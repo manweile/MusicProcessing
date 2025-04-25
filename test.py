@@ -1,4 +1,5 @@
-from audio_info.audio_metadata import AudioMetadata
+# from audio_info.audio_metadata import AudioMetadata
+from audio_info import AudioMetadata
 
 # eyed3 and mutagen can both read it
 # and it has a date and album art
