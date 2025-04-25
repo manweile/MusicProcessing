@@ -9,8 +9,11 @@ There are many things I need to do:
       - album sub dirs
 - Rename files per my format
   - artist-title
+- Convert all non-mp3 audio files to mp3
 - Update information tags
   - ensure all tags are ID3v2.3
+    - convert ID3v2.4 to 2.3
+    - convert APE to ID3v2
   - ensure all songs have correct:
     - title
     - artist
@@ -20,9 +23,12 @@ There are many things I need to do:
     - bit rate (>=128 kbps)
     - front cover album art
     - media source
-      - recorded from vinyl lp
-      - ripped from cd
-      - downloaded
+      - vinyl
+        - recorded from vinyl lp
+      - cd
+        - ripped from cd
+      - digital
+        - downloaded
 
 ## Audio File Types
 There are different audio file types
