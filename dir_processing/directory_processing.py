@@ -20,15 +20,17 @@ Defines the base class for directory processing
 # standard
 import csv
 import gc
-import glob
-import logging
 import os
 import sys
+
+from operator import itemgetter
 
 # third party
 from pathvalidate import is_valid_filename, sanitize_filepath, ValidationError
 
-_AUDIO_EXT = ["mp3", "m4a", "wma"]
+# from Mp3Tag program, I know I have these audio file extensions and types:
+_AUDIO_EXTS = [ ".mp3", ".m4a", ".wma" ]
+_AUDIO_TYPES = ["mp3", "m4a", "wma"]
 
 gc.enable()
 
@@ -42,6 +44,7 @@ class DirectoryProcessing():
 
     def __init__(self, drive, tld):
         '''!
+        @private
         @brief Initializes the DirectoryProcessing class
 
         @details The drive letter is expected to be valid and the top level directory is expected to exist
@@ -73,6 +76,7 @@ class DirectoryProcessing():
     @property
     def drive(self):
         '''!
+        @public
         @brief Returns the drive letter
 
         @param {instance} self The class reference
@@ -88,6 +92,7 @@ class DirectoryProcessing():
     @drive.setter
     def drive(self, value):
         '''!
+        @public
         @brief Sets the drive letter
 
         @param {str} value The drive letter
@@ -102,6 +107,7 @@ class DirectoryProcessing():
     @property
     def tld(self):
         '''!
+        @public
         @brief Returns the top level directory
 
         @param {instance} self The class reference
@@ -114,6 +120,7 @@ class DirectoryProcessing():
     @tld.setter
     def tld(self, value):
         '''!
+        @public
         @brief Sets the top level directory
 
         @details The top level directory is expected to exist already
@@ -133,6 +140,7 @@ class DirectoryProcessing():
     @property
     def tld_path(self):
         '''!
+        @public
         @brief Returns the full top level directory path
 
         @param {instance} self The class reference
@@ -142,61 +150,151 @@ class DirectoryProcessing():
         return self._tld_path
 
 
-    def get_file_type(self, file_path):
+    def audio_list_files(self, start_path=None):
         '''!
-        @brief Returns the file type of audio file without leading period
+        @public
+        @brief Generates a csv containing full path for all audio files
 
-        @param {str} file_path The full audio file path
-        @return {str} file_extension The file extension of audio file
-        '''
-
-        split_extension = None
-
-        try:
-            if file_path:
-                # get the file type, don't care about the file name
-                _, split_extension = os.path.splitext(file_path)
-                file_extension = split_extension[1:]
-        except Exception:
-            print('File extension error: {} occurred'.format(sys.exec_info()[0]))
-
-        return file_extension
-
-    def list_files(self, file_ext, start_path=None):
-        '''!
-        @brief Generates a csv containing full file path for an extension
-
-        @details Generates a csv containing full file path for an extension
+        @details Generates a csv containing full file path for audio files
         If start_path is not supplied, uses the class top level directory path
         The csv file is created in the current working directory
+        The csv has 2 columns, full file path for audio file and extension
 
         @param {str} file_ext The file extension want file paths for
         @param tld_path {str} start_path The starting point of the directory walk
         '''
+
+        data = []
+        file_count = 0
+        file_extension = None
+        mp3_count = 0
+        m4a_count = 0
+        wma_count = 0
 
         if start_path == None:
             start_path = self._tld_path
 
         # get the current working directory, that's where csv will be saved
         cwd = os.getcwd()
-        csv_filename = "found_" + file_ext + ".csv"
+        csv_filename = "found_audio_files.csv"
         csv_path = os.path.join(cwd, csv_filename)
+
         # create csv file, overwrite any existing with same name
         csv_outfile = open(csv_path, 'w', newline='')
-        csv_file_writer = csv.writer(csv_outfile)
-        #  write the header row so we always have record of what extension we looked for
-        csv_file_writer.writerow([file_ext + " file path"])
+        csv_file_writer = csv.writer(csv_outfile, delimiter=',')
+        header_row = ["file path","audio file type"]
+        csv_file_writer.writerow(header_row)
 
         # top down walk for files of the specified extension type
-        # want the directory path so can get full file path
-        # so don't care about the sub-directories
+        # want the directory path & file names so we can get full file path
+        # we don't care about the sub-directory names
         for dir_path, _, files in os.walk(start_path):
             for file in files:
-                if(file.endswith('.' + file_ext)):
+                _, file_extension = os.path.splitext(file)
+                if(file_extension in _AUDIO_EXTS):
+                    audio_file_path = os.path.join(dir_path, file)
+                    data.append([audio_file_path, file_extension])
+                    file_count += 1
+                    if file_extension == _AUDIO_EXTS[0]:
+                        mp3_count += 1
+                    elif file_extension == _AUDIO_EXTS[1]:
+                        m4a_count += 1
+                    elif file_extension == _AUDIO_EXTS[2]:
+                        wma_count += 1
+
+        # sort on the extension, as the audio file path is already sorted by os walk
+        sorted_data = sorted(data, key=itemgetter(1))
+        csv_file_writer.writerows(sorted_data)
+        csv_outfile.close()
+        print("Found {0} audio files, with {1} {2} files, {3} {4} files, and {5} {6} files".format(
+            file_count, mp3_count, _AUDIO_TYPES[0], m4a_count, _AUDIO_TYPES[1], wma_count, _AUDIO_TYPES[2]))
+
+
+    def ext_list_files(self, file_ext=None, start_path=None):
+        '''!
+        @public
+        @brief Wrapper for function that generates a csv containing full file path for an extension
+
+        @param {instance} self The class reference
+        @param {str} file_ext The file extension want file paths for
+        @param start_path {str} start_path The starting point of the directory walk
+        '''
+
+        if start_path == None:
+            start_path = self._tld_path
+
+        if (file_ext):
+            self._ext_list_files(file_ext, start_path)
+        else:
+            # for ext in ext_list:
+            for file_type in _AUDIO_TYPES:
+                self._ext_list_files(file_type, start_path)
+
+
+    def _ext_list_files(self, file_type, start_path):
+        '''!
+        @private
+        @brief Generates a csv containing full file path for an audio file type
+
+        @details Generates a csv containing full file path for an audio file type
+        If start_path is not supplied, uses the class top level directory path
+        The csv file is created in the current working directory
+        The csv file has one column that shows the filepath for files with audio file type we looked for
+        The csv file is sorted in directory path as found by os walk top down order
+
+        @param {instance} self The class reference
+        @param {str} file_type The file type want file paths for
+        @param start_path {str} start_path The starting point of the directory walk
+        '''
+
+        type_count = 0
+        csv_filename = "found_" + file_type + ".csv"
+        # get the current working directory, that's where csv will be saved
+        cwd = os.getcwd()
+        csv_path = os.path.join(cwd, csv_filename)
+        # create csv file, overwrite any existing with same name if necessary
+        csv_outfile = open(csv_path, 'w', newline='')
+        csv_file_writer = csv.writer(csv_outfile)
+
+        # write the header row so we always have record of what extension we looked for
+        header_row = file_type + " file path"
+        csv_file_writer.writerow([header_row])
+
+        # top down walk for files of the specified extension type
+        # want the directory path & file names so we can get full file path
+        # don't care about the sub-directory names at all
+        for dir_path, _, files in os.walk(start_path):
+            for file in files:
+                if(file.endswith('.' + file_type)):
                     audio_file_path = os.path.join(dir_path, file)
                     csv_file_writer.writerow([audio_file_path])
+                    type_count += 1
 
         csv_outfile.close()
+        print("Found {0} {1} files".format(type_count, file_type))
+
+
+    def get_file_type(self, file_path):
+        '''!
+        @public
+        @brief Returns the file type of audio file without leading period
+
+        @param {str} file_path The full audio file path
+        @return {str} file_type The file type of audio file
+        '''
+
+        split_extension = None
+
+        try:
+            if file_path:
+                # get the file extension, don't care about the file name
+                _, split_extension = os.path.splitext(file_path)
+                # want the type, not the full extension with the period
+                file_type = split_extension[1:]
+        except Exception:
+            print('File type error: {} occurred'.format(sys.exec_info()[0]))
+
+        return file_type
 
 
     def make_album_dir(self, artist_dirpath, album_dir):
