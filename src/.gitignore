@@ -1,2 +1,2 @@
-docs/*.*
+docs/Doxyfile
 generated_files/*.csv
