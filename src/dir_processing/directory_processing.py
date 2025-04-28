@@ -18,27 +18,7 @@
 
 # @copyright 2025 GWN Software. All rights reserved.
 
-#  old docs
-# '''!
-# @file directory_processing.py
-# @brief Defines the directory processing class
-
-# @section description_directory_processing Description
-# Defines the base class for directory processing
-# - DirectoryProcessing (base class)
-
-# @section libraries_directory_processing Libraries/Modules
-# - os standard library (https://docs.python.org/3/library/os.html)
-# - pathvalidate 3rd party library (https://pathvalidate.readthedocs.io/en/latest/index.html#)
-#     - access to is_valid_filename, sanitize_filepath, ValidationError
-
-# @section author_directory_processing Authour(s)
-# - Created by Gerald Manweiler on April 8, 2025
-
-# @copyright 2025 GWN Software. All rights reserved.
-# '''
-
-# standard
+# standard modules
 import csv
 import gc
 import os
@@ -46,11 +26,11 @@ import sys
 
 from operator import itemgetter
 
-# third party
+# third party modules
 # from pathvalidate import is_valid_filename, sanitize_filepath, ValidationError
 import pathvalidate
 
-# local
+# local modules
 from generated_files import script_directory as generated_files
 
 # from Mp3Tag program, I know I have these audio file extensions and types:
@@ -68,13 +48,13 @@ class DirectoryProcessing():
     def __init__(self, drive, tld):
         '''!
         @private
-        @brief Initializes the DirectoryProcessing class.
-        @details The drive letter is expected to be valid and the top level directory is expected to exist.
-        We set the values for convenience, and do not expect to change them.
-        @param {instance} self The class reference
-        @param {str} drive The drive letter for top level directory
-        @param {str} tld The top level directory that contains all the music files
-        @return {object} DirectoryProcessing An instance of the class
+        @brief      Initializes the DirectoryProcessing class.
+        @details    The drive letter is expected to be valid and the top level directory is expected to exist.
+        @details    We set the values for convenience, and do not expect to change them.
+        @param      self {instance} The class reference.
+        @param      drive {str} The drive letter for top level directory.
+        @param      tld {str} The top level directory that contains all the music files.
+        @return     DirectoryProcessing {instance} An instance of the class.
         '''
 
         if drive.isalpha() and drive:
@@ -109,8 +89,8 @@ class DirectoryProcessing():
         '''!
         @public
         @brief Returns the drive letter.
-        @param {instance} self The class reference
-        @return {str} The drive letter for top level directory
+        @param self {instance} The class reference.
+        @return drive {str} The drive letter for top level directory.
         '''
 
         drive = None
@@ -124,7 +104,8 @@ class DirectoryProcessing():
         '''!
         @public
         @brief Sets the drive letter.
-        @param {str} value The drive letter
+        @param self {instance} The class reference.
+        @param value {str} The drive letter.
         '''
 
         if value.isalpha():
@@ -151,8 +132,8 @@ class DirectoryProcessing():
         @public
         @brief Sets the top level directory.
         @details The top level directory is expected to exist already.
-        @param {instance} self The class reference
-        @param {str} value The top level directory
+        @param self {instance} The class reference.
+        @param value {str} The top level directory.
         '''
 
         # check if input directory does exist
@@ -168,8 +149,8 @@ class DirectoryProcessing():
         '''!
         @public
         @brief Returns the full top level directory path.
-        @param {instance} self The class reference
-        @return {str} tld_path The top level directory path
+        @param self {instance} The class reference.
+        @return tld_path {str} The top level directory path
         '''
 
         return self._tld_path
@@ -180,10 +161,11 @@ class DirectoryProcessing():
         @public
         @brief Generates a csv containing full path for all audio files.
         @details If start_path is not supplied, uses the class top level directory path.
-        The csv file is created in the designated generated files directory.
-        The csv has 2 columns, full file path for audio file and extension.
-        @param {str} file_ext The file extension want file paths for
-        @param tld_path {str} start_path The starting point of the directory walk
+        @details The csv file is created in the designated generated files directory.
+        @details The csv has 2 columns, full file path for audio file and extension.
+        @param self {instance} The class reference.
+        @param file_ext {str} The file extension want file paths for.
+        @param tld_path {str} start_path The starting point of the directory walk.
         '''
 
         data = []
@@ -196,7 +178,7 @@ class DirectoryProcessing():
         if start_path == None:
             start_path = self._tld_path
 
-        # get the current working directory, that's where csv will be saved
+        # get the generated files directory, that's where csv will be saved
         cwd = generated_files
         csv_filename = "found_audio_files.csv"
         csv_path = os.path.join(cwd, csv_filename)
@@ -236,14 +218,11 @@ class DirectoryProcessing():
         '''!
         @public
         @brief Wrapper for function that generates a csv containing full file path for an extension.
-        @details Generates a csv containing full file path for audio files with extension.
-        If start_path is not supplied, uses the class top level directory path.
-        If file extension is not supplied, uses the preset audio types module list.
-        The csv file is created in the designated generated files directory.
-        The csv has 1 columns, the full file path for audio file.
-        @param {instance} self The class reference
-        @param {str} file_ext The file extension want file paths for
-        @param {str} start_path The starting point of the directory walk
+        @details If start_path is not supplied, uses the class top level directory path.
+        @details If file extension is not supplied, uses the preset audio types module list.
+        @param self {instance} The class reference.
+        @param file_ext {str} The file extension want file paths for.
+        @param start_path {str} The starting point of the directory walk.
         '''
 
         if start_path == None:
@@ -252,7 +231,6 @@ class DirectoryProcessing():
         if (file_ext):
             self._ext_list_files(file_ext, start_path)
         else:
-            # for ext in ext_list:
             for file_type in _AUDIO_TYPES:
                 self._ext_list_files(file_type, start_path)
 
@@ -261,18 +239,17 @@ class DirectoryProcessing():
         '''!
         @private
         @brief Generates a csv containing full file path for an audio file type.
-        @details If start_path is not supplied, uses the class top level directory path.
-        The csv file is created in the current working directory.
-        The csv file has one column that shows the filepath for files with audio file type we looked for.
-        The csv file is sorted in directory path as found by os walk top down order.
-        @param {instance} self The class reference
-        @param {str} file_type The file type want file paths for
-        @param {str} start_path The starting point of the directory walk
+        @details The csv file has one column that shows the filepath for files with audio file type we looked for.
+        @details The csv file is sorted in directory path as found by os walk top down order.
+        @details The csv file is created in the designated generated files directory.
+        @param self {instance} The class reference.
+        @param file_type {str} The file type want file paths for.
+        @param start_path {str} The starting point of the directory walk.
         '''
 
         type_count = 0
         csv_filename = "found_" + file_type + ".csv"
-        # get the current working directory, that's where csv will be saved
+        # get the generated files directory, that's where csv will be saved
         cwd = generated_files
         csv_path = os.path.join(cwd, csv_filename)
         # create csv file, overwrite any existing with same name if necessary
@@ -301,8 +278,9 @@ class DirectoryProcessing():
         '''!
         @public
         @brief Returns the file type of audio file without leading period.
-        @param {str} file_path The full audio file path
-        @return {str} file_type The file type of audio file
+        @param self {instance} The class reference.
+        @param file_path {str} The full audio file path.
+        @return file_type {str} The file type of audio file.
         '''
 
         split_extension = None
@@ -323,19 +301,16 @@ class DirectoryProcessing():
         '''!
         @brief Creates an album sub-directory in an artist directory.
         @details Creates the album sub directory for the artist if needed.
-        The album name for the directory is drawn from the metadata and may need sanitization,
-        because there is no guarantee it can be used as is from the metadata.
-        The artist directory has been manually created and presumed to be valid.
-        The audio file(s) for the created album directory will moved into the created directory by another function.
-        @param {instance} self The class reference
-        @param {str} artist_dirpath The name of the artist for artist directory
-        @param {str} album_dir The name of the album for new album directory
+        @details The album name for the directory is drawn from the metadata.
+        @details The artist directory has been manually created and presumed to be valid.
+        @details The audio file(s) for the created album directory will moved into the created directory by another function.
+        @param self {instance} The class reference.
+        @param artist_dirpath {str} The name of the artist for artist directory.
+        @param album_dir {str} The name of the album for new album directory.
         '''
 
-        # using all defaults
-        # album_dir = sanitize_filepath(album_dir)
+        # sanitize because the metadata might have characters invalid for directory names
         album_dir = pathvalidate.sanitize_filepath(album_dir)
-
 
         music_dir = os.path.join(self._tld_path, artist_dirpath, album_dir)
 

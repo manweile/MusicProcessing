@@ -35,7 +35,7 @@
 #
 # @copyright GWN Software 2025. All rights reserved.
 
-from src.dir_processing.directory_processing import DirectoryProcessing
+from dir_processing.directory_processing import DirectoryProcessing
 
 def main():
     '''!

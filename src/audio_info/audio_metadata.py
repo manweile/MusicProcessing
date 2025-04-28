@@ -59,11 +59,10 @@ class AudioMetadata():
     # @todo finish, using mutagen
     def get_album_name(self, audio_file):
         '''!
-        @brief Gets album name from metadata
-
-        @param {instance} self The class reference
-        @param {object} audio_file The FileType instance for an audio file
-        @return [{str}, {str}] album_info Tuple holding artist name and album name from audio file metadata
+        @brief Gets album name from metadata.
+        @param self {instance} The class reference.
+        @param audio_file {object} The FileType instance for an audio file.
+        @return album_info tuple({str}, {str}) Artist name and album name from audio file metadata.
         '''
         artist_name = None
         album_name = None
