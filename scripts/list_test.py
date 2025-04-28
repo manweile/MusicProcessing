@@ -1,4 +1,4 @@
-from dir_processing import DirectoryProcessing
+from src.dir_processing import DirectoryProcessing
 
 dir_processing = DirectoryProcessing('H', 'Music')
 

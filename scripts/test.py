@@ -1,6 +1,6 @@
 # from audio_info.audio_metadata import AudioMetadata
 # from src.audio_info import AudioMetadata
-from audio_info import AudioMetadata
+from src.audio_info.audio_metadata import AudioMetadata
 
 # eyed3 and mutagen can both read it
 # and it has a date and album art
@@ -16,12 +16,12 @@ from audio_info import AudioMetadata
 # eyed3 and mutagen can both read it
 # and it has a date
 # but mutagen can't read date while eyed3 can read date
-# file_path = "H:\\Music\\4 Non Blondes\\Bigger, Better, Faster, More!\\4 Non Blondes-What's Up.mp3"
+file_path = "H:\\Music\\4 Non Blondes\\Bigger, Better, Faster, More!\\4 Non Blondes-What's Up.mp3"
 
 # eyed3 can't read it, mutagen can
 # wma has different tag keys than mp3
 # but there is a year tag present (WM/Year) that mutagen SHOULD be able to read
-file_path = "H:\\Music\\Elton John\\Greatest Hits, Vol. 2\\Elton John-Island Girl.wma"
+# file_path = "H:\\Music\\Elton John\\Greatest Hits, Vol. 2\\Elton John-Island Girl.wma"
 
 # eyed3 can't read it, mutagen can
 # m4a has different tag keys than mp3 file
