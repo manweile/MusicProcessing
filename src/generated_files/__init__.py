@@ -1,10 +1,10 @@
-'''!
-@todo package documentation
-'''
-
 import os
 
-# want the directory so don't have to have a "magic spell" else where in code
-script_directory = os.path.dirname(os.path.abspath(__file__))
+## @var generated_files
+# @brief gets directory name so don't need a "magic spell" else where in codebase.
+generated_files = ""
+generated_files = os.path.dirname(os.path.abspath(__file__))
 
-__all__ = ['script_directory']
+## @var __all__
+# @brief exposes list for imports
+__all__ = ['generated_files']
