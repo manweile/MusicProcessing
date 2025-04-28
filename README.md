@@ -51,14 +51,15 @@ There are different audio file types
 There are several different tools I can use
 
 ### Tag Editors & Databases
-Mp3Tag
+Mp3Tag:
 - a tag editor
 - uses Discogs, MusicBrainz picard and freedb for information sources
 - not very intuitive UI
 - so-so better help documentation
 - doesn't add a lot of extraneous metadata
 - will prefer APE tags or ID3, which can be confusing and cause saving failures
-[MusicBrainz Picard](https://picard-docs.musicbrainz.org/v2.13/en/index.html)
+ 
+[MusicBrainz Picard](https://picard-docs.musicbrainz.org/v2.13/en/index.html):
 - uses mutagen under the hood
 - both tag editor & database
 - more intuitive UI
@@ -66,22 +67,24 @@ Mp3Tag
 - much better help documentation
 - can add a significant amount of metadata (more than  I really need)
 - can do playlists
-Discogs
+
+Discogs:
 - is a music info database
 
 ### Audio File Processing
-Goldwave
+Goldwave:
 - very good for vinyl LP recording
 - can convert file formats (m4a, wav, wma) to mp3
 - can rip mp3's from cd's
 - can play all of my audio file formats
 
 ### Audio File Players
-Windows Media Player
+Windows Media Player:
 - can do some tag editing, but is really limited and flaky in re album art displaying properly
 - adequate for ripping mp3's from cd's, but goldwave is probably better
 - is adequate for playlists - with caveats in re playlist file types and save locations
-VLC
+
+VLC:
 - can so some tag editing, but is really a media player at heart
 - can rip mp3's from cd's, but goldwave is probably better
 
