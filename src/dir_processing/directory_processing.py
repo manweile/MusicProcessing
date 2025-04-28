@@ -31,7 +31,9 @@ from operator import itemgetter
 import pathvalidate
 
 # local modules
-from generated_files import script_directory as generated_files
+# generated files package does not have any modules,
+# just a package variable the __all__ list exposes via __init__.py
+from src.generated_files import generated_files
 
 # from Mp3Tag program, I know I have these audio file extensions and types:
 _AUDIO_EXTS = [ ".mp3", ".m4a", ".wma" ]
