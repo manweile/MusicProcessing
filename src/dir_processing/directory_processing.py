@@ -181,9 +181,9 @@ class DirectoryProcessing():
             start_path = self._tld_path
 
         # get the generated files directory, that's where csv will be saved
-        cwd = generated_files
+        csv_dir = generated_files
         csv_filename = "found_audio_files.csv"
-        csv_path = os.path.join(cwd, csv_filename)
+        csv_path = os.path.join(csv_dir, csv_filename)
 
         # create csv file, overwrite any existing with same name
         csv_outfile = open(csv_path, 'w', newline='')
@@ -252,8 +252,8 @@ class DirectoryProcessing():
         type_count = 0
         csv_filename = "found_" + file_type + ".csv"
         # get the generated files directory, that's where csv will be saved
-        cwd = generated_files
-        csv_path = os.path.join(cwd, csv_filename)
+        csv_dir = generated_files
+        csv_path = os.path.join(csv_dir, csv_filename)
         # create csv file, overwrite any existing with same name if necessary
         csv_outfile = open(csv_path, 'w', newline='')
         csv_file_writer = csv.writer(csv_outfile)
