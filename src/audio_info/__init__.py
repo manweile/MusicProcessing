@@ -1,5 +1,5 @@
 '''
-@package audio_inf
+@package audio_info
 @module audio_metadata
 '''
 # using absolute import as don't expect to be re-organizing directories
