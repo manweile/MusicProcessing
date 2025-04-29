@@ -1,4 +1,4 @@
-'''!
+'''
 @file audio_metadata.py
 @brief Defines the audio metadata class
 
@@ -37,20 +37,17 @@ D:\\ProcessedMusic\\
 '''
 
 class AudioMetadata():
-    '''!
+    '''
     @brief Contains metadata processing functionality
-
     @details Defines the base metadata processing used by project
     '''
 
     def __init__(self):
-        '''!
+        '''
         @brief Initializes the AudioMetadata class
-
         @details A basic class implementation with no instantiation parameters
 
-        @param {instance} self The class reference
-        @return {object} AudioMetadata  An instance of the class
+        @return AudioMetadata {object} An instance of the class
         '''
 
         pass
@@ -58,9 +55,9 @@ class AudioMetadata():
 
     # @todo finish, using mutagen
     def get_album_name(self, audio_file):
-        '''!
+        '''
         @brief Gets album name from metadata.
-        @param self {instance} The class reference.
+
         @param audio_file {object} The FileType instance for an audio file.
         @return album_info tuple({str}, {str}) Artist name and album name from audio file metadata.
         '''
@@ -77,12 +74,11 @@ class AudioMetadata():
 
 
     def get_art_type(self, audio_file):
-        '''!
+        '''
         @brief returns the mime type of album art
 
-        @param {instance} self The class reference
-        @param {object} audio_file The FileType instance for an audio file
-        @return {str} mime_type The mime type of the album art
+        @param audio_file {object} The FileType instance for an audio file
+        @return mime_type {str} The mime type of the album art
         '''
 
         mime_type = None
@@ -95,24 +91,22 @@ class AudioMetadata():
 
     # @todo finish, using mutagen
     def get_metadata_type(self, audio_file):
-        '''!
+        '''
         @brief Returns the metadata type of audio file
 
-        @param {instance} self The class reference
-        @param {object} audio_file The mutagen FileType instance for an audio file
-        @return {str} metadata_type The metadata type of the audio file
+        @param audio_file {object} The mutagen FileType instance for an audio file
+        @return metadata_type {str} The metadata type of the audio file
         '''
 
         pass
 
 
     def get_tag_info(self, audio_file):
-        '''!
+        '''
         @brief gets tag information for an audio file
 
-        @param {instance} self The class reference
-        @param {object} audio_file The eyed3 Mp3AudioFile object for an audio file
-        @return {object} tag_info Tag object holding audio file tag info
+        @param audio_file  {object} The eyed3 Mp3AudioFile object for an audio file
+        @return tag_info {object} Tag object holding audio file tag info
         '''
 
         tag_info = None
@@ -123,12 +117,11 @@ class AudioMetadata():
 
     # @todo input a mutagen FileType instance instead of a file path
     def has_art(self, file_path):
-        '''!
+        '''
         @brief Checks if an audio file contains embedded album art
 
-        @param {instance} self The class reference
-        @param {str} file_path The full path to audio file
-        @return {boolean} art_present Returns true if art is present, false otherwise
+        @param file_path {str} The full path to audio file
+        @return art_present {boolean} Returns true if art is present, false otherwise
         '''
 
         art_present = False
@@ -142,12 +135,11 @@ class AudioMetadata():
         return art_present
 
     def load_file(self, file_path):
-        '''!
+        '''
         @brief loads an audio file
 
-        @param {instance} self The class reference
-        @param {str} file_path  The full file path for audio file
-        @return [{Mp3AudioFile}, {FileType}] Tuple containing objects for the input audio file path
+        @param file_path {str} The full file path for audio file
+        @return Tuple [{Mp3AudioFile}, {FileType}] Containing objects for the input audio file path
         '''
 
         eyed3_audio_file = None
@@ -163,11 +155,10 @@ class AudioMetadata():
         return eyed3_audio_file, mutagen_audio_file
 
     def show_metadata(self, audio_file):
-        '''!
+        '''
         @brief Shows mutagen info
 
-        @param {instance} self The class reference
-        @param {FileType} audio_file The mutagen FileType instance for an audio file
+        @param audio_file {FileType} The mutagen FileType instance for an audio file
         '''
 
         artist_name = audio_file['TPE1'].text[0]
@@ -182,11 +173,10 @@ class AudioMetadata():
 
 
     def show_date(self, tag_info):
-        '''!
+        '''
         @brief Show eyed3 tag date info
 
-        @param {instance} self The class reference
-        @param {object} tag_info Tag object holding audio file tag info
+        @param tag_info {object} Tag object holding audio file tag info
         '''
 
         # @todo getBestDate() perhaps not best method

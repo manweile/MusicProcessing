@@ -3,11 +3,8 @@
 @module directory_processing
 '''
 
-# either relative or absolute import work
-# relative import
-from .. dir_processing.directory_processing import DirectoryProcessing
-# absolute import
-# from src.dir_processing.directory_processing import DirectoryProcessing
+# using absolute import as don't expect to be re-organizing directories
+from src.dir_processing.directory_processing import DirectoryProcessing
 
 ## @var __all__
 # @brief exposes list for imports

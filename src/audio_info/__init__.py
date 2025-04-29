@@ -1,10 +1,10 @@
-'''!
-@todo package documentation
 '''
-## either relative or absolute import work
-# relative import
-from .. audio_info.audio_metadata import AudioMetadata
-# absolute import
-# from src.audio_info.audio_metadata import AudioMetadata
+@package audio_inf
+@module audio_metadata
+'''
+# using absolute import as don't expect to be re-organizing directories
+from src.audio_info.audio_metadata import AudioMetadata
 
+## @var __all__
+# @brief exposes list for imports
 __all__ = ['AudioMetadata']
