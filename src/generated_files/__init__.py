@@ -1,3 +1,7 @@
+'''
+@package generated_files
+@brief gets directory name for importing by other modules
+'''
 import os
 
 ## @var generated_files
