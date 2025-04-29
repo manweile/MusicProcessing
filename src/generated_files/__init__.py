@@ -1,6 +1,9 @@
 '''
 @package generated_files
-@brief gets directory name for importing by other modules
+@brief Gets directory name for importing by other modules
+@details The generated files directory is where files are created by project.
+@details Code needing to know this location will be located in other directories.
+@details To modularize code, get the absolute path of this file and expose it for importing.
 '''
 import os
 
