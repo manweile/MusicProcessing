@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-'''!
+'''
 @brief Music Processing Project
 '''
 
@@ -38,7 +38,7 @@
 from src.dir_processing.directory_processing import DirectoryProcessing
 
 def main():
-    '''!
+    '''
     @public
     @brief Module entry point.
     @details Takes command line arguments and executes per arguments
@@ -48,7 +48,7 @@ def main():
     processing.ext_list_files("aac")
 
 if __name__ == "__main__":
-    '''!
+    '''
     @private
     @brief Top level script environment entry point
     '''
