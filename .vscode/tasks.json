@@ -9,6 +9,20 @@
             "command": "doxygen",
             "options": {
                 "cwd": "${workspaceFolder}/docs"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false,
+                "close": true
             }
         },
         {
@@ -16,11 +30,21 @@
             "type": "process",
             "command": "Firefox",
             "windows": {
-                "command": "C:/Program Files/Mozilla Firefox/firefox.exe",
+                "command": "C:/Program Files/Mozilla Firefox/firefox.exe"
             },
             "args": [
                 "file:///${workspaceFolder}/docs/html/index.html"
-            ]
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false,
+                "close": true
+            }
         }
     ]
 }
