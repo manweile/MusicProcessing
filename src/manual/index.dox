@@ -1,0 +1,30 @@
+/**
+@mainpage Music Processing Project
+
+@section description_main Description
+A python program for manipulating & normalizing audio files.
+
+@section notes_main Notes
+Music Processing recognizes the following file types:
+- Audio file types:
+    - mp3
+    - m4a
+    - wma
+- Playlist file types:
+    - m3u
+
+@section usage_main Usage
+From a command line (Powershell or Windows cmd):
+- >cd <location of main.py>
+- >python.exe main.py <arguments>
+
+@section libraries_main Libraries/Modules
+3rd party libraries
+- pathvalidate  (https://pathvalidate.readthedocs.io/en/latest/index.html#)
+
+@section authour_main Authour
+Gerald Manweiler
+
+@section copyright_main Copyright
+GWN Software @showdate "%Y". All rights reserved.
+*/
