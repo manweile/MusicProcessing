@@ -1,24 +1,10 @@
 '''
+@file directory_processing.py
 @brief Defines the directory processing class.
+@details Defines the base class for processing files and directories.
+@author Gerald Manweiler
+@copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
-
-##
-# @file directory_processing.py
-# @brief Defines the directory processing class
-#
-# @section description_directory_processing Description
-# Defines the base class for directory processing
-# - DirectoryProcessing (base class)
-
-# @section libraries_directory_processing Libraries/Modules
-# - os standard library (https://docs.python.org/3/library/os.html)
-# - pathvalidate 3rd party library (https://pathvalidate.readthedocs.io/en/latest/index.html#)
-#     - access to is_valid_filename, sanitize_filepath, ValidationError
-
-# @section author_directory_processing Authour(s)
-# - Created by Gerald Manweiler on April 8, 2025
-
-# @copyright 2025 GWN Software. All rights reserved.
 
 # standard modules
 import csv
@@ -29,7 +15,6 @@ import sys
 from operator import itemgetter
 
 # third party modules
-# from pathvalidate import is_valid_filename, sanitize_filepath, ValidationError
 import pathvalidate
 
 # local modules
@@ -51,14 +36,14 @@ class DirectoryProcessing():
 
     def __init__(self, drive, tld):
         '''
-        @private
         @brief      Initializes the DirectoryProcessing class.
         @details    The drive letter is expected to be valid and the top level directory is expected to exist.
         @details    We set the values for convenience, and do not expect to change them.
-
         @param      drive {str} The drive letter for top level directory.
         @param      tld {str} The top level directory that contains all the music files.
         @return     DirectoryProcessing {instance} An instance of the class.
+        @exception  ValueError alphabetic character A-Z or a-z expected
+        @exception  ValidationError a pathvalidate module error
         '''
 
         if drive.isalpha() and drive:
@@ -70,16 +55,10 @@ class DirectoryProcessing():
         # using defaults so platform is "universal", replacement text for invalid chars is ""
         # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
         if tld:
-            # sanitized_tld = sanitize_filepath(tld)
             sanitized_tld = pathvalidate.sanitize_filepath(tld)
         else:
-            # raise ValidationError("directory path required")
             raise pathvalidate.ValidationError("directory path required")
 
-        # if is_valid_filename(sanitized_tld):
-        #     self._tld = sanitized_tld
-        # else:
-        #     raise ValidationError("invalid directory path {0}".format(tld))
         if pathvalidate.is_valid_filename(sanitized_tld):
             self._tld = sanitized_tld
         else:
@@ -91,9 +70,7 @@ class DirectoryProcessing():
     @property
     def drive(self):
         '''
-        @public
         @brief Returns the drive letter.
-
         @return drive {str} The drive letter for top level directory.
         '''
 
@@ -106,10 +83,9 @@ class DirectoryProcessing():
     @drive.setter
     def drive(self, value):
         '''
-        @public
         @brief Sets the drive letter.
-
         @param value {str} The drive letter.
+        @exception ValueError alphabetic character A-Z or a-z expected
         '''
 
         if value.isalpha():
@@ -121,9 +97,7 @@ class DirectoryProcessing():
     @property
     def tld(self):
         '''
-        @public
         @brief Returns the top level directory.
-
         @return {str} tld The top level directory
         '''
 
@@ -133,11 +107,10 @@ class DirectoryProcessing():
     @tld.setter
     def tld(self, value):
         '''
-        @public
         @brief Sets the top level directory.
         @details The top level directory is expected to exist already.
-
         @param value {str} The top level directory.
+        @exception IOError an os module error
         '''
 
         # check if input directory does exist
@@ -151,9 +124,7 @@ class DirectoryProcessing():
     @property
     def tld_path(self):
         '''
-        @public
         @brief Returns the full top level directory path.
-
         @return tld_path {str} The top level directory path
         '''
 
@@ -162,12 +133,10 @@ class DirectoryProcessing():
 
     def audio_list_files(self, start_path=None):
         '''
-        @public
         @brief Generates a csv containing full path for all audio files.
         @details If start_path is not supplied, uses the class top level directory path.
         @details The csv file is created in the designated generated files directory.
         @details The csv has 2 columns, full file path for audio file and extension.
-
         @param file_ext {str} The file extension want file paths for.
         @param tld_path {str} start_path The starting point of the directory walk.
         '''
@@ -220,11 +189,9 @@ class DirectoryProcessing():
 
     def ext_list_files(self, file_ext=None, start_path=None):
         '''
-        @public
         @brief Wrapper for function that generates a csv containing full file path for an extension.
         @details If start_path is not supplied, uses the class top level directory path.
         @details If file extension is not supplied, uses the preset audio types module list.
-
         @param file_ext {str} The file extension want file paths for.
         @param start_path {str} The starting point of the directory walk.
         '''
@@ -233,20 +200,18 @@ class DirectoryProcessing():
             start_path = self._tld_path
 
         if (file_ext):
-            self._ext_list_files(file_ext, start_path)
+            self.__ext_list_files(file_ext, start_path)
         else:
             for file_type in _AUDIO_TYPES:
-                self._ext_list_files(file_type, start_path)
+                self.__ext_list_files(file_type, start_path)
 
 
-    def _ext_list_files(self, file_type, start_path):
+    def __ext_list_files(self, file_type, start_path):
         '''
-        @private
         @brief Generates a csv containing full file path for an audio file type.
         @details The csv file has one column that shows the filepath for files with audio file type we looked for.
         @details The csv file is sorted in directory path as found by os walk top down order.
         @details The csv file is created in the designated generated files directory.
-
         @param file_type {str} The file type want file paths for.
         @param start_path {str} The starting point of the directory walk.
         '''
@@ -280,11 +245,10 @@ class DirectoryProcessing():
 
     def get_file_type(self, file_path):
         '''
-        @public
         @brief Returns the file type of audio file without leading period.
-
         @param file_path {str} The full audio file path.
         @return file_type {str} The file type of audio file.
+        @exception Exception an os module error
         '''
 
         split_extension = None
@@ -308,7 +272,6 @@ class DirectoryProcessing():
         @details The album name for the directory is drawn from the metadata.
         @details The artist directory has been manually created and presumed to be valid.
         @details The audio file(s) for the created album directory will moved into the created directory by another function.
-
         @param artist_dirpath {str} The name of the artist for artist directory.
         @param album_dir {str} The name of the album for new album directory.
         '''
