@@ -189,9 +189,9 @@ class DirectoryProcessing():
 
     def ext_list_files(self, file_ext=None, start_path=None):
         '''
-        @brief Wrapper for function that generates a csv containing full file path for an extension.
-        @details If start_path is not supplied, uses the class top level directory path.
-        @details If file extension is not supplied, uses the preset audio types module list.
+        @brief Wrapper for function that generates a csv containing full file path for an extension
+        @details If start_path is not supplied, uses the class top level directory path?
+        If file extension is not supplied, uses the preset audio types module list.
         @param file_ext {str} The file extension want file paths for.
         @param start_path {str} The starting point of the directory walk.
         '''

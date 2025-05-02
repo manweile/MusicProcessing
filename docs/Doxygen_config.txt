@@ -3,7 +3,7 @@
 # project for which the documentation is generated. This name is used in the
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
-my project name.
+Use my project name.
 PROJECT_NAME           = "Music Processing"
 
 # By default Python docstrings are displayed as preformatted text and Doxygen's
@@ -11,7 +11,7 @@ PROJECT_NAME           = "Music Processing"
 # Doxygen's special commands can be used and the contents of the docstring
 # documentation blocks is shown as Doxygen documentation.
 # The default value is: YES.
-if this was left at default, you have to use ! in every python docstring if you also want to use the @special commands.
+If this was left at default, you have to use ! in every python docstring if you also want to use the @special commands.
 e.g. '''!@ipsumlorem ''', which is major PITA.
 PYTHON_DOCSTRING       = NO
 
@@ -33,7 +33,7 @@ OPTIMIZE_OUTPUT_JAVA   = YES
 It is my responsibility to ensure documentation is filled out, so need this to yes
 EXTRACT_ALL            = YES
 
-# See EXTRACT_ALL notes and reasoning for change from default value.
+See EXTRACT_ALL notes and reasoning for change from default value of NO.
 EXTRACT_PRIVATE        = YES
 EXTRACT_PRIV_VIRTUAL   = YES
 EXTRACT_PACKAGE        = YES
@@ -53,7 +53,8 @@ EXTRACT_STATIC         = YES
 # YES.
 # Possible values are: SYSTEM, NO and YES.
 # The default value is: SYSTEM.
-on a Windows system, so set to NO
+On a Windows system, so set to NO
+@TODO need to check if SYSTEM will give same results as No on Windows and YES on Ubuntu.
 CASE_SENSE_NAMES       = NO
 
 # If the HIDE_SCOPE_NAMES tag is set to NO then Doxygen will show members with
@@ -68,7 +69,7 @@ HIDE_SCOPE_NAMES       = YES
 # name. If set to NO, the members will appear in declaration order. Note that
 # this will also influence the order of the classes in the class list.
 # The default value is: NO.
-I try to have my declaration order alphabetical in any case, so set to YES.
+I try to write my code in alphabetical order in any case, so set to YES.
 SORT_BRIEF_DOCS        = YES
 
 # The INPUT tag is used to specify the files and/or directories that contain
@@ -77,13 +78,17 @@ SORT_BRIEF_DOCS        = YES
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 docs dir is sibling of src, so need ../src
+main.py is program entry point, so needs to included
+index.dox creates the main page content, so need it too
 if/when I add unit tests and maybe the standalone scripts will add to tag.
 INPUT                  = ../src
+                         ../main.py
+                         ../manual/index.dox
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
 # The default value is: NO.
-of course this needs to be YES, my project directory tree is NOT flat.
+Of course this needs to be YES, my project directory tree is NOT flat.
 RECURSIVE              = YES
 
 # If you want full control over the layout of the generated HTML pages it might

@@ -9,9 +9,8 @@ from src.dir_processing.directory_processing import DirectoryProcessing
 
 def main():
     '''
-    @public
     @brief Module entry point.
-    @details Takes command line arguments and executes per arguments
+    @details Takes command line arguments and executes per arguments.
     '''
 
     processing = DirectoryProcessing('H', 'Music')
@@ -19,7 +18,6 @@ def main():
 
 if __name__ == "__main__":
     '''
-    @private
     @brief Top level script environment entry point
     '''
 
