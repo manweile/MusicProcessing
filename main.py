@@ -1,25 +1,8 @@
 #!/usr/bin/env python3
 '''
 @file main.py
-@brief Music Processing Project
-@mainpage Music Processing Project
-
-@section description_main Description
-A python program for manipulating & normalizing audio files.
-
-@section notes_main Notes
-Music Processing recognizes the following file types:
-- Audio file types:
-    - mp3
-    - m4a
-    - wma
-- Playlist file types:
-    - m3u
-
-@section usage_main Usage
->python.exe main.py
-
-@copyright GWN Software 2025. All rights reserved.
+@brief Music Processing project executable script.
+@details Run this script with appropriate input arguments to process audio files.
 '''
 
 from src.dir_processing.directory_processing import DirectoryProcessing
