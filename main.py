@@ -2,6 +2,7 @@
 '''
 @file main.py
 @brief Music Processing project executable script.
+
 @details Run this script with appropriate input arguments to process audio files.
 '''
 
