@@ -20,6 +20,7 @@ From a command line (Powershell or Windows cmd):
 
 @section libraries_main Libraries/Modules
 3rd party libraries
+- mutagen (https://mutagen.readthedocs.io/en/latest/)
 - pathvalidate  (https://pathvalidate.readthedocs.io/en/latest/index.html#)
 
 @section authour_main Authour
