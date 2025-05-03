@@ -3,7 +3,7 @@ from src.dir_processing.directory_processing import DirectoryProcessing
 
 def main():
     processing = DirectoryProcessing('H', 'Music')
-    processing.ext_list_files("aac")
+    processing.get_ext_list_files("aac")
 
 if __name__ == "__main__":
     main()
