@@ -22,9 +22,11 @@ import pathvalidate
 # just a package variable the __all__ list exposes via __init__.py
 from src.generated_files import generated_files
 
-# from Mp3Tag program, I know I have these audio file extensions and types:
+# from Mp3Tag program, I know I have these audio/playlist file extensions and types:
 _AUDIO_EXTS = [ ".mp3", ".m4a", ".wma" ]
 _AUDIO_TYPES = ["mp3", "m4a", "wma"]
+_PLAYLIST_EXTS = [".m3u"]
+_PLAYLIST_TYPES = ["m3u"]
 
 gc.enable()
 
@@ -37,33 +39,25 @@ class DirectoryProcessing():
         '''
         @brief      Initializes the DirectoryProcessing class.
 
-        @details    The drive letter is expected to be valid and the top level directory is expected to exist.
+        @details    The drive letter and the top level directory of the audio source files are expected to exist.
         @details    We set the values for convenience, and do not expect to change them.
 
         @param      drive {str} The drive letter for top level directory.
         @param      tld {str} The top level directory that contains all the music files.
         @return     DirectoryProcessing {instance} An instance of the class.
-        @exception  ValueError alphabetic character A-Z or a-z expected
-        @exception  ValidationError a pathvalidate module error
+        @exception  ValueError Alphabetic character A-Z or a-z expected
+        @exception  IOError Top level directory not found
         '''
 
         if drive.isalpha() and drive:
             self._drive = drive + ":\\"
         else:
-            raise ValueError("alphabetic character A-Z or a-z expected")
+            raise ValueError("Alphabetic character A-Z or a-z expected")
 
-        # remove any invalid directory path characters
-        # using defaults so platform is "universal", replacement text for invalid chars is ""
-        # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
-        if tld:
-            sanitized_tld = pathvalidate.sanitize_filepath(tld)
+        if not os.path.exists(drive + ":\\" + tld):
+            raise IOError("Top level directory {0} not found".format(tld))
         else:
-            raise pathvalidate.ValidationError("directory path required")
-
-        if pathvalidate.is_valid_filename(sanitized_tld):
-            self._tld = sanitized_tld
-        else:
-            raise pathvalidate.ValidationError("invalid directory path {0}".format(tld))
+            self._tld = tld
 
         self._tld_path = self._drive + self._tld
 
@@ -88,7 +82,7 @@ class DirectoryProcessing():
         @brief Sets the drive letter.
 
         @param value {str} The drive letter.
-        @exception ValueError alphabetic character A-Z or a-z expected
+        @exception ValueError Alphabetic character A-Z or a-z expected
         '''
 
         if value.isalpha():
@@ -116,7 +110,7 @@ class DirectoryProcessing():
         @details The top level directory is expected to exist already.
 
         @param value {str} The top level directory.
-        @exception IOError an os module error
+        @exception IOError An os module error
         '''
 
         # check if input directory does exist
@@ -138,7 +132,7 @@ class DirectoryProcessing():
         return self._tld_path
 
 
-    def audio_list_files(self, start_path=None):
+    def get_audio_list_files(self, start_path=None):
         '''
         @brief Generates a csv containing full path for all audio files.
 
@@ -196,7 +190,7 @@ class DirectoryProcessing():
             file_count, mp3_count, _AUDIO_TYPES[0], m4a_count, _AUDIO_TYPES[1], wma_count, _AUDIO_TYPES[2]))
 
 
-    def ext_list_files(self, file_ext=None, start_path=None):
+    def get_ext_list_files(self, file_ext=None, start_path=None):
         '''
         @brief Wrapper for function that generates a csv containing full file path for an extension.
 
@@ -260,6 +254,8 @@ class DirectoryProcessing():
         '''
         @brief Returns the file type of audio file without leading period.
 
+        @details Returns the file type using os library as opposed to getting it from audio metadata.
+
         @param file_path {str} The full audio file path.
         @return file_type {str} The file type of audio file.
         @exception Exception an os module error
@@ -290,14 +286,23 @@ class DirectoryProcessing():
 
         @param artist_dirpath {str} The name of the artist for artist directory.
         @param album_dir {str} The name of the album for new album directory.
+        @exception ValidationError Album name is unacceptable as a directory path
         '''
 
         # sanitize because the metadata might have characters invalid for directory names
-        album_dir = pathvalidate.sanitize_filepath(album_dir)
+        # using defaults so platform is "universal", replacement text for invalid chars is ""
+        # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
+        if album_dir:
+            sanitized_album_dir = pathvalidate.sanitize_filepath(album_dir)
+        else:
+            raise pathvalidate.ValidationError("Album name: {0} is unacceptable as a directory path".format(album_dir))
 
-        music_dir = os.path.join(self._tld_path, artist_dirpath, album_dir)
+        music_dir = os.path.join(self._tld_path, artist_dirpath, sanitized_album_dir)
 
         # if the album sub-directory already exists, we don't need to do anything
-        if not os.path.exists(music_dir):
+        if os.path.exists(music_dir):
+            print("artist & album sub-directory: {0} already exists".format(music_dir))
+        else:
+            print("Created album sub-directory: {0} under artist directory: {1}".format(sanitized_album_dir, artist_dirpath))
             os.mkdir(music_dir)
 
