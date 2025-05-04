@@ -1,6 +1,5 @@
 '''
-@package generated_files
-@brief Gets directory name for importing by other modules
+@brief Gets directory name for importing by other modules.
 '''
 import os
 

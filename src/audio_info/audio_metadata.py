@@ -1,6 +1,6 @@
 '''
 @file audio_metadata.py
-@brief Defines the audio metadata class
+@brief Defines the audio metadata class.
 
 @author Gerald Manweiler
 @copyright @showdate "%Y" GWN Software. All rights reserved.
@@ -39,6 +39,24 @@ class AudioMetadata():
 
         pass
 
+    def convert_to_mp3(self, file_path):
+        '''
+        @todo finish
+        @brief Converts an audio file to mp3 audio file.
+
+        @param file_path {str} The full path to audio file
+        '''
+
+        export_format = "mp3"
+        import_format = ""
+
+        # get the filename of song without the extension
+
+        # get the file type of input file
+
+        # convert per file type of input file
+
+        pass
 
     def get_album_name(self, file_path):
         '''
@@ -61,7 +79,7 @@ class AudioMetadata():
 
     def get_art_type(self, audio_file):
         '''
-        @brief returns the mime type of album art.
+        @brief Returns the mime type of album art.
 
         @param audio_file {object} The FileType instance for an audio file.
         @return mime_type {str} The mime type of the album art
@@ -93,7 +111,7 @@ class AudioMetadata():
         @brief Returns the metadata type of audio file.
 
         @param file_path {str} The full path to audio file
-        @return metadata_type {str} The metadata type of the audio file
+        @return metadata_type {str} The type of the audio file metadata tags
         '''
 
         metadata_type = None
@@ -101,7 +119,8 @@ class AudioMetadata():
         try:
             audio_file = mutagen.File(file_path)
             if audio_file is not None:
-                metadata_type = audio_file.__class__.__name__
+                # the built in class name of the filetype returned shows what metadata type
+                metadata_type = audio_file.__class__.__name__.lower()
             else:
                 return None
         except Exception as e:

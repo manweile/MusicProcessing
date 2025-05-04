@@ -21,12 +21,14 @@ import pathvalidate
 # generated files package does not have any modules,
 # just a package variable the __all__ list exposes via __init__.py
 from src.generated_files import generated_files
+from src import _AUDIO_EXTS
+from src import _AUDIO_TYPES
 
 # from Mp3Tag program, I know I have these audio/playlist file extensions and types:
-_AUDIO_EXTS = [ ".mp3", ".m4a", ".wma" ]
-_AUDIO_TYPES = ["mp3", "m4a", "wma"]
-_PLAYLIST_EXTS = [".m3u"]
-_PLAYLIST_TYPES = ["m3u"]
+# _AUDIO_EXTS = [ ".mp3", ".m4a", ".wma" ]
+# _AUDIO_TYPES = ["mp3", "m4a", "wma"]
+# _PLAYLIST_EXTS = [".m3u"]
+# _PLAYLIST_TYPES = ["m3u"]
 
 gc.enable()
 
