@@ -1,0 +1,17 @@
+ID3v2.3 	MetaData 	                Object
+TIT2 	    track_name 	                ID3v23_T___Frame
+TRCK 	    track_number/track_total 	ID3v23_T___Frame
+TPOS 	    album_number/album_total 	ID3v23_T___Frame
+TALB 	    album_name 	                ID3v23_T___Frame
+TPE1 	    artist_name 	            ID3v23_T___Frame
+TPE2 	    performer_name 	            ID3v23_T___Frame
+TPE3 	    conductor_name 	            ID3v23_T___Frame
+TCOM 	    composer_name 	            ID3v23_T___Frame
+TMED 	    media 	                    ID3v23_T___Frame
+TSRC 	    ISRC 	                    ID3v23_T___Frame
+TCOP 	    copyright 	                ID3v23_T___Frame
+TPUB 	    publisher 	                ID3v23_T___Frame
+TYER 	    year 	                    ID3v23_T___Frame
+TRDA 	    date 	                    ID3v23_T___Frame
+COMM 	    comment 	                ID3v23_COMM_Frame
+APIC 	    images() 	                ID3v23_APIC_Frame

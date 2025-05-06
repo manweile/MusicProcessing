@@ -18,27 +18,39 @@ def main():
     # processing.ext_list_files("aac")
 
     metadata = AudioMetadata()
-    # file_list = ["H:\\Music\\Kenny Rogers\\Daytime Friends - The Very Best of Kenny\\18 Lady.mp3",
-    #              "H:\\Music\\Albert Collins\\Albert Collins - Trash Talkin'.mp3",
-    #              "H:\\Music\\4 Non Blondes\\Bigger, Better, Faster, More!\\4 Non Blondes-What's Up.mp3",
-    #             ]
 
-    # file_list = ["H:\\Music\\.38 Special\\.38 Special-Teacher, Teacher.mp3",
-    #              "H:\\Music\\.38 Special\\Special Forces\\.38 Special-Caught Up in You.mp3"
-    #             ]
+    # # get mp3
+    # mp3_file_list = ["H:\\Music\\Kenny Rogers\\Daytime Friends - The Very Best of Kenny\\18 Lady.mp3",
+    #                  "H:\\Music\\Various Artists\\Best of the Blues, Volume 1\\Albert Collins-Trash Talkin'.mp3",
+    #                  "H:\\Music\\4 Non Blondes\\Bigger, Better, Faster, More!\\4 Non Blondes-What's Up.mp3",
+    #                  "H:\\Music\\.38 Special\\.38 Special-Teacher, Teacher.mp3",
+    #                  "H:\\Music\\.38 Special\\Special Forces\\.38 Special-Caught Up in You.mp3"
+    #                 ]
+    # for song in mp3_file_list:
+    #     metadata_type = metadata.get_any_metadata_type(song)
+    #     if metadata_type == "mp3":
+    #         tag = metadata.get_mp3_tag_info(song)
+    #         print(tag)
 
-    file_list = ["H:\\Music\Dolly Parton\\Blue Smoke\\Dolly Parton-Unlikely Angel.mp3",
-                 "H:\\Music\\The Eagles\\The Eagles-Desperado.m4a",
-                 "H:\\Music\\Elton John\\Greatest Hits, Vol. 2\\Elton John-Island Girl.wma"
-                ]
+    # # get any tag info
+    # any_tag_info_file_list = ["H:\\Music\Dolly Parton\\Blue Smoke\\Dolly Parton-Unlikely Angel.mp3",
+    #                           "H:\\Music\\The Eagles\\The Eagles-Desperado.m4a",
+    #                           "H:\\Music\\Elton John\\Greatest Hits, Vol. 2\\Elton John-Island Girl.wma"
+    #                          ]
+    # for song in any_tag_info_file_list:
+    #     metadata_type = metadata.get_any_metadata_type(song)
+    #     print("Song: {0} has metadata type: {1}".format(song, metadata_type))
 
-    for song in file_list:
-        metadata_type = metadata.get_metadata_type(song)
-        print("Song: {0} has metadata type: {1}".format(song, metadata_type))
+    # conversion testing
+    conversion_file_list = ["H:\\Music\\The Eagles\\The Eagles-Desperado.m4a",
+                            "H:\\Music\\The Eagles\\Hotel California\\The Eagles-Hotel California.wma"
+                            ]
 
-        if metadata_type == "mp3":
-            tag = metadata.get_mp3_tag_info(song)
-            print(tag)
+    for song in conversion_file_list:
+        metadata_type = metadata.get_any_metadata_type(song)
+
+        if metadata_type.lower() != "mp3":
+            metadata.convert_any_to_mp3(song)
 
 if __name__ == "__main__":
     main()

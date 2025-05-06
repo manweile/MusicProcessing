@@ -31,10 +31,30 @@ There are many things I need to do:
       - digital
         - downloaded
 
-# Source Files
+## Source Files
+
+### Location
 The source location is on my HTPC (home theatre personal computer).
+These files have all been metadata edited with Windows Media Player.
+- Almost all have album art
+- Almost all song files are in my preferred filename format
+- The majority are mp3 files (my preferred format)
+- Most have my preferred directory structure
+
+### Working Copy
 The files on the HTPC will be copied as is to a micro-sd card.
 The project will read files from the micro-sd card.
+
+### Directory Structure
+My preferred directory structure is: "drive":\"top level dir"\"artist name"\"album name"\, with the songs for the album.
+- Some artists will not have album sub-directories
+- All the songs for that artist, irregardless of what album they are from will be under the artist directory
+- There is not a directory for compilation albums
+  - songs from compilation albums are under the contributing artist
+
+### Audio Filename Format & Type/Metadata
+My preferred filename format is "artist name"-"song title", or "artist name" - "song title".
+My preferred audio file type & metadata is mp3 with ID3v2.3 tags.
 
 ## Audio File Types
 There are different audio file types
@@ -44,15 +64,13 @@ There are different audio file types
   - not near as many as mp3, but 2nd most likely file type
 - m4a
   - these are iTunes purchase & downloads
-- wav
-  - Goldwave recordings
 
 ## Playlist File Types
 - m3u
   - general playlist file
 
 # Tools
-There are several different tools I can use
+There are several different tools I can use.
 
 ## Tag Editors & Databases
 
@@ -70,7 +88,7 @@ Basic paradigm is batch editing of single audio files.
 
 ### [MusicBrainz Picard](https://picard-docs.musicbrainz.org/v2.13/en/index.html):
 MusicBrainz is both a tag editor (Picard) & database (MusicBrainz).
-Basic paradigm is processing from  one album at a time.
+Basic paradigm is processing one album at a time.
 #### MusicBrainz Picard Pros
 - can add a significant amount of metadata (more than  I really need)
 - better metadata browser search and retrieval
@@ -92,7 +110,7 @@ Discogs is a music info database.
 ### [ffmpeg](https://www.ffmpeg.org/)
 FFMPEG is ipsum lorem
 #### FFMPEG Pros
-- ispsum lorem
+- ipsum lorem
 #### FFMPEG Cons
 - ipsum lorem
 
@@ -109,6 +127,7 @@ Goldwave is ipsum lorem
 ## Audio File Players
 
 ### [Windows Media Player](https://support.microsoft.com/en-us/windows/windows-media-player-12-e8f84f54-cd64-865c-2e83-1d8ec121b5b8)
+WMP is a ipsum lorem
 #### WMP Pros
 - can do some tag editing
 - adequate for ripping mp3's from cd's
@@ -137,9 +156,9 @@ I will use MP3Tag to:
 - remove all APEv2 tags from mp3 files
   - remove all non ID3v2.3 tags from mp3 files
   - verify all mp3 files have only ID2v2.3 tags
-- rename a few audio files that have "NN song title".ext to "artist name"-"song title".ext
+- rename the few audio files that have incorrect filename format
 
-### Python Music Processing
+## Python Music Processing
 I will use the music processing  python code to:
 - create csv lists
   - all audio files and their extension

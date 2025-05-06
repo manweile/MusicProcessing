@@ -1,0 +1,16 @@
+APEv2 	        Metadata
+Title 	        track_name
+Track 	        track_number/track_total
+Media 	        album_number/album_total
+Album 	        album_name
+Artist 	        artist_name
+Performer 	    performer_name
+Composer 	    composer_name
+Conductor 	    conductor_name
+ISRC 	        ISRC
+Catalog 	    catalog
+Copyright 	    copyright
+Publisher 	    publisher
+Year 	        year
+Record Date 	date
+Comment 	    comment
