@@ -50,7 +50,8 @@ class AudioMetadata():
         export_file_ext = _AUDIO_EXTS[0]
 
         # ensure input file is not an mp3 then create full export file path
-        file_path_components = file_path.split('\\')
+        # file_path_components = file_path.split('\\')
+        file_path_components = file_path.split(os.sep)
         file_name_and_extension = file_path_components[-1].rsplit('.', 1)
         file_name = file_name_and_extension[0]
         file_ext = file_name_and_extension[1]
@@ -66,7 +67,8 @@ class AudioMetadata():
         # file_audio_bitrate = file_media_info['bit_rate']
 
         # get the input files metadata
-        file_tags = file_media_info['TAG']
+        pydub_file_tags = file_media_info['TAG']
+        mutagen_file_tags = self.get_any_tags(file_path)
         '''
         @todo decide what is best methodology
         I have wma and m4a metadata, which have different considerations
@@ -125,7 +127,8 @@ class AudioMetadata():
         try:
             audio_segment = AudioSegment.from_file(file_path)
             # @todo there are many more params I could send to export command
-            audio_segment.export(export_filepath, export_format, tags=file_tags, id3v2_version='3')
+            # audio_segment.export(export_filepath, export_format, tags=mutagen_file_tags, id3v2_version='3')
+            audio_segment.export(export_filepath, export_format, id3v2_version='3')
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path}")
 

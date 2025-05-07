@@ -42,8 +42,16 @@ def main():
     #     print("Song: {0} has metadata type: {1}".format(song, metadata_type))
 
     # conversion testing
-    conversion_file_list = ["H:\\Music\\The Eagles\\The Eagles-Desperado.m4a",
-                            "H:\\Music\\The Eagles\\Hotel California\\The Eagles-Hotel California.wma"
+# The commented out code block `conversion_file_list` is creating a list of file paths for audio files
+# that are intended for conversion to MP3 format. The paths are specified as strings, with each string
+# representing the file path of an audio file. The code block is currently disabled by commenting it
+# out, so it is not being executed when the script runs.
+    # conversion_file_list = ["H:\\Music\\The Eagles\\The Eagles-Desperado.m4a",
+    #                         "H:\\Music\\The Eagles\\Hotel California\\The Eagles-Hotel California.wma"
+    #                         ]
+
+    conversion_file_list = [r"/media/gerald/Music/Music/The Eagles/The Eagles-Desperado.m4a",
+                            r"/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma"
                             ]
 
     for song in conversion_file_list:
