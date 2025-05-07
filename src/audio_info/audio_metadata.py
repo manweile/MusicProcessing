@@ -13,6 +13,7 @@ import os
 import mutagen
 from pydub import AudioSegment
 from pydub.utils import mediainfo
+from tinytag import TinyTag
 
 # local modules
 from src import _AUDIO_EXTS, _AUDIO_TYPES
@@ -50,7 +51,6 @@ class AudioMetadata():
         export_file_ext = _AUDIO_EXTS[0]
 
         # ensure input file is not an mp3 then create full export file path
-        # file_path_components = file_path.split('\\')
         file_path_components = file_path.split(os.sep)
         file_name_and_extension = file_path_components[-1].rsplit('.', 1)
         file_name = file_name_and_extension[0]
@@ -66,9 +66,12 @@ class AudioMetadata():
         # file_audio_codec = file_media_info['codec_name']
         # file_audio_bitrate = file_media_info['bit_rate']
 
-        # get the input files metadata
+        # get the input files metadata from pydub because doing so gives consistent schema
         pydub_file_tags = file_media_info['TAG']
         mutagen_file_tags = self.get_any_tags(file_path)
+        tinytag_file_tags = TinyTag.get(file_path, image=True)
+        tiny_tag_image = tinytag_file_tags.get_image()
+
         '''
         @todo decide what is best methodology
         I have wma and m4a metadata, which have different considerations

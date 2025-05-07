@@ -1,18 +1,15 @@
 ID3v2.3 	MetaData 	                WMA				M4A
-TIT2 	    track_name 	                Title			@nam
-TRCK 	    track_number/track_total 	WM/TrackNumber	trkn
-TPOS 	    album_number/album_total 	WM/PartofSet	disk
-TALB 	    album_name 	                WM/AlbumTitle	@alb
-TPE1 	    artist_name 	            Author			@ART
-TPE2 	    performer_name 	            WM/AlbumArtist	aART
-TPE3 	    conductor_name 	            WM/Conductor	@con
-TCOM 	    composer_name 				Description		@cmt            
-TMED 	    media 	                    undefined		undefined
-TSRC 	    ISRC 	                    WM/ISRC			undefined
+APIC 	    images										covr
+COMM 	    comment 					Description		@cmt                
+TPOS 	    album number/album total 	WM/PartofSet	disk
+TRCK 	    track number/track total 	WM/TrackNumber	trkn
+TALB 	    album name 	                WM/AlbumTitle	@alb
+TCOM		composer(s)					WM/Composer		@wrt   
 TCOP 	    copyright 	                Copyright		cprt
+TIT2 	    track name 	                Title			@nam
+TMED 	    media 	                    undefined		undefined
+TPE1 	    artist name 	            Author			@ART
+TPE2 	    album artist	            WM/AlbumArtist	aART
+TPE3 	    conductor_name 	            WM/Conductor	@con
 TPUB 	    publisher 	                WM/Publisher	@pub
 TYER 	    year 	                    WM/Year			@day
-TRDA 	    date 	                    
-COMM 	    comment 	                
-APIC 	    images() 
-			composer(s)									@wrt
