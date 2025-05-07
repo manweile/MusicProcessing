@@ -91,14 +91,16 @@ class AudioMetadata():
 
         # get the input file info - want the codec and bitrate so can preserve the quality in exported file
         file_media_info = mediainfo(file_path)
-        # file_audio_codec = file_media_info['codec_name']
-        # file_audio_bitrate = file_media_info['bit_rate']
+        # need codec and bit rate as strings for pydub
+        file_audio_codec = file_media_info['codec_name']
+        file_audio_bitrate = file_media_info['bit_rate']
 
         # get the input files metadata from pydub because doing so gives consistent schema
         pydub_file_tags = file_media_info['TAG']
         mutagen_file_tags = self.get_any_tags(file_path)
+        mutagen_file_thing = mutagen.File(file_path)
         tinytag_file_tags = TinyTag.get(file_path, image=True)
-        # tiny_tag_image = tinytag_file_tags.get_image()
+        tiny_tag_image = tinytag_file_tags.get_image()
 
         '''
         @todo decide what is best methodology
@@ -162,7 +164,7 @@ class AudioMetadata():
             audio_segment = AudioSegment.from_file(file_path)
             # @todo there are many more params I could send to export command
             # audio_segment.export(export_filepath, export_format, tags=mutagen_file_tags, id3v2_version='3')
-            audio_segment.export(export_filepath, export_format, id3v2_version='3')
+            audio_segment.export(export_filepath, export_format, bitrate=file_audio_bitrate, id3v2_version='3')
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_filepath}")
 
