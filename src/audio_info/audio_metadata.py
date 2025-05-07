@@ -11,6 +11,7 @@ import os
 
 # third party modules
 import mutagen
+from mediafile import MediaFile, Image, ImageType
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 from tinytag import TinyTag
@@ -18,6 +19,7 @@ from tinytag import TinyTag
 # local modules
 from src import _AUDIO_EXTS, _AUDIO_TYPES
 from src.generated_files import generated_files
+
 
 class AudioMetadata():
     '''
@@ -46,18 +48,44 @@ class AudioMetadata():
         @param file_path {str} The full path to audio file
         '''
 
+        export_dir = None
+        export_name = None
+        export_filepath = None
+
         # get audio formats & extensions from package constants
         export_format = _AUDIO_TYPES[0]
         export_file_ext = _AUDIO_EXTS[0]
 
-        # ensure input file is not an mp3 then create full export file path
         file_path_components = file_path.split(os.sep)
+        # the filename and extension are always the final index from a file path split
         file_name_and_extension = file_path_components[-1].rsplit('.', 1)
+
+        '''
+        The file path will either be 4 or 5 elements long
+        len = 4 means there is just an artist dir holding the song file
+        Eg. drive, tld, artist, song
+        len = 5 means there is also an album dir holding the song file
+        Eg. drive, tld, artist, album, song
+        '''
+        if len(file_path_components) == 5:
+            artist_dir = file_path_components[2]
+            album_dir = file_path_components[3]
+            file_dir = os.path.join(artist_dir, album_dir)
+        elif len(file_path_components) == 4:
+            file_dir = file_path_components[2]
+
         file_name = file_name_and_extension[0]
         file_ext = file_name_and_extension[1]
+
         if file_ext != ".mp3":
+            export_dir = os.path.join(generated_files, file_dir)
             export_name = file_name + export_file_ext
-            export_filepath = os.path.join(generated_files, export_name)
+            export_filepath = os.path.join(export_dir, export_name)
+
+            # directory is already extant if we are processing multiple songs for the same album
+            if not os.path.exists(export_dir):
+                os.mkdir(export_dir)
+
         else:
             raise IOError(f"source file {file_path} is already an {export_format}")
 
@@ -70,7 +98,7 @@ class AudioMetadata():
         pydub_file_tags = file_media_info['TAG']
         mutagen_file_tags = self.get_any_tags(file_path)
         tinytag_file_tags = TinyTag.get(file_path, image=True)
-        tiny_tag_image = tinytag_file_tags.get_image()
+        # tiny_tag_image = tinytag_file_tags.get_image()
 
         '''
         @todo decide what is best methodology
@@ -111,6 +139,7 @@ class AudioMetadata():
         pydub does NOT extract any existing cover art, I will need to use something else - probably mutagen
         save the extracted art as a separate file (named either folder.jpg or cover.jpg) in the same directory as the converted file
         and embed the cover art in the converted file - which I can do with pydub
+        and embed the cover art in the converted file - which I can do with pydub
         Of course, I may have to deal with different cover art schemas for different audio file
         ID3v2.3 tag album art   APIC
         3 denotes front cover
@@ -119,6 +148,8 @@ class AudioMetadata():
         - stored as separate file in same directory as the audio file it belongs to
         - cover art file name can be either Folder.jpg or Cover.jpg
         '''
+        # if "covr" in mutagen_file_tags and len(mutagen_file_tags["covr"]) > 0:
+        #   artwork_data = mutagen_file_tags["covr"][0]
         # check if input file path has a file "Folder.jpg"
         # if Folder.jpg, then cover=path_to_Folder.jpg
         # elseif check if the input audio file has embedded art then
@@ -133,7 +164,7 @@ class AudioMetadata():
             # audio_segment.export(export_filepath, export_format, tags=mutagen_file_tags, id3v2_version='3')
             audio_segment.export(export_filepath, export_format, id3v2_version='3')
         except Exception as e:
-            raise Exception(f"Exception {e} converting {file_path}")
+            raise Exception(f"Exception {e} converting {file_path} to {export_filepath}")
 
 
     def get_any_metadata_type(self, file_path):
@@ -252,7 +283,7 @@ class AudioMetadata():
         audio_file = None
 
         try:
-            audio_file = mutagen.File(file_path)
+            audio_file = mutagen.File(file_path,easy=True)
         except Exception as e:
             print(f"Error processing file: {e}")
             return None
