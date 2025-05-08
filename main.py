@@ -5,8 +5,15 @@
 @details Run this script with appropriate input arguments to process audio files.
 '''
 
-from src.dir_processing.directory_processing import DirectoryProcessing
-from src.audio_info.audio_metadata import AudioMetadata
+# standard modules
+import argparse
+import csv
+import logging
+import os
+import sys
+
+from src.dir_processing import DirectoryProcessing
+from src.audio_info import AudioMetadata
 
 def main():
     '''
@@ -41,15 +48,16 @@ def main():
     #     metadata_type = metadata.get_any_metadata_type(song)
     #     print("Song: {0} has metadata type: {1}".format(song, metadata_type))
 
-    # conversion testing
-# The commented out code block `conversion_file_list` is creating a list of file paths for audio files
-# that are intended for conversion to MP3 format. The paths are specified as strings, with each string
-# representing the file path of an audio file. The code block is currently disabled by commenting it
-# out, so it is not being executed when the script runs.
-    conversion_file_list = ["H:\\Music\\The Eagles\\The Eagles-Desperado.m4a",
-                            "H:\\Music\\The Eagles\\Hotel California\\The Eagles-Hotel California.wma"
+    # conversion testing windows
+    # The commented out code block `conversion_file_list` is creating a list of file paths for audio files
+    # that are intended for conversion to MP3 format. The paths are specified as strings, with each string
+    # representing the file path of an audio file. The code block is currently disabled by commenting it
+    # out, so it is not being executed when the script runs.
+    conversion_file_list = [r"H:\Music\The Eagles\The Eagles-Desperado.m4a",
+                            r"H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"
                             ]
 
+    # conversion testing Ubuntu
     # conversion_file_list = [r"/media/gerald/Music/Music/The Eagles/The Eagles-Desperado.m4a",
     #                         r"/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma"
     #                         ]
@@ -61,5 +69,18 @@ def main():
              metadata.convert_any_to_mp3(song)
 
 if __name__ == "__main__":
+    '''
+    @private
+    Top level script environment entry point, parses and validates input arguments
+    '''
+
+    # parser = argparse.ArgumentParser(description='Music Processing')
+    # parser.add_argument('-l', '--list', type=valid_date, help='Start date in YYYY-MM-DD', required=True)
+    # parser.add_argument('-e', '--end', type=valid_date, help='End date in YYYY-MM-DD', required=True)
+    # parser.add_argument('-a', '--aor', type=valid_aor, help='AOR text', required=True)
+    # parser.add_argument('-d', '--dir', type=valid_dir, help='Source directory', required=True)
+
+    # args = parser.parse_args()
+
     main()
 
