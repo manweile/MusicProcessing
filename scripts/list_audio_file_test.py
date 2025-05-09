@@ -21,7 +21,9 @@ permanent no code fix for Windows:
         In the "Variable value" field, enter the directories you want to add to the Python path, separated by semicolons (;).
         D:\MusicProcessing;
     Apply Changes: Click "OK" on all dialog boxes to save the changes.
-    Verify: from command line: echo %PYTHONPATH%
+    Verify:
+        from command prompt line: echo %PYTHONPATH%
+        from Powershell: $env:Pythonpath
 
 in code fix: must be first three lines of script
     import os
