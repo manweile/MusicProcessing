@@ -1,9 +1,15 @@
-import sys
 import os
+import platform
+import sys
+
+# @todo add /home/gerald/MusicProcessing or D:\MusicProcessing to PATH??
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.dir_processing import DirectoryProcessing
 
-dir_processing = DirectoryProcessing(r"H:\Music")
+if platform.system() == "Linux":
+    dir_processing = DirectoryProcessing(r"/media/gerald/Music/Music")
+elif platform.system() == "Windows":
+    dir_processing = DirectoryProcessing(r"H:\Music")
 
-dir_processing.get_audio_list_files()
+dir_processing.get_audio_file_list()
