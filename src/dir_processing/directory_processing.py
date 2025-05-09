@@ -82,7 +82,7 @@ class DirectoryProcessing():
                 raise Exception(f"Exception {e} setting path {tld_path}")
 
 
-    def get_audio_list_files(self, start_path=None):
+    def get_audio_file_list(self, start_path=None):
         '''
         @brief Generates a csv containing full path for all audio files.
 
