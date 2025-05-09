@@ -12,8 +12,9 @@ import logging
 import os
 import sys
 
-from src.dir_processing import DirectoryProcessing
+# local modules
 from src.audio_info import AudioMetadata
+from src.dir_processing import DirectoryProcessing
 
 def main():
     '''
