@@ -83,7 +83,7 @@ index.dox creates the main page content, so need it too
 if/when I add unit tests and maybe the standalone scripts will add to tag.
 INPUT                  = ../src
                          ../main.py
-                         ../manual/index.dox
+                         ../index.dox
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
