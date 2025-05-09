@@ -76,7 +76,7 @@ def show_info(tag_info):
 
     for image in tag_info.images:
         image_file = open("{0}-{1}.jpg".format(artist_name, song_title), "wb")
-        print("Writing image file: {0}-{1}.jpg".format(artist_name, song_title))
+        print("Writing image file: {artist_name}-{song_title}.jpg")
         image_file.write(image.image_data)
         image_file.close()
 
