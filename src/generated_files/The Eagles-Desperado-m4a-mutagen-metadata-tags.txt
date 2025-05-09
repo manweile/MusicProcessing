@@ -1,0 +1,20 @@
+{
+'title': ['Desperado'],
+'album': ['Desperado'],
+'artist': ['Eagles'],
+'albumartist': ['Eagles'],
+'date': ['2013'],
+'comment': ['Purchased from 7digital.com'],
+'genre': ['Classic Rock'],
+'copyright': ['1973 Asylum Records'],
+'albumartistsort': ['Eagles'],
+'artistsort': ['Eagles'],
+'musicbrainz_artistid': ['f46bd570-5768-462e-b84c-c7c993bbf47e'],
+'musicbrainz_trackid': ['96308d6d-77c8-48d6-b866-bdc48675ef10'],
+'musicbrainz_albumid': ['e95722b4-c235-41f5-94db-941bcd24fc09'],
+'musicbrainz_albumartistid': ['f46bd570-5768-462e-b84c-c7c993bbf47e'],
+'musicbrainz_albumstatus': ['official'],
+'musicbrainz_albumtype': ['album'],
+'tracknumber': ['5/11'],
+'discnumber': ['1/1']
+}

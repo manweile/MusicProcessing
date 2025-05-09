@@ -22,6 +22,9 @@ def main():
     @details Takes command line arguments and executes per arguments.
     '''
 
+    # get the arguments
+
+
     # processing = DirectoryProcessing('H', 'Music')
     # processing.ext_list_files("aac")
 
@@ -54,12 +57,13 @@ def main():
     # that are intended for conversion to MP3 format. The paths are specified as strings, with each string
     # representing the file path of an audio file. The code block is currently disabled by commenting it
     # out, so it is not being executed when the script runs.
-    conversion_file_list = [r"H:\Music\The Eagles\The Eagles-Desperado.m4a",
-                            r"H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"
+    conversion_file_list = [r"H:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a",
+                            r"H:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a",
+                            r"H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma",
                             ]
 
     # conversion testing Ubuntu
-    # conversion_file_list = [r"/media/gerald/Music/Music/The Eagles/The Eagles-Desperado.m4a",
+    # conversion_file_list = [r"/media/gerald/Music/Music/The Eagles/Desperado/The Eagles-Desperado.m4a",
     #                         r"/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma"
     #                         ]
 

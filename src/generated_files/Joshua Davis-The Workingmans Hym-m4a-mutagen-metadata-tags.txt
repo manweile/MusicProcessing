@@ -1,0 +1,14 @@
+{
+'title': ['The Workingman’s Hymn'], 
+'album': ['The Voice Performance'], 
+'artist': ['Joshua Davis'], 
+'albumartist': ['Joshua Davis'], 
+'date': ['2015-05-18T07:00:00Z'], 
+'comment': ['(The Voice Performance)'], 
+'genre': ['Rock'], 
+'albumsort': ['Workingman’s Hymn (The Voice Performance) - Single'], 
+'artistsort': ['Joshua Davis'], 
+'titlesort': ['Workingman’s Hymn (The Voice Performance)'], 
+'tracknumber': ['1/1'], 
+'discnumber': ['1/1']
+}

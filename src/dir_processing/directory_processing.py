@@ -155,8 +155,8 @@ class DirectoryProcessing():
         @details If start_path is not supplied, uses the class top level directory path.
         @details If file extension is not supplied, uses the preset audio types list.
 
-        @param file_ext {str} The file extension want file paths for.
-        @param start_path {str} The starting point of the directory walk.
+        @param file_ext {str} The file extension want file paths for
+        @param start_path {str} The starting point of the directory walk
         '''
 
         if start_path == None:

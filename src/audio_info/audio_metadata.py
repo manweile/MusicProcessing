@@ -14,7 +14,6 @@ import mutagen
 from mediafile import MediaFile, Image, ImageType
 from pydub import AudioSegment
 from pydub.utils import mediainfo
-from tinytag import TinyTag
 
 # local modules
 from src import _AUDIO_EXTS, _AUDIO_TYPES
@@ -77,14 +76,14 @@ class AudioMetadata():
         file_name = file_name_and_extension[0]
         file_ext = file_name_and_extension[1]
 
-        if file_ext != ".mp3":
+        if file_ext != "mp3":
             export_dir = os.path.join(generated_files, file_dir)
             export_name = file_name + export_file_ext
             export_filepath = os.path.join(export_dir, export_name)
 
             # directory is already extant if we are processing multiple songs for the same album
             if not os.path.exists(export_dir):
-                os.mkdir(export_dir)
+                os.makedirs(export_dir)
 
         else:
             raise IOError(f"source file {file_path} is already an {export_format}")
@@ -92,15 +91,32 @@ class AudioMetadata():
         # get the input file info - want the codec and bitrate so can preserve the quality in exported file
         file_media_info = mediainfo(file_path)
         # need codec and bit rate as strings for pydub
+        # not sure about getting codec
+        # don't like how mutagen reports it
+        # not sure how to use what pydub reports
         file_audio_codec = file_media_info['codec_name']
         file_audio_bitrate = file_media_info['bit_rate']
 
         # get the input files metadata from pydub because doing so gives consistent schema
         pydub_file_tags = file_media_info['TAG']
-        mutagen_file_tags = self.get_any_tags(file_path)
-        mutagen_file_thing = mutagen.File(file_path)
-        tinytag_file_tags = TinyTag.get(file_path, image=True)
-        tiny_tag_image = tinytag_file_tags.get_image()
+
+        # need to massage the date info
+        # if wma, look for key WM/Year
+        # if m4a, look for key date
+        # once I have the info, need to check if is 4 chars or longer
+        # if longer, just need the 1st 4 chars
+        # eg from an m4a:
+        # 'date': '2015-05-18T07:00:00Z'
+        # 'date': '2013'
+        # 'originalyear': '1973'
+        # 'originaldate': '1973-04-17'
+        # from a wma:
+        # 'WM/Year': '1976'
+
+        # mutagen_file_tags = self.get_any_tags(file_path)
+        # mutagen_file_thing = mutagen.File(file_path)
+        # tinytag_file_tags = TinyTag.get(file_path, image=True)
+        # tiny_tag_image = tinytag_file_tags.get_image()
 
         '''
         @todo decide what is best methodology
@@ -164,7 +180,8 @@ class AudioMetadata():
             audio_segment = AudioSegment.from_file(file_path)
             # @todo there are many more params I could send to export command
             # audio_segment.export(export_filepath, export_format, tags=mutagen_file_tags, id3v2_version='3')
-            audio_segment.export(export_filepath, export_format, bitrate=file_audio_bitrate, id3v2_version='3')
+            # audio_segment.export(export_filepath, export_format, bitrate=file_audio_bitrate, id3v2_version='3')
+            audio_segment.export(export_filepath, export_format, bitrate=file_audio_bitrate, tags=pydub_file_tags, id3v2_version='3')
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_filepath}")
 

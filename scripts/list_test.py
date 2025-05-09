@@ -42,4 +42,4 @@ if platform.system() == "Linux":
 elif platform.system() == "Windows":
     dir_processing = DirectoryProcessing(r"H:\Music")
 
-dir_processing.get_ext_file_list("aac")
+dir_processing.get_ext_file_list("m4a")
