@@ -38,6 +38,8 @@ class DirectoryProcessing():
 
         @param      tld_path {str} The top level directory path that contains all the music files.
         @return     DirectoryProcessing {instance} An instance of the class.
+        @exception  OSError An os error
+        @exception  Exception A generic exception
         '''
 
         try:
@@ -90,8 +92,9 @@ class DirectoryProcessing():
         @details The csv file is created in the designated generated files directory.
         @details The csv has 2 columns, full file path for audio file and extension.
 
-        @param file_ext {str} The file extension want file paths for.
-        @param tld_path {str} start_path The starting point of the directory walk.
+        @param file_ext {str} The file extension want file paths for
+        @param tld_path {str} start_path The starting point of the directory walk
+        @exception Exception A generic exception
         '''
 
         data = []
@@ -137,8 +140,10 @@ class DirectoryProcessing():
             sorted_data = sorted(data, key=itemgetter(1))
             csv_file_writer.writerows(sorted_data)
             csv_outfile.close()
-            print("Found {0} audio files, with {1} {2} files, {3} {4} files, and {5} {6} files".format(
-                file_count, mp3_count, _AUDIO_TYPES[0], m4a_count, _AUDIO_TYPES[1], wma_count, _AUDIO_TYPES[2]))
+            print(f"Found {file_count} audio files")
+            print(f"{mp3_count} {_AUDIO_TYPES[0]} files")
+            print(f"{m4a_count} {_AUDIO_TYPES[1]} files")
+            print(f"{wma_count} {_AUDIO_TYPES[2]} files")
         except Exception as e:
             raise Exception(f"Exception {e} getting files for {start_path}")
 
@@ -148,7 +153,7 @@ class DirectoryProcessing():
         @brief Wrapper for function that generates a csv containing full file path for an extension.
 
         @details If start_path is not supplied, uses the class top level directory path.
-        @details If file extension is not supplied, uses the preset audio types module list.
+        @details If file extension is not supplied, uses the preset audio types list.
 
         @param file_ext {str} The file extension want file paths for.
         @param start_path {str} The starting point of the directory walk.
@@ -172,8 +177,9 @@ class DirectoryProcessing():
         @details The csv file is sorted in directory path as found by os walk top down order.
         @details The csv file is created in the designated generated files directory.
 
-        @param file_ext {str} The file type want file paths for.
-        @param start_path {str} The starting point of the directory walk.
+        @param file_ext {str} The file type want file paths for
+        @param start_path {str} The starting point of the directory walk
+        @exception Exception A generic exception
         '''
 
         try:
@@ -201,7 +207,7 @@ class DirectoryProcessing():
                         type_count += 1
 
             csv_outfile.close()
-            print("Found {0} {1} files".format(type_count, file_ext))
+            print(f"Found {type_count} {file_ext} files")
         except Exception as e:
             raise Exception(f"Exception {e} getting files for extension {file_ext} in {start_path}")
 
@@ -212,9 +218,9 @@ class DirectoryProcessing():
 
         @details Returns the file type using os library as opposed to getting it from audio metadata.
 
-        @param file_path {str} The full audio file path.
-        @return file_ext {str} The file type of audio file.
-        @exception Exception A generic exception
+        @param file_path {str} The full audio file path
+        @return file_ext {str} The file type of audio file
+        @exception Exception A generic file type exception
         '''
 
         split_extension = None
@@ -240,9 +246,11 @@ class DirectoryProcessing():
         @details The artist directory has been manually created and presumed to be valid.
         @details The audio file(s) for the created album directory will moved into the created directory by another function.
 
-        @param artist_dirpath {str} The name of the artist for artist directory.
-        @param album_dir {str} The name of the album for new album directory.
+        @param artist_dirpath {str} The name of the artist for artist directory
+        @param album_dir {str} The name of the album for new album directory
         @exception ValidationError Album name is unacceptable as a directory path
+        @exception OSError An os permission error
+        @exception Exception A generic exception
         '''
 
         # sanitize because the metadata might have characters invalid for directory names
@@ -251,7 +259,7 @@ class DirectoryProcessing():
         if album_dir:
             sanitized_album_dir = pathvalidate.sanitize_filepath(album_dir)
         else:
-            raise pathvalidate.ValidationError("Album name: {0} is unacceptable as a directory path".format(album_dir))
+            raise pathvalidate.ValidationError(f"Album name: {album_dir} is unacceptable as a directory path")
 
         music_dir = os.path.join(self._tld_path, artist_dirpath, sanitized_album_dir)
 
