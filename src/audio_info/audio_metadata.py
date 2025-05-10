@@ -19,7 +19,9 @@ from pydub.utils import mediainfo
 from src import _AUDIO_EXTS, _AUDIO_TYPES
 from src.generated_files import generated_files
 
-
+# the set of pydub generic metadata keys I want to copy to converted files
+# these keys also correspond to what Windows displays as file information in File Explorer
+_PREFERRED_KEYS = {'album', 'album_artist', 'artist', 'comment', 'composer', 'copyright', 'date', 'disc', 'genre', 'publisher', 'title', 'track'}
 class AudioMetadata():
     '''
     @brief Defines the base metadata processing used by project.
@@ -76,41 +78,53 @@ class AudioMetadata():
         file_name = file_name_and_extension[0]
         file_ext = file_name_and_extension[1]
 
-        if file_ext != "mp3":
-            export_dir = os.path.join(generated_files, file_dir)
-            export_name = file_name + export_file_ext
-            export_filepath = os.path.join(export_dir, export_name)
+        # if file_ext != "mp3":
+        #     export_dir = os.path.join(generated_files, file_dir)
+        #     export_name = file_name + export_file_ext
+        #     export_filepath = os.path.join(export_dir, export_name)
 
-            # directory is already extant if we are processing multiple songs for the same album
-            if not os.path.exists(export_dir):
-                os.makedirs(export_dir)
+        #     # directory is already extant if we are processing multiple songs for the same album
+        #     if not os.path.exists(export_dir):
+        #         os.makedirs(export_dir)
+        # else:
+        #     raise IOError(f"source file {file_path} is already an {export_format}")
 
-        else:
-            raise IOError(f"source file {file_path} is already an {export_format}")
+        export_dir = os.path.join(generated_files, file_dir)
+        export_name = file_name + export_file_ext
+        export_filepath = os.path.join(export_dir, export_name)
+        # directory is already extant if we are processing multiple songs for the same album
+        if not os.path.exists(export_dir):
+            os.makedirs(export_dir)
 
-        # get the input file info - want the codec and bitrate so can preserve the quality in exported file
-        file_media_info = mediainfo(file_path)
-        # need codec and bit rate as strings for pydub
-        # not sure about getting codec
-        # don't like how mutagen reports it
-        # not sure how to use what pydub reports
-        file_audio_codec = file_media_info['codec_name']
-        file_audio_bitrate = file_media_info['bit_rate']
+        # get the input file info - want bitrate so can preserve the quality in exported file
+        pydub_media_info = mediainfo(file_path)
+        file_audio_bitrate = pydub_media_info['bit_rate']
 
         # get the input files metadata from pydub because doing so gives consistent schema
-        pydub_file_tags = file_media_info['TAG']
+        pydub_media_tags = pydub_media_info['TAG']
 
-        # need to massage the date info
-        # if wma, look for key WM/Year
-        # if m4a, look for key date
+        # I dont want every possible tag that pydub returns. just the subset that Windows will display
+        # iterate over the reported metadata for the file
+        # for every key that is in my preferred keys
+        # get the value and write it to corresponding ID3v2.3 tag
+        # Eg reported: "album": "Desperado" -> "TALB": "Desperado"
+
+        # need to massage the reported date info
+        # if m4a, look for key date, then originalYear, then originalDate
         # once I have the info, need to check if is 4 chars or longer
         # if longer, just need the 1st 4 chars
         # eg from an m4a:
         # 'date': '2015-05-18T07:00:00Z'
+        # strip out the 2015
+        #
         # 'date': '2013'
         # 'originalyear': '1973'
+        # both are YYYY format, but use oldest date, ie 1973
+        #
         # 'originaldate': '1973-04-17'
-        # from a wma:
+        # strip out the 1973
+        #
+        # if wma, look for key WM/Year
         # 'WM/Year': '1976'
 
         # mutagen_file_tags = self.get_any_tags(file_path)
@@ -119,42 +133,9 @@ class AudioMetadata():
         # tiny_tag_image = tinytag_file_tags.get_image()
 
         '''
-        @todo decide what is best methodology
-        I have wma and m4a metadata, which have different considerations
-        1) the ASF (wma) and MP4 (m4a) metadata keys are different from both each other and ID3v2.3
-        so I need to figure out how to acquire what I want from the source file then map it correctly for ID3v2.3 keys
-        I want:
-        title (song title)      TIT2
-        artist (album artist)   TPE1
-        album                   TALB
-        genre                   TCON
-        year
-        - year looks to be a PITA, different metadata schemas have different definitions of year and how that definition is handled
-        - for me, I am look ing to map to ID3v2.3
-        - this means (in sec order of preference)
-        TYER
-            The 'Year' frame is a numeric string with a year of the recording. This
-            frames is always four characters long (until the year 10000).
-        TORY
-            The 'Original release year' frame is intended for the year when the
-            original recording, if for example the music in the file should be a
-            cover of a previously released song, was released. The field is
-            formatted as in the "TYER" frame
-        TDRC
-            This is actually from ID3v2.4
-            If encountered needs to be mapped to ID3v2.3 TYER and then removed
-        TXXX:original year
-            This is what MusicBrainz Picard put in
-        media source            TMED
-        - recorded (from vinyl lp)      - ID3v2.3 frame TMED("TT33")
-        - ripped (from a cd)            - ID3v2.3 frame TMED(")
-        - downloaded (from a source)
-        '''
-
-        '''
         @todo cover art
         cover art needs to be sent as a separate input param
-        pydub does NOT extract any existing cover art, I will need to use something else - probably mutagen
+        pydub does NOT extract any existing cover art, I will need to use mutagen
         save the extracted art as a separate file (named either folder.jpg or cover.jpg) in the same directory as the converted file
         and embed the cover art in the converted file - which I can do with pydub
         and embed the cover art in the converted file - which I can do with pydub
@@ -166,8 +147,13 @@ class AudioMetadata():
         - stored as separate file in same directory as the audio file it belongs to
         - cover art file name can be either Folder.jpg or Cover.jpg
         '''
-        # if "covr" in mutagen_file_tags and len(mutagen_file_tags["covr"]) > 0:
-        #   artwork_data = mutagen_file_tags["covr"][0]
+        mutagen_file_thing = mutagen.File(file_path)
+        mutagen_media_tags = self.get_any_tags(file_path)
+        # MP4 (m4a files) will have covr tag for embedded cover art
+        # ASF (wma files) will have WM/Picture for embedded cover art
+
+        # if "covr" in mutagen_media_tags and len(mutagen_media_tags["covr"]) > 0:
+        #   artwork_data = mutagen_media_tags["covr"][0]
         # check if input file path has a file "Folder.jpg"
         # if Folder.jpg, then cover=path_to_Folder.jpg
         # elseif check if the input audio file has embedded art then
@@ -181,7 +167,7 @@ class AudioMetadata():
             # @todo there are many more params I could send to export command
             # audio_segment.export(export_filepath, export_format, tags=mutagen_file_tags, id3v2_version='3')
             # audio_segment.export(export_filepath, export_format, bitrate=file_audio_bitrate, id3v2_version='3')
-            audio_segment.export(export_filepath, export_format, bitrate=file_audio_bitrate, tags=pydub_file_tags, id3v2_version='3')
+            audio_segment.export(export_filepath, export_format, bitrate=file_audio_bitrate, tags=pydub_media_tags, id3v2_version='3')
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_filepath}")
 
@@ -229,9 +215,9 @@ class AudioMetadata():
         return artist_name, album_name
 
 
-    def get_mp3_art_type(self, file_path):
+    def get_embedded_art_mime(self, file_path):
         '''
-        @brief Returns the mime type of album art in mp3 file.
+        @brief Returns the mime type of album art in audio file.
 
         @param file_path {str} The full path to mp3 audio file
         @return mime_type {str} The mime type of the album art

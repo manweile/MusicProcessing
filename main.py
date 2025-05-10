@@ -60,6 +60,7 @@ def main():
     conversion_file_list = [r"H:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a",
                             r"H:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a",
                             r"H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma",
+                            r"H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3"
                             ]
 
     # conversion testing Ubuntu
@@ -70,8 +71,9 @@ def main():
     for song in conversion_file_list:
         metadata_type = metadata.get_any_metadata_type(song)
 
-        if metadata_type.lower() != "mp3":
-             metadata.convert_any_to_mp3(song)
+        # if metadata_type.lower() != "mp3":
+        #      metadata.convert_any_to_mp3(song)
+        metadata.convert_any_to_mp3(song)
 
 if __name__ == "__main__":
     '''
