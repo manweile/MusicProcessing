@@ -1,10 +1,10 @@
 ID3v2.3(MP3)MetaData 	                WMA(ASF)		M4A(MP4)
 APIC 	    images						WM/Picture		covr
-COMM 	    comment 					Description		@cmt                
+COMM 	    comment 					Description		@cmt
 TPOS 	    album number/album total 	WM/PartofSet	disk
 TRCK 	    track number/track total 	WM/TrackNumber	trkn
 TALB 	    album name 	                WM/AlbumTitle	@alb
-TCOM		composer(s)					WM/Composer		@wrt   
+TCOM		composer(s)					WM/Composer		@wrt
 TCON        genre                       WM/Genre        @gen
 TCOP 	    copyright 	                Copyright		cprt
 TIT2 	    track name 	                Title			@nam
