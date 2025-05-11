@@ -10,6 +10,7 @@ import argparse
 import csv
 import logging
 import os
+import platform
 import sys
 
 # local modules
@@ -52,26 +53,26 @@ def main():
     #     metadata_type = metadata.get_any_metadata_type(song)
     #     print("Song: {0} has metadata type: {1}".format(song, metadata_type))
 
-    # conversion testing windows
-    # The commented out code block `conversion_file_list` is creating a list of file paths for audio files
-    # that are intended for conversion to MP3 format. The paths are specified as strings, with each string
-    # representing the file path of an audio file. The code block is currently disabled by commenting it
-    # out, so it is not being executed when the script runs.
-    # conversion_file_list = [r"H:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a",
-    #                         r"H:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a",
-    #                         r"H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma",
-    #                         r"H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3"
-    #                         ]
+    # conversion testing
+    # Create an os appropriate list of file paths for audio files that are intended for conversion to MP3 format.
+    # The paths are specified as strings, with each string representing the file path of an audio file.
+    if platform.system() == "Linux":
+        conversion_file_list = [
+                                r"/media/gerald/Music/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3",
+                                r"/media/gerald/Music/Music/The Eagles/Desperado/The Eagles-Desperado.m4a",
+                                r"/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma",
+                                r"/home/gerald/Music/Alejandro Escovedo/Alejandro Escovedo-Broken Bottle.wma"
+                                ]
+    elif platform.system() == "Windows":
+        conversion_file_list = [
+                                r"H:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a",
+                                r"H:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a",
+                                r"H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma",
+                                r"H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3"
+                                ]
 
-    # conversion testing Ubuntu
-    conversion_file_list = [r"/media/gerald/Music/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3",
-                            r"/media/gerald/Music/Music/The Eagles/Desperado/The Eagles-Desperado.m4a",
-                            r"/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma",
-                            r"/media/gerald/Music/Music/Alejandro Escovedo/Alejandro Escovedo-Broken Bottle.wma"
-                            ]
 
     for song in conversion_file_list:
-        metadata_type = metadata.get_any_metadata_type(song)
         metadata.convert_any_to_mp3(song)
 
 if __name__ == "__main__":
