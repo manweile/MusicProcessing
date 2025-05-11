@@ -11,17 +11,77 @@ import os
 
 # third party modules
 import mutagen
-from mediafile import MediaFile, Image, ImageType
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 
 # local modules
 from src import _AUDIO_EXTS, _AUDIO_TYPES
 from src.generated_files import generated_files
+# from src.dir_processing import DirectoryProcessing
 
 # the set of pydub generic metadata keys I want to copy to converted files
 # these keys also correspond to what Windows displays as file information in File Explorer
-_PREFERRED_KEYS = {'album', 'album_artist', 'artist', 'comment', 'composer', 'copyright', 'date', 'disc', 'genre', 'publisher', 'title', 'track'}
+_GEN_KEYS = {
+            'album',
+            'album_artist',
+            'artist',
+            'comment',
+            'composer',
+            'copyright',
+            'date',
+            'disc',
+            'genre',
+            'publisher',
+            'title',
+            'track'
+            }
+
+# The generic to ID3v2.3 for mp3 files
+_MP3_KEYS = {
+            'album': 'TALB',
+            'album_artist': 'TPE2',
+            'artist': 'TPE1',
+            'comment': 'COMM',
+            'composer': 'TCOM',
+            'copyright': 'TCOP',
+            'date': 'TYER',
+            'disc': 'TPOS',
+            'genre': 'TCON',
+            'publisher': 'TPUB',
+            'title': 'TIT2',
+            'track': 'TRCK'
+            }
+
+_M4A_KEYS = {
+            'album': u'@alb',
+            'album_artist': 'aART',
+            'artist': u'@ART',
+            'comment': u'cmt',
+            'composer': u'@wrt',
+            'copyright': 'cprt',
+            'date': u'@day',
+            'disc': 'disk',
+            'genre': u'@gen',
+            'publisher': u'@pub',
+            'title': u'@nam',
+            'track': 'trkn'
+            }
+
+_WMA_KEYS = {
+            'album': 'WM/AlbumTitle',
+            'album_artist': 'WM/AlbumArtist',
+            'artist': 'Author',
+            'comment': 'Description',
+            'composer': 'WM/Composer',
+            'copyright': 'Copyright',
+            'date': 'WM/Year',
+            'disc': 'WM/PartofSet',
+            'genre': 'WM/Genre',
+            'publisher': 'WM/Publisher',
+            'title': 'Title',
+            'track': 'WM/TrackNumber'
+            }
+
 class AudioMetadata():
     '''
     @brief Defines the base metadata processing used by project.
@@ -41,11 +101,11 @@ class AudioMetadata():
     def convert_any_to_mp3(self, file_path):
         '''
         @todo finish
-        @brief Converts any non-mp3 audio file to mp3 audio file.
+        @brief Converts any audio file to mp3 audio file.
 
-        @details FFMPEG does the actual conversion
-        @details The "any" if def name means wma or m4a files
-        @details Mutagen retrieves the info & metadata & cover art for FFMPEG
+        @details FFMPEG does the actual conversion.
+        @details The "any" if def name means wma, m4a, mp3 files.
+
         @param file_path {str} The full path to audio file
         '''
 
@@ -53,7 +113,7 @@ class AudioMetadata():
         export_name = None
         export_filepath = None
 
-        # get audio formats & extensions from package constants
+        # get mp3 audio format & extension from package constants
         export_format = _AUDIO_TYPES[0]
         export_file_ext = _AUDIO_EXTS[0]
 
@@ -68,6 +128,7 @@ class AudioMetadata():
         len = 5 means there is also an album dir holding the song file
         Eg. drive, tld, artist, album, song
         '''
+        # @todo FIX ubuntu has different len!!!
         if len(file_path_components) == 5:
             artist_dir = file_path_components[2]
             album_dir = file_path_components[3]
@@ -78,20 +139,10 @@ class AudioMetadata():
         file_name = file_name_and_extension[0]
         file_ext = file_name_and_extension[1]
 
-        # if file_ext != "mp3":
-        #     export_dir = os.path.join(generated_files, file_dir)
-        #     export_name = file_name + export_file_ext
-        #     export_filepath = os.path.join(export_dir, export_name)
-
-        #     # directory is already extant if we are processing multiple songs for the same album
-        #     if not os.path.exists(export_dir):
-        #         os.makedirs(export_dir)
-        # else:
-        #     raise IOError(f"source file {file_path} is already an {export_format}")
-
         export_dir = os.path.join(generated_files, file_dir)
         export_name = file_name + export_file_ext
         export_filepath = os.path.join(export_dir, export_name)
+
         # directory is already extant if we are processing multiple songs for the same album
         if not os.path.exists(export_dir):
             os.makedirs(export_dir)
@@ -103,9 +154,10 @@ class AudioMetadata():
         # get the input files metadata from pydub because doing so gives consistent schema
         pydub_media_tags = pydub_media_info['TAG']
 
-        # I dont want every possible tag that pydub returns. just the subset that Windows will display
-        # iterate over the reported metadata for the file
-        # for every key that is in my preferred keys
+        # I dont want every possible tag that pydub returns,
+        # just the subset that Windows will display.
+        # Iterate over the reported metadata for the file,
+        # for every metadata key that is in my set of generic preferred keys,
         # get the value and write it to corresponding ID3v2.3 tag
         # Eg reported: "album": "Desperado" -> "TALB": "Desperado"
 
@@ -129,47 +181,35 @@ class AudioMetadata():
 
         # mutagen_file_tags = self.get_any_tags(file_path)
         # mutagen_file_thing = mutagen.File(file_path)
-        # tinytag_file_tags = TinyTag.get(file_path, image=True)
-        # tiny_tag_image = tinytag_file_tags.get_image()
 
         '''
         @todo cover art
-        cover art needs to be sent as a separate input param
-        pydub does NOT extract any existing cover art, I will need to use mutagen
-        save the extracted art as a separate file (named either folder.jpg or cover.jpg) in the same directory as the converted file
-        and embed the cover art in the converted file - which I can do with pydub
-        and embed the cover art in the converted file - which I can do with pydub
-        Of course, I may have to deal with different cover art schemas for different audio file
-        ID3v2.3 tag album art   APIC
-        3 denotes front cover
-        - jpg or png acceptable
-        - 200px x 200px to 600px x 600px
-        - stored as separate file in same directory as the audio file it belongs to
-        - cover art file name can be either Folder.jpg or Cover.jpg
+        Almost all songs do NOT have embedded album art,
+        this is a result from all the WMP processing I did.
+        Unfortunately, since many artist dirs also do NOT have album sub directories,
+        there is no mapping the hidden jpg files to albums/songs.
+        Since almost all songs do not have embedded art,
+        will need to use co-located Folder.jpg files as cover art.
+        Can only do this with certainty where there is artist/album/song & Folder.jpg
+        I don't care if a (rare) song has embedded art and I overwrite it.
+        ID3v2.3 tag album art tag is APIC, where '3' denotes front cover
         '''
+
         mutagen_file_thing = mutagen.File(file_path)
         mutagen_media_tags = self.get_any_tags(file_path)
-        # MP4 (m4a files) will have covr tag for embedded cover art
-        # ASF (wma files) will have WM/Picture for embedded cover art
-
-        # if "covr" in mutagen_media_tags and len(mutagen_media_tags["covr"]) > 0:
-        #   artwork_data = mutagen_media_tags["covr"][0]
-        # check if input file path has a file "Folder.jpg"
-        # if Folder.jpg, then cover=path_to_Folder.jpg
-        # elseif check if the input audio file has embedded art then
-        #   extract it
-        #   save it as Extracted.jpg
-        #   cover=path_to_Extracted.jpg
-        # else leave cover=None
 
         try:
             audio_segment = AudioSegment.from_file(file_path)
-            # @todo there are many more params I could send to export command
-            # audio_segment.export(export_filepath, export_format, tags=mutagen_file_tags, id3v2_version='3')
-            # audio_segment.export(export_filepath, export_format, bitrate=file_audio_bitrate, id3v2_version='3')
             audio_segment.export(export_filepath, export_format, bitrate=file_audio_bitrate, tags=pydub_media_tags, id3v2_version='3')
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_filepath}")
+
+    def create_album_dir(self, file_path):
+        '''
+        @brief
+        '''
+
+        pass
 
 
     def get_any_metadata_type(self, file_path):

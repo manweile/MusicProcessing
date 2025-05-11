@@ -32,7 +32,7 @@ class DirectoryProcessing():
     @brief Defines the base directory processing used by project.
     '''
 
-    def __init__(self, tld_path):
+    def __init__(self, tld_path=None):
         '''
         @brief      Initializes the DirectoryProcessing class.
 
@@ -42,14 +42,17 @@ class DirectoryProcessing():
         @exception  Exception A generic exception
         '''
 
-        try:
-            if os.path.isdir(tld_path):
-                self._tld_path = tld_path
-        except OSError as e:
-            if e.errno == errno.ENOENT:
-                raise OSError(f"Error: Path {tld_path} not found")
-            else:
-                raise Exception(f"Exception {e} setting path {tld_path}")
+        if tld_path != None:
+            try:
+                if os.path.isdir(tld_path):
+                    self._tld_path = tld_path
+            except OSError as e:
+                if e.errno == errno.ENOENT:
+                    raise OSError(f"Error: Path {tld_path} not found")
+                else:
+                    raise Exception(f"Exception {e} setting path {tld_path}")
+        else:
+            pass
 
 
     @property
