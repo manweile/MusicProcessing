@@ -122,6 +122,9 @@ class AudioMetadata():
         file_name_and_extension = file_path_components[-1].rsplit('.', 1)
 
         '''
+        /media/gerald/Music/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3
+        ['', 'media', 'gerald', 'Music', 'Music', '.38 Special', 'Special Forces', '.38 Special-Caught Up in You.mp3']
+        0th:'' 1st: media 2nd:gerald 3rd:Music 4th:Music 5th:.38 Special 6th:Special Forces 7th; .38 Special-Caught Up in You.mp3
         The file path will either be 4 or 5 elements long
         len = 4 means there is just an artist dir holding the song file
         Eg. drive, tld, artist, song
@@ -129,12 +132,14 @@ class AudioMetadata():
         Eg. drive, tld, artist, album, song
         '''
         # @todo FIX ubuntu has different len!!!
-        if len(file_path_components) == 5:
-            artist_dir = file_path_components[2]
-            album_dir = file_path_components[3]
+        len_path =len(file_path_components)
+        if len_path == 5 or len_path == 8:
+            album_dir = file_path_components[-2]
+            artist_dir = file_path_components[-3]
+
             file_dir = os.path.join(artist_dir, album_dir)
-        elif len(file_path_components) == 4:
-            file_dir = file_path_components[2]
+        elif len_path == 4 or len_path == 7:
+            file_dir = file_path_components[-2]
 
         file_name = file_name_and_extension[0]
         file_ext = file_name_and_extension[1]
