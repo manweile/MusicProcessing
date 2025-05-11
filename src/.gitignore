@@ -1,3 +1,2 @@
 generated_files/*.csv
-generated_files/*.mp3
-generated_files/*.txt
+generated_files/*/*.mp3
