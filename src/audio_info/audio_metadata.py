@@ -117,21 +117,52 @@ class AudioMetadata():
         export_format = _AUDIO_TYPES[0]
         export_file_ext = _AUDIO_EXTS[0]
 
+        '''
+        Ubuntu, using usb mount point:
+        Input:
+        /media/gerald/Music/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3
+        After input.split(os.sep):
+        ['', 'media', 'gerald', 'Music', 'Music', '.38 Special', 'Special Forces', '.38 Special-Caught Up in You.mp3']
+        0th:'' 1st: 'media' 2nd: 'gerald' 3rd: 'Music' 4th: 'Music' 5th:  '.38 Special' 6th: 'Special Forces' 7th: '.38 Special-Caught Up in You.mp3'
+        8 elements
+        The file path will either be 7 (does not have album subdirectory) or 8 (does have album subdirectory) elements long
+        Path components /media/gerald/Music is equivalent to H: on windows
+
+        Ubuntu, using hdd:
+        Input:
+        /home/gerald/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3
+        After input.split(os.sep):
+        ['', 'home', 'gerald', 'Music', '.38 Special', 'Special Forces', '.38 Special-Caught Up in You.mp3']
+        0th:'' 1st: 'home' 2nd: 'gerald' 3rd: 'Music' 4th: '.38 Special' 5th: 'Special Forces' 6th: '.38 Special-Caught Up in You.mp3'
+        7 elements
+        The file path will either be 6 (does not have album subdirectory) or 7 (does have album subdirectory) elements long
+        Path components /home/gerald are equivalent to C: on windows
+
+        Windows:
+        Input: H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3
+        After input.split(os.sep):
+        ['H', 'Music', '.38 Special', 'Special Forces', '.38 Special-Caught Up in You.mp3']
+        0th: 'H', 1st: 'Music', 2nd: '.38 Special', 3rd: 'Special Forces', 4th: '.38 Special-Caught Up in You.mp3'
+        5 elements
+        The file path will either be 4 (does not have album subdirectory) or 5 (does have album subdirectory) elements long
+
+        On Ubuntu, /media/gerald/Music is equivalent to usb H:\ on Windows, and /home/gerald/ is equivalent to hdd C:\ on Windows
+
+        filename with extension is always  input.split(os.sep)[-1]
+        directory holding the song is always input.split(os.sep)[-2]
+        1st fly in ointment: does the artist directory have album subdirectories or not
+            has sub dirs means input.split(os.sep)[-2] is actually an album subdir and input.split(os.sep)[-3 is artist directory]
+        2nd fly in ointment: are you on Windows or Ubuntu
+            Under Windows, input.split(os.sep)[0][1] are the toplevel path (ie drive:\tld), irregardless of physical device (hdd or usb)
+        3rd fly in ointment: under Ubuntu, are you on hdd or a mount point?
+            Under Ubuntu on a HDD, input.split(os.sep)[0][1][2] is the top level path
+            Under Ubuntu on a USB mount point, input.split(os.sep)[0][1][2][3] is the top level path
+        '''
+
         file_path_components = file_path.split(os.sep)
         # the filename and extension are always the final index from a file path split
         file_name_and_extension = file_path_components[-1].rsplit('.', 1)
 
-        '''
-        /media/gerald/Music/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3
-        ['', 'media', 'gerald', 'Music', 'Music', '.38 Special', 'Special Forces', '.38 Special-Caught Up in You.mp3']
-        0th:'' 1st: media 2nd:gerald 3rd:Music 4th:Music 5th:.38 Special 6th:Special Forces 7th; .38 Special-Caught Up in You.mp3
-        The file path will either be 4 or 5 elements long
-        len = 4 means there is just an artist dir holding the song file
-        Eg. drive, tld, artist, song
-        len = 5 means there is also an album dir holding the song file
-        Eg. drive, tld, artist, album, song
-        '''
-        # @todo FIX ubuntu has different len!!!
         len_path =len(file_path_components)
         if len_path == 5 or len_path == 8:
             album_dir = file_path_components[-2]
