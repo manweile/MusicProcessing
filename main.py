@@ -58,10 +58,10 @@ def main():
     # The paths are specified as strings, with each string representing the file path of an audio file.
     if platform.system() == "Linux":
         conversion_file_list = [
+                                r"/home/gerald/Music/Alejandro Escovedo/Alejandro Escovedo-Broken Bottle.wma",
                                 r"/media/gerald/Music/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3",
                                 r"/media/gerald/Music/Music/The Eagles/Desperado/The Eagles-Desperado.m4a",
                                 r"/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma",
-                                r"/home/gerald/Music/Alejandro Escovedo/Alejandro Escovedo-Broken Bottle.wma"
                                 ]
     elif platform.system() == "Windows":
         conversion_file_list = [

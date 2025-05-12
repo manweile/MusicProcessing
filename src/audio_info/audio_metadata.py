@@ -8,6 +8,7 @@
 
 # standard modules
 import os
+from pathlib import Path
 
 # third party modules
 import mutagen
@@ -158,10 +159,19 @@ class AudioMetadata():
             Under Ubuntu on a HDD, input.split(os.sep)[0][1][2] is the top level path
             Under Ubuntu on a USB mount point, input.split(os.sep)[0][1][2][3] is the top level path
         '''
+        input_path = Path(file_path)
+        # file_path_components = file_path.split(os.sep)
+        file_path_components = input_path.parts
 
-        file_path_components = file_path.split(os.sep)
         # the filename and extension are always the final index from a file path split
-        file_name_and_extension = file_path_components[-1].rsplit('.', 1)
+        # file_name_and_extension = file_path_components[-1].rsplit('.', 1)
+        file_name_and_extension = Path(file_path).name.rsplit('.', 1)
+
+        # no matter what os, ALWAYS going to have .../Music/.../song.ext or ...\Music\...\song.ext
+        # get the parts
+        # get the filename
+        # strip off the filename
+        # reverse walk the remnant, check each element, if != Music, prepend it to export_dir
 
         len_path =len(file_path_components)
         if len_path == 5 or len_path == 8:
