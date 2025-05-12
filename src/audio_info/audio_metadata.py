@@ -20,6 +20,9 @@ from src import _AUDIO_EXTS, _AUDIO_TYPES
 from src.generated_files import generated_files
 # from src.dir_processing import DirectoryProcessing
 
+# set of directories I don't care about
+_DIR_IGNORE = {'Music', 'gerald', 'home', 'media', 'mount'}
+_EXPORT_TLD = "Music"
 # the set of pydub generic metadata keys I want to copy to converted files
 # these keys also correspond to what Windows displays as file information in File Explorer
 _GEN_KEYS = {
@@ -110,8 +113,6 @@ class AudioMetadata():
         @param file_path {str} The full path to audio file
         '''
 
-        album_dir = None
-        artist_dir = None
         export_dir = None
         export_name = None
         export_filepath = None
@@ -121,75 +122,64 @@ class AudioMetadata():
         export_file_ext = _AUDIO_EXTS[0]
 
         '''
-        Ubuntu, using usb mount point:
-        Input:
-        /media/gerald/Music/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3
-        After input.split(os.sep):
-        ['', 'media', 'gerald', 'Music', 'Music', '.38 Special', 'Special Forces', '.38 Special-Caught Up in You.mp3']
-        0th:'' 1st: 'media' 2nd: 'gerald' 3rd: 'Music' 4th: 'Music' 5th:  '.38 Special' 6th: 'Special Forces' 7th: '.38 Special-Caught Up in You.mp3'
-        8 elements
-        The file path will either be 7 (does not have album subdirectory) or 8 (does have album subdirectory) elements long
-        Path components /media/gerald/Music is equivalent to H: on windows
+        Ubuntu file path:
+        <root>/<mount point>/<usr>/[drive label]/<tld>/<artist dir>/[album dir]/<song file>.<ext>
+        root is always /
+        mount point is either home (an hdd) or media (an usb)
+        if mount point is media then there will be a drive label
+        album dir is optional
 
-        Ubuntu, using hdd:
-        Input:
-        /home/gerald/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3
-        After input.split(os.sep):
-        ['', 'home', 'gerald', 'Music', '.38 Special', 'Special Forces', '.38 Special-Caught Up in You.mp3']
-        0th:'' 1st: 'home' 2nd: 'gerald' 3rd: 'Music' 4th: '.38 Special' 5th: 'Special Forces' 6th: '.38 Special-Caught Up in You.mp3'
-        7 elements
-        The file path will either be 6 (does not have album subdirectory) or 7 (does have album subdirectory) elements long
-        Path components /home/gerald are equivalent to C: on windows
+        Windows file path:
+        <drive>\<tld>\<artist dir>\[album dir]\<song file>.<ext>
+        drive is always a drive letter
+        album dir is optional
 
-        Windows:
-        Input: H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3
-        After input.split(os.sep):
-        ['H', 'Music', '.38 Special', 'Special Forces', '.38 Special-Caught Up in You.mp3']
-        0th: 'H', 1st: 'Music', 2nd: '.38 Special', 3rd: 'Special Forces', 4th: '.38 Special-Caught Up in You.mp3'
-        5 elements
-        The file path will either be 4 (does not have album subdirectory) or 5 (does have album subdirectory) elements long
+        Ubuntu from USB stick, with an album directory
+        "/media/gerald/Music/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3"
+        Ubuntu from hdd, w/o album directory
+        "/home/gerald/Music/Alejandro Escovedo/Alejandro Escovedo-Broken Bottle.wma"
+        Windows from USB stick, with an album directory
+        "H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3"
+        Windows from hdd, w/o album directory
+        "C:\Music\Alejandro Escovedo\Alejandro Escovedo-Broken Bottle.wma"
 
-        On Ubuntu, /media/gerald/Music is equivalent to usb H:\ on Windows, and /home/gerald/ is equivalent to hdd C:\ on Windows
-
-        filename with extension is always  input.split(os.sep)[-1]
-        directory holding the song is always input.split(os.sep)[-2]
-        1st fly in ointment: does the artist directory have album subdirectories or not
-            has sub dirs means input.split(os.sep)[-2] is actually an album subdir and input.split(os.sep)[-3 is artist directory]
-        2nd fly in ointment: are you on Windows or Ubuntu
-            Under Windows, input.split(os.sep)[0][1] are the toplevel path (ie drive:\tld), irregardless of physical device (hdd or usb)
-        3rd fly in ointment: under Ubuntu, are you on hdd or a mount point?
-            Under Ubuntu on a HDD, input.split(os.sep)[0][1][2] is the top level path
-            Under Ubuntu on a USB mount point, input.split(os.sep)[0][1][2][3] is the top level path
+        I don' need drive/root, mount point, usr, drive label, tld, or song file extension
+        I always need artist dir, album dir if it exists, and song file
         '''
 
-        # no matter what os, ALWAYS going to have .../Music/.../song.ext or ...\Music\...\song.ext
-        # get the parts
-        # get the filename
-        # strip off the filename
-
-        # file_path_components = file_path.split(os.sep)
         input_path = Path(file_path)
+        # get the full parent w/o filename so I can start removing the <mount point>/[drive label]/<tld> or <drive letter> and <tld>
         input_path_parent = input_path.parent
-        # remove the drive no use for it
-        input_path_components = input_path_parent.parts[1:]
-        export_dir = generated_files
+        # remove the root/drive, have no use for it
+        input_path_parts = input_path_parent.parts[1:]
+
+        # "media" mean file path is for an Ubuntu USB
+        # "home" means file path is for an Ubuntu hdd
+        # anything else means is file path for Windows
+        if input_path_parts[0] == "media":
+            # Ubuntu usb is going to have <mount point>/<usr>/drive label/<tld>
+            input_path_components = input_path_parts[3:]
+        elif input_path_parts[0] == "home":
+            # Ubuntu usb is going to have <mount point>/<usr>/<tld>
+            input_path_components = input_path_parts[2:]
+        else:
+            # Windows is going to have <drive>/<tld>
+            input_path_components = input_path_parts[1:]
+
+        export_dir = os.path.join(generated_files, _EXPORT_TLD)
 
         for component in input_path_components:
-            if component in {'Music', 'gerald', 'home', 'media', 'mount'}:
-                continue
-            else:
-                export_dir = os.path.join(export_dir, component)
-
-        input_file_name = input_path.stem
-        input_file_ext = input_path.suffix
-
-        # export_dir = os.path.join(generated_files, file_dir)
-        export_name = input_file_name + export_file_ext
-        export_filepath = os.path.join(export_dir, export_name)
+            export_dir = os.path.join(export_dir, component)
 
         # directory is already extant if we are processing multiple songs for the same album
         if not os.path.exists(export_dir):
             os.makedirs(export_dir)
+
+        input_file_name = input_path.stem
+        # input_file_ext = input_path.suffix
+
+        export_name = input_file_name + export_file_ext
+        export_filepath = os.path.join(export_dir, export_name)
 
         # get the input file info - want bitrate so can preserve the quality in exported file
         pydub_media_info = mediainfo(file_path)
@@ -224,7 +214,6 @@ class AudioMetadata():
         # 'WM/Year': '1976'
 
         # mutagen_file_tags = self.get_any_tags(file_path)
-        # mutagen_file_thing = mutagen.File(file_path)
 
         '''
         @todo cover art
@@ -238,9 +227,6 @@ class AudioMetadata():
         I don't care if a (rare) song has embedded art and I overwrite it.
         ID3v2.3 tag album art tag is APIC, where '3' denotes front cover
         '''
-
-        mutagen_file_thing = mutagen.File(file_path)
-        mutagen_media_tags = self.get_any_tags(file_path)
 
         try:
             audio_segment = AudioSegment.from_file(file_path)
