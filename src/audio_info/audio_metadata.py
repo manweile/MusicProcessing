@@ -110,6 +110,8 @@ class AudioMetadata():
         @param file_path {str} The full path to audio file
         '''
 
+        album_dir = None
+        artist_dir = None
         export_dir = None
         export_name = None
         export_filepath = None
@@ -159,34 +161,30 @@ class AudioMetadata():
             Under Ubuntu on a HDD, input.split(os.sep)[0][1][2] is the top level path
             Under Ubuntu on a USB mount point, input.split(os.sep)[0][1][2][3] is the top level path
         '''
-        input_path = Path(file_path)
-        # file_path_components = file_path.split(os.sep)
-        file_path_components = input_path.parts
-
-        # the filename and extension are always the final index from a file path split
-        # file_name_and_extension = file_path_components[-1].rsplit('.', 1)
-        file_name_and_extension = Path(file_path).name.rsplit('.', 1)
 
         # no matter what os, ALWAYS going to have .../Music/.../song.ext or ...\Music\...\song.ext
         # get the parts
         # get the filename
         # strip off the filename
-        # reverse walk the remnant, check each element, if != Music, prepend it to export_dir
 
-        len_path =len(file_path_components)
-        if len_path == 5 or len_path == 8:
-            album_dir = file_path_components[-2]
-            artist_dir = file_path_components[-3]
+        # file_path_components = file_path.split(os.sep)
+        input_path = Path(file_path)
+        input_path_parent = input_path.parent
+        # remove the drive no use for it
+        input_path_components = input_path_parent.parts[1:]
+        export_dir = generated_files
 
-            file_dir = os.path.join(artist_dir, album_dir)
-        elif len_path == 4 or len_path == 7:
-            file_dir = file_path_components[-2]
+        for component in input_path_components:
+            if component in {'Music', 'gerald', 'home', 'media', 'mount'}:
+                continue
+            else:
+                export_dir = os.path.join(export_dir, component)
 
-        file_name = file_name_and_extension[0]
-        file_ext = file_name_and_extension[1]
+        input_file_name = input_path.stem
+        input_file_ext = input_path.suffix
 
-        export_dir = os.path.join(generated_files, file_dir)
-        export_name = file_name + export_file_ext
+        # export_dir = os.path.join(generated_files, file_dir)
+        export_name = input_file_name + export_file_ext
         export_filepath = os.path.join(export_dir, export_name)
 
         # directory is already extant if we are processing multiple songs for the same album
