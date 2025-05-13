@@ -221,9 +221,9 @@ class AudioMetadata():
         # Iterate over the reported metadata for the file, for every metadata key that is in my set of generic preferred keys,
         # get the value and write it to corresponding ID3v2.3 tag
         # Eg reported: "album": "Desperado" -> "TALB": "Desperado"
-        for key, value in file_media_tags.items():
-            if key in _GEN_KEYS:
-                print(f'key: {key}, value: {value}')
+        # for key, value in file_media_tags.items():
+        #     if key in _GEN_KEYS:
+        #         print(f'key: {key}, value: {value}')
 
         # need to massage the reported date info
         # if m4a, look for key date, then originalYear, then originalDate
