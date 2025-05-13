@@ -125,7 +125,7 @@ class AudioMetadata():
         Ubuntu file path:
         <root>/<mount point>/<usr>/[drive label]/<tld>/<artist dir>/[album dir]/<song file>.<ext>
         root is always /
-        mount point is either home (an hdd) or media (an usb)
+        mount point is either home (a hdd) or media (an usb)
         if mount point is media then there will be a drive label
         album dir is optional
 
@@ -158,13 +158,13 @@ class AudioMetadata():
         # anything else means is file path for Windows
         if input_path_parts[0] == "media":
             # Ubuntu usb is going to have <mount point>/<usr>/drive label/<tld>
-            input_path_components = input_path_parts[3:]
+            input_path_components = input_path_parts[4:]
         elif input_path_parts[0] == "home":
             # Ubuntu usb is going to have <mount point>/<usr>/<tld>
-            input_path_components = input_path_parts[2:]
+            input_path_components = input_path_parts[3:]
         else:
             # Windows is going to have <drive>/<tld>
-            input_path_components = input_path_parts[1:]
+            input_path_components = input_path_parts[2:]
 
         export_dir = os.path.join(generated_files, _EXPORT_TLD)
 
@@ -231,6 +231,7 @@ class AudioMetadata():
         try:
             audio_segment = AudioSegment.from_file(file_path)
             audio_segment.export(export_filepath, export_format, bitrate=file_audio_bitrate, tags=pydub_media_tags, id3v2_version='3')
+            print(f'{input_file_name} converted tp {export_format} in {export_dir}')
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_filepath}")
 
