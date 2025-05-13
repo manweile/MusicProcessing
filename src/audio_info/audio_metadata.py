@@ -39,7 +39,34 @@ _GEN_KEYS = {
             'track'
             }
 
-# The generic to ID3v2.3 for mp3 files
+# set of known media keys in ID3, m4a, wma order
+_MEDIA_KEYS = {
+            'TMED',                     # ID3
+            'MEDIA',                    # m4a
+            'WM/Media',                 # wma
+            'media_type'                # wma
+            }
+
+# set of known date keys in ID3, m4a, wma order
+_TIME_KEYS = {
+            'TYER',                     # ID3
+            'TORY',                     # ID3
+            u'@day',                    # m4a
+            'originalyear',             # m4a
+            'originaldate',             # m4a
+            'WM/OriginalReleaseYear',   # wma
+            'WM/OriginalReleaseTime',   # wma
+            'WM/Year'                   # wma
+            }
+
+# set of known art keys in ID3, m4a, wma order
+_ART_KEYS = {
+            'APIC',                     # ID3
+            'covr',                     # m4a
+            'WM/Picture'                # wma
+            }
+
+# dict of generic to ID3v2.3 for mp3 files
 _MP3_KEYS = {
             'album': 'TALB',
             'album_artist': 'TPE2',
@@ -55,6 +82,7 @@ _MP3_KEYS = {
             'track': 'TRCK'
             }
 
+# dict of generic to m4a for mp3 files
 _M4A_KEYS = {
             'album': u'@alb',
             'album_artist': 'aART',
@@ -70,6 +98,7 @@ _M4A_KEYS = {
             'track': 'trkn'
             }
 
+# dict of generic to wma for mp3 files
 _WMA_KEYS = {
             'album': 'WM/AlbumTitle',
             'album_artist': 'WM/AlbumArtist',
@@ -113,8 +142,8 @@ class AudioMetadata():
         '''
 
         export_dir = None
-        export_name = None
-        export_filepath = None
+        export_file_name = None
+        export_file_path = None
 
         # get mp3 audio format & extension from package constants
         export_format = _AUDIO_TYPES[0]
@@ -147,16 +176,16 @@ class AudioMetadata():
         '''
 
         input_path = Path(file_path)
-        # get the full parent w/o filename so I can start removing the <mount point>/[drive label]/<tld> or <drive letter> and <tld>
+        # get the full parent w/o filename so I can start removing unnecessary path components
         input_path_parent = input_path.parent
-        # remove the root/drive, have no use for it
+        # remove the root or drive, have no use for it
         input_path_parts = input_path_parent.parts[1:]
 
         # "media" mean file path is for an Ubuntu USB
         # "home" means file path is for an Ubuntu hdd
         # anything else means is file path for Windows
         if input_path_parts[0] == "media":
-            # Ubuntu usb is going to have <mount point>/<usr>/drive label/<tld>
+            # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>
             input_path_components = input_path_parts[4:]
         elif input_path_parts[0] == "home":
             # Ubuntu usb is going to have <mount point>/<usr>/<tld>
@@ -165,6 +194,7 @@ class AudioMetadata():
             # Windows is going to have <drive>/<tld>
             input_path_components = input_path_parts[2:]
 
+        # using fixed storage path because will always know project structure
         export_dir = os.path.join(generated_files, _EXPORT_TLD)
 
         for component in input_path_components:
@@ -175,10 +205,10 @@ class AudioMetadata():
             os.makedirs(export_dir)
 
         input_file_name = input_path.stem
-        # input_file_ext = input_path.suffix
+        input_file_ext = input_path.suffix
 
-        export_name = input_file_name + export_file_ext
-        export_filepath = os.path.join(export_dir, export_name)
+        export_file_name = input_file_name + export_file_ext
+        export_file_path = os.path.join(export_dir, export_file_name)
 
         # get the input file info - want bitrate so can preserve the quality in exported file
         file_media_info = mediainfo(file_path)
@@ -230,10 +260,10 @@ class AudioMetadata():
 
         try:
             audio_segment = AudioSegment.from_file(file_path)
-            audio_segment.export(export_filepath, export_format, bitrate=file_audio_bitrate, tags=file_media_tags, id3v2_version='3')
+            audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=file_media_tags, id3v2_version='3')
             print(f'{input_file_name} converted tp {export_format} in {export_dir}')
         except Exception as e:
-            raise Exception(f"Exception {e} converting {file_path} to {export_filepath}")
+            raise Exception(f"Exception {e} converting {file_path} to {export_file_path}")
 
     def create_album_dir(self, file_path):
         '''
