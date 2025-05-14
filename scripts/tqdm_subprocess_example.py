@@ -46,3 +46,35 @@ if __name__ == "__main__":
         if return_code == 0:
           print(f"Command '{cmd}' executed successfully.")
           #print(f"Stdout:\n{stdout}") # Uncomment if you want to print the full output
+
+# test 2
+# input_path = Path(out_f.name)
+# input_file_name = input_path.name
+
+# with tqdm(desc=f"Running ffmpeg subprocess to convert{input_file_name}") as pbar:
+#     with open(os.devnull, 'rb') as devnull:
+#         p = subprocess.Popen(conversion_command, stdin=devnull, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+#     #  when get here, p.stderr.readlines() has binary data with \r\n in it
+#     # stderr_count = p.stderr.readlines().len()
+#     for line in p.stderr:
+#         pbar.update(1)
+
+# read stdin / write stdout
+# with open(os.devnull, 'rb') as devnull:
+#     p = subprocess.Popen(conversion_command, stdin=devnull, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+# test 1
+# # my addition adding progress bar
+# input_path = Path(out_f.name)
+# input_file_name = input_path.name
+
+#
+#     while True:
+#         line = p.stderr.readline()
+#         if not line:
+#             if p.poll() is not None:
+#                 break
+#             # time.sleep(0.1)
+#             continue
+#         pbar.update(1)
