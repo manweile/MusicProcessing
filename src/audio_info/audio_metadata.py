@@ -261,9 +261,10 @@ class AudioMetadata():
         try:
             audio_segment = AudioSegment.from_file(file_path)
             audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=file_media_tags, id3v2_version='3')
-            print(f'{input_file_name} converted tp {export_format} in {export_dir}')
+            print(f'{input_file_name} converted to {export_format}')
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_file_path}")
+
 
     def create_album_dir(self, file_path):
         '''
