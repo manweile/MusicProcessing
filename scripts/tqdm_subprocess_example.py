@@ -33,19 +33,21 @@ def run_command_with_progress(command):
       if stderr:
           print(f"Stderr:\n{stderr}")
 
-    return process.returncode, stdout
+    return process.returncode, stdout, stderr
 
 if __name__ == "__main__":
     commands = [
         "ls -l /usr/bin",  # Example: List files in /usr/bin
-        "find / -name '*.txt'", # Example: Find text files (may take long)
+        "ls -l /",
+        "find /usr -name '*.txt'", # Example: Find text files (may take long)
     ]
 
     for cmd in commands:
-        return_code, stdout = run_command_with_progress(cmd)
+        return_code, stdout, stderr = run_command_with_progress(cmd)
         if return_code == 0:
           print(f"Command '{cmd}' executed successfully.")
-          #print(f"Stdout:\n{stdout}") # Uncomment if you want to print the full output
+          print(f"Stdout:\n{stdout}") # Uncomment if you want to print the full output
+          print(f"Stderr:\n{stderr}")
 
 # test 2
 # input_path = Path(out_f.name)
