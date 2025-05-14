@@ -1,3 +1,4 @@
 mutagen==1.47.0
 pathvalidate==3.2.1
 pydub==0.25.1
+tqdm==4.67.1

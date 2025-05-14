@@ -171,28 +171,28 @@ class AudioMetadata():
         Windows from hdd, w/o album directory
         "C:\Music\Alejandro Escovedo\Alejandro Escovedo-Broken Bottle.wma"
 
-        I don' need drive/root, mount point, usr, drive label, tld, or song file extension
+        I don't need drive/root, mount point, usr, drive label, tld
         I always need artist dir, album dir if it exists, and song file
         '''
 
         input_path = Path(file_path)
         # get the full parent w/o filename so I can start removing unnecessary path components
         input_path_parent = input_path.parent
-        # remove the root or drive, have no use for it
+        # remove the root or drive (ie. / or H:), have no use for it
         input_path_parts = input_path_parent.parts[1:]
 
         # "media" mean file path is for an Ubuntu USB
         # "home" means file path is for an Ubuntu hdd
         # anything else means is file path for Windows
         if input_path_parts[0] == "media":
-            # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>
+            # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/[album dir]
             input_path_components = input_path_parts[4:]
         elif input_path_parts[0] == "home":
-            # Ubuntu usb is going to have <mount point>/<usr>/<tld>
+            # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/[album dir]
             input_path_components = input_path_parts[3:]
         else:
-            # Windows is going to have <drive>/<tld>
-            input_path_components = input_path_parts[2:]
+            # Windows is going to have <tld>/<artist dir>/[album dir]
+            input_path_components = input_path_parts[1:]
 
         # using fixed storage path because will always know project structure
         export_dir = os.path.join(generated_files, _EXPORT_TLD)
