@@ -217,14 +217,29 @@ class AudioMetadata():
         # get the input files metadata from pydub because doing so gives consistent schema
         file_media_tags = file_media_info['TAG']
 
-        # I dont want every possible tag that pydub returns, just the subset that Windows will display.
-        # Iterate over the reported metadata for the file, for every metadata key that is in my set of generic preferred keys,
-        # get the value and write it to corresponding ID3v2.3 tag
-        # Eg reported: "album": "Desperado" -> "TALB": "Desperado"
-        # for key, value in file_media_tags.items():
-        #     if key in _GEN_KEYS:
-        #         print(f'key: {key}, value: {value}')
+        '''
+        @todo metadata transfer
+        I dont want every possible tag that pydub returns, just the subset that Windows will display.
+        Iterate over the reported metadata for the file, for every metadata key that is in my set of generic preferred keys,
+        get the value and write it to corresponding ID3v2.3 tag
+        Eg reported: "album": "Desperado" -> "TALB": "Desperado"
+        for key, value in file_media_tags.items():
+            if key in _GEN_KEYS:
+                print(f'key: {key}, value: {value}')
+        '''
 
+
+        '''
+        @todo date
+        date info is most problematic part of metadata
+        different audio file types have different date type tags
+        and to make things worse, the date could be a full ISO date,
+        or could just be a 4 digit year string
+        Possible heuristic
+        1) check for what "date" present
+        1) normalize it to "YYYY" if necessary
+        2) use the oldest "YYYY" value
+        '''
         # need to massage the reported date info
         # if m4a, look for key date, then originalYear, then originalDate
         # once I have the info, need to check if is 4 chars or longer
@@ -247,14 +262,18 @@ class AudioMetadata():
 
         '''
         @todo cover art
-        Almost all songs do NOT have embedded album art,
-        this is a result from all the WMP processing I did.
-        Unfortunately, since many artist dirs also do NOT have album sub directories,
-        there is no mapping the hidden jpg files to albums/songs.
-        Since almost all songs do not have embedded art,
-        will need to use co-located Folder.jpg files as cover art.
-        Can only do this with certainty where there is artist/album/song & Folder.jpg
-        I don't care if a (rare) song has embedded art and I overwrite it.
+        Most songs have hidden file art, this is a result from all the WMP processing I did.
+        Unfortunately, many artist dirs also do NOT have album sub directories.
+
+        Since most songs do not have embedded art, will need to use co-located Folder.jpg files as cover art.
+        Can only do this with certainty where there is artist/album/song & a single Folder.jpg in album directory.
+
+        So I have to decide if I am going to create all the required album sub directories,
+        move the audio files, and then manually move the correct *.jpg to proper album sub directory.add()
+
+        If a song has does have embedded art, ffmpeg will NOT auto transfer it.
+        Will need to extract it, save it, then add it to export command.
+
         ID3v2.3 tag album art tag is APIC, where '3' denotes front cover
         '''
 
