@@ -72,7 +72,6 @@ def main():
                                 r"H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3"
                                 ]
 
-
     for song in conversion_file_list:
         metadata.convert_any_to_mp3(song)
 
@@ -83,7 +82,9 @@ if __name__ == "__main__":
     '''
 
     # parser = argparse.ArgumentParser(description='Music Processing')
-    # parser.add_argument('-l', '--list', type=valid_date, help='Start date in YYYY-MM-DD', required=True)
+    # list needs 1 mandatory arg, the tld path , and 1 optional arg, the file type
+    # parser.add_argument('-l', '--list', type=str, help='requires top level directory path and optional three letter file extension', required=False)
+    #
     # parser.add_argument('-e', '--end', type=valid_date, help='End date in YYYY-MM-DD', required=True)
     # parser.add_argument('-a', '--aor', type=valid_aor, help='AOR text', required=True)
     # parser.add_argument('-d', '--dir', type=valid_dir, help='Source directory', required=True)
