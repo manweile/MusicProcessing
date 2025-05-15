@@ -51,7 +51,7 @@ _MEDIA_KEYS = {
 _TIME_KEYS = {
             'TYER',                     # ID3
             'TORY',                     # ID3
-            u'@day',                    # m4a
+            '\xa9day',                  # m4a, MIGHT need to use bytes literal; b'\xa9day'
             'originalyear',             # m4a
             'originaldate',             # m4a
             'WM/OriginalReleaseYear',   # wma
@@ -84,17 +84,17 @@ _MP3_KEYS = {
 
 # dict of generic to m4a for mp3 files
 _M4A_KEYS = {
-            'album': u'@alb',
+            'album': '\xa9alb',
             'album_artist': 'aART',
-            'artist': u'@ART',
-            'comment': u'cmt',
-            'composer': u'@wrt',
+            'artist': '\xa9ART',
+            'comment': '\xa9cmt',
+            'composer': '\xa9wrt',
             'copyright': 'cprt',
-            'date': u'@day',
+            'date': '\xa9day',
             'disc': 'disk',
-            'genre': u'@gen',
-            'publisher': u'@pub',
-            'title': u'@nam',
+            'genre': '\xa9gen',
+            'publisher': '\xa9pub',
+            'title': '\xa9nam',
             'track': 'trkn'
             }
 
@@ -214,19 +214,23 @@ class AudioMetadata():
         file_media_info = mediainfo(file_path)
         file_audio_bitrate = file_media_info['bit_rate']
 
-        # get the input files metadata from pydub because doing so gives consistent schema
-        file_media_tags = file_media_info['TAG']
-
         '''
         @todo metadata transfer
         I dont want every possible tag that pydub returns, just the subset that Windows will display.
         Iterate over the reported metadata for the file, for every metadata key that is in my set of generic preferred keys,
         get the value and write it to corresponding ID3v2.3 tag
-        Eg reported: "album": "Desperado" -> "TALB": "Desperado"
+        Eg pydub reported: "album": "Desperado" -> "TALB": "Desperado"
         for key, value in file_media_tags.items():
             if key in _GEN_KEYS:
                 print(f'key: {key}, value: {value}')
         '''
+
+        # get the input files metadata from pydub because doing so gives consistent schema
+        file_media_tags = file_media_info['TAG']
+        export_metadata = {}
+        for key, value in file_media_tags.items():
+            if key in _GEN_KEYS:
+                export_metadata[key] = value
 
 
         '''
@@ -258,7 +262,7 @@ class AudioMetadata():
         # if wma, look for key WM/Year
         # 'WM/Year': '1976'
 
-        # mutagen_file_tags = self.get_any_tags(file_path)
+        mutagen_file_tags = self.get_any_tags(file_path)
 
         '''
         @todo cover art
@@ -279,7 +283,7 @@ class AudioMetadata():
 
         try:
             audio_segment = AudioSegment.from_file(file_path)
-            audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=file_media_tags, id3v2_version='3')
+            audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3')
             print(f'{input_file_name} converted to {export_format}')
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_file_path}")
