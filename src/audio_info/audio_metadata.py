@@ -181,9 +181,6 @@ class AudioMetadata():
         # remove the root or drive (ie. / or H:), have no use for it
         input_path_parts = input_path_parent.parts[1:]
 
-        # "media" mean file path is for an Ubuntu USB
-        # "home" means file path is for an Ubuntu hdd
-        # anything else means is file path for Windows
         if input_path_parts[0] == "media":
             # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/[album dir]
             input_path_components = input_path_parts[4:]
