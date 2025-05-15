@@ -238,8 +238,8 @@ class AudioMetadata():
         or could just be a 4 digit year string
         Possible heuristic
         1) check for what "date" present
-        1) normalize it to "YYYY" if necessary
-        2) use the oldest "YYYY" value
+        2) normalize it to "YYYY" if necessary
+        3) use the oldest "YYYY" value
         '''
         # need to massage the reported date info
         # if m4a, look for key date, then originalYear, then originalDate
