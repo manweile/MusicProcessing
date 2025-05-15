@@ -410,7 +410,7 @@ class AudioMetadata():
         audio_file = None
 
         try:
-            audio_file = mutagen.File(file_path,easy=True)
+            audio_file = mutagen.File(file_path)
         except Exception as e:
             print(f"Error processing file: {e}")
             return None
