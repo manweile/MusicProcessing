@@ -149,7 +149,7 @@ class AudioMetadata():
         export_format = _AUDIO_TYPES[0]
         export_file_ext = _AUDIO_EXTS[0]
 
-        '''
+        r'''
         Ubuntu file path:
         <root>/<mount point>/<usr>/[drive label]/<tld>/<artist dir>/[album dir]/<song file>.<ext>
         root is always /
