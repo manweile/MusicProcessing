@@ -28,12 +28,13 @@ def find_embedded_art_m4a(file_path):
         return None
 
 # Example usage:
-file_path = r"D:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"  # Replace with the actual path to your M4A file
+file_path = r"D:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"
+# file_path = r"D:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
 artwork_data = find_embedded_art_m4a(file_path)
 
 if artwork_data:
     # Save the artwork to a file (e.g., as a JPEG)
-    with open("artwork.jpg", "wb") as f:
+    with open("Extracted.jpg", "wb") as f:
         f.write(artwork_data)
     print("Artwork saved to artwork.jpg")
 else:

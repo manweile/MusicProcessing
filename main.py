@@ -66,9 +66,9 @@ def main():
     elif platform.system() == "Windows":
         conversion_file_list = [
                                 r"D:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a",   # embedded art, datetime string
-                                r"H:\Music\Alejandro Escovedo\Alejandro Escovedo-Broken Bottle.wma",
-                                r"H:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a",                              # embedded art
-                                r"H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma",
+                                r"H:\Music\Alejandro Escovedo\Alejandro Escovedo-Broken Bottle.wma",                    # no embedded art
+                                r"H:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a",                              # no embedded art even though file explorer shows it
+                                r"H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma",                # no embedded art
                                 r"H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3"                 # no embedded art
                                 ]
 
