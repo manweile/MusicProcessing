@@ -1,4 +1,4 @@
-'''
+r'''
 permanent no code fix for Ubuntu:
     Open ~/.bashrc for editing
     Set the value:

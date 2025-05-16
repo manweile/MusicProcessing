@@ -2,7 +2,7 @@ import os
 
 import eyed3
 
-'''
+r'''
 Music Files directory & file naming format:
 <drive>:\\<top level dir\\<artist name>\\<album name>\\<artist name>-<song title>.mp3
 Example source file path:
@@ -83,5 +83,5 @@ def show_info(tag_info):
 
 # audio_info = get_info("H:\\Music\\38 Special\\.38 Special-Hold On Loosely.mp3")
 # audio_info = get_info("H:\\Music\\Kenny Rogers\\Daytime Friends - The Very Best of Kenny\\18 Lady.mp3")
-audio_info = get_info("H:\\Music\\Abba\\Greatest Hits Volume 2\\ABBA-Angeleyes.mp3")
+audio_info = get_info(r"H:\Music\Abba\Greatest Hits Volume 2\ABBA-Angeleyes.mp3")
 show_info(audio_info)
