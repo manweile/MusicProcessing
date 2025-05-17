@@ -324,14 +324,15 @@ class AudioMetadata():
         #             print(f'found audio file {file} in artist directory {current_dir}')
 
         # get the artist dirs under tld
-        artist_content = os.listdir(start_path)
+        tld_content = os.listdir(start_path)
 
         # iterate through list of artist directories looking for album sub directories
-        for artist_item in artist_content:
-            # create artist directory path
-            artist_item_path = os.path.join(start_path, artist_item)
-            if os.path.isdir(artist_item_path):
-                artist_path = os.path.join(start_path, artist_item)
+        for tld_item in tld_content:
+            # we only want artist directories, playlist files dont' count
+            if os.path.isdir(os.path.join(start_path, tld_item)):
+                artist_path = os.path.join(start_path, tld_item)
+            else:
+                continue
 
             # want to know if we have any empty artist directories
             # so we can deal with them later
@@ -340,13 +341,14 @@ class AudioMetadata():
                 continue
 
             # artist dirs should NOT contain audio files, only album directories
-            for item in os.listdir(artist_path):
-                if os.path.isfile(os.path.join(artist_path, item)):
-                    _, file_ext = os.path.splitext(item)
+            artist_content = os.listdir(artist_path)
+            for artist_item in artist_content:
+                if os.path.isfile(os.path.join(artist_path, artist_item)):
+                    _, file_ext = os.path.splitext(artist_item)
                     if file_ext.lower() in _AUDIO_EXTS:
-                        print(f'found audio file {item} in artist directory {artist_path}')
-                # elif os.path.isdir(os.path.join(artist_path, item)):
-                #     print(f'found album directory {item} in artist directory {artist_path}')
+                        print(f'found audio file {artist_item} in artist directory {artist_path}')
+                        # this is where would get album metadata and create album sub dir
+                        # by calling dir processing func
 
 
     def get_any_metadata_type(self, file_path):
