@@ -286,12 +286,67 @@ class AudioMetadata():
             raise Exception(f"Exception {e} converting {file_path} to {export_file_path}")
 
 
-    def create_album_dir(self, file_path):
+    def create_album_dir(self, start_path, file_path=None):
         '''
-        @brief
+        @brief Creates an album sub-directory in an artist directory.
+
+        @details Creates the album sub directory for the artist if needed.
+        @details The album name for the directory is drawn from the metadata.
+
+        @param start_path {str} The tld holding music files
+        @param file_path {str} The full path to audio file
+        @exception OSError An os permission error
+        @exception Exception A generic exception
         '''
 
-        pass
+        # for current_dir, dirs, files in os.walk(start_path):
+        #     # directory with no sub dirs
+        #     if not dirs:
+        #         print(f"{current_dir} has no album directories")
+        #         if not files:
+        #             print(f"{current_dir} also has no files")
+
+        # for current_dir, dirs, files in os.walk(start_path):
+        #     # don't need to check tld, I don't care about the playlist files and csv files
+        #     if current_dir == start_path:
+        #         continue
+
+        #     # shouldn't be any empty dirs
+        #     current_dir_content = os.listdir(current_dir)
+        #     if not current_dir_content:
+        #         print(f'{current_dir} is empty')
+        #         continue
+
+        #     # check if audio files present and sub dirs present
+        #     for file in files:
+        #         _, file_ext = os.path.splitext(file)
+        #         if file_ext.lower() in _AUDIO_EXTS:
+        #             print(f'found audio file {file} in artist directory {current_dir}')
+
+        # get the artist dirs under tld
+        artist_content = os.listdir(start_path)
+
+        # iterate through list of artist directories looking for album sub directories
+        for artist_item in artist_content:
+            # create artist directory path
+            artist_item_path = os.path.join(start_path, artist_item)
+            if os.path.isdir(artist_item_path):
+                artist_path = os.path.join(start_path, artist_item)
+
+            # want to know if we have any empty artist directories
+            # so we can deal with them later
+            if os.path.isdir(artist_path) and not os.listdir(artist_path):
+                print(f'{artist_path} is an empty directory')
+                continue
+
+            # artist dirs should NOT contain audio files, only album directories
+            for item in os.listdir(artist_path):
+                if os.path.isfile(os.path.join(artist_path, item)):
+                    _, file_ext = os.path.splitext(item)
+                    if file_ext.lower() in _AUDIO_EXTS:
+                        print(f'found audio file {item} in artist directory {artist_path}')
+                # elif os.path.isdir(os.path.join(artist_path, item)):
+                #     print(f'found album directory {item} in artist directory {artist_path}')
 
 
     def get_any_metadata_type(self, file_path):
