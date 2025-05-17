@@ -19,6 +19,7 @@ from pydub.utils import mediainfo
 # local modules
 from src import _AUDIO_EXTS, _AUDIO_TYPES
 from src.generated_files import generated_files
+from src.dir_processing import DirectoryProcessing
 
 _EXPORT_TLD = "Music"
 
@@ -323,12 +324,20 @@ class AudioMetadata():
         #         if file_ext.lower() in _AUDIO_EXTS:
         #             print(f'found audio file {file} in artist directory {current_dir}')
 
+        dir_processing = DirectoryProcessing(start_path)
+
         # get the artist dirs under tld
         tld_content = os.listdir(start_path)
 
-        # iterate through list of artist directories looking for album sub directories
+        from tqdm import tqdm
+        len_tld_content = len(tld_content)
+        tld_bar = tqdm(desc=f'Processing tld content', total=len_tld_content, unit=' items')
+
+        # iterate through top level directory
+        # consists of artist directories, playlist files and couple other sundry files
         for tld_item in tld_content:
-            # we only want artist directories, playlist files dont' count
+
+            # we only want artist directories, playlist/sundry files don't count
             if os.path.isdir(os.path.join(start_path, tld_item)):
                 artist_path = os.path.join(start_path, tld_item)
             else:
@@ -340,15 +349,35 @@ class AudioMetadata():
                 print(f'{artist_path} is an empty directory')
                 continue
 
-            # artist dirs should NOT contain audio files, only album directories
+            tld_bar.update(1)
+
+            # now we look at what's in the current artist directory
             artist_content = os.listdir(artist_path)
+
             for artist_item in artist_content:
+
+                # now we care about files - artist dir do NOT contain any sub dirs
+                if os.path.isdir(os.path.join(artist_path, artist_item)):
+                    continue
+
                 if os.path.isfile(os.path.join(artist_path, artist_item)):
                     _, file_ext = os.path.splitext(artist_item)
+
+                    # artist dirs should NOT contain audio files, only album directories
                     if file_ext.lower() in _AUDIO_EXTS:
-                        print(f'found audio file {artist_item} in artist directory {artist_path}')
-                        # this is where would get album metadata and create album sub dir
-                        # by calling dir processing func
+                        # print(f'found audio file {artist_item} in artist directory {artist_path}')
+                        artist_file_item = os.path.join(artist_path, artist_item)
+                        file_media_info = mediainfo(artist_file_item)
+                        file_media_tags = file_media_info['TAG']
+
+                        if 'album' in file_media_tags.keys():
+                            album = file_media_tags['album']
+                            dir_processing.make_album_dir(artist_path, album)
+                        else:
+                            print(f'{artist_file_item} is missing album metadata')
+                            continue
+
+        tld_bar.close()
 
 
     def get_any_metadata_type(self, file_path):
