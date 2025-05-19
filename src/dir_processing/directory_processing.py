@@ -11,12 +11,14 @@ import csv
 import errno
 import gc
 import os
+import platform
 import sys
 
 from operator import itemgetter
 
 # third party modules
 import pathvalidate
+from pathvalidate import replace_symbol
 
 # local modules
 # generated files package does not have any modules,
@@ -259,20 +261,26 @@ class DirectoryProcessing():
         # sanitize because the metadata might have characters invalid for directory names
         # using defaults so platform is "universal", replacement text for invalid chars is ""
         # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
-        if album_dir:
-            sanitized_album_dir = pathvalidate.sanitize_filepath(album_dir)
-        else:
-            raise pathvalidate.ValidationError(f"Album name: {album_dir} is unacceptable as a directory path")
+        # if album_dir:
+        #     sanitized_album_dir = pathvalidate.sanitize_filepath(album_dir, replacement_text='-', platform=platform.system())
+        # else:
+        #     raise pathvalidate.ValidationError(f"Album name: {album_dir} is unacceptable as a directory path")
+
+        try:
+           sanitized_album_dir = pathvalidate.sanitize_filepath(album_dir, platform=platform.system(), validate_after_sanitize=True)
+        except Exception as e:
+            raise Exception(f'Exception {e} sanitizing {album_dir}')
 
         music_dir = os.path.join(self._tld_path, artist_dirpath, sanitized_album_dir)
 
         # if the album sub-directory already exists, we don't need to do anything
         if os.path.exists(music_dir):
-            print(f"artist & album sub-directory: {music_dir} already exists")
+            # print(f"artist & album sub-directory: {music_dir} already exists")
+            pass
         else:
             try:
                 os.mkdir(music_dir)
-                print(f"Created album sub-directory: {sanitized_album_dir} under artist directory: {artist_dirpath}")
+                # print(f"Created album sub-directory: {sanitized_album_dir} under artist directory: {artist_dirpath}")
             except Exception as e:
                 if e.errno == errno.EACCES:
                     raise OSError(f"Error: permission denied for creating {music_dir}")
