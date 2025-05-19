@@ -82,9 +82,13 @@ Basic paradigm is batch editing of single audio files.
 - doesn't add a lot of extraneous metadata
 - batch editing of tags & files
 - reasonably intuitive UI
+- spreadsheet style display
 #### MP3Tag Cons
 - will prefer APE tags or ID3, which can be confusing and cause saving failures
 - metadata browser search & retrieval can fail on same song that MusicBrainz succeeds with
+
+### [puddletag](https://docs.puddletag.net/)
+puddletag is essentially the Ubuntu equivalent of MP3tag
 
 ### [MusicBrainz Picard](https://picard-docs.musicbrainz.org/v2.13/en/index.html):
 MusicBrainz is both a tag editor (Picard) & database (MusicBrainz).
@@ -96,7 +100,7 @@ Basic paradigm is processing one album at a time.
 #### MusicBrainz Picard Cons
 - not as intuitive UI
 - does not have full support for .wav files
-- not a great batch editor
+- not a batch editor
 
 ### [Discogs](https://www.discogs.com/)
 Discogs is a music info database.
@@ -108,26 +112,29 @@ Discogs is a music info database.
 ## Audio File Processing
 
 ### [ffmpeg](https://www.ffmpeg.org/)
-FFMPEG is ipsum lorem
+FFMPEG is a universal media converter.
+It can read a wide variety of inputs - including live grabbing/recording devices - filter, and transcode them into a plethora of output formats.
+The python module pydub wraps ffmpeg for scripting use.
 #### FFMPEG Pros
-- ipsum lorem
+- fast & versatile
 #### FFMPEG Cons
-- ipsum lorem
+- documentation is difficult to use
+- very complex command line only interface
 
 ### [Goldwave](https://goldwave.com/)
-Goldwave is ipsum lorem
+Goldwave is a professional, full featured, digital audio editor. Use it to play, record, import, edit, restore, process, analyze, and convert audio.
 #### Goldwave Pros
 - very good for vinyl LP recording
 - can convert file formats (m4a, wav, wma) to mp3
 - can rip mp3's from cd's
 - can play all of my audio file formats
 #### Goldwave Cons
-- ipsum lorem
+- paid version required for full functionality
 
 ## Audio File Players
 
 ### [Windows Media Player](https://support.microsoft.com/en-us/windows/windows-media-player-12-e8f84f54-cd64-865c-2e83-1d8ec121b5b8)
-WMP is a ipsum lorem
+WMP is a full-featured music library that allows you to quickly browse and play your music, as well as create and manage playlists.
 #### WMP Pros
 - can do some tag editing
 - adequate for ripping mp3's from cd's
@@ -140,7 +147,7 @@ WMP is a ipsum lorem
     - m3u can be created, but not best ui functionality to do so
 
 ### [VLC](https://www.videolan.org/vlc/):
-VLC is a ipsum lorem
+VLC is a multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols.
 #### VLS Pros
 - can so some tag editing, but is really a media player at heart
 - can rip mp3's from cd's, but goldwave is probably better
@@ -150,13 +157,20 @@ VLC is a ipsum lorem
 # Processing Steps
 
 ## Tag Editor Preprocessing
-I will use MP3Tag to:
+### Normalization
+I will use MP3Tag/puddletag to:
 - verify all wma files have only WMA tags
 - verify all m4a files have only MP4 tags
 - remove all APEv2 tags from mp3 files
   - remove all non ID3v2.3 tags from mp3 files
   - verify all mp3 files have only ID2v2.3 tags
 - rename the few audio files that have incorrect filename format
+- verify all albums have file system acceptable names for directory creation
+- find all metadata with missing tags
+### Acquisition & Accuracy
+I will use Musicbrainz Picard to:
+- acquire missing metadata
+- update missing or inaccurate metadata
 
 ## Python Music Processing
 I will use the music processing  python code to:
