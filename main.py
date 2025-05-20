@@ -77,7 +77,7 @@ def main():
 
     # creating album dirs
     if platform.system() == "Linux":
-        metadata.create_album_dir(r"/media/gerald/Music/Music")
+        metadata.create_album_dir(r"/home/gerald/Music")
     elif platform.system() == "Windows":
         metadata.create_album_dir(r"H:\Music")
 

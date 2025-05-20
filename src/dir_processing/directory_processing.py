@@ -21,11 +21,12 @@ import pathvalidate
 from pathvalidate import replace_symbol
 
 # local modules
+from src import _AUDIO_EXTS
+from src import _AUDIO_TYPES
 # generated files package does not have any modules,
 # just a package variable the __all__ list exposes via __init__.py
 from src.generated_files import generated_files
-from src import _AUDIO_EXTS
-from src import _AUDIO_TYPES
+
 
 gc.enable()
 

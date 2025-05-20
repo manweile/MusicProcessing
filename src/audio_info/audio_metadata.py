@@ -7,19 +7,31 @@
 '''
 
 # standard modules
+import csv
+import errno
+import gc
 import os
 from pathlib import Path
+import platform
+import sys
+
+from operator import itemgetter
 
 # third party modules
 import mutagen
+import pathvalidate
 from mutagen.id3 import ID3, TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TMED
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 
 # local modules
 from src import _AUDIO_EXTS, _AUDIO_TYPES
-from src.generated_files import generated_files
 from src.dir_processing import DirectoryProcessing
+# generated files package does not have any modules,
+# just a package variable the __all__ list exposes via __init__.py
+from src.generated_files import generated_files
+
+gc.enable()
 
 _EXPORT_TLD = "Music"
 
@@ -300,84 +312,85 @@ class AudioMetadata():
         @exception Exception A generic exception
         '''
 
-        # for current_dir, dirs, files in os.walk(start_path):
-        #     # directory with no sub dirs
-        #     if not dirs:
-        #         print(f"{current_dir} has no album directories")
-        #         if not files:
-        #             print(f"{current_dir} also has no files")
+        data = []
+        dir_count = 0
 
-        # for current_dir, dirs, files in os.walk(start_path):
-        #     # don't need to check tld, I don't care about the playlist files and csv files
-        #     if current_dir == start_path:
-        #         continue
+        try:
+            # get the generated files directory, that's where csv will be saved
+            csv_dir = generated_files
+            csv_filename = "created_album_dirs.csv"
+            csv_path = os.path.join(csv_dir, csv_filename)
 
-        #     # shouldn't be any empty dirs
-        #     current_dir_content = os.listdir(current_dir)
-        #     if not current_dir_content:
-        #         print(f'{current_dir} is empty')
-        #         continue
+            # create csv file, overwrite any existing with same name if necessary
+            csv_outfile = open(csv_path, 'w', newline='')
+            csv_file_writer = csv.writer(csv_outfile, delimiter=',')
+            header_row = ["audio file path", "album metadata", "album directory"]
+            csv_file_writer.writerow(header_row)
 
-        #     # check if audio files present and sub dirs present
-        #     for file in files:
-        #         _, file_ext = os.path.splitext(file)
-        #         if file_ext.lower() in _AUDIO_EXTS:
-        #             print(f'found audio file {file} in artist directory {current_dir}')
+            dir_processing = DirectoryProcessing(start_path)
 
-        dir_processing = DirectoryProcessing(start_path)
+            # get the artist dirs under tld
+            tld_content = os.listdir(start_path)
 
-        # get the artist dirs under tld
-        tld_content = os.listdir(start_path)
+            from tqdm import tqdm
+            len_tld_content = len(tld_content)
+            tld_bar = tqdm(desc=f'Processing {start_path} content', total=len_tld_content, unit=' items')
 
-        from tqdm import tqdm
-        len_tld_content = len(tld_content)
-        tld_bar = tqdm(desc=f'Processing tld content', total=len_tld_content, unit=' items')
+            # iterate through top level directory
+            # consists of artist directories, playlist files and couple other sundry files
+            for tld_item in tld_content:
 
-        # iterate through top level directory
-        # consists of artist directories, playlist files and couple other sundry files
-        for tld_item in tld_content:
-
-            # we only want artist directories, playlist/sundry files don't count
-            if os.path.isdir(os.path.join(start_path, tld_item)):
-                artist_path = os.path.join(start_path, tld_item)
-            else:
-                continue
-
-            # want to know if we have any empty artist directories
-            # so we can deal with them later
-            if os.path.isdir(artist_path) and not os.listdir(artist_path):
-                print(f'{artist_path} is an empty directory')
-                continue
-
-            tld_bar.update(1)
-
-            # now we look at what's in the current artist directory
-            artist_content = os.listdir(artist_path)
-
-            for artist_item in artist_content:
-
-                # now we care about files - artist dir do NOT contain any sub dirs
-                if os.path.isdir(os.path.join(artist_path, artist_item)):
+                # we only want artist directories, playlist/sundry files don't count
+                if os.path.isdir(os.path.join(start_path, tld_item)):
+                    artist_path = os.path.join(start_path, tld_item)
+                else:
                     continue
 
-                if os.path.isfile(os.path.join(artist_path, artist_item)):
-                    _, file_ext = os.path.splitext(artist_item)
+                # want to know if we have any empty artist directories
+                # so we can deal with them later
+                if os.path.isdir(artist_path) and not os.listdir(artist_path):
+                    print(f'{artist_path} is an empty directory')
+                    continue
 
-                    # artist dirs should NOT contain audio files, only album directories
-                    if file_ext.lower() in _AUDIO_EXTS:
-                        # print(f'found audio file {artist_item} in artist directory {artist_path}')
-                        artist_file_item = os.path.join(artist_path, artist_item)
-                        file_media_info = mediainfo(artist_file_item)
-                        file_media_tags = file_media_info['TAG']
+                # now we look at what's in the current artist directory
+                artist_content = os.listdir(artist_path)
 
-                        if 'album' in file_media_tags.keys():
-                            album = file_media_tags['album']
-                            dir_processing.make_album_dir(artist_path, album)
-                        else:
-                            print(f'{artist_file_item} is missing album metadata')
-                            continue
+                for artist_item in artist_content:
 
-        tld_bar.close()
+                    # we don't care about album sub-dirs
+                    if os.path.isdir(os.path.join(artist_path, artist_item)):
+                        continue
+
+                    # if we find a file, we may need a album sub-directory for it
+                    # as artist dirs are supposed only contain album sub dirs
+                    if os.path.isfile(os.path.join(artist_path, artist_item)):
+                        _, file_ext = os.path.splitext(artist_item)
+
+                        # audio files are supposed to be in an album sub dir
+                        if file_ext.lower() in _AUDIO_EXTS:
+                            audio_file = os.path.join(artist_path, artist_item)
+                            file_media_info = mediainfo(audio_file)
+                            file_media_tags = file_media_info['TAG']
+
+                            if 'album' in file_media_tags.keys():
+                                album = file_media_tags['album']
+                                # dir_processing.make_album_dir(artist_path, album)
+                                album_dir = pathvalidate.sanitize_filepath(album, platform=platform.system(), validate_after_sanitize=True)
+                                # write file path, album metadata, album directory
+                                data.append([audio_file, album, album_dir])
+                                dir_count += 1
+                                tld_bar.update(1)
+                            else:
+                                print(f'{audio_file} is missing album metadata')
+                                continue
+
+            tld_bar.close()
+            sorted_data = sorted(data, key=itemgetter(0))
+            csv_file_writer.writerows(sorted_data)
+            csv_outfile.close()
+            print(f'Created {dir_count} album dirs')
+        except Exception as e:
+            raise Exception(f"Exception {e} creating sub-dirs for {start_path}")
 
 
     def get_any_metadata_type(self, file_path):
