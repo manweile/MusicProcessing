@@ -323,7 +323,7 @@ class AudioMetadata():
 
             # create csv file, overwrite any existing with same name if necessary
             csv_outfile = open(csv_path, 'w', newline='')
-            csv_file_writer = csv.writer(csv_outfile, delimiter=',')
+            csv_file_writer = csv.writer(csv_outfile, dialect='excel', delimiter=';')
             header_row = ["audio file path", "album metadata", "album directory"]
             csv_file_writer.writerow(header_row)
 
@@ -379,10 +379,12 @@ class AudioMetadata():
                                 # write file path, album metadata, album directory
                                 data.append([audio_file, album, album_dir])
                                 dir_count += 1
-                                tld_bar.update(1)
                             else:
                                 print(f'{audio_file} is missing album metadata')
                                 continue
+
+                # update the progress bar after processing artist directory
+                tld_bar.update(1)
 
             tld_bar.close()
             sorted_data = sorted(data, key=itemgetter(0))
