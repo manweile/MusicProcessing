@@ -309,8 +309,8 @@ class AudioMetadata():
 
         @param start_path {str} The tld holding music files
         @param file_path {str} The full path to audio file
-        @exception OSError An os permission error
-        @exception Exception A generic exception
+        @exception ValueError An inappropriate argument value of correct type error
+        @exception Exception A common baseclass exception to handle unforeseen errors
         '''
 
         data = []
@@ -323,8 +323,8 @@ class AudioMetadata():
             csv_path = os.path.join(csv_dir, csv_filename)
 
             # create csv file, overwrite any existing with same name if necessary
-            csv_outfile = open(csv_path, 'w', newline='')
-            csv_file_writer = csv.writer(csv_outfile, delimiter=';')
+            csv_outfile = open(csv_path, mode='w', newline='')
+            csv_file_writer = csv.writer(csv_outfile, dialect=csv.excel, delimiter=';')
             header_row = ["audio file path", "album metadata", "album directory"]
             csv_file_writer.writerow(header_row)
 
@@ -339,22 +339,22 @@ class AudioMetadata():
             # iterate through top level directory
             # consists of artist directories, playlist files and couple other sundry files
             for tld_item in tld_content:
-
+                # update the progress bar before processing artist directory
+                # else we will have a mismatch in the bar processed/total display
                 # we only want artist directories, playlist/sundry files don't count
                 if os.path.isdir(os.path.join(start_path, tld_item)):
                     artist_path = os.path.join(start_path, tld_item)
+                    tld_bar.update(1)
                 else:
+                    tld_bar.update(1)
                     continue
 
                 # want to know if we have any empty artist directories
                 # so we can deal with them later
                 if os.path.isdir(artist_path) and not os.listdir(artist_path):
                     print(f"{artist_path} is an empty directory")
+                    tld_bar.update(1)
                     continue
-
-                # update the progress bar before processing artist directory
-                # else we will have a mismatch in the bar processed/total display
-                tld_bar.update(1)
 
                 # now we look at what's in the current artist directory
                 artist_content = os.listdir(artist_path)
@@ -378,11 +378,17 @@ class AudioMetadata():
 
                             if 'album' in file_media_tags.keys():
                                 album = file_media_tags['album']
-                                # dir_processing.make_album_dir(artist_path, album)
-                                album_dir = pathvalidate.sanitize_filepath(album, platform=platform.system(), validate_after_sanitize=True)
+                                # sanitize because the metadata might have characters invalid for directory names
+                                # platform "Windows" because it is more restrictive (therefore os universal),
+                                # the characters \, :, *, ?, ", <, >, | will be replaced by "-"
+                                # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
+                                album_dir = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
                                 # write file path, album metadata, album directory
                                 data.append([audio_file, album, album_dir])
                                 dir_count += 1
+                                dir_processing.make_album_dir(artist_path, album)
+                                # now transfer the audio file to new album directory
+                                #
                             else:
                                 print(f"{audio_file} is missing album metadata")
                                 continue
@@ -392,6 +398,8 @@ class AudioMetadata():
             csv_file_writer.writerows(sorted_data)
             csv_outfile.close()
             print(f"Created {dir_count} album dirs")
+        except ValueError as e:
+            raise Exception(f"ValueError {e} sanitizing album metadata {album}")
         except Exception as e:
             raise Exception(f"Exception {e} creating sub-dirs for {start_path}")
 
@@ -502,6 +510,29 @@ class AudioMetadata():
 
         return art_present
 
+
+    def has_m4a_art(self, file_path):
+        '''
+        @brief Checks if an m4a audio file contains embedded album art.
+
+        @param file_path {str} The full path to m4a audio file
+        @return art_present {boolean} Returns true if art is present, false otherwise
+        '''
+
+        pass
+
+
+    def has_wma_art(self, file_path):
+        '''
+        @brief Checks if an wma audio file contains embedded album art.
+
+        @param file_path {str} The full path to wma audio file
+        @return art_present {boolean} Returns true if art is present, false otherwise
+        '''
+
+        pass
+
+
     def load_any_file(self, file_path):
         '''
         @brief loads any valid audio file type
@@ -535,6 +566,7 @@ class AudioMetadata():
             audio_file = mutagen.File(file_path, "MP3")
 
         return audio_file
+
 
     def show_mp3_metadata(self, file_path):
         '''

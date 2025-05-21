@@ -98,8 +98,7 @@ class DirectoryProcessing():
         @details The csv file is created in the designated generated files directory.
         @details The csv has 2 columns, full file path for audio file and extension.
 
-        @param file_ext {str} The file extension want file paths for
-        @param tld_path {str} start_path The starting point of the directory walk
+        @param start_path {str} start_path The starting point of the directory walk
         @exception Exception A generic exception
         '''
 
@@ -254,29 +253,16 @@ class DirectoryProcessing():
 
         @param artist_dirpath {str} The name of the artist for artist directory
         @param album_dir {str} The name of the album for new album directory
-        @exception ValidationError Album name is unacceptable as a directory path
         @exception OSError An os permission error
-        @exception Exception A generic exception
+        @exception Exception A common baseclass exception to handle unforeseen errors
         '''
 
-        # sanitize because the metadata might have characters invalid for directory names
-        # using defaults so platform is "universal", replacement text for invalid chars is ""
-        # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
-        try:
-           sanitized_album_dir = pathvalidate.sanitize_filepath(album_dir, platform=platform.system(), validate_after_sanitize=True)
-        except Exception as e:
-            raise Exception(f"Exception {e} sanitizing {album_dir}")
-
-        music_dir = os.path.join(self._tld_path, artist_dirpath, sanitized_album_dir)
+        music_dir = os.path.join(self._tld_path, artist_dirpath, album_dir)
 
         # if the album sub-directory already exists, we don't need to do anything
-        if os.path.exists(music_dir):
-            # print(f"artist & album sub-directory: {music_dir} already exists")
-            pass
-        else:
+        if not os.path.exists(music_dir):
             try:
                 os.mkdir(music_dir)
-                # print(f"Created album sub-directory: {sanitized_album_dir} under artist directory: {artist_dirpath}")
             except Exception as e:
                 if e.errno == errno.EACCES:
                     raise OSError(f"Error: permission denied for creating {music_dir}")
@@ -284,3 +270,48 @@ class DirectoryProcessing():
                     raise Exception(f"Exception {e} creating {music_dir}")
 
 
+    def rm_dir(self, start_path):
+        '''
+        @brief Removes empty album directories.
+
+        @details Walks through top level directory to remove empty second level album directories contained in artist first level directories.
+
+        @param start_path {str} The starting point of the directory walk
+        @exception OSError An os permission error
+        @exception Exception A common baseclass exception to handle unforeseen errors
+        '''
+
+        dir_count = 0
+
+        try:
+            # get the artist dirs under tld
+            tld_content = os.listdir(start_path)
+
+            # iterate through top level directory
+            # consists of artist directories, playlist files and couple other sundry files
+            for tld_item in tld_content:
+                # we only want artist directories, playlist/sundry files don't count
+                if os.path.isdir(os.path.join(start_path, tld_item)):
+                    artist_path = os.path.join(start_path, tld_item)
+                else:
+                    continue
+
+                # also don't care about empty artist directories
+                if os.path.isdir(artist_path) and not os.listdir(artist_path):
+                    continue
+
+                # now we look at what's in the current artist directory
+                artist_content = os.listdir(artist_path)
+
+                for artist_item in artist_content:
+                    artist_item_path = os.path.join(artist_path, artist_item)
+                    if os.path.isdir(artist_item_path) and not os.listdir(artist_item_path):
+                        os.rmdir(artist_item_path)
+                        dir_count += 1
+
+            print(f"removed {dir_count} empty album directories")
+        except Exception as e:
+            if e.errno == errno.EACCES:
+                raise OSError(f"Error: permission denied for removing {artist_item_path}")
+            else:
+                raise Exception(f"Exception {e} deleting {artist_item_path}")
