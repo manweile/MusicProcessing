@@ -262,15 +262,10 @@ class DirectoryProcessing():
         # sanitize because the metadata might have characters invalid for directory names
         # using defaults so platform is "universal", replacement text for invalid chars is ""
         # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
-        # if album_dir:
-        #     sanitized_album_dir = pathvalidate.sanitize_filepath(album_dir, replacement_text='-', platform=platform.system())
-        # else:
-        #     raise pathvalidate.ValidationError(f"Album name: {album_dir} is unacceptable as a directory path")
-
         try:
            sanitized_album_dir = pathvalidate.sanitize_filepath(album_dir, platform=platform.system(), validate_after_sanitize=True)
         except Exception as e:
-            raise Exception(f'Exception {e} sanitizing {album_dir}')
+            raise Exception(f"Exception {e} sanitizing {album_dir}")
 
         music_dir = os.path.join(self._tld_path, artist_dirpath, sanitized_album_dir)
 

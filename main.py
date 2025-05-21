@@ -79,7 +79,7 @@ def main():
     if platform.system() == "Linux":
         metadata.create_album_dir(r"/home/gerald/Music")
     elif platform.system() == "Windows":
-        metadata.create_album_dir(r"H:\Music")
+        metadata.create_album_dir(r"C:\Music")
 
 if __name__ == "__main__":
     '''
