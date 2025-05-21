@@ -23,6 +23,7 @@ import pathvalidate
 from mutagen.id3 import ID3, TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TMED
 from pydub import AudioSegment
 from pydub.utils import mediainfo
+from tqdm import tqdm
 
 # local modules
 from src import _AUDIO_EXTS, _AUDIO_TYPES
@@ -232,7 +233,7 @@ class AudioMetadata():
         Eg pydub reported: "album": "Desperado" -> "TALB": "Desperado"
         for key, value in file_media_tags.items():
             if key in _GEN_KEYS:
-                print(f'key: {key}, value: {value}')
+                print(f"key: {key}, value: {value}")
         '''
 
         # get the input files metadata from pydub because doing so gives consistent schema
@@ -294,7 +295,7 @@ class AudioMetadata():
         try:
             audio_segment = AudioSegment.from_file(file_path)
             audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3')
-            print(f'{input_file_name} converted to {export_format}')
+            print(f"{input_file_name} converted to {export_format}")
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_file_path}")
 
@@ -323,7 +324,7 @@ class AudioMetadata():
 
             # create csv file, overwrite any existing with same name if necessary
             csv_outfile = open(csv_path, 'w', newline='')
-            csv_file_writer = csv.writer(csv_outfile, dialect='excel', delimiter=';')
+            csv_file_writer = csv.writer(csv_outfile, delimiter=';')
             header_row = ["audio file path", "album metadata", "album directory"]
             csv_file_writer.writerow(header_row)
 
@@ -332,7 +333,6 @@ class AudioMetadata():
             # get the artist dirs under tld
             tld_content = os.listdir(start_path)
 
-            from tqdm import tqdm
             len_tld_content = len(tld_content)
             tld_bar = tqdm(desc=f'Processing {start_path} content', total=len_tld_content, unit=' items')
 
@@ -349,8 +349,12 @@ class AudioMetadata():
                 # want to know if we have any empty artist directories
                 # so we can deal with them later
                 if os.path.isdir(artist_path) and not os.listdir(artist_path):
-                    print(f'{artist_path} is an empty directory')
+                    print(f"{artist_path} is an empty directory")
                     continue
+
+                # update the progress bar before processing artist directory
+                # else we will have a mismatch in the bar processed/total display
+                tld_bar.update(1)
 
                 # now we look at what's in the current artist directory
                 artist_content = os.listdir(artist_path)
@@ -380,17 +384,14 @@ class AudioMetadata():
                                 data.append([audio_file, album, album_dir])
                                 dir_count += 1
                             else:
-                                print(f'{audio_file} is missing album metadata')
+                                print(f"{audio_file} is missing album metadata")
                                 continue
-
-                # update the progress bar after processing artist directory
-                tld_bar.update(1)
 
             tld_bar.close()
             sorted_data = sorted(data, key=itemgetter(0))
             csv_file_writer.writerows(sorted_data)
             csv_outfile.close()
-            print(f'Created {dir_count} album dirs')
+            print(f"Created {dir_count} album dirs")
         except Exception as e:
             raise Exception(f"Exception {e} creating sub-dirs for {start_path}")
 
