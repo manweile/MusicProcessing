@@ -27,7 +27,7 @@ mp3_file = r"H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp
 image_data = find_embedded_art(mp3_file)
 
 if image_data:
-    with open('album_art.jpg', 'wb') as img_file:
+    with open('Extracted.jpg', 'wb') as img_file:
         img_file.write(image_data)
     print("Album art extracted and saved as 'album_art.jpg'")
 else:

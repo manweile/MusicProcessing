@@ -30,7 +30,7 @@ def find_embedded_art_wma(file_path):
 def save_art(image_data, image_format, output_path):
     if image_data and image_format:
         file_extension = image_format.split('/')[1]
-        filename = f"cover.{file_extension}"
+        filename = f"Extracted.{file_extension}"
         filepath = os.path.join(output_path, filename)
 
         with open(filepath, "wb") as f:
