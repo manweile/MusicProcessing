@@ -30,6 +30,7 @@ def main():
     # processing.ext_list_files("aac")
 
     metadata = AudioMetadata()
+    directory = DirectoryProcessing()
 
     # # get mp3
     # mp3_file_list = ["H:\\Music\\Kenny Rogers\\Daytime Friends - The Very Best of Kenny\\18 Lady.mp3",
@@ -65,7 +66,7 @@ def main():
     #                             ]
     # elif platform.system() == "Windows":
     #     conversion_file_list = [
-    #                             r"D:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a",   # embedded art, datetime string
+    #                             r"C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a",   # embedded art, datetime string
     #                             r"H:\Music\Alejandro Escovedo\Alejandro Escovedo-Broken Bottle.wma",                    # no embedded art
     #                             r"H:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a",                              # no embedded art even though file explorer shows it
     #                             r"H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma",                # no embedded art
@@ -76,10 +77,16 @@ def main():
     #     metadata.convert_any_to_mp3(song)
 
     # creating album dirs
+    # if platform.system() == "Linux":
+    #     metadata.create_album_dir(r"/home/gerald/Music")
+    # elif platform.system() == "Windows":
+    #     metadata.create_album_dir(r"C:\Music")
+
+    # removing empty album dirs
     if platform.system() == "Linux":
-        metadata.create_album_dir(r"/home/gerald/Music")
+        directory.rm_dir(r"/home/gerald/Music")
     elif platform.system() == "Windows":
-        metadata.create_album_dir(r"C:\Music")
+        directory.rm_dir(r"C:\Music")
 
 if __name__ == "__main__":
     '''
@@ -88,9 +95,9 @@ if __name__ == "__main__":
     '''
 
     # if platform.system() == "Linux":
-    #     tld_path = r"/media/gerald/Music/Music"
+    #     tld_path = r"/home/gerald/Music"
     # elif platform.system() == "Windows":
-    #     tld_path =r"H:\Music"
+    #     tld_path =r"C:\Music"
 
     # parser = argparse.ArgumentParser(description='Music Processing')
     # list_group = parser.add_mutually_exclusive_group()
