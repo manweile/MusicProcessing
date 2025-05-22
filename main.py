@@ -17,7 +17,12 @@ import sys
 from src.audio_info import AudioMetadata
 from src.dir_processing import DirectoryProcessing
 
-def main():
+def list_audio(tld_path):
+    directory = DirectoryProcessing()
+    directory.get_audio_file_list(tld_path)
+
+
+def main(args):
     '''
     @brief Module entry point.
     @details Takes command line arguments and executes per arguments.
@@ -29,8 +34,8 @@ def main():
     # processing = DirectoryProcessing('H:\Music')
     # processing.ext_list_files("aac")
 
-    metadata = AudioMetadata()
-    directory = DirectoryProcessing()
+    # metadata = AudioMetadata()
+    # directory = DirectoryProcessing()
 
     # # get mp3
     # mp3_file_list = ["H:\\Music\\Kenny Rogers\\Daytime Friends - The Very Best of Kenny\\18 Lady.mp3",
@@ -77,10 +82,13 @@ def main():
     #     metadata.convert_any_to_mp3(song)
 
     # creating album dirs
-    if platform.system() == "Linux":
-        metadata.create_album_dir(r"/home/gerald/Music")
-    elif platform.system() == "Windows":
-        metadata.create_album_dir(r"C:\Music")
+    # if platform.system() == "Linux":
+    #     metadata.create_album_dir(r"/home/gerald/Music")
+    # elif platform.system() == "Windows":
+    #     metadata.create_album_dir(r"C:\Music")
+    if getattr(args, 'list-audio'):
+        tld_path = getattr(args, 'tld')
+        list_audio(tld_path)
 
     # removing empty album dirs
     # if platform.system() == "Linux":
@@ -94,18 +102,39 @@ if __name__ == "__main__":
     Top level script environment entry point, parses and validates input arguments
     '''
 
-    # if platform.system() == "Linux":
-    #     tld_path = r"/home/gerald/Music"
-    # elif platform.system() == "Windows":
-    #     tld_path =r"C:\Music"
+    parser = argparse.ArgumentParser(description='Music Processing')
+    # all audio files list
+    # 1 mandatory arg, the tld path
+    # sys.argv = ['MusicProcessing', 'list-audio' '--tld' '/home/gerald/Music']
+    parser.add_argument("list-audio", type=str, help="required top level directory path")
+    parser.add_argument("--tld", type=str, help="optional top level directory", required=False)
+    # list files by extension
+    # 1 mandatory arg, the tld path
+    # 1 optional arg, the file extension
+    # sys.argv = ['MusicProcessing', 'list-ext' '/home/gerald/Music' --audio-ext <'mp3' | 'm4a' | 'wma' | 'abc'>]
+    # parser.add_argument('list-ext', type=str, help='required top level directory path')
+    # parser.add_argument('--audio-ext', type=str, help='optional file extension', required=False)
 
-    # parser = argparse.ArgumentParser(description='Music Processing')
-    # list_group = parser.add_mutually_exclusive_group()
-    # list needs 1 mandatory arg, the tld path , and 1 optional arg, the file type
-    # list_group.add_argument('--list', type=str, help='required top level directory path', required=True)
-    # list_group.add_argument('ext', type=str, help='optional 3 letter ext', required=False)
+
+    args = parser.parse_args()
+    main(args)
+
+    # uncomment for testing command line arguments
+    # change start and end paramters as needed, but they must match date range in query that produced data set
+    # change data set dir path as needed, but WG_<data type>.txt file(s) must exist in dir path
+    # sys.argv = ['process_for_ml', '-s', '2019-9-27', '-e', '2019-10-3', '-a', 'RM06A', '-d', '/home/pt/PTData/DataExtraction/RM06A/RM06A_Sep27_2019_to_Oct3_2019/']
+
+    # parser = argparse.ArgumentParser(description='Process data for Clairvoyance')
+    # parser.add_argument('-s', '--start', type=valid_date, help='Start date in YYYY-MM-DD', required=True)
+    # parser.add_argument('-e', '--end', type=valid_date, help='End date in YYYY-MM-DD', required=True)
+    # parser.add_argument('-a', '--aor', type=valid_aor, help='AOR text', required=True)
+    # parser.add_argument('-d', '--dir', type=valid_dir, help='Source directory', required=True)
+
     # args = parser.parse_args()
 
+    # verify_dates((getattr(args, 'start'), getattr(args, 'end')))
+
+    # main(args)
 
 # parser = argparse.ArgumentParser(description="calculate X to the power of Y")
 # group = parser.add_mutually_exclusive_group()
@@ -123,5 +152,5 @@ if __name__ == "__main__":
 # else:
 #     print(f"{args.x}^{args.y} == {answer}")
 
-    main()
+    # main()
 

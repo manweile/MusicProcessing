@@ -13,6 +13,16 @@
             "justMyCode": false
         },
         {
+            "name": "Python Debugger: MusicProcessing with args input",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": "${command:pickArgs}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",  // <-- this is key
+            "justMyCode": false
+        },
+        {
             "name": "Python Debugger: list audio file test script",
             "type": "debugpy",
             "request": "launch",
@@ -20,5 +30,5 @@
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",  // <-- this is key
             "justMyCode": false
-          }
+        }
     ]
