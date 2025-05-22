@@ -111,9 +111,9 @@ if __name__ == "__main__":
     # list files by extension
     # 1 mandatory arg, the tld path
     # 1 optional arg, the file extension
-    # sys.argv = ['MusicProcessing', 'list-ext' '/home/gerald/Music' --audio-ext <'mp3' | 'm4a' | 'wma' | 'abc'>]
+    # sys.argv = ['MusicProcessing', 'list-ext' '--tld' '/home/gerald/Music' --ext 'mp3' | 'm4a' | 'wma' | 'abc']
     # parser.add_argument('list-ext', type=str, help='required top level directory path')
-    # parser.add_argument('--audio-ext', type=str, help='optional file extension', required=False)
+    # parser.add_argument('--ext', type=str, help='optional file extension', required=False)
 
 
     args = parser.parse_args()
