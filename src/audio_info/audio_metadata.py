@@ -21,6 +21,7 @@ from operator import itemgetter
 import mutagen
 import pathvalidate
 from mutagen.id3 import ID3, TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TMED
+from pathvalidate import replace_symbol
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 from tqdm import tqdm
@@ -331,64 +332,67 @@ class AudioMetadata():
                 # update the progress bar before processing artist directory
                 # else we will have a mismatch in the bar processed/total display
                 # we only want artist directories, playlist/sundry files don't count
-                if os.path.isdir(os.path.join(start_path, tld_item)):
-                    artist_path = os.path.join(start_path, tld_item)
-                    tld_bar.update(1)
-                else:
+                tld_path = os.path.join(start_path, tld_item)
+                if os.path.isfile(tld_path):
                     tld_bar.update(1)
                     continue
 
+                # since we skip tld items that are files,
+                # now we need to check tld items that are directories
+                artist_content = os.listdir(tld_path)
                 # want to know if we have any empty artist directories so we can deal with them later
-                if os.path.isdir(artist_path) and not os.listdir(artist_path):
-                    # @todo move to log
-                    print(f"{artist_path} is an empty directory")
+                if os.path.isdir(tld_path) and not artist_content:
+                    print(f"{tld_path} is an empty artist directory")
                     tld_bar.update(1)
                     continue
 
-                # now we can look at what's in the current artist directory
-                artist_content = os.listdir(artist_path)
+                # now we can look at what's in the current artist 1st level directory
                 for artist_item in artist_content:
-                    # we don't care about album sub-dirs
-                    if os.path.isdir(os.path.join(artist_path, artist_item)):
+                    # we don't care about existing album 2nd level dirs
+                    artist_path = os.path.join(tld_path, artist_item)
+                    if os.path.isdir(artist_path):
                         continue
 
-                    # if we find a file, we may need a album sub-directory for it
-                    # as artist dirs are supposed only contain album sub dirs
-                    if os.path.isfile(os.path.join(artist_path, artist_item)):
+                    # if we find an audio file, we need a album sub-directory for it
+                    # as artist dirs are supposed to only contain album sub dirs
+                    if os.path.isfile(artist_path):
                         _, file_ext = os.path.splitext(artist_item)
 
-                        # audio files are supposed to be in an album sub dir
-                        if file_ext.lower() in _AUDIO_EXTS:
-                            audio_file = os.path.join(artist_path, artist_item)
-                            file_media_info = mediainfo(audio_file)
-                            file_media_tags = file_media_info['TAG']
+                    # audio files are supposed to be in an album sub dir
+                    if file_ext.lower() in _AUDIO_EXTS:
+                        audio_file = artist_path
+                        file_media_info = mediainfo(audio_file)
+                        file_media_tags = file_media_info['TAG']
+                    else:
+                        # we found a non audio file
+                        continue
 
-                            if 'album' in file_media_tags.keys():
-                                album = file_media_tags['album']
-                                # sanitize because the metadata might have characters invalid for directory names
-                                # the album metadata MUST have had all / removed manually,
-                                # as it is a valid char, but would wreak havoc by creating nested dirs
-                                # platform is "Windows" because it is more restrictive (therefore os universal),
-                                # the characters \, :, *, ?, ", <, >, | will be replaced by "-"
-                                # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
-                                album_dir = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
-                                data.append([audio_file, album, album_dir])
-                                album_dirs.add(album_dir)
+                    if 'album' in file_media_tags.keys():
+                        # the album metadata should have had all / removed manually,
+                        # but do replace anyways, it would wreak havoc by creating nested dirs
+                        album = file_media_tags['album'].replace("/", "-")
+                        # sanitize because the metadata might have characters invalid for directory names
+                        # platform is "Windows" because it is more restrictive (therefore os universal),
+                        # the characters \, :, *, ?, ", <, >, | will be replaced by "-"
+                        # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
+                        album_dir = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
+                        data.append([audio_file, album, album_dir])
+                        album_dirs.add(album_dir)
 
-                                # make the album dub directory REQUIRED before moving the audio file
-                                dir_processing.make_album_dir(artist_path, album_dir)
+                        # make the album dub directory REQUIRED before moving the audio file
+                        dir_processing.make_album_dir(tld_path, album_dir)
 
-                                # now transfer the audio file to new album directory
-                                destination_dir = os.path.join(start_path, artist_path, album_dir)
-                                dir_processing.move_audio_file(audio_file, destination_dir)
-                            else:
-                                # @todo move to log
-                                print(f"{audio_file} is missing album metadata")
-                                continue
+                        # now transfer the audio file to new album directory
+                        destination_dir = os.path.join(tld_path, album_dir)
+                        dir_processing.move_audio_file(audio_file, destination_dir)
+                    else:
+                        print(f"{audio_file} is missing album metadata")
+                        continue
+
+                tld_bar.update(1)
 
             tld_bar.close()
             dir_processing.create_csv(csv_filename, data, generated_files, header_row, 0)
-            # @todo move to log
             print(f"Created {len(album_dirs)} album dirs")
         except ValueError as e:
             raise Exception(f"ValueError {e} sanitizing album metadata {album}")
