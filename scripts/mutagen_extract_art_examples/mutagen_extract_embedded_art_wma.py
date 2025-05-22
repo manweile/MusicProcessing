@@ -14,18 +14,18 @@ def find_embedded_art_wma(file_path):
         pictures = audio.pictures
         if pictures:
             for i, picture in enumerate(pictures):
-              if picture.type == 3: # Check if it's cover art
-                image_data = picture.data
-                image_format = picture.mime
-                return image_data, image_format
+                if picture.type == 3: # Check if it's cover art
+                    image_data = picture.data
+                    image_format = picture.mime
+                    return image_data, image_format
         else:
             return None, None
     except error as e:
         print(f"Error processing {file_path}: {e}")
         return None, None
     except Exception as e:
-         print(f"An unexpected error occurred: {e}")
-         return None, None
+        print(f"An unexpected error occurred: {e}")
+        return None, None
 
 def save_art(image_data, image_format, output_path):
     if image_data and image_format:

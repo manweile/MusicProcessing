@@ -15,7 +15,7 @@ def find_embedded_art(mp3_filepath):
         audio = MP3(mp3_filepath, ID3=ID3)
         if 'APIC:' in audio.tags:
             for tag in audio.tags.getall('APIC'):
-               return tag.data
+                return tag.data
         else:
             return None
     except Exception as e:
