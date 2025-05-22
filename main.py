@@ -18,25 +18,18 @@ from src.audio_info import AudioMetadata
 from src.dir_processing import DirectoryProcessing
 
 def list_audio(tld_path):
-    directory = DirectoryProcessing()
-    directory.get_audio_file_list(tld_path)
+    directory = DirectoryProcessing(tld_path)
+    directory.get_audio_file_list()
 
+def list_ext(tld_path, file_ext=None):
+    directory = DirectoryProcessing(tld_path)
+    directory.get_ext_file_list(file_ext)
 
 def main(args):
     '''
     @brief Module entry point.
     @details Takes command line arguments and executes per arguments.
     '''
-
-    # get the arguments
-
-
-    # processing = DirectoryProcessing('H:\Music')
-    # processing.ext_list_files("aac")
-
-    # metadata = AudioMetadata()
-    # directory = DirectoryProcessing()
-
     # # get mp3
     # mp3_file_list = ["H:\\Music\\Kenny Rogers\\Daytime Friends - The Very Best of Kenny\\18 Lady.mp3",
     #                  "H:\\Music\\Various Artists\\Best of the Blues, Volume 1\\Albert Collins-Trash Talkin'.mp3",
@@ -95,6 +88,8 @@ def main(args):
     #     directory.remove_album_dir(r"/home/gerald/Music")
     # elif platform.system() == "Windows":
     #     directory.remove_album_dir(r"C:\Music")
+    if getattr(args, 'list-ext'):
+        tld_path = getattr(args, 'tld')
 
 if __name__ == "__main__":
     '''
@@ -107,13 +102,14 @@ if __name__ == "__main__":
     # 1 mandatory arg, the tld path
     # sys.argv = ['MusicProcessing', 'list-audio' '--tld' '/home/gerald/Music']
     parser.add_argument("list-audio", type=str, help="required top level directory path")
-    parser.add_argument("--tld", type=str, help="optional top level directory", required=False)
+    parser.add_argument("-tld", type=str, help="mandatory top level directory", required=True)
     # list files by extension
     # 1 mandatory arg, the tld path
     # 1 optional arg, the file extension
-    # sys.argv = ['MusicProcessing', 'list-ext' '--tld' '/home/gerald/Music' --ext 'mp3' | 'm4a' | 'wma' | 'abc']
-    # parser.add_argument('list-ext', type=str, help='required top level directory path')
-    # parser.add_argument('--ext', type=str, help='optional file extension', required=False)
+    # sys.argv = ['MusicProcessing', 'list-ext' '-tld' '/home/gerald/Music' --ext 'mp3' | 'm4a' | 'wma' | 'abc']
+    parser.add_argument('list-ext', type=str, help='required top level directory path')
+    parser.add_argument("-tld", type=str, help="mandatory top level directory", required=True)
+    parser.add_argument('--ext', type=str, help='optional file extension', required=False)
 
 
     args = parser.parse_args()
