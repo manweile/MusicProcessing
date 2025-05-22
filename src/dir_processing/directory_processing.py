@@ -91,7 +91,7 @@ class DirectoryProcessing():
                 raise Exception(f"Exception {e} setting path {tld_path}")
 
 
-    def create_csv(self, csv_filename: str, data: list, csv_dir: str, header_row: list | None, sort_col: int | None):
+    def create_csv(self, csv_filename, data, csv_dir, header_row=None, sort_col=None):
         '''
         @brief Creates a csv file
 
