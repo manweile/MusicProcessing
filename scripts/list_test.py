@@ -38,8 +38,8 @@ import platform
 from src.dir_processing import DirectoryProcessing
 
 if platform.system() == "Linux":
-    dir_processing = DirectoryProcessing(r"/media/gerald/Music/Music")
+    dir_processing = DirectoryProcessing(r"/home/gerald/Music")
 elif platform.system() == "Windows":
-    dir_processing = DirectoryProcessing(r"H:\Music")
+    dir_processing = DirectoryProcessing(r"C:\Music")
 
 dir_processing.get_ext_file_list("m4a")
