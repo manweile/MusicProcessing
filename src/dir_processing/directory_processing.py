@@ -147,7 +147,9 @@ class DirectoryProcessing():
         header_row = ["file path","audio file type"]
         mp3_count = 0
         m4a_count = 0
+        not_count = 0
         wma_count = 0
+        tot_count = 0
 
         if start_path == None:
             start_path = self._tld_path
@@ -156,8 +158,8 @@ class DirectoryProcessing():
             # top down walk for files of the specified extension type
             # want the directory path & file names so we can get full file path
             # we don't care about the sub-directory names
-            for dir_path, _, files in os.walk(start_path):
-                for file in files:
+            for dir_path, dir_names, filenames in os.walk(start_path):
+                for file in filenames:
                     _, file_extension = os.path.splitext(file)
                     if(file_extension in _AUDIO_EXTS):
                         audio_file_path = os.path.join(dir_path, file)
@@ -169,13 +171,21 @@ class DirectoryProcessing():
                             m4a_count += 1
                         elif file_extension == _AUDIO_EXTS[2]:
                             wma_count += 1
+                    else:
+                        not_count += 1
+
+                    tot_count += 1
 
             # sort on the extension, as the audio file path is already sorted by os walk
             self.create_csv(csv_filename, data, csv_dir, header_row, 1)
+            print(f"Found {tot_count} total files")
+            print(f"{not_count} non-audio files")
             print(f"Found {file_count} audio files")
             print(f"{mp3_count} {_AUDIO_TYPES[0]} files")
             print(f"{m4a_count} {_AUDIO_TYPES[1]} files")
             print(f"{wma_count} {_AUDIO_TYPES[2]} files")
+
+
         except Exception as e:
             raise Exception(f"Exception {e} getting files for {start_path}")
 
