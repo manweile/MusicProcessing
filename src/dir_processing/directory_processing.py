@@ -40,10 +40,10 @@ class DirectoryProcessing():
         '''
         @brief      Initializes the DirectoryProcessing class.
 
-        @param      tld_path {str} The top level directory path that contains all the music files.
+        @param      tld_path {str} Optional, the top level directory path that contains all the music files.
         @return     DirectoryProcessing {instance} An instance of the class.
         @exception  OSError An os error
-        @exception  Exception A generic exception
+        @exception  Exception A common baseclass exception to handle unforeseen errors
         '''
 
         if tld_path != None:
@@ -78,7 +78,7 @@ class DirectoryProcessing():
 
         @param tld_path {str} The top level directory path that contains all the music files.
         @exception OSError An os error
-        @exception Exception A generic exception
+        @exception Exception A common baseclass exception to handle unforeseen errors
         '''
 
         try:
@@ -101,8 +101,8 @@ class DirectoryProcessing():
         @param csv_filename {str} Filename for csv
         @param data [{str}] Data to write into csv
         @param csv_dir {str} Path for csv file
-        @param header_row [{str}] Optional starting row naming fields
-        @param sort_col {int} Optional column to sort data on
+        @param header_row [{str}] Optional, the starting row naming fields
+        @param sort_col {int} Optional, the column to sort data on
         @exception Exception A common baseclass exception to handle unforeseen errors
         '''
 
@@ -135,13 +135,16 @@ class DirectoryProcessing():
         @details The csv file is created in the designated generated files directory.
         @details The csv has 2 columns, full file path for audio file and extension.
 
-        @param start_path {str} start_path The starting point of the directory walk
-        @exception Exception A generic exception
+        @param start_path {str} start_path Optional, the starting point of the directory walk
+        @exception Exception A common baseclass exception to handle unforeseen errors
         '''
 
         data = []
+        csv_dir = generated_files
+        csv_filename = "found_audio_files.csv"
         file_count = 0
         file_extension = None
+        header_row = ["file path","audio file type"]
         mp3_count = 0
         m4a_count = 0
         wma_count = 0
@@ -150,17 +153,6 @@ class DirectoryProcessing():
             start_path = self._tld_path
 
         try:
-            # get the generated files directory, that's where csv will be saved
-            csv_dir = generated_files
-            csv_filename = "found_audio_files.csv"
-            csv_path = os.path.join(csv_dir, csv_filename)
-
-            # create csv file, overwrite any existing with same name
-            csv_outfile = open(csv_path, 'w', newline='')
-            csv_file_writer = csv.writer(csv_outfile, dialect=csv.excel, delimiter=';')
-            header_row = ["file path","audio file type"]
-            csv_file_writer.writerow(header_row)
-
             # top down walk for files of the specified extension type
             # want the directory path & file names so we can get full file path
             # we don't care about the sub-directory names
@@ -179,9 +171,7 @@ class DirectoryProcessing():
                             wma_count += 1
 
             # sort on the extension, as the audio file path is already sorted by os walk
-            sorted_data = sorted(data, key=itemgetter(1))
-            csv_file_writer.writerows(sorted_data)
-            csv_outfile.close()
+            self.create_csv(csv_filename, data, csv_dir, header_row, 1)
             print(f"Found {file_count} audio files")
             print(f"{mp3_count} {_AUDIO_TYPES[0]} files")
             print(f"{m4a_count} {_AUDIO_TYPES[1]} files")
@@ -197,8 +187,8 @@ class DirectoryProcessing():
         @details If start_path is not supplied, uses the class top level directory path.
         @details If file extension is not supplied, uses the preset audio types list.
 
-        @param file_ext {str} The file extension want file paths for
-        @param start_path {str} The starting point of the directory walk
+        @param file_ext {str} Optional, the file extension want file paths for
+        @param start_path {str} Optional, the starting point of the directory walk
         '''
 
         if start_path == None:
@@ -221,37 +211,27 @@ class DirectoryProcessing():
 
         @param file_ext {str} The file type want file paths for
         @param start_path {str} The starting point of the directory walk
-        @exception Exception A generic exception
+        @exception Exception A common baseclass exception to handle unforeseen errors
         '''
 
+        data = []
+        csv_filename = "found_" + file_ext + ".csv"
+        csv_dir = generated_files
+        header_row = [file_ext + " file path"]
+        type_count = 0
+
         try:
-            type_count = 0
-            data = []
-            csv_filename = "found_" + file_ext + ".csv"
-            # get the generated files directory, that's where csv will be saved
-            csv_dir = generated_files
-            csv_path = os.path.join(csv_dir, csv_filename)
-            # create csv file, overwrite any existing with same name if necessary
-            csv_outfile = open(csv_path, 'w', newline='')
-            csv_file_writer = csv.writer(csv_outfile, dialect=csv.excel, delimiter=';')
-
-            # write the header row so we always have record of what extension we looked for
-            header_row = [file_ext + " file path"]
-            csv_file_writer.writerow(header_row)
-
             # top down walk for files of the specified extension type
             # want the directory path & file names so we can get full file path
             # don't care about the sub-directory names at all
-            for dir_path, _, files in os.walk(start_path):
-                for file in files:
+            for dir_path, dir_names, filenames in os.walk(start_path):
+                for file in filenames:
                     if(file.endswith('.' + file_ext)):
                         audio_file_path = os.path.join(dir_path, file)
                         data.append([audio_file_path])
-                        # csv_file_writer.writerow([audio_file_path])
                         type_count += 1
 
-            csv_file_writer.writerows(data)
-            csv_outfile.close()
+            self.create_csv(csv_filename, data, csv_dir, header_row, None)
             print(f"Found {type_count} {file_ext} files")
         except Exception as e:
             raise Exception(f"Exception {e} getting files for extension {file_ext} in {start_path}")
@@ -264,11 +244,10 @@ class DirectoryProcessing():
         @details Returns the file type using os library as opposed to getting it from audio metadata.
 
         @param file_path {str} The full audio file path
-        @return file_ext {str} The file type of audio file
-        @exception Exception A generic file type exception
+        @return file_ext {str} The file type of audio file or None
         '''
 
-        split_extension = None
+        file_ext = None
 
         try:
             if file_path:
@@ -277,7 +256,6 @@ class DirectoryProcessing():
                 # want the type, not the full extension with the period
                 file_ext = split_extension[1:]
         except Exception:
-            # @todo move to log
             print('File type error: {} occurred'.format(sys.exec_info()[0]))
 
         return file_ext
