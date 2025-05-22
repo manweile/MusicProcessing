@@ -77,16 +77,16 @@ def main():
     #     metadata.convert_any_to_mp3(song)
 
     # creating album dirs
-    # if platform.system() == "Linux":
-    #     metadata.create_album_dir(r"/home/gerald/Music")
-    # elif platform.system() == "Windows":
-    #     metadata.create_album_dir(r"C:\Music")
+    if platform.system() == "Linux":
+        metadata.create_album_dir(r"/home/gerald/Music")
+    elif platform.system() == "Windows":
+        metadata.create_album_dir(r"C:\Music")
 
     # removing empty album dirs
-    if platform.system() == "Linux":
-        directory.rm_dir(r"/home/gerald/Music")
-    elif platform.system() == "Windows":
-        directory.rm_dir(r"C:\Music")
+    # if platform.system() == "Linux":
+    #     directory.remove_album_dir(r"/home/gerald/Music")
+    # elif platform.system() == "Windows":
+    #     directory.remove_album_dir(r"C:\Music")
 
 if __name__ == "__main__":
     '''

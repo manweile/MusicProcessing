@@ -10,6 +10,7 @@
 import csv
 import errno
 import gc
+import shutil
 import os
 import platform
 import sys
@@ -90,6 +91,42 @@ class DirectoryProcessing():
                 raise Exception(f"Exception {e} setting path {tld_path}")
 
 
+    def create_csv(self, csv_filename: str, data: list, csv_dir: str, header_row: list | None, sort_col: int | None):
+        '''
+        @brief Creates a csv file
+
+        @details Creates a csv file in specified directory, or default generated files directory.
+        @details Header row and sorting are optional.
+
+        @param csv_filename {str} Filename for csv
+        @param data [{str}] Data to write into csv
+        @param csv_dir {str} Path for csv file
+        @param header_row [{str}] Optional starting row naming fields
+        @param sort_col {int} Optional column to sort data on
+        @exception Exception A common baseclass exception to handle unforeseen errors
+        '''
+
+        try:
+            csv_path = os.path.join(csv_dir, csv_filename)
+
+            # I don't care about any previous file contents
+            csv_outfile = open(csv_path, mode='w', newline='')
+            csv_file_writer = csv.writer(csv_outfile, dialect=csv.excel, delimiter=';')
+
+            if header_row != None:
+                csv_file_writer.writerow(header_row)
+
+            if sort_col != None:
+                sorted_data = sorted(data, key=itemgetter(sort_col))
+            else:
+                sorted_data = data
+
+            csv_file_writer.writerows(sorted_data)
+            csv_outfile.close()
+        except Exception as e:
+            raise Exception(f"Exception {e} writing {csv_filename}")
+
+
     def get_audio_file_list(self, start_path=None):
         '''
         @brief Generates a csv containing full path for all audio files.
@@ -120,7 +157,7 @@ class DirectoryProcessing():
 
             # create csv file, overwrite any existing with same name
             csv_outfile = open(csv_path, 'w', newline='')
-            csv_file_writer = csv.writer(csv_outfile, delimiter=',')
+            csv_file_writer = csv.writer(csv_outfile, dialect=csv.excel, delimiter=';')
             header_row = ["file path","audio file type"]
             csv_file_writer.writerow(header_row)
 
@@ -189,17 +226,18 @@ class DirectoryProcessing():
 
         try:
             type_count = 0
+            data = []
             csv_filename = "found_" + file_ext + ".csv"
             # get the generated files directory, that's where csv will be saved
             csv_dir = generated_files
             csv_path = os.path.join(csv_dir, csv_filename)
             # create csv file, overwrite any existing with same name if necessary
             csv_outfile = open(csv_path, 'w', newline='')
-            csv_file_writer = csv.writer(csv_outfile)
+            csv_file_writer = csv.writer(csv_outfile, dialect=csv.excel, delimiter=';')
 
             # write the header row so we always have record of what extension we looked for
-            header_row = file_ext + " file path"
-            csv_file_writer.writerow([header_row])
+            header_row = [file_ext + " file path"]
+            csv_file_writer.writerow(header_row)
 
             # top down walk for files of the specified extension type
             # want the directory path & file names so we can get full file path
@@ -208,9 +246,11 @@ class DirectoryProcessing():
                 for file in files:
                     if(file.endswith('.' + file_ext)):
                         audio_file_path = os.path.join(dir_path, file)
-                        csv_file_writer.writerow([audio_file_path])
+                        data.append([audio_file_path])
+                        # csv_file_writer.writerow([audio_file_path])
                         type_count += 1
 
+            csv_file_writer.writerows(data)
             csv_outfile.close()
             print(f"Found {type_count} {file_ext} files")
         except Exception as e:
@@ -237,6 +277,7 @@ class DirectoryProcessing():
                 # want the type, not the full extension with the period
                 file_ext = split_extension[1:]
         except Exception:
+            # @todo move to log
             print('File type error: {} occurred'.format(sys.exec_info()[0]))
 
         return file_ext
@@ -251,15 +292,14 @@ class DirectoryProcessing():
         @details The artist directory has been manually created and presumed to be valid.
         @details The audio file(s) for the created album directory will moved into the created directory by another function.
 
-        @param artist_dirpath {str} The name of the artist for artist directory
-        @param album_dir {str} The name of the album for new album directory
+        @param artist_dirpath {str} The artist directory the new album directory will be created in
+        @param album_dir {str} The sanitized & validated name of the album for new album directory
         @exception OSError An os permission error
         @exception Exception A common baseclass exception to handle unforeseen errors
         '''
 
         music_dir = os.path.join(self._tld_path, artist_dirpath, album_dir)
 
-        # if the album sub-directory already exists, we don't need to do anything
         if not os.path.exists(music_dir):
             try:
                 os.mkdir(music_dir)
@@ -270,7 +310,27 @@ class DirectoryProcessing():
                     raise Exception(f"Exception {e} creating {music_dir}")
 
 
-    def rm_dir(self, start_path):
+    def move_audio_file(self, file_path, destination_dir):
+        '''
+        @brief Moves an audio file to a new directory.
+
+        @details The destination path must exist already.
+
+        @param file_path {str} File path for audio file
+        @param destination_path {str} New directory for audio file
+        @exception Exception A common baseclass exception to handle unforeseen errors
+        '''
+
+        audio_file = os.path.basename(file_path)
+        destination_path = os.path.join(destination_dir, audio_file)
+
+        try:
+            shutil.move(file_path, destination_path)
+        except Exception as e:
+            raise Exception(f"Exception {e} moving {audio_file} from {os.path.dirname(file_path)} to {destination_dir}")
+
+
+    def remove_album_dir(self, start_path):
         '''
         @brief Removes empty album directories.
 
@@ -309,6 +369,7 @@ class DirectoryProcessing():
                         os.rmdir(artist_item_path)
                         dir_count += 1
 
+            # @todo move to log
             print(f"removed {dir_count} empty album directories")
         except Exception as e:
             if e.errno == errno.EACCES:
