@@ -145,6 +145,7 @@ class AudioMetadata():
 
         pass
 
+
     def convert_any_to_mp3(self, file_path):
         '''
         @todo finish
@@ -154,6 +155,7 @@ class AudioMetadata():
         @details The "any" if def name means wma, m4a, mp3 files.
 
         @param file_path {str} The full path to audio file
+        @exception Exception A common baseclass exception to handle unforeseen errors
         '''
 
         export_dir = None
@@ -406,6 +408,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to audio file
         @return metadata_type {str} The type of the audio file metadata tags
+        @exception Exception A common baseclass exception to handle unforeseen errors
         '''
 
         metadata_type = None
@@ -535,7 +538,9 @@ class AudioMetadata():
 
         @param file_path {str} The full file path for audio file
         @return audio_file {FileType} Containing objects for the input audio file path
+        @exception Exception A common baseclass exception to handle unforeseen errors
         '''
+
         audio_file = None
 
         try:
