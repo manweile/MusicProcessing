@@ -21,7 +21,7 @@ def list_audio(tld_path):
     directory = DirectoryProcessing(tld_path)
     directory.get_audio_file_list()
 
-def list_ext(tld_path, file_ext=None):
+def list_type(tld_path, file_ext=None):
     directory = DirectoryProcessing(tld_path)
     directory.get_ext_file_list(file_ext)
 
@@ -79,7 +79,15 @@ def main(args):
     #     metadata.create_album_dir(r"/home/gerald/Music")
     # elif platform.system() == "Windows":
     #     metadata.create_album_dir(r"C:\Music")
-    if getattr(args, 'list-audio'):
+    # if getattr(args, 'list-audio'):
+    #     tld_path = getattr(args, 'tld')
+    #     list_audio(tld_path)
+
+    # if args.subcommand == 'list-audio':
+    #     tld_path = getattr(args, 'tld')
+    #     list_audio(tld_path)
+
+    if hasattr(args, 'func'):
         tld_path = getattr(args, 'tld')
         list_audio(tld_path)
 
@@ -88,8 +96,10 @@ def main(args):
     #     directory.remove_album_dir(r"/home/gerald/Music")
     # elif platform.system() == "Windows":
     #     directory.remove_album_dir(r"C:\Music")
-    if getattr(args, 'list-ext'):
+    if getattr(args, 'list-type'):
         tld_path = getattr(args, 'tld')
+        file_ext = getattr(args, 'ext')
+        list_type(tld_path, file_ext)
 
 if __name__ == "__main__":
     '''
@@ -98,19 +108,25 @@ if __name__ == "__main__":
     '''
 
     parser = argparse.ArgumentParser(description='Music Processing')
+    subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
+
     # all audio files list
     # 1 mandatory arg, the tld path
-    # sys.argv = ['MusicProcessing', 'list-audio' '--tld' '/home/gerald/Music']
-    parser.add_argument("list-audio", type=str, help="required top level directory path")
-    parser.add_argument("-tld", type=str, help="mandatory top level directory", required=True)
+    # sys.argv = ['MusicProcessing', 'list-audio' '-tld' '/home/gerald/Music']
+    list_audio_parser = subparsers.add_parser("list-audio", help="Generates a csv containing full path for all audio files")
+    # list_audio_parser.add_argument("list-audio", type=str, help="retrieve list of all audio files")
+    list_audio_parser.add_argument("--tld", type=str, help="mandatory top level directory")
+    list_audio_parser.set_defaults(func=list_audio)
+
     # list files by extension
     # 1 mandatory arg, the tld path
     # 1 optional arg, the file extension
     # sys.argv = ['MusicProcessing', 'list-ext' '-tld' '/home/gerald/Music' --ext 'mp3' | 'm4a' | 'wma' | 'abc']
-    parser.add_argument('list-ext', type=str, help='required top level directory path')
-    parser.add_argument("-tld", type=str, help="mandatory top level directory", required=True)
-    parser.add_argument('--ext', type=str, help='optional file extension', required=False)
-
+    # list_type_parser = subparsers.add_parser("list-type", help="Generates a csv containing full file path for an audio file type")
+    # list_type_parser.add_argument("list-type", type=str, help="retrieve list of audio files specified by ext")
+    # list_type_parser.add_argument("--tld", type=str, help="mandatory top level directory")
+    # list_type_parser.add_argument('--ext', type=str, help='optional file extension')
+    # list_type_parser.set_defaults(func=list_type)
 
     args = parser.parse_args()
     main(args)
