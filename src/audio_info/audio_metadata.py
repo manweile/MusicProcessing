@@ -152,7 +152,7 @@ class AudioMetadata():
         @brief Converts any audio file to mp3 audio file.
 
         @details FFMPEG does the actual conversion.
-        @details The "any" if def name means wma, m4a, mp3 files.
+        @details The "any" in definition name means wma, m4a, mp3 files.
 
         @param file_path {str} The full path to audio file.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -436,23 +436,18 @@ class AudioMetadata():
         return metadata_type
 
 
-    def get_mp3_album_name(self, file_path):
+    def get_any_tags(self, file_path):
         '''
-        @todo decide if needed
-        @brief Gets album name from metadata in mp3 file.
+        @brief gets tags for an audio file.
 
-        @param audio_file {object} The FileType instance for an mp3 audio file.
-        @return album_info tuple({str}, {str}) Artist name and album name from audio file metadata.
+        @param file_path {str} The full path to audio file.
+        @return tags {object} Tag object holding audio file tags.
         '''
-        artist_name = None
-        album_name = None
 
-        # The artist name directory we get from the audio file path instead of metadata
-        # after all we would not have successfully got the metadata if the artist directory was invalid
-
-        # the album name we must get from metadata
-
-        return artist_name, album_name
+        tags = None
+        audio_file = self.load_any_file(file_path)
+        tags = audio_file.tags
+        return tags
 
 
     def get_embedded_art_mime(self, file_path):
@@ -473,18 +468,23 @@ class AudioMetadata():
         return mime_type
 
 
-    def get_any_tags(self, file_path):
+    def get_mp3_album_name(self, file_path):
         '''
-        @brief gets tags for an audio file.
+        @todo decide if needed
+        @brief Gets album name from metadata in mp3 file.
 
-        @param file_path {str} The full path to audio file.
-        @return tags {object} Tag object holding audio file tags.
+        @param audio_file {object} The FileType instance for an mp3 audio file.
+        @return album_info tuple({str}, {str}) Artist name and album name from audio file metadata.
         '''
+        artist_name = None
+        album_name = None
 
-        tags = None
-        audio_file = self.load_any_file(file_path)
-        tags = audio_file.tags
-        return tags
+        # The artist name directory we get from the audio file path instead of metadata
+        # after all we would not have successfully got the metadata if the artist directory was invalid
+
+        # the album name we must get from metadata
+
+        return artist_name, album_name
 
 
     def get_mp3_tag_info(self, file_path):
@@ -499,6 +499,18 @@ class AudioMetadata():
         audio_file = self.load_mp3_file(file_path)
         tag_info = audio_file.tags
         return tag_info
+
+
+    def has_m4a_art(self, file_path):
+        '''
+        @todo finish
+        @brief Checks if an m4a audio file contains embedded album art.
+
+        @param file_path {str} The full path to m4a audio file.
+        @return art_present {boolean} Returns true if art is present, false otherwise.
+        '''
+
+        pass
 
 
     def has_mp3_art(self, file_path):
@@ -519,18 +531,6 @@ class AudioMetadata():
             # print(f"Image MIME type: {apic_frame.mime} in: {file_path}")
 
         return art_present
-
-
-    def has_m4a_art(self, file_path):
-        '''
-        @todo finish
-        @brief Checks if an m4a audio file contains embedded album art.
-
-        @param file_path {str} The full path to m4a audio file.
-        @return art_present {boolean} Returns true if art is present, false otherwise.
-        '''
-
-        pass
 
 
     def has_wma_art(self, file_path):
@@ -582,6 +582,17 @@ class AudioMetadata():
         return audio_file
 
 
+    def show_mp3_date(self, tag_info):
+        '''
+        @todo finish
+        @brief Show metadata date info.
+
+        @param tag_info {object} Tag object holding audio file tag info.
+        '''
+
+        pass
+
+
     def show_mp3_metadata(self, file_path):
         '''
         @brief Shows mp3 audio file metadata.
@@ -602,15 +613,4 @@ class AudioMetadata():
         print (album_name)
         print (song_title)
         print(song_genre)
-
-
-    def show_mp3_date(self, tag_info):
-        '''
-        @todo finish
-        @brief Show metadata date info.
-
-        @param tag_info {object} Tag object holding audio file tag info.
-        '''
-
-        pass
 

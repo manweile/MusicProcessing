@@ -77,7 +77,7 @@ class DirectoryProcessing():
         @details The top level directory is expected to exist already.
 
         @param tld_path {str} The top level directory path that contains all the music files.
-        @exception OSError An os error.
+        @exception OSError An os path not found or other os error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -86,9 +86,11 @@ class DirectoryProcessing():
                 self._tld_path = tld_path
         except OSError as e:
             if e.errno == errno.ENOENT:
-                raise OSError(f"Error: Path {tld_path} not found")
+                raise OSError(f"OSError path {tld_path} not found")
             else:
-                raise Exception(f"Exception {e} setting path {tld_path}")
+                raise OSError(f"OSError {e} setting path {tld_path}")
+        except Exception as e:
+            raise Exception(f"Exception {e} setting path {tld_path}")
 
 
     def create_csv(self, csv_filename, data, csv_dir, header_row=None, sort_col=None):
