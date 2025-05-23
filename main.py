@@ -30,6 +30,16 @@ def main(args):
     @brief Module entry point.
     @details Takes command line arguments and executes per arguments.
     '''
+
+    if args.subcommand == 'list-audio':
+        tld_path = getattr(args, 'tld')
+        list_audio(tld_path)
+
+    if args.subcommand == 'list-type':
+        tld_path = getattr(args, 'tld')
+        file_ext = getattr(args, 'ext')
+        list_type(tld_path, file_ext)
+
     # # get mp3
     # mp3_file_list = ["H:\\Music\\Kenny Rogers\\Daytime Friends - The Very Best of Kenny\\18 Lady.mp3",
     #                  "H:\\Music\\Various Artists\\Best of the Blues, Volume 1\\Albert Collins-Trash Talkin'.mp3",
@@ -79,27 +89,13 @@ def main(args):
     #     metadata.create_album_dir(r"/home/gerald/Music")
     # elif platform.system() == "Windows":
     #     metadata.create_album_dir(r"C:\Music")
-    # if getattr(args, 'list-audio'):
-    #     tld_path = getattr(args, 'tld')
-    #     list_audio(tld_path)
-
-    # if args.subcommand == 'list-audio':
-    #     tld_path = getattr(args, 'tld')
-    #     list_audio(tld_path)
-
-    if hasattr(args, 'func'):
-        tld_path = getattr(args, 'tld')
-        list_audio(tld_path)
 
     # removing empty album dirs
     # if platform.system() == "Linux":
     #     directory.remove_album_dir(r"/home/gerald/Music")
     # elif platform.system() == "Windows":
     #     directory.remove_album_dir(r"C:\Music")
-    if getattr(args, 'list-type'):
-        tld_path = getattr(args, 'tld')
-        file_ext = getattr(args, 'ext')
-        list_type(tld_path, file_ext)
+
 
 if __name__ == "__main__":
     '''
@@ -112,21 +108,19 @@ if __name__ == "__main__":
 
     # all audio files list
     # 1 mandatory arg, the tld path
-    # sys.argv = ['MusicProcessing', 'list-audio' '-tld' '/home/gerald/Music']
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'list-audio', '/home/gerald/Music']
     list_audio_parser = subparsers.add_parser("list-audio", help="Generates a csv containing full path for all audio files")
-    # list_audio_parser.add_argument("list-audio", type=str, help="retrieve list of all audio files")
-    list_audio_parser.add_argument("--tld", type=str, help="mandatory top level directory")
+    list_audio_parser.add_argument("tld", type=str, help="mandatory top level directory")
     list_audio_parser.set_defaults(func=list_audio)
 
     # list files by extension
     # 1 mandatory arg, the tld path
     # 1 optional arg, the file extension
-    # sys.argv = ['MusicProcessing', 'list-ext' '-tld' '/home/gerald/Music' --ext 'mp3' | 'm4a' | 'wma' | 'abc']
-    # list_type_parser = subparsers.add_parser("list-type", help="Generates a csv containing full file path for an audio file type")
-    # list_type_parser.add_argument("list-type", type=str, help="retrieve list of audio files specified by ext")
-    # list_type_parser.add_argument("--tld", type=str, help="mandatory top level directory")
-    # list_type_parser.add_argument('--ext', type=str, help='optional file extension')
-    # list_type_parser.set_defaults(func=list_type)
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'list-type' '/home/gerald/Music' '--ext' 'mp3' | 'm4a' | 'wma' | 'abc']
+    list_type_parser = subparsers.add_parser("list-type", help="Generates a csv containing full file path for an audio file type")
+    list_type_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    list_type_parser.add_argument('--ext', type=str, help='optional file extension')
+    list_type_parser.set_defaults(func=list_type)
 
     args = parser.parse_args()
     main(args)
