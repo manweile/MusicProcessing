@@ -140,7 +140,7 @@ class AudioMetadata():
 
         @details A basic class implementation with no instantiation parameters.
 
-        @return AudioMetadata {instance} An instance of the class
+        @return AudioMetadata {instance} An instance of the class.
         '''
 
         pass
@@ -154,8 +154,8 @@ class AudioMetadata():
         @details FFMPEG does the actual conversion.
         @details The "any" if def name means wma, m4a, mp3 files.
 
-        @param file_path {str} The full path to audio file
-        @exception Exception A common baseclass exception to handle unforeseen errors
+        @param file_path {str} The full path to audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         export_dir = None
@@ -253,10 +253,13 @@ class AudioMetadata():
         different audio file types have different date type tags
         and to make things worse, the date could be a full ISO date,
         or could just be a 4 digit year string
+
+        I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
+
         Possible heuristic
-        1) check for what "date" present
+        1) check for what "date" metadata key is present
         2) normalize it to "YYYY" if necessary
-        3) use the oldest "YYYY" value
+        3) if there are multiple "date" metadata keys, use the oldest "YYYY" value
         '''
         # need to massage the reported date info
         # if m4a, look for key date, then originalYear, then originalDate
@@ -280,17 +283,19 @@ class AudioMetadata():
 
         '''
         @todo cover art
-        Most songs have hidden file art, this is a result from all the WMP processing I did.
-        Unfortunately, many artist dirs also do NOT have album sub directories.
+        Many songs have co-located hidden file art, this is a result from all the WMP processing I did.
+        I am going to:
+        - create all the required album sub directories
+        - move the audio files
+        - manually review existing AlbumArt*.jpg files
+        - rename correct AlbumArt*.jpg (image and size 200x200 +- 5 px) to Folder.jpg
+        - manually move the correct Folder.jpg to proper album sub directory
 
         Since most songs do not have embedded art, will need to use co-located Folder.jpg files as cover art.
         Can only do this with certainty where there is artist/album/song & a single Folder.jpg in album directory.
 
-        So I have to decide if I am going to create all the required album sub directories,
-        move the audio files, and then manually move the correct *.jpg to proper album sub directory.add()
-
         If a song has does have embedded art, ffmpeg will NOT auto transfer it.
-        Will need to extract it, save it, then add it to export command.
+        Will need to extract it, save it as Folder.jpg, then add it to export command.
 
         ID3v2.3 tag album art tag is APIC, where '3' denotes front cover
         '''
@@ -298,6 +303,7 @@ class AudioMetadata():
         try:
             audio_segment = AudioSegment.from_file(file_path)
             audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3')
+            # @todo log to csv file
             print(f"{input_file_name} converted to {export_format}")
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_file_path}")
@@ -309,11 +315,12 @@ class AudioMetadata():
 
         @details Creates the album sub directory for the artist if needed.
         @details The album name for the directory is drawn from the metadata.
+        @details Also creates csv of all audio file paths, raw album metadata and album directory names.
 
-        @param start_path {str} The tld holding music files
-        @param file_path {str} The full path to audio file
-        @exception ValueError An inappropriate argument value of correct type error
-        @exception Exception A common baseclass exception to handle unforeseen errors
+        @param start_path {str} The tld holding music files.
+        @param file_path {str} The full path to audio file.
+        @exception ValueError An inappropriate argument value of correct type error.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         album_dirs = set()
@@ -373,15 +380,17 @@ class AudioMetadata():
                         # the album metadata should have had all / removed manually,
                         # but do replace anyways, it would wreak havoc by creating nested dirs
                         album = file_media_tags['album'].replace("/", "-")
+
                         # sanitize because the metadata might have characters invalid for directory names
                         # platform is "Windows" because it is more restrictive (therefore os universal),
                         # the characters \, :, *, ?, ", <, >, | will be replaced by "-"
                         # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
                         album_dir = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
+
                         data.append([audio_file, album, album_dir])
                         album_dirs.add(album_dir)
 
-                        # make the album dub directory REQUIRED before moving the audio file
+                        # make the album dub directory is REQUIRED before moving the audio file
                         dir_processing.make_album_dir(tld_path, album_dir)
 
                         # now transfer the audio file to new album directory
@@ -406,9 +415,9 @@ class AudioMetadata():
         '''
         @brief Returns the metadata type of any audio file.
 
-        @param file_path {str} The full path to audio file
-        @return metadata_type {str} The type of the audio file metadata tags
-        @exception Exception A common baseclass exception to handle unforeseen errors
+        @param file_path {str} The full path to audio file.
+        @return metadata_type {str} The type of the audio file metadata tags.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         metadata_type = None
@@ -429,7 +438,7 @@ class AudioMetadata():
 
     def get_mp3_album_name(self, file_path):
         '''
-        @todo finish using mutagen
+        @todo decide if needed
         @brief Gets album name from metadata in mp3 file.
 
         @param audio_file {object} The FileType instance for an mp3 audio file.
@@ -448,10 +457,11 @@ class AudioMetadata():
 
     def get_embedded_art_mime(self, file_path):
         '''
+        @todo add code for wma and m4a
         @brief Returns the mime type of album art in audio file.
 
-        @param file_path {str} The full path to mp3 audio file
-        @return mime_type {str} The mime type of the album art
+        @param file_path {str} The full path to mp3 audio file.
+        @return mime_type {str} The mime type of the album art.
         '''
 
         audio_file = mutagen.File(file_path)
@@ -467,8 +477,8 @@ class AudioMetadata():
         '''
         @brief gets tags for an audio file.
 
-        @param file_path {str} The full path to audio file
-        @return tags {object} Tag object holding audio file tags
+        @param file_path {str} The full path to audio file.
+        @return tags {object} Tag object holding audio file tags.
         '''
 
         tags = None
@@ -481,8 +491,8 @@ class AudioMetadata():
         '''
         @brief gets tag information for an mp3 audio file.
 
-        @param file_path {str} The full path to mp3 audio file
-        @return tag_info {object} Tag object holding audio file tag info
+        @param file_path {str} The full path to mp3 audio file.
+        @return tag_info {object} Tag object holding audio file tag info.
         '''
 
         tag_info = None
@@ -493,10 +503,11 @@ class AudioMetadata():
 
     def has_mp3_art(self, file_path):
         '''
+        @todo refactor
         @brief Checks if an mp3 audio file contains embedded album art.
 
-        @param file_path {str} The full path to mp3 audio file
-        @return art_present {boolean} Returns true if art is present, false otherwise
+        @param file_path {str} The full path to mp3 audio file.
+        @return art_present {boolean} Returns true if art is present, false otherwise.
         '''
 
         art_present = False
@@ -512,10 +523,11 @@ class AudioMetadata():
 
     def has_m4a_art(self, file_path):
         '''
+        @todo finish
         @brief Checks if an m4a audio file contains embedded album art.
 
-        @param file_path {str} The full path to m4a audio file
-        @return art_present {boolean} Returns true if art is present, false otherwise
+        @param file_path {str} The full path to m4a audio file.
+        @return art_present {boolean} Returns true if art is present, false otherwise.
         '''
 
         pass
@@ -523,10 +535,11 @@ class AudioMetadata():
 
     def has_wma_art(self, file_path):
         '''
+        @todo finish
         @brief Checks if an wma audio file contains embedded album art.
 
-        @param file_path {str} The full path to wma audio file
-        @return art_present {boolean} Returns true if art is present, false otherwise
+        @param file_path {str} The full path to wma audio file.
+        @return art_present {boolean} Returns true if art is present, false otherwise.
         '''
 
         pass
@@ -534,11 +547,11 @@ class AudioMetadata():
 
     def load_any_file(self, file_path):
         '''
-        @brief loads any valid audio file type
+        @brief loads any valid audio file type.
 
-        @param file_path {str} The full file path for audio file
-        @return audio_file {FileType} Containing objects for the input audio file path
-        @exception Exception A common baseclass exception to handle unforeseen errors
+        @param file_path {str} The full file path for audio file.
+        @return audio_file {FileType} Containing objects for the input audio file path.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         audio_file = None
@@ -558,8 +571,8 @@ class AudioMetadata():
 
         @details Expects a valid filepath to a mp3 type audio file.
 
-        @param file_path {str} The full file path for audio file
-        @return audio_file {FileType} Containing objects for the input audio file path
+        @param file_path {str} The full file path for audio file.
+        @return audio_file {FileType} Containing objects for the input audio file path.
         '''
 
         audio_file = None
@@ -575,7 +588,7 @@ class AudioMetadata():
 
         @details All mp3 files are presumed to be ID3v2.3 tags so we have consistent metadata fields.
 
-        @param file_path {str} The full file path for mp3 audio file
+        @param file_path {str} The full file path for mp3 audio file.
         '''
 
         audio_file = self.load_mp3_file(file_path)
@@ -593,10 +606,10 @@ class AudioMetadata():
 
     def show_mp3_date(self, tag_info):
         '''
-        @todo write using mutagen presuming ID3v2.3 metadata
-        @brief Show metadata date info
+        @todo finish
+        @brief Show metadata date info.
 
-        @param tag_info {object} Tag object holding audio file tag info
+        @param tag_info {object} Tag object holding audio file tag info.
         '''
 
         pass
