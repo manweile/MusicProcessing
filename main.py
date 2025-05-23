@@ -25,20 +25,35 @@ def list_type(tld_path, file_ext=None):
     directory = DirectoryProcessing(tld_path)
     directory.get_ext_file_list(file_ext)
 
+def convert_type(tld_path, file_ext=None):
+    metadata = AudioMetadata()
+    pass
+
+
 def main(args):
     '''
     @brief Module entry point.
+
     @details Takes command line arguments and executes per arguments.
+
+    @exception NotImplementedError A subcommand not implemented error.
+    @exception Exception A common baseclass exception to handle unforeseen errors.
     '''
 
-    if args.subcommand == 'list-audio':
-        tld_path = getattr(args, 'tld')
-        list_audio(tld_path)
+    try:
+        if args.subcommand == 'list-audio':
+            tld_path = getattr(args, 'tld')
+            list_audio(tld_path)
 
-    if args.subcommand == 'list-type':
-        tld_path = getattr(args, 'tld')
-        file_ext = getattr(args, 'ext')
-        list_type(tld_path, file_ext)
+        if args.subcommand == 'list-type':
+            tld_path = getattr(args, 'tld')
+            file_ext = getattr(args, 'ext')
+            list_type(tld_path, file_ext)
+    except NotImplementedError as e:
+        raise NotImplementedError(f"Command {args.subcommand} does not exist")
+    except Exception as e:
+        raise Exception(f"Exception {e} executing subcommand {args.subcommand}")
+
 
     # # get mp3
     # mp3_file_list = ["H:\\Music\\Kenny Rogers\\Daytime Friends - The Very Best of Kenny\\18 Lady.mp3",
@@ -122,6 +137,15 @@ if __name__ == "__main__":
     list_type_parser.add_argument("tld", type=str, help="mandatory top level directory")
     list_type_parser.add_argument('--ext', type=str, help='optional file extension')
     list_type_parser.set_defaults(func=list_type)
+
+    # convert audio files by extension
+    # 1 mandatory arg, the tld path
+    # 1 optional arg, the file extension
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-type' '/home/gerald/Music' '--ext' 'mp3' | 'm4a' | 'wma']
+    convert_type_parser = subparsers.add_parser("convert-type", help="Converts audio file to mp3")
+    convert_type_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    convert_type_parser.add_argument('--ext', type=str, help='optional file extension')
+    convert_type_parser.set_defaults(func=convert_type)
 
     args = parser.parse_args()
     main(args)
