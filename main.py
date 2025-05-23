@@ -99,14 +99,15 @@ def main(args):
 
 if __name__ == "__main__":
     '''
-    @private
-    Top level script environment entry point, parses and validates input arguments
+    @brief Top level script environment entry point
+
+    @details Parses and validates input arguments.
     '''
 
     parser = argparse.ArgumentParser(description='Music Processing')
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
-    # all audio files list
+    # list all audio files
     # 1 mandatory arg, the tld path
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'list-audio', '/home/gerald/Music']
     list_audio_parser = subparsers.add_parser("list-audio", help="Generates a csv containing full path for all audio files")
@@ -124,39 +125,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     main(args)
-
-    # uncomment for testing command line arguments
-    # change start and end paramters as needed, but they must match date range in query that produced data set
-    # change data set dir path as needed, but WG_<data type>.txt file(s) must exist in dir path
-    # sys.argv = ['process_for_ml', '-s', '2019-9-27', '-e', '2019-10-3', '-a', 'RM06A', '-d', '/home/pt/PTData/DataExtraction/RM06A/RM06A_Sep27_2019_to_Oct3_2019/']
-
-    # parser = argparse.ArgumentParser(description='Process data for Clairvoyance')
-    # parser.add_argument('-s', '--start', type=valid_date, help='Start date in YYYY-MM-DD', required=True)
-    # parser.add_argument('-e', '--end', type=valid_date, help='End date in YYYY-MM-DD', required=True)
-    # parser.add_argument('-a', '--aor', type=valid_aor, help='AOR text', required=True)
-    # parser.add_argument('-d', '--dir', type=valid_dir, help='Source directory', required=True)
-
-    # args = parser.parse_args()
-
-    # verify_dates((getattr(args, 'start'), getattr(args, 'end')))
-
-    # main(args)
-
-# parser = argparse.ArgumentParser(description="calculate X to the power of Y")
-# group = parser.add_mutually_exclusive_group()
-# group.add_argument("-v", "--verbose", action="store_true")
-# group.add_argument("-q", "--quiet", action="store_true")
-# parser.add_argument("x", type=int, help="the base")
-# parser.add_argument("y", type=int, help="the exponent")
-# args = parser.parse_args()
-# answer = args.x**args.y
-
-# if args.quiet:
-#     print(answer)
-# elif args.verbose:
-#     print(f"{args.x} to the power {args.y} equals {answer}")
-# else:
-#     print(f"{args.x}^{args.y} == {answer}")
-
-    # main()
 
