@@ -367,17 +367,32 @@ class DirectoryProcessing():
             else:
                 raise Exception(f"Exception {e} deleting {artist_item_path}")
 
-    def remove_file(start_path, file_list):
+    def remove_file(self, file_ext, start_path=None):
         '''
         @todo finish
         @brief Removes specified files.
 
-        @details Walks through top level directory and removes specified file(s).
+        @details Walks through top level directory and removes file with specified extension.
 
         @param start_path {str} The starting point of the directory walk.
-        @param file_list {list[str]} Full filename and ext to delete.
+        @param file_ext {str} The file type want file paths for.
         @exception OSError An os permission error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        pass
+        try:
+            if start_path == None:
+                start_path = self._tld_path
+
+            # top down walk for files of the specified extension type
+            # want the directory path & file names so we can get full file path
+            # don't care about the sub-directory names at all
+            for dir_path, dir_names, filenames in os.walk(start_path):
+                for file in filenames:
+                    if(file.endswith('.' + file_ext)):
+                        file_path = os.path.join(dir_path, file)
+                        os.remove(file_path)
+
+        except Exception as e:
+            raise Exception(f"Exception {e} deleting files for extension {file_ext} in {start_path}")
+

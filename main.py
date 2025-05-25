@@ -18,16 +18,36 @@ from src.audio_info import AudioMetadata
 from src.dir_processing import DirectoryProcessing
 
 def list_audio(tld_path):
+    '''
+    @brief List all audio files from specified top level directory.
+    '''
+
     directory = DirectoryProcessing(tld_path)
     directory.get_audio_file_list()
 
 def list_type(tld_path, file_ext=None):
+    '''
+    @brief List files from specified top level directory by specified extension.
+    '''
+
     directory = DirectoryProcessing(tld_path)
     directory.get_ext_file_list(file_ext)
 
 def convert_type(tld_path, file_ext=None):
+    '''
+    @brief Convert audio files from specified top level directory to mp3.
+    '''
+
     metadata = AudioMetadata()
     pass
+
+def remove_ext(tld_path, file_ext):
+    '''
+    @brief Remove files with specified extension from specified top level directory.
+    '''
+
+    directory = DirectoryProcessing(tld_path)
+    directory.remove_file(file_ext)
 
 
 def main(args):
@@ -41,14 +61,20 @@ def main(args):
     '''
 
     try:
-        if args.subcommand == 'list-audio':
-            tld_path = getattr(args, 'tld')
+        if args.subcommand == "list-audio":
+            tld_path = getattr(args, "tld")
             list_audio(tld_path)
 
-        if args.subcommand == 'list-type':
-            tld_path = getattr(args, 'tld')
-            file_ext = getattr(args, 'ext')
+        if args.subcommand == "list-type":
+            tld_path = getattr(args, "tld")
+            file_ext = getattr(args, "ext")
             list_type(tld_path, file_ext)
+
+        if args.subcommand == "remove-ext":
+            tld_path = getattr(args, "tld")
+            file_ext = getattr(args, "ext")
+            remove_ext(tld_path, file_ext)
+
     except NotImplementedError as e:
         raise NotImplementedError(f"Command {args.subcommand} does not exist")
     except Exception as e:
@@ -135,17 +161,25 @@ if __name__ == "__main__":
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'list-type' '/home/gerald/Music' '--ext' 'mp3' | 'm4a' | 'wma' | 'abc']
     list_type_parser = subparsers.add_parser("list-type", help="Generates a csv containing full file path for an audio file type")
     list_type_parser.add_argument("tld", type=str, help="mandatory top level directory")
-    list_type_parser.add_argument('--ext', type=str, help='optional file extension')
+    list_type_parser.add_argument("--ext", type=str, help='optional file extension')
     list_type_parser.set_defaults(func=list_type)
 
     # convert audio files by extension
-    # 1 mandatory arg, the tld path
+    # 1 mandatory arg, the path to walk
     # 1 optional arg, the file extension
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-type' '/home/gerald/Music' '--ext' 'mp3' | 'm4a' | 'wma']
     convert_type_parser = subparsers.add_parser("convert-type", help="Converts audio file to mp3")
     convert_type_parser.add_argument("tld", type=str, help="mandatory top level directory")
-    convert_type_parser.add_argument('--ext', type=str, help='optional file extension')
+    convert_type_parser.add_argument("--ext", type=str, help='optional file extension')
     convert_type_parser.set_defaults(func=convert_type)
+
+    # remove files with specified extension from specified top level directory
+    # 2 mandatory arg, the tld path and the file extension
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'remove-ext' '/home/gerald/Music' ['db' | 'ini'] ]
+    remove_specified_ext = subparsers.add_parser("remove-ext", help="Removes files with specified extension  from specified top level directory")
+    remove_specified_ext.add_argument("tld", type=str, help="mandatory top level directory")
+    remove_specified_ext.add_argument("ext", type=str, help='mandatory file extension')
+    remove_specified_ext.set_defaults(func=remove_ext)
 
     args = parser.parse_args()
     main(args)
