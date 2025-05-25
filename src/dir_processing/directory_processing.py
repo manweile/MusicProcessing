@@ -129,7 +129,7 @@ class DirectoryProcessing():
             raise Exception(f"Exception {e} writing {csv_filename}")
 
 
-    def get_audio_file_list(self, start_path=None):
+    def get_audio_file_list(self, start_path):
         '''
         @brief Generates a csv containing full path for all audio files.
 
@@ -192,7 +192,7 @@ class DirectoryProcessing():
             raise Exception(f"Exception {e} getting files for {start_path}")
 
 
-    def get_ext_file_list(self, file_ext=None, start_path=None):
+    def get_ext_file_list(self, file_ext, start_path):
         '''
         @brief Wrapper for function that generates a csv containing full file path for an extension.
 
@@ -332,6 +332,9 @@ class DirectoryProcessing():
         dir_count = 0
 
         try:
+            if start_path == None:
+                start_path = self._tld_path
+
             # get the artist dirs under tld
             tld_content = os.listdir(start_path)
 
