@@ -58,13 +58,13 @@ def remove_albums(tld_path):
     directory.remove_album_dir(tld_path)
 
 
-def remove_ext(tld_path, file_ext):
+def remove_pattern(tld_path, file_pattern):
     '''
-    @brief Remove files with specified extension from specified top level directory.
+    @brief Remove files with specified pattern from specified top level directory.
     '''
 
     directory = DirectoryProcessing(tld_path)
-    directory.remove_file(file_ext)
+    directory.remove_pattern(file_pattern)
 
 
 def main(args):
@@ -100,10 +100,10 @@ def main(args):
             tld_path = getattr(args, "tld")
             remove_albums(tld_path)
 
-        if args.subcommand == "remove-ext":
+        if args.subcommand == "remove-pattern":
             tld_path = getattr(args, "tld")
-            file_ext = getattr(args, "ext")
-            remove_ext(tld_path, file_ext)
+            file_pattern = getattr(args, "pattern")
+            remove_pattern(tld_path, file_pattern)
 
     except NotImplementedError as e:
         raise NotImplementedError(f"Command {args.subcommand} does not exist")
@@ -170,7 +170,7 @@ if __name__ == "__main__":
     # 1 mandatory arg, the path to walk
     # 1 optional arg, the file extension
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-type' '/home/gerald/Music' '--ext' 'mp3' | 'm4a' | 'wma']
-    convert_type_parser = subparsers.add_parser("convert-type", help="Converts audio file to mp3")
+    convert_type_parser = subparsers.add_parser("convert-type", help="Converts audio files to mp3")
     convert_type_parser.add_argument("tld", type=str, help="mandatory top level directory")
     convert_type_parser.add_argument("--ext", type=str, help='optional file extension')
     convert_type_parser.set_defaults(func=convert_type)
@@ -205,13 +205,13 @@ if __name__ == "__main__":
     remove_album_parser.add_argument("tld", type=str, help="mandatory top level directory")
     remove_album_parser.set_defaults(func=remove_albums)
 
-    # remove files with specified extension from specified top level directory
-    # 2 mandatory arg, the tld path and the file extension
-    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'remove-ext' '/home/gerald/Music' ['db' | 'ini'] ]
-    remove_specified_ext = subparsers.add_parser("remove-ext", help="Removes files with specified extension  from specified top level directory")
-    remove_specified_ext.add_argument("tld", type=str, help="mandatory top level directory")
-    remove_specified_ext.add_argument("ext", type=str, help='mandatory file extension')
-    remove_specified_ext.set_defaults(func=remove_ext)
+    # remove files matching specified file pattern
+    # 2 mandatory args, the tld path and the file pattern
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'remove-pattern' '/home/gerald/Music' [ 'AlbumArt*Small.jpg' | '*.db' | '*.ini'] ]
+    remove_pattern_parser = subparsers.add_parser("remove-pattern", help="Removes files with specified pattern")
+    remove_pattern_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    remove_pattern_parser.add_argument("pattern", type=str, help="mandatory file pattern")
+    remove_pattern_parser.set_defaults(func=remove_pattern)
 
     args = parser.parse_args()
     main(args)

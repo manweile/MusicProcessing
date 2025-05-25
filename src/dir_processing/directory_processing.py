@@ -9,10 +9,10 @@
 # standard modules
 import csv
 import errno
+import fnmatch
 import gc
 import shutil
 import os
-import platform
 import sys
 
 from operator import itemgetter
@@ -277,18 +277,16 @@ class DirectoryProcessing():
         '''
         @brief Creates an album sub-directory in an artist directory.
 
-        @details Creates the album sub directory for the artist if needed.
         @details The album name for the directory is drawn from the metadata.
-        @details The artist directory has been manually created and presumed to be valid.
         @details The audio file(s) for the created album directory will moved into the created directory by another function.
 
-        @param artist_dirpath {str} The artist directory the new album directory will be created in.
+        @param artist_dirpath {str} The absolute path artist directory the new album directory will be created in.
         @param album_dir {str} The sanitized & validated name of the album for new album directory.
         @exception OSError An os permission error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        music_dir = os.path.join(self._tld_path, artist_dirpath, album_dir)
+        music_dir = os.path.join(artist_dirpath, album_dir)
 
         if not os.path.exists(music_dir):
             try:
@@ -359,23 +357,22 @@ class DirectoryProcessing():
                         os.rmdir(artist_item_path)
                         dir_count += 1
 
-            # @todo move to log
             print(f"removed {dir_count} empty album directories")
         except Exception as e:
             if e.errno == errno.EACCES:
-                raise OSError(f"Error: permission denied for removing {artist_item_path}")
+                raise OSError(f"Error: permission denied for deleting {artist_item_path}")
             else:
                 raise Exception(f"Exception {e} deleting {artist_item_path}")
 
-    def remove_file(self, file_ext, start_path=None):
+    def remove_pattern(self, start_path, file_pattern):
         '''
-        @todo finish
-        @brief Removes specified files.
+        @brief Removes specified pattern.
 
-        @details Walks through top level directory and removes file with specified extension.
+        @details Walks through top level directory and removes files matching specified file pattern.
 
-        @param start_path {str} The starting point of the directory walk.
-        @param file_ext {str} The file type want file paths for.
+        @param start_path {str} Optional, the starting point of the directory walk.
+        @param file_ext {str} Optional, the file type we want to delete.
+        @param file_pattern {str} Optional, the file pattern we want to delete.
         @exception OSError An os permission error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -384,15 +381,28 @@ class DirectoryProcessing():
             if start_path == None:
                 start_path = self._tld_path
 
-            # top down walk for files of the specified extension type
+            # top down walk for files of the specified extension type or specified pattern
             # want the directory path & file names so we can get full file path
             # don't care about the sub-directory names at all
-            for dir_path, dir_names, filenames in os.walk(start_path):
-                for file in filenames:
-                    if(file.endswith('.' + file_ext)):
+
+            # if file_ext != None:
+            #     for dir_path, dir_names, file_names in os.walk(start_path):
+            #         for file in file_names:
+            #             if(file.endswith('.' + file_ext)):
+            #                 file_path = os.path.join(dir_path, file)
+            #                 os.remove(file_path)
+            #                 print(f"Deleted: {file_path}")
+
+            for dir_path, dir_names, file_names in os.walk(start_path):
+                for file in file_names:
+                    if fnmatch.fnmatch(file, file_pattern):
                         file_path = os.path.join(dir_path, file)
                         os.remove(file_path)
+                        print(f"Deleted: {file_path}")
 
         except Exception as e:
-            raise Exception(f"Exception {e} deleting files for extension {file_ext} in {start_path}")
+            if e.errno == errno.EACCES:
+                raise OSError(f"Error: permission denied for deleting {file_path}")
+            else:
+                raise Exception(f"Exception {e} deleting file {file_path}")
 
