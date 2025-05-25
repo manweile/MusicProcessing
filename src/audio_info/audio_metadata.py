@@ -149,6 +149,7 @@ class AudioMetadata():
     def convert_any_to_mp3(self, file_path):
         '''
         @todo finish
+        @todo rewrite to walk through a supplied dir path
         @brief Converts any audio file to mp3 audio file.
 
         @details FFMPEG does the actual conversion.
