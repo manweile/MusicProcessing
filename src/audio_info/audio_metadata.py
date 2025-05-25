@@ -345,35 +345,35 @@ class AudioMetadata():
                 # update the progress bar before processing artist directory
                 # else we will have a mismatch in the bar processed/total display
                 # we only want artist directories, playlist/sundry files don't count
-                tld_path = os.path.join(start_path, tld_item)
-                if os.path.isfile(tld_path):
+                tld_item_path = os.path.join(start_path, tld_item)
+                if os.path.isfile(tld_item_path):
                     tld_bar.update(1)
                     continue
 
                 # since we skip tld items that are files,
                 # now we need to check tld items that are directories
-                artist_content = os.listdir(tld_path)
+                artist_content = os.listdir(tld_item_path)
                 # want to know if we have any empty artist directories so we can deal with them later
-                if os.path.isdir(tld_path) and not artist_content:
-                    print(f"{tld_path} is an empty artist directory")
+                if os.path.isdir(tld_item_path) and not artist_content:
+                    print(f"{tld_item_path} is an empty artist directory")
                     tld_bar.update(1)
                     continue
 
                 # now we can look at what's in the current artist 1st level directory
                 for artist_item in artist_content:
                     # we don't care about existing album 2nd level dirs
-                    artist_path = os.path.join(tld_path, artist_item)
-                    if os.path.isdir(artist_path):
+                    artist_item_path = os.path.join(tld_item_path, artist_item)
+                    if os.path.isdir(artist_item_path):
                         continue
 
                     # if we find an audio file, we need a album sub-directory for it
                     # as artist dirs are supposed to only contain album sub dirs
-                    if os.path.isfile(artist_path):
+                    if os.path.isfile(artist_item_path):
                         _, file_ext = os.path.splitext(artist_item)
 
                     # audio files are supposed to be in an album sub dir
                     if file_ext.lower() in _AUDIO_EXTS:
-                        audio_file = artist_path
+                        audio_file = artist_item_path
                         file_media_info = mediainfo(audio_file)
                         file_media_tags = file_media_info['TAG']
                     else:
@@ -394,11 +394,11 @@ class AudioMetadata():
                         data.append([audio_file, album, album_dir])
                         album_dirs.add(album_dir)
 
-                        # make the album dub directory is REQUIRED before moving the audio file
-                        dir_processing.make_album_dir(tld_path, album_dir)
+                        # make the album sub directory is REQUIRED before moving the audio file
+                        dir_processing.make_album_dir(tld_item_path, album_dir)
 
                         # now transfer the audio file to new album directory
-                        destination_dir = os.path.join(tld_path, album_dir)
+                        destination_dir = os.path.join(tld_item_path, album_dir)
                         dir_processing.move_audio_file(audio_file, destination_dir)
                     else:
                         print(f"{audio_file} is missing album metadata")
