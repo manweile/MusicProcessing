@@ -285,15 +285,18 @@ class AudioMetadata():
         '''
         @todo cover art
         Many songs have co-located hidden file art, this is a result from all the WMP processing I did.
-        I am going to:
-        - create all the required album sub directories
-        - move the audio files
+        I have:
+        - created all the required album sub directories
+        - moved the audio files
+        I will:
         - manually review existing AlbumArt*.jpg files
         - rename correct AlbumArt*.jpg (image and size 200x200 +- 5 px) to Folder.jpg
         - manually move the correct Folder.jpg to proper album sub directory
+        - create <album dir>.jpg in tld/Album Art
 
         Since most songs do not have embedded art, will need to use co-located Folder.jpg files as cover art.
         Can only do this with certainty where there is artist/album/song & a single Folder.jpg in album directory.
+        Alternatively, if an <album dir>.jpg exists in tld/Album Art, use that.
 
         If a song has does have embedded art, ffmpeg will NOT auto transfer it.
         Will need to extract it, save it as Folder.jpg, then add it to export command.
