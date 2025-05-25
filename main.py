@@ -7,15 +7,29 @@
 
 # standard modules
 import argparse
-import csv
-import logging
-import os
-import platform
-import sys
 
 # local modules
 from src.audio_info import AudioMetadata
 from src.dir_processing import DirectoryProcessing
+
+
+def convert_type(tld_path, file_ext=None):
+    '''
+    @brief Convert audio files specified by extension to mp3 format.
+    '''
+
+    metadata = AudioMetadata()
+    metadata.convert_any_to_mp3(tld_path, file_ext)
+
+
+def create_albums(tld_path):
+    '''
+    @brief Create album 2nd level directories under artist first level directories in top level directory.
+    '''
+
+    metadata = AudioMetadata()
+    metadata.create_album_dir(tld_path)
+
 
 def list_audio(tld_path):
     '''
@@ -25,6 +39,7 @@ def list_audio(tld_path):
     directory = DirectoryProcessing(tld_path)
     directory.get_audio_file_list()
 
+
 def list_type(tld_path, file_ext=None):
     '''
     @brief List files from specified top level directory by specified extension.
@@ -33,13 +48,15 @@ def list_type(tld_path, file_ext=None):
     directory = DirectoryProcessing(tld_path)
     directory.get_ext_file_list(file_ext)
 
-def convert_type(tld_path, file_ext=None):
+
+def remove_albums(tld_path):
     '''
-    @brief Convert audio files from specified top level directory to mp3.
+    @brief Remove empty album directories from specified top level directory.
     '''
 
-    metadata = AudioMetadata()
-    pass
+    directory = DirectoryProcessing(tld_path)
+    directory.remove_album_dir(tld_path)
+
 
 def remove_ext(tld_path, file_ext):
     '''
@@ -61,6 +78,15 @@ def main(args):
     '''
 
     try:
+        if args.subcommand == "convert-type":
+            tld_path = getattr(args, "tld")
+            file_ext = getattr(args, "ext")
+            convert_type(tld_path, file_ext)
+
+        if args.subcommand == "create-albums":
+            tld_path = getattr(args, "tld")
+            create_albums(tld_path)
+
         if args.subcommand == "list-audio":
             tld_path = getattr(args, "tld")
             list_audio(tld_path)
@@ -69,6 +95,10 @@ def main(args):
             tld_path = getattr(args, "tld")
             file_ext = getattr(args, "ext")
             list_type(tld_path, file_ext)
+
+        if args.subcommand == "remove-albums":
+            tld_path = getattr(args, "tld")
+            remove_albums(tld_path)
 
         if args.subcommand == "remove-ext":
             tld_path = getattr(args, "tld")
@@ -125,18 +155,6 @@ def main(args):
     # for song in conversion_file_list:
     #     metadata.convert_any_to_mp3(song)
 
-    # creating album dirs
-    # if platform.system() == "Linux":
-    #     metadata.create_album_dir(r"/home/gerald/Music")
-    # elif platform.system() == "Windows":
-    #     metadata.create_album_dir(r"C:\Music")
-
-    # removing empty album dirs
-    # if platform.system() == "Linux":
-    #     directory.remove_album_dir(r"/home/gerald/Music")
-    # elif platform.system() == "Windows":
-    #     directory.remove_album_dir(r"C:\Music")
-
 
 if __name__ == "__main__":
     '''
@@ -147,6 +165,22 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Music Processing')
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
+
+    # convert audio files specified by extension to mp3 format
+    # 1 mandatory arg, the path to walk
+    # 1 optional arg, the file extension
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-type' '/home/gerald/Music' '--ext' 'mp3' | 'm4a' | 'wma']
+    convert_type_parser = subparsers.add_parser("convert-type", help="Converts audio file to mp3")
+    convert_type_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    convert_type_parser.add_argument("--ext", type=str, help='optional file extension')
+    convert_type_parser.set_defaults(func=convert_type)
+
+    # create album directories
+    # 1 mandatory arg, the tld path
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'create-album', '/home/gerald/Music']
+    create_album_parser = subparsers.add_parser("create-albums", help="Create album sub-directories")
+    create_album_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    create_album_parser.set_defaults(func=create_albums)
 
     # list all audio files
     # 1 mandatory arg, the tld path
@@ -164,14 +198,12 @@ if __name__ == "__main__":
     list_type_parser.add_argument("--ext", type=str, help='optional file extension')
     list_type_parser.set_defaults(func=list_type)
 
-    # convert audio files by extension
-    # 1 mandatory arg, the path to walk
-    # 1 optional arg, the file extension
-    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-type' '/home/gerald/Music' '--ext' 'mp3' | 'm4a' | 'wma']
-    convert_type_parser = subparsers.add_parser("convert-type", help="Converts audio file to mp3")
-    convert_type_parser.add_argument("tld", type=str, help="mandatory top level directory")
-    convert_type_parser.add_argument("--ext", type=str, help='optional file extension')
-    convert_type_parser.set_defaults(func=convert_type)
+    # remove empty album directories
+    # 1 mandatory arg, the tld path
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'remove-album', '/home/gerald/Music']
+    remove_album_parser = subparsers.add_parser("remove-albums", help="Remove empty album sub-directories")
+    remove_album_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    remove_album_parser.set_defaults(func=remove_albums)
 
     # remove files with specified extension from specified top level directory
     # 2 mandatory arg, the tld path and the file extension
