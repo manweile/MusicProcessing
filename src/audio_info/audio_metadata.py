@@ -313,7 +313,7 @@ class AudioMetadata():
             raise Exception(f"Exception {e} converting {file_path} to {export_file_path}")
 
 
-    def create_album_dir(self, start_path, file_path=None):
+    def create_album_dir(self, start_path):
         '''
         @brief Creates an album sub-directory in an artist directory.
 
