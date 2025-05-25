@@ -13,12 +13,14 @@ from src.audio_info import AudioMetadata
 from src.dir_processing import DirectoryProcessing
 
 
+directory = DirectoryProcessing()
+metadata = AudioMetadata()
+
 def convert_type(tld_path, file_ext=None):
     '''
     @brief Convert audio files specified by extension to mp3 format.
     '''
 
-    metadata = AudioMetadata()
     metadata.convert_any_to_mp3(tld_path, file_ext)
 
 
@@ -27,7 +29,6 @@ def create_albums(tld_path):
     @brief Create album 2nd level directories under artist first level directories in top level directory.
     '''
 
-    metadata = AudioMetadata()
     metadata.create_album_dir(tld_path)
 
 
@@ -36,8 +37,7 @@ def list_audio(tld_path):
     @brief List all audio files from specified top level directory.
     '''
 
-    directory = DirectoryProcessing(tld_path)
-    directory.get_audio_file_list()
+    directory.get_audio_file_list(tld_path)
 
 
 def list_type(tld_path, file_ext=None):
@@ -45,8 +45,7 @@ def list_type(tld_path, file_ext=None):
     @brief List files from specified top level directory by specified extension.
     '''
 
-    directory = DirectoryProcessing(tld_path)
-    directory.get_ext_file_list(file_ext)
+    directory.get_ext_file_list(file_ext, tld_path)
 
 
 def remove_albums(tld_path):
@@ -54,7 +53,6 @@ def remove_albums(tld_path):
     @brief Remove empty album directories from specified top level directory.
     '''
 
-    directory = DirectoryProcessing(tld_path)
     directory.remove_album_dir(tld_path)
 
 
@@ -63,8 +61,7 @@ def remove_pattern(tld_path, file_pattern):
     @brief Remove files with specified pattern from specified top level directory.
     '''
 
-    directory = DirectoryProcessing(tld_path)
-    directory.remove_pattern(file_pattern)
+    directory.remove_pattern(tld_path, file_pattern)
 
 
 def main(args):
@@ -207,7 +204,7 @@ if __name__ == "__main__":
 
     # remove files matching specified file pattern
     # 2 mandatory args, the tld path and the file pattern
-    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'remove-pattern' '/home/gerald/Music' [ 'AlbumArt*Small.jpg' | '*.db' | '*.ini'] ]
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'remove-pattern' '/home/gerald/Music' [ 'AlbumArtSmall.jpg' |'AlbumArt*Small.jpg' | '*.db' | '*.ini' ] ]
     remove_pattern_parser = subparsers.add_parser("remove-pattern", help="Removes files with specified pattern")
     remove_pattern_parser.add_argument("tld", type=str, help="mandatory top level directory")
     remove_pattern_parser.add_argument("pattern", type=str, help="mandatory file pattern")
