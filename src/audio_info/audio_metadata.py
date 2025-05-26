@@ -9,13 +9,13 @@
 # standard modules
 import csv
 import errno
+import fnmatch
 import gc
 import os
-from pathlib import Path
 import platform
 import sys
-
 from operator import itemgetter
+from pathlib import Path
 
 # third party modules
 import mutagen
@@ -146,7 +146,7 @@ class AudioMetadata():
         pass
 
 
-    def convert_any_to_mp3(self, file_path):
+    def convert_any_to_mp3(self, tld_path):
         '''
         @todo finish
         @todo rewrite to walk through a supplied dir path
@@ -155,7 +155,7 @@ class AudioMetadata():
         @details FFMPEG does the actual conversion.
         @details The "any" in definition name means wma, m4a, mp3 files.
 
-        @param file_path {str} The full path to audio file.
+        @param tld_path {str} The top level directory path that contains all the music files.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -192,6 +192,15 @@ class AudioMetadata():
         I don't need drive/root, mount point, usr, drive label, tld
         I always need artist dir, album dir if it exists, and song file
         '''
+
+        # top down walk for files of the specified pattern
+        # want the directory path & file names so we can get full file path
+        # don't care about the sub-directory names at all
+
+        for dir_path, dir_names, file_names in os.walk(tld_path):
+            for file in file_names:
+                if fnmatch.fnmatch(file, file_pattern):
+                    file_path = os.path.join(dir_path, file)
 
         input_path = Path(file_path)
         # get the full parent w/o filename so I can start removing unnecessary path components
@@ -247,6 +256,8 @@ class AudioMetadata():
             if key in _GEN_KEYS:
                 export_metadata[key] = value
 
+        # if there isn't an album_artist key/value in the export metadata
+        # create it by using the artist value
 
         '''
         @todo date
@@ -257,10 +268,7 @@ class AudioMetadata():
 
         I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
 
-        Possible heuristic
-        1) check for what "date" metadata key is present
-        2) normalize it to "YYYY" if necessary
-        3) if there are multiple "date" metadata keys, use the oldest "YYYY" value
+
         '''
         # need to massage the reported date info
         # if m4a, look for key date, then originalYear, then originalDate
@@ -284,22 +292,21 @@ class AudioMetadata():
 
         '''
         @todo cover art
+        If a song has does have embedded art, ffmpeg will NOT auto transfer it.
+
         Many songs have co-located hidden file art, this is a result from all the WMP processing I did.
         I have:
         - created all the required album sub directories
         - moved the audio files
         I will:
         - manually review existing AlbumArt*.jpg files
-        - rename correct AlbumArt*.jpg (image and size 200x200 +- 5 px) to Folder.jpg
+        - rename convert AlbumArt*.jpg (image and size 200x200 +- 5 px) to Folder.jpg
         - manually move the correct Folder.jpg to proper album sub directory
-        - create <album dir>.jpg in tld/Album Art
+        - create <album dir>.jpg in tld/Album Art for repeated album names
 
-        Since most songs do not have embedded art, will need to use co-located Folder.jpg files as cover art.
-        Can only do this with certainty where there is artist/album/song & a single Folder.jpg in album directory.
-        Alternatively, if an <album dir>.jpg exists in tld/Album Art, use that.
-
-        If a song has does have embedded art, ffmpeg will NOT auto transfer it.
-        Will need to extract it, save it as Folder.jpg, then add it to export command.
+        1st source: a co-located Folder.jpg with audio file
+        2nd source: look for an <album name>.jpg in tld/Album Art
+        3rd source: extract album art, save it as Folder.jpg
 
         ID3v2.3 tag album art tag is APIC, where '3' denotes front cover
         '''
