@@ -384,17 +384,9 @@ class DirectoryProcessing():
             if start_path == None:
                 start_path = self._tld_path
 
-            # top down walk for files of the specified extension type or specified pattern
+            # top down walk for files of the specified pattern
             # want the directory path & file names so we can get full file path
             # don't care about the sub-directory names at all
-
-            # if file_ext != None:
-            #     for dir_path, dir_names, file_names in os.walk(start_path):
-            #         for file in file_names:
-            #             if(file.endswith('.' + file_ext)):
-            #                 file_path = os.path.join(dir_path, file)
-            #                 os.remove(file_path)
-            #                 print(f"Deleted: {file_path}")
 
             for dir_path, dir_names, file_names in os.walk(start_path):
                 for file in file_names:
