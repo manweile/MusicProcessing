@@ -35,7 +35,9 @@ from src.generated_files import generated_files
 
 gc.enable()
 
+_ALBUM_ART = "Album Art"
 _EXPORT_TLD = "Music"
+_EXTRACTED_ART = "Folder.jpg"
 
 # the set of pydub generic metadata keys I want to copy to converted files
 # these keys also correspond to what Windows displays as file information in File Explorer
@@ -146,16 +148,16 @@ class AudioMetadata():
         pass
 
 
-    def convert_any_to_mp3(self, tld_path):
+    def convert_file(self, file_path):
         '''
-        @todo finish
-        @todo rewrite to walk through a supplied dir path
-        @brief Converts any audio file to mp3 audio file.
+        @todo make os agnostic
+        @brief Converts a wma, m4a or mp3 audio file to mp3 audio file.
 
-        @details FFMPEG does the actual conversion.
-        @details The "any" in definition name means wma, m4a, mp3 files.
+        @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
+        @details Only the Windows displayable subset of metadata key/values is preserved.
+        @details The
 
-        @param tld_path {str} The top level directory path that contains all the music files.
+        @param file_path {str} The path for audio file to be converted.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -192,15 +194,6 @@ class AudioMetadata():
         I don't need drive/root, mount point, usr, drive label, tld
         I always need artist dir, album dir if it exists, and song file
         '''
-
-        # top down walk for files of the specified pattern
-        # want the directory path & file names so we can get full file path
-        # don't care about the sub-directory names at all
-
-        for dir_path, dir_names, file_names in os.walk(tld_path):
-            for file in file_names:
-                if fnmatch.fnmatch(file, file_pattern):
-                    file_path = os.path.join(dir_path, file)
 
         input_path = Path(file_path)
         # get the full parent w/o filename so I can start removing unnecessary path components
@@ -320,6 +313,28 @@ class AudioMetadata():
             raise Exception(f"Exception {e} converting {file_path} to {export_file_path}")
 
 
+    def convert_walk(self, start_path, file_pattern):
+        '''
+        @brief Converts all audio files found in specified path to mp3 format.
+
+        @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
+        @details Only the Windows displayable subset of metadata key/values is preserved.
+
+        @param start_path {str} The starting point of the directory walk.
+        @param file_pattern {str} Optional, the audio file pattern we want to transform.
+
+        '''
+
+        try:
+            for dir_path, dir_names, file_names in os.walk(start_path):
+                for file in file_names:
+                    if fnmatch.fnmatch(file, file_pattern):
+                        file_path = os.path.join(dir_path, file)
+
+        except Exception as e:
+            raise Exception(f"Exception {e} converting audio files in {start_path} to {file_pattern}")
+
+
     def create_album_dir(self, start_path):
         '''
         @brief Creates an album sub-directory in an artist directory.
@@ -420,6 +435,37 @@ class AudioMetadata():
             raise Exception(f"ValueError {e} sanitizing album metadata {album}")
         except Exception as e:
             raise Exception(f"Exception {e} creating sub-dirs for {start_path}")
+
+
+    def create_tag(self, metadata):
+        '''
+        @todo finish
+        @brief Creates a an ID3v2.3 metadata tag
+
+        @params metadata {dict} Metadata to create tag with.add()
+        @return tag {object} ID3v2.3 tag object.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            pass
+        except Exception as e:
+            raise Exception(f"Exception {e} creating tag")
+
+
+    def extract_art(self, file_path):
+        '''
+        @todo finish
+        @brief Extracts embedded album art from an audio file.
+
+        @details Embedded art is extracted and saved as Folder.jpg in same location as audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            pass
+        except Exception as e:
+            raise Exception(f"Exception {e} extracting embedded art from {file_path}")
 
 
     def get_any_metadata_type(self, file_path):
