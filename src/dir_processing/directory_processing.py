@@ -14,12 +14,7 @@ import gc
 import shutil
 import os
 import sys
-
 from operator import itemgetter
-
-# third party modules
-import pathvalidate
-from pathvalidate import replace_symbol
 
 # local modules
 from src import _AUDIO_EXTS
@@ -69,6 +64,7 @@ class DirectoryProcessing():
 
         return self._tld_path
 
+
     @tld_path.setter
     def tld_path(self, tld_path):
         '''
@@ -76,9 +72,9 @@ class DirectoryProcessing():
 
         @details The top level directory is expected to exist already.
 
-        @param tld_path {str} The top level directory path that contains all the music files.
-        @exception OSError An os path not found or other os error.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @param      tld_path {str} The top level directory path that contains all the music files.
+        @exception  OSError An os path not found or other os error.
+        @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -100,12 +96,12 @@ class DirectoryProcessing():
         @details Creates a csv file in specified directory, or default generated files directory.
         @details Header row and sorting are optional.
 
-        @param csv_filename {str} Filename for csv.
-        @param data [{str}] Data to write into csv.
-        @param csv_dir {str} Path for csv file.
-        @param header_row [{str}] Optional, the starting row naming fields.
-        @param sort_col {int} Optional, the column to sort data on.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @param      csv_filename {str} Filename for csv.
+        @param      data [{str}] Data to write into csv.
+        @param      csv_dir {str} Path for csv file.
+        @param      header_row [{str}] Optional, the starting row naming fields.
+        @param      sort_col {int} Optional, the column to sort data on.
+        @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -137,8 +133,8 @@ class DirectoryProcessing():
         @details The csv file is created in the designated generated files directory.
         @details The csv has 2 columns, full file path for audio file and extension.
 
-        @param start_path {str} start_path Optional, the starting point of the directory walk.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @param      start_path {str} start_path Optional, the starting point of the directory walk.
+        @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         data = []
@@ -186,8 +182,6 @@ class DirectoryProcessing():
             print(f"{mp3_count} {_AUDIO_TYPES[0]} files")
             print(f"{m4a_count} {_AUDIO_TYPES[1]} files")
             print(f"{wma_count} {_AUDIO_TYPES[2]} files")
-
-
         except Exception as e:
             raise Exception(f"Exception {e} getting files for {start_path}")
 
@@ -199,8 +193,8 @@ class DirectoryProcessing():
         @details If start_path is not supplied, uses the class top level directory path.
         @details If file extension is not supplied, uses the preset audio types list.
 
-        @param file_ext {str} Optional, the file extension want file paths for.
-        @param start_path {str} Optional, the starting point of the directory walk.
+        @param  file_ext {str} Optional, the file extension want file paths for.
+        @param  start_path {str} Optional, the starting point of the directory walk.
         '''
 
         if start_path == None:
@@ -221,9 +215,9 @@ class DirectoryProcessing():
         @details The csv file is sorted in directory path as found by os walk top down order.
         @details The csv file is created in the designated generated files directory.
 
-        @param file_ext {str} The file type want file paths for.
-        @param start_path {str} The starting point of the directory walk.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @param      file_ext {str} The file type want file paths for.
+        @param      start_path {str} The starting point of the directory walk.
+        @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         data = []
@@ -255,7 +249,7 @@ class DirectoryProcessing():
 
         @details Returns the file type using os library as opposed to getting it from audio metadata.
 
-        @param file_path {str} The full audio file path.
+        @param  file_path {str} The full audio file path.
         @return file_ext {str} The file type of audio file or None.
         '''
 
@@ -280,10 +274,10 @@ class DirectoryProcessing():
         @details The album name for the directory is drawn from the metadata.
         @details The audio file(s) for the created album directory will moved into the created directory by another function.
 
-        @param artist_dirpath {str} The absolute path artist directory the new album directory will be created in.
-        @param album_dir {str} The sanitized & validated name of the album for new album directory.
-        @exception OSError An os permission error.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @param      artist_dirpath {str} The absolute path artist directory the new album directory will be created in.
+        @param      album_dir {str} The sanitized & validated name of the album for new album directory.
+        @exception  OSError An os permission error.
+        @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         music_dir = os.path.join(artist_dirpath, album_dir)
@@ -304,9 +298,9 @@ class DirectoryProcessing():
 
         @details The destination path must exist already.
 
-        @param file_path {str} File path for audio file.
-        @param destination_path {str} New directory for audio file.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @param      file_path {str} File path for audio file.
+        @param      destination_path {str} New directory for audio file.
+        @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         audio_file = os.path.basename(file_path)
@@ -324,9 +318,9 @@ class DirectoryProcessing():
 
         @details Walks through top level directory to remove empty second level album directories contained in artist first level directories.
 
-        @param start_path {str} The starting point of the directory walk.
-        @exception OSError An os permission error.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @param      start_path {str} The starting point of the directory walk.
+        @exception  OSError An os permission error.
+        @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         dir_count = 0
@@ -367,17 +361,17 @@ class DirectoryProcessing():
             else:
                 raise Exception(f"Exception {e} deleting {artist_item_path}")
 
+
     def remove_pattern(self, start_path, file_pattern):
         '''
         @brief Removes specified pattern.
 
         @details Walks through top level directory and removes files matching specified file pattern.
 
-        @param start_path {str} Optional, the starting point of the directory walk.
-        @param file_ext {str} Optional, the file type we want to delete.
-        @param file_pattern {str} Optional, the file pattern we want to delete.
-        @exception OSError An os permission error.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @param      start_path {str} Optional, the starting point of the directory walk.
+        @param      file_pattern {str} Optional, the file pattern we want to delete.
+        @exception  OSError An os permission error.
+        @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
