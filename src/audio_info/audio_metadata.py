@@ -171,41 +171,40 @@ class AudioMetadata():
 
         r'''
         Ubuntu file path:
-        <root>/<mount point>/<usr>/[drive label]/<tld>/<artist dir>/[album dir]/<song file>.<ext>
-        root is always /
+        <anchor>/<mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>/<song file.ext> = 8 elements
+        <anchor>/<mount point>/<usr>/<tld>/<artist dir>/<album dir>/<song file.ext> = 7 elements
+        anchor root is always empty string + forward slash
         mount point is either home (a hdd) or media (an usb)
-        if mount point is media then there will be a drive label
-        album dir is optional
+        if mount point is media then there will be a drive label immediately following usr
 
         Windows file path:
-        <drive>\<tld>\<artist dir>\[album dir]\<song file>.<ext>
-        drive is always a drive letter
-        album dir is optional
+        <anchor>\<tld>\<artist dir>\<album dir>\<song file.ext> = 5 elements
+        anchor is always a drive letter + colon + backslash Eg. C:\, H:\
 
-        Ubuntu from USB stick, with an album directory
-        "/media/gerald/Music/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3"
-        Ubuntu from hdd, w/o album directory
-        "/home/gerald/Music/Alejandro Escovedo/Alejandro Escovedo-Broken Bottle.wma"
-        Windows from USB stick, with an album directory
+        Ubuntu from USB stick
+        "/media/gerald/Lexar/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3"
+        Ubuntu from hdd
+        "/home/gerald/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.wma"
+        Windows from USB stick
         "H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3"
-        Windows from hdd, w/o album directory
-        "C:\Music\Alejandro Escovedo\Alejandro Escovedo-Broken Bottle.wma"
+        Windows from hdd
+        "C:\Music\Alejandro Escovedo\More Miles Than Money- Live 1994-1996\Alejandro Escovedo-Broken Bottle.wma"
 
         I don't need drive/root, mount point, usr, drive label, tld
-        I always need artist dir, album dir if it exists, and song file
+        I always need artist dir, album dir, and song file
         '''
 
         input_path = Path(file_path)
         # get the full parent w/o filename so I can start removing unnecessary path components
         input_path_parent = input_path.parent
-        # remove the root or drive (ie. / or H:), have no use for it
+        # remove the anchor (ie. / or H:), have no use for it
         input_path_parts = input_path_parent.parts[1:]
 
         if input_path_parts[0] == "media":
-            # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/[album dir]
+            # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
             input_path_components = input_path_parts[4:]
         elif input_path_parts[0] == "home":
-            # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/[album dir]
+            # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
             input_path_components = input_path_parts[3:]
         else:
             # Windows is going to have <tld>/<artist dir>/[album dir]
