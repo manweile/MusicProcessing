@@ -148,7 +148,7 @@ class AudioMetadata():
         pass
 
 
-    def convert_file(self, file_path, file_ext):
+    def convert_file(self, file_path, file_ext=None):
         '''
         @todo make os agnostic
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file.
@@ -246,9 +246,11 @@ class AudioMetadata():
         # get the input files metadata from pydub because doing so gives consistent schema
         file_media_tags = file_media_info['TAG']
         export_metadata = {}
+        print(f"FFMPEG tags for {file_path}")
         for key, value in file_media_tags.items():
             if key in _GEN_KEYS:
                 export_metadata[key] = value
+                print(f"{key}: {value}")
 
         # if there isn't an album_artist key/value in the export metadata
         # create it by using the artist value
@@ -291,8 +293,9 @@ class AudioMetadata():
         # m4a = MP4
         # wma = ASF
 
-        # mutagen_file_tags = self.get_any_tags(file_path)
-
+        mutagen_file_tags = self.get_any_tags(file_path)
+        print(f"Mutagen tags for {file_path}")
+        print(mutagen_file_tags.pprint())
         '''
         @todo cover art
         If a song has does have embedded art, ffmpeg will NOT auto transfer it.
@@ -316,7 +319,7 @@ class AudioMetadata():
 
         try:
             audio_segment = AudioSegment.from_file(file_path)
-            audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3')
+            # audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3')
             # @todo log to csv file
             print(f"{input_file_name} converted to {export_format}")
         except Exception as e:
@@ -335,19 +338,21 @@ class AudioMetadata():
 
         '''
 
+        input_file_ext = None
+
         try:
             input_path = Path(start_path)
 
-            for dir_path, dir_names, file_names in input_path.walk():
+            for dir_path, dir_names, file_names in os.walk(input_path):
                 for file in file_names:
                     # get the file extension
-                    input_file_ext = file.suffix
+                    input_file_name, input_file_ext = os.path.splitext(file)
 
                     # file is not mp3, m4a, or wma, so carry on to next file
                     if input_file_ext not in _AUDIO_EXTS:
                         continue
                     else:
-                        input_file_path = Path.joinpath(dir_path, file)
+                        input_file_path = os.path.join(dir_path, file)
                         if file_pattern and fnmatch.fnmatch(file, file_pattern):
                             self.convert_file(input_file_path, input_file_ext)
                         elif not file_pattern:
@@ -549,25 +554,6 @@ class AudioMetadata():
             mime_type = apic_frame.mime
 
         return mime_type
-
-
-    def get_mp3_album_name(self, file_path):
-        '''
-        @todo decide if needed
-        @brief Gets album name from metadata in mp3 file.
-
-        @param audio_file {object} The FileType instance for an mp3 audio file.
-        @return album_info tuple({str}, {str}) Artist name and album name from audio file metadata.
-        '''
-        artist_name = None
-        album_name = None
-
-        # The artist name directory we get from the audio file path instead of metadata
-        # after all we would not have successfully got the metadata if the artist directory was invalid
-
-        # the album name we must get from metadata
-
-        return artist_name, album_name
 
 
     def get_mp3_tag_info(self, file_path):

@@ -83,11 +83,11 @@ def main(args):
     '''
 
     try:
-        if args.subcommand == "convert_file":
+        if args.subcommand == "convert-file":
             file_path = getattr(args, "file")
             convert_file(file_path)
 
-        if args.subcommand == "convert_walk":
+        if args.subcommand == "convert-walk":
             tld_path = getattr(args, "tld")
             file_pattern = getattr(args, "pattern")
             convert_walk(tld_path, file_pattern)
@@ -117,6 +117,7 @@ def main(args):
     except NotImplementedError as e:
         raise NotImplementedError(f"Command {args.subcommand} does not exist")
     except Exception as e:
+
         raise Exception(f"Exception {e} executing subcommand {args.subcommand}")
 
 
@@ -174,7 +175,7 @@ if __name__ == "__main__":
     # 1 mandatory arg, the tld path
     # sys.argv = ['D:\MusicProcessing\main.py', 'convert-walk', 'C:\Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-walk', '/home/gerald/Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
-    convert_walk_parser = subparsers.add_parser("convert-walk",help="Converts all audio files to mp3" )
+    convert_walk_parser = subparsers.add_parser("convert-walk", help="Converts all audio files to mp3")
     convert_walk_parser.add_argument("tld", type=str, help="mandatory top level directory")
     convert_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
     convert_walk_parser.set_defaults(func=convert_walk)
