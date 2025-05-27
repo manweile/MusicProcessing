@@ -334,13 +334,24 @@ class AudioMetadata():
         '''
 
         try:
-            for dir_path, dir_names, file_names in os.walk(start_path):
+            input_path = Path(start_path)
+
+            for dir_path, dir_names, file_names in input_path.walk():
                 for file in file_names:
-                    if fnmatch.fnmatch(file, file_pattern):
-                        file_path = os.path.join(dir_path, file)
+                    # get the file extension
+                    input_file_ext = file.suffix
+                    # guard against no pattern input and file extension is NOT for an audio file
+                    if not file_pattern and input_file_ext not in _AUDIO_EXTS:
+                        continue
+                    elif file_pattern and fnmatch.fnmatch(file, file_pattern):
+                        input_file_path = Path.joinpath(dir_path, file)
+                        self.convert_file(input_file_path)
 
         except Exception as e:
-            raise Exception(f"Exception {e} converting audio files in {start_path} to {file_pattern}")
+            if file_pattern:
+                raise Exception(f"Exception {e} walking {start_path} to convert {file_pattern} audio files to mp3")
+            else:
+                raise Exception(f"Exception {e} walking {start_path} to convert audio files to mp3")
 
 
     def create_album_dir(self, start_path):
