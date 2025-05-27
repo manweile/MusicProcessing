@@ -252,7 +252,6 @@ class AudioMetadata():
         # create it by using the artist value
 
         '''
-        @todo date
         date info is most problematic part of metadata
         different audio file types have different date type tags
         and to make things worse, the date could be a full ISO date,
@@ -260,25 +259,35 @@ class AudioMetadata():
 
         I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
 
+        FFMPEG will return key 'date' by preference.
+        So look for date key in FFMPEG return, if present use it.
+        If not present, then look for the various date type tags for mp3, m4a, wma tags
+        If multiple hits, use the oldest
+        For all successful hits, strip out the YYYY
+        If still nothing, then use default year 1963
 
+        if m4a, look for key date, then originalYear, then originalDate
+        once I have the info, need to check if is 4 chars or longer
+        if longer, just need the 1st 4 chars
+        eg from an m4a:
+        'date': '2015-05-18T07:00:00Z'
+        strip out the 2015
+
+        'date': '2013'
+        'originalyear': '1973'
+        both are YYYY format, but use oldest date, ie 1973
+
+        'originaldate': '1973-04-17'
+        strip out the 1973
+
+        if wma, look for key WM/Year
+        'WM/Year': '1976'
         '''
-        # need to massage the reported date info
-        # if m4a, look for key date, then originalYear, then originalDate
-        # once I have the info, need to check if is 4 chars or longer
-        # if longer, just need the 1st 4 chars
-        # eg from an m4a:
-        # 'date': '2015-05-18T07:00:00Z'
-        # strip out the 2015
-        #
-        # 'date': '2013'
-        # 'originalyear': '1973'
-        # both are YYYY format, but use oldest date, ie 1973
-        #
-        # 'originaldate': '1973-04-17'
-        # strip out the 1973
-        #
-        # if wma, look for key WM/Year
-        # 'WM/Year': '1976'
+
+        # get file tag per file type
+        # mp3 = ID3v2.3
+        # m4a = MP4
+        # wma = ASF
 
         mutagen_file_tags = self.get_any_tags(file_path)
 
