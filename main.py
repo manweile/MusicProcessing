@@ -24,12 +24,12 @@ def convert_file(file_path):
     metadata.convert_file(file_path)
 
 
-def convert_walk(tld_path):
+def convert_walk(tld_path, file_pattern):
     '''
     @brief Convert all audio files in specified top level directory to mp3 format.
     '''
 
-    metadata.convert_walk(tld_path)
+    metadata.convert_walk(tld_path, file_pattern)
 
 
 def create_albums(tld_path):
@@ -89,7 +89,8 @@ def main(args):
 
         if args.subcommand == "convert_walk":
             tld_path = getattr(args, "tld")
-            convert_walk(tld_path)
+            file_pattern = getattr(args, "pattern")
+            convert_walk(tld_path, file_pattern)
 
         if args.subcommand == "create-albums":
             tld_path = getattr(args, "tld")
@@ -171,10 +172,11 @@ if __name__ == "__main__":
 
     # convert all audio files found in top level directory
     # 1 mandatory arg, the tld path
-    # sys.argv = ['D:\MusicProcessing\main.py', 'convert-walk', 'C:\Music']
-    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-walk', '/home/gerald/Music']
+    # sys.argv = ['D:\MusicProcessing\main.py', 'convert-walk', 'C:\Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-walk', '/home/gerald/Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
     convert_walk_parser = subparsers.add_parser("convert-walk",help="Converts all audio files to mp3" )
     convert_walk_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    convert_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
     convert_walk_parser.set_defaults(func=convert_walk)
 
     # create album directories
@@ -197,7 +199,7 @@ if __name__ == "__main__":
     # 1 mandatory arg, the tld path
     # 1 optional arg, the file extension
     # sys.argv = ['D:\MusicProcessing\main.py', 'list-type', 'C:\Music', '--ext', 'mp3' | 'm4a' | 'wma' | 'abc']
-    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'list-type', '/home/gerald/Music', '--ext' 'mp3' | 'm4a' | 'wma' | 'abc']
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'list-type', '/home/gerald/Music', '--ext', 'mp3' | 'm4a' | 'wma' | 'abc']
     list_type_parser = subparsers.add_parser("list-type", help="Generates a csv containing full file path for an audio file type")
     list_type_parser.add_argument("tld", type=str, help="mandatory top level directory")
     list_type_parser.add_argument("--ext", type=str, help='optional file extension')

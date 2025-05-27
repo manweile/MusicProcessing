@@ -42,18 +42,18 @@ _EXTRACTED_ART = "Folder.jpg"
 # the set of pydub generic metadata keys I want to copy to converted files
 # these keys also correspond to what Windows displays as file information in File Explorer
 _GEN_KEYS = {
-            'album',
-            'album_artist',
-            'artist',
-            'comment',
-            'composer',
-            'copyright',
-            'date',
-            'disc',
-            'genre',
-            'publisher',
-            'title',
-            'track'
+            'album',                    # must have
+            'album_artist',             # nice to have
+            'artist',                   # must have
+            'comment',                  # nice to have
+            'composer',                 # nice to have
+            'copyright',                # nice to have
+            'date',                     # must have
+            'disc',                     # nice to have
+            'genre',                    # must have
+            'publisher',                # nice to have
+            'title',                    # must have
+            'track'                     # nice to have
             }
 
 # set of known media keys in ID3, m4a, wma order
@@ -83,7 +83,7 @@ _ART_KEYS = {
             'WM/Picture'                # wma
             }
 
-# dict of generic to ID3v2.3 for mp3 files
+# dict of generic to ID3v2.3
 _MP3_KEYS = {
             'album': 'TALB',
             'album_artist': 'TPE2',
@@ -99,7 +99,7 @@ _MP3_KEYS = {
             'track': 'TRCK'
             }
 
-# dict of generic to m4a for mp3 files
+# dict of generic to m4a
 _M4A_KEYS = {
             'album': '\xa9alb',
             'album_artist': 'aART',
@@ -115,7 +115,7 @@ _M4A_KEYS = {
             'track': 'trkn'
             }
 
-# dict of generic to wma for mp3 files
+# dict of generic to wma
 _WMA_KEYS = {
             'album': 'WM/AlbumTitle',
             'album_artist': 'WM/AlbumArtist',
@@ -148,7 +148,7 @@ class AudioMetadata():
         pass
 
 
-    def convert_file(self, file_path):
+    def convert_file(self, file_path, file_ext):
         '''
         @todo make os agnostic
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file.
@@ -171,35 +171,37 @@ class AudioMetadata():
 
         r'''
         Ubuntu file path:
-        <anchor>/<mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>/<song file.ext> = 8 elements
-        <anchor>/<mount point>/<usr>/<tld>/<artist dir>/<album dir>/<song file.ext> = 7 elements
-        anchor root is always empty string + forward slash
-        mount point is either home (a hdd) or media (an usb)
-        if mount point is media then there will be a drive label immediately following usr
+        <anchor><mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>/<song file.ext> = 8 elements
+        <anchor><mount point>/<usr>/<tld>/<artist dir>/<album dir>/<song file.ext> = 7 elements
+        anchor is drive (always an empty string) + root (always a forward slash) Eg. "" + "/" = "/"
+        mount point is either "home" (a hdd) or "media" (an usb)
+        if mount point is media, then usr is immediately followed by drive label, then top level directory
+        if mount point is home, then usr is immediately followed by top level directory
 
         Windows file path:
-        <anchor>\<tld>\<artist dir>\<album dir>\<song file.ext> = 5 elements
+        <anchor><tld>\<artist dir>\<album dir>\<song file.ext> = 5 elements
         anchor is always a drive letter + colon + backslash Eg. C:\, H:\
 
         Ubuntu from USB stick
-        "/media/gerald/Lexar/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3"
+        "/media/gerald/Lexar/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
         Ubuntu from hdd
-        "/home/gerald/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.wma"
+        "/home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
         Windows from USB stick
-        "H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3"
+        "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
         Windows from hdd
-        "C:\Music\Alejandro Escovedo\More Miles Than Money- Live 1994-1996\Alejandro Escovedo-Broken Bottle.wma"
+        "C:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
 
-        I don't need drive/root, mount point, usr, drive label, tld
+        I don't need anchor, mount point, usr, drive label, tld
         I always need artist dir, album dir, and song file
         '''
 
         input_path = Path(file_path)
         # get the full parent w/o filename so I can start removing unnecessary path components
         input_path_parent = input_path.parent
-        # remove the anchor (ie. / or H:), have no use for it
+        # remove the anchor (ie. / or H:\), have no use for it
         input_path_parts = input_path_parent.parts[1:]
 
+        #  keep the artist dir and album dir
         if input_path_parts[0] == "media":
             # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
             input_path_components = input_path_parts[4:]
@@ -207,7 +209,7 @@ class AudioMetadata():
             # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
             input_path_components = input_path_parts[3:]
         else:
-            # Windows is going to have <tld>/<artist dir>/[album dir]
+            # Windows is going to have <tld>/<artist dir>/<album dir>
             input_path_components = input_path_parts[1:]
 
         # using fixed storage path because will always know project structure
@@ -216,7 +218,7 @@ class AudioMetadata():
         for component in input_path_components:
             export_dir = os.path.join(export_dir, component)
 
-        # directory is already extant if we are processing multiple songs for the same album
+        # directory is already extant if we are processing multiple songs for the same artist & album
         if not os.path.exists(export_dir):
             os.makedirs(export_dir)
 
@@ -289,7 +291,7 @@ class AudioMetadata():
         # m4a = MP4
         # wma = ASF
 
-        mutagen_file_tags = self.get_any_tags(file_path)
+        # mutagen_file_tags = self.get_any_tags(file_path)
 
         '''
         @todo cover art
@@ -340,12 +342,17 @@ class AudioMetadata():
                 for file in file_names:
                     # get the file extension
                     input_file_ext = file.suffix
-                    # guard against no pattern input and file extension is NOT for an audio file
-                    if not file_pattern and input_file_ext not in _AUDIO_EXTS:
+
+                    # file is not mp3, m4a, or wma, so carry on to next file
+                    if input_file_ext not in _AUDIO_EXTS:
                         continue
-                    elif file_pattern and fnmatch.fnmatch(file, file_pattern):
+                    else:
                         input_file_path = Path.joinpath(dir_path, file)
-                        self.convert_file(input_file_path)
+                        if file_pattern and fnmatch.fnmatch(file, file_pattern):
+                            self.convert_file(input_file_path, input_file_ext)
+                        elif not file_pattern:
+                            self.convert_file(input_file_path)
+
 
         except Exception as e:
             if file_pattern:
@@ -575,6 +582,22 @@ class AudioMetadata():
         audio_file = self.load_mp3_file(file_path)
         tag_info = audio_file.tags
         return tag_info
+
+
+    def has_album_art(self, dir_path):
+        '''
+        @todo finish
+        @brief Checks if a directory contains and album art file.
+
+        @param file_path {str} The directory path to album art file.
+        @return art_present {boolean} Returns true if art is present, false otherwise.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            pass
+        except Exception as e:
+            raise Exception(f"Exception {e} finding album art file in {dir_path}")
 
 
     def has_m4a_art(self, file_path):
