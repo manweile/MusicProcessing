@@ -1,16 +1,16 @@
 #  standard modules
 import os
+import platform
 
 # third part modules
-from mutagen.asf import ASF, Picture, error
+from mutagen.asf import ASF
+import mutagen
+_ART_FILE = "Folder.jpg"
 
-# local modules
-from src import _AUDIO_EXTS, _AUDIO_TYPES
-from src.generated_files import generated_files
-
-def find_embedded_art_wma(file_path):
+def find_embedded_art(file_path):
     try:
         audio = ASF(file_path)
+        m_audio = mutagen.File(file_path)
         pictures = audio.pictures
         if pictures:
             for i, picture in enumerate(pictures):
@@ -20,11 +20,8 @@ def find_embedded_art_wma(file_path):
                     return image_data, image_format
         else:
             return None, None
-    except error as e:
-        print(f"Error processing {file_path}: {e}")
-        return None, None
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"Exception: {e} extracting embedded art from {file_path}")
         return None, None
 
 def save_art(image_data, image_format, output_path):
@@ -40,12 +37,19 @@ def save_art(image_data, image_format, output_path):
         print("No cover art found to save.")
 
 #Example Usage
-file_path = "example.wma" # Replace with your WMA file path
-output_path = generated_files
+file_path = None
+if platform.system() == "Linux":
+    file_path = r"/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma"  # has art
+    # file_path = r"/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a"       # no art
+elif platform.system() == "Windows":
+    file_path = r"C:\Music|Elton John|Goodbye Yellow Brick Road|Elton John-Saturday Night's Alright for Fighting.wma"  # has art
+    # file_path = r"C:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"       # no art
 
-image_data, image_format = find_embedded_art_wma(file_path)
+image_data, image_format = find_embedded_art(file_path)
 
-if image_data and image_format:
-    save_art(image_data,image_format, output_path)
+if image_data:
+    with open(_ART_FILE, 'wb') as img_file:
+        img_file.write(image_data)
+    print(f"Album art extracted from {file_path} and saved as {_ART_FILE}")
 else:
     print("No embedded cover art found.")
