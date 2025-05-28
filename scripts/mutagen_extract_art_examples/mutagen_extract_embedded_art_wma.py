@@ -3,18 +3,23 @@ import os
 import platform
 
 # third part modules
-from mutagen.asf import ASF
+from mutagen.asf import ASF, ASFByteArrayAttribute
 import mutagen
+from pydub import AudioSegment
+from pydub.utils import mediainfo
+from tinytag import Image, Images, TinyTag
+
 _ART_FILE = "Folder.jpg"
+
+# see https://blog.1a23.com/2020/03/16/read-and-write-tags-of-music-files-with-ffmpeg/ for an
+# ffmpeg cli that works!
 
 def find_embedded_art(file_path):
     try:
         audio = ASF(file_path)
         if 'WM/Picture' in audio.tags:
-            picture_tag_value = audio.tags['WM/Picture']
-
-            asf_byte_array = picture_tag_value[0]
-            image_data = asf_byte_array
+            picture_data = audio['WM/Picture'][0].value
+            image_data = ASFByteArrayAttribute().parse(picture_data)
 
             return image_data, None
         # pictures = audio.pictures
@@ -48,7 +53,8 @@ if platform.system() == "Linux":
     file_path = r"/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma"  # has art
     # file_path = r"/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a"       # no art
 elif platform.system() == "Windows":
-    file_path = r"C:\Music|Elton John|Goodbye Yellow Brick Road|Elton John-Saturday Night's Alright for Fighting.wma"  # has art
+    # file_path = r"C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"  # has art
+    file_path = r"\\192.168.0.14\sambashare\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"
     # file_path = r"C:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"       # no art
 
 image_data, image_format = find_embedded_art(file_path)
