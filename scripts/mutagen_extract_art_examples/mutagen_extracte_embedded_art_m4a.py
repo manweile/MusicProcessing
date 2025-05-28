@@ -18,7 +18,9 @@ def find_embedded_art(file_path):
         if "covr" in audio:
             # M4A files can have multiple 'covr' atoms, each containing a different image.
             # This example extracts the first one.
-            artwork = audio["covr"][0]
+            cover_tag = audio["covr"]
+            artwork = cover_tag[0]
+            # artwork = audio["covr"][0]
             # Artwork data might be wrapped in format codes; extract the raw data.
             if isinstance(artwork, tuple):
                 return artwork[1] # Return the image data

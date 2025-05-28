@@ -10,14 +10,20 @@ _ART_FILE = "Folder.jpg"
 def find_embedded_art(file_path):
     try:
         audio = ASF(file_path)
-        m_audio = mutagen.File(file_path)
-        pictures = audio.pictures
-        if pictures:
-            for i, picture in enumerate(pictures):
-                if picture.type == 3: # Check if it's cover art
-                    image_data = picture.data
-                    image_format = picture.mime
-                    return image_data, image_format
+        if 'WM/Picture' in audio.tags:
+            picture_tag_value = audio.tags['WM/Picture']
+
+            asf_byte_array = picture_tag_value[0]
+            image_data = asf_byte_array
+
+            return image_data, None
+        # pictures = audio.pictures
+        # if pictures:
+        #     for i, picture in enumerate(pictures):
+        #         if picture.type == 3: # Check if it's cover art
+        #             image_data = picture.data
+        #             image_format = picture.mime
+        #             return image_data, image_format
         else:
             return None, None
     except Exception as e:
