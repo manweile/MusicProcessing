@@ -129,7 +129,7 @@ def main(args):
     #                  "H:\\Music\\.38 Special\\Special Forces\\.38 Special-Caught Up in You.mp3"
     #                 ]
     # for song in mp3_file_list:
-    #     metadata_type = metadata.get_any_metadata_type(song)
+    #     metadata_type = metadata.get_metadata_type(song)
     #     if metadata_type == "mp3":
     #         tag = metadata.get_mp3_tag_info(song)
     #         print(tag)
@@ -140,7 +140,7 @@ def main(args):
     #                           "H:\\Music\\Elton John\\Greatest Hits, Vol. 2\\Elton John-Island Girl.wma"
     #                          ]
     # for song in any_tag_info_file_list:
-    #     metadata_type = metadata.get_any_metadata_type(song)
+    #     metadata_type = metadata.get_metadata_type(song)
     #     print("Song: {0} has metadata type: {1}".format(song, metadata_type))
 
 
