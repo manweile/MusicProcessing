@@ -1,51 +1,63 @@
 #  standard modules
-import os
 import platform
+import struct
 
 # third part modules
-from mutagen.asf import ASF, ASFByteArrayAttribute
-import mutagen
-from pydub import AudioSegment
-from pydub.utils import mediainfo
-from tinytag import Image, Images, TinyTag
+from mutagen.asf import ASF
 
 _ART_FILE = "Folder.jpg"
 
-# see https://blog.1a23.com/2020/03/16/read-and-write-tags-of-music-files-with-ffmpeg/ for an
-# ffmpeg cli that works!
+def unpack_asf_image(data):
+    '''
+    @brief Unpack image data from a WM/Picture tag.
+
+    @details https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243
+    @details This function is treated as "untrusted" and could throw all manner of exceptions (out-of-bounds, etc.).
+
+    @return (mime, image_data, type, description) ({str}, {bytes}, {int}, {str}) Tuple containing the MIME type, the raw image data, a type indicator, and
+    the image's description.
+    @exception Exception A common baseclass exception to handle unforeseen errors.
+    '''
+
+    try:
+        type, size = struct.unpack_from('<bi', data)
+        pos = 5
+        mime = b''
+
+        while data[pos:pos + 2] != b'\x00\x00':
+            mime += data[pos:pos + 2]
+            pos += 2
+
+        pos += 2
+        description = b''
+        while data[pos:pos + 2] != b'\x00\x00':
+            description += data[pos:pos + 2]
+            pos += 2
+
+        pos += 2
+        image_data = data[pos:pos + size]
+
+        return (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
+    except Exception as e:
+        raise Exception(f"Exception {e} extracting embedded art from tag data")
+
 
 def find_embedded_art(file_path):
     try:
-        audio = ASF(file_path)
-        if 'WM/Picture' in audio.tags:
-            picture_data = audio['WM/Picture'][0].value
-            image_data = ASFByteArrayAttribute().parse(picture_data)
-
-            return image_data, None
-        # pictures = audio.pictures
-        # if pictures:
-        #     for i, picture in enumerate(pictures):
-        #         if picture.type == 3: # Check if it's cover art
-        #             image_data = picture.data
-        #             image_format = picture.mime
-        #             return image_data, image_format
+        asf_audio = ASF(file_path)
+        asf_audio_tags = asf_audio.tags
+        if 'WM/Picture' in asf_audio_tags:
+            asf_pic_tag = asf_audio_tags["WM/Picture"]
+            asf_byte_attribute_array = asf_pic_tag[0]
+            asf_picture_data = asf_byte_attribute_array.value
+            mime_type, image_data, type_indicator, image_description = unpack_asf_image(asf_picture_data)
+            return image_data
         else:
-            return None, None
+            print(f"No embedded art in {file_path}")
+            return None
     except Exception as e:
         print(f"Exception: {e} extracting embedded art from {file_path}")
-        return None, None
-
-def save_art(image_data, image_format, output_path):
-    if image_data and image_format:
-        file_extension = image_format.split('/')[1]
-        filename = f"Extracted.{file_extension}"
-        filepath = os.path.join(output_path, filename)
-
-        with open(filepath, "wb") as f:
-            f.write(image_data)
-        print(f"Cover art saved to {filepath}")
-    else:
-        print("No cover art found to save.")
+        return None
 
 #Example Usage
 file_path = None
@@ -57,7 +69,7 @@ elif platform.system() == "Windows":
     file_path = r"\\192.168.0.14\sambashare\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"
     # file_path = r"C:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"       # no art
 
-image_data, image_format = find_embedded_art(file_path)
+image_data = find_embedded_art(file_path)
 
 if image_data:
     with open(_ART_FILE, 'wb') as img_file:
