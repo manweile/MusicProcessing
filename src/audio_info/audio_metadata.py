@@ -35,7 +35,7 @@ from src.generated_files import generated_files
 
 gc.enable()
 
-_ALBUM_ART = "Album Art"
+_ALBUM_ART = "AlbumArt"
 _EXPORT_TLD = "Music"
 _EXTRACTED_ART = "Folder.jpg"
 
@@ -358,7 +358,6 @@ class AudioMetadata():
                         elif not file_pattern:
                             self.convert_file(input_file_path)
 
-
         except Exception as e:
             if file_pattern:
                 raise Exception(f"Exception {e} walking {start_path} to convert {file_pattern} audio files to mp3")
@@ -484,22 +483,7 @@ class AudioMetadata():
             raise Exception(f"Exception {e} creating tag")
 
 
-    def extract_art(self, file_path):
-        '''
-        @todo finish
-        @brief Extracts embedded album art from an audio file.
-
-        @details Embedded art is extracted and saved as Folder.jpg in same location as audio file.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            pass
-        except Exception as e:
-            raise Exception(f"Exception {e} extracting embedded art from {file_path}")
-
-
-    def get_any_metadata_type(self, file_path):
+    def get_metadata_type(self, file_path):
         '''
         @brief Returns the metadata type of any audio file.
 
@@ -538,24 +522,6 @@ class AudioMetadata():
         return tags
 
 
-    def get_embedded_art_mime(self, file_path):
-        '''
-        @todo add code for wma and m4a
-        @brief Returns the mime type of album art in audio file.
-
-        @param file_path {str} The full path to mp3 audio file.
-        @return mime_type {str} The mime type of the album art.
-        '''
-
-        audio_file = mutagen.File(file_path)
-        mime_type = None
-        if 'APIC:' in audio_file:
-            apic_frame = audio_file['APIC:']
-            mime_type = apic_frame.mime
-
-        return mime_type
-
-
     def get_mp3_tag_info(self, file_path):
         '''
         @brief gets tag information for an mp3 audio file.
@@ -570,18 +536,23 @@ class AudioMetadata():
         return tag_info
 
 
-    def has_album_art(self, dir_path):
+    def has_embedded_art(self, file_path):
         '''
         @todo finish
-        @brief Checks if a directory contains and album art file.
+        @brief Checks if an audio file contains embedded album art.
 
-        @param file_path {str} The directory path to album art file.
-        @return art_present {boolean} Returns true if art is present, false otherwise.
+        @param file_path {str} The full path to mp3 audio file.
+        @return has_art {boolean} Returns true if art is present, false otherwise.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
+        has_art = False
+
         try:
-            pass
+            # load the audio file
+            audio_file = self.load_any_file(file_path)
+
+            return has_art
         except Exception as e:
             raise Exception(f"Exception {e} finding album art file in {dir_path}")
 
@@ -667,15 +638,36 @@ class AudioMetadata():
         return audio_file
 
 
-    def show_mp3_date(self, tag_info):
+    def set_album_art(self, file_path):
         '''
         @todo finish
-        @brief Show metadata date info.
+        @brief Extracts embedded album art from an audio file.
 
-        @param tag_info {object} Tag object holding audio file tag info.
+        @details Embedded art is extracted and saved as Folder.jpg in same location as audio file.
+        @details Uses ffmpeg to extract video stream  only frame, which is cover art in an audio file.
+
+        @param file_path {str} The full path to audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        pass
+        try:
+            # get the album parent path of audio file
+            # Eg. "C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Albert Collins - Trash Talkin'.mp3"
+            input_path = Path(file_path)
+            parent_path = input_path.parent                                 # should be "C:\Music\Albert Collins\Best Of The Blues, Vol. 1"
+            parent_content = os.listdir(parent_path)                        # should be ["Albert Collins - Trash Talkin'.mp3"]
+            # check if there is a "Folder.jpg" already present
+            # if yes, no need to extract album art
+            if _EXTRACTED_ART in parent_content:
+                print(f"Album directory {parent_path} contains a {_EXTRACTED_ART} file")
+                return
+
+            # check in ALbum Art folder if a jpg for album name exists
+            album_dir = parent_path.parts[:-1]                              # should be "Best Of The Blues, Vol. 1"
+            album_jpg = album_dir + ".jpg"
+            album_dir_content = os.listdir()
+        except Exception as e:
+            raise Exception(f"Exception {e} extracting embedded art from {file_path}")
 
 
     def show_mp3_metadata(self, file_path):
