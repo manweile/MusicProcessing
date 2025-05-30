@@ -184,12 +184,40 @@ class AudioMetadata():
 
         Ubuntu from USB stick
         "/media/gerald/Lexar/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
+        anchor = "/",
+        mount point = "media",
+        usr = "gerald",
+        drive label = "Lexar",
+        tld = "Music",
+        artist = "38 Special",
+        album = "Special Forces",
+        file = '38 Special-Caught Up in You.mp3"
+
         Ubuntu from hdd
         "/home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
+        anchor = "/",
+        mount point = "home",
+        usr = "gerald",
+        tld = "Music",
+        artist = "38 Special",
+        album = "Special Forces",
+        file = '38 Special-Caught Up in You.mp3"
+
         Windows from USB stick
         "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
+        anchor = "H:\",
+        tld = "Music",
+        artist = "38 Special",
+        album = "Special Forces",
+        file = '38 Special-Caught Up in You.mp3"
+
         Windows from hdd
         "C:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
+        anchor = "C:\",
+        tld = "Music",
+        artist = "38 Special",
+        album = "Special Forces",
+        file = '38 Special-Caught Up in You.mp3"
 
         I don't need anchor, mount point, usr, drive label, tld
         I always need artist dir, album dir, and song file
@@ -554,7 +582,7 @@ class AudioMetadata():
 
             return has_art
         except Exception as e:
-            raise Exception(f"Exception {e} finding album art file in {dir_path}")
+            raise Exception(f"Exception {e} finding album art file in {file_path}")
 
 
     def has_m4a_art(self, file_path):
@@ -652,20 +680,31 @@ class AudioMetadata():
 
         try:
             # get the album parent path of audio file
-            # Eg. "C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Albert Collins - Trash Talkin'.mp3"
-            input_path = Path(file_path)
-            parent_path = input_path.parent                                 # should be "C:\Music\Albert Collins\Best Of The Blues, Vol. 1"
-            parent_content = os.listdir(parent_path)                        # should be ["Albert Collins - Trash Talkin'.mp3"]
+            input_path = Path(file_path)                    # Eg. "C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Albert Collins - Trash Talkin'.mp3"
+            album_path = input_path.parent                  # should be "C:\Music\Albert Collins\Best Of The Blues, Vol. 1"
+            album_content = os.listdir(album_path)          # should be 1 file: ["Albert Collins - Trash Talkin'.mp3"]
+
             # check if there is a "Folder.jpg" already present
             # if yes, no need to extract album art
-            if _EXTRACTED_ART in parent_content:
-                print(f"Album directory {parent_path} contains a {_EXTRACTED_ART} file")
+            if _EXTRACTED_ART in album_content:
+                print(f"Album directory {album_path} contains a {_EXTRACTED_ART} file")
                 return
 
-            # check in ALbum Art folder if a jpg for album name exists
-            album_dir = parent_path.parts[:-1]                              # should be "Best Of The Blues, Vol. 1"
-            album_jpg = album_dir + ".jpg"
-            album_dir_content = os.listdir()
+            # check in AlbumArt folder if a jpg for album name exists
+            album_dir_name = album_path.parts[:-1]              # should be "Best Of The Blues, Vol. 1"
+            album_jpg = album_dir_name + ".jpg"                 # should be "Best Of The Blues, Vol. 1.jpg"
+
+            # need anchor, tld, but linux will have usr and maybe drive label
+            # since we know dir hierarchy from right side is always tld/artist/album/file
+            # we can stack up parent calls or use a pathlib parts call and negative slicing
+            tld_path = album_path.parent.parent                     # should be "C:\Music"
+            album_art_dir = os.path.join(tld_path, _ALBUM_ART)      # should be "C:\Music\AlbumArt"
+            album_art_dir_content = os.listdir(album_art_dir)
+
+            if album_jpg in album_art_dir_content:
+                pass
+
+
         except Exception as e:
             raise Exception(f"Exception {e} extracting embedded art from {file_path}")
 
