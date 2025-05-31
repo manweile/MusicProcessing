@@ -44,13 +44,13 @@ def unpack_asf_image(data):
 
 def find_embedded_art(file_path):
     try:
-        asf_audio = ASF(file_path)
-        asf_audio_tags = asf_audio.tags
-        if 'WM/Picture' in asf_audio_tags:
-            asf_pic_tag = asf_audio_tags["WM/Picture"]
-            asf_byte_attribute_array = asf_pic_tag[0]
-            asf_picture_data = asf_byte_attribute_array.value
-            mime_type, image_data, type_indicator, image_description = unpack_asf_image(asf_picture_data)
+        audio = ASF(file_path)
+        audio_tags = audio.tags
+        if 'WM/Picture' in audio_tags:
+            pic_tag = audio_tags["WM/Picture"]
+            byte_attribute_array = pic_tag[0]
+            picture_data = byte_attribute_array.value
+            mime_type, image_data, type_indicator, image_description = unpack_asf_image(picture_data)
             return image_data
         else:
             print(f"No embedded art in {file_path}")

@@ -11,6 +11,7 @@ def extract_art_from_any(input_file, output_file):
     @brief Extracts cover art from a media file.
 
     @details Uses ffmpeg and is audio file type agnostic.
+    @details The input file is assumed to have cover art.
 
     @param input_file {str} Path to the input media file.
     @param output_file {str} Path to save the extracted cover art image.
