@@ -20,6 +20,9 @@ def unpack_asf_image(data):
     '''
 
     try:
+        # <:little-endian byte order, b: signed char (1 byte), i: signed int (4 bytes)
+        # unpacks first 5 bytes in tuple where type is signed char and size is signed int
+        # for an ASF WM/Picture, 3= Front album cover, 4 = back album cover
         type, size = struct.unpack_from('<bi', data)
         pos = 5
         mime = b''
