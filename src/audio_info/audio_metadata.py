@@ -13,6 +13,7 @@ import fnmatch
 import gc
 import os
 import platform
+import shutil
 import sys
 from operator import itemgetter
 from pathlib import Path
@@ -37,7 +38,7 @@ gc.enable()
 
 _ALBUM_ART = "AlbumArt"
 _EXPORT_TLD = "Music"
-_EXTRACTED_ART = "Folder.jpg"
+_FOLDER_ART = "Folder.jpg"
 
 # the set of pydub generic metadata keys I want to copy to converted files
 # these keys also correspond to what Windows displays as file information in File Explorer
@@ -566,7 +567,6 @@ class AudioMetadata():
 
     def has_embedded_art(self, file_path):
         '''
-        @todo finish
         @brief Checks if an audio file contains embedded album art.
 
         @param file_path {str} The full path to mp3 audio file.
@@ -577,15 +577,14 @@ class AudioMetadata():
         has_art = False
 
         try:
-            # load the audio file
-            audio_file = self.load_any_file(file_path)
+            audio_tags = self.get_any_tags(file_path)
 
-            if isinstance(audio_file, mutagen.asf):
-                pass
-            elif isinstance(audio_file, mutagen.m4a):
-                pass
-            elif isinstance(audio_file, mutagen.mp3):
-                pass
+            if 'WM/Picture' in audio_tags:
+                has_art = True
+            elif 'covr' in audio_tags:
+                has_art = True
+            elif 'APIC:' in audio_tags:
+                has_art = True
             else:
                 print(f"{file_path} not any of {_AUDIO_TYPES}")
                 has_art = False
@@ -593,50 +592,6 @@ class AudioMetadata():
             return has_art
         except Exception as e:
             raise Exception(f"Exception {e} finding album art file in {file_path}")
-
-
-    def has_m4a_art(self, file_path):
-        '''
-        @todo finish
-        @brief Checks if an m4a audio file contains embedded album art.
-
-        @param file_path {str} The full path to m4a audio file.
-        @return art_present {boolean} Returns true if art is present, false otherwise.
-        '''
-
-        pass
-
-
-    def has_mp3_art(self, file_path):
-        '''
-        @todo refactor
-        @brief Checks if an mp3 audio file contains embedded album art.
-
-        @param file_path {str} The full path to mp3 audio file.
-        @return art_present {boolean} Returns true if art is present, false otherwise.
-        '''
-
-        art_present = False
-        audio_file = self.load_mp3_file(file_path)
-
-        if 'APIC:' in audio_file:
-            art_present = True
-            # apic_frame = audio_file['APIC:']
-            # print(f"Image MIME type: {apic_frame.mime} in: {file_path}")
-
-        return art_present
-
-
-    def has_wma_art(self, file_path):
-        '''
-        @todo finish
-        @brief Checks if an wma audio file contains embedded album art.
-
-        @param file_path {str} The full path to wma audio file.
-        @return art_present {boolean} Returns true if art is present, false otherwise.
-        '''
-
-        pass
 
 
     def load_any_file(self, file_path):
@@ -678,17 +633,20 @@ class AudioMetadata():
 
     def set_album_art(self, file_path):
         '''
-        @todo finish
-        @brief Extracts embedded album art from an audio file.
+        @brief Sets album art file Folder.jpg for an album directory.
 
-        @details Embedded art is extracted and saved as Folder.jpg in same location as audio file.
-        @details Uses ffmpeg to extract video stream  only frame, which is cover art in an audio file.
+        @details First check to see a Folder.jpg is present in album directory.
+        @details Second checks if there is a /AlbumArt/<album>.jpg cover art file and renames it Folder.jpg and moves it to album directory.
+        @details Third check if any audio file in album directory have embedded art, extract it and save as Folder.jpg in album directory.
+        @details Uses ffmpeg to extract video stream first frame, which is cover art in an audio file.
 
         @param file_path {str} The full path to audio file.
+        @return set_art {boolean} True if Folder.jpg exists in album directory, false otherwise.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
+            set_art = False
             # get the album parent path of audio file
             input_path = Path(file_path)                    # Eg. "C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Albert Collins - Trash Talkin'.mp3"
             album_path = input_path.parent                  # should be "C:\Music\Albert Collins\Best Of The Blues, Vol. 1"
@@ -696,24 +654,35 @@ class AudioMetadata():
 
             # check if there is a "Folder.jpg" already present
             # if yes, no need to extract album art
-            if _EXTRACTED_ART in album_content:
-                print(f"Album directory {album_path} contains a {_EXTRACTED_ART} file")
-                return
+            if _FOLDER_ART in album_content:
+                print(f"Album directory {album_path} contains a {_FOLDER_ART} file")
+                set_art = True
+                return set_art
 
             # check in AlbumArt folder if a jpg for album name exists
-            album_dir_name = album_path.parts[:-1]              # should be "Best Of The Blues, Vol. 1"
-            album_jpg = album_dir_name + ".jpg"                 # should be "Best Of The Blues, Vol. 1.jpg"
+            album_dir_name = album_path.parts[:-1]          # should be "Best Of The Blues, Vol. 1"
+            album_jpg = album_dir_name + ".jpg"             # should be "Best Of The Blues, Vol. 1.jpg"
 
-            # need anchor, tld, but linux will have usr and maybe drive label
-            # since we know dir hierarchy from right side is always tld/artist/album/file
-            # we can stack up parent calls or use a pathlib parts call and negative slicing
-            tld_path = album_path.parent.parent                     # should be "C:\Music"
-            album_art_dir = os.path.join(tld_path, _ALBUM_ART)      # should be "C:\Music\AlbumArt"
+            # per the project hierarchy
+            album_art_dir = os.path.join(generated_files, _ALBUM_ART)
             album_art_dir_content = os.listdir(album_art_dir)
 
             if album_jpg in album_art_dir_content:
-                pass
+                # copy the album art to album
+                album_art_jpg = os.path.join(album_art_dir, album_jpg)
+                folder_jpg = os.path.join(album_path, _FOLDER_ART)
+                shutil.copy(album_art_jpg, folder_jpg)
+                set_art = True
+                return set_art
 
+            # iterate through album directory looking for audio files with embedded art
+            for dir_path, dir_names, file_names in os.walk(input_path):
+                for file in file_names:
+                    if self.has_embedded_art(file):
+                        # extract it to album dir
+
+                        set_art = True
+                        return set_art
 
         except Exception as e:
             raise Exception(f"Exception {e} extracting embedded art from {file_path}")
@@ -730,13 +699,29 @@ class AudioMetadata():
 
         audio_file = self.load_mp3_file(file_path)
 
-        artist_name = audio_file['TPE1'].text[0]
-        album_name = audio_file['TALB'].text[0]
-        song_title = audio_file['TIT2'].text[0]
-        song_genre = audio_file['TCON'].text[0]
+        album = audio_file['TALB'].text[0]
+        album_artist = audio_file['TPE2'].text[0]
+        artist = audio_file['TPE1'].text[0]
+        comment = audio_file['COMM'].text[0]
+        composer = audio_file['TCOM'].text[0]
+        copyright = audio_file['TCOP'].text[0]
+        date = audio_file['TYER'].text[0]
+        disc = audio_file['TPOS'].text[0]
+        genre = audio_file['TCON'].text[0]
+        publisher = audio_file['TPUB'].text[0]
+        title = audio_file['TIT2'].text[0]
+        track = audio_file['TRCK'].text[0]
 
-        print (artist_name)
-        print (album_name)
-        print (song_title)
-        print(song_genre)
+        print(f"album: {album}")
+        print(f"album artist: {album_artist}")
+        print (f"artist: {artist}")
+        print(f"comment: {comment}")
+        print(f"composer: {composer}")
+        print(f"copyright: {copyright}")
+        print(f"date: {date}")
+        print(f"disc: {disc}")
+        print(f"genre: {genre}")
+        print(f"publisher: {publisher}")
+        print(f"title: {title}")
+        print{f"track: {track}"}
 
