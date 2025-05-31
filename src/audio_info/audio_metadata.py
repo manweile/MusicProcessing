@@ -227,18 +227,33 @@ class AudioMetadata():
         input_path = Path(file_path)
         # get the full parent w/o filename so I can start removing unnecessary path components
         input_path_parent = input_path.parent
+        r'''
+        /media/gerald/Lexar/Music/38 Special/Special Forces                          # ubuntu usb
+        /home/gerald/Music/38 Special/Special Forces                                 # ubuntu hdd
+        H:\Music\38 Special\Special Forces                                           # windows usb
+        C:\Music\38 Special\Special Forces                                           # windows hdd
+        '''
+
         # remove the anchor (ie. / or H:\), have no use for it
         input_path_parts = input_path_parent.parts[1:]
-
-        #  keep the artist dir and album dir
+        '''
+        ['media', 'gerald', 'Lexar', 'Music', '38 Special', 'Special Forces']       # ubuntu usb
+        ['home', 'gerald', 'Music', '38 Special', 'Special Forces']                 # ubuntu hdd
+        ['Music', '38 Special', 'Special Forces']                                   # windows hdd or usb
+        '''
+        # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
+        # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
         if input_path_parts[0] == "media":
             # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
+            # so 6 elements, de don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
             input_path_components = input_path_parts[4:]
         elif input_path_parts[0] == "home":
             # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
+            # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
             input_path_components = input_path_parts[3:]
         else:
             # Windows is going to have <tld>/<artist dir>/<album dir>
+            # so 3 elements, we don't want element 1: 'Music'
             input_path_components = input_path_parts[1:]
 
         # using fixed storage path because will always know project structure
