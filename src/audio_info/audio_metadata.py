@@ -580,6 +580,16 @@ class AudioMetadata():
             # load the audio file
             audio_file = self.load_any_file(file_path)
 
+            if isinstance(audio_file, mutagen.asf):
+                pass
+            elif isinstance(audio_file, mutagen.m4a):
+                pass
+            elif isinstance(audio_file, mutagen.mp3):
+                pass
+            else:
+                print(f"{file_path} not any of {_AUDIO_TYPES}")
+                has_art = False
+
             return has_art
         except Exception as e:
             raise Exception(f"Exception {e} finding album art file in {file_path}")
