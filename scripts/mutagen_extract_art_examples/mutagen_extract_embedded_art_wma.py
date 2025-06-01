@@ -21,12 +21,12 @@ def unpack_asf_image(data):
 
     try:
         # <:little-endian byte order, b: signed char (1 byte), i: signed int (4 bytes)
-        # unpacks first 5 bytes in tuple where type is signed char (1 byte) and size is signed int (4 bytes)
+        # unpacks first 5 bytes in tuple where type is C signed char (1 byte)/Python integer and size is C signed int (4 bytes)/Python integer
         # for an ASF WM/Picture, 3 = Front album cover
         # eg. b'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`
         # image type and image size, elements 0-5: b'\x03\x140\x00\x00
         # image type, elements 0-1, b'\x03'
-        # image size, elements 1-5, b'\x140\x00\x00
+        # image size, elements 1-5, b'\x140\x00\x00 = 0x1403 little-endian, 0x3014 big-endian, decimal 12308
         # mime type, elements 5 to 25: b'i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00'
         # null terminator, elements 25 to 27: b'\x00\x00'
         # description, elements 27 to 29: b'\x00\x00'
