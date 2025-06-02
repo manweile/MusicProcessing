@@ -71,6 +71,13 @@ def remove_pattern(tld_path, file_pattern):
 
     directory.remove_pattern(tld_path, file_pattern)
 
+def set_album_art(tld_path):
+    '''
+    @brief Sets album art file for an album directory.
+    '''
+
+    metadata.set_album_art(tld_path)
+
 
 def main(args):
     '''
@@ -113,6 +120,10 @@ def main(args):
             tld_path = getattr(args, "tld")
             file_pattern = getattr(args, "pattern")
             remove_pattern(tld_path, file_pattern)
+
+        if args.subcommand == "set-art":
+            tld_path = getattr(args, "tld")
+            set_album_art(tld_path)
 
     except NotImplementedError as e:
         raise NotImplementedError(f"Command {args.subcommand} does not exist")
@@ -222,6 +233,14 @@ if __name__ == "__main__":
     remove_pattern_parser.add_argument("tld", type=str, help="mandatory top level directory")
     remove_pattern_parser.add_argument("pattern", type=str, help="mandatory file pattern")
     remove_pattern_parser.set_defaults(func=remove_pattern)
+
+    # set album art file
+    # 1 mandatory arg, the tld path
+    # sys.argv = ['D:\MusicProcessing\main.py', 'set-art', 'C:\Music']
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'set-art', '/home/gerald/Music']
+    remove_album_parser = subparsers.add_parser("set-art", help="Set album art file")
+    remove_album_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    remove_album_parser.set_defaults(func=set_album_art)
 
     args = parser.parse_args()
     main(args)

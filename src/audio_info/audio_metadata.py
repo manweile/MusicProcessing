@@ -576,6 +576,20 @@ class AudioMetadata():
             raise Exception(f"Exception {e} extracting art from {input_path}")
 
 
+    def get_any_tags(self, file_path):
+        '''
+        @brief gets tags for an audio file.
+
+        @param file_path {str} The full path to audio file.
+        @return tags {object} Tag object holding audio file tags.
+        '''
+
+        tags = None
+        audio_file = self.load_any_file(file_path)
+        tags = audio_file.tags
+        return tags
+
+
     def get_metadata_type(self, file_path):
         '''
         @brief Returns the metadata type of any audio file.
@@ -601,18 +615,7 @@ class AudioMetadata():
         return metadata_type
 
 
-    def get_any_tags(self, file_path):
-        '''
-        @brief gets tags for an audio file.
 
-        @param file_path {str} The full path to audio file.
-        @return tags {object} Tag object holding audio file tags.
-        '''
-
-        tags = None
-        audio_file = self.load_any_file(file_path)
-        tags = audio_file.tags
-        return tags
 
 
     def get_mp3_tag_info(self, file_path):
@@ -696,20 +699,21 @@ class AudioMetadata():
         return audio_file
 
 
-    def set_album_art(self, dir_path):
+    def set_album_art(self, input_path):
         '''
-        @brief Sets album art file Folder.jpg for an album directory.
+        @brief Sets album art file for an album directory.
 
-        @details First check to see a Folder.jpg is present in album directory.
-        @details Second checks if there is a /AlbumArt/<album>.jpg cover art file and renames it Folder.jpg and moves it to album directory.
+        @details First check to see an album art folder is present in album directory.
+        @details Second checks if there is a /AlbumArt/<album>.jpg cover art file,
+        renames it to album art folder constant and moves it to album directory.
 
-        @param file_path {str} The full path to album directory.
+        @param input_path {str} The full path to album directory.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
             # get the album parent path of audio file
-            album_path = Path(dir_path)                     # Eg. "C:\Music\Albert Collins\Best Of The Blues, Vol. 1
+            album_path = Path(input_path)                   # Eg. "C:\Music\Albert Collins\Best Of The Blues, Vol. 1
             album_content = os.listdir(album_path)
 
             if _FOLDER_ART in album_content:
@@ -717,15 +721,14 @@ class AudioMetadata():
                 return
 
             # check in AlbumArt folder if a jpg for album name exists
-            album_dir_name = album_path.parts[:-1]          # should be "Best Of The Blues, Vol. 1"
+            album_dir_name = os.path.basename(input_path)   # should be "Best Of The Blues, Vol. 1"
             album_jpg = album_dir_name + ".jpg"             # should be "Best Of The Blues, Vol. 1.jpg"
 
-            # per the project hierarchy
+            # get the album art directory, per the project hierarchy
             album_art_dir = os.path.join(generated_files, _ALBUM_ART)
             album_art_dir_content = os.listdir(album_art_dir)
 
             if album_jpg in album_art_dir_content:
-                # copy the album art to album
                 album_art_jpg = os.path.join(album_art_dir, album_jpg)
                 folder_jpg = os.path.join(album_path, _FOLDER_ART)
                 shutil.copy(album_art_jpg, folder_jpg)
@@ -771,5 +774,5 @@ class AudioMetadata():
         print(f"genre: {genre}")
         print(f"publisher: {publisher}")
         print(f"title: {title}")
-        print{f"track: {track}"}
+        print(f"track: {track}")
 
