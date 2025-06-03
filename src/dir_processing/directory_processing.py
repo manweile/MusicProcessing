@@ -47,7 +47,7 @@ class DirectoryProcessing():
                     self._tld_path = tld_path
             except OSError as e:
                 if e.errno == errno.ENOENT:
-                    raise OSError(f"Error: Path {tld_path} not found")
+                    raise OSError(f"Exception: Path {tld_path} not found")
                 else:
                     raise Exception(f"Exception {e} setting path {tld_path}")
         else:
@@ -287,7 +287,7 @@ class DirectoryProcessing():
                 os.mkdir(music_dir)
             except Exception as e:
                 if e.errno == errno.EACCES:
-                    raise OSError(f"Error: permission denied for creating {music_dir}")
+                    raise OSError(f"Exception: permission denied for creating {music_dir}")
                 else:
                     raise Exception(f"Exception {e} creating {music_dir}")
 
@@ -357,7 +357,7 @@ class DirectoryProcessing():
             print(f"removed {dir_count} empty album directories")
         except Exception as e:
             if e.errno == errno.EACCES:
-                raise OSError(f"Error: permission denied for deleting {artist_item_path}")
+                raise OSError(f"Exception: permission denied for deleting {artist_item_path}")
             else:
                 raise Exception(f"Exception {e} deleting {artist_item_path}")
 
@@ -391,7 +391,7 @@ class DirectoryProcessing():
 
         except Exception as e:
             if e.errno == errno.EACCES:
-                raise OSError(f"Error: permission denied for deleting {file_path}")
+                raise OSError(f"Exception: permission denied for deleting {file_path}")
             else:
                 raise Exception(f"Exception {e} deleting file {file_path}")
 
