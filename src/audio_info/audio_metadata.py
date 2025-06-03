@@ -7,15 +7,15 @@
 '''
 
 # standard modules
-import csv
-import errno
+# import csv
+# import errno
 import ffmpeg
 import fnmatch
 import gc
 import os
-import platform
+# import platform
 import shutil
-import sys
+# import sys
 from operator import itemgetter
 from pathlib import Path
 
