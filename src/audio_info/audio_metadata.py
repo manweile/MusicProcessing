@@ -338,9 +338,9 @@ class AudioMetadata():
         # m4a = MP4
         # wma = ASF
 
-        mutagen_file_tags = self.get_any_tags(file_path)
+        any_file_tags = self.get_any_tags(file_path)
         print(f"Mutagen tags for {file_path}")
-        print(mutagen_file_tags.pprint())
+        print(any_file_tags.pprint())
         '''
         @todo cover art
         If a song has does have embedded art, ffmpeg will NOT auto transfer it.
@@ -350,22 +350,27 @@ class AudioMetadata():
         - created all the required album sub directories
         - moved the audio files
         I will:
-        - manually review existing AlbumArt*.jpg files
-        - rename convert AlbumArt*.jpg (image and size 200x200 +- 5 px) to Folder.jpg
-        - manually move the correct Folder.jpg to proper album sub directory
+        - manually review existing AlbumArt*.jpg and Folder.jpg files
+        - manually move Folder.jpg to correct album directory
+        - rename AlbumArt*.jpg (image and size 200x200 +- 5 px) to Folder.jpg
+        - manually move the renamed Folder.jpg to proper album sub directory
         - create <album dir>.jpg in tld/Album Art for repeated album names
 
-        1st source: a co-located Folder.jpg with audio file
-        2nd source: look for an <album name>.jpg in tld/Album Art
-        3rd source: extract album art, save it as Folder.jpg
+        End result:
+        Almost all album directories will contain a Folder.jpg cover art file
 
-        ID3v2.3 tag album art tag is APIC, where '3' denotes front cover
+        1st source: a co-located Folder.jpg with audio file
+        2nd source: look for an <album name>.jpg in generated_files/AlbumArt and copy it to album directory as Folder.jpg
+        3rd source: extract album art, save it as Folder.jpg in album directory
+
+        ID3v2.3 album art tag is APIC, where '3' denotes front cover
+        ASF album art tag is WM/Picture, where '3' denotes front cover
+        MP4 album art tag is covr, where '?' denotes front cover??
         '''
 
         try:
             audio_segment = AudioSegment.from_file(file_path)
             # audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3')
-            # @todo log to csv file
             print(f"{input_file_name} converted to {export_format}")
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_file_path}")
@@ -613,9 +618,6 @@ class AudioMetadata():
             return None
 
         return metadata_type
-
-
-
 
 
     def get_mp3_tag_info(self, file_path):
