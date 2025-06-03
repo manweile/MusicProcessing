@@ -7,23 +7,20 @@
 '''
 
 # standard modules
-# import csv
-# import errno
 import ffmpeg
 import fnmatch
 import gc
 import os
-# import platform
 import shutil
-# import sys
-from operator import itemgetter
 from pathlib import Path
 
 # third party modules
 import mutagen
 import pathvalidate
-from mutagen.id3 import ID3, TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TMED
-from pathvalidate import replace_symbol
+from mutagen.asf import ASF
+from mutagen.id3 import ID3, TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK
+from mutagen.mp4 import MP4
+from mutagen.mp3 import MP3
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 from tqdm import tqdm
@@ -31,8 +28,6 @@ from tqdm import tqdm
 # local modules
 from src import _AUDIO_EXTS, _AUDIO_TYPES
 from src.dir_processing import DirectoryProcessing
-# generated files package does not have any modules,
-# just a package variable the __all__ list exposes via __init__.py
 from src.generated_files import generated_files
 
 gc.enable()
@@ -56,14 +51,6 @@ _GEN_KEYS = {
             'publisher',                # nice to have
             'title',                    # must have
             'track'                     # nice to have
-            }
-
-# set of known media keys in ID3, m4a, wma order
-_MEDIA_KEYS = {
-            'TMED',                     # ID3
-            'MEDIA',                    # m4a
-            'WM/Media',                 # wma
-            'media_type'                # wma
             }
 
 # set of known date keys in ID3, m4a, wma order
@@ -150,9 +137,9 @@ class AudioMetadata():
         pass
 
 
-    def convert_file(self, file_path, file_ext=None):
+    def convert_file(self, file_path, file_ext):
         '''
-        @todo make os agnostic
+        @todo finish
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file.
 
         @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
@@ -268,7 +255,10 @@ class AudioMetadata():
             os.makedirs(export_dir)
 
         input_file_name = input_path.stem
-        input_file_ext = input_path.suffix
+        if file_ext:
+            input_file_ext = file_ext
+        else:
+            input_file_ext = input_path.suffix
 
         export_file_name = input_file_name + export_file_ext
         export_file_path = os.path.join(export_dir, export_file_name)
@@ -352,7 +342,7 @@ class AudioMetadata():
         I will:
         - manually review existing AlbumArt*.jpg and Folder.jpg files
         - manually move Folder.jpg to correct album directory
-        - rename AlbumArt*.jpg (image and size 200x200 +- 5 px) to Folder.jpg
+        - if necessary, rename AlbumArt*.jpg (image and size 200x200 +- 5 px) to Folder.jpg
         - manually move the renamed Folder.jpg to proper album sub directory
         - create <album dir>.jpg in tld/Album Art for repeated album names
 
@@ -522,7 +512,7 @@ class AudioMetadata():
         @todo finish
         @brief Creates a an ID3v2.3 metadata tag
 
-        @params metadata {dict} Metadata to create tag with.add()
+        @params metadata {dict} Metadata to create tag with.
         @return tag {object} ID3v2.3 tag object.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -581,17 +571,62 @@ class AudioMetadata():
             raise Exception(f"Exception {e} extracting art from {input_path}")
 
 
+    def extract_walk(self, start_path, file_pattern):
+        '''
+        @brief Extracts all embedded album art form audio files.
+
+        @details Extracts embedded art from m4a, mp3, and wma files with ffmpeg.
+
+        @param start_path {str} The starting point of the directory walk.
+        @param file_pattern {str} Optional, the audio file pattern we want to transform.
+        '''
+
+        input_file_ext = None
+
+        try:
+            input_path = Path(start_path)
+
+            for dir_path, dir_names, file_names in os.walk(input_path):
+                for file in file_names:
+                    # get the file extension
+                    input_file_name, input_file_ext = os.path.splitext(file)
+
+                    # file is not mp3, m4a, or wma, so carry on to next file
+                    if input_file_ext not in _AUDIO_EXTS:
+                        continue
+                    else:
+                        input_file_path = os.path.join(dir_path, file)
+                        if file_pattern and fnmatch.fnmatch(file, file_pattern):
+                            self.convert_file(input_file_path, input_file_ext)
+                        elif not file_pattern:
+                            self.convert_file(input_file_path)
+
+        except Exception as e:
+            if file_pattern:
+                raise Exception(f"Exception {e} walking {start_path} to convert {file_pattern} audio files to mp3")
+            else:
+                raise Exception(f"Exception {e} walking {start_path} to convert audio files to mp3")
+
+
     def get_any_tags(self, file_path):
         '''
         @brief gets tags for an audio file.
 
         @param file_path {str} The full path to audio file.
-        @return tags {object} Tag object holding audio file tags.
+        @return tags {object} Tag object holding audio file tags or None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        tags = None
-        audio_file = self.load_any_file(file_path)
-        tags = audio_file.tags
+        try:
+            tags = None
+            audio_file = self.load_any_file(file_path)
+            if audio_file is not None:
+                tags = audio_file.tags
+            else:
+                return None
+        except Exception as e:
+            raise Exception(f"Exception: {e} getting metadata type for file: {file_path}")
+
         return tags
 
 
@@ -600,37 +635,43 @@ class AudioMetadata():
         @brief Returns the metadata type of any audio file.
 
         @param file_path {str} The full path to audio file.
-        @return metadata_type {str} The type of the audio file metadata tags.
+        @return metadata_type {str} The type of the audio file metadata tags or None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        metadata_type = None
-
         try:
-            audio_file = mutagen.File(file_path)
+            metadata_type = None
+            audio_file = self.load_any_file(file_path)
             if audio_file is not None:
                 # the built in class name of the filetype returned shows what metadata type
                 metadata_type = audio_file.__class__.__name__
             else:
                 return None
         except Exception as e:
-            print(f"Error processing file: {e}")
-            return None
+            raise Exception(f"Exception: {e} getting metadata type for file: {file_path}")
 
         return metadata_type
 
 
-    def get_mp3_tag_info(self, file_path):
+    def get_mp3_tags(self, file_path):
         '''
         @brief gets tag information for an mp3 audio file.
 
         @param file_path {str} The full path to mp3 audio file.
-        @return tag_info {object} Tag object holding audio file tag info.
+        @return tag_info {object} Tag object holding audio file tag info or None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        tag_info = None
-        audio_file = self.load_mp3_file(file_path)
-        tag_info = audio_file.tags
+        try:
+            tag_info = None
+            audio_file = self.load_mp3_file(file_path)
+            if audio_file is not None:
+                tag_info = audio_file.tags
+            else:
+                return None
+        except Exception as e:
+            raise Exception(f"Exception {e} getting tags for file {file_path}")
+
         return tag_info
 
 
@@ -638,17 +679,20 @@ class AudioMetadata():
         '''
         @brief Checks if an audio file has the embedded album art tag.
 
-        @param file_path {str} The full path to mp3 audio file.
+        @param file_path {str} The full path to audio file.
         @return has_art {boolean} Returns true if art tag is present, false otherwise.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        has_art = False
-
         try:
-            # @tod0 add check to make file is an audio file of mp3, m4a or wma type
+            has_art = False
+            file_name, file_ext = os.path.splitext(file_path)
 
-            audio_tags = self.get_any_tags(file_path)
+            if file_ext in _AUDIO_EXTS:
+                audio_tags = self.get_any_tags(file_path)
+            else:
+                print(f"File: {file_name} has invalid extension: {file_ext}")
+                has_art = False
 
             if 'WM/Picture' in audio_tags:
                 has_art = True
@@ -658,28 +702,31 @@ class AudioMetadata():
                 has_art = True
             else:
                 has_art = False
-
-            return has_art
+                print(f"No tags found in {file_name}")
         except Exception as e:
             raise Exception(f"Exception {e} checking for album art tag in file {file_path}")
+
+        return has_art
 
 
     def load_any_file(self, file_path):
         '''
         @brief loads any valid audio file type.
 
+        @details Expects a valid filepath to an acceptable audio file.
+
         @param file_path {str} The full file path for audio file.
-        @return audio_file {FileType} Containing objects for the input audio file path.
+        @return audio_file {FileType} Instance for the input audio file type or None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        audio_file = None
-
         try:
+            audio_file = None
             audio_file = mutagen.File(file_path)
+            if audio_file is None:
+                return None
         except Exception as e:
-            print(f"Error processing file: {e}")
-            return None
+            raise Exception(f"Exception {e} loading audio file: {file_path}")
 
         return audio_file
 
@@ -691,12 +738,19 @@ class AudioMetadata():
         @details Expects a valid filepath to a mp3 type audio file.
 
         @param file_path {str} The full file path for audio file.
-        @return audio_file {FileType} Containing objects for the input audio file path.
+        @return audio_file {FileType} Instance for the input audio file type or None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        audio_file = None
-        if file_path.endswith('.mp3'):
-            audio_file = mutagen.File(file_path, "MP3")
+        try:
+            audio_file = None
+            if file_path.endswith('.mp3'):
+                # audio_file = mutagen.File(file_path, "MP3")
+                audio_file = MP3(file_path)
+                if audio_file is None:
+                    return None
+        except Exception as e:
+            raise Exception(f"Exception {e} loading audio file: {file_path}")
 
         return audio_file
 
@@ -743,6 +797,7 @@ class AudioMetadata():
 
     def show_mp3_metadata(self, file_path):
         '''
+        @todo add error handling
         @brief Shows mp3 audio file metadata.
 
         @details All mp3 files are presumed to be ID3v2.3 tags so we have consistent metadata fields.
