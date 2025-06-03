@@ -29,7 +29,7 @@ def run_command_with_progress(command):
     stdout, stderr = process.communicate()
 
     if process.returncode != 0:
-      print(f"Error: Command '{command}' failed with return code {process.returncode}")
+      print(f"Exception: Command '{command}' failed with return code {process.returncode}")
       if stderr:
           print(f"Stderr:\n{stderr}")
 
