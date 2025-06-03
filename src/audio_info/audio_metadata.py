@@ -527,7 +527,7 @@ class AudioMetadata():
         '''
         @brief Extracts and saves embedded album art.
 
-        @details Check if file has embedded art, extracts and saves it to album directory.
+        @details Check if album folder does not have album art file, ensures file has embedded art, extracts and saves it to album directory.
         @details Uses ffmpeg and is audio file type agnostic.
 
         @param file_path {str} The full path to audio file.
@@ -551,9 +551,14 @@ class AudioMetadata():
         try:
             input_path = Path(file_path)
             album_path = input_path.parent
-            output_file = os.path.join(album_path, _FOLDER_ART)
+
+            album_contents = os.listdir(album_path)
+            if _FOLDER_ART in album_contents:
+                print(f"{album_path} already contains {_FOLDER_ART}")
+                return
 
             if self.has_art_tag(input_path):
+                output_file = os.path.join(album_path, _FOLDER_ART)
                 input_stream  = ffmpeg.input(input_path)
                 output_stream = ffmpeg.output(input_stream, output_file, map=map, map_metadata=map_metadata)
 
@@ -561,7 +566,7 @@ class AudioMetadata():
                 # the capture_stdout and stderr are for debugging purposes
                 # quiet prevents output to terminal
                 # overwrite_output since won't be able to respond to an overwrite y/n prompt
-                out, err = ffmpeg.run(output_stream, capture_stdout=True, capture_stderr=True, quiet=True, overwrite_output=True)
+                # out, err = ffmpeg.run(output_stream, capture_stdout=True, capture_stderr=True, quiet=True, overwrite_output=True)
                 print(f"Cover art extracted from {input_path.name} and saved to {album_path}")
             else:
                 print(f"{input_path.name} does not have any embedded cover art")
@@ -573,7 +578,7 @@ class AudioMetadata():
 
     def extract_walk(self, start_path, file_pattern):
         '''
-        @brief Extracts all embedded album art form audio files.
+        @brief Extracts all embedded album art from audio files.
 
         @details Extracts embedded art from m4a, mp3, and wma files with ffmpeg.
 
@@ -591,16 +596,19 @@ class AudioMetadata():
                     # get the file extension
                     input_file_name, input_file_ext = os.path.splitext(file)
 
-                    # file is not mp3, m4a, or wma, so carry on to next file
+                    # we don't touch non-audio files like m3u etc
                     if input_file_ext not in _AUDIO_EXTS:
                         continue
-                    else:
-                        input_file_path = os.path.join(dir_path, file)
-                        if file_pattern and fnmatch.fnmatch(file, file_pattern):
-                            self.convert_file(input_file_path, input_file_ext)
-                        elif not file_pattern:
-                            self.convert_file(input_file_path)
 
+                    input_file_path = os.path.join(dir_path, file)
+
+                    if file_pattern:
+                        if fnmatch.fnmatch(file, file_pattern):
+                            self.extract_album_art(input_file_path)
+                        else:
+                            continue
+                    else:
+                        self.extract_album_art(input_file_path)
         except Exception as e:
             if file_pattern:
                 raise Exception(f"Exception {e} walking {start_path} to convert {file_pattern} audio files to mp3")

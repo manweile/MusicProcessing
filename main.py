@@ -18,7 +18,7 @@ metadata = AudioMetadata()
 
 def convert_file(file_path):
     '''
-    @brief Convert audio file specified by extension to mp3 format.
+    @brief Converts specified audio file to mp3 format.
     '''
 
     metadata.convert_file(file_path)
@@ -26,7 +26,7 @@ def convert_file(file_path):
 
 def convert_walk(tld_path, file_pattern):
     '''
-    @brief Convert all audio files in specified top level directory to mp3 format.
+    @brief Converts all audio files in specified top level directory to mp3 format.
     '''
 
     metadata.convert_walk(tld_path, file_pattern)
@@ -38,6 +38,22 @@ def create_albums(tld_path):
     '''
 
     metadata.create_album_dir(tld_path)
+
+
+def extract_art(file_path):
+    '''
+    @brief Extracts and saves embedded album art from specified audio file.
+    '''
+
+    metadata.extract_album_art(file_path)
+
+
+def extract_walk(tld_path, file_pattern):
+    '''
+    @brief Extracts and save embedded art from  all audio files in specified top level directory with specified pattern.
+    '''
+
+    metadata.extract_walk(tld_path, file_pattern)
 
 
 def list_audio(tld_path):
@@ -71,6 +87,7 @@ def remove_pattern(tld_path, file_pattern):
 
     directory.remove_pattern(tld_path, file_pattern)
 
+
 def set_album_art(tld_path):
     '''
     @brief Sets album art file for an album directory.
@@ -102,6 +119,15 @@ def main(args):
         if args.subcommand == "create-albums":
             tld_path = getattr(args, "tld")
             create_albums(tld_path)
+
+        if args.subcommand == "extract-art":
+            file_path = getattr(args, "file")
+            extract_art(file_path)
+
+        if args.subcommand == "extract-walk":
+            tld_path = getattr(args, "tld")
+            file_pattern = getattr(args, "pattern")
+            extract_walk(tld_path, file_pattern)
 
         if args.subcommand == "list-audio":
             tld_path = getattr(args, "tld")
@@ -165,6 +191,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Music Processing')
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
+    # convert audio file specified to mp3 format
     # "/media/gerald/Music/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3",
     # "/home/gerald/Music/Alejandro Escovedo/Alejandro Escovedo-Broken Bottle.wma",
     # "/media/gerald/Music/Music/The Eagles/Desperado/The Eagles-Desperado.m4a",
@@ -174,7 +201,6 @@ if __name__ == "__main__":
     # "H:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a",                              # no embedded art even though file explorer shows it
     # "H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma",                # no embedded art
     # "H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3"                 # no embedded art
-    # convert audio file specified to mp3 format
     # 1 mandatory arg, the audio file path
     # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
@@ -184,6 +210,7 @@ if __name__ == "__main__":
 
     # convert all audio files found in top level directory
     # 1 mandatory arg, the tld path
+    # 1 optional arg, the file pattern to match
     # sys.argv = ['D:\MusicProcessing\main.py', 'convert-walk', 'C:\Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-walk', '/home/gerald/Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
     convert_walk_parser = subparsers.add_parser("convert-walk", help="Converts all audio files to mp3")
@@ -198,6 +225,29 @@ if __name__ == "__main__":
     create_album_parser = subparsers.add_parser("create-albums", help="Create album sub-directories")
     create_album_parser.add_argument("tld", type=str, help="mandatory top level directory")
     create_album_parser.set_defaults(func=create_albums)
+
+    # extract album art from specified audio file
+    # C:\Music\Alberta Hunter\The Blues\Alberta Hunter - Amtrak Blues.mp3                                   #no embedded, no Folder.jpg
+    # C:\Music\38 Special\Special Forces\Caught Up in You.mp3                                               #no embedded, has Folder.jpg
+    # C:\Music\Joshua Davis\The Voice Peformance\Joshau Davis-The Workingman's Hym.m4a                      #has embedded, no Folder.jpg
+    # C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma    #has embedded, no Folder.jpg
+    # 1 mandatory arg, the tld path
+    # 1 optional arg, the file pattern to match
+    # sys.argv = ['D:\MusicProcessing\main.py', 'extract-art', 'C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma',
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-walk', '/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma',
+    extract_art_parser = subparsers.add_parser("extract-art", help="Extracts embedded art from audio file")
+    extract_art_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    extract_art_parser.set_defaults(func=extract_art)
+
+    # extract album art from all audio files found in top level directory
+    # 1 mandatory arg, the tld path
+    # 1 optional arg, the file pattern to match
+    # sys.argv = ['D:\MusicProcessing\main.py', 'extract-walk', 'C:\Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-walk', '/home/gerald/Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
+    extract_walk_parser = subparsers.add_parser("extract-walk", help="Extracts embedded art from all audio files")
+    extract_walk_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    extract_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
+    extract_walk_parser.set_defaults(func=extract_walk)
 
     # list all audio files
     # 1 mandatory arg, the tld path
