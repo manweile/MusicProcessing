@@ -142,7 +142,7 @@ def main(args):
     # for song in mp3_file_list:
     #     metadata_type = metadata.get_metadata_type(song)
     #     if metadata_type == "mp3":
-    #         tag = metadata.get_mp3_tag_info(song)
+    #         tag = metadata.get_mp3_tags(song)
     #         print(tag)
 
     # # get any tag info
