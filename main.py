@@ -12,7 +12,6 @@ import argparse
 from src.audio_info import AudioMetadata
 from src.dir_processing import DirectoryProcessing
 
-
 directory = DirectoryProcessing()
 metadata = AudioMetadata()
 
