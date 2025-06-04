@@ -707,11 +707,15 @@ class AudioMetadata():
             has_art = False
             file_name, file_ext = os.path.splitext(file_path)
 
-            if file_ext in _AUDIO_EXTS:
-                audio_tags = self.get_any_tags(file_path)
-            else:
+            if file_ext not in _AUDIO_EXTS:
                 print(f"File: {file_name} has invalid extension: {file_ext}")
-                has_art = False
+                return has_art
+
+            audio_tags = self.get_any_tags(file_path)
+
+            if audio_tags is None:
+                print(f"File: {file_name} has no metadata")
+                return has_art
 
             if 'WM/Picture' in audio_tags:
                 has_art = True
@@ -719,9 +723,6 @@ class AudioMetadata():
                 has_art = True
             elif 'APIC:' in audio_tags:
                 has_art = True
-            else:
-                has_art = False
-                print(f"No tags found in {file_name}")
         except Exception as e:
             raise Exception(f"Exception {e} checking for album art tag in file {file_path}")
 
