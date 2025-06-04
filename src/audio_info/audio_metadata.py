@@ -353,7 +353,7 @@ class AudioMetadata():
         2nd source: look for an <album name>.jpg in generated_files/AlbumArt and copy it to album directory as Folder.jpg
         3rd source: extract album art, save it as Folder.jpg in album directory
 
-        ID3v2.3 album art tag is APIC, where '3' denotes front cover
+        ID3v2.3 album art tag is APIC, where '3' denotes front cover??
         ASF album art tag is WM/Picture, where '3' denotes front cover
         MP4 album art tag is covr, where '?' denotes front cover??
         '''
@@ -383,10 +383,10 @@ class AudioMetadata():
         try:
             input_path = Path(start_path)
 
-            for dir_path, dir_names, file_names in os.walk(input_path):
+            for dir_path, _, file_names in os.walk(input_path):
                 for file in file_names:
                     # get the file extension
-                    input_file_name, input_file_ext = os.path.splitext(file)
+                    _, input_file_ext = os.path.splitext(file)
 
                     # file is not mp3, m4a, or wma, so carry on to next file
                     if input_file_ext not in _AUDIO_EXTS:
@@ -552,6 +552,9 @@ class AudioMetadata():
             input_path = Path(file_path)
             album_path = input_path.parent
 
+            # album folders are supposed to contain a Folder.jpg
+            # and the end result of extraction is to to create a Folder.jpg
+            # but we don't need to waste cycles once we have a Folder.jpg
             album_contents = os.listdir(album_path)
             if _FOLDER_ART in album_contents:
                 print(f"{album_path} already contains {_FOLDER_ART}")
@@ -566,10 +569,8 @@ class AudioMetadata():
                 # the capture_stdout and stderr are for debugging purposes
                 # quiet prevents output to terminal
                 # overwrite_output since won't be able to respond to an overwrite y/n prompt
-                # out, err = ffmpeg.run(output_stream, capture_stdout=True, capture_stderr=True, quiet=True, overwrite_output=True)
+                out, err = ffmpeg.run(output_stream, capture_stdout=True, capture_stderr=True, quiet=True, overwrite_output=True)
                 print(f"Cover art extracted from {input_path.name} and saved to {album_path}")
-            else:
-                print(f"{input_path.name} does not have any embedded cover art")
         except ffmpeg.Error as e:
             print(f"An ffmpeg error occurred: {e.stderr.decode()}")
         except Exception as e:
@@ -591,10 +592,20 @@ class AudioMetadata():
         try:
             input_path = Path(start_path)
 
-            for dir_path, dir_names, file_names in os.walk(input_path):
+            for dir_path, _, file_names in os.walk(input_path):
+
+                # the tld Music does contain files, but not jpg's
+                # album folders are supposed to contain a Folder.jpg
+                # and the end result of extraction is to to create a Folder.jpg
+                # but we don't need to waste cycles once we have a Folder.jpg
+                dir_contents = os.listdir(dir_path)
+                if _FOLDER_ART in dir_contents:
+                    print(f"{dir_path} contains {_FOLDER_ART}")
+                    continue
+
                 for file in file_names:
                     # get the file extension
-                    input_file_name, input_file_ext = os.path.splitext(file)
+                    _, input_file_ext = os.path.splitext(file)
 
                     # we don't touch non-audio files like m3u etc
                     if input_file_ext not in _AUDIO_EXTS:
