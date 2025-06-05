@@ -557,7 +557,6 @@ class AudioMetadata():
             # but we don't need to waste cycles once we have a Folder.jpg
             album_contents = os.listdir(album_path)
             if _FOLDER_ART in album_contents:
-                print(f"{album_path} already contains {_FOLDER_ART}")
                 return
 
             if self.has_art_tag(input_path):
@@ -594,29 +593,26 @@ class AudioMetadata():
 
             for dir_path, _, file_names in os.walk(input_path):
 
-                # the tld Music does contain files, but not jpg's
+                # the tld Music does contain files, but not audio files w/jpg's
+                if dir_path == start_path:
+                    continue
+
                 # album folders are supposed to contain a Folder.jpg
                 # and the end result of extraction is to to create a Folder.jpg
-                # but we don't need to waste cycles once we have a Folder.jpg
+                # but we don't need to waste cycles if we find a Folder.jpg
                 dir_contents = os.listdir(dir_path)
                 if _FOLDER_ART in dir_contents:
-                    print(f"{dir_path} contains {_FOLDER_ART}")
                     continue
 
                 for file in file_names:
-                    # get the file extension
                     _, input_file_ext = os.path.splitext(file)
-
                     # we don't touch non-audio files like m3u etc
                     if input_file_ext not in _AUDIO_EXTS:
                         continue
 
                     input_file_path = os.path.join(dir_path, file)
 
-                    if file_pattern:
-                        if fnmatch.fnmatch(file, file_pattern):
-                            self.extract_album_art(input_file_path)
-                        else:
+                    if file_pattern and not fnmatch.fnmatch(file, file_pattern):
                             continue
                     else:
                         self.extract_album_art(input_file_path)
