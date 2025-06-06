@@ -32,7 +32,7 @@ def run_task(cmd):
             # print subprocess output line-by-line as soon as its stdout buffer is flushed in Python 3:
             for line in process.stdout:
                 # Update the progress, since we do not have a predefined iterator
-                # tqdm doesnt know before hand when to end and cant generate a progress bar
+                # tqdm doesn't know before hand when to end and cant generate a progress bar
                 # hence elapsed time will be shown, this is good enough as we know
                 # something is in progress
                 t.update()

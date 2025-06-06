@@ -3,6 +3,7 @@ import time
 from tqdm import tqdm
 import queue
 
+
 def worker(q, progress_bar):
     while True:
         task = q.get()
@@ -11,6 +12,7 @@ def worker(q, progress_bar):
         time.sleep(0.1)  # Simulate work
         progress_bar.update(1)
         q.task_done()
+
 
 if __name__ == "__main__":
     num_tasks = 100

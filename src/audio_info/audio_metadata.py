@@ -17,9 +17,9 @@ from pathlib import Path
 # third party modules
 import mutagen
 import pathvalidate
-from mutagen.asf import ASF
-from mutagen.id3 import ID3, TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK
-from mutagen.mp4 import MP4
+# from mutagen.asf import ASF
+# from mutagen.id3 import ID3, TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK
+# from mutagen.mp4 import MP4
 from mutagen.mp3 import MP3
 from pydub import AudioSegment
 from pydub.utils import mediainfo
@@ -119,6 +119,7 @@ _WMA_KEYS = {
             'title': 'Title',
             'track': 'WM/TrackNumber'
             }
+
 
 class AudioMetadata():
     '''
@@ -561,7 +562,7 @@ class AudioMetadata():
 
             if self.has_art_tag(input_path):
                 output_file = os.path.join(album_path, _FOLDER_ART)
-                input_stream  = ffmpeg.input(input_path)
+                input_stream = ffmpeg.input(input_path)
                 output_stream = ffmpeg.output(input_stream, output_file, map=map, map_metadata=map_metadata)
 
                 # run executes the ffmpeg command
@@ -613,7 +614,7 @@ class AudioMetadata():
                     input_file_path = os.path.join(dir_path, file)
 
                     if file_pattern and not fnmatch.fnmatch(file, file_pattern):
-                            continue
+                        continue
                     else:
                         self.extract_album_art(input_file_path)
         except Exception as e:
@@ -838,7 +839,7 @@ class AudioMetadata():
 
         print(f"album: {album}")
         print(f"album artist: {album_artist}")
-        print (f"artist: {artist}")
+        print(f"artist: {artist}")
         print(f"comment: {comment}")
         print(f"composer: {composer}")
         print(f"copyright: {copyright}")
@@ -848,4 +849,3 @@ class AudioMetadata():
         print(f"publisher: {publisher}")
         print(f"title: {title}")
         print(f"track: {track}")
-

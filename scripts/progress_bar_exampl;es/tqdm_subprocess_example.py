@@ -2,6 +2,7 @@ import subprocess
 from tqdm import tqdm
 import time
 
+
 def run_command_with_progress(command):
     """Runs a shell command and displays progress using tqdm."""
 
@@ -29,11 +30,12 @@ def run_command_with_progress(command):
     stdout, stderr = process.communicate()
 
     if process.returncode != 0:
-      print(f"Exception: Command '{command}' failed with return code {process.returncode}")
-      if stderr:
-          print(f"Stderr:\n{stderr}")
+        print(f"Exception: Command '{command}' failed with return code {process.returncode}")
+    if stderr:
+        print(f"Stderr:\n{stderr}")
 
     return process.returncode, stdout, stderr
+
 
 if __name__ == "__main__":
     commands = [
@@ -45,9 +47,9 @@ if __name__ == "__main__":
     for cmd in commands:
         return_code, stdout, stderr = run_command_with_progress(cmd)
         if return_code == 0:
-          print(f"Command '{cmd}' executed successfully.")
-          print(f"Stdout:\n{stdout}") # Uncomment if you want to print the full output
-          print(f"Stderr:\n{stderr}")
+            print(f"Command '{cmd}' executed successfully.")
+            print(f"Stdout:\n{stdout}") # Uncomment if you want to print the full output
+            print(f"Stderr:\n{stderr}")
 
 # test 2
 # input_path = Path(out_f.name)

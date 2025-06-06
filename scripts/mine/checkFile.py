@@ -1,5 +1,4 @@
-import os
-
+# import os
 import eyed3
 
 r'''
@@ -20,6 +19,7 @@ SOURCE_DIR = "Music"
 # top level processed music files directory
 PROCESSED_MUSIC = "ProcessedMusic"
 
+
 def createDir(drive_letter, dir_path):
     '''
     @brief  Creates top level processed music files directory if it does not exist
@@ -29,8 +29,9 @@ def createDir(drive_letter, dir_path):
 
 
     # check if top level directory exists
-        # create it
+    # create it
     # else return
+
 
 def get_info(file_path):
     '''
@@ -68,9 +69,9 @@ def show_info(tag_info):
     # look at other ways, at min, format print - all I really want is the YYYY
     song_date = tag_info.getBestDate()
 
-    print (artist_name)
-    print (album_name)
-    print (song_title)
+    print(artist_name)
+    print(album_name)
+    print(song_title)
     print(song_genre)
     print(song_date)
 

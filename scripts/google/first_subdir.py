@@ -1,5 +1,6 @@
 from pathlib import Path
 
+
 def get_first_subdirectory(path_str):
     path = Path(path_str)
     if not path.is_dir():
@@ -15,6 +16,7 @@ def get_first_subdirectory(path_str):
 
     # subdirectories = [x for x in path.iterdir() if x.is_dir()]
     return subdirectories[0] if subdirectories else None
+
 
 # Example usage:
 directory_path = r"C:\Music" # Current directory

@@ -7,6 +7,7 @@ from mutagen.asf import ASF
 
 _ART_FILE = "Folder.jpg"
 
+
 def unpack_asf_image(data):
     '''
     @brief Unpack image data from a WM/Picture tag.
@@ -70,7 +71,8 @@ def find_embedded_art(file_path):
         print(f"Exception: {e} extracting embedded art from {file_path}")
         return None
 
-#Example Usage
+
+# Example Usage
 file_path = None
 if platform.system() == "Linux":
     file_path = r"/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma"  # has art

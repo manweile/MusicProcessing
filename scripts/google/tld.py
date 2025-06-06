@@ -1,22 +1,25 @@
 from pathlib import Path
 
+
 def get_top_level_directory(path_string):
-  """
-  Returns the top-level directory of a given path string.
+    """
+    Returns the top-level directory of a given path string.
 
-  Args:
-    path_string: A string representing the file path.
+    Args:
+      path_string: A string representing the file path.
 
-  Returns:
-    A string representing the top-level directory, or None if the path is invalid.
-  """
-  path_object = Path(path_string)
+    Returns:
+      A string representing the top-level directory, or None if the path is invalid.
+    """
 
-  # Handle cases like '/' or 'C:\\' where parent does not exist
-  if str(path_object) == path_object.root:
-      return str(path_object)
+    path_object = Path(path_string)
 
-  return str(path_object.parents[-1])
+    # Handle cases like '/' or 'C:\\' where parent does not exist
+    if str(path_object) == path_object.root:
+        return str(path_object)
+
+    return str(path_object.parents[-1])
+
 
 # Example usage:
 file_path = "/home/user/documents/project/file.txt"

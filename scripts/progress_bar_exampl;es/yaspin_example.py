@@ -3,6 +3,7 @@ import time
 from yaspin import yaspin
 from yaspin.spinners import Spinners
 
+
 def run_with_spinner(command, text="Processing..."):
     with yaspin(Spinners.dots, text=text) as sp:
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -16,6 +17,7 @@ def run_with_spinner(command, text="Processing..."):
             sp.ok("Done!")
             print(stdout.decode())
         return process.returncode
+
 
 if __name__ == "__main__":
     command_to_run = "ls -l /usr/bin"

@@ -5,6 +5,7 @@ from mutagen.id3 import ID3
 
 _ART_FILE = "Folder.jpg"
 
+
 def find_embedded_art(file_path):
     """
     Finds and extracts embedded album art from an MP3 file.
@@ -26,6 +27,7 @@ def find_embedded_art(file_path):
     except Exception as e:
         print(f"Exception: {e} extracting embedded art from {file_path}")
         return None
+
 
 # Example usage:
 file_path = None

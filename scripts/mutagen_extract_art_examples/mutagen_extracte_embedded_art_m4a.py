@@ -3,6 +3,7 @@ from mutagen.mp4 import MP4
 
 _ART_FILE = "Folder.jpg"
 
+
 def find_embedded_art(file_path):
     """
     Finds and extracts embedded artwork from an M4A file using Mutagen.
@@ -24,13 +25,14 @@ def find_embedded_art(file_path):
             # artwork = audio["covr"][0]
             # Artwork data might be wrapped in format codes; extract the raw data.
             if isinstance(artwork, tuple):
-                return artwork[1] # Return the image data
+                return artwork[1]  # Return the image data
             return artwork
         else:
             return None
     except Exception as e:
         print(f"Exception: {e} extracting embedded art from {file_path}")
         return None
+
 
 # Example usage:
 file_path = None
