@@ -15,6 +15,7 @@ from src.dir_processing import DirectoryProcessing
 directory = DirectoryProcessing()
 metadata = AudioMetadata()
 
+
 def convert_file(file_path):
     '''
     @brief Converts specified audio file to mp3 format.
@@ -150,10 +151,9 @@ def main(args):
             tld_path = getattr(args, "tld")
             set_album_art(tld_path)
 
-    except NotImplementedError as e:
+    except NotImplementedError:
         raise NotImplementedError(f"Command {args.subcommand} does not exist")
     except Exception as e:
-
         raise Exception(f"Exception {e} executing subcommand {args.subcommand}")
 
 
@@ -169,7 +169,7 @@ def main(args):
     #     if metadata_type == "mp3":
     #         tag = metadata.get_mp3_tags(song)
     #         print(tag)
-
+    #
     # # get any tag info
     # any_tag_info_file_list = ["H:\\Music\Dolly Parton\\Blue Smoke\\Dolly Parton-Unlikely Angel.mp3",
     #                           "H:\\Music\\The Eagles\\The Eagles-Desperado.m4a",
@@ -293,4 +293,3 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     main(args)
-
