@@ -39,86 +39,86 @@ _FOLDER_ART = "Folder.jpg"
 # the set of pydub generic metadata keys I want to copy to converted files
 # these keys also correspond to what Windows displays as file information in File Explorer
 _GEN_KEYS = {
-            'album',                    # must have
-            'album_artist',             # nice to have
-            'artist',                   # must have
-            'comment',                  # nice to have
-            'composer',                 # nice to have
-            'copyright',                # nice to have
-            'date',                     # must have
-            'disc',                     # nice to have
-            'genre',                    # must have
-            'publisher',                # nice to have
-            'title',                    # must have
-            'track'                     # nice to have
-            }
+    'album',                    # must have
+    'album_artist',             # nice to have
+    'artist',                   # must have
+    'comment',                  # nice to have
+    'composer',                 # nice to have
+    'copyright',                # nice to have
+    'date',                     # must have
+    'disc',                     # nice to have
+    'genre',                    # must have
+    'publisher',                # nice to have
+    'title',                    # must have
+    'track'                     # nice to have
+}
 
 # set of known date keys in ID3, m4a, wma order
 _TIME_KEYS = {
-            'TYER',                     # ID3
-            'TORY',                     # ID3
-            '\xa9day',                  # m4a, MIGHT need to use bytes literal; b'\xa9day'
-            'originalyear',             # m4a
-            'originaldate',             # m4a
-            'WM/OriginalReleaseYear',   # wma
-            'WM/OriginalReleaseTime',   # wma
-            'WM/Year'                   # wma
-            }
+    'TYER',                     # ID3
+    'TORY',                     # ID3
+    '\xa9day',                  # m4a, MIGHT need to use bytes literal; b'\xa9day'
+    'originalyear',             # m4a
+    'originaldate',             # m4a
+    'WM/OriginalReleaseYear',   # wma
+    'WM/OriginalReleaseTime',   # wma
+    'WM/Year'                   # wma
+}
 
 # set of known art keys in ID3, m4a, wma order
 _ART_KEYS = {
-            'APIC',                     # ID3
-            'covr',                     # m4a
-            'WM/Picture'                # wma
-            }
+    'APIC',                     # ID3
+    'covr',                     # m4a
+    'WM/Picture'                # wma
+}
 
 # dict of generic to ID3v2.3
 _MP3_KEYS = {
-            'album': 'TALB',
-            'album_artist': 'TPE2',
-            'artist': 'TPE1',
-            'comment': 'COMM',
-            'composer': 'TCOM',
-            'copyright': 'TCOP',
-            'date': 'TYER',
-            'disc': 'TPOS',
-            'genre': 'TCON',
-            'publisher': 'TPUB',
-            'title': 'TIT2',
-            'track': 'TRCK'
-            }
+    'album': 'TALB',
+    'album_artist': 'TPE2',
+    'artist': 'TPE1',
+    'comment': 'COMM',
+    'composer': 'TCOM',
+    'copyright': 'TCOP',
+    'date': 'TYER',
+    'disc': 'TPOS',
+    'genre': 'TCON',
+    'publisher': 'TPUB',
+    'title': 'TIT2',
+    'track': 'TRCK'
+}
 
 # dict of generic to m4a
 _M4A_KEYS = {
-            'album': '\xa9alb',
-            'album_artist': 'aART',
-            'artist': '\xa9ART',
-            'comment': '\xa9cmt',
-            'composer': '\xa9wrt',
-            'copyright': 'cprt',
-            'date': '\xa9day',
-            'disc': 'disk',
-            'genre': '\xa9gen',
-            'publisher': '\xa9pub',
-            'title': '\xa9nam',
-            'track': 'trkn'
-            }
+    'album': '\xa9alb',
+    'album_artist': 'aART',
+    'artist': '\xa9ART',
+    'comment': '\xa9cmt',
+    'composer': '\xa9wrt',
+    'copyright': 'cprt',
+    'date': '\xa9day',
+    'disc': 'disk',
+    'genre': '\xa9gen',
+    'publisher': '\xa9pub',
+    'title': '\xa9nam',
+    'track': 'trkn'
+}
 
 # dict of generic to wma
 _WMA_KEYS = {
-            'album': 'WM/AlbumTitle',
-            'album_artist': 'WM/AlbumArtist',
-            'artist': 'Author',
-            'comment': 'Description',
-            'composer': 'WM/Composer',
-            'copyright': 'Copyright',
-            'date': 'WM/Year',
-            'disc': 'WM/PartofSet',
-            'genre': 'WM/Genre',
-            'publisher': 'WM/Publisher',
-            'title': 'Title',
-            'track': 'WM/TrackNumber'
-            }
+    'album': 'WM/AlbumTitle',
+    'album_artist': 'WM/AlbumArtist',
+    'artist': 'Author',
+    'comment': 'Description',
+    'composer': 'WM/Composer',
+    'copyright': 'Copyright',
+    'date': 'WM/Year',
+    'disc': 'WM/PartofSet',
+    'genre': 'WM/Genre',
+    'publisher': 'WM/Publisher',
+    'title': 'Title',
+    'track': 'WM/TrackNumber'
+}
 
 
 class AudioMetadata():
@@ -762,7 +762,6 @@ class AudioMetadata():
         try:
             audio_file = None
             if file_path.endswith('.mp3'):
-                # audio_file = mutagen.File(file_path, "MP3")
                 audio_file = MP3(file_path)
                 if audio_file is None:
                     return None
@@ -776,7 +775,7 @@ class AudioMetadata():
         '''
         @brief Sets album art file for an album directory.
 
-        @details First check to see an album art folder is present in album directory.
+        @details First check to see a folder art file is present in album directory.
         @details Second checks if there is a /AlbumArt/<album>.jpg cover art file,
         renames it to album art folder constant and moves it to album directory.
 
@@ -785,29 +784,36 @@ class AudioMetadata():
         '''
 
         try:
-            # get the album parent path of audio file
-            album_path = Path(input_path)                   # Eg. "C:\Music\Albert Collins\Best Of The Blues, Vol. 1
-            album_content = os.listdir(album_path)
+            for dir_path, dir_names, file_names in os.walk(input_path):
+                # the tld Music does contain files, but not audio files w/jpg's
+                if dir_path == input_path:
+                    continue
 
-            if _FOLDER_ART in album_content:
-                print(f"Album directory {album_path} contains a {_FOLDER_ART} file")
-                return
+                # first level artist directories only contain album directories, and no files
+                if not file_names:
+                    continue
 
-            # check in AlbumArt folder if a jpg for album name exists
-            album_dir_name = os.path.basename(input_path)   # should be "Best Of The Blues, Vol. 1"
-            album_jpg = album_dir_name + ".jpg"             # should be "Best Of The Blues, Vol. 1.jpg"
+                album_path = Path(dir_path)                     # Eg. "C:\Music\Albert Collins\Best Of The Blues, Vol. 1
+                album_content = os.listdir(album_path)
 
-            # get the album art directory, per the project hierarchy
-            album_art_dir = os.path.join(generated_files, _ALBUM_ART)
-            album_art_dir_content = os.listdir(album_art_dir)
+                if _FOLDER_ART in album_content:
+                    continue
 
-            if album_jpg in album_art_dir_content:
-                album_art_jpg = os.path.join(album_art_dir, album_jpg)
-                folder_jpg = os.path.join(album_path, _FOLDER_ART)
-                shutil.copy(album_art_jpg, folder_jpg)
-                print(f"Set {album_art_jpg} as {_FOLDER_ART} for {album_path}")
-            else:
-                print(f"No album art set for {album_path}")
+                # check in AlbumArt folder if a jpg for album name exists
+                album_dir_name = os.path.basename(dir_path)     # should be "Best Of The Blues, Vol. 1"
+                album_jpg = album_dir_name + ".jpg"             # should be "Best Of The Blues, Vol. 1.jpg"
+
+                # get the album art directory, per the project hierarchy
+                album_art_dir = os.path.join(generated_files, _ALBUM_ART)
+                album_art_dir_content = os.listdir(album_art_dir)
+
+                if album_jpg in album_art_dir_content:
+                    album_art_jpg = os.path.join(album_art_dir, album_jpg)
+                    folder_jpg = os.path.join(album_path, _FOLDER_ART)
+                    shutil.copy(album_art_jpg, folder_jpg)
+                    print(f"Set {album_art_jpg} as {_FOLDER_ART} for {album_path}")
+                else:
+                    print(f"No album art set for {album_path}")
         except Exception as e:
             raise Exception(f"Exception {e} setting album art for {album_path}")
 

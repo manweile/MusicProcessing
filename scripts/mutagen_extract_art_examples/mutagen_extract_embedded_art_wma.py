@@ -75,8 +75,12 @@ def find_embedded_art(file_path):
 # Example Usage
 file_path = None
 if platform.system() == "Linux":
-    file_path = r"/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma"  # has art
+    # file_path = r"/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma"  # has art
     # file_path = r"/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a"       # no art
+    file_path = r"/home/gerald/Music/Buddy Guy/Bring 'Em In/Buddy Guy-Ain't No Sunshine.wma"
+    # file_path = r"/home/gerald/Music/The Beach Boys/The Best of the Beach Boys, Vol. 1/The Beach Boys-Little Deuce Coupe.wma"
+    # file_path = r"/home/gerald/Music/Elton John/Greatest Hits, Vol. 2/Elton John-Island Girl.wma"
+    # file_path = r"/home/gerald/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma"
 elif platform.system() == "Windows":
     # file_path = r"C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"  # has art
     file_path = r"\\192.168.0.14\sambashare\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"
