@@ -706,7 +706,7 @@ class AudioMetadata():
 
             if file_ext not in _AUDIO_EXTS:
                 print(f"File: {file_name} has invalid extension: {file_ext}")
-                return has_art
+                return False
 
             audio_tags = self.get_any_tags(file_path)
 
@@ -720,6 +720,8 @@ class AudioMetadata():
                 has_art = True
             elif 'APIC:' in audio_tags:
                 has_art = True
+            else:
+                has_art = False
         except Exception as e:
             raise Exception(f"Exception {e} checking for album art tag in file {file_path}")
 
