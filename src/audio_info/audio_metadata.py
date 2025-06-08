@@ -12,12 +12,13 @@ import fnmatch
 import gc
 import os
 import shutil
+import struct
 from pathlib import Path
 
 # third party modules
 import mutagen
 import pathvalidate
-# from mutagen.asf import ASF
+from mutagen.asf import ASF
 # from mutagen.id3 import ID3, TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK
 # from mutagen.mp4 import MP4
 from mutagen.mp3 import MP3
@@ -361,7 +362,7 @@ class AudioMetadata():
 
         try:
             audio_segment = AudioSegment.from_file(file_path)
-            # audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3')
+            audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3')
             print(f"{input_file_name} converted to {export_format}")
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_file_path}")
@@ -529,7 +530,72 @@ class AudioMetadata():
         @brief Extracts and saves embedded album art.
 
         @details Check if album folder does not have album art file, ensures file has embedded art, extracts and saves it to album directory.
+
+        @param file_path {str} The full path to audio file.
+
+        @exception Error A ffmpeg error.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            input_path = Path(file_path)
+            album_path = input_path.parent
+
+            # album folders are supposed to contain a Folder.jpg
+            # and the end result of extraction is to to create a Folder.jpg
+            # but we don't need to waste cycles once we have a Folder.jpg
+            album_contents = os.listdir(album_path)
+            if _FOLDER_ART in album_contents:
+                return
+
+            if self.has_art_tag(input_path):
+                metadata_type = self.get_metadata_type(input_path)
+                if metadata_type == "ASF":
+                    self.extract_asf_art
+                elif metadata_type == "MP3":
+                    self.extract_mp3_art
+                elif metadata_type == "MP4":
+                    self.extract_m4a_art
+        except Exception as e:
+            raise Exception(f"Exception {e} extracting art from {file_path}")
+
+
+    def extract_asf_art(self, file_path):
+        '''
+        @brief Extracts cover art from wma files
+
+        @details Input file is expected to have cover art.
+
+        @param file_path {str} The full path to audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            audio = ASF(file_path)
+            audio_tags = audio.tags
+            pic_tag = audio_tags["WM/Picture"]
+            byte_attribute_array = pic_tag[0]
+            picture_data = byte_attribute_array.value
+            mime_type, image_data, type_indicator, image_description = self.__unpack_asf_image(picture_data)
+            if image_data:
+                input_path = Path(file_path)
+                album_path = input_path.parent
+                output_file = os.path.join(album_path, _FOLDER_ART)
+                with open(output_file, 'wb') as img_file:
+                    img_file.write(image_data)
+                print(f"Album art extracted from {input_path.name} and saved to {album_path}")
+        except Exception as e:
+            raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
+
+
+    def extract_ffmpeg_art(self, file_path):
+        '''
+        @todo needs a check to ensure there is an video stream with at least 1 frame
+        @brief Extracts and saves embedded album art.
+
+        @details Check if album folder does not have album art file, ensures file has embedded art, extracts and saves it to album directory.
         @details Uses ffmpeg and is audio file type agnostic.
+        @details Audio file MUST have a video stream and an audio stream.
 
         @param file_path {str} The full path to audio file.
 
@@ -575,6 +641,32 @@ class AudioMetadata():
             print(f"An ffmpeg error occurred: {e.stderr.decode()}")
         except Exception as e:
             raise Exception(f"Exception {e} extracting art from {input_path}")
+
+
+    def extract_m4a_art(self, file_path):
+        '''
+        @brief Extracts cover art from m4a files
+
+        @details Input file is expected to have cover art.
+
+        @param file_path {str} The full path to audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        pass
+
+
+    def extract_mp3_art(self, file_path):
+        '''
+        @brief Extracts cover art from wma files
+
+        @details Input file is expected to have cover art
+
+        @param file_path {str} The full path to audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        pass
 
 
     def extract_walk(self, start_path, file_pattern):
@@ -636,7 +728,7 @@ class AudioMetadata():
         try:
             tags = None
             audio_file = self.load_any_file(file_path)
-            if audio_file is not None:
+            if audio_file is not None and audio_file.tags:
                 tags = audio_file.tags
             else:
                 return None
@@ -660,6 +752,7 @@ class AudioMetadata():
             audio_file = self.load_any_file(file_path)
             if audio_file is not None:
                 # the built in class name of the filetype returned shows what metadata type
+                # Eg mp3 = MP3, m4a = MP4, wma = ASF
                 metadata_type = audio_file.__class__.__name__
             else:
                 return None
@@ -705,14 +798,12 @@ class AudioMetadata():
             file_name, file_ext = os.path.splitext(file_path)
 
             if file_ext not in _AUDIO_EXTS:
-                print(f"File: {file_name} has invalid extension: {file_ext}")
-                return False
+                raise Exception(f"File: {file_name} has invalid extension: {file_ext}")
 
             audio_tags = self.get_any_tags(file_path)
 
             if audio_tags is None:
-                print(f"File: {file_name} has no metadata")
-                return has_art
+                raise Exception(f"File: {file_name} has no metadata")
 
             if 'WM/Picture' in audio_tags:
                 has_art = True
@@ -720,8 +811,6 @@ class AudioMetadata():
                 has_art = True
             elif 'APIC:' in audio_tags:
                 has_art = True
-            else:
-                has_art = False
         except Exception as e:
             raise Exception(f"Exception {e} checking for album art tag in file {file_path}")
 
@@ -857,3 +946,49 @@ class AudioMetadata():
         print(f"publisher: {publisher}")
         print(f"title: {title}")
         print(f"track: {track}")
+
+
+    def __unpack_asf_image(self, data):
+        '''
+        @brief Unpack image data from a WM/Picture tag.
+
+        @details https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243
+        @details This function is treated as "untrusted" and could throw all manner of exceptions (out-of-bounds, etc.).
+
+        @return (mime, image_data, type, description) ({str}, {bytes}, {int}, {str}) Tuple containing the MIME type, the raw image data, a type indicator, and
+        the image's description.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            # <:little-endian byte order, b: signed char (1 byte), i: signed int (4 bytes)
+            # unpacks first 5 bytes in tuple where type is C signed char (1 byte)/Python integer and size is C signed int (4 bytes)/Python integer
+            # for an ASF WM/Picture, 3 = Front album cover
+            # eg. b'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`
+            # image type and image size, elements 0-5: b'\x03\x140\x00\x00
+            # image type, elements 0-1, b'\x03'
+            # image size, elements 1-5, b'\x140\x00\x00 = 0x1403 little-endian, 0x3014 big-endian, decimal 12308
+            # mime type, elements 5 to 25: b'i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00'
+            # null terminator, elements 25 to 27: b'\x00\x00'
+            # description, elements 27 to 29: b'\x00\x00'
+            # data, elements 29 to 29 + size: b'\xff\xe0\x...'
+            type, size = struct.unpack_from('<bi', data)
+            pos = 5
+            mime = b''
+
+            while data[pos:pos + 2] != b'\x00\x00':
+                mime += data[pos:pos + 2]
+                pos += 2
+
+            pos += 2
+            description = b''
+            while data[pos:pos + 2] != b'\x00\x00':
+                description += data[pos:pos + 2]
+                pos += 2
+
+            pos += 2
+            image_data = data[pos:pos + size]
+
+            return (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
+        except Exception as e:
+            raise Exception(f"Exception {e} extracting embedded art from tag data")
