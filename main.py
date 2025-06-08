@@ -231,12 +231,11 @@ if __name__ == "__main__":
     # C:\Music\Joshua Davis\The Voice Peformance\Joshau Davis-The Workingman's Hym.m4a                      #has embedded, no Folder.jpg
     # C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma    #has embedded, no Folder.jpg
     # C:\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma                      #has embedded, but not in a video stream, so will fail with ffmpeg
-    # 1 mandatory arg, the tld path
-    # 1 optional arg, the file pattern to match
+    # 1 mandatory arg, the path to audio file
     # sys.argv = ['D:\MusicProcessing\main.py', 'extract-art', 'C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma',
-    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-walk', '/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma',
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-art', '/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma',
     extract_art_parser = subparsers.add_parser("extract-art", help="Extracts embedded art from audio file")
-    extract_art_parser.add_argument("tld", type=str, help="mandatory full path to audio file")
+    extract_art_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     extract_art_parser.set_defaults(func=extract_art)
 
     # extract album art from all audio files found in top level directory
