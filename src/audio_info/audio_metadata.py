@@ -19,9 +19,10 @@ from pathlib import Path
 import mutagen
 import pathvalidate
 from mutagen.asf import ASF
-# from mutagen.id3 import ID3, TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK
-# from mutagen.mp4 import MP4
+# from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK
+from mutagen.id3 import ID3
 from mutagen.mp3 import MP3
+from mutagen.mp4 import MP4
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 from tqdm import tqdm
@@ -137,6 +138,75 @@ class AudioMetadata():
         '''
 
         pass
+
+
+    def __unpack_asf_image(self, data):
+        '''
+        @brief Unpack image data from a WM/Picture tag.
+
+        @details https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243
+        @details This function is treated as "untrusted" and could throw all manner of exceptions (out-of-bounds, etc.).
+
+        @return (mime, image_data, type, description) ({str}, {bytes}, {int}, {str}) Tuple containing the MIME type, the raw image data, a type indicator, and
+        the image's description.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            r'''
+            <:little-endian byte order, b: signed char (1 byte), i: signed int (4 bytes)
+            unpacks first 5 bytes in tuple where type is C signed char (1 byte)/Python integer and size is C signed int (4 bytes)/Python integer
+            for an ASF WM/Picture, 3 = Front album cover
+            eg. b'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`
+            image type and image size, elements 0-5: b'\x03\x140\x00\x00
+            image type, elements 0-1, b'\x03'
+            image size, elements 1-5, b'\x140\x00\x00 = 0x1403 little-endian, 0x3014 big-endian, decimal 12308
+            mime type, elements 5 to 25: b'i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00'
+            null terminator, elements 25 to 27: b'\x00\x00'
+            description, elements 27 to 29: b'\x00\x00'
+            data, elements 29 to 29 + size: b'\xff\xe0\x...'
+            '''
+            type, size = struct.unpack_from('<bi', data)
+            pos = 5
+            mime = b''
+
+            while data[pos:pos + 2] != b'\x00\x00':
+                mime += data[pos:pos + 2]
+                pos += 2
+
+            pos += 2
+            description = b''
+            while data[pos:pos + 2] != b'\x00\x00':
+                description += data[pos:pos + 2]
+                pos += 2
+
+            pos += 2
+            image_data = data[pos:pos + size]
+
+            return (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
+        except Exception as e:
+            raise Exception(f"Exception {e} extracting embedded art from tag data")
+
+
+    def __write_data(self, file_path, image_data):
+        '''
+        @brief Writes image data for audio file to separate jpeg file.
+
+        @param file_path {str} The full path to audio file.
+        @param image_data {bytearray} The image bytes extracted from audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            if image_data:
+                input_path = Path(file_path)
+                album_path = input_path.parent
+                output_file = os.path.join(album_path, _FOLDER_ART)
+                with open(output_file, 'wb') as img_file:
+                    img_file.write(image_data)
+                print(f"Album art written from {input_path.name} and saved to {album_path}")
+        except Exception as e:
+            raise Exception(f"Exception: {e} writing embedded art from {file_path}")
 
 
     def convert_file(self, file_path, file_ext):
@@ -333,31 +403,27 @@ class AudioMetadata():
         any_file_tags = self.get_any_tags(file_path)
         print(f"Mutagen tags for {file_path}")
         print(any_file_tags.pprint())
-        '''
-        @todo cover art
-        If a song has does have embedded art, ffmpeg will NOT auto transfer it.
 
+        '''
+        If a song has does have embedded art, ffmpeg will NOT auto transfer it.
         Many songs have co-located hidden file art, this is a result from all the WMP processing I did.
         I have:
-        - created all the required album sub directories
+        - created all the required album sub directories with create_album_dir function.
         - moved the audio files
-        I will:
-        - manually review existing AlbumArt*.jpg and Folder.jpg files
-        - manually move Folder.jpg to correct album directory
-        - if necessary, rename AlbumArt*.jpg (image and size 200x200 +- 5 px) to Folder.jpg
+        - manually reviewed existing AlbumArt*.jpg and Folder.jpg files
+        - manually moved Folder.jpg to correct album directory
+        - if necessary, rename AlbumArt*.jpg to Folder.jpg
         - manually move the renamed Folder.jpg to proper album sub directory
-        - create <album dir>.jpg in tld/Album Art for repeated album names
-
+        - create <album dir>.jpg in src/generated_files/Album Art for repeated album names
         End result:
-        Almost all album directories will contain a Folder.jpg cover art file
+        All album directories will contain a Folder.jpg cover art file
 
-        1st source: a co-located Folder.jpg with audio file
-        2nd source: look for an <album name>.jpg in generated_files/AlbumArt and copy it to album directory as Folder.jpg
-        3rd source: extract album art, save it as Folder.jpg in album directory
-
-        ID3v2.3 album art tag is APIC, where '3' denotes front cover??
-        ASF album art tag is WM/Picture, where '3' denotes front cover
-        MP4 album art tag is covr, where '?' denotes front cover??
+        1st source: a co-located Folder.jpg with audio file.
+        See above processing steps.
+        2nd source: look for an <album name>.jpg in generated_files/AlbumArt and copy it to album directory as Folder.jpg.
+        Do with set_album_art function.
+        3rd source: extract album art, save it as Folder.jpg in album directory.
+        Do with extract_walk function.
         '''
 
         try:
@@ -377,7 +443,7 @@ class AudioMetadata():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
-
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         input_file_ext = None
@@ -551,11 +617,11 @@ class AudioMetadata():
             if self.has_art_tag(input_path):
                 metadata_type = self.get_metadata_type(input_path)
                 if metadata_type == "ASF":
-                    self.extract_asf_art
+                    self.extract_asf_art(file_path)
                 elif metadata_type == "MP3":
-                    self.extract_mp3_art
+                    self.extract_mp3_art(file_path)
                 elif metadata_type == "MP4":
-                    self.extract_m4a_art
+                    self.extract_m4a_art(file_path)
         except Exception as e:
             raise Exception(f"Exception {e} extracting art from {file_path}")
 
@@ -577,13 +643,8 @@ class AudioMetadata():
             byte_attribute_array = pic_tag[0]
             picture_data = byte_attribute_array.value
             mime_type, image_data, type_indicator, image_description = self.__unpack_asf_image(picture_data)
-            if image_data:
-                input_path = Path(file_path)
-                album_path = input_path.parent
-                output_file = os.path.join(album_path, _FOLDER_ART)
-                with open(output_file, 'wb') as img_file:
-                    img_file.write(image_data)
-                print(f"Album art extracted from {input_path.name} and saved to {album_path}")
+
+            self.__write_data(file_path, image_data)
         except Exception as e:
             raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
 
@@ -653,12 +714,27 @@ class AudioMetadata():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        pass
+        try:
+            audio = MP4(file_path)
+            audio_tags = audio.tags
+            cover_tag = audio_tags["covr"]
+            # M4A files can have multiple 'covr' atoms, each containing a different image.
+            # I only want the first, which is the front cover.
+            artwork = cover_tag[0]
+            # Artwork data might be wrapped in format codes; extract the raw data.
+            if isinstance(artwork, tuple):
+                image_data = artwork[1]
+            else:
+                image_data = artwork
+
+            self.__write_data(file_path, image_data)
+        except Exception as e:
+            raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
 
 
     def extract_mp3_art(self, file_path):
         '''
-        @brief Extracts cover art from wma files
+        @brief Extracts cover art from wma files        @exception Exception A common baseclass exception to handle unforeseen errors.
 
         @details Input file is expected to have cover art
 
@@ -666,7 +742,15 @@ class AudioMetadata():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        pass
+        try:
+            audio = MP3(file_path, ID3=ID3)
+            audio_tags = audio.tags
+            for tag in audio_tags.getall('APIC'):
+                image_data = tag.data
+
+            self.__write_data(file_path, image_data)
+        except Exception as e:
+            raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
 
 
     def extract_walk(self, start_path, file_pattern):
@@ -946,49 +1030,3 @@ class AudioMetadata():
         print(f"publisher: {publisher}")
         print(f"title: {title}")
         print(f"track: {track}")
-
-
-    def __unpack_asf_image(self, data):
-        '''
-        @brief Unpack image data from a WM/Picture tag.
-
-        @details https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243
-        @details This function is treated as "untrusted" and could throw all manner of exceptions (out-of-bounds, etc.).
-
-        @return (mime, image_data, type, description) ({str}, {bytes}, {int}, {str}) Tuple containing the MIME type, the raw image data, a type indicator, and
-        the image's description.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            # <:little-endian byte order, b: signed char (1 byte), i: signed int (4 bytes)
-            # unpacks first 5 bytes in tuple where type is C signed char (1 byte)/Python integer and size is C signed int (4 bytes)/Python integer
-            # for an ASF WM/Picture, 3 = Front album cover
-            # eg. b'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`
-            # image type and image size, elements 0-5: b'\x03\x140\x00\x00
-            # image type, elements 0-1, b'\x03'
-            # image size, elements 1-5, b'\x140\x00\x00 = 0x1403 little-endian, 0x3014 big-endian, decimal 12308
-            # mime type, elements 5 to 25: b'i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00'
-            # null terminator, elements 25 to 27: b'\x00\x00'
-            # description, elements 27 to 29: b'\x00\x00'
-            # data, elements 29 to 29 + size: b'\xff\xe0\x...'
-            type, size = struct.unpack_from('<bi', data)
-            pos = 5
-            mime = b''
-
-            while data[pos:pos + 2] != b'\x00\x00':
-                mime += data[pos:pos + 2]
-                pos += 2
-
-            pos += 2
-            description = b''
-            while data[pos:pos + 2] != b'\x00\x00':
-                description += data[pos:pos + 2]
-                pos += 2
-
-            pos += 2
-            image_data = data[pos:pos + size]
-
-            return (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
-        except Exception as e:
-            raise Exception(f"Exception {e} extracting embedded art from tag data")
