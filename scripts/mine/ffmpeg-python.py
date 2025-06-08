@@ -1,7 +1,7 @@
 import ffmpeg
 import platform
 
-_ART_FILE = "Folder.jpg"
+_ART_FILE = "Cover.jpg"
 
 # also see https://blog.1a23.com/2020/03/16/read-and-write-tags-of-music-files-with-ffmpeg/ for an
 # ffmpeg cli that works!

@@ -82,9 +82,8 @@ if platform.system() == "Linux":
     # file_path = r"/home/gerald/Music/Elton John/Greatest Hits, Vol. 2/Elton John-Island Girl.wma"
     # file_path = r"/home/gerald/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma"
 elif platform.system() == "Windows":
-    file_path = r"C:\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma"     # has art, but not in a video stream, so ffmpeg fails
     # file_path = r"C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"  # has art
-    # file_path = r"\\192.168.0.14\sambashare\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"
+    file_path = r"\\192.168.0.14\sambashare\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"
     # file_path = r"C:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"       # no art
 
 image_data = find_embedded_art(file_path)
