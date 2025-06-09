@@ -209,14 +209,13 @@ class AudioMetadata():
             raise Exception(f"Exception: {e} writing embedded art from {file_path}")
 
 
-    def convert_file(self, file_path, file_ext):
+    def convert_file(self, file_path):
         '''
         @todo finish
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file.
 
         @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
         @details Only the Windows displayable subset of metadata key/values is preserved.
-        @details The
 
         @param file_path {str} The path for audio file to be converted.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -327,10 +326,11 @@ class AudioMetadata():
             os.makedirs(export_dir)
 
         input_file_name = input_path.stem
-        if file_ext:
-            input_file_ext = file_ext
-        else:
-            input_file_ext = input_path.suffix
+        input_file_ext = input_path.suffix
+        # if file_ext:
+        #     input_file_ext = file_ext
+        # else:
+        #     input_file_ext = input_path.suffix
 
         export_file_name = input_file_name + export_file_ext
         export_file_path = os.path.join(export_dir, export_file_name)
@@ -353,14 +353,9 @@ class AudioMetadata():
         # get the input files metadata from pydub because doing so gives consistent schema
         file_media_tags = file_media_info['TAG']
         export_metadata = {}
-        print(f"FFMPEG tags for {file_path}")
         for key, value in file_media_tags.items():
             if key in _GEN_KEYS:
                 export_metadata[key] = value
-                print(f"{key}: {value}")
-
-        # if there isn't an album_artist key/value in the export metadata
-        # create it by using the artist value
 
         '''
         date info is most problematic part of metadata
@@ -417,18 +412,11 @@ class AudioMetadata():
         - create <album dir>.jpg in src/generated_files/Album Art for repeated album names
         End result:
         All album directories will contain a Folder.jpg cover art file
-
-        1st source: a co-located Folder.jpg with audio file.
-        See above processing steps.
-        2nd source: look for an <album name>.jpg in generated_files/AlbumArt and copy it to album directory as Folder.jpg.
-        Do with set_album_art function.
-        3rd source: extract album art, save it as Folder.jpg in album directory.
-        Do with extract_walk function.
         '''
-
+        cover_art = os.path.join(input_path_parent, _FOLDER_ART)
         try:
             audio_segment = AudioSegment.from_file(file_path)
-            audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3')
+            audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3', cover=cover_art)
             print(f"{input_file_name} converted to {export_format}")
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_file_path}")

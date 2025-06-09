@@ -1,0 +1,14 @@
+main.py get-tags "/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3" 
+APIC=other,  (image/jpeg, 11866 bytes)
+TALB=Here
+TCOM=Paul Lamb
+TCON=Pop
+TDRC=2002
+TIT2=Live
+TPE1=Crush
+TPE2=Crush
+TPOS=1/1
+TPUB=Sonic Records
+TRCK=1/12
+TSSE=Lavf60.16.100
+TXXX=comment=Cover (front)

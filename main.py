@@ -173,29 +173,6 @@ def main(args):
         raise Exception(f"Exception {e} executing subcommand {args.subcommand}")
 
 
-    # # get mp3
-    # mp3_file_list = ["H:\\Music\\Kenny Rogers\\Daytime Friends - The Very Best of Kenny\\18 Lady.mp3",
-    #                  "H:\\Music\\Various Artists\\Best of the Blues, Volume 1\\Albert Collins-Trash Talkin'.mp3",
-    #                  "H:\\Music\\4 Non Blondes\\Bigger, Better, Faster, More!\\4 Non Blondes-What's Up.mp3",
-    #                  "H:\\Music\\.38 Special\\.38 Special-Teacher, Teacher.mp3",
-    #                  "H:\\Music\\.38 Special\\Special Forces\\.38 Special-Caught Up in You.mp3"
-    #                 ]
-    # for song in mp3_file_list:
-    #     metadata_type = metadata.get_metadata_type(song)
-    #     if metadata_type == "mp3":
-    #         tag = metadata.get_mp3_tags(song)
-    #         print(tag)
-    #
-    # # get any tag info
-    # any_tag_info_file_list = ["H:\\Music\Dolly Parton\\Blue Smoke\\Dolly Parton-Unlikely Angel.mp3",
-    #                           "H:\\Music\\The Eagles\\The Eagles-Desperado.m4a",
-    #                           "H:\\Music\\Elton John\\Greatest Hits, Vol. 2\\Elton John-Island Girl.wma"
-    #                          ]
-    # for song in any_tag_info_file_list:
-    #     metadata_type = metadata.get_metadata_type(song)
-    #     print("Song: {0} has metadata type: {1}".format(song, metadata_type))
-
-
 if __name__ == "__main__":
     '''
     @brief Top level script environment entry point
@@ -219,7 +196,8 @@ if __name__ == "__main__":
     # 1 mandatory arg, the audio file path
     # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
-    convert_file_parser = subparsers.add_parser("convert_file", help="Converts an audio file to mp3")
+    # "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
+    convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
     convert_file_parser.add_argument("file", type=str, help="mandatory audio file path")
     convert_file_parser.set_defaults(func=convert_file)
 
