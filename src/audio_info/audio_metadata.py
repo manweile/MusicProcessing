@@ -809,6 +809,48 @@ class AudioMetadata():
         return tags
 
 
+    def get_m4a_tags(self, file_path):
+        '''
+        @brief gets tag information for an m4a audio file.
+
+        @param file_path {str} The full path to m4a audio file.
+        @return tag_info {object} Tag object holding audio file tag info or None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            tag_info = None
+            audio_file = self.load_m4a_file(file_path)
+            if audio_file is not None:
+                tag_info = audio_file.tags
+            else:
+                return None
+        except Exception as e:
+            raise Exception(f"Exception {e} getting tags for file {file_path}")
+
+        return tag_info
+
+
+    def get_media_info(self, file_path):
+        '''
+        @brief Gets media info.
+
+        @details uses ffmpeg to get all media info from any valid audio file.
+
+        @param file_path {str} The full path to audio file.
+        @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        media_info = None
+        try:
+            media_info = mediainfo(file_path)
+        except Exception as e:
+            raise Exception(f"Exception {e} getting media info for file {file_path}")
+
+        return media_info
+
+
     def get_metadata_type(self, file_path):
         '''
         @brief Returns the metadata type of any audio file.
@@ -845,6 +887,28 @@ class AudioMetadata():
         try:
             tag_info = None
             audio_file = self.load_mp3_file(file_path)
+            if audio_file is not None:
+                tag_info = audio_file.tags
+            else:
+                return None
+        except Exception as e:
+            raise Exception(f"Exception {e} getting tags for file {file_path}")
+
+        return tag_info
+
+
+    def get_wma_tags(self, file_path):
+        '''
+        @brief gets tag information for an wma audio file.
+
+        @param file_path {str} The full path to wma audio file.
+        @return tag_info {object} Tag object holding audio file tag info or None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            tag_info = None
+            audio_file = self.load_wma_file(file_path)
             if audio_file is not None:
                 tag_info = audio_file.tags
             else:
@@ -937,6 +1001,29 @@ class AudioMetadata():
         return audio_file
 
 
+    def load_m4a_file(self, file_path):
+        '''
+        @brief Loads an m4a audio file.
+
+        @details Expects a valid filepath to a m4a type audio file.
+
+        @param file_path {str} The full file path for audio file.
+        @return audio_file {FileType} Instance for the input audio file type or None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            audio_file = None
+            if file_path.endswith('.m4a'):
+                audio_file = MP4(file_path)
+                if audio_file is None:
+                    return None
+        except Exception as e:
+            raise Exception(f"Exception {e} loading audio file: {file_path}")
+
+        return audio_file
+
+
     def load_mp3_file(self, file_path):
         '''
         @brief Loads an mp3 audio file.
@@ -952,6 +1039,29 @@ class AudioMetadata():
             audio_file = None
             if file_path.endswith('.mp3'):
                 audio_file = MP3(file_path)
+                if audio_file is None:
+                    return None
+        except Exception as e:
+            raise Exception(f"Exception {e} loading audio file: {file_path}")
+
+        return audio_file
+
+
+    def load_wma_file(self, file_path):
+        '''
+        @brief Loads an wma audio file.
+
+        @details Expects a valid filepath to a wma type audio file.
+
+        @param file_path {str} The full file path for audio file.
+        @return audio_file {FileType} Instance for the input audio file type or None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            audio_file = None
+            if file_path.endswith('.wma3'):
+                audio_file = ASF(file_path)
                 if audio_file is None:
                     return None
         except Exception as e:
