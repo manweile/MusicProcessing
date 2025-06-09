@@ -457,7 +457,7 @@ class AudioMetadata():
                     _, input_file_ext = os.path.splitext(file)
 
                     # file is not mp3, m4a, or wma, so carry on to next file
-                    if input_file_ext not in _AUDIO_EXTS:
+                    if input_file_ext.lower() not in _AUDIO_EXTS:
                         continue
                     else:
                         input_file_path = os.path.join(dir_path, file)
@@ -612,13 +612,15 @@ class AudioMetadata():
 
             # we don't touch non-audio files like m3u etc
             input_file_ext = input_path.suffix
-            if input_file_ext not in _AUDIO_EXTS:
+            if input_file_ext.lower() not in _AUDIO_EXTS:
                 return
 
             # file with video stream can use audio type agnostic extraction
             if self.has_video_stream(input_path):
                 self.extract_ffmpeg_art(input_path)
                 return
+            else:
+                print(f"No video stream album art present in {file_path}")
 
             # no matter what extraction method, file must have an art tag
             if self.has_art_tag(input_path):
@@ -782,7 +784,7 @@ class AudioMetadata():
                 for file in file_names:
                     _, input_file_ext = os.path.splitext(file)
                     # we don't touch non-audio files like m3u etc
-                    if input_file_ext not in _AUDIO_EXTS:
+                    if input_file_ext.lower() not in _AUDIO_EXTS:
                         continue
 
                     if file_pattern and not fnmatch.fnmatch(file, file_pattern):
@@ -878,7 +880,7 @@ class AudioMetadata():
             has_art = False
             file_name, file_ext = os.path.splitext(file_path)
 
-            if file_ext not in _AUDIO_EXTS:
+            if file_ext.lower() not in _AUDIO_EXTS:
                 raise Exception(f"File: {file_name} has invalid extension: {file_ext}")
 
             audio_tags = self.get_any_tags(file_path)
