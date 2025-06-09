@@ -8,6 +8,8 @@
 # standard modules
 import argparse
 
+from mutagen.id3 import ID3
+
 # local modules
 from src.audio_info import AudioMetadata
 from src.dir_processing import DirectoryProcessing
@@ -54,6 +56,15 @@ def extract_walk(tld_path, file_pattern):
     '''
 
     metadata.extract_walk(tld_path, file_pattern)
+
+
+def get_tags(file_path):
+    '''
+    @brief Gets metadata from specified audio file.
+    '''
+
+    tags = metadata.get_any_tags(file_path)
+    return tags
 
 
 def list_audio(tld_path):
@@ -128,6 +139,11 @@ def main(args):
             tld_path = getattr(args, "tld")
             file_pattern = getattr(args, "pattern")
             extract_walk(tld_path, file_pattern)
+
+        if args.subcommand == "get-tags":
+            file_path = getattr(args, "file")
+            tags = get_tags(file_path)
+            print(ID3.pprint(tags))
 
         if args.subcommand == "list-audio":
             tld_path = getattr(args, "tld")
@@ -247,6 +263,13 @@ if __name__ == "__main__":
     extract_walk_parser.add_argument("tld", type=str, help="mandatory top level directory")
     extract_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
     extract_walk_parser.set_defaults(func=extract_walk)
+
+    # get metadata tags for file
+    # 1 mandatory arg, the path to audio file
+    # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags', 'C:\Music\Buckingham McVie\Buckingham McVie\Buckingham McVie-Too Far Gone.mp3',
+    get_tags_parser = subparsers.add_parser("get-tags", help="Gets metadata tags from audio file")
+    get_tags_parser.add_argument("file", type=str, help="mandatory full path to audio file")
+    get_tags_parser.set_defaults(func=get_tags)
 
     # list all audio files
     # 1 mandatory arg, the tld path

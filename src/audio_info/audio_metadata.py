@@ -38,20 +38,20 @@ _ALBUM_ART = "AlbumArt"
 _EXPORT_TLD = "Music"
 _FOLDER_ART = "Folder.jpg"
 
-# the set of pydub generic metadata keys I want to copy to converted files
+# the set of pydub generic metadata keys I want to copy to converted & normalized files
 # these keys also correspond to what Windows displays as file information in File Explorer
 _GEN_KEYS = {
     'album',                    # must have
-    'album_artist',             # nice to have
     'artist',                   # must have
+    'date',                     # must have
+    'genre',                    # must have
+    'title',                    # must have
+    'album_artist',             # nice to have
     'comment',                  # nice to have
     'composer',                 # nice to have
     'copyright',                # nice to have
-    'date',                     # must have
     'disc',                     # nice to have
-    'genre',                    # must have
     'publisher',                # nice to have
-    'title',                    # must have
     'track'                     # nice to have
 }
 
@@ -598,8 +598,6 @@ class AudioMetadata():
         @details Check if album folder does not have album art file, ensures file has embedded art, extracts and saves it to album directory.
 
         @param file_path {str} The full path to audio file.
-
-        @exception Error A ffmpeg error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -607,14 +605,24 @@ class AudioMetadata():
             input_path = Path(file_path)
             album_path = input_path.parent
 
-            # album folders are supposed to contain a Folder.jpg
-            # and the end result of extraction is to to create a Folder.jpg
-            # but we don't need to waste cycles once we have a Folder.jpg
+            # don't need to waste cycles if we have a Folder.jpg from a previous execution
             album_contents = os.listdir(album_path)
             if _FOLDER_ART in album_contents:
                 return
 
+            # we don't touch non-audio files like m3u etc
+            input_file_ext = input_path.suffix
+            if input_file_ext not in _AUDIO_EXTS:
+                return
+
+            # file with video stream can use audio type agnostic extraction
+            if self.has_video_stream(input_path):
+                self.extract_ffmpeg_art(input_path)
+                return
+
+            # no matter what extraction method, file must have an art tag
             if self.has_art_tag(input_path):
+                # each audio file type has different extraction method
                 metadata_type = self.get_metadata_type(input_path)
                 if metadata_type == "ASF":
                     self.extract_asf_art(file_path)
@@ -622,6 +630,9 @@ class AudioMetadata():
                     self.extract_mp3_art(file_path)
                 elif metadata_type == "MP4":
                     self.extract_m4a_art(file_path)
+            else:
+                print(f"No album art present in {file_path}")
+                return
         except Exception as e:
             raise Exception(f"Exception {e} extracting art from {file_path}")
 
@@ -651,15 +662,12 @@ class AudioMetadata():
 
     def extract_ffmpeg_art(self, file_path):
         '''
-        @todo needs a check to ensure there is an video stream with at least 1 frame
         @brief Extracts and saves embedded album art.
 
-        @details Check if album folder does not have album art file, ensures file has embedded art, extracts and saves it to album directory.
         @details Uses ffmpeg and is audio file type agnostic.
-        @details Audio file MUST have a video stream and an audio stream.
+        @details Input file must have a video stream and an art tag.
 
         @param file_path {str} The full path to audio file.
-
         @exception Error A ffmpeg error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -680,24 +688,16 @@ class AudioMetadata():
             input_path = Path(file_path)
             album_path = input_path.parent
 
-            # album folders are supposed to contain a Folder.jpg
-            # and the end result of extraction is to to create a Folder.jpg
-            # but we don't need to waste cycles once we have a Folder.jpg
-            album_contents = os.listdir(album_path)
-            if _FOLDER_ART in album_contents:
-                return
+            input_stream = ffmpeg.input(input_path)
+            output_file = os.path.join(album_path, _FOLDER_ART)
+            output_stream = ffmpeg.output(input_stream, output_file, map=map, map_metadata=map_metadata)
 
-            if self.has_art_tag(input_path):
-                output_file = os.path.join(album_path, _FOLDER_ART)
-                input_stream = ffmpeg.input(input_path)
-                output_stream = ffmpeg.output(input_stream, output_file, map=map, map_metadata=map_metadata)
-
-                # run executes the ffmpeg command
-                # the capture_stdout and stderr are for debugging purposes
-                # quiet prevents output to terminal
-                # overwrite_output since won't be able to respond to an overwrite y/n prompt
-                out, err = ffmpeg.run(output_stream, capture_stdout=True, capture_stderr=True, quiet=True, overwrite_output=True)
-                print(f"Cover art extracted from {input_path.name} and saved to {album_path}")
+            # run executes the ffmpeg command
+            # quiet prevents output to terminal and captures stdout & stderr for debugging purposes
+            # overwrite_output since won't be able to respond to an overwrite y/n prompt
+            # out, err = ffmpeg.run(output_stream, capture_stdout=True, capture_stderr=True, quiet=True, overwrite_output=True)
+            out, err = ffmpeg.run(output_stream, quiet=True, overwrite_output=True)
+            print(f"Album art written from {input_path.name} and saved to {album_path}")
         except ffmpeg.Error as e:
             print(f"An ffmpeg error occurred: {e.stderr.decode()}")
         except Exception as e:
@@ -734,9 +734,9 @@ class AudioMetadata():
 
     def extract_mp3_art(self, file_path):
         '''
-        @brief Extracts cover art from wma files        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @brief Extracts cover art from wma files.
 
-        @details Input file is expected to have cover art
+        @details Input file is expected to have cover art.
 
         @param file_path {str} The full path to audio file.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -757,7 +757,7 @@ class AudioMetadata():
         '''
         @brief Extracts all embedded album art from audio files.
 
-        @details Extracts embedded art from m4a, mp3, and wma files with ffmpeg.
+        @details Extracts embedded art from m4a, mp3, and wma files.
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
@@ -774,9 +774,7 @@ class AudioMetadata():
                 if dir_path == start_path:
                     continue
 
-                # album folders are supposed to contain a Folder.jpg
-                # and the end result of extraction is to to create a Folder.jpg
-                # but we don't need to waste cycles if we find a Folder.jpg
+                # don't need to waste cycles if we have a Folder.jpg from a previous iteration
                 dir_contents = os.listdir(dir_path)
                 if _FOLDER_ART in dir_contents:
                     continue
@@ -787,11 +785,10 @@ class AudioMetadata():
                     if input_file_ext not in _AUDIO_EXTS:
                         continue
 
-                    input_file_path = os.path.join(dir_path, file)
-
                     if file_pattern and not fnmatch.fnmatch(file, file_pattern):
                         continue
                     else:
+                        input_file_path = os.path.join(dir_path, file)
                         self.extract_album_art(input_file_path)
         except Exception as e:
             if file_pattern:
@@ -899,6 +896,33 @@ class AudioMetadata():
             raise Exception(f"Exception {e} checking for album art tag in file {file_path}")
 
         return has_art
+
+
+    def has_video_stream(self, file_path):
+        '''
+        @brief Checks if an audio file has a video stream.
+
+        @details Audio files can have embedded art in video streams.
+        @details Embedded art is the first frame.
+
+        @param file_path {str} The full path to audio file.
+        @return has_video {boolean} Returns true if video stream is present, false otherwise.
+        @exception Error A ffmpeg error.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            has_stream = False
+            probe = ffmpeg.probe(file_path)
+            for stream in probe['streams']:
+                if stream['codec_type'] == 'video':
+                    has_stream = True
+        except ffmpeg.Error as e:
+            print(f"An ffmpeg error occurred: {e.stderr.decode()}")
+        except Exception as e:
+            raise Exception(f"Exception {e} extracting art from {file_path}")
+
+        return has_stream
 
 
     def load_any_file(self, file_path):

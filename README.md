@@ -7,6 +7,7 @@ There are many things I need to do:
   - top level dir
     - artist sub dir
       - album sub dirs
+        - find cover art for album dirs
 - Rename files per my format
   - artist-title
 - Convert all non-mp3 audio files to mp3
@@ -15,21 +16,22 @@ There are many things I need to do:
     - up convert any ID3 < v2.3 to 2.3
     - down convert any ID3v2.4 to 2.3
     - convert APEv2 to ID3v2.3
-  - ensure all songs have correct:
-    - title
-    - artist
+  - ensure all songs have these tags:
     - album
+    - artist
+    - date
     - genre
-    - year
-    - bit rate (>=128 kbps)
+    - title
     - front cover album art
-    - media source
-      - vinyl
-        - recorded from vinyl lp
-      - cd
-        - ripped from cd
-      - digital
-        - downloaded
+  - if possible, populate these "nice to have" tags:
+    - album artist
+    - comment
+    - composer
+    - copyright
+    - disc
+    - publisher
+    - track
+- Normalize volume levels
 
 ## Source Files
 
@@ -43,11 +45,11 @@ These files have all been metadata edited with Windows Media Player.
 
 ### Working Copy
 The files on the HTPC will be copied as is to a micro-sd card.
-The project will read files from the micro-sd card.
+The files will be copied to respective hdd (ubuntu laptop and win 10 desktop)
+The project will read files from the respective hdd.
 
 ### Directory Structure
 My preferred directory structure is: "drive":\"top level dir"\"artist name"\"album name"\, with the songs for the album.
-- Some artists will not have album sub-directories
 - All the songs for that artist, irregardless of what album they are from will be under the artist directory
 - There is not a directory for compilation albums
   - songs from compilation albums are under the contributing artist
@@ -167,8 +169,9 @@ I will use MP3Tag/puddletag to:
 - rename the few audio files that have incorrect filename format
 - verify all albums have file system acceptable names for directory creation
 - find all metadata with missing tags
+- find cover art for all albums
 ### Acquisition & Accuracy
-I will use Musicbrainz Picard to:
+I will use Musicbrainz Picard and Mp3Tag/puddletag to:
 - acquire missing metadata
 - update missing or inaccurate metadata
 
@@ -179,6 +182,9 @@ I will use the music processing  python code to:
   - all mp3 files
   - all wma files
   - all m4a files
-- convert wma files to mp3 files
-- convert m4a files to mp3 files
+- convert wma files to mp3 files with my preferred ID3v2.3 tags
+- convert m4a files to mp3 files with my preferred ID3v2.3 tags
+- normalize mp3 file to mp3 files with my preferred ID3v2.3 tags
 - create album sub-dirs for artist directories
+- set cover art for compilation albums
+- extract embedded cover art if no cover art exists for album
