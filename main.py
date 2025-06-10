@@ -198,7 +198,7 @@ if __name__ == "__main__":
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
     # "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
     convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
-    convert_file_parser.add_argument("file", type=str, help="mandatory audio file path")
+    convert_file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     convert_file_parser.set_defaults(func=convert_file)
 
     # convert all audio files found in top level directory
