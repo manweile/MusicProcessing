@@ -19,8 +19,8 @@ from pathlib import Path
 import mutagen
 import pathvalidate
 from mutagen.asf import ASF
-# from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK
 from mutagen.id3 import ID3
+from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 from pydub import AudioSegment
@@ -222,12 +222,12 @@ class AudioMetadata():
         '''
 
         export_dir = None
-        export_file_name = None
-        export_file_path = None
+        export_name = None
+        export_path = None
 
         # get mp3 audio format & extension from package constants
         export_format = _AUDIO_TYPES[0]
-        export_file_ext = _AUDIO_EXTS[0]
+        export_ext = _AUDIO_EXTS[0]
 
         r'''
         Ubuntu file path:
@@ -325,19 +325,10 @@ class AudioMetadata():
         if not os.path.exists(export_dir):
             os.makedirs(export_dir)
 
-        input_file_name = input_path.stem
-        input_file_ext = input_path.suffix
-        # if file_ext:
-        #     input_file_ext = file_ext
-        # else:
-        #     input_file_ext = input_path.suffix
+        input_name = input_path.stem
 
-        export_file_name = input_file_name + export_file_ext
-        export_file_path = os.path.join(export_dir, export_file_name)
-
-        # get the input file info - want bitrate so can preserve the quality in exported file
-        file_media_info = mediainfo(file_path)
-        file_audio_bitrate = file_media_info['bit_rate']
+        export_name = input_name + export_ext
+        export_path = os.path.join(export_dir, export_name)
 
         '''
         @todo metadata transfer
@@ -349,13 +340,28 @@ class AudioMetadata():
             if key in _GEN_KEYS:
                 print(f"key: {key}, value: {value}")
         '''
+        export_audio = MP3(export_path)
 
-        # get the input files metadata from pydub because doing so gives consistent schema
-        file_media_tags = file_media_info['TAG']
-        export_metadata = {}
-        for key, value in file_media_tags.items():
-            if key in _GEN_KEYS:
-                export_metadata[key] = value
+        metadata_type = self.get_metadata_type(file_path)
+        if metadata_type == "ASF":
+            input_audio = self.load_wma_file(file_path)
+            # @todo map wma keys/values to matching ID3
+            pass
+        elif metadata_type == "MP3":
+            input_audio = self.load_mp3_file(file_path)
+            # this only works because it's a ID3 key to ID3 key
+            for key in input_audio.keys():
+                export_audio[key] = input_audio[key]
+        elif metadata_type == "MP4":
+            input_audio = self.load_m4a_file(file_path)
+            # @todo map mp4 keys/values to matching ID3
+            pass
+
+        # get the input file info - want bitrate so can preserve the quality in exported file
+        media_info = mediainfo(input_path)
+        media_bitrate = media_info['bit_rate']
+        # media_tags = media_info['TAG']
+
 
         '''
         date info is most problematic part of metadata
@@ -390,15 +396,6 @@ class AudioMetadata():
         'WM/Year': '1976'
         '''
 
-        # get file tag per file type
-        # mp3 = ID3v2.3
-        # m4a = MP4
-        # wma = ASF
-
-        any_file_tags = self.get_any_tags(file_path)
-        print(f"Mutagen tags for {file_path}")
-        print(any_file_tags.pprint())
-
         '''
         If a song has does have embedded art, ffmpeg will NOT auto transfer it.
         Many songs have co-located hidden file art, this is a result from all the WMP processing I did.
@@ -415,11 +412,14 @@ class AudioMetadata():
         '''
         cover_art = os.path.join(input_path_parent, _FOLDER_ART)
         try:
-            audio_segment = AudioSegment.from_file(file_path)
-            audio_segment.export(export_file_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3', cover=cover_art)
-            print(f"{input_file_name} converted to {export_format}")
+            audio_segment = AudioSegment.from_file(input_path)
+            audio_segment.export(export_path, export_format, bitrate=media_bitrate, id3v2_version='3', cover=cover_art)
+            # audio_segment.export(export_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3', cover=cover_art)
+            export_audio.save()
+
+            print(f"{input_name} converted to {export_format}")
         except Exception as e:
-            raise Exception(f"Exception {e} converting {file_path} to {export_file_path}")
+            raise Exception(f"Exception {e} converting {input_path} to {export_path}")
 
 
     def convert_walk(self, start_path, file_pattern):
