@@ -13,6 +13,7 @@ import gc
 import os
 import shutil
 import struct
+import sys
 from pathlib import Path
 
 # third party modules
@@ -74,7 +75,7 @@ _ART_KEYS = {
     'WM/Picture'                # wma
 }
 
-# dict of generic to ID3v2.3
+# dict of generic to ID3v2.3 (MP3)
 _MP3_KEYS = {
     'album': 'TALB',
     'album_artist': 'TPE2',
@@ -90,7 +91,7 @@ _MP3_KEYS = {
     'track': 'TRCK'
 }
 
-# dict of generic to m4a
+# dict of generic to m4a (MP4)
 _M4A_KEYS = {
     'album': '\xa9alb',
     'album_artist': 'aART',
@@ -106,7 +107,7 @@ _M4A_KEYS = {
     'track': 'trkn'
 }
 
-# dict of generic to wma
+# dict of generic to wma (ASF)
 _WMA_KEYS = {
     'album': 'WM/AlbumTitle',
     'album_artist': 'WM/AlbumArtist',
@@ -340,22 +341,24 @@ class AudioMetadata():
             if key in _GEN_KEYS:
                 print(f"key: {key}, value: {value}")
         '''
-        export_audio = MP3(export_path)
-
         metadata_type = self.get_metadata_type(file_path)
         if metadata_type == "ASF":
-            input_audio = self.load_wma_file(file_path)
+            # input_audio = self.load_wma_file(file_path)
+            input_tags = self.get_wma_tags(file_path)
             # @todo map wma keys/values to matching ID3
-            pass
+            id3_tags = self.map_wma_to_id3(input_tags)
+            print(id3_tags.pprint())
         elif metadata_type == "MP3":
-            input_audio = self.load_mp3_file(file_path)
-            # this only works because it's a ID3 key to ID3 key
-            for key in input_audio.keys():
-                export_audio[key] = input_audio[key]
+            # input_audio = self.load_mp3_file(file_path)
+            input_tags = self.get_mp3_tags(file_path)
+            id3_tags = self.map_mp3_to_id3(input_tags)
+            print(id3_tags.pprint())
         elif metadata_type == "MP4":
-            input_audio = self.load_m4a_file(file_path)
+            # input_audio = self.load_m4a_file(file_path)
+            input_tags = self.get_m4a_tags(file_path)
             # @todo map mp4 keys/values to matching ID3
-            pass
+            id3_tags = self.map_m4a_to_id3(input_tags)
+            print(id3_tags.pprint())
 
         # get the input file info - want bitrate so can preserve the quality in exported file
         media_info = mediainfo(input_path)
@@ -415,7 +418,7 @@ class AudioMetadata():
             audio_segment = AudioSegment.from_file(input_path)
             audio_segment.export(export_path, export_format, bitrate=media_bitrate, id3v2_version='3', cover=cover_art)
             # audio_segment.export(export_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3', cover=cover_art)
-            export_audio.save()
+            # export_audio.save()
 
             print(f"{input_name} converted to {export_format}")
         except Exception as e:
@@ -1068,6 +1071,73 @@ class AudioMetadata():
             raise Exception(f"Exception {e} loading audio file: {file_path}")
 
         return audio_file
+
+
+    def map_m4a_to_id3(self, m4a_tags):
+        '''
+        @brief Converts m4a metadata to id3 metadata
+
+        @details Converts subset of tags (the ones that Window will display) from wma to id3.
+
+        @param m4a_tags {ASF} The m4a tags source.
+        @return id3_tags {ID3} The id3 tags converted from wma tags.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            id3_tags = ID3()
+            for m4a_key, m4a_value in _M4A_KEYS.items():
+                m4a_tag = m4a_tags.get(m4a_value)
+                if m4a_tag:
+                    id3_key = _MP3_KEYS[m4a_key]
+                    id3_class = getattr(sys.modules[__name__], id3_key)
+                    tag_text = m4a_tags[m4a_value][0]
+                    id3_tags.add(id3_class(encoding=3, text=tag_text))
+                    print(id3_key)
+        except Exception as e:
+            raise Exception(f"Exception {e} converting m4a tags to id3 tags")
+
+        return id3_tags
+
+
+    def map_mp3_to_id3(self, mp3_tags):
+        '''
+        @brief Converts mp3 metadata to id3 metadata
+
+        @details Converts subset of tags (the ones that Window will display) from mp3 to id3.
+
+        @param mp3_tags {MP3} The mp3 tags source.
+        @return id3_tags {ID3} The id3 tags converted from mp3 tags.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            id3_tags = None
+            pass
+        except Exception as e:
+            raise Exception(f"Exception {e} converting wma tags to id3 tags")
+
+        return id3_tags
+
+
+    def map_wma_to_id3(self, wma_tags):
+        '''
+        @brief Converts wma metadata to id3 metadata
+
+        @details Converts subset of tags (the ones that Window will display) from wma to id3.
+
+        @param wma_tags {MP4} The wma tags source.
+        @return id3_tags {ID3} The id3 tags converted from wma tags.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            id3_tags = None
+            pass
+        except Exception as e:
+            raise Exception(f"Exception {e} converting wma tags to id3 tags")
+
+        return id3_tags
 
 
     def set_album_art(self, input_path):

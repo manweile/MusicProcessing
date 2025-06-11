@@ -143,7 +143,7 @@ def main(args):
         if args.subcommand == "get-tags":
             file_path = getattr(args, "file")
             tags = get_tags(file_path)
-            print(ID3.pprint(tags))
+            print(tags.pprint())
 
         if args.subcommand == "list-audio":
             tld_path = getattr(args, "tld")
@@ -190,7 +190,7 @@ if __name__ == "__main__":
     # "/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma"
     # "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a",   # embedded art, datetime string
     # "H:\Music\Alejandro Escovedo\Alejandro Escovedo-Broken Bottle.wma",                    # no embedded art
-    # "H:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a",                              # no embedded art even though file explorer shows it
+    # "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a",                              # no embedded art even though file explorer shows it
     # "H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma",                # no embedded art
     # "H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3"                 # no embedded art
     # 1 mandatory arg, the audio file path
@@ -245,6 +245,7 @@ if __name__ == "__main__":
     # get metadata tags for file
     # 1 mandatory arg, the path to audio file
     # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags', 'C:\Music\Buckingham McVie\Buckingham McVie\Buckingham McVie-Too Far Gone.mp3',
+    # sys.argv = [D:\MusicProcessing\main.py', 'get-tags', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
     get_tags_parser = subparsers.add_parser("get-tags", help="Gets metadata tags from audio file")
     get_tags_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     get_tags_parser.set_defaults(func=get_tags)
