@@ -26,6 +26,7 @@ from src.generated_files import generated_files
 
 gc.enable()
 
+
 class DirectoryProcessing():
     '''
     @brief Defines the base directory processing used by project.
@@ -108,13 +109,13 @@ class DirectoryProcessing():
             csv_path = os.path.join(csv_dir, csv_filename)
 
             # I don't care about any previous file contents
-            csv_outfile = open(csv_path, mode='w', newline='')
-            csv_file_writer = csv.writer(csv_outfile, dialect=csv.excel, delimiter=';')
+            csv_outfile = open(csv_path, mode='w', encoding='windows-1252', newline='')
+            csv_file_writer = csv.writer(csv_outfile, dialect='excel', delimiter=';')
 
-            if header_row != None:
+            if header_row is not None:
                 csv_file_writer.writerow(header_row)
 
-            if sort_col != None:
+            if sort_col is not None:
                 sorted_data = sorted(data, key=itemgetter(sort_col))
             else:
                 sorted_data = data
@@ -142,14 +143,14 @@ class DirectoryProcessing():
         csv_filename = "found_audio_files.csv"
         file_count = 0
         file_extension = None
-        header_row = ["file path","audio file type"]
+        header_row = ["file path", "audio file type"]
         mp3_count = 0
         m4a_count = 0
         not_count = 0
         wma_count = 0
         tot_count = 0
 
-        if start_path == None:
+        if start_path is None:
             start_path = self._tld_path
 
         try:
@@ -159,7 +160,7 @@ class DirectoryProcessing():
             for dir_path, dir_names, filenames in os.walk(start_path):
                 for file in filenames:
                     _, file_extension = os.path.splitext(file)
-                    if(file_extension in _AUDIO_EXTS):
+                    if (file_extension in _AUDIO_EXTS):
                         audio_file_path = os.path.join(dir_path, file)
                         data.append([audio_file_path, file_extension])
                         file_count += 1
@@ -197,7 +198,7 @@ class DirectoryProcessing():
         @param  start_path {str} Optional, the starting point of the directory walk.
         '''
 
-        if start_path == None:
+        if start_path is None:
             start_path = self._tld_path
 
         if (file_ext):
@@ -232,7 +233,7 @@ class DirectoryProcessing():
             # don't care about the sub-directory names at all
             for dir_path, dir_names, filenames in os.walk(start_path):
                 for file in filenames:
-                    if(file.endswith('.' + file_ext)):
+                    if (file.endswith('.' + file_ext)):
                         audio_file_path = os.path.join(dir_path, file)
                         data.append([audio_file_path])
                         type_count += 1
@@ -326,7 +327,7 @@ class DirectoryProcessing():
         dir_count = 0
 
         try:
-            if start_path == None:
+            if start_path is None:
                 start_path = self._tld_path
 
             # get the artist dirs under tld
@@ -375,7 +376,7 @@ class DirectoryProcessing():
         '''
 
         try:
-            if start_path == None:
+            if start_path is None:
                 start_path = self._tld_path
 
             # top down walk for files of the specified pattern
@@ -394,4 +395,3 @@ class DirectoryProcessing():
                 raise OSError(f"Exception: permission denied for deleting {file_path}")
             else:
                 raise Exception(f"Exception {e} deleting file {file_path}")
-
