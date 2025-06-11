@@ -450,12 +450,12 @@ class AudioMetadata():
                     # file is not mp3, m4a, or wma, so carry on to next file
                     if input_file_ext.lower() not in _AUDIO_EXTS:
                         continue
-                    else:
-                        input_file_path = os.path.join(dir_path, file)
-                        if file_pattern and fnmatch.fnmatch(file, file_pattern):
-                            self.convert_file(input_file_path, input_file_ext)
-                        elif not file_pattern:
-                            self.convert_file(input_file_path)
+                    elif file_pattern:
+                        if not fnmatch.fnmatch(file, file_pattern):
+                            continue
+
+                    input_file_path = os.path.join(dir_path, file)
+                    self.convert_file(input_file_path)
 
         except Exception as e:
             if file_pattern:
