@@ -1086,14 +1086,28 @@ class AudioMetadata():
 
         try:
             id3_tags = ID3()
-            for m4a_key, m4a_value in _M4A_KEYS.items():
+            id3_tags.version = (2, 3, 0)
+            for metadata_key, m4a_value in _M4A_KEYS.items():
                 m4a_tag = m4a_tags.get(m4a_value)
                 if m4a_tag:
-                    id3_key = _MP3_KEYS[m4a_key]
+                    id3_key = _MP3_KEYS[metadata_key]
                     id3_class = getattr(sys.modules[__name__], id3_key)
-                    tag_text = m4a_tags[m4a_value][0]
-                    id3_tags.add(id3_class(encoding=3, text=tag_text))
-                    print(id3_key)
+                    metadata_value = m4a_tags[m4a_value][0]
+
+                    if isinstance(metadata_value, tuple) and m4a_value == "trkn":
+                        track_num = m4a_tags[m4a_value][0][0]
+                        total_tracks = m4a_tags[m4a_value][0][1]
+                        tag_value = f"{track_num}/{total_tracks}"
+                    if isinstance(metadata_value, tuple) and m4a_value == "disk":
+                        disc_num = m4a_tags[m4a_value][0][0]
+                        total_discs = m4a_tags[m4a_value][0][1]
+                        tag_value = f"{disc_num}/{total_discs}"
+                    elif isinstance(metadata_value, str):
+                        tag_value = metadata_value
+
+                    print(f"metadata: {metadata_key} - wma key: {m4a_value} - id3 key: {id3_key} - value: {tag_value}")
+                    id3_tags.add(id3_class(encoding=3, text=tag_value))
+
         except Exception as e:
             raise Exception(f"Exception {e} converting m4a tags to id3 tags")
 

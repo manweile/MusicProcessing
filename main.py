@@ -185,8 +185,8 @@ if __name__ == "__main__":
 
     # convert audio file specified to mp3 format
     # "/media/gerald/Music/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3",
-    # "/home/gerald/Music/Alejandro Escovedo/Alejandro Escovedo-Broken Bottle.wma",
-    # "/media/gerald/Music/Music/The Eagles/Desperado/The Eagles-Desperado.m4a",
+    # "/home/gerald/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.wma",
+    # "/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a",
     # "/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma"
     # "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a",   # embedded art, datetime string
     # "H:\Music\Alejandro Escovedo\Alejandro Escovedo-Broken Bottle.wma",                    # no embedded art

@@ -41,5 +41,5 @@ original_year = original_year_tag[0].decode()
 '1973'
 
 title_tag = tags.get('\xa9nam')
-title = titel_tag[0]
+title = title_tag[0]
 'Desperado'
