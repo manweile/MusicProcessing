@@ -357,18 +357,15 @@ class AudioMetadata():
         '''
         metadata_type = self.get_metadata_type(file_path)
         if metadata_type == "ASF":
-            # input_audio = self.load_wma_file(file_path)
             input_tags = self.get_wma_tags(file_path)
             # @todo map wma keys/values to matching ID3
             id3_tags = self.map_wma_to_id3(input_tags)
             print(id3_tags.pprint())
         elif metadata_type == "MP3":
-            # input_audio = self.load_mp3_file(file_path)
             input_tags = self.get_mp3_tags(file_path)
             id3_tags = self.map_mp3_to_id3(input_tags)
             print(id3_tags.pprint())
         elif metadata_type == "MP4":
-            # input_audio = self.load_m4a_file(file_path)
             input_tags = self.get_m4a_tags(file_path)
             # @todo map mp4 keys/values to matching ID3
             id3_tags = self.map_m4a_to_id3(input_tags)
@@ -434,7 +431,7 @@ class AudioMetadata():
             # audio_segment.export(export_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3', cover=cover_art)
             # export_audio.save()
 
-            print(f"{input_name} converted to {export_format}")
+            print(f"{input_name} converted to {export_format}\r\n")
         except Exception as e:
             raise Exception(f"Exception {e} converting {input_path} to {export_path}")
 
