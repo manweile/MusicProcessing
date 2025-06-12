@@ -8,8 +8,6 @@
 # standard modules
 import argparse
 
-from mutagen.id3 import ID3
-
 # local modules
 from src.audio_info import AudioMetadata
 from src.dir_processing import DirectoryProcessing

@@ -21,9 +21,9 @@ import mutagen
 import pathvalidate
 from mutagen.asf import ASF
 from mutagen.id3 import ID3
-from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK
+from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TCMP, TMED, TORY
 from mutagen.mp3 import MP3
-from mutagen.mp4 import MP4
+from mutagen.mp4 import MP4, MP4FreeForm
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 from tqdm import tqdm
@@ -53,7 +53,11 @@ _GEN_KEYS = {
     'copyright',                # nice to have
     'disc',                     # nice to have
     'publisher',                # nice to have
-    'track'                     # nice to have
+    'track',                    # nice to have
+    'compilation',              # nice to have
+    'label',                    # alternate publisher
+    'media',                    # nice to have
+    'originalyear'              # alternate date
 }
 
 # set of known date keys in ID3, m4a, wma order
@@ -62,9 +66,7 @@ _TIME_KEYS = {
     'TORY',                     # ID3
     '\xa9day',                  # m4a, MIGHT need to use bytes literal; b'\xa9day'
     'originalyear',             # m4a
-    'originaldate',             # m4a
     'WM/OriginalReleaseYear',   # wma
-    'WM/OriginalReleaseTime',   # wma
     'WM/Year'                   # wma
 }
 
@@ -88,7 +90,11 @@ _MP3_KEYS = {
     'genre': 'TCON',
     'publisher': 'TPUB',
     'title': 'TIT2',
-    'track': 'TRCK'
+    'track': 'TRCK',
+    'compilation': 'TCMP',
+    'label': 'TPUB',
+    'media': 'TMED',
+    'originalyear': 'TORY'
 }
 
 # dict of generic to m4a (MP4)
@@ -104,7 +110,11 @@ _M4A_KEYS = {
     'genre': '\xa9gen',
     'publisher': '\xa9pub',
     'title': '\xa9nam',
-    'track': 'trkn'
+    'track': 'trkn',
+    'compilation': 'cpil',
+    'label': '----:com.apple.iTunes:LABEL',
+    'media': '----:com.apple.iTunes:MEDIA',
+    'originalyear': '----:com.apple.iTunes:originalyear'
 }
 
 # dict of generic to wma (ASF)
@@ -120,7 +130,11 @@ _WMA_KEYS = {
     'genre': 'WM/Genre',
     'publisher': 'WM/Publisher',
     'title': 'Title',
-    'track': 'WM/TrackNumber'
+    'track': 'WM/TrackNumber',
+    'compilation': 'WM/IsCompilation',
+    'label': 'WM/Publisher',
+    'media': 'WM/Media',
+    'originalyear': 'WM/OriginalReleaseYear'
 }
 
 
@@ -343,18 +357,15 @@ class AudioMetadata():
         '''
         metadata_type = self.get_metadata_type(file_path)
         if metadata_type == "ASF":
-            # input_audio = self.load_wma_file(file_path)
             input_tags = self.get_wma_tags(file_path)
             # @todo map wma keys/values to matching ID3
             id3_tags = self.map_wma_to_id3(input_tags)
             print(id3_tags.pprint())
         elif metadata_type == "MP3":
-            # input_audio = self.load_mp3_file(file_path)
             input_tags = self.get_mp3_tags(file_path)
             id3_tags = self.map_mp3_to_id3(input_tags)
             print(id3_tags.pprint())
         elif metadata_type == "MP4":
-            # input_audio = self.load_m4a_file(file_path)
             input_tags = self.get_m4a_tags(file_path)
             # @todo map mp4 keys/values to matching ID3
             id3_tags = self.map_m4a_to_id3(input_tags)
@@ -420,7 +431,7 @@ class AudioMetadata():
             # audio_segment.export(export_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3', cover=cover_art)
             # export_audio.save()
 
-            print(f"{input_name} converted to {export_format}")
+            print(f"{input_name} converted to {export_format}\r\n")
         except Exception as e:
             raise Exception(f"Exception {e} converting {input_path} to {export_path}")
 
@@ -1098,15 +1109,21 @@ class AudioMetadata():
                         track_num = m4a_tags[m4a_value][0][0]
                         total_tracks = m4a_tags[m4a_value][0][1]
                         tag_value = f"{track_num}/{total_tracks}"
+
                     if isinstance(metadata_value, tuple) and m4a_value == "disk":
                         disc_num = m4a_tags[m4a_value][0][0]
                         total_discs = m4a_tags[m4a_value][0][1]
                         tag_value = f"{disc_num}/{total_discs}"
-                    elif isinstance(metadata_value, str):
+
+                    if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
-                    print(f"metadata: {metadata_key} - wma key: {m4a_value} - id3 key: {id3_key} - value: {tag_value}")
-                    id3_tags.add(id3_class(encoding=3, text=tag_value))
+                    if isinstance(metadata_value, MP4FreeForm):
+                        tag_value = m4a_tags[m4a_value][0].decode()
+
+                    if tag_value not in id3_tags:
+                        print(f"metadata: {metadata_key:<30} - wma key: {m4a_value:<35} - id3 key: {id3_key} - value: {tag_value}")
+                        id3_tags.add(id3_class(encoding=3, text=tag_value))
 
         except Exception as e:
             raise Exception(f"Exception {e} converting m4a tags to id3 tags")
