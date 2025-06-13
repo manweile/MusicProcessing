@@ -574,7 +574,7 @@ class AudioMetadata():
 
     def create_tag(self, metadata):
         '''
-        @todo finish
+        @todo finish or delete
         @brief Creates a an ID3v2.3 metadata tag
 
         @params metadata {dict} Metadata to create tag with.
@@ -590,9 +590,11 @@ class AudioMetadata():
 
     def extract_album_art(self, file_path):
         '''
-        @brief Extracts and saves embedded album art.
+        @brief Wrapper function for extracting and saving embedded album art.
 
-        @details Check if album folder does not have album art file, ensures file has embedded art, extracts and saves it to album directory.
+        @details Extracts art as Folder.jpg to album directory of input file.
+        @details First tries extraction from video stream (audio file type agnostic),
+        then by metadata art tag (from specific audio file type).
 
         @param file_path {str} The full path to audio file.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -640,7 +642,7 @@ class AudioMetadata():
         '''
         @brief Extracts cover art from wma files
 
-        @details Input file is expected to have cover art.
+        @details Input file is expected to have embedded cover art.
 
         @param file_path {str} The full path to audio file.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -675,7 +677,8 @@ class AudioMetadata():
         # by default, the covert art is the first (and only frame) of the of the (only) video stream.
         # 0: Refers to the first input file (index 0).
         # v: Refers to the video stream within that input file.
-        # results in only including the video stream from the first input file in the output, discarding any other streams (audio or video).
+        # results in only including the video stream from the first input file in the output,
+        # discarding any other streams (audio or video).
         map = '0:v'
 
         # map_metadata controls how metadata is handled.
@@ -694,7 +697,6 @@ class AudioMetadata():
             # run executes the ffmpeg command
             # quiet prevents output to terminal and captures stdout & stderr for debugging purposes
             # overwrite_output since won't be able to respond to an overwrite y/n prompt
-            # out, err = ffmpeg.run(output_stream, capture_stdout=True, capture_stderr=True, quiet=True, overwrite_output=True)
             out, err = ffmpeg.run(output_stream, quiet=True, overwrite_output=True)
             print(f"Album art written from {input_path.name} and saved to {album_path}")
         except ffmpeg.Error as e:

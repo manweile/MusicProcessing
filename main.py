@@ -223,6 +223,7 @@ if __name__ == "__main__":
     # C:\Music\Joshua Davis\The Voice Peformance\Joshau Davis-The Workingman's Hym.m4a                      #has embedded, no Folder.jpg
     # C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma    #has embedded, no Folder.jpg
     # C:\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma                      #has embedded, but not in a video stream, so will fail with ffmpeg
+    # "/home/gerald/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma"          #has embedded, but not in a video stream, so will fail with ffmpeg
     # 1 mandatory arg, the path to audio file
     # sys.argv = ['D:\MusicProcessing\main.py', 'extract-art', 'C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma',
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-art', '/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma',
