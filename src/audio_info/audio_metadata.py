@@ -236,201 +236,196 @@ class AudioMetadata():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        export_dir = None
-        export_name = None
-        export_path = None
-
-        # get mp3 audio format & extension from package constants
-        export_format = _AUDIO_TYPES[0]
-        export_ext = _AUDIO_EXTS[0]
-
-        r'''
-        Ubuntu file path:
-        <anchor><mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>/<song file.ext> = 8 elements
-        <anchor><mount point>/<usr>/<tld>/<artist dir>/<album dir>/<song file.ext> = 7 elements
-        anchor is drive (always an empty string) + root (always a forward slash) Eg. "" + "/" = "/"
-        mount point is either "home" (a hdd) or "media" (an usb)
-        if mount point is media, then usr is immediately followed by drive label, then top level directory
-        if mount point is home, then usr is immediately followed by top level directory
-
-        Windows file path:
-        <anchor><tld>\<artist dir>\<album dir>\<song file.ext> = 5 elements
-        anchor is always a drive letter + colon + backslash Eg. C:\, H:\
-
-        Ubuntu from USB stick
-        "/media/gerald/Lexar/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
-        anchor = "/",
-        mount point = "media",
-        usr = "gerald",
-        drive label = "Lexar",
-        tld = "Music",
-        artist = "38 Special",
-        album = "Special Forces",
-        file = '38 Special-Caught Up in You.mp3"
-
-        Ubuntu from hdd
-        "/home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
-        anchor = "/",
-        mount point = "home",
-        usr = "gerald",
-        tld = "Music",
-        artist = "38 Special",
-        album = "Special Forces",
-        file = '38 Special-Caught Up in You.mp3"
-
-        Windows from USB stick
-        "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
-        anchor = "H:\",
-        tld = "Music",
-        artist = "38 Special",
-        album = "Special Forces",
-        file = '38 Special-Caught Up in You.mp3"
-
-        Windows from hdd
-        "C:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
-        anchor = "C:\",
-        tld = "Music",
-        artist = "38 Special",
-        album = "Special Forces",
-        file = '38 Special-Caught Up in You.mp3"
-
-        I don't need anchor, mount point, usr, drive label, tld
-        I always need artist dir, album dir, and song file
-        '''
-
-        input_path = Path(file_path)
-        # get the full parent w/o filename so I can start removing unnecessary path components
-        input_path_parent = input_path.parent
-        r'''
-        /media/gerald/Lexar/Music/38 Special/Special Forces                          # ubuntu usb
-        /home/gerald/Music/38 Special/Special Forces                                 # ubuntu hdd
-        H:\Music\38 Special\Special Forces                                           # windows usb
-        C:\Music\38 Special\Special Forces                                           # windows hdd
-        '''
-
-        # remove the anchor (ie. / or H:\), have no use for it
-        input_path_parts = input_path_parent.parts[1:]
-        '''
-        ['media', 'gerald', 'Lexar', 'Music', '38 Special', 'Special Forces']       # ubuntu usb
-        ['home', 'gerald', 'Music', '38 Special', 'Special Forces']                 # ubuntu hdd
-        ['Music', '38 Special', 'Special Forces']                                   # windows hdd or usb
-        '''
-        # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
-        # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
-        if input_path_parts[0] == "media":
-            # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
-            # so 6 elements, de don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
-            input_path_components = input_path_parts[4:]
-        elif input_path_parts[0] == "home":
-            # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
-            # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
-            input_path_components = input_path_parts[3:]
-        else:
-            # Windows is going to have <tld>/<artist dir>/<album dir>
-            # so 3 elements, we don't want element 1: 'Music'
-            input_path_components = input_path_parts[1:]
-
-        # using fixed storage path because will always know project structure
-        export_dir = os.path.join(generated_files, _EXPORT_TLD)
-
-        for component in input_path_components:
-            export_dir = os.path.join(export_dir, component)
-
-        # directory is already extant if we are processing multiple songs for the same artist & album
-        if not os.path.exists(export_dir):
-            os.makedirs(export_dir)
-
-        input_name = input_path.stem
-
-        export_name = input_name + export_ext
-        export_path = os.path.join(export_dir, export_name)
-
-        '''
-        @todo metadata transfer
-        I dont want every possible tag that pydub returns, just the subset that Windows will display.
-        Iterate over the reported metadata for the file, for every metadata key that is in my set of generic preferred keys,
-        get the value and write it to corresponding ID3v2.3 tag
-        Eg pydub reported: "album": "Desperado" -> "TALB": "Desperado"
-        for key, value in file_media_tags.items():
-            if key in _GEN_KEYS:
-                print(f"key: {key}, value: {value}")
-        '''
-        metadata_type = self.get_metadata_type(file_path)
-        if metadata_type == "ASF":
-            input_tags = self.get_wma_tags(file_path)
-            # @todo map wma keys/values to matching ID3
-            id3_tags = self.map_wma_to_id3(input_tags)
-            print(id3_tags.pprint())
-        elif metadata_type == "MP3":
-            input_tags = self.get_mp3_tags(file_path)
-            id3_tags = self.map_mp3_to_id3(input_tags)
-            print(id3_tags.pprint())
-        elif metadata_type == "MP4":
-            input_tags = self.get_m4a_tags(file_path)
-            # @todo map mp4 keys/values to matching ID3
-            id3_tags = self.map_m4a_to_id3(input_tags)
-            print(id3_tags.pprint())
-
-        # get the input file info - want bitrate so can preserve the quality in exported file
-        media_info = mediainfo(input_path)
-        media_bitrate = media_info['bit_rate']
-        # media_tags = media_info['TAG']
-
-
-        '''
-        date info is most problematic part of metadata
-        different audio file types have different date type tags
-        and to make things worse, the date could be a full ISO date,
-        or could just be a 4 digit year string
-
-        I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
-
-        FFMPEG will return key 'date' by preference.
-        So look for date key in FFMPEG return, if present use it.
-        If not present, then look for the various date type tags for mp3, m4a, wma tags
-        If multiple hits, use the oldest
-        For all successful hits, strip out the YYYY
-        If still nothing, then use default year 1963
-
-        if m4a, look for key date, then originalYear, then originalDate
-        once I have the info, need to check if is 4 chars or longer
-        if longer, just need the 1st 4 chars
-        eg from an m4a:
-        'date': '2015-05-18T07:00:00Z'
-        strip out the 2015
-
-        'date': '2013'
-        'originalyear': '1973'
-        both are YYYY format, but use oldest date, ie 1973
-
-        'originaldate': '1973-04-17'
-        strip out the 1973
-
-        if wma, look for key WM/Year
-        'WM/Year': '1976'
-        '''
-
-        '''
-        If a song has does have embedded art, ffmpeg will NOT auto transfer it.
-        Many songs have co-located hidden file art, this is a result from all the WMP processing I did.
-        I have:
-        - created all the required album sub directories with create_album_dir function.
-        - moved the audio files
-        - manually reviewed existing AlbumArt*.jpg and Folder.jpg files
-        - manually moved Folder.jpg to correct album directory
-        - if necessary, rename AlbumArt*.jpg to Folder.jpg
-        - manually move the renamed Folder.jpg to proper album sub directory
-        - create <album dir>.jpg in src/generated_files/Album Art for repeated album names
-        End result:
-        All album directories will contain a Folder.jpg cover art file
-        '''
-        cover_art = os.path.join(input_path_parent, _FOLDER_ART)
         try:
-            audio_segment = AudioSegment.from_file(input_path)
-            audio_segment.export(export_path, export_format, bitrate=media_bitrate, id3v2_version='3', cover=cover_art)
-            # audio_segment.export(export_path, export_format, bitrate=file_audio_bitrate, tags=export_metadata, id3v2_version='3', cover=cover_art)
-            # export_audio.save()
+            export_dir = None
+            export_name = None
+            export_path = None
 
+            # get mp3 audio format & extension from package constants
+            export_format = _AUDIO_TYPES[0]
+            export_ext = _AUDIO_EXTS[0]
+
+            r'''
+            Ubuntu file path:
+            <anchor><mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>/<song file.ext> = 8 elements
+            <anchor><mount point>/<usr>/<tld>/<artist dir>/<album dir>/<song file.ext> = 7 elements
+            anchor is drive (always an empty string) + root (always a forward slash) Eg. "" + "/" = "/"
+            mount point is either "home" (a hdd) or "media" (an usb)
+            if mount point is media, then usr is immediately followed by drive label, then top level directory
+            if mount point is home, then usr is immediately followed by top level directory
+
+            Windows file path:
+            <anchor><tld>\<artist dir>\<album dir>\<song file.ext> = 5 elements
+            anchor is always a drive letter + colon + backslash Eg. C:\, H:\
+
+            Ubuntu from USB stick
+            "/media/gerald/Lexar/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
+            anchor = "/",
+            mount point = "media",
+            usr = "gerald",
+            drive label = "Lexar",
+            tld = "Music",
+            artist = "38 Special",
+            album = "Special Forces",
+            file = '38 Special-Caught Up in You.mp3"
+
+            Ubuntu from hdd
+            "/home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
+            anchor = "/",
+            mount point = "home",
+            usr = "gerald",
+            tld = "Music",
+            artist = "38 Special",
+            album = "Special Forces",
+            file = '38 Special-Caught Up in You.mp3"
+
+            Windows from USB stick
+            "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
+            anchor = "H:\",
+            tld = "Music",
+            artist = "38 Special",
+            album = "Special Forces",
+            file = '38 Special-Caught Up in You.mp3"
+
+            Windows from hdd
+            "C:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
+            anchor = "C:\",
+            tld = "Music",
+            artist = "38 Special",
+            album = "Special Forces",
+            file = '38 Special-Caught Up in You.mp3"
+
+            I don't need anchor, mount point, usr, drive label, tld
+            I always need artist dir, album dir, and song file
+            '''
+
+            input_path = Path(file_path)
+            # get the full parent w/o filename so I can start removing unnecessary path components
+            input_path_parent = input_path.parent
+            r'''
+            /media/gerald/Lexar/Music/38 Special/Special Forces                          # ubuntu usb
+            /home/gerald/Music/38 Special/Special Forces                                 # ubuntu hdd
+            H:\Music\38 Special\Special Forces                                           # windows usb
+            C:\Music\38 Special\Special Forces                                           # windows hdd
+            '''
+
+            # remove the anchor (ie. / or H:\), have no use for it
+            input_path_parts = input_path_parent.parts[1:]
+            '''
+            ['media', 'gerald', 'Lexar', 'Music', '38 Special', 'Special Forces']       # ubuntu usb
+            ['home', 'gerald', 'Music', '38 Special', 'Special Forces']                 # ubuntu hdd
+            ['Music', '38 Special', 'Special Forces']                                   # windows hdd or usb
+            '''
+            # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
+            # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
+            if input_path_parts[0] == "media":
+                # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
+                # so 6 elements, de don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
+                input_path_components = input_path_parts[4:]
+            elif input_path_parts[0] == "home":
+                # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
+                # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
+                input_path_components = input_path_parts[3:]
+            else:
+                # Windows is going to have <tld>/<artist dir>/<album dir>
+                # so 3 elements, we don't want element 1: 'Music'
+                input_path_components = input_path_parts[1:]
+
+            # using fixed storage path because will always know project structure
+            export_dir = os.path.join(generated_files, _EXPORT_TLD)
+
+            for component in input_path_components:
+                export_dir = os.path.join(export_dir, component)
+
+            # directory is already extant if we are processing multiple songs for the same artist & album
+            if not os.path.exists(export_dir):
+                os.makedirs(export_dir)
+
+            input_name = input_path.stem
+
+            export_name = input_name + export_ext
+            export_path = os.path.join(export_dir, export_name)
+
+            '''
+            @todo metadata transfer
+            I dont want every possible tag that pydub returns, just the subset that Windows will display.
+            Iterate over the reported metadata for the file, for every metadata key that is in my set of generic preferred keys,
+            get the value and write it to corresponding ID3v2.3 tag
+            Eg pydub reported: "album": "Desperado" -> "TALB": "Desperado"
+            for key, value in file_media_tags.items():
+                if key in _GEN_KEYS:
+                    print(f"key: {key}, value: {value}")
+            '''
+            metadata_type = self.get_metadata_type(file_path)
+            if metadata_type == "ASF":
+                input_tags = self.get_wma_tags(file_path)
+                # @todo map wma keys/values to matching ID3
+                tags = self.map_wma_tags(input_tags)
+                print(tags.pprint())
+            elif metadata_type == "MP3":
+                input_tags = self.get_mp3_tags(file_path)
+                tags = self.map_mp3_tags(input_tags)
+                print(tags.pprint())
+            elif metadata_type == "MP4":
+                input_tags = self.get_m4a_tags(file_path)
+                # @todo map mp4 keys/values to matching ID3
+                tags = self.map_m4a_tags(input_tags)
+                print(tags.pprint())
+
+            # get the input file info - want bitrate so can preserve the quality in exported file
+            media_info = mediainfo(input_path)
+            media_bitrate = media_info['bit_rate']
+
+            '''
+            date info is most problematic part of metadata
+            different audio file types have different date type tags
+            and to make things worse, the date could be a full ISO date,
+            or could just be a 4 digit year string
+
+            I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
+
+            FFMPEG will return key 'date' by preference.
+            So look for date key in FFMPEG return, if present use it.
+            If not present, then look for the various date type tags for mp3, m4a, wma tags
+            If multiple hits, use the oldest
+            For all successful hits, strip out the YYYY
+            If still nothing, then use default year 1963
+
+            if m4a, look for key date, then originalYear, then originalDate
+            once I have the info, need to check if is 4 chars or longer
+            if longer, just need the 1st 4 chars
+            eg from an m4a:
+            'date': '2015-05-18T07:00:00Z'
+            strip out the 2015
+
+            'date': '2013'
+            'originalyear': '1973'
+            both are YYYY format, but use oldest date, ie 1973
+
+            'originaldate': '1973-04-17'
+            strip out the 1973
+
+            if wma, look for key WM/Year
+            'WM/Year': '1976'
+            '''
+
+            '''
+            If a song has does have embedded art, ffmpeg will NOT auto transfer it.
+            Many songs have co-located hidden file art, this is a result from all the WMP processing I did.
+            I have:
+            - created all the required album sub directories with create_album_dir function.
+            - moved the audio files
+            - manually reviewed existing AlbumArt*.jpg and Folder.jpg files
+            - manually moved Folder.jpg to correct album directory
+            - if necessary, rename AlbumArt*.jpg to Folder.jpg
+            - manually move the renamed Folder.jpg to proper album sub directory
+            - create <album dir>.jpg in src/generated_files/Album Art for repeated album names
+            End result:
+            All album directories will contain a Folder.jpg cover art file
+            '''
+            cover_art = os.path.join(input_path_parent, _FOLDER_ART)
+            audio_segment = AudioSegment.from_file(input_path)
+            audio_segment.export(export_path, export_format, bitrate=media_bitrate, tags=tags, id3v2_version='3', cover=cover_art)
             print(f"{input_name} converted to {export_format}\r\n")
         except Exception as e:
             raise Exception(f"Exception {e} converting {input_path} to {export_path}")
@@ -1084,25 +1079,23 @@ class AudioMetadata():
         return audio_file
 
 
-    def map_m4a_to_id3(self, m4a_tags):
+    def map_m4a_tags(self, m4a_tags):
         '''
-        @brief Converts m4a metadata to id3 metadata
+        @brief Converts m4a metadata to generic metadata
 
-        @details Converts subset of tags (the ones that Window will display) from wma to id3.
+        @details Converts subset of tags (the ones that Window will display) from wma.
 
         @param m4a_tags {ASF} The m4a tags source.
-        @return id3_tags {ID3} The id3 tags converted from wma tags.
+        @return tags {dict} The tags converted from wma tags.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
-            id3_tags = ID3()
-            id3_tags.version = (2, 3, 0)
+            tags = {}
             for metadata_key, m4a_value in _M4A_KEYS.items():
                 m4a_tag = m4a_tags.get(m4a_value)
                 if m4a_tag:
                     id3_key = _MP3_KEYS[metadata_key]
-                    id3_class = getattr(sys.modules[__name__], id3_key)
                     metadata_value = m4a_tags[m4a_value][0]
 
                     if isinstance(metadata_value, tuple) and m4a_value == "trkn":
@@ -1121,17 +1114,17 @@ class AudioMetadata():
                     if isinstance(metadata_value, MP4FreeForm):
                         tag_value = m4a_tags[m4a_value][0].decode()
 
-                    if tag_value not in id3_tags:
+                    if metadata_key not in tags:
                         print(f"metadata: {metadata_key:<30} - wma key: {m4a_value:<35} - id3 key: {id3_key} - value: {tag_value}")
-                        id3_tags.add(id3_class(encoding=3, text=tag_value))
+                        tags[id3_key] = tag_value
 
         except Exception as e:
-            raise Exception(f"Exception {e} converting m4a tags to id3 tags")
+            raise Exception(f"Exception {e} converting m4a tags")
+        print()
+        return tags
 
-        return id3_tags
 
-
-    def map_mp3_to_id3(self, mp3_tags):
+    def map_mp3_tags(self, mp3_tags):
         '''
         @brief Converts mp3 metadata to id3 metadata
 
@@ -1151,7 +1144,7 @@ class AudioMetadata():
         return id3_tags
 
 
-    def map_wma_to_id3(self, wma_tags):
+    def map_wma_tags(self, wma_tags):
         '''
         @brief Converts wma metadata to id3 metadata
 
