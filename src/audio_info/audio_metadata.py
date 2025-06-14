@@ -73,6 +73,26 @@ _TIME_KEYS = {
     'WM/Year'                   # wma
 }
 
+_MP3_TIME_KEYS = {
+    'TYER',                     # preferred key
+    'TORY',
+    'TDRC',
+    'TDOR',
+    'TXXX=originalyear'
+}
+
+_MP4_TIME_KEYS = {
+    '\xa9day',                              # preferred key
+    'originalyear',
+    '----:com.apple.iTunes:originalyear'
+}
+
+_ASF_TIME_KEY = {
+
+    'WM/Year',                  # preferred key
+    'WM/OriginalReleaseYear'
+}
+
 # set of known art keys in ID3, m4a, wma order
 _ART_KEYS = {
     'APIC',                     # ID3
@@ -364,16 +384,13 @@ class AudioMetadata():
                 input_tags = self.get_wma_tags(file_path)
                 # @todo map wma keys/values to matching ID3
                 tags = self.map_wma_tags(input_tags)
-                print(tags.pprint())
             elif metadata_type == "MP3":
                 input_tags = self.get_mp3_tags(file_path)
                 tags = self.map_mp3_tags(input_tags)
-                print(tags.pprint())
             elif metadata_type == "MP4":
                 input_tags = self.get_m4a_tags(file_path)
                 # @todo map mp4 keys/values to matching ID3
                 tags = self.map_m4a_tags(input_tags)
-                print(tags.pprint())
 
             # get the input file info - want bitrate so can preserve the quality in exported file
             media_info = mediainfo(input_path)
@@ -1214,6 +1231,18 @@ class AudioMetadata():
 
         try:
             id3_tags = None
+            '''
+            need to worry about these tags:
+            TYER - this is the tag I want to save
+            Theses are other possible tags:
+            TORY
+            TDOR
+            TDRC
+            TXXX=originalyear
+
+            also need to worry if value is YYYY or YYYY-MM-DD
+            '''
+
             pass
         except Exception as e:
             raise Exception(f"Exception {e} converting mp3 tags to id3 tags")
