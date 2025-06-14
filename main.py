@@ -65,6 +65,14 @@ def get_tags(file_path):
     return tags
 
 
+def get_tags_walk(tld_path, file_pattern):
+    '''
+    @brief Gets metadata from  all audio files in specified top level directory with specified pattern.
+    '''
+
+    metadata.get_tags_walk(tld_path, file_pattern)
+
+
 def list_audio(tld_path):
     '''
     @brief List all audio files from specified top level directory.
@@ -142,6 +150,11 @@ def main(args):
             file_path = getattr(args, "file")
             tags = get_tags(file_path)
             print(tags.pprint())
+
+        if args.subcommand == "get-tags-walk":
+            tld_path = getattr(args, "tld")
+            file_pattern = getattr(args, "pattern")
+            tags = get_tags_walk(tld_path, file_pattern)
 
         if args.subcommand == "list-audio":
             tld_path = getattr(args, "tld")
@@ -248,6 +261,17 @@ if __name__ == "__main__":
     get_tags_parser = subparsers.add_parser("get-tags", help="Gets metadata tags from audio file")
     get_tags_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     get_tags_parser.set_defaults(func=get_tags)
+
+    # get metadata tags from all audio files found in top level directory
+    # 1 mandatory arg, the tld path
+    # 1 optional arg, the file pattern to match
+    # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags-walk', 'C:\Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
+
+    get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Gets metadata tags from audio files")
+    get_tags_walk_parser.add_argument("tld", type=str, help="mandatory full path to audio file")
+    get_tags_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
+    get_tags_walk_parser.set_defaults(func=get_tags_walk)
 
     # list all audio files
     # 1 mandatory arg, the tld path

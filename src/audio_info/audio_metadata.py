@@ -64,6 +64,9 @@ _GEN_KEYS = {
 _TIME_KEYS = {
     'TYER',                     # ID3
     'TORY',                     # ID3
+    'TDRC',                     # ID3
+    'TDOR',                     # ID3
+    'TXXX=originalyear',        # ID3
     '\xa9day',                  # m4a, MIGHT need to use bytes literal; b'\xa9day'
     'originalyear',             # m4a
     'WM/OriginalReleaseYear',   # wma
@@ -800,7 +803,9 @@ class AudioMetadata():
 
     def get_any_tags(self, file_path):
         '''
-        @brief gets tags for an audio file.
+        @brief gets tags for any type of audio file.
+
+        @details Any type means m4a, mp3, or wma files.
 
         @param file_path {str} The full path to audio file.
         @return tags {object} Tag object holding audio file tags or None.
@@ -825,7 +830,7 @@ class AudioMetadata():
         @brief gets tag information for an m4a audio file.
 
         @param file_path {str} The full path to m4a audio file.
-        @return tag_info {object} Tag object holding audio file tag info or None.
+        @return tag_info {MP4Tags} Tag object holding audio file tag info or None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -846,10 +851,10 @@ class AudioMetadata():
         '''
         @brief Gets media info.
 
-        @details uses ffmpeg to get all media info from any valid audio file.
+        @details Uses ffmpeg to get all media info from any valid audio file.
 
         @param file_path {str} The full path to audio file.
-        @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath
+        @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -860,6 +865,28 @@ class AudioMetadata():
             raise Exception(f"Exception {e} getting media info for file {file_path}")
 
         return media_info
+
+
+    def get_media_tags(self, file_path):
+        '''
+        @brief Gets media tags.
+
+        @details Uses ffmpeg to get tags from any valid audio file.
+
+        @param file_path {str} The full path to audio file.
+        @return media_tags {dict} Media tags from filepath.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        media_tags = None
+        try:
+            media_info = mediainfo(file_path)
+            if media_info:
+                media_tags = mediainfo['TAG']
+        except Exception as e:
+            raise Exception(f"Exception {e} getting media tags for file {file_path}")
+
+        return media_tags
 
 
     def get_metadata_type(self, file_path):
@@ -891,7 +918,7 @@ class AudioMetadata():
         @brief gets tag information for an mp3 audio file.
 
         @param file_path {str} The full path to mp3 audio file.
-        @return tag_info {object} Tag object holding audio file tag info or None.
+        @return tag_info {ID3} Tag object holding audio file tag info or None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -908,12 +935,53 @@ class AudioMetadata():
         return tag_info
 
 
+    def get_tags_walk(self, file_path, file_pattern):
+        '''
+
+        '''
+
+        try:
+            for dir_path, _, file_names in os.walk(file_path):
+                # the tld Music does contain files, but not audio files
+                if dir_path == file_path:
+                    continue
+
+                for file in file_names:
+                    input_file, input_file_ext = os.path.splitext(file)
+
+                    # we don't touch non-audio files like jpg's
+                    if input_file_ext.lower() not in _AUDIO_EXTS:
+                        continue
+
+                    if file_pattern and not fnmatch.fnmatch(file, file_pattern):
+                        continue
+                    else:
+                        tag_file_path = os.path.join(dir_path, file)
+
+                        metadata_type = self.get_metadata_type(tag_file_path)
+                        if metadata_type == "ASF":
+                            input_tags = self.get_wma_tags(tag_file_path)
+                        elif metadata_type == "MP3":
+                            input_tags = self.get_mp3_tags(tag_file_path)
+                        elif metadata_type == "MP4":
+                            input_tags = self.get_m4a_tags(tag_file_path)
+
+                    if input_tags:
+                        print(f"{input_file} is {metadata_type}")
+                        print(input_tags.pprint())
+                        print()
+                    else:
+                        print(f"{tag_file_path} has no metadata")
+        except Exception as e:
+            raise Exception(f"Exception {e} getting tags for file {file_path}")
+
+
     def get_wma_tags(self, file_path):
         '''
         @brief gets tag information for an wma audio file.
 
         @param file_path {str} The full path to wma audio file.
-        @return tag_info {object} Tag object holding audio file tag info or None.
+        @return tag_info {ASFTags} Tag object holding audio file tag info or None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -1071,7 +1139,7 @@ class AudioMetadata():
 
         try:
             audio_file = None
-            if file_path.endswith('.wma3'):
+            if file_path.endswith('.wma'):
                 audio_file = ASF(file_path)
                 if audio_file is None:
                     return None
@@ -1087,18 +1155,24 @@ class AudioMetadata():
 
         @details Converts subset of tags (the ones that Window will display) from wma.
 
-        @param m4a_tags {ASF} The m4a tags source.
-        @return tags {dict} The tags converted from wma tags.
+        @param m4a_tags {MP4} The m4a tags source.
+        @return mp3_tags {dict} The tags converted from wma tags.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
-            tags = {}
+            mp3_tags = {}
             for metadata_key, m4a_value in _M4A_KEYS.items():
                 m4a_tag = m4a_tags.get(m4a_value)
                 if m4a_tag:
-                    id3_key = _MP3_KEYS[metadata_key]
+                    mp3_key = _MP3_KEYS[metadata_key]
                     metadata_value = m4a_tags[m4a_value][0]
+
+                    if isinstance(metadata_value, bool) and m4a_value == 'cpil':
+                        if metadata_value:
+                            tag_value = "1"
+                        else:
+                            tag_value = "0"
 
                     if isinstance(metadata_value, tuple) and m4a_value == "trkn":
                         track_num = m4a_tags[m4a_value][0][0]
@@ -1113,17 +1187,18 @@ class AudioMetadata():
                     if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
+                    # handle ----:com.apple.iTunes:<METADATA> format tags
                     if isinstance(metadata_value, MP4FreeForm):
                         tag_value = m4a_tags[m4a_value][0].decode()
 
-                    if metadata_key not in tags:
-                        print(f"metadata: {metadata_key:<30} - wma key: {m4a_value:<35} - id3 key: {id3_key} - value: {tag_value}")
-                        tags[id3_key] = tag_value
+                    if metadata_key not in mp3_tags:
+                        print(f"metadata: {metadata_key:<30} - wma key: {m4a_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
+                        mp3_tags[mp3_key] = tag_value
 
         except Exception as e:
             raise Exception(f"Exception {e} converting m4a tags")
         print()
-        return tags
+        return mp3_tags
 
 
     def map_mp3_tags(self, mp3_tags):
@@ -1133,7 +1208,7 @@ class AudioMetadata():
         @details Converts subset of tags (the ones that Window will display) from mp3 to id3.
 
         @param mp3_tags {MP3} The mp3 tags source.
-        @return id3_tags {ID3} The id3 tags converted from mp3 tags.
+        @return id3_tags {dict} The tags converted from mp3 tags.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -1141,7 +1216,7 @@ class AudioMetadata():
             id3_tags = None
             pass
         except Exception as e:
-            raise Exception(f"Exception {e} converting wma tags to id3 tags")
+            raise Exception(f"Exception {e} converting mp3 tags to id3 tags")
 
         return id3_tags
 
@@ -1152,18 +1227,49 @@ class AudioMetadata():
 
         @details Converts subset of tags (the ones that Window will display) from wma to id3.
 
-        @param wma_tags {MP4} The wma tags source.
-        @return id3_tags {ID3} The id3 tags converted from wma tags.
+        @param wma_tags {ASF} The wma tags source.
+        @return tags {dict} The tags converted from wma tags.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
-            id3_tags = None
-            pass
+            mp3_tags = {}
+            for metadata_key, wma_value in _WMA_KEYS.items():
+                wma_tag = wma_tags.get(wma_value)
+                if wma_tag:
+                    mp3_key = _MP3_KEYS[metadata_key]
+                    metadata_value = wma_tags[wma_value][0]
+
+                    if isinstance(metadata_value, bool) and wma_value == 'WM/IsCompilation':
+                        if metadata_value:
+                            tag_value = "1"
+                        else:
+                            tag_value = "0"
+
+                    if isinstance(metadata_value, tuple) and wma_value == "WM/TrackNumber":
+                        track_num = wma_tags[wma_value][0][0]
+                        total_tracks = wma_tags[wma_value][0][1]
+                        tag_value = f"{track_num}/{total_tracks}"
+
+                    if isinstance(metadata_value, tuple) and wma_value == "WM/TrackNumber":
+                        disc_num = wma_tags[wma_value][0][0]
+                        total_discs = wma_tags[wma_value][0][1]
+                        tag_value = f"{disc_num}/{total_discs}"
+
+                    if isinstance(metadata_value, str):
+                        tag_value = metadata_value
+
+                    # handle
+                    # if isinstance(metadata_value, MP4FreeForm):
+                    #     tag_value = wma_tags[wma_value][0].decode()
+
+                    if metadata_key not in mp3_tags:
+                        print(f"metadata: {metadata_key:<30} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
+                        mp3_tags[mp3_key] = tag_value
         except Exception as e:
             raise Exception(f"Exception {e} converting wma tags to id3 tags")
 
-        return id3_tags
+        return tags
 
 
     def set_album_art(self, input_path):

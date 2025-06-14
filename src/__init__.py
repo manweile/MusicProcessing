@@ -8,12 +8,12 @@
 ## @var _AUDIO_EXTS
 # @brief audio file extensions in my collection
 # @details use this when working with os library
-_AUDIO_EXTS = [ ".mp3", ".m4a", ".wma", ".wav" ]
+_AUDIO_EXTS = [".mp3", ".m4a", ".wma", ".wav"]
 
 ## @var _AUDIO_TYPES
 # @brief audio file types in my collection
 # @details use this when you just need the type
-_AUDIO_TYPES = ["mp3", "m4a", "wma","wav"]
+_AUDIO_TYPES = ["mp3", "m4a", "wma", "wav"]
 
 ## @var _PLAYLIST_EXTS
 # @brief playlist file extensions in my collection
