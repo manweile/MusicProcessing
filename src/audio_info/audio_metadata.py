@@ -149,7 +149,7 @@ _WMA_KEYS = {
     'composer': 'WM/Composer',
     'copyright': 'Copyright',
     'date': 'WM/Year',
-    'disc': 'WM/PartofSet',
+    'disc': 'WM/PartOfSet',
     'genre': 'WM/Genre',
     'publisher': 'WM/Publisher',
     'title': 'Title',
@@ -443,9 +443,9 @@ class AudioMetadata():
             End result:
             All album directories will contain a Folder.jpg cover art file
             '''
-            cover_art = os.path.join(input_path_parent, _FOLDER_ART)
-            audio_segment = AudioSegment.from_file(input_path)
-            audio_segment.export(export_path, export_format, bitrate=media_bitrate, tags=tags, id3v2_version='3', cover=cover_art)
+            # cover_art = os.path.join(input_path_parent, _FOLDER_ART)
+            # audio_segment = AudioSegment.from_file(input_path)
+            # audio_segment.export(export_path, export_format, bitrate=media_bitrate, tags=tags, id3v2_version='3', cover=cover_art)
             print(f"{input_name} converted to {export_format}\r\n")
         except Exception as e:
             raise Exception(f"Exception {e} converting {input_path} to {export_path}")
@@ -1172,7 +1172,7 @@ class AudioMetadata():
 
         @details Converts subset of tags (the ones that Window will display) from wma.
 
-        @param m4a_tags {MP4} The m4a tags source.
+        @param m4a_tags {MP4Tags} The m4a tags source.
         @return mp3_tags {dict} The tags converted from wma tags.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1224,7 +1224,7 @@ class AudioMetadata():
 
         @details Converts subset of tags (the ones that Window will display) from mp3 to id3.
 
-        @param mp3_tags {MP3} The mp3 tags source.
+        @param mp3_tags {ID3} The mp3 tags source.
         @return id3_tags {dict} The tags converted from mp3 tags.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1256,7 +1256,7 @@ class AudioMetadata():
 
         @details Converts subset of tags (the ones that Window will display) from wma to id3.
 
-        @param wma_tags {ASF} The wma tags source.
+        @param wma_tags {ASFTags} The wma tags source.
         @return tags {dict} The tags converted from wma tags.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1267,7 +1267,7 @@ class AudioMetadata():
                 wma_tag = wma_tags.get(wma_value)
                 if wma_tag:
                     mp3_key = _MP3_KEYS[metadata_key]
-                    metadata_value = wma_tags[wma_value][0]
+                    metadata_value = wma_tags[wma_value][0].value
 
                     if isinstance(metadata_value, bool) and wma_value == 'WM/IsCompilation':
                         if metadata_value:
@@ -1275,30 +1275,20 @@ class AudioMetadata():
                         else:
                             tag_value = "0"
 
-                    if isinstance(metadata_value, tuple) and wma_value == "WM/TrackNumber":
-                        track_num = wma_tags[wma_value][0][0]
-                        total_tracks = wma_tags[wma_value][0][1]
-                        tag_value = f"{track_num}/{total_tracks}"
-
-                    if isinstance(metadata_value, tuple) and wma_value == "WM/TrackNumber":
-                        disc_num = wma_tags[wma_value][0][0]
-                        total_discs = wma_tags[wma_value][0][1]
-                        tag_value = f"{disc_num}/{total_discs}"
-
                     if isinstance(metadata_value, str):
                         tag_value = metadata_value
-
-                    # handle
-                    # if isinstance(metadata_value, MP4FreeForm):
-                    #     tag_value = wma_tags[wma_value][0].decode()
 
                     if metadata_key not in mp3_tags:
                         print(f"metadata: {metadata_key:<30} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
                         mp3_tags[mp3_key] = tag_value
+
+            # most wma files do not have disc - WM/PartOfSet
+            if "TPOS" not in mp3_tags:
+                mp3_tags["TPOS"] = "1/1"
         except Exception as e:
             raise Exception(f"Exception {e} converting wma tags to id3 tags")
 
-        return tags
+        return mp3_tags
 
 
     def set_album_art(self, input_path):
