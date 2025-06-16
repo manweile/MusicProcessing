@@ -54,9 +54,7 @@ _FOLDER_ART = "Folder.jpg"
 #     'publisher',                # nice to have
 #     'track',                    # nice to have
 #     'compilation',              # nice to have
-#     'label',                    # alternate publisher
 #     'media',                    # nice to have
-#     'originalyear'              # alternate date
 # }
 
 # set of known art keys
@@ -1220,15 +1218,12 @@ class AudioMetadata():
             for metadata_key, mp3_value in _MP3_KEYS.items():
                 mp3_tag = mp3_tags.get(mp3_value)
 
+                # @todo COMM tags needs work
+                # the metadata needs fixing in a tag editor
+                # they need to be in proper format COMM==eng
                 if mp3_tag:
                     mp3_key = _MP3_KEYS[metadata_key]
                     metadata_value = mp3_tags[mp3_value].text[0]
-
-                    # if isinstance(metadata_value, bool) and mp3_value == 'TCMP':
-                    #     if metadata_value:
-                    #         tag_value = "1"
-                    #     else:
-                    #         tag_value = "0"
 
                     # need to get all possible date years into set, but not add to output dict just yet
                     if isinstance(metadata_value, ID3TimeStamp) and (mp3_value in _MP3_TIME_KEYS):

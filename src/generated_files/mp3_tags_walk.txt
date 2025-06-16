@@ -2718,18 +2718,17 @@ TPUB=ZOHO Roots
 TRCK=1
 
 Genesis-I'd Rather Be You is MP3
-APIC=cover front,  (image/jpeg, 9083 bytes)
+APIC=cover front,  (image/jpeg, 43507 bytes)
 COMM==eng=Purchased from 7digital.com
-COMM=ID3v1 Comment=eng=Purchased from 7digital.com
-TALB=In Too Deep-I’d Rather Be You
+TALB=In Too Deep / I'd Rather Be You
 TCON=Rock
 TDOR=2009
-TDRC=1963
-TIT2=I’d Rather Be You
+TDRC=2009
+TIT2=I'd Rather Be You (single version)
 TPE1=Genesis
 TPE2=Genesis
 TPOS=1/1
-TRCK=1
+TRCK=2/2
 TSO2=Genesis
 TSOP=Genesis
 TXXX=ARTISTS=Genesis
@@ -2744,18 +2743,17 @@ TXXX=originalyear=2009
 UFID=http://musicbrainz.org=b'ebe564d8-a584-405c-b674-38297f3efbef'
 
 Genesis-In Too Deep is MP3
-APIC=cover front,  (image/jpeg, 9083 bytes)
+APIC=cover front,  (image/jpeg, 43507 bytes)
 COMM==eng=Purchased from 7digital.com
-COMM=ID3v1 Comment=eng=Purchased from 7digital.com
-TALB=In Too Deep-I’d Rather Be You
+TALB=In Too Deep / I'd Rather Be You
 TCON=Rock
 TDOR=2009
-TDRC=1963
-TIT2=In Too Deep
+TDRC=2009
+TIT2=In Too Deep (single version)
 TPE1=Genesis
 TPE2=Genesis
 TPOS=1/1
-TRCK=1
+TRCK=1/2
 TSO2=Genesis
 TSOP=Genesis
 TXXX=ARTISTS=Genesis
@@ -10116,16 +10114,35 @@ TPUB=Rhino
 TRCK=1
 
 Gordon Lightfoot-Dream Street Rose is MP3
-COMM==eng=                            
+APIC=cover front,  (image/jpeg, 12752 bytes)
 TALB=Dream Street Rose
 TCOM=Gordon Lightfoot
-TCON=Folk
-TDRC=1963
+TCON=Contemporary Folk/Rock/Singer-Songwriter
+TDOR=1980
+TDRC=2002
 TIT2=Dream Street Rose
+TMED=CD
 TPE1=Gordon Lightfoot
 TPE2=Gordon Lightfoot
+TPOS=1/1
 TPUB=Rhino
-TRCK=1
+TRCK=3/10
+TSO2=Lightfoot, Gordon
+TSOP=Lightfoot, Gordon
+TSRC=USWB10200719
+TXXX=ARTISTS=Gordon Lightfoot
+TXXX=BARCODE=081227816322
+TXXX=CATALOGNUMBER=R2 78163
+TXXX=MusicBrainz Album Artist Id=9d97b077-b28d-4ba8-a3d9-c71926e3b2b6
+TXXX=MusicBrainz Album Id=426f847e-18d2-404c-b55d-9aa0d3dbb5e1
+TXXX=MusicBrainz Album Status=official
+TXXX=MusicBrainz Album Type=album
+TXXX=MusicBrainz Artist Id=9d97b077-b28d-4ba8-a3d9-c71926e3b2b6
+TXXX=MusicBrainz Release Group Id=3f4b9391-8dbb-33ae-84ad-07d1c5ef7ac9
+TXXX=MusicBrainz Release Track Id=c7bfcdd5-2db1-4cb2-9b91-83b049971810
+TXXX=SCRIPT=Latn
+TXXX=originalyear=1980
+UFID=http://musicbrainz.org=b'810df473-8e2a-4b0b-bc40-741adb375e78'
 
 Gordon Lightfoot-The Auctioneer is MP3
 TALB=Dream Street Rose
@@ -10696,7 +10713,6 @@ TPE2=Jim Croce
 TRCK=1
 
 Jim Croce - Cigarettes, Whiskey & Wild Wild Women is MP3
-COMM==eng=                            
 PCNT=0
 TALB=The 50th Anniversary Collection
 TCON=Folk
@@ -15261,7 +15277,6 @@ TPUB=Curb
 TRCK=1
 
 Dan Seals-Big Wheels In The Moonlight is MP3
-COMM==eng=  
 TALB=Greatest Hits
 TCOM=Bob McDill/Dan Seals
 TCON=Country
@@ -15884,8 +15899,6 @@ TPE2=Kenny Wayne Shepherd
 TRCK=1
 
 Suzy Bogguss-Someday Soon is MP3
-COMM=MusicMatch_Mood=eng=Tranquil
-COMM=MusicMatch_Tempo=eng=Pretty slow
 PCNT=0
 TALB=Aces
 TCOM=Ian Tyson
@@ -21550,7 +21563,6 @@ TRCK=1
 UFID=http://www.cddb.com/id3/taginfo1.html=b'3CD3O9Q190851724V88F03343D37E6504A2D2559C4551664D96P5\x00'
 
 Rod Stewart-My Heart Stood Still is MP3
-COMM=iTunes_CDDB_IDs=eng=14+0E50BDCB0CE5B13D6A5802C27A76EE2C+3401493
 TALB=As Time Goes By-The Great American Songbook Vol. 2
 TCOM=Al Dubin, Harry Warren/Various
 TCON=Easy Listening
@@ -21565,7 +21577,6 @@ TRCK=1
 UFID=http://www.cddb.com/id3/taginfo1.html=b'3CD3O6Q190851723V3836C465C8346C79F39346220AC76F8153P1\x00'
 
 Rod Stewart-Our Love Is Here To Stay is MP3
-COMM=iTunes_CDDB_IDs=eng=14+0E50BDCB0CE5B13D6A5802C27A76EE2C+3401493
 TALB=As Time Goes By-The Great American Songbook Vol. 2
 TCOM=Al Dubin, Harry Warren/Various
 TCON=Easy Listening
@@ -21580,7 +21591,6 @@ TRCK=1
 UFID=http://www.cddb.com/id3/taginfo1.html=b'3CD3N22Q190851728U158053E4E5E912EDA580C421D832B312B39P3\x00'
 
 Rod Stewart-Crazy She Calls Me is MP3
-COMM=iTunes_CDDB_IDs=eng=14+0E50BDCB0CE5B13D6A5802C27A76EE2C+3401493
 TALB=As Time Goes By-The Great American Songbook Vol. 2
 TCOM=Al Dubin, Harry Warren/Various
 TCON=Easy Listening
@@ -21595,7 +21605,6 @@ TRCK=1
 UFID=http://www.cddb.com/id3/taginfo1.html=b'3CD3N19Q190851727U17818D8600F789A419D719148FC0DAFE102P6\x00'
 
 Rod Stewart-I'm In The Mood For Love is MP3
-COMM=iTunes_CDDB_IDs=eng=14+0E50BDCB0CE5B13D6A5802C27A76EE2C+3401493
 TALB=As Time Goes By-The Great American Songbook Vol. 2
 TCOM=Al Dubin, Harry Warren/Various
 TCON=Easy Listening
@@ -21625,7 +21634,6 @@ TRCK=1
 UFID=http://www.cddb.com/id3/taginfo1.html=b'3CD3N12Q190851725V68E6F7646AE1361F7B345E45A461A3BAE8P1\x00'
 
 Rod Stewart-I Only Have Eyes For You is MP3
-COMM=iTunes_CDDB_IDs=eng=14+0E50BDCB0CE5B13D6A5802C27A76EE2C+3401493
 TALB=As Time Goes By-The Great American Songbook Vol. 2
 TCOM=Al Dubin, Harry Warren/Various
 TCON=Easy Listening
@@ -21640,7 +21648,6 @@ TRCK=1
 UFID=http://www.cddb.com/id3/taginfo1.html=b'3CD3N15Q190851726U1485DA8140D78E1DFACED9009E8CA468287P7\x00'
 
 Rod Stewart-Bewitched, Bothered & Bewildered is MP3
-COMM=iTunes_CDDB_IDs=eng=14+0E50BDCB0CE5B13D6A5802C27A76EE2C+3401493
 TALB=As Time Goes By-The Great American Songbook Vol. 2
 TCOM=Al Dubin, Harry Warren/Various
 TCON=Easy Listening
@@ -21700,7 +21707,6 @@ TRCK=1
 UFID=http://www.cddb.com/id3/taginfo1.html=b'3CD3M103Q190851719V985C55BCD8E0A7D1B6CE051146F76CE507P3\x00'
 
 Rod Stewart-Don't Get Around Much Anymore is MP3
-COMM=iTunes_CDDB_IDs=eng=14+0E50BDCB0CE5B13D6A5802C27A76EE2C+3401493
 TALB=As Time Goes By-The Great American Songbook Vol. 2
 TCOM=Al Dubin, Harry Warren/Various
 TCON=Easy Listening
@@ -22706,10 +22712,6 @@ TPUB=Mirror Image Records
 TRCK=1
 
 Maggie Reilly-Everytime We Touch is MP3
-COMM=MusicMatch_Mood=eng=None
-COMM=MusicMatch_Preference=eng=None
-COMM=MusicMatch_Situation=eng=None
-COMM=MusicMatch_Tempo=eng=None
 TALB=Echoes
 TCOM=Maggie Reilly/Peter Risavy/St. MacKillop
 TCON=Pop
@@ -22768,7 +22770,6 @@ TRCK=1
 
 John Mellencamp-Paper In Fire is MP3
 APIC=cover front,  (image/jpeg, 82626 bytes)
-COMM==eng=                              
 TALB=The Lonesome Jubilee
 TCOM=John Mellencamp
 TCON=Classic Rock
@@ -28284,11 +28285,8 @@ TRCK=1
 
 Scandal-The Warrior is MP3
 APIC=cover front,  (image/jpeg, 60472 bytes)
-COMM=MusicMatch_Mood=ena=None
 COMM=MusicMatch_Preference=en =None
 COMM=MusicMatch_Situation=en0=None
-COMM=en0:MusicMatch_Situation=eng=None
-COMM=en=eng=:MusicMatch_Preference / None
 TALB=Warrior
 TCOM=Holly Knight/Nick Gilder
 TCON=Rock
@@ -34506,7 +34504,6 @@ TPUB=Sony Legacy
 TRCK=1
 
 Celine Dion-I Drove All Night is MP3
-COMM=MusicMatch_Tempo=XXX=None
 TALB=One Heart
 TCON=Easy Listening
 TDRC=1963
@@ -34518,7 +34515,6 @@ TPUB=Columbia
 TRCK=1
 
 Celine Dion-The Power of Love is MP3
-COMM=MusicMatch_Tempo=eng=Moderate
 TALB=The Colour Of My Love
 TCOM=Candy Derouge/Gunther Mende/Jennifer Rush/Mary Susan Applegate
 TCON=Easy Listening
@@ -34907,20 +34903,36 @@ TPUB=A&M
 TRCK=1
 
 Maroon 5-Animals is MP3
-APIC=other,  (image/jpeg, 732660 bytes)
-APIC=other, 0 (image/jpeg, 732660 bytes)
-APIC=other, 1 (image/jpeg, 732660 bytes)
+APIC=cover front,  (image/jpeg, 32948 bytes)
 COMM==XXX=Purchased from 7digital.com
 TALB=V
 TCON=Pop
+TDOR=2014
 TDRC=1963
 TENC=iTunes 11.1.5.5
 TIT2=Animals
+TMED=CD
 TPE1=Maroon 5
 TPE2=Maroon 5
 TPOS=1/1
-TPUB=Polydor
-TRCK=1
+TPUB=222 Records/Interscope Records
+TRCK=2/11
+TSO2=Maroon 5
+TSOP=Maroon 5
+TSRC=USUM71409576
+TXXX=ARTISTS=Maroon 5
+TXXX=BARCODE=602537962143
+TXXX=CATALOGNUMBER=B0021499-02
+TXXX=MusicBrainz Album Artist Id=0ab49580-c84f-44d4-875f-d83760ea2cfe
+TXXX=MusicBrainz Album Id=d2852ca4-06f7-4bf1-acfa-fe26ad238c63
+TXXX=MusicBrainz Album Status=official
+TXXX=MusicBrainz Album Type=album
+TXXX=MusicBrainz Artist Id=0ab49580-c84f-44d4-875f-d83760ea2cfe
+TXXX=MusicBrainz Release Group Id=3622c71c-c674-46bc-8fc2-24d182f7684a
+TXXX=MusicBrainz Release Track Id=9ceee545-5057-439a-bd9e-70d00ac0cb77
+TXXX=SCRIPT=Latn
+TXXX=originalyear=2014
+UFID=http://musicbrainz.org=b'7c0ed007-5118-4086-917a-fd9cfb0d338e'
 
 Maroon 5-Maps is MP3
 APIC=other,  (image/jpeg, 732660 bytes)
