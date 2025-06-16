@@ -13,15 +13,14 @@ import gc
 import os
 import shutil
 import struct
-import sys
 from pathlib import Path
 
 # third party modules
 import mutagen
 import pathvalidate
 from mutagen.asf import ASF
-from mutagen.id3 import ID3
-from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TCMP, TMED, TORY
+from mutagen.id3 import ID3, ID3TimeStamp
+from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TCMP, TMED, TORY, TDOR, TDRC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4FreeForm
 from pydub import AudioSegment
@@ -39,42 +38,42 @@ _ALBUM_ART = "AlbumArt"
 _EXPORT_TLD = "Music"
 _FOLDER_ART = "Folder.jpg"
 
-# the set of pydub generic metadata keys I want to copy to converted & normalized files
-# these keys also correspond to what Windows displays as file information in File Explorer
-_GEN_KEYS = {
-    'album',                    # must have
-    'artist',                   # must have
-    'date',                     # must have
-    'genre',                    # must have
-    'title',                    # must have
-    'album_artist',             # nice to have
-    'comment',                  # nice to have
-    'composer',                 # nice to have
-    'copyright',                # nice to have
-    'disc',                     # nice to have
-    'publisher',                # nice to have
-    'track',                    # nice to have
-    'compilation',              # nice to have
-    'label',                    # alternate publisher
-    'media',                    # nice to have
-    'originalyear'              # alternate date
+# # the set of pydub generic metadata keys I want to copy to converted & normalized files
+# # these keys also correspond to what Windows displays as file information in File Explorer
+# _GEN_KEYS = {
+#     'album',                    # must have
+#     'artist',                   # must have
+#     'date',                     # must have
+#     'genre',                    # must have
+#     'title',                    # must have
+#     'album_artist',             # nice to have
+#     'comment',                  # nice to have
+#     'composer',                 # nice to have
+#     'copyright',                # nice to have
+#     'disc',                     # nice to have
+#     'publisher',                # nice to have
+#     'track',                    # nice to have
+#     'compilation',              # nice to have
+#     'label',                    # alternate publisher
+#     'media',                    # nice to have
+#     'originalyear'              # alternate date
+# }
+
+# set of known art keys
+_ART_KEYS = {
+    'ID3': 'APIC',
+    'MP4': 'covr',
+    'ASF': 'WM/Picture'
 }
 
-# set of known date keys in ID3, m4a, wma order
-_TIME_KEYS = {
-    'TYER',                     # ID3
-    'TORY',                     # ID3
-    'TDRC',                     # ID3
-    'TDOR',                     # ID3
-    'TXXX=originalyear',        # ID3
-    '\xa9day',                  # m4a, MIGHT need to use bytes literal; b'\xa9day'
-    'originalyear',             # m4a
-    'WM/OriginalReleaseYear',   # wma
-    'WM/Year'                   # wma
+_ASF_TIME_KEYS = {
+
+    'WM/Year',                              # preferred key
+    'WM/OriginalReleaseYear'
 }
 
 _MP3_TIME_KEYS = {
-    'TYER',                     # preferred key
+    'TYER',                                 # preferred key
     'TORY',
     'TDRC',
     'TDOR',
@@ -83,21 +82,7 @@ _MP3_TIME_KEYS = {
 
 _MP4_TIME_KEYS = {
     '\xa9day',                              # preferred key
-    'originalyear',
     '----:com.apple.iTunes:originalyear'
-}
-
-_ASF_TIME_KEY = {
-
-    'WM/Year',                  # preferred key
-    'WM/OriginalReleaseYear'
-}
-
-# set of known art keys in ID3, m4a, wma order
-_ART_KEYS = {
-    'APIC',                     # ID3
-    'covr',                     # m4a
-    'WM/Picture'                # wma
 }
 
 # dict of generic to ID3v2.3 (MP3)
@@ -117,10 +102,13 @@ _MP3_KEYS = {
     'compilation': 'TCMP',
     'label': 'TPUB',
     'media': 'TMED',
-    'originalyear': 'TORY'
+    'original_year': 'TORY',
+    'original_date': 'TDOR',
+    'release_date': 'TDRC',
+    'custom_original_year': 'TXXX=originalyear'
 }
 
-# dict of generic to m4a (MP4)
+# dict of possible m4a (MP4)
 _M4A_KEYS = {
     'album': '\xa9alb',
     'album_artist': 'aART',
@@ -140,7 +128,7 @@ _M4A_KEYS = {
     'originalyear': '----:com.apple.iTunes:originalyear'
 }
 
-# dict of generic to wma (ASF)
+# dict of possible wma (ASF)
 _WMA_KEYS = {
     'album': 'WM/AlbumTitle',
     'album_artist': 'WM/AlbumArtist',
@@ -343,7 +331,7 @@ class AudioMetadata():
             # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
             if input_path_parts[0] == "media":
                 # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
-                # so 6 elements, de don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
+                # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
                 input_path_components = input_path_parts[4:]
             elif input_path_parts[0] == "home":
                 # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
@@ -370,14 +358,15 @@ class AudioMetadata():
             export_path = os.path.join(export_dir, export_name)
 
             '''
-            @todo metadata transfer
-            I dont want every possible tag that pydub returns, just the subset that Windows will display.
-            Iterate over the reported metadata for the file, for every metadata key that is in my set of generic preferred keys,
-            get the value and write it to corresponding ID3v2.3 tag
-            Eg pydub reported: "album": "Desperado" -> "TALB": "Desperado"
-            for key, value in file_media_tags.items():
-                if key in _GEN_KEYS:
-                    print(f"key: {key}, value: {value}")
+            metadata transfer
+            I dont want every possible tag, just the subset that Windows will display.
+
+            date info is most problematic part of metadata
+            different audio file types have different date type tags
+            and to make things worse, the date could be a full ISO date,
+            or could just be a 4 digit year string
+
+            I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
             '''
             metadata_type = self.get_metadata_type(file_path)
             if metadata_type == "ASF":
@@ -389,45 +378,11 @@ class AudioMetadata():
                 tags = self.map_mp3_tags(input_tags)
             elif metadata_type == "MP4":
                 input_tags = self.get_m4a_tags(file_path)
-                # @todo map mp4 keys/values to matching ID3
                 tags = self.map_m4a_tags(input_tags)
 
             # get the input file info - want bitrate so can preserve the quality in exported file
             media_info = mediainfo(input_path)
             media_bitrate = media_info['bit_rate']
-
-            '''
-            date info is most problematic part of metadata
-            different audio file types have different date type tags
-            and to make things worse, the date could be a full ISO date,
-            or could just be a 4 digit year string
-
-            I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
-
-            FFMPEG will return key 'date' by preference.
-            So look for date key in FFMPEG return, if present use it.
-            If not present, then look for the various date type tags for mp3, m4a, wma tags
-            If multiple hits, use the oldest
-            For all successful hits, strip out the YYYY
-            If still nothing, then use default year 1963
-
-            if m4a, look for key date, then originalYear, then originalDate
-            once I have the info, need to check if is 4 chars or longer
-            if longer, just need the 1st 4 chars
-            eg from an m4a:
-            'date': '2015-05-18T07:00:00Z'
-            strip out the 2015
-
-            'date': '2013'
-            'originalyear': '1973'
-            both are YYYY format, but use oldest date, ie 1973
-
-            'originaldate': '1973-04-17'
-            strip out the 1973
-
-            if wma, look for key WM/Year
-            'WM/Year': '1976'
-            '''
 
             '''
             If a song has does have embedded art, ffmpeg will NOT auto transfer it.
@@ -438,10 +393,11 @@ class AudioMetadata():
             - manually reviewed existing AlbumArt*.jpg and Folder.jpg files
             - manually moved Folder.jpg to correct album directory
             - if necessary, rename AlbumArt*.jpg to Folder.jpg
+            - deleted extraneous ALbumArt*.jpg's
             - manually move the renamed Folder.jpg to proper album sub directory
             - create <album dir>.jpg in src/generated_files/Album Art for repeated album names
             End result:
-            All album directories will contain a Folder.jpg cover art file
+            All album directories now contain a Folder.jpg cover art file
             '''
             # cover_art = os.path.join(input_path_parent, _FOLDER_ART)
             # audio_segment = AudioSegment.from_file(input_path)
@@ -1168,7 +1124,7 @@ class AudioMetadata():
 
     def map_m4a_tags(self, m4a_tags):
         '''
-        @brief Converts m4a metadata to generic metadata
+        @brief Converts m4a (MP4) metadata to generic metadata
 
         @details Converts subset of tags (the ones that Window will display) from wma.
 
@@ -1179,8 +1135,10 @@ class AudioMetadata():
 
         try:
             mp3_tags = {}
+            date_values = set()
             for metadata_key, m4a_value in _M4A_KEYS.items():
                 m4a_tag = m4a_tags.get(m4a_value)
+
                 if m4a_tag:
                     mp3_key = _MP3_KEYS[metadata_key]
                     metadata_value = m4a_tags[m4a_value][0]
@@ -1201,16 +1159,43 @@ class AudioMetadata():
                         total_discs = m4a_tags[m4a_value][0][1]
                         tag_value = f"{disc_num}/{total_discs}"
 
-                    if isinstance(metadata_value, str):
-                        tag_value = metadata_value
+                    # need to get all possible date years into set, but not add to output dict just yet
+                    if isinstance(metadata_value, str) and m4a_value in _MP4_TIME_KEYS:
+                        # just in case string is "YYYY-MM-DD"
+                        date_value = metadata_value[0:4]
+                        date_values.add(date_value)
+                        print(f"metadata: {metadata_key:<30} - wma key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
+                        continue
 
-                    # handle ----:com.apple.iTunes:<METADATA> format tags
+                    # m4a doesn't have a "native" original year field like "\xa9ory", relies on the iTunes field,
+                    # so need additional step to decode from MP4FreeForm
+                    if isinstance(metadata_value, MP4FreeForm) and m4a_value in _MP4_TIME_KEYS:
+                        decode_value = m4a_tags[m4a_value][0].decode()
+                        # just in case string is "YYYY-MM-DD"
+                        date_value = decode_value[0:4]
+                        date_values.add(date_value)
+                        print(f"metadata: {metadata_key:<30} - wma key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
+                        continue
+
+                    # m4a doesn't have a "native" media field like "\xa9med", relies on the iTunes "----:com.apple.iTunes:MEDIA" field
+                    # m4a does have native publisher: "\xa9pub" and can have iTunes "----:com.apple.iTunes:LABEL" field
+                    # both fields are mapped to ID3 TPUB, and the last one processed is the final value in return dict
                     if isinstance(metadata_value, MP4FreeForm):
                         tag_value = m4a_tags[m4a_value][0].decode()
 
-                    if metadata_key not in mp3_tags:
-                        print(f"metadata: {metadata_key:<30} - wma key: {m4a_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
-                        mp3_tags[mp3_key] = tag_value
+                    if isinstance(metadata_value, str):
+                        tag_value = metadata_value
+
+                    print(f"metadata: {metadata_key:<30} - wma key: {m4a_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
+                    mp3_tags[mp3_key] = tag_value
+
+            # want newest date from unique dates found
+            if date_values:
+                max_date = max(date_values, key=int)
+                mp3_tags["TYER"] = max_date
+
+            if "TPOS" not in mp3_tags:
+                mp3_tags["TPOS"] = "1/1"
 
         except Exception as e:
             raise Exception(f"Exception {e} converting m4a tags")
@@ -1230,20 +1215,44 @@ class AudioMetadata():
         '''
 
         try:
-            id3_tags = None
-            '''
-            need to worry about these tags:
-            TYER - this is the tag I want to save
-            Theses are other possible tags:
-            TORY
-            TDOR
-            TDRC
-            TXXX=originalyear
+            id3_tags = {}
+            date_values = set()
+            for metadata_key, mp3_value in _MP3_KEYS.items():
+                mp3_tag = mp3_tags.get(mp3_value)
 
-            also need to worry if value is YYYY or YYYY-MM-DD
-            '''
+                if mp3_tag:
+                    mp3_key = _MP3_KEYS[metadata_key]
+                    metadata_value = mp3_tags[mp3_value].text[0]
 
-            pass
+                    # if isinstance(metadata_value, bool) and mp3_value == 'TCMP':
+                    #     if metadata_value:
+                    #         tag_value = "1"
+                    #     else:
+                    #         tag_value = "0"
+
+                    # need to get all possible date years into set, but not add to output dict just yet
+                    if isinstance(metadata_value, ID3TimeStamp) and (mp3_value in _MP3_TIME_KEYS):
+                        # just in case string is "YYYY-MM-DD"
+                        date_value = metadata_value.text[0:4]
+                        date_values.add(date_value)
+                        print(f"metadata: {metadata_key:<15} - wma key: {mp3_value:<5} - id3 key: {mp3_key} - value: {date_value}")
+                        continue
+
+                    if isinstance(metadata_value, str):
+                        tag_value = metadata_value
+
+                    print(f"metadata: {metadata_key:<15} - mp3 key: {mp3_value:<5} - id3 key: {mp3_key} - value: {tag_value}")
+                    id3_tags[mp3_key] = tag_value
+
+            # want newest date from unique dates found
+            if date_values:
+                max_date = max(date_values, key=int)
+                id3_tags["TYER"] = max_date
+
+            # most wma files do not have disc - WM/PartOfSet
+            if "TPOS" not in mp3_tags:
+                id3_tags["TPOS"] = "1/1"
+
         except Exception as e:
             raise Exception(f"Exception {e} converting mp3 tags to id3 tags")
 
@@ -1252,7 +1261,7 @@ class AudioMetadata():
 
     def map_wma_tags(self, wma_tags):
         '''
-        @brief Converts wma metadata to id3 metadata
+        @brief Converts wma (ASF) metadata to id3 metadata
 
         @details Converts subset of tags (the ones that Window will display) from wma to id3.
 
@@ -1263,8 +1272,10 @@ class AudioMetadata():
 
         try:
             mp3_tags = {}
+            date_values = set()
             for metadata_key, wma_value in _WMA_KEYS.items():
                 wma_tag = wma_tags.get(wma_value)
+
                 if wma_tag:
                     mp3_key = _MP3_KEYS[metadata_key]
                     metadata_value = wma_tags[wma_value][0].value
@@ -1275,16 +1286,29 @@ class AudioMetadata():
                         else:
                             tag_value = "0"
 
+                    # need to get all possible date years into set, but not add to output dict just yet
+                    if isinstance(metadata_value, str) and (wma_value in _ASF_TIME_KEYS):
+                        # just in case string is "YYYY-MM-DD"
+                        date_value = metadata_value[0:4]
+                        date_values.add(date_value)
+                        print(f"metadata: {metadata_key:<30} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {date_value}")
+                        continue
+
                     if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
-                    if metadata_key not in mp3_tags:
-                        print(f"metadata: {metadata_key:<30} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
-                        mp3_tags[mp3_key] = tag_value
+                    print(f"metadata: {metadata_key:<30} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
+                    mp3_tags[mp3_key] = tag_value
+
+            # want newest date from unique dates found
+            if date_values:
+                max_date = max(date_values, key=int)
+                mp3_tags["TYER"] = max_date
 
             # most wma files do not have disc - WM/PartOfSet
             if "TPOS" not in mp3_tags:
                 mp3_tags["TPOS"] = "1/1"
+
         except Exception as e:
             raise Exception(f"Exception {e} converting wma tags to id3 tags")
 
