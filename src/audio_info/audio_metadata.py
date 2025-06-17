@@ -1201,6 +1201,9 @@ class AudioMetadata():
                 max_date = max(date_values, key=int)
                 mp3_tags["TYER"] = max_date
 
+            if "TCMP" not in mp3_tags:
+                mp3_tags["TCMP"] = 0
+
             if "TPOS" not in mp3_tags:
                 mp3_tags["TPOS"] = "1/1"
 
@@ -1227,30 +1230,33 @@ class AudioMetadata():
             for metadata_key, mp3_value in _MP3_KEYS.items():
                 if mp3_value == "COMM":
                     # can also do mp3_tags.get("COMM::eng") or "COMM::XXXX"
+                    # but getall works with just "COMM", and returns a list of COMM objects
                     mp3_tag = mp3_tags.getall(mp3_value)
                 else:
                     mp3_tag = mp3_tags.get(mp3_value)
 
-                # @todo COMM tags needs work
-                # the metadata needs fixing in a tag editor
-                # they need to be in proper format COMM==eng
                 if mp3_tag:
                     mp3_key = _MP3_KEYS[metadata_key]
-                    # @todo COMM objects need different handling
-                    metadata_value = mp3_tags[mp3_value].text[0]
+
+                    if mp3_value == "COMM":
+                        # I don't care about possible 2nd or 3rd etc COMM objects so just grab 1st element
+                        # I also don't care  about possible 2nd etc text elements
+                        metadata_value = mp3_tag[0].text[0]
+                    else:
+                        metadata_value = mp3_tags[mp3_value].text[0]
 
                     # need to get all possible date years into set, but not add to output dict just yet
                     if isinstance(metadata_value, ID3TimeStamp) and (mp3_value in _MP3_TIME_KEYS):
                         # just in case string is "YYYY-MM-DD"
                         date_value = metadata_value.text[0:4]
                         date_values.add(date_value)
-                        print(f"metadata: {metadata_key:<15} - wma key: {mp3_value:<5} - id3 key: {mp3_key} - value: {date_value}")
+                        print(f"metadata: {metadata_key:<20} - wma key: {mp3_value:<5} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
                     if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
-                    print(f"metadata: {metadata_key:<15} - mp3 key: {mp3_value:<5} - id3 key: {mp3_key} - value: {tag_value}")
+                    print(f"metadata: {metadata_key:<20} - mp3 key: {mp3_value:<5} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
             # want newest date from unique dates found
@@ -1258,7 +1264,9 @@ class AudioMetadata():
                 max_date = max(date_values, key=int)
                 id3_tags["TYER"] = max_date
 
-            # most wma files do not have disc - WM/PartOfSet
+            if "TCMP" not in mp3_tags:
+                id3_tags["TCMP"] = 0
+
             if "TPOS" not in mp3_tags:
                 id3_tags["TPOS"] = "1/1"
 
@@ -1313,6 +1321,9 @@ class AudioMetadata():
             if date_values:
                 max_date = max(date_values, key=int)
                 mp3_tags["TYER"] = max_date
+
+            if "TCMP" not in mp3_tags:
+                mp3_tags["TCMP"] = 0
 
             # most wma files do not have disc - WM/PartOfSet
             if "TPOS" not in mp3_tags:
