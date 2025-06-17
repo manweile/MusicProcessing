@@ -100,10 +100,10 @@ _MP3_KEYS = {
     'compilation': 'TCMP',
     'label': 'TPUB',
     'media': 'TMED',
-    'original_year': 'TORY',
-    'original_date': 'TDOR',
-    'release_date': 'TDRC',
-    'custom_original_year': 'TXXX=originalyear'
+    'original_year': 'TORY',                        # ID3v2.3: TORY
+    'original_date': 'TDOR',                        # ID3v2.4 -> ID3v2.3: TORY
+    'release_date': 'TDRC',                         # ID3v2.4 -> YYYY portion to ID3v2.3 TYER
+    'custom_original_year': 'TXXX=originalyear'     # ID3v2.3: TORY
 }
 
 # dict of possible m4a (MP4)
@@ -886,7 +886,7 @@ class AudioMetadata():
 
     def get_mp3_tags(self, file_path):
         '''
-        @brief gets tag information for an mp3 audio file.
+        @brief Gets tag information for an mp3 audio file.
 
         @param file_path {str} The full path to mp3 audio file.
         @return tag_info {ID3} Tag object holding audio file tag info or None.
@@ -908,10 +908,15 @@ class AudioMetadata():
 
     def get_tags_walk(self, file_path, file_pattern):
         '''
+        @brief Pretty prints tags for audio files.
 
+        @param file_path {str} The starting point of the directory walk.
+        @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
+            input_tags = None
             for dir_path, _, file_names in os.walk(file_path):
                 # the tld Music does contain files, but not audio files
                 if dir_path == file_path:
@@ -939,7 +944,11 @@ class AudioMetadata():
 
                     if input_tags:
                         print(f"{input_file} is {metadata_type}")
+                        # pretty print cause mutagen returns tags as ASFTags, ID3Tags, MPfTags
+                        # not as a simple dict of string key/value
+                        # @todo if I do a splitlines on input_tags.pprint(), I get a list
                         print(input_tags.pprint())
+                        print(input_tags.pprint().splitlines())
                         print()
                     else:
                         print(f"{tag_file_path} has no metadata")
@@ -1216,13 +1225,18 @@ class AudioMetadata():
             id3_tags = {}
             date_values = set()
             for metadata_key, mp3_value in _MP3_KEYS.items():
-                mp3_tag = mp3_tags.get(mp3_value)
+                if mp3_value == "COMM":
+                    # can also do mp3_tags.get("COMM::eng") or "COMM::XXXX"
+                    mp3_tag = mp3_tags.getall(mp3_value)
+                else:
+                    mp3_tag = mp3_tags.get(mp3_value)
 
                 # @todo COMM tags needs work
                 # the metadata needs fixing in a tag editor
                 # they need to be in proper format COMM==eng
                 if mp3_tag:
                     mp3_key = _MP3_KEYS[metadata_key]
+                    # @todo COMM objects need different handling
                     metadata_value = mp3_tags[mp3_value].text[0]
 
                     # need to get all possible date years into set, but not add to output dict just yet
