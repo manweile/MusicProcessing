@@ -35,27 +35,15 @@ from src.generated_files import generated_files
 gc.enable()
 
 _ALBUM_ART = "AlbumArt"
+_ASF = "ASF"
 _EXPORT_TLD = "Music"
 _FOLDER_ART = "Folder.jpg"
-
-# # the set of pydub generic metadata keys I want to copy to converted & normalized files
-# # these keys also correspond to what Windows displays as file information in File Explorer
-# _GEN_KEYS = {
-#     'album',                    # must have
-#     'artist',                   # must have
-#     'date',                     # must have
-#     'genre',                    # must have
-#     'title',                    # must have
-#     'album_artist',             # nice to have
-#     'comment',                  # nice to have
-#     'composer',                 # nice to have
-#     'copyright',                # nice to have
-#     'disc',                     # nice to have
-#     'publisher',                # nice to have
-#     'track',                    # nice to have
-#     'compilation',              # nice to have
-#     'media',                    # nice to have
-# }
+_MP3 = "MP3"
+_MP4 = "MP4"
+_TCMP = "TCMP"
+_TMED = "TMED"
+_TPOS = "TPOS"
+_TYER = "TYER"
 
 # set of known art keys
 _ART_KEYS = {
@@ -98,7 +86,6 @@ _MP3_KEYS = {
     'title': 'TIT2',
     'track': 'TRCK',
     'compilation': 'TCMP',
-    # 'label': 'TPUB',                              # alternate publisher field convert to ID3v2.3 TPUB
     'media': 'TMED',
     'original_year': 'TORY',
     'original_date': 'TDOR',                        # ID3v2.4 field to ID3v2.3 TYER
@@ -117,12 +104,10 @@ _M4A_KEYS = {
     'date': '\xa9day',
     'disc': 'disk',
     'genre': '\xa9gen',
-    # 'publisher': '\xa9pub',
-    'publisher': '----:com.apple.iTunes:LABEL',               # alternate publisher field
+    'publisher': '----:com.apple.iTunes:LABEL',     # alternate publisher field
     'title': '\xa9nam',
     'track': 'trkn',
     'compilation': 'cpil',
-    # 'label': '----:com.apple.iTunes:LABEL',                 # alternate publisher field
     'media': '----:com.apple.iTunes:MEDIA',
     'original_year': '----:com.apple.iTunes:originalyear'
 }
@@ -245,16 +230,16 @@ class AudioMetadata():
             # want newest date from unique dates found
             if date_values:
                 max_date = max(date_values, key=int)
-                id3_tags["TYER"] = max_date
+                id3_tags[_TYER] = max_date
 
             if "TCMP" not in id3_tags:
-                id3_tags["TCMP"] = 0
+                id3_tags[_TCMP] = 0
 
             if "TMED" not in id3_tags:
-                id3_tags["TMED"] = "Digital Media"
+                id3_tags[_TMED] = "Digital Media"
 
             if "TPOS" not in id3_tags:
-                id3_tags["TPOS"] = "1/1"
+                id3_tags[_TPOS] = "1/1"
 
             print()
             for key, value in id3_tags.items():
@@ -402,20 +387,20 @@ class AudioMetadata():
             print(f"Beginning processing {input_path.name}")
 
             metadata_type = self.get_metadata_type(file_path)
-            if metadata_type == "ASF":
+            if metadata_type == _ASF:
                 input_tags = self.get_wma_tags(file_path)
                 # @todo map wma keys/values to matching ID3
                 tags = self.map_wma_tags(input_tags)
-            elif metadata_type == "MP3":
+            elif metadata_type == _MP3:
                 input_tags = self.get_mp3_tags(file_path)
                 tags = self.map_mp3_tags(input_tags)
-            elif metadata_type == "MP4":
+            elif metadata_type == _MP4:
                 input_tags = self.get_m4a_tags(file_path)
                 tags = self.map_m4a_tags(input_tags)
 
             # get the input file info - want bitrate so can preserve the quality in exported file
-            media_info = mediainfo(input_path)
-            media_bitrate = media_info['bit_rate']
+            media_info = self.get_media_info(input_path)
+            bitrate = media_info['bit_rate']
 
             '''
             If a song has does have embedded art, ffmpeg will NOT auto transfer it.
@@ -432,9 +417,9 @@ class AudioMetadata():
             End result:
             All album directories now contain a Folder.jpg cover art file
             '''
-            cover_art = os.path.join(input_path_parent, _FOLDER_ART)
+            cover = os.path.join(input_path_parent, _FOLDER_ART)
             audio_segment = AudioSegment.from_file(input_path)
-            audio_segment.export(export_path, export_format, bitrate=media_bitrate, tags=tags, id3v2_version='3', cover=cover_art)
+            audio_segment.export(export_path, export_format, bitrate=bitrate, tags=tags, id3v2_version='3', cover=cover)
             print(f"{input_name} converted to {export_format}\r\n")
         except Exception as e:
             raise Exception(f"Exception {e} converting {input_path} to {export_path}")
@@ -581,22 +566,6 @@ class AudioMetadata():
             raise Exception(f"Exception {e} creating sub-dirs for {start_path}")
 
 
-    def create_tag(self, metadata):
-        '''
-        @todo finish or delete
-        @brief Creates a an ID3v2.3 metadata tag
-
-        @params metadata {dict} Metadata to create tag with.
-        @return tag {object} ID3v2.3 tag object.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            pass
-        except Exception as e:
-            raise Exception(f"Exception {e} creating tag")
-
-
     def extract_album_art(self, file_path):
         '''
         @brief Wrapper function for extracting and saving embedded album art.
@@ -634,11 +603,11 @@ class AudioMetadata():
             if self.has_art_tag(input_path):
                 # each audio file type has different extraction method
                 metadata_type = self.get_metadata_type(input_path)
-                if metadata_type == "ASF":
+                if metadata_type == _ASF:
                     self.extract_asf_art(file_path)
-                elif metadata_type == "MP3":
+                elif metadata_type == _MP3:
                     self.extract_mp3_art(file_path)
-                elif metadata_type == "MP4":
+                elif metadata_type == _MP4:
                     self.extract_m4a_art(file_path)
             else:
                 print(f"No album art present in {file_path}")
@@ -970,19 +939,17 @@ class AudioMetadata():
                         tag_file_path = os.path.join(dir_path, file)
 
                         metadata_type = self.get_metadata_type(tag_file_path)
-                        if metadata_type == "ASF":
+                        if metadata_type == _ASF:
                             input_tags = self.get_wma_tags(tag_file_path)
-                        elif metadata_type == "MP3":
+                        elif metadata_type == _MP3:
                             input_tags = self.get_mp3_tags(tag_file_path)
-                        elif metadata_type == "MP4":
+                        elif metadata_type == _MP4:
                             input_tags = self.get_m4a_tags(tag_file_path)
 
                     if input_tags:
                         print(f"{input_file} is {metadata_type}")
                         # pretty print cause mutagen returns tags as ASFTags, ID3Tags, MPfTags
                         # not as a simple dict of string key/value
-                        # @todo if I do a splitlines on input_tags.pprint(), I get a list
-                        print(input_tags.pprint())
                         print(input_tags.pprint().splitlines())
                         print()
                     else:
@@ -1394,42 +1361,3 @@ class AudioMetadata():
                     print(f"No album art set for {album_path}")
         except Exception as e:
             raise Exception(f"Exception {e} setting album art for {album_path}")
-
-
-    def show_mp3_metadata(self, file_path):
-        '''
-        @todo add error handling
-        @brief Shows mp3 audio file metadata.
-
-        @details All mp3 files are presumed to be ID3v2.3 tags so we have consistent metadata fields.
-
-        @param file_path {str} The full file path for mp3 audio file.
-        '''
-
-        audio_file = self.load_mp3_file(file_path)
-
-        album = audio_file['TALB'].text[0]
-        album_artist = audio_file['TPE2'].text[0]
-        artist = audio_file['TPE1'].text[0]
-        comment = audio_file['COMM'].text[0]
-        composer = audio_file['TCOM'].text[0]
-        copyright = audio_file['TCOP'].text[0]
-        date = audio_file['TYER'].text[0]
-        disc = audio_file['TPOS'].text[0]
-        genre = audio_file['TCON'].text[0]
-        publisher = audio_file['TPUB'].text[0]
-        title = audio_file['TIT2'].text[0]
-        track = audio_file['TRCK'].text[0]
-
-        print(f"album: {album}")
-        print(f"album artist: {album_artist}")
-        print(f"artist: {artist}")
-        print(f"comment: {comment}")
-        print(f"composer: {composer}")
-        print(f"copyright: {copyright}")
-        print(f"date: {date}")
-        print(f"disc: {disc}")
-        print(f"genre: {genre}")
-        print(f"publisher: {publisher}")
-        print(f"title: {title}")
-        print(f"track: {track}")
