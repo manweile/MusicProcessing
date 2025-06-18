@@ -19,6 +19,8 @@ metadata = AudioMetadata()
 def convert_file(file_path):
     '''
     @brief Converts specified audio file to mp3 format.
+
+    @param file_path {str} The full path to audio file.
     '''
 
     metadata.convert_file(file_path)
@@ -27,6 +29,9 @@ def convert_file(file_path):
 def convert_walk(tld_path, file_pattern):
     '''
     @brief Converts all audio files in specified top level directory to mp3 format.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    @param file_pattern {str} The file pattern we want to delete.
     '''
 
     metadata.convert_walk(tld_path, file_pattern)
@@ -35,6 +40,8 @@ def convert_walk(tld_path, file_pattern):
 def create_albums(tld_path):
     '''
     @brief Create album 2nd level directories under artist first level directories in top level directory.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
     metadata.create_album_dir(tld_path)
@@ -43,6 +50,8 @@ def create_albums(tld_path):
 def extract_art(file_path):
     '''
     @brief Extracts and saves embedded album art from specified audio file.
+
+    @param file_path {str} The full path to audio file.
     '''
 
     metadata.extract_album_art(file_path)
@@ -51,6 +60,9 @@ def extract_art(file_path):
 def extract_walk(tld_path, file_pattern):
     '''
     @brief Extracts and save embedded art from  all audio files in specified top level directory with specified pattern.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    @param file_pattern {str} The file pattern we want to delete.
     '''
 
     metadata.extract_walk(tld_path, file_pattern)
@@ -59,6 +71,8 @@ def extract_walk(tld_path, file_pattern):
 def get_tags(file_path):
     '''
     @brief Gets metadata from specified audio file.
+
+    @param file_path {str} The full path to audio file.
     '''
 
     tags = metadata.get_any_tags(file_path)
@@ -68,6 +82,9 @@ def get_tags(file_path):
 def get_tags_walk(tld_path, file_pattern):
     '''
     @brief Gets metadata from  all audio files in specified top level directory with specified pattern.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    @param file_pattern {str} The file pattern we want to delete.
     '''
 
     metadata.get_tags_walk(tld_path, file_pattern)
@@ -76,6 +93,8 @@ def get_tags_walk(tld_path, file_pattern):
 def list_audio(tld_path):
     '''
     @brief List all audio files from specified top level directory.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
     directory.get_audio_file_list(tld_path)
@@ -84,6 +103,9 @@ def list_audio(tld_path):
 def list_type(tld_path, file_ext=None):
     '''
     @brief List files from specified top level directory by specified extension.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    @param file_ext {str} The specified extension to get list of.
     '''
 
     directory.get_ext_file_list(file_ext, tld_path)
@@ -92,6 +114,8 @@ def list_type(tld_path, file_ext=None):
 def remove_albums(tld_path):
     '''
     @brief Remove empty album directories from specified top level directory.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
     directory.remove_album_dir(tld_path)
@@ -100,6 +124,9 @@ def remove_albums(tld_path):
 def remove_pattern(tld_path, file_pattern):
     '''
     @brief Remove files with specified pattern from specified top level directory.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    @param file_pattern {str} The file pattern we want to delete.
     '''
 
     directory.remove_pattern(tld_path, file_pattern)
@@ -108,6 +135,8 @@ def remove_pattern(tld_path, file_pattern):
 def set_album_art(tld_path):
     '''
     @brief Sets album art file for an album directory.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
     metadata.set_album_art(tld_path)
@@ -119,6 +148,7 @@ def main(args):
 
     @details Takes command line arguments and executes per arguments.
 
+    @param args {Namespace} Arguments for execution.
     @exception NotImplementedError A subcommand not implemented error.
     @exception Exception A common baseclass exception to handle unforeseen errors.
     '''
