@@ -98,7 +98,7 @@ _MP3_KEYS = {
     'title': 'TIT2',
     'track': 'TRCK',
     'compilation': 'TCMP',
-    'label': 'TPUB',                                # alternate publisher field convert to ID3v2.3 TPUB
+    # 'label': 'TPUB',                              # alternate publisher field convert to ID3v2.3 TPUB
     'media': 'TMED',
     'original_year': 'TORY',
     'original_date': 'TDOR',                        # ID3v2.4 field to ID3v2.3 TYER
@@ -117,11 +117,12 @@ _M4A_KEYS = {
     'date': '\xa9day',
     'disc': 'disk',
     'genre': '\xa9gen',
-    'publisher': '\xa9pub',
+    # 'publisher': '\xa9pub',
+    'publisher': '----:com.apple.iTunes:LABEL',               # alternate publisher field
     'title': '\xa9nam',
     'track': 'trkn',
     'compilation': 'cpil',
-    'label': '----:com.apple.iTunes:LABEL',                 # alternate publisher field
+    # 'label': '----:com.apple.iTunes:LABEL',                 # alternate publisher field
     'media': '----:com.apple.iTunes:MEDIA',
     'original_year': '----:com.apple.iTunes:originalyear'
 }
@@ -141,7 +142,6 @@ _WMA_KEYS = {
     'title': 'Title',
     'track': 'WM/TrackNumber',
     'compilation': 'WM/IsCompilation',
-    'label': 'WM/Publisher',
     'media': 'WM/Media',
     'original_year': 'WM/OriginalReleaseYear'
 }
@@ -255,6 +255,11 @@ class AudioMetadata():
 
             if "TPOS" not in id3_tags:
                 id3_tags["TPOS"] = "1/1"
+
+            print()
+            for key, value in id3_tags.items():
+                print(f"key: {key}, value: {value}")
+
         except Exception as e:
             raise Exception(f"Exception: {e} updating tags")
 
@@ -394,6 +399,8 @@ class AudioMetadata():
 
             I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
             '''
+            print(f"Beginning processing {input_path.name}")
+
             metadata_type = self.get_metadata_type(file_path)
             if metadata_type == "ASF":
                 input_tags = self.get_wma_tags(file_path)
@@ -1199,7 +1206,7 @@ class AudioMetadata():
                         # just in case string is "YYYY-MM-DD"
                         date_value = metadata_value[0:4]
                         date_values.add(date_value)
-                        print(f"metadata: {metadata_field:<30} - wma key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
+                        print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
                     # m4a doesn't have a "native" original year field like "\xa9ory", relies on the iTunes field,
@@ -1209,26 +1216,25 @@ class AudioMetadata():
                         # just in case string is "YYYY-MM-DD"
                         date_value = decode_value[0:4]
                         date_values.add(date_value)
-                        print(f"metadata: {metadata_field:<30} - wma key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
+                        print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
-                    # m4a doesn't have a "native" media field like "\xa9med", relies on the iTunes "----:com.apple.iTunes:MEDIA" field
-                    # m4a does have native publisher: "\xa9pub" but can also have iTunes "----:com.apple.iTunes:LABEL" field
-                    # both fields are mapped to ID3 TPUB, and the last one processed is the final value in return dict
+                    # m4a doesn't have a native media field like "\xa9med", relies on the iTunes "----:com.apple.iTunes:MEDIA" field
+                    # m4a does have native publisher like "\xa9pub", relies on iTunes "----:com.apple.iTunes:LABEL" field
                     if isinstance(metadata_value, MP4FreeForm):
                         tag_value = input_tags[m4a_value][0].decode()
 
                     if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
-                    print(f"metadata: {metadata_field:<30} - wma key: {m4a_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
+                    print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
             id3_tags = self._update_id3(date_values, id3_tags)
 
         except Exception as e:
             raise Exception(f"Exception {e} converting m4a tags")
-        print()
+
         return id3_tags
 
 
@@ -1273,13 +1279,13 @@ class AudioMetadata():
                         # just in case string is "YYYY-MM-DD"
                         date_value = metadata_value.text[0:4]
                         date_values.add(date_value)
-                        print(f"metadata: {metadata_field:<20} - wma key: {mp3_value:<5} - id3 key: {mp3_key} - value: {date_value}")
+                        print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
                     if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
-                    print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<5} - id3 key: {mp3_key} - value: {tag_value}")
+                    print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
             id3_tags = self._update_id3(date_values, id3_tags)
@@ -1322,16 +1328,17 @@ class AudioMetadata():
                         # just in case string is "YYYY-MM-DD"
                         date_value = metadata_value[0:4]
                         date_values.add(date_value)
-                        print(f"metadata: {metadata_field:<30} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {date_value}")
+                        print(f"metadata: {metadata_field:<20} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
                     if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
+                    # track num is int
                     if isinstance(metadata_value, int):
                         tag_value = metadata_value
 
-                    print(f"metadata: {metadata_field:<30} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
+                    print(f"metadata: {metadata_field:<20} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
             id3_tags = self._update_id3(date_values, id3_tags)
