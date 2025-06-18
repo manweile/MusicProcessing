@@ -42,7 +42,7 @@ class DirectoryProcessing():
         @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        if tld_path != None:
+        if tld_path is not None:
             try:
                 if os.path.isdir(tld_path):
                     self._tld_path = tld_path
@@ -130,7 +130,7 @@ class DirectoryProcessing():
         '''
         @brief Generates a csv containing full path for all audio files.
 
-        @details If start_path is not supplied, uses the class top level directory path.
+        @details Without a start path input, the top level directory MUST have been set.
         @details The csv file is created in the designated generated files directory.
         @details The csv has 2 columns, full file path for audio file and extension.
 
@@ -191,7 +191,7 @@ class DirectoryProcessing():
         '''
         @brief Wrapper for function that generates a csv containing full file path for an extension.
 
-        @details If start_path is not supplied, uses the class top level directory path.
+        @details Without a start path input, the top level directory MUST have been set.
         @details If file extension is not supplied, uses the preset audio types list.
 
         @param  file_ext {str} Optional, the file extension want file paths for.
@@ -318,6 +318,7 @@ class DirectoryProcessing():
         @brief Removes empty album directories.
 
         @details Walks through top level directory to remove empty second level album directories contained in artist first level directories.
+        @details Without a start path input, the top level directory MUST have been set.
 
         @param      start_path {str} The starting point of the directory walk.
         @exception  OSError An os permission error.
@@ -365,12 +366,13 @@ class DirectoryProcessing():
 
     def remove_pattern(self, start_path, file_pattern):
         '''
-        @brief Removes specified pattern.
+        @brief Removes file matching specified pattern.
 
         @details Walks through top level directory and removes files matching specified file pattern.
+        @details Without a start path input, the top level directory MUST have been set.
 
         @param      start_path {str} Optional, the starting point of the directory walk.
-        @param      file_pattern {str} Optional, the file pattern we want to delete.
+        @param      file_pattern {str} The file pattern we want to delete.
         @exception  OSError An os permission error.
         @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
