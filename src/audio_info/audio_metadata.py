@@ -425,9 +425,9 @@ class AudioMetadata():
             End result:
             All album directories now contain a Folder.jpg cover art file
             '''
-            # cover_art = os.path.join(input_path_parent, _FOLDER_ART)
-            # audio_segment = AudioSegment.from_file(input_path)
-            # audio_segment.export(export_path, export_format, bitrate=media_bitrate, tags=tags, id3v2_version='3', cover=cover_art)
+            cover_art = os.path.join(input_path_parent, _FOLDER_ART)
+            audio_segment = AudioSegment.from_file(input_path)
+            audio_segment.export(export_path, export_format, bitrate=media_bitrate, tags=tags, id3v2_version='3', cover=cover_art)
             print(f"{input_name} converted to {export_format}\r\n")
         except Exception as e:
             raise Exception(f"Exception {e} converting {input_path} to {export_path}")
