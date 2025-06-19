@@ -24,6 +24,7 @@ from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TP
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4FreeForm
 from pydub import AudioSegment
+from pydub.effects import normalize
 from pydub.utils import mediainfo
 from tqdm import tqdm
 
@@ -857,7 +858,7 @@ class AudioMetadata():
         try:
             media_info = mediainfo(file_path)
             if media_info:
-                media_tags = mediainfo['TAG']
+                media_tags = media_info['TAG']
         except Exception as e:
             raise Exception(f"Exception {e} getting media tags for file {file_path}")
 
@@ -1129,6 +1130,82 @@ class AudioMetadata():
             raise Exception(f"Exception {e} loading audio file: {file_path}")
 
         return audio_file
+
+
+    def peak_normalize_file(self, file_path):
+        '''
+        @brief Normalizes audio file level.
+
+        @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
+
+        @param file_path {str} The full file path for audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            export_dir = None
+            export_name = None
+            export_path = None
+
+            input_path = Path(file_path)
+            # get the full parent w/o filename so I can start removing unnecessary path components
+            input_path_parent = input_path.parent
+            # remove the anchor (ie. / or H:\), have no use for it
+            input_path_parts = input_path_parent.parts[1:]
+
+            # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
+            # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
+            if input_path_parts[0] == "media":
+                # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
+                # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
+                input_path_components = input_path_parts[4:]
+            elif input_path_parts[0] == "home":
+                # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
+                # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
+                input_path_components = input_path_parts[3:]
+            else:
+                # Windows is going to have <tld>/<artist dir>/<album dir>
+                # so 3 elements, we don't want element 1: 'Music'
+                input_path_components = input_path_parts[1:]
+
+            # using fixed storage path because will always know project structure
+            export_dir = os.path.join(generated_files, _EXPORT_TLD)
+
+            for component in input_path_components:
+                export_dir = os.path.join(export_dir, component)
+
+            # directory is already extant if we are processing multiple songs for the same artist & album
+            if not os.path.exists(export_dir):
+                os.makedirs(export_dir)
+            media_info = self.get_media_info(input_path)
+            bitrate = media_info['bit_rate']
+            export_name = input_path.name
+            export_path = os.path.join(export_dir, export_name)
+            media_tags = self.get_media_tags(input_path)
+            print(media_tags)
+            audio_segment = AudioSegment.from_file(input_path)
+            normalized_audio_segment = normalize(audio_segment)
+            normalized_audio_segment.export(export_path,  bitrate=bitrate, tags=media_tags, id3v2_version='3' )
+
+        except Exception as e:
+            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
+
+
+    def loudness_normalize_file(self, file_path, target_dbfs):
+        '''
+        @brief Normalizes audio file level.
+
+        @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
+
+        @param file_path {str} The full file path for audio file.
+        @param target_dbfs {float} The target loudness.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            pass
+        except Exception as e:
+            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 
 
     def map_m4a_tags(self, input_tags):

@@ -111,6 +111,16 @@ def list_type(tld_path, file_ext=None):
     directory.get_ext_file_list(file_ext, tld_path)
 
 
+def peak_file(file_path):
+    '''
+    @brief Peak normalize the specified audio file.
+
+    @param file_path {str} The full path to audio file.
+    '''
+
+    metadata.peak_normalize_file(file_path)
+
+
 def remove_albums(tld_path):
     '''
     @brief Remove empty album directories from specified top level directory.
@@ -194,6 +204,10 @@ def main(args):
             tld_path = getattr(args, "tld")
             file_ext = getattr(args, "ext")
             list_type(tld_path, file_ext)
+
+        if args.subcommand == "peak-file":
+            file_path = getattr(args, "file")
+            peak_file(file_path)
 
         if args.subcommand == "remove-albums":
             tld_path = getattr(args, "tld")
@@ -338,6 +352,14 @@ if __name__ == "__main__":
     remove_pattern_parser.add_argument("tld", type=str, help="mandatory top level directory")
     remove_pattern_parser.add_argument("pattern", type=str, help="mandatory file pattern")
     remove_pattern_parser.set_defaults(func=remove_pattern)
+
+    # peak normalize an audio file
+    # 1 mandatory arg, the path to audio file
+    # sys.argv = ['D:\MusicProcessing\main.py', 'peak-file', "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"]
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'peak-file', "/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a"]
+    peak_file_parser = subparsers.add_parser("peak-file", help="Peak normalizes an audio file level")
+    peak_file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
+    peak_file_parser.set_defaults(func=peak_file)
 
     # set album art file
     # 1 mandatory arg, the tld path
