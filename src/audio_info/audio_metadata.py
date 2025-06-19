@@ -390,7 +390,6 @@ class AudioMetadata():
             metadata_type = self.get_metadata_type(file_path)
             if metadata_type == _ASF:
                 input_tags = self.get_wma_tags(file_path)
-                # @todo map wma keys/values to matching ID3
                 tags = self.map_wma_tags(input_tags)
             elif metadata_type == _MP3:
                 input_tags = self.get_mp3_tags(file_path)
@@ -424,6 +423,32 @@ class AudioMetadata():
             print(f"{input_name} converted to {export_format}\r\n")
         except Exception as e:
             raise Exception(f"Exception {e} converting {input_path} to {export_path}")
+
+
+    '''
+    def mp3convtagger(webm, mp3, song, path, bitrate, icon_url):
+        iconname = ospath.join(
+            path,
+            remove_sus_characters(song["artists"][0]["name"] + "-" + song["name"]) + ".jpg",
+        )
+        request.urlretrieve(icon_url, iconname)
+        convert = AudioSegment.from_file(webm)
+        convert.export(mp3, format="mp3", bitrate=bitrate)
+        tags = ID3(mp3)
+        tags.add(TIT2(encoding=3, text=[song["name"]]))
+        tags.add(TALB(encoding=3, text=[song["album"]["name"]]))
+        tags.add(TPE1(encoding=3, text=", ".join([i["name"] for i in song["artists"]])))
+        tags.add(TPE2(encoding=3, text=", ".join([i["name"] for i in song["album"]["artists"]])))
+        tags.add(TYER(encoding=3, text=[song["album"]["release_date"][0:4]]))
+        tags.add(TRCK(encoding=3, text=[song["track_number"]]))
+        with open(iconname, "rb") as f:
+            tags.add(
+                APIC(encoding=3, mime="image/jpeg", type=3, desc="Cover", data=f.read())
+            )
+        tags.save(v2_version=3)
+        remove(webm)
+        remove(iconname)
+    '''
 
 
     def convert_walk(self, start_path, file_pattern):
@@ -1185,7 +1210,7 @@ class AudioMetadata():
             print(media_tags)
             audio_segment = AudioSegment.from_file(input_path)
             normalized_audio_segment = normalize(audio_segment)
-            normalized_audio_segment.export(export_path,  bitrate=bitrate, tags=media_tags, id3v2_version='3' )
+            normalized_audio_segment.export(export_path, bitrate=bitrate, tags=media_tags, id3v2_version='3')
 
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
