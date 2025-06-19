@@ -355,6 +355,8 @@ if __name__ == "__main__":
 
     # peak normalize an audio file
     # 1 mandatory arg, the path to audio file
+    # "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
+    # "/home/gerald/ProcessedMusic/Crush/Here/Crush-Live.mp3"
     # sys.argv = ['D:\MusicProcessing\main.py', 'peak-file', "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"]
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'peak-file', "/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a"]
     peak_file_parser = subparsers.add_parser("peak-file", help="Peak normalizes an audio file level")
