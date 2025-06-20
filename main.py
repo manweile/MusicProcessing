@@ -248,11 +248,13 @@ if __name__ == "__main__":
     # "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a",                              # no embedded art even though file explorer shows it
     # "H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma",                # no embedded art
     # "H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3"                 # no embedded art
+    # "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
+    # "F:\ProcessedMusic\Crush\Here\Crush-Live.mp3"
     # "/home/gerald/Music/Genesis/Platinum Collection/Genesis-I Can't Dance.mp3"
     # 1 mandatory arg, the audio file path
     # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
-    # "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
+
     convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
     convert_file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     convert_file_parser.set_defaults(func=convert_file)
@@ -357,6 +359,7 @@ if __name__ == "__main__":
     # 1 mandatory arg, the path to audio file
     # "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
     # "/home/gerald/ProcessedMusic/Crush/Here/Crush-Live.mp3"
+    # "F:\ProcessedMusic\Crush\Here\Crush-Live.mp3"
     # sys.argv = ['D:\MusicProcessing\main.py', 'peak-file', "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"]
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'peak-file', "/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a"]
     peak_file_parser = subparsers.add_parser("peak-file", help="Peak normalizes an audio file level")
