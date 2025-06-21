@@ -68,6 +68,14 @@ def extract_walk(tld_path, file_pattern):
     metadata.extract_walk(tld_path, file_pattern)
 
 
+def get_media_info(file_path):
+    pass
+
+
+def get_media_tags(file_path):
+    pass
+
+
 def get_tags(file_path):
     '''
     @brief Gets metadata from specified audio file.
@@ -186,6 +194,14 @@ def main(args):
             file_pattern = getattr(args, "pattern")
             extract_walk(tld_path, file_pattern)
 
+        if args.subcommand == "get-media-info":
+            file_path = getattr(args, "file")
+            get_media_info(file_path)
+
+        if args.subcommand == "get-media-tags":
+            file_path = getattr(args, "file")
+            get_media_tags(file_path)
+
         if args.subcommand == "get-tags":
             file_path = getattr(args, "file")
             tags = get_tags(file_path)
@@ -301,7 +317,17 @@ if __name__ == "__main__":
     extract_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
     extract_walk_parser.set_defaults(func=extract_walk)
 
-    # get metadata tags for file
+    # get ffprobe media information for a file or files
+    get_media_info_parser = subparsers.add_parser("get-media-info", help="Gets ffprobe media info for audio file")
+    get_media_info_parser.add_argument("file", type=str, help="mandatory full path to audio file")
+    get_media_info_parser.set_defaults(func=get_media_info)
+
+    # get ffprobe media tags for a file or files
+    get_media_tags_parser = subparsers.add_parser("get-media-tags", help="Gets ffprobe media tags for audio file")
+    get_media_tags_parser.add_argument("file", type=str, help="mandatory full path to audio file")
+    get_media_tags_parser.set_defaults(func=get_media_tags)
+
+    # get mutagen metadata tags for file
     # 1 mandatory arg, the path to audio file
     # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags', 'C:\Music\Buckingham McVie\Buckingham McVie\Buckingham McVie-Too Far Gone.mp3',
     # sys.argv = [D:\MusicProcessing\main.py', 'get-tags', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
@@ -309,12 +335,11 @@ if __name__ == "__main__":
     get_tags_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     get_tags_parser.set_defaults(func=get_tags)
 
-    # get metadata tags from all audio files found in top level directory
+    # get mutagen metadata tags from all audio files found in top level directory
     # 1 mandatory arg, the tld path
     # 1 optional arg, the file pattern to match
     # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags-walk', 'C:\Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
-
     get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Gets metadata tags from audio files")
     get_tags_walk_parser.add_argument("tld", type=str, help="mandatory full path to audio file")
     get_tags_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
