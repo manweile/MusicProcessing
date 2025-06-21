@@ -11,6 +11,7 @@ import ffmpeg
 import fnmatch
 import gc
 import os
+import pprint
 import shutil
 import struct
 import subprocess
@@ -23,7 +24,7 @@ from mutagen.asf import ASF
 from mutagen.id3 import APIC, error, ID3, ID3TimeStamp
 from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TCMP, TMED, TORY, TDOR, TDRC
 from mutagen.mp3 import MP3
-from mutagen.mp4 import MP4, MP4FreeForm
+from mutagen.mp4 import MP4, MP4FreeForm, MP4Tags
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 from tqdm import tqdm
@@ -913,7 +914,7 @@ class AudioMetadata():
         return tag_info
 
 
-    def get_tags_walk(self, file_path, file_pattern):
+    def get_tags_walk(self, file_path, file_pattern, ffprobe=False):
         '''
         @brief Pretty prints tags for audio files.
 
@@ -941,22 +942,30 @@ class AudioMetadata():
                     else:
                         tag_file_path = os.path.join(dir_path, file)
 
-                        metadata_type = self.get_metadata_type(tag_file_path)
-                        if metadata_type == _ASF:
-                            input_tags = self.get_wma_tags(tag_file_path)
-                        elif metadata_type == _MP3:
-                            input_tags = self.get_mp3_tags(tag_file_path)
-                        elif metadata_type == _MP4:
-                            input_tags = self.get_m4a_tags(tag_file_path)
+                        if ffprobe:
+                            input_tags = self.get_media_tags(tag_file_path)
+                        else:
+                            metadata_type = self.get_metadata_type(tag_file_path)
+                            if metadata_type == _ASF:
+                                input_tags = self.get_wma_tags(tag_file_path)
+                            elif metadata_type == _MP3:
+                                input_tags = self.get_mp3_tags(tag_file_path)
+                            elif metadata_type == _MP4:
+                                input_tags = self.get_m4a_tags(tag_file_path)
 
-                    if input_tags:
-                        print(f"{input_file} is {metadata_type}")
-                        # pretty print cause mutagen returns tags as ASFTags, ID3Tags, MP4Tags
-                        # not as a simple dict of string key/value
-                        print(input_tags.pprint().splitlines())
-                        print()
-                    else:
-                        print(f"{tag_file_path} has no metadata")
+                            if input_tags:
+                                if ffprobe:
+                                    # want one key/value pair per line
+                                    pprint.pprint(input_tags)
+                                else:
+                                    print(f"{input_file} is {metadata_type}")
+                                    # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
+                                    # not as a simple dict of string key/value
+                                    # so need mutagen pprint and splitlines to "format" into simple dict
+                                    pprint.pprint(input_tags.pprint().splitlines())
+                                    print()
+                            else:
+                                print(f"{tag_file_path} has no metadata")
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 

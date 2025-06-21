@@ -99,15 +99,16 @@ def get_tags(file_path):
     return tags
 
 
-def get_tags_walk(tld_path, file_pattern):
+def get_tags_walk(tld_path, file_pattern, ffprobe):
     '''
     @brief Gets metadata from  all audio files in specified top level directory with specified pattern.
 
     @param tld_path {str} The top level directory path that contains all the music files.
-    @param file_pattern {str} The file pattern we want to delete.
+    @param file_pattern {str} The file pattern we want to get tags for.
+    @param ffprobe {bool} Get ffprobe tags instead of mutagen specific tags.
     '''
 
-    metadata.get_tags_walk(tld_path, file_pattern)
+    metadata.get_tags_walk(tld_path, file_pattern, ffprobe)
 
 
 def list_audio(tld_path):
@@ -222,7 +223,8 @@ def main(args):
         if args.subcommand == "get-tags-walk":
             tld_path = getattr(args, "tld")
             file_pattern = getattr(args, "pattern")
-            tags = get_tags_walk(tld_path, file_pattern)
+            ffprobe = getattr(args, "ffprobe")
+            tags = get_tags_walk(tld_path, file_pattern, ffprobe)
 
         if args.subcommand == "list-audio":
             tld_path = getattr(args, "tld")
@@ -355,6 +357,7 @@ if __name__ == "__main__":
     get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Gets metadata tags from audio files")
     get_tags_walk_parser.add_argument("tld", type=str, help="mandatory full path to audio file")
     get_tags_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
+    get_tags_walk_parser.add_argument("--ffprobe", type=bool, help="optional ffprobe tags")
     get_tags_walk_parser.set_defaults(func=get_tags_walk)
 
     # list all audio files
