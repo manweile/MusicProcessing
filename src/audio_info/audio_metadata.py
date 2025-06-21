@@ -920,6 +920,7 @@ class AudioMetadata():
 
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
+        @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -957,6 +958,7 @@ class AudioMetadata():
                                 if ffprobe:
                                     # want one key/value pair per line
                                     pprint.pprint(input_tags)
+                                    print()
                                 else:
                                     print(f"{input_file} is {metadata_type}")
                                     # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
