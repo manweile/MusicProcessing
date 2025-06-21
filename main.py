@@ -69,11 +69,23 @@ def extract_walk(tld_path, file_pattern):
 
 
 def get_media_info(file_path):
-    pass
+    '''
+    @brief Gets media info.
+
+    @param file_path {str} The full path to audio file.
+    '''
+
+    metadata.get_media_info(file_path)
 
 
 def get_media_tags(file_path):
-    pass
+    '''
+    @brief Gets media tags.
+
+    @param file_path {str} The full path to audio file.
+    '''
+
+    metadata.get_media_tags(file_path)
 
 
 def get_tags(file_path):

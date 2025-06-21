@@ -11,6 +11,7 @@ import ffmpeg
 import fnmatch
 import gc
 import os
+import pprint
 import shutil
 import struct
 import subprocess
@@ -20,7 +21,7 @@ from pathlib import Path
 import mutagen
 import pathvalidate
 from mutagen.asf import ASF
-from mutagen.id3 import APIC, ID3, ID3TimeStamp
+from mutagen.id3 import APIC, error, ID3, ID3TimeStamp
 from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TCMP, TMED, TORY, TDOR, TDRC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4FreeForm
@@ -43,18 +44,9 @@ _EXPORT_TLD = "Music"
 _FOLDER_ART = "Folder.jpg"
 _MP3 = "MP3"
 _MP4 = "MP4"
-# @todo remove TCMP not ID3v2.3 compatible and TMED not relevant to project
-_TCMP = "TCMP"
-_TMED = "TMED"
 _TPOS = "TPOS"
 _TYER = "TYER"
 
-# set of known art keys
-_ART_KEYS = {
-    'ID3': 'APIC',
-    'MP4': 'covr',
-    'ASF': 'WM/Picture'
-}
 
 _ASF_TIME_KEYS = {
 
@@ -80,8 +72,6 @@ _MP3_KEYS = {
     'album': 'TALB',
     'album_artist': 'TPE2',
     'artist': 'TPE1',
-    # @to remove a real PITA across the board
-    # 'comment': 'COMM',
     'composer': 'TCOM',
     'copyright': 'TCOP',
     'date': 'TYER',
@@ -90,9 +80,6 @@ _MP3_KEYS = {
     'publisher': 'TPUB',
     'title': 'TIT2',
     'track': 'TRCK',
-    # @todo remove TCMP not ID3v2.3 compatible and TMED not relevant to project
-    # 'compilation': 'TCMP',
-    # 'media': 'TMED',
     'original_year': 'TORY',                        # keep as is
     'original_date': 'TDOR',                        # ID3v2.4 field to ID3v2.3 TYER
     'release_date': 'TDRC',                         # ID3v2.4 field convert YYYY portion to ID3v2.3 TYER
@@ -104,8 +91,6 @@ _M4A_KEYS = {
     'album': '\xa9alb',
     'album_artist': 'aART',
     'artist': '\xa9ART',
-    # @to remove a real PITA across the board
-    # 'comment': '\xa9cmt',
     'composer': '\xa9wrt',
     'copyright': 'cprt',
     'date': '\xa9day',
@@ -114,9 +99,6 @@ _M4A_KEYS = {
     'publisher': '----:com.apple.iTunes:LABEL',     # using iTunes field, not sure \xa9pub is valid
     'title': '\xa9nam',
     'track': 'trkn',
-    # @todo remove TCMP not ID3v2.3 compatible and TMED not relevant to project
-    # 'compilation': 'cpil',
-    # 'media': '----:com.apple.iTunes:MEDIA',
     'original_year': '----:com.apple.iTunes:originalyear'
 }
 
@@ -125,8 +107,6 @@ _WMA_KEYS = {
     'album': 'WM/AlbumTitle',
     'album_artist': 'WM/AlbumArtist',
     'artist': 'Author',
-    # @to remove a real PITA across the board
-    # 'comment': 'Description',
     'composer': 'WM/Composer',
     'copyright': 'Copyright',
     'date': 'WM/Year',
@@ -135,9 +115,6 @@ _WMA_KEYS = {
     'publisher': 'WM/Publisher',
     'title': 'Title',
     'track': 'WM/TrackNumber',
-    # @todo remove TCMP not ID3v2.3 compatible and TMED not relevant to project
-    # 'compilation': 'WM/IsCompilation',
-    # 'media': 'WM/Media',
     'original_year': 'WM/OriginalReleaseYear'
 }
 
@@ -227,6 +204,7 @@ class AudioMetadata():
         except Exception as e:
             raise Exception(f"Exception: {e} writing embedded art from {file_path}")
 
+
     def _update_id3(self, date_values, id3_tags):
         '''
         @brief Updates tags dictionary without media, compilation and dis tags
@@ -242,21 +220,8 @@ class AudioMetadata():
                 max_date = max(date_values, key=int)
                 id3_tags[_TYER] = max_date
 
-            # @todo remove not ID3v2.3 compatible, tag editors having difficulty with it
-            if "TCMP" not in id3_tags:
-                id3_tags[_TCMP] = 0
-
-            # @todo remove not relevant to project
-            if "TMED" not in id3_tags:
-                id3_tags[_TMED] = "Digital Media"
-
             if "TPOS" not in id3_tags:
                 id3_tags[_TPOS] = "1/1"
-
-            print()
-            for key, value in id3_tags.items():
-                print(f"key: {key}, value: {value}")
-
         except Exception as e:
             raise Exception(f"Exception: {e} updating tags")
 
@@ -265,7 +230,6 @@ class AudioMetadata():
 
     def convert_file(self, file_path):
         '''
-        @todo finish
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file.
 
         @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
@@ -341,6 +305,7 @@ class AudioMetadata():
             input_path = Path(file_path)
             # get the full parent w/o filename so I can start removing unnecessary path components
             input_path_parent = input_path.parent
+
             r'''
             /media/gerald/Lexar/Music/38 Special/Special Forces                          # ubuntu usb
             /home/gerald/Music/38 Special/Special Forces                                 # ubuntu hdd
@@ -350,11 +315,13 @@ class AudioMetadata():
 
             # remove the anchor (ie. / or H:\), have no use for it
             input_path_parts = input_path_parent.parts[1:]
+
             '''
             ['media', 'gerald', 'Lexar', 'Music', '38 Special', 'Special Forces']       # ubuntu usb
             ['home', 'gerald', 'Music', '38 Special', 'Special Forces']                 # ubuntu hdd
             ['Music', '38 Special', 'Special Forces']                                   # windows hdd or usb
             '''
+
             # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
             # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
             if input_path_parts[0] == "media":
@@ -396,6 +363,7 @@ class AudioMetadata():
 
             I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
             '''
+
             print(f"Beginning processing {input_path.name}")
 
             metadata_type = self.get_metadata_type(file_path)
@@ -428,17 +396,21 @@ class AudioMetadata():
             End result:
             All album directories now contain a Folder.jpg cover art file
             '''
+
             cover = os.path.join(input_path_parent, _FOLDER_ART)
             audio_segment = AudioSegment.from_file(input_path, format=input_format)
 
+            # the id3v2 version = 3 is important!
+            # both pydub (AudioSegment) and mutagen (MP3) need it
+            # and both documentation doesn't really mention it
             audio_segment.export(export_path, export_format, bitrate=bitrate, tags=tags, id3v2_version='3')
-            audio_tags = MP3(export_path, ID3=ID3, v2_version=3)
+
             # Add or update album art
-            from mutagen.id3 import error
             try:
+                audio_tags = MP3(export_path, ID3=ID3, v2_version=3)
                 audio_tags.add_tags()
             except error:
-                pass  # Tags already exist
+                pass                        # Tags already exist
 
             with open(cover, "rb") as album_art_file:
                 audio_tags.tags.add(
@@ -451,9 +423,7 @@ class AudioMetadata():
                     )
                 )
             audio_tags.save(v2_version=3)
-
-            # audio_segment.export(export_path, export_format, bitrate=bitrate, tags=tags, id3v2_version='3', cover=cover)
-            print(f"{input_name} converted to {export_format}\r\n")
+            print(f"{input_name} converted to {export_format}\n")
         except Exception as e:
             raise Exception(f"Exception {e} converting {input_path} to {export_path}")
 
@@ -477,7 +447,6 @@ class AudioMetadata():
 
             for dir_path, _, file_names in os.walk(input_path):
                 for file in file_names:
-                    # get the file extension
                     _, input_file_ext = os.path.splitext(file)
 
                     # file is not mp3, m4a, or wma, so carry on to next file
@@ -558,8 +527,8 @@ class AudioMetadata():
                     # audio files are supposed to be in an album sub dir
                     if file_ext.lower() in _AUDIO_EXTS:
                         audio_file = artist_item_path
-                        file_media_info = mediainfo(audio_file)
-                        file_media_tags = file_media_info['TAG']
+                        # using ffprobe function cause it is audio file type agnostic
+                        file_media_tags = self.get_media_tags(audio_file)
                     else:
                         # we found a non audio file
                         continue
@@ -733,6 +702,7 @@ class AudioMetadata():
             # M4A files can have multiple 'covr' atoms, each containing a different image.
             # I only want the first, which is the front cover.
             artwork = cover_tag[0]
+
             # Artwork data might be wrapped in format codes; extract the raw data.
             if isinstance(artwork, tuple):
                 image_data = artwork[1]
@@ -757,6 +727,7 @@ class AudioMetadata():
         try:
             audio = MP3(file_path, ID3=ID3)
             audio_tags = audio.tags
+            # technically this would have an issue if there is more than 1 embedded cover art
             for tag in audio_tags.getall('APIC'):
                 image_data = tag.data
 
@@ -981,7 +952,7 @@ class AudioMetadata():
 
                     if input_tags:
                         print(f"{input_file} is {metadata_type}")
-                        # pretty print cause mutagen returns tags as ASFTags, ID3Tags, MPfTags
+                        # pretty print cause mutagen returns tags as ASFTags, ID3Tags, MP4Tags
                         # not as a simple dict of string key/value
                         print(input_tags.pprint().splitlines())
                         print()
@@ -1209,22 +1180,17 @@ class AudioMetadata():
             # directory is already extant if we are processing multiple songs for the same artist & album
             if not os.path.exists(export_dir):
                 os.makedirs(export_dir)
-            media_info = self.get_media_info(input_path)
-            bitrate = media_info['bit_rate']
+
+            input_info = self.get_media_info(input_path)
+            bitrate = input_info['bit_rate']
             export_name = input_path.name
             export_path = os.path.join(export_dir, export_name)
-            media_tags = self.get_media_tags(input_path)
-            print(media_tags)
-            # audio_segment = AudioSegment.from_file(input_path)
-            # normalized_audio_segment = normalize(audio_segment)
-            # normalized_audio_segment.export(export_path, bitrate=bitrate, tags=media_tags, id3v2_version='3')
 
-            # working ubuntu cli:
+            # working ubuntu/windows cli:
             # ffmpeg-normalize ~/ProcessedMusic/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
-            # working windows powershell cli:
             # ffmpeg-normalize F:\ProcessedMusic\Crush\Here\Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
             # album art and tags are preserved!!!
-
+            # the extra output option setting the ID3v2.3 is necessary, else can't preserve embedded art
             command = [
                 "ffmpeg-normalize",
                 input_path,
@@ -1236,8 +1202,8 @@ class AudioMetadata():
                 "-f", "-o", export_path
             ]
 
-            text = f"Converting {input_path.stem}"
-            with yaspin(Spinners.dots, text=text, timer=True) as sp:
+            text = f"Normalizing {input_path.stem}"
+            with yaspin(Spinners.dots, text=text, timer=True):
                 with open(os.devnull, 'rb') as devnull:
                     p = subprocess.Popen(
                         command,
@@ -1252,13 +1218,10 @@ class AudioMetadata():
                         break
 
                 p_out, p_err = p.communicate()
-
             print(f"Successfully normalized '{input_path}' to '{export_path}' using ffmpeg-normalize.")
         except subprocess.CalledProcessError:
             raise Exception(
-                f"Error during normalization. ffmpeg-normalize returned error code: {p.returncode}\n\n" +
-                f"for command line: {command}\n\n" +
-                f"{p_err.decode(errors='ignore')}")
+                f"ffmpeg-normalize returned error code: {p.returncode}\n\n for command line: {command}\n\n {p_err.decode(errors='ignore')}")
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 
@@ -1301,13 +1264,6 @@ class AudioMetadata():
                     mp3_key = _MP3_KEYS[metadata_field]
                     metadata_value = input_tags[m4a_value][0]
 
-                    # @todo remove, not ID3v2.3 compatible
-                    # if isinstance(metadata_value, bool) and m4a_value == 'cpil':
-                    #     if metadata_value:
-                    #         tag_value = "1"
-                    #     else:
-                    #         tag_value = "0"
-
                     if isinstance(metadata_value, tuple) and m4a_value == "trkn":
                         track_num = input_tags[m4a_value][0][0]
                         total_tracks = input_tags[m4a_value][0][1]
@@ -1336,8 +1292,6 @@ class AudioMetadata():
                         print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
-                    # @todo restrict to just LABEL
-                    # m4a doesn't have a native media field like "\xa9med", relies on the iTunes "----:com.apple.iTunes:MEDIA" field
                     # m4a supposedly has native publisher "\xa9pub", but not seen in my collection
                     # I do have iTunes "----:com.apple.iTunes:LABEL" field
                     if isinstance(metadata_value, MP4FreeForm) and m4a_value == "----:com.apple.iTunes:LABEL":
@@ -1373,32 +1327,10 @@ class AudioMetadata():
             date_values = set()
             for metadata_field, mp3_value in _MP3_KEYS.items():
 
-                # @todo remove.
-                # PITA for coding, for tag editors, not many files with, many of those that do it is poorly formed
-                # ID3 COMM tag requires different handling
-                # get("COMM::eng") or get("COMM::XXX") return a single COMM object, but require if conditionals
-                # not editing all comment tags - tag editor functionality spotty for comments, dependent on app/OS
-                # getall("COMM") is encoding language agnostic, but returns a list of all COMM objects
-                # if mp3_value == "COMM":
-                #     mp3_tag = input_tags.getall(mp3_value)
-                # else:
-                #     mp3_tag = input_tags.get(mp3_value)
-
                 mp3_tag = input_tags.get(mp3_value)
                 if mp3_tag:
                     mp3_key = _MP3_KEYS[metadata_field]
                     metadata_value = input_tags[mp3_value].text[0]
-
-                    # @todo remove.
-                    # PITA for coding, for tag editors, not many files with, those that do it is poorly formed
-                    # if mp3_value == "COMM":
-                    #     # I don't care about possible 2nd etc COMM objects
-                    #     # I also don't care about possible 2nd etc text elements
-                    #     metadata_value = mp3_tag[0].text[0]
-                    # else:
-                    #     # all other ID3 field objects return single objects
-                    #     # and still don't care about possible 2nd etc text elements
-                    #     metadata_value = input_tags[mp3_value].text[0]
 
                     # need to get all possible date years into set, but not add to output dict just yet
                     if isinstance(metadata_value, ID3TimeStamp) and (mp3_value in _MP3_TIME_KEYS):
@@ -1442,13 +1374,6 @@ class AudioMetadata():
                 if wma_tag:
                     mp3_key = _MP3_KEYS[metadata_field]
                     metadata_value = input_tags[wma_value][0].value
-
-                    # @todo remove, not ID3v2.3 compatible
-                    # if isinstance(metadata_value, bool) and wma_value == 'WM/IsCompilation':
-                    #     if metadata_value:
-                    #         tag_value = "1"
-                    #     else:
-                    #         tag_value = "0"
 
                     # need to get all possible date years into set, but not add to output dict just yet
                     if isinstance(metadata_value, str) and (wma_value in _ASF_TIME_KEYS):
