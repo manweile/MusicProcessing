@@ -292,18 +292,18 @@ if __name__ == "__main__":
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
     # convert audio file specified to mp3 format
-    # "/media/gerald/Music/Music/.38 Special/Special Forces/.38 Special-Caught Up in You.mp3",
-    # "/home/gerald/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.wma",
-    # "/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a",
+    # "/media/gerald/Music/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
     # "/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma"
-    # "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a",   # embedded art, datetime string
-    # "H:\Music\Alejandro Escovedo\Alejandro Escovedo-Broken Bottle.wma",                    # no embedded art
-    # "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a",                              # no embedded art even though file explorer shows it
-    # "H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma",                # no embedded art
-    # "H:\Music\.38 Special\Special Forces\.38 Special-Caught Up in You.mp3"                 # no embedded art
+    # "/home/gerald/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.wma",
+    # "/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a"
     # "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
-    # "F:\ProcessedMusic\Crush\Here\Crush-Live.mp3"
     # "/home/gerald/Music/Genesis/Platinum Collection/Genesis-I Can't Dance.mp3"
+    # "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"   # embedded art, datetime string
+    # "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"                              # no embedded art even though file explorer shows it
+    # "F:\ProcessedMusic\Crush\Here\Crush-Live.mp3"                                         # embedded art
+    # "H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"                # no embedded art
+    # "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"                  # no embedded art
+    # "H:\Music\Alejandro Escovedo\Alejandro Escovedo-Broken Bottle.wma"                    # no embedded art
     # 1 mandatory arg, the audio file path
     # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
@@ -331,12 +331,13 @@ if __name__ == "__main__":
     create_album_parser.set_defaults(func=create_albums)
 
     # extract album art from specified audio file
-    # C:\Music\Alberta Hunter\The Blues\Alberta Hunter - Amtrak Blues.mp3                                   #no embedded, no Folder.jpg
-    # C:\Music\38 Special\Special Forces\Caught Up in You.mp3                                               #no embedded, has Folder.jpg
-    # C:\Music\Joshua Davis\The Voice Peformance\Joshau Davis-The Workingman's Hym.m4a                      #has embedded, no Folder.jpg
-    # C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma    #has embedded, no Folder.jpg
-    # C:\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma                      #has embedded, but not in a video stream, so will fail with ffmpeg
-    # "/home/gerald/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma"          #has embedded, but not in a video stream, so will fail with ffmpeg
+    # "/home/gerald/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma"          # has embedded, but not in a video stream, so will fail with ffmpeg
+    # "C:\Music\Alberta Hunter\The Blues\Alberta Hunter - Amtrak Blues.mp3"                                 # no embedded, no Folder.jpg
+    # "C:\Music\38 Special\Special Forces\Caught Up in You.mp3"                                             # no embedded, has Folder.jpg
+    # "C:\ProcessedMusic\Crush\Here\Crush-Live.mp3"                                                         # embedded art
+    # "C:\Music\Joshua Davis\The Voice Peformance\Joshau Davis-The Workingman's Hym.m4a ""                  # has embedded, no Folder.jpg
+    # "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"  # has embedded, no Folder.jpg
+    # "C:\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma"                    # has embedded, but not in a video stream, so will fail with ffmpeg
     # 1 mandatory arg, the path to audio file
     # sys.argv = ['D:\MusicProcessing\main.py', 'extract-art', 'C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma',
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-art', '/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma',
@@ -367,7 +368,7 @@ if __name__ == "__main__":
     # get mutagen metadata tags for file
     # 1 mandatory arg, the path to audio file
     # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags', 'C:\Music\Buckingham McVie\Buckingham McVie\Buckingham McVie-Too Far Gone.mp3',
-    # sys.argv = [D:\MusicProcessing\main.py', 'get-tags', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
+    # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
     get_tags_parser = subparsers.add_parser("get-tags", help="Gets metadata tags from audio file")
     get_tags_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     get_tags_parser.set_defaults(func=get_tags)
