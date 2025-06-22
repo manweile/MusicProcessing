@@ -7,6 +7,7 @@
 
 # standard modules
 import argparse
+import pprint
 import sys
 
 # local modules
@@ -113,6 +114,12 @@ def get_tags_walk(tld_path, file_pattern, ffprobe):
 
 
 def get_unique_media(tld_path):
+    '''
+    @brief Gets set of unique keys for entire collection found by ffprobe.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    '''
+
     metadata.get_unique_media_keys(tld_path)
 
 
@@ -223,7 +230,10 @@ def main(args):
         if args.subcommand == "get-tags":
             file_path = getattr(args, "file")
             tags = get_tags(file_path)
-            print(tags.pprint())
+            # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
+            # not as a simple dict of string key/value
+            # so need mutagen pprint and splitlines to "format" into simple dict
+            pprint.pprint(tags.pprint().splitlines())
 
         if args.subcommand == "get-tags-walk":
             tld_path = getattr(args, "tld")

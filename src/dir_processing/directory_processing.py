@@ -94,11 +94,11 @@ class DirectoryProcessing():
         '''
         @brief Creates a csv file
 
-        @details Creates a csv file in specified directory, or default generated files directory.
+        @details Creates a csv file in specified directory.
         @details Header row and sorting are optional.
 
         @param      csv_filename {str} Filename for csv.
-        @param      data [{str}] Data to write into csv.
+        @param      data [{str}] Data to write into csv. Expected to be 1 line per element.
         @param      csv_dir {str} Path for csv file.
         @param      header_row [{str}] Optional, the starting row naming fields.
         @param      sort_col {int} Optional, the column to sort data on.
@@ -134,11 +134,15 @@ class DirectoryProcessing():
         @details The csv file is created in the designated generated files directory.
         @details The csv has 2 columns, full file path for audio file and extension.
 
-        @param      start_path {str} start_path Optional, the starting point of the directory walk.
+        @param      start_path {str} Optional, the starting point of the directory walk.
         @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         data = []
+        directory_counts = {}
+
+        album_count = 0
+        artist_count = 0
         csv_dir = generated_files
         csv_filename = "found_audio_files.csv"
         file_count = 0
@@ -154,16 +158,25 @@ class DirectoryProcessing():
             start_path = self._tld_path
 
         try:
+            initial_depth = len(start_path.split(os.sep))
+
             # top down walk for files of the specified extension type
             # want the directory path & file names so we can get full file path
             # we don't care about the sub-directory names
             for dir_path, dir_names, filenames in os.walk(start_path):
+                current_depth = len(dir_path.split(os.sep)) - initial_depth
+
+                if dir_names:
+                    directory_counts[current_depth] = directory_counts.get(current_depth, 0) + len(dir_names)
+
                 for file in filenames:
                     _, file_extension = os.path.splitext(file)
+
                     if (file_extension in _AUDIO_EXTS):
                         audio_file_path = os.path.join(dir_path, file)
                         data.append([audio_file_path, file_extension])
                         file_count += 1
+
                         if file_extension == _AUDIO_EXTS[0]:
                             mp3_count += 1
                         elif file_extension == _AUDIO_EXTS[1]:
@@ -175,8 +188,12 @@ class DirectoryProcessing():
 
                     tot_count += 1
 
-            # sort on the extension, as the audio file path is already sorted by os walk
             self.create_csv(csv_filename, data, csv_dir, header_row, 1)
+
+            artist_count = directory_counts[0]
+            album_count = directory_counts[1]
+            print(f"Found {artist_count} artist directories")
+            print(f"Found {album_count} album directories")
             print(f"Found {tot_count} total files")
             print(f"{not_count} non-audio files")
             print(f"Found {file_count} audio files")
