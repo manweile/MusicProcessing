@@ -7,12 +7,15 @@
 
 # standard modules
 import argparse
+import gc
 import pprint
 import sys
 
 # local modules
 from src.audio_info import AudioMetadata
 from src.dir_processing import DirectoryProcessing
+
+gc.enable()
 
 directory = DirectoryProcessing()
 metadata = AudioMetadata()
