@@ -3,7 +3,9 @@ There are basically 3 options for running stand alone scripts in a sibling direc
 
 ## Run script as a module
 Useful for terminal execution of modules directly, especially when dealing with packages or when you want to avoid issues with relative imports.
+
 No need to add code or modify PYTHONPATH.
+
 - ```>cd D:\MusicProcessing```
 - ```>python.exe -i -m <script dir>.<script name>```
 - where script dir is location of script name
@@ -12,8 +14,11 @@ No need to add code or modify PYTHONPATH.
 
 ## In code pathing
 Great for one off scripts if you don't mind adding the code and don't want to modify your PYTHONPATH.
+
 Is the in code version of permanently modifying PYTHONPATH.
+
 Also allows script to be ran by VS Code python debugger.
+
 - add at **top** of script:
 ```
 import os
