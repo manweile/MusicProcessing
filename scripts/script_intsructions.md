@@ -2,8 +2,8 @@
 There are basically 3 options for running stand alone scripts in a sibling directory that do NOT have a ```if __name__ = "__main__":```
 
 ## Run script as a module
-Useful for terminal execution of modules directly, especially when dealing with packages or when you want to avoid issues with relative imports
-No need to add code or modify PYTHONPATH
+Useful for terminal execution of modules directly, especially when dealing with packages or when you want to avoid issues with relative imports.
+No need to add code or modify PYTHONPATH.
 - ```>cd D:\MusicProcessing```
 - ```>python.exe -i -m <script dir>.<script name>```
 - where script dir is location of script name
@@ -11,9 +11,9 @@ No need to add code or modify PYTHONPATH
 - use period instead of backslash for pathing
 
 ## In code pathing
-Great for one off scripts if you don't mind adding the code and don't want to modify your PYTHONPATH
-Is the in code version of permanently modifying PYTHONPATH
-Also allows script to be ran by VS Code python debugger
+Great for one off scripts if you don't mind adding the code and don't want to modify your PYTHONPATH.
+Is the in code version of permanently modifying PYTHONPATH.
+Also allows script to be ran by VS Code python debugger.
 - add at **top** of script:
 ```
 import os
@@ -22,7 +22,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 ```
 
 ## Modify PYTHONPATH
-Modifying the PYTHONPATH is essentially duplicating what pip install <package> does
+Modifying the PYTHONPATH is essentially duplicating what pip install <package> does.
 
 ### Ubuntu
 - Open ~/.bashrc for editing
