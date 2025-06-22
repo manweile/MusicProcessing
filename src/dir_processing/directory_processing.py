@@ -177,18 +177,24 @@ class DirectoryProcessing():
         data = []
         directory_counts = {}
 
+        audio_count = 0
         album_count = 0
         artist_count = 0
+        csv_count = 0
         csv_dir = generated_files
         csv_filename = "found_audio_files.csv"
-        file_count = 0
+        dir_count = 0
         file_extension = None
         header_row = ["file path", "audio file type"]
-        mp3_count = 0
         m4a_count = 0
+        mp3_count = 0
+        m3u_count = 0
+        other_count = 0
         not_count = 0
-        wma_count = 0
         tot_count = 0
+        txt_count = 0
+        wma_count = 0
+
 
         if start_path is None:
             start_path = self._tld_path
@@ -211,7 +217,7 @@ class DirectoryProcessing():
                     if (file_extension in _AUDIO_EXTS):
                         audio_file_path = os.path.join(dir_path, file)
                         data.append([audio_file_path, file_extension])
-                        file_count += 1
+                        audio_count += 1
 
                         if file_extension == _AUDIO_EXTS[0]:
                             mp3_count += 1
@@ -220,7 +226,14 @@ class DirectoryProcessing():
                         elif file_extension == _AUDIO_EXTS[2]:
                             wma_count += 1
                     else:
-                        not_count += 1
+                        if file_extension == ".csv":
+                            csv_count += 1
+                        elif file_extension == ".m3u":
+                            m3u_count += 1
+                        elif file_extension == ".txt":
+                            txt_count += 1
+                        else:
+                            not_count += 1
 
                     tot_count += 1
 
@@ -228,14 +241,25 @@ class DirectoryProcessing():
 
             artist_count = directory_counts[0]
             album_count = directory_counts[1]
+            dir_count = artist_count + album_count
+            other_count = csv_count + txt_count + m3u_count + not_count
+
             print(f"Found {artist_count} artist directories")
             print(f"Found {album_count} album directories")
+            print(f"Found {dir_count} total directories")
+
+            print(f"Found {mp3_count} {_AUDIO_TYPES[0]} files")
+            print(f"Found {m4a_count} {_AUDIO_TYPES[1]} files")
+            print(f"Found {wma_count} {_AUDIO_TYPES[2]} files")
+            print(f"Found {audio_count} total audio files")
+
+            print(f"Found {csv_count} csv files")
+            print(f"Found {txt_count} text files")
+            print(f"Found {m3u_count} m3u files")
+            print(f"Found {not_count} unknown type files")
+            print(f"Found {other_count} non-audio files")
+
             print(f"Found {tot_count} total files")
-            print(f"{not_count} non-audio files")
-            print(f"Found {file_count} audio files")
-            print(f"{mp3_count} {_AUDIO_TYPES[0]} files")
-            print(f"{m4a_count} {_AUDIO_TYPES[1]} files")
-            print(f"{wma_count} {_AUDIO_TYPES[2]} files")
         except Exception as e:
             raise Exception(f"Exception {e} getting files for {start_path}")
 
