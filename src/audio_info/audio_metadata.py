@@ -207,7 +207,7 @@ class AudioMetadata():
 
     def _update_id3(self, date_values, id3_tags):
         '''
-        @brief Updates tags dictionary without media, compilation and dis tags
+        @brief Updates tags dictionary with newest year value and ands default disc value if needed.
 
         @param id3_tags {dict} Source ID3 tags.
         @return output_tags {dict} Updated ID3 tags.
@@ -356,10 +356,8 @@ class AudioMetadata():
             metadata transfer
             I dont want every possible tag, just the subset that Windows will display.
 
-            date info is most problematic part of metadata
-            different audio file types have different date type tags
-            and to make things worse, the date could be a full ISO date,
-            or could just be a 4 digit year string
+            date info is most problematic part of metadata, different audio file types have different date type tags
+            and to make things worse, the date could be a full ISO date, or could just be a 4 digit year string
 
             I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
             '''
