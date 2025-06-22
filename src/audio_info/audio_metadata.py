@@ -47,7 +47,6 @@ _MP4 = "MP4"
 _TPOS = "TPOS"
 _TYER = "TYER"
 
-
 _ASF_TIME_KEYS = {
 
     'WM/Year',                              # preferred key
