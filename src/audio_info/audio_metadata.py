@@ -24,7 +24,7 @@ from mutagen.asf import ASF
 from mutagen.id3 import APIC, error, ID3, ID3TimeStamp
 from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TCMP, TMED, TORY, TDOR, TDRC
 from mutagen.mp3 import MP3
-from mutagen.mp4 import MP4, MP4FreeForm, MP4Tags
+from mutagen.mp4 import MP4, MP4FreeForm
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 from tqdm import tqdm
@@ -954,20 +954,21 @@ class AudioMetadata():
                             elif metadata_type == _MP4:
                                 input_tags = self.get_m4a_tags(tag_file_path)
 
-                            if input_tags:
-                                if ffprobe:
-                                    # want one key/value pair per line
-                                    pprint.pprint(input_tags)
-                                    print()
-                                else:
-                                    print(f"{input_file} is {metadata_type}")
-                                    # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
-                                    # not as a simple dict of string key/value
-                                    # so need mutagen pprint and splitlines to "format" into simple dict
-                                    pprint.pprint(input_tags.pprint().splitlines())
-                                    print()
+                        if input_tags:
+                            if ffprobe:
+                                print(f"{tag_file_path} has {len(input_tags)} ffprobe tags")
+                                # want one key/value pair per line
+                                pprint.pprint(input_tags)
+                                print()
                             else:
-                                print(f"{tag_file_path} has no metadata")
+                                print(f"{tag_file_path} has {len(input_tags)} {metadata_type} tags")
+                                # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
+                                # not as a simple dict of string key/value
+                                # so need mutagen pprint and splitlines to "format" into simple dict
+                                pprint.pprint(input_tags.pprint().splitlines())
+                                print()
+                        else:
+                            print(f"{tag_file_path} has no metadata")
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
@@ -992,6 +993,40 @@ class AudioMetadata():
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
         return tag_info
+
+
+    def get_unique_media_keys(self, file_path):
+        '''
+        @brief Gets set of ffprobe keys.
+
+        @details Walks from starting path and saves set of unique metadata keys found by ffprobe.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            input_tags = None
+            unique_keys = set()
+            for dir_path, _, file_names in os.walk(file_path):
+                # the tld Music does contain files, but not audio files
+                if dir_path == file_path:
+                    continue
+
+                for file in file_names:
+                    input_file, input_file_ext = os.path.splitext(file)
+
+                    # we don't touch non-audio files like jpg's
+                    if input_file_ext.lower() not in _AUDIO_EXTS:
+                        continue
+
+                    tag_file_path = os.path.join(dir_path, file)
+                    input_tags = self.get_media_tags(tag_file_path)
+                    file_keys = input_tags.keys()
+                    if file_keys:
+                        unique_keys.update(file_keys)
+
+            print(sorted(unique_keys))
+        except Exception as e:
+            raise Exception(f"Exception {e} getting tags for file {file_path}")
 
 
     def has_art_tag(self, file_path):

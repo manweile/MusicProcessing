@@ -7,6 +7,7 @@
 
 # standard modules
 import argparse
+import sys
 
 # local modules
 from src.audio_info import AudioMetadata
@@ -109,6 +110,10 @@ def get_tags_walk(tld_path, file_pattern, ffprobe):
     '''
 
     metadata.get_tags_walk(tld_path, file_pattern, ffprobe)
+
+
+def get_unique_media(tld_path):
+    metadata.get_unique_media_keys(tld_path)
 
 
 def list_audio(tld_path):
@@ -224,7 +229,11 @@ def main(args):
             tld_path = getattr(args, "tld")
             file_pattern = getattr(args, "pattern")
             ffprobe = getattr(args, "ffprobe")
-            tags = get_tags_walk(tld_path, file_pattern, ffprobe)
+            get_tags_walk(tld_path, file_pattern, ffprobe)
+
+        if args.subcommand == "get-unique-media":
+            tld_path = getattr(args, "tld")
+            get_unique_media(tld_path)
 
         if args.subcommand == "list-audio":
             tld_path = getattr(args, "tld")
@@ -264,6 +273,10 @@ if __name__ == "__main__":
 
     @details Parses and validates input arguments.
     '''
+
+    # might need to handle extended unicode printing
+    if sys.stdout.encoding != "utf-16":
+        sys.stdout.reconfigure(encoding="utf-16")
 
     parser = argparse.ArgumentParser(description='Music Processing')
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
@@ -359,6 +372,10 @@ if __name__ == "__main__":
     get_tags_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
     get_tags_walk_parser.add_argument("--ffprobe", type=bool, help="optional ffprobe tags")
     get_tags_walk_parser.set_defaults(func=get_tags_walk)
+
+    get_unique_media_keys = subparsers.add_parser("get-unique-media", help="Gets set of unique ffprobe tags from collection")
+    get_unique_media_keys.add_argument("tld", type=str, help="mandatory top level directory")
+    get_unique_media_keys.set_defaults(func=get_unique_media)
 
     # list all audio files
     # 1 mandatory arg, the tld path
