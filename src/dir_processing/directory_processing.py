@@ -55,6 +55,42 @@ class DirectoryProcessing():
             pass
 
 
+    def __ext_file_list(self, file_ext, start_path):
+        '''
+        @brief Generates a csv containing full file path for an audio file type.
+
+        @details The csv file has one column that shows the filepath for files with audio file type we looked for.
+        @details The csv file is sorted in directory path as found by os walk top down order.
+        @details The csv file is created in the designated generated files directory.
+
+        @param      file_ext {str} The file type want file paths for.
+        @param      start_path {str} The starting point of the directory walk.
+        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        csv_filename = "found_" + file_ext + ".csv"
+        csv_dir = generated_files
+        header_row = [file_ext + " file path"]
+        type_count = 0
+
+        try:
+            # top down walk for files of the specified extension type
+            # want the directory path & file names so we can get full file path
+            # don't care about the sub-directory names at all
+            for dir_path, dir_names, filenames in os.walk(start_path):
+                for file in filenames:
+                    if (file.endswith('.' + file_ext)):
+                        audio_file_path = os.path.join(dir_path, file)
+                        data.append([audio_file_path])
+                        type_count += 1
+
+            self.create_csv(csv_filename, data, csv_dir, header_row, None)
+            print(f"Found {type_count} {file_ext} files")
+        except Exception as e:
+            raise Exception(f"Exception {e} getting files for extension {file_ext} in {start_path}")
+
+
     @property
     def tld_path(self):
         '''
@@ -223,42 +259,6 @@ class DirectoryProcessing():
         else:
             for file_ext in _AUDIO_TYPES:
                 self.__ext_file_list(file_ext, start_path)
-
-
-    def __ext_file_list(self, file_ext, start_path):
-        '''
-        @brief Generates a csv containing full file path for an audio file type.
-
-        @details The csv file has one column that shows the filepath for files with audio file type we looked for.
-        @details The csv file is sorted in directory path as found by os walk top down order.
-        @details The csv file is created in the designated generated files directory.
-
-        @param      file_ext {str} The file type want file paths for.
-        @param      start_path {str} The starting point of the directory walk.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        data = []
-        csv_filename = "found_" + file_ext + ".csv"
-        csv_dir = generated_files
-        header_row = [file_ext + " file path"]
-        type_count = 0
-
-        try:
-            # top down walk for files of the specified extension type
-            # want the directory path & file names so we can get full file path
-            # don't care about the sub-directory names at all
-            for dir_path, dir_names, filenames in os.walk(start_path):
-                for file in filenames:
-                    if (file.endswith('.' + file_ext)):
-                        audio_file_path = os.path.join(dir_path, file)
-                        data.append([audio_file_path])
-                        type_count += 1
-
-            self.create_csv(csv_filename, data, csv_dir, header_row, None)
-            print(f"Found {type_count} {file_ext} files")
-        except Exception as e:
-            raise Exception(f"Exception {e} getting files for extension {file_ext} in {start_path}")
 
 
     def get_file_ext(self, file_path):
