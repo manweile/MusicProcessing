@@ -53,6 +53,25 @@ _ASF_TIME_KEYS = {
     'WM/OriginalReleaseYear'
 }
 
+# # the set of pydub generic metadata keys I want to copy to converted & normalized files
+# # these keys also correspond to what Windows displays as file information in File Explorer
+# _GEN_KEYS = {
+#     'album',                    # must have
+#     'album_artist',             # nice to have
+#     'artist',                   # must have
+#     'comment',                  # nice to have
+#     'compilation',              # nice to have, but not ID3v2.3
+#     'composer',                 # nice to have
+#     'copyright',                # nice to have
+#     'date',                     # must have
+#     'disc',                     # nice to have
+#     'genre',                    # must have
+#     'originalyear'              # nice to have
+#     'publisher',                # nice to have
+#     'title',                    # must have
+#     'track',                    # nice to have
+# }
+
 _MP3_TIME_KEYS = {
     'TYER',                                 # preferred key
     'TORY',
@@ -76,11 +95,11 @@ _MP3_KEYS = {
     'date': 'TYER',
     'disc': 'TPOS',
     'genre': 'TCON',
+    'originalyear': 'TORY',                         # keep as is
     'publisher': 'TPUB',
     'title': 'TIT2',
     'track': 'TRCK',
-    'original_year': 'TORY',                        # keep as is
-    'original_date': 'TDOR',                        # ID3v2.4 field to ID3v2.3 TYER
+    'originaldate': 'TDOR',                         # ID3v2.4 field to ID3v2.3 TYER
     'release_date': 'TDRC',                         # ID3v2.4 field convert YYYY portion to ID3v2.3 TYER
     'custom_original_year': 'TXXX=originalyear'     # ID3 user defined original year field convert to ID3v2.3 TORY
 }
