@@ -1,0 +1,1 @@
+-v quiet -show_format -show_streams C:/Music/Crush/Here/Crush-Live.mp3

@@ -306,7 +306,7 @@ if __name__ == "__main__":
     # "F:\ProcessedMusic\Crush\Here\Crush-Live.mp3"                                         # embedded art
     # "H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"                # no embedded art
     # "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"                  # no embedded art
-    # "H:\Music\Alejandro Escovedo\Alejandro Escovedo-Broken Bottle.wma"                    # no embedded art
+    # "C:\Music\Alejandro Escovedo\More Miles Than Money- Live 1994-1996\Alejandro Escovedo-Broken Bottle.wma"                    # no embedded art
     # 1 mandatory arg, the audio file path
     # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
@@ -426,7 +426,7 @@ if __name__ == "__main__":
     remove_pattern_parser.add_argument("pattern", type=str, help="mandatory file pattern")
     remove_pattern_parser.set_defaults(func=remove_pattern)
 
-    # peak normalize an audio file
+    # peak normalize an audio file (destructive)
     # 1 mandatory arg, the path to audio file
     # "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
     # "/home/gerald/ProcessedMusic/Crush/Here/Crush-Live.mp3"
@@ -436,6 +436,8 @@ if __name__ == "__main__":
     peak_file_parser = subparsers.add_parser("peak-file", help="Peak normalizes an audio file level")
     peak_file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     peak_file_parser.set_defaults(func=peak_file)
+
+    # add replay gain to audio file (non-destructive)
 
     # set album art file
     # 1 mandatory arg, the tld path

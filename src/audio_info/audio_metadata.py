@@ -47,7 +47,7 @@ _MP4 = "MP4"
 _TPOS = "TPOS"
 _TYER = "TYER"
 
-_ASF_TIME_KEYS = {
+_WMA_TIME_KEYS = {
 
     'WM/Year',                              # preferred key
     'WM/OriginalReleaseYear'
@@ -59,7 +59,7 @@ _ASF_TIME_KEYS = {
 #     'album',                    # must have
 #     'album_artist',             # nice to have
 #     'artist',                   # must have
-#     'comment',                  # nice to have
+#     'comment',                  # nice to have, but a PITA to parse/add
 #     'compilation',              # nice to have, but not ID3v2.3
 #     'composer',                 # nice to have
 #     'copyright',                # nice to have
@@ -114,10 +114,10 @@ _M4A_KEYS = {
     'date': '\xa9day',
     'disc': 'disk',
     'genre': '\xa9gen',
-    'publisher': '----:com.apple.iTunes:LABEL',     # using iTunes field, not sure \xa9pub is valid
+    'publisher': '----:com.apple.iTunes:LABEL',     # using iTunes field, \xa9pub is validity is not certain
     'title': '\xa9nam',
     'track': 'trkn',
-    'original_year': '----:com.apple.iTunes:originalyear'
+    'originalyear': '----:com.apple.iTunes:originalyear'
 }
 
 # dict of possible wma (ASF)
@@ -133,7 +133,7 @@ _WMA_KEYS = {
     'publisher': 'WM/Publisher',
     'title': 'Title',
     'track': 'WM/TrackNumber',
-    'original_year': 'WM/OriginalReleaseYear'
+    'originalyear': 'WM/OriginalReleaseYear'
 }
 
 
@@ -240,6 +240,11 @@ class AudioMetadata():
 
             if "TPOS" not in id3_tags:
                 id3_tags[_TPOS] = "1/1"
+
+            for key, value in id3_tags.items():
+                print(f"key: {key}, value: {value}")
+
+            print()
         except Exception as e:
             raise Exception(f"Exception: {e} updating tags")
 
@@ -380,7 +385,7 @@ class AudioMetadata():
             I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
             '''
 
-            print(f"Beginning processing {input_path.name}")
+            print(f"Beginning processing {input_path.name}\n")
 
             metadata_type = self.get_metadata_type(file_path)
             if metadata_type == _ASF:
@@ -1196,6 +1201,182 @@ class AudioMetadata():
         return audio_file
 
 
+    def loudness_normalize_file(self, file_path, target_dbfs):
+        '''
+        @brief Normalizes audio file level.
+
+        @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
+
+        @param file_path {str} The full file path for audio file.
+        @param target_dbfs {float} The target loudness.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            pass
+        except Exception as e:
+            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
+
+
+    def map_m4a_tags(self, input_tags):
+        '''
+        @brief Converts m4a (MP4) metadata to generic metadata
+
+        @details Converts subset of tags (the ones that Window will display) from wma.
+
+        @param input_tags {MP4Tags} The m4a tags source.
+        @return id3_tags {dict} The tags converted from wma tags.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            id3_tags = {}
+            date_values = set()
+            for metadata_field, m4a_value in _M4A_KEYS.items():
+                m4a_tag = input_tags.get(m4a_value)
+
+                if m4a_tag:
+                    mp3_key = _MP3_KEYS[metadata_field]
+                    metadata_value = input_tags[m4a_value][0]
+
+                    if isinstance(metadata_value, tuple) and m4a_value == "trkn":
+                        track_num = input_tags[m4a_value][0][0]
+                        total_tracks = input_tags[m4a_value][0][1]
+                        tag_value = f"{track_num}/{total_tracks}"
+
+                    if isinstance(metadata_value, tuple) and m4a_value == "disk":
+                        disc_num = input_tags[m4a_value][0][0]
+                        total_discs = input_tags[m4a_value][0][1]
+                        tag_value = f"{disc_num}/{total_discs}"
+
+                    # need to get all possible date years into set, but not add to output dict just yet
+                    if isinstance(metadata_value, str) and m4a_value in _MP4_TIME_KEYS:
+                        # just in case string is "YYYY-MM-DD"
+                        date_value = metadata_value[0:4]
+                        date_values.add(date_value)
+                        print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
+                        continue
+
+                    # m4a doesn't have a "native" original year field like "\xa9ory", relies on the iTunes field,
+                    # so need additional step to decode from MP4FreeForm
+                    if isinstance(metadata_value, MP4FreeForm) and m4a_value in _MP4_TIME_KEYS:
+                        decode_value = input_tags[m4a_value][0].decode()
+                        # just in case string is "YYYY-MM-DD"
+                        date_value = decode_value[0:4]
+                        date_values.add(date_value)
+                        print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
+                        continue
+
+                    # m4a supposedly has native publisher "\xa9pub", but not seen in my collection
+                    # I do have iTunes "----:com.apple.iTunes:LABEL" field
+                    if isinstance(metadata_value, MP4FreeForm) and m4a_value == "----:com.apple.iTunes:LABEL":
+                        tag_value = input_tags[m4a_value][0].decode()
+
+                    if isinstance(metadata_value, str):
+                        tag_value = metadata_value
+
+                    print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
+                    id3_tags[mp3_key] = tag_value
+
+            print()
+            id3_tags = self._update_id3(date_values, id3_tags)
+
+        except Exception as e:
+            raise Exception(f"Exception {e} converting m4a tags")
+
+        return id3_tags
+
+
+    def map_mp3_tags(self, input_tags):
+        '''
+        @brief Converts mp3 metadata to id3 metadata
+
+        @details Converts subset of tags (the ones that Window will display) from mp3 to id3.
+
+        @param input_tags {ID3} The mp3 tags source.
+        @return id3_tags {dict} The tags converted from mp3 tags.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            id3_tags = {}
+            date_values = set()
+            for metadata_field, mp3_value in _MP3_KEYS.items():
+
+                mp3_tag = input_tags.get(mp3_value)
+                if mp3_tag:
+                    mp3_key = _MP3_KEYS[metadata_field]
+                    metadata_value = input_tags[mp3_value].text[0]
+
+                    # need to get all possible date years into set, but not add to output dict just yet
+                    if isinstance(metadata_value, ID3TimeStamp) and (mp3_value in _MP3_TIME_KEYS):
+                        # just in case string is "YYYY-MM-DD"
+                        date_value = metadata_value.text[0:4]
+                        date_values.add(date_value)
+                        print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {date_value}")
+                        continue
+
+                    if isinstance(metadata_value, str):
+                        tag_value = metadata_value
+
+                    print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {tag_value}")
+                    id3_tags[mp3_key] = tag_value
+
+            id3_tags = self._update_id3(date_values, id3_tags)
+
+        except Exception as e:
+            raise Exception(f"Exception {e} converting mp3 tags to id3 tags")
+
+        return id3_tags
+
+
+    def map_wma_tags(self, input_tags):
+        '''
+        @brief Converts wma (ASF) metadata to id3 metadata
+
+        @details Converts subset of tags (the ones that Window will display) from wma to id3.
+
+        @param input_tags {ASFTags} The wma tags source.
+        @return tags {dict} The tags converted from wma tags.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            id3_tags = {}
+            date_values = set()
+            for metadata_field, wma_value in _WMA_KEYS.items():
+                wma_tag = input_tags.get(wma_value)
+
+                if wma_tag:
+                    mp3_key = _MP3_KEYS[metadata_field]
+                    metadata_value = input_tags[wma_value][0].value
+
+                    # need to get all possible date years into set, but not add to output dict just yet
+                    if isinstance(metadata_value, str) and (wma_value in _WMA_TIME_KEYS):
+                        # just in case string is "YYYY-MM-DD"
+                        date_value = metadata_value[0:4]
+                        date_values.add(date_value)
+                        print(f"metadata: {metadata_field:<20} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {date_value}")
+                        continue
+
+                    if isinstance(metadata_value, str):
+                        tag_value = metadata_value
+
+                    # track num is int
+                    if isinstance(metadata_value, int):
+                        tag_value = metadata_value
+
+                    print(f"metadata: {metadata_field:<20} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
+                    id3_tags[mp3_key] = tag_value
+
+            id3_tags = self._update_id3(date_values, id3_tags)
+
+        except Exception as e:
+            raise Exception(f"Exception {e} converting wma tags to id3 tags")
+
+        return id3_tags
+
+
     def peak_normalize_file(self, file_path):
         '''
         @brief Normalizes audio file level.
@@ -1285,181 +1466,6 @@ class AudioMetadata():
                 f"ffmpeg-normalize returned error code: {p.returncode}\n\n for command line: {command}\n\n {p_err.decode(errors='ignore')}")
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
-
-
-    def loudness_normalize_file(self, file_path, target_dbfs):
-        '''
-        @brief Normalizes audio file level.
-
-        @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
-
-        @param file_path {str} The full file path for audio file.
-        @param target_dbfs {float} The target loudness.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            pass
-        except Exception as e:
-            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
-
-
-    def map_m4a_tags(self, input_tags):
-        '''
-        @brief Converts m4a (MP4) metadata to generic metadata
-
-        @details Converts subset of tags (the ones that Window will display) from wma.
-
-        @param input_tags {MP4Tags} The m4a tags source.
-        @return id3_tags {dict} The tags converted from wma tags.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            id3_tags = {}
-            date_values = set()
-            for metadata_field, m4a_value in _M4A_KEYS.items():
-                m4a_tag = input_tags.get(m4a_value)
-
-                if m4a_tag:
-                    mp3_key = _MP3_KEYS[metadata_field]
-                    metadata_value = input_tags[m4a_value][0]
-
-                    if isinstance(metadata_value, tuple) and m4a_value == "trkn":
-                        track_num = input_tags[m4a_value][0][0]
-                        total_tracks = input_tags[m4a_value][0][1]
-                        tag_value = f"{track_num}/{total_tracks}"
-
-                    if isinstance(metadata_value, tuple) and m4a_value == "disk":
-                        disc_num = input_tags[m4a_value][0][0]
-                        total_discs = input_tags[m4a_value][0][1]
-                        tag_value = f"{disc_num}/{total_discs}"
-
-                    # need to get all possible date years into set, but not add to output dict just yet
-                    if isinstance(metadata_value, str) and m4a_value in _MP4_TIME_KEYS:
-                        # just in case string is "YYYY-MM-DD"
-                        date_value = metadata_value[0:4]
-                        date_values.add(date_value)
-                        print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
-                        continue
-
-                    # m4a doesn't have a "native" original year field like "\xa9ory", relies on the iTunes field,
-                    # so need additional step to decode from MP4FreeForm
-                    if isinstance(metadata_value, MP4FreeForm) and m4a_value in _MP4_TIME_KEYS:
-                        decode_value = input_tags[m4a_value][0].decode()
-                        # just in case string is "YYYY-MM-DD"
-                        date_value = decode_value[0:4]
-                        date_values.add(date_value)
-                        print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
-                        continue
-
-                    # m4a supposedly has native publisher "\xa9pub", but not seen in my collection
-                    # I do have iTunes "----:com.apple.iTunes:LABEL" field
-                    if isinstance(metadata_value, MP4FreeForm) and m4a_value == "----:com.apple.iTunes:LABEL":
-                        tag_value = input_tags[m4a_value][0].decode()
-
-                    if isinstance(metadata_value, str):
-                        tag_value = metadata_value
-
-                    print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
-                    id3_tags[mp3_key] = tag_value
-
-            id3_tags = self._update_id3(date_values, id3_tags)
-
-        except Exception as e:
-            raise Exception(f"Exception {e} converting m4a tags")
-
-        return id3_tags
-
-
-    def map_mp3_tags(self, input_tags):
-        '''
-        @brief Converts mp3 metadata to id3 metadata
-
-        @details Converts subset of tags (the ones that Window will display) from mp3 to id3.
-
-        @param input_tags {ID3} The mp3 tags source.
-        @return id3_tags {dict} The tags converted from mp3 tags.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            id3_tags = {}
-            date_values = set()
-            for metadata_field, mp3_value in _MP3_KEYS.items():
-
-                mp3_tag = input_tags.get(mp3_value)
-                if mp3_tag:
-                    mp3_key = _MP3_KEYS[metadata_field]
-                    metadata_value = input_tags[mp3_value].text[0]
-
-                    # need to get all possible date years into set, but not add to output dict just yet
-                    if isinstance(metadata_value, ID3TimeStamp) and (mp3_value in _MP3_TIME_KEYS):
-                        # just in case string is "YYYY-MM-DD"
-                        date_value = metadata_value.text[0:4]
-                        date_values.add(date_value)
-                        print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {date_value}")
-                        continue
-
-                    if isinstance(metadata_value, str):
-                        tag_value = metadata_value
-
-                    print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {tag_value}")
-                    id3_tags[mp3_key] = tag_value
-
-            id3_tags = self._update_id3(date_values, id3_tags)
-
-        except Exception as e:
-            raise Exception(f"Exception {e} converting mp3 tags to id3 tags")
-
-        return id3_tags
-
-
-    def map_wma_tags(self, input_tags):
-        '''
-        @brief Converts wma (ASF) metadata to id3 metadata
-
-        @details Converts subset of tags (the ones that Window will display) from wma to id3.
-
-        @param input_tags {ASFTags} The wma tags source.
-        @return tags {dict} The tags converted from wma tags.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            id3_tags = {}
-            date_values = set()
-            for metadata_field, wma_value in _WMA_KEYS.items():
-                wma_tag = input_tags.get(wma_value)
-
-                if wma_tag:
-                    mp3_key = _MP3_KEYS[metadata_field]
-                    metadata_value = input_tags[wma_value][0].value
-
-                    # need to get all possible date years into set, but not add to output dict just yet
-                    if isinstance(metadata_value, str) and (wma_value in _ASF_TIME_KEYS):
-                        # just in case string is "YYYY-MM-DD"
-                        date_value = metadata_value[0:4]
-                        date_values.add(date_value)
-                        print(f"metadata: {metadata_field:<20} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {date_value}")
-                        continue
-
-                    if isinstance(metadata_value, str):
-                        tag_value = metadata_value
-
-                    # track num is int
-                    if isinstance(metadata_value, int):
-                        tag_value = metadata_value
-
-                    print(f"metadata: {metadata_field:<20} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
-                    id3_tags[mp3_key] = tag_value
-
-            id3_tags = self._update_id3(date_values, id3_tags)
-
-        except Exception as e:
-            raise Exception(f"Exception {e} converting wma tags to id3 tags")
-
-        return id3_tags
 
 
     def set_album_art(self, input_path):
