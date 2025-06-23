@@ -22,7 +22,7 @@ import mutagen
 import pathvalidate
 from mutagen.asf import ASF
 from mutagen.id3 import APIC, error, ID3, ID3TimeStamp
-from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TCMP, TMED, TORY, TDOR, TDRC
+# from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TCMP, TMED, TORY, TDOR, TDRC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4FreeForm
 from pydub import AudioSegment
@@ -223,7 +223,7 @@ class AudioMetadata():
             raise Exception(f"Exception: {e} writing embedded art from {file_path}")
 
 
-    def _update_id3(self, date_values, id3_tags):
+    def __update_id3(self, date_values, id3_tags):
         '''
         @brief Updates tags dictionary with newest year value and ands default disc value if needed.
 
@@ -244,7 +244,6 @@ class AudioMetadata():
             for key, value in id3_tags.items():
                 print(f"key: {key}, value: {value}")
 
-            print()
         except Exception as e:
             raise Exception(f"Exception: {e} updating tags")
 
@@ -385,16 +384,19 @@ class AudioMetadata():
             I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
             '''
 
-            print(f"Beginning processing {input_path.name}\n")
+            print(f"Beginning converting {input_path.name} from {input_format}")
 
             metadata_type = self.get_metadata_type(file_path)
             if metadata_type == _ASF:
+                format = _ASF
                 input_tags = self.get_wma_tags(file_path)
                 tags = self.map_wma_tags(input_tags)
             elif metadata_type == _MP3:
+                format = _MP3
                 input_tags = self.get_mp3_tags(file_path)
                 tags = self.map_mp3_tags(input_tags)
             elif metadata_type == _MP4:
+                format = _MP4
                 input_tags = self.get_m4a_tags(file_path)
                 tags = self.map_m4a_tags(input_tags)
 
@@ -419,7 +421,7 @@ class AudioMetadata():
             '''
 
             cover = os.path.join(input_path_parent, _FOLDER_ART)
-            audio_segment = AudioSegment.from_file(input_path, format=input_format)
+            audio_segment = AudioSegment.from_file(input_path, format=format)
 
             # the id3v2 version = 3 is important!
             # both pydub (AudioSegment) and mutagen (MP3) need it
@@ -444,7 +446,7 @@ class AudioMetadata():
                     )
                 )
             audio_tags.save(v2_version=3)
-            print(f"{input_name} converted to {export_format}\n")
+            print(f"Finished converting {input_name} to {export_format}\n")
         except Exception as e:
             raise Exception(f"Exception {e} converting {input_path} to {export_path}")
 
@@ -1278,8 +1280,7 @@ class AudioMetadata():
                     print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
-            print()
-            id3_tags = self._update_id3(date_values, id3_tags)
+            id3_tags = self.__update_id3(date_values, id3_tags)
 
         except Exception as e:
             raise Exception(f"Exception {e} converting m4a tags")
@@ -1322,7 +1323,7 @@ class AudioMetadata():
                     print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
-            id3_tags = self._update_id3(date_values, id3_tags)
+            id3_tags = self.__update_id3(date_values, id3_tags)
 
         except Exception as e:
             raise Exception(f"Exception {e} converting mp3 tags to id3 tags")
@@ -1369,7 +1370,7 @@ class AudioMetadata():
                     print(f"metadata: {metadata_field:<20} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
-            id3_tags = self._update_id3(date_values, id3_tags)
+            id3_tags = self.__update_id3(date_values, id3_tags)
 
         except Exception as e:
             raise Exception(f"Exception {e} converting wma tags to id3 tags")

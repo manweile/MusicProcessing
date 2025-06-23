@@ -288,8 +288,8 @@ if __name__ == "__main__":
     '''
 
     # might need to handle extended unicode printing
-    if sys.stdout.encoding != "utf-16":
-        sys.stdout.reconfigure(encoding="utf-16")
+    if sys.stdout.encoding != "utf-8":
+        sys.stdout.reconfigure(encoding="utf-8")
 
     parser = argparse.ArgumentParser(description='Music Processing')
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")

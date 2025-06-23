@@ -961,10 +961,15 @@ class AudioSegment(object):
         '''
         YASPIN NEW CODE STARTS
         '''
-        import time
+        '''
+        YASPIN NEW CODE STARTS
+        '''
         from pathlib import Path
         from yaspin import yaspin
         from yaspin.spinners import Spinners
+        # might need to handle extended unicode printing
+        if sys.stdout.encoding != "utf-8":
+            sys.stdout.reconfigure(encoding="utf-8")
 
         input_path = Path(out_f.name)
         input_file_name = input_path.stem
@@ -972,15 +977,13 @@ class AudioSegment(object):
         with yaspin(Spinners.dots, text=text, timer=True) as sp:
             with open(os.devnull, 'rb') as devnull:
                 p = subprocess.Popen(
-                                    conversion_command,
-                                    stdin=devnull,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    universal_newlines=True
-                                    )
+                    conversion_command,
+                    stdin=devnull,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    universal_newlines=True
+                )
 
-            # while p.poll() is None:
-            #     time.sleep(0.1)
             while True:
                 line = p.stderr.readline()
                 if not line:
@@ -988,6 +991,7 @@ class AudioSegment(object):
 
             p_out, p_err = p.communicate()
 
+        print(f"Elapsed conversion time: {sp.elapsed_time}")
         log_subprocess_output(p_out)
         log_subprocess_output(p_err)
 
