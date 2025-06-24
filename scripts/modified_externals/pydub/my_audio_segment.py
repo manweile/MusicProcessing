@@ -961,20 +961,16 @@ class AudioSegment(object):
         '''
         YASPIN NEW CODE STARTS
         '''
-        '''
-        YASPIN NEW CODE STARTS
-        '''
         import platform
-        import sys
         from pathlib import Path
         from yaspin import yaspin
         from yaspin.spinners import Spinners
 
         # might need to handle extended unicode printing
         os_name = platform.system()
-        if os_name == "Windows":
+        if os_name == "windows" and sys.stdout.encoding != "utf-16":
             sys.stdout.reconfigure(encoding="utf-16")
-        elif os_name == "Linux":
+        elif os_name == "linux" and sys.stdout.encoding != "utf-8":
             sys.stdout.reconfigure(encoding="utf-8")
 
         input_path = Path(out_f.name)
@@ -1022,50 +1018,6 @@ class AudioSegment(object):
         '''
         YASPIN NEW CODE ENDS
         '''
-
-        '''
-        tqdm new code starts
-        '''
-        # from tqdm import tqdm
-        # import time
-        # from pathlib import Path
-
-        # input_path = Path(out_f.name)
-        # input_file_name = input_path.stem
-
-
-        # with tqdm(desc=f"Converting {input_file_name}", unit=" line", leave=True) as pbar:
-        #     with open(os.devnull, 'rb') as devnull:
-        #         p = subprocess.Popen(conversion_command, stdin=devnull, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-
-        #     for line in p.stderr:
-        #         pbar.update(1)
-
-        #     p_out, p_err = p.communicate()
-
-        # log_subprocess_output(p_out)
-        # log_subprocess_output(p_err)
-
-        # if p.returncode != 0:
-        #     raise CouldntEncodeError(
-        #         "Encoding failed. ffmpeg/avlib returned error code: {0}\n\nCommand:{1}\n\nOutput from ffmpeg/avlib:\n\n{2}".format(
-        #             p.returncode, conversion_command, p_err.decode(errors='ignore') ))
-
-        # output.seek(0)
-        # out_f.write(output.read())
-
-        # data.close()
-        # output.close()
-
-        # os.unlink(data.name)
-        # os.unlink(output.name)
-
-        # out_f.seek(0)
-        # return out_f
-        '''
-        tqdm new code ends
-        '''
-
         '''
         ORIGINAL CODE STARTS
         '''

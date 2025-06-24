@@ -1052,6 +1052,7 @@ class AudioMetadata():
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
 
+
     def has_art_tag(self, file_path):
         '''
         @brief Checks if an audio file has the embedded album art tag.
@@ -1208,7 +1209,7 @@ class AudioMetadata():
         @todo complete or abandon
         @brief Normalizes audio file level.
 
-        @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
+        @details
 
         @param file_path {str} The full file path for audio file.
         @param target_dbfs {float} The target loudness.
@@ -1381,7 +1382,7 @@ class AudioMetadata():
 
     def peak_normalize_file(self, file_path):
         '''
-        @brief Peak nNormalizes audio file level.
+        @brief Peak normalizes audio file level.
 
         @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
         @details Audio file must be mp3 format.
@@ -1455,7 +1456,7 @@ class AudioMetadata():
             ]
 
             text = f"Normalizing {input_path.stem}"
-            with yaspin(Spinners.dots, text=text, timer=True):
+            with yaspin(Spinners.dots, text=text, timer=True) as sp:
                 with open(os.devnull, 'rb') as devnull:
                     p = subprocess.Popen(
                         command,
@@ -1464,13 +1465,15 @@ class AudioMetadata():
                         stderr=subprocess.PIPE,
                         universal_newlines=True
                     )
+
                 while True:
                     line = p.stderr.readline()
                     if not line:
                         break
 
                 p_out, p_err = p.communicate()
-            print(f"Successfully normalized {input_path.stem} to {export_dir} using ffmpeg-normalize.\r\n")
+
+            print(f"Successfully normalized {input_path.stem} to {export_dir} in {sp.elapsed_time} secs\r\n")
         except subprocess.CalledProcessError:
             raise Exception(
                 f"ffmpeg-normalize returned error code: {p.returncode}\n\n for command line: {command}\n\n {p_err.decode(errors='ignore')}")
