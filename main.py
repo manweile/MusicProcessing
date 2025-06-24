@@ -303,10 +303,12 @@ if __name__ == "__main__":
     '''
 
     os_name = platform.system()
-    if os_name == "windows" and sys.stdout.encoding != "utf-16":
-        sys.stdout.reconfigure(encoding="utf-16")
-    elif os_name == "linux" and sys.stdout.encoding != "utf-8":
-        sys.stdout.reconfigure(encoding="utf-8")
+    if os_name == "Windows":
+        if sys.stdout.encoding != "utf-8":
+            sys.stdout.reconfigure(encoding="utf-8")
+    elif os_name == "Linux":
+        if sys.stdout.encoding != "utf-8":
+            sys.stdout.reconfigure(encoding="utf-8")
 
     parser = argparse.ArgumentParser(description='Music Processing')
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
@@ -320,9 +322,10 @@ if __name__ == "__main__":
     # "/media/gerald/Music/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"                     # no embedded, has Folder.jpg
     # "/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma"                   # no embedded art
 
-    # "C:\Music\38 Special\Special Forces\Caught Up in You.mp3"                                                 # no embedded, has Folder.jpg
+    # "C:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"                                                 # no embedded, has Folder.jpg
     # "C:\Music\Alberta Hunter\The Blues\Alberta Hunter - Amtrak Blues.mp3"                                     # no embedded, no Folder.jpg
     # "C:\Music\Alejandro Escovedo\More Miles Than Money- Live 1994-1996\Alejandro Escovedo-Broken Bottle.wma"  # no embedded art
+    # "C:\Music\Arlo Guthrie\Best Songs Of Arlo Guthrie\Arlo Guthrie-Arlo Guthrie.MP3"                          # capped extension
     # "C:\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma"                        # has embedded, but not in a video stream, so will fail with ffmpeg
     # "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"      # has embedded, no Folder.jpg
     # "C:\Music\Joshua Davis\The Voice Peformance\Joshau Davis-The Workingman's Hym.m4a"                        # has embedded, no Folder.jpg, datetime string
