@@ -370,7 +370,7 @@ class AudioMetadata():
                 os.makedirs(export_dir)
 
             input_name = input_path.stem
-            input_format = input_path.suffix[1:]
+            input_format = input_path.suffix[1:].lower()
             export_name = input_name + export_ext
             export_path = os.path.join(export_dir, export_name)
 
@@ -810,7 +810,7 @@ class AudioMetadata():
         @details Any type means m4a, mp3, or wma files.
 
         @param file_path {str} The full path to audio file.
-        @return tags {object} Tag object holding audio file tags or None.
+        @return tags {object} Tag object (one of ID3, MP4Tags, or ASFTags) holding audio file tags or None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -820,7 +820,8 @@ class AudioMetadata():
             if audio_file is not None and audio_file.tags:
                 tags = audio_file.tags
             else:
-                return None
+                raise ValueError(f"Returned None loading audio file: {file_path} ")
+                # return None
         except Exception as e:
             raise Exception(f"Exception: {e} getting metadata type for file: {file_path}")
 
@@ -842,7 +843,8 @@ class AudioMetadata():
             if audio_file is not None:
                 tag_info = audio_file.tags
             else:
-                return None
+                raise ValueError(f"Returned None loading audio file: {file_path} ")
+                # return None
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
@@ -930,7 +932,8 @@ class AudioMetadata():
             if audio_file is not None:
                 tag_info = audio_file.tags
             else:
-                return None
+                raise ValueError(f"Returned None loading audio file: {file_path} ")
+                # return None
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
@@ -1011,7 +1014,8 @@ class AudioMetadata():
             if audio_file is not None:
                 tag_info = audio_file.tags
             else:
-                return None
+                raise ValueError(f"Returned None loading audio file: {file_path} ")
+                # return None
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
@@ -1148,7 +1152,7 @@ class AudioMetadata():
 
         try:
             audio_file = None
-            if file_path.endswith('.m4a'):
+            if file_path.lower().endswith('.m4a'):
                 audio_file = MP4(file_path)
                 if audio_file is None:
                     return None
@@ -1171,7 +1175,7 @@ class AudioMetadata():
 
         try:
             audio_file = None
-            if file_path.endswith('.mp3'):
+            if file_path.lower().endswith('.mp3'):
                 audio_file = MP3(file_path)
                 if audio_file is None:
                     return None
@@ -1194,7 +1198,7 @@ class AudioMetadata():
 
         try:
             audio_file = None
-            if file_path.endswith('.wma'):
+            if file_path.lower().endswith('.wma'):
                 audio_file = ASF(file_path)
                 if audio_file is None:
                     return None
