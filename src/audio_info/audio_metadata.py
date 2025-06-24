@@ -1205,6 +1205,7 @@ class AudioMetadata():
 
     def loudness_normalize_file(self, file_path, target_dbfs):
         '''
+        @todo complete or abandon
         @brief Normalizes audio file level.
 
         @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
@@ -1380,9 +1381,10 @@ class AudioMetadata():
 
     def peak_normalize_file(self, file_path):
         '''
-        @brief Normalizes audio file level.
+        @brief Peak nNormalizes audio file level.
 
         @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
+        @details Audio file must be mp3 format.
 
         @param file_path {str} The full file path for audio file.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -1394,6 +1396,13 @@ class AudioMetadata():
             export_path = None
 
             input_path = Path(file_path)
+
+            input_ext = input_path.suffix
+            if input_ext.lower() != _AUDIO_EXTS[0]:
+                raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
+
+            print(f"Beginning normalizing {input_path} using ffmpeg-normalize.")
+
             # get the full parent w/o filename so I can start removing unnecessary path components
             input_path_parent = input_path.parent
             # remove the anchor (ie. / or H:\), have no use for it
@@ -1461,12 +1470,43 @@ class AudioMetadata():
                         break
 
                 p_out, p_err = p.communicate()
-            print(f"Successfully normalized '{input_path}' to '{export_path}' using ffmpeg-normalize.")
+            print(f"Successfully normalized {input_path.stem} to {export_dir} using ffmpeg-normalize.\r\n")
         except subprocess.CalledProcessError:
             raise Exception(
                 f"ffmpeg-normalize returned error code: {p.returncode}\n\n for command line: {command}\n\n {p_err.decode(errors='ignore')}")
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
+
+
+    def peak_normalize_walk(self, file_path):
+        '''
+        @brief Peak normalizes mp3 audio files in under starting top level directory.
+
+        @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
+
+        @param file_path {str} The starting point of the directory walk.
+        @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        input_file_ext = None
+
+        try:
+            input_path = Path(file_path)
+
+            for dir_path, _, file_names in os.walk(input_path):
+                for file in file_names:
+                    _, input_file_ext = os.path.splitext(file)
+
+                    # file is not mp3, carry on to next file
+                    if input_file_ext.lower() != _AUDIO_EXTS[0]:
+                        continue
+
+                    input_file_path = os.path.join(dir_path, file)
+                    self.peak_normalize_file(input_file_path)
+
+        except Exception as e:
+            raise Exception(f"Exception {e} walking {file_path} to normalize audio files")
 
 
     def set_album_art(self, input_path):

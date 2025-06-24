@@ -9,6 +9,7 @@
 import argparse
 import gc
 import pprint
+import platform
 import sys
 
 # local modules
@@ -36,7 +37,7 @@ def convert_walk(tld_path, file_pattern):
     @brief Converts all audio files in specified top level directory to mp3 format.
 
     @param tld_path {str} The top level directory path that contains all the music files.
-    @param file_pattern {str} The file pattern we want to delete.
+    @param file_pattern {str} The file pattern we want to convert.
     '''
 
     metadata.convert_walk(tld_path, file_pattern)
@@ -157,6 +158,16 @@ def peak_file(file_path):
     metadata.peak_normalize_file(file_path)
 
 
+def peak_walk(tld_path):
+    '''
+    @brief Peak normalizes all audio files in specified top level directory.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    '''
+
+    metadata.peak_normalize_walk(tld_path)
+
+
 def remove_albums(tld_path):
     '''
     @brief Remove empty album directories from specified top level directory.
@@ -261,6 +272,10 @@ def main(args):
             file_path = getattr(args, "file")
             peak_file(file_path)
 
+        if args.subcommand == "peak-walk":
+            tld_path = getattr(args, "tld")
+            peak_walk(tld_path)
+
         if args.subcommand == "remove-albums":
             tld_path = getattr(args, "tld")
             remove_albums(tld_path)
@@ -287,26 +302,40 @@ if __name__ == "__main__":
     @details Parses and validates input arguments.
     '''
 
-    # might need to handle extended unicode printing
-    if sys.stdout.encoding != "utf-8":
+    os_name = platform.system()
+    if os_name == "Windows":
+        sys.stdout.reconfigure(encoding="utf-16")
+    elif os_name == "Linux":
         sys.stdout.reconfigure(encoding="utf-8")
+
+    # # might need to handle extended unicode printing
+    # if sys.stdout.encoding != utf_code:
+    #     sys.stdout.reconfigure(encoding=utf_code)
 
     parser = argparse.ArgumentParser(description='Music Processing')
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
+    # "/home/gerald/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.wma"
+    # "/home/gerald/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma"              # has embedded, but not in a video stream, so will fail with ffmpeg
+    # "/home/gerald/Music/Crush/Here/Crush-Live.mp3"                                                            # embedded art
+    # "/home/gerald/Music/Genesis/Platinum Collection/Genesis-I Can't Dance.mp3"                                # embedded art
+    # "/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a"                                        # embedded art
+    # "/home/gerald/ProcessedMusic/Crush/Here/Crush-Live.mp3"                                                   # embedded art
+    # "/media/gerald/Music/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"                     # no embedded, has Folder.jpg
+    # "/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma"                   # no embedded art
+
+    # "C:\Music\38 Special\Special Forces\Caught Up in You.mp3"                                                 # no embedded, has Folder.jpg
+    # "C:\Music\Alberta Hunter\The Blues\Alberta Hunter - Amtrak Blues.mp3"                                     # no embedded, no Folder.jpg
+    # "C:\Music\Alejandro Escovedo\More Miles Than Money- Live 1994-1996\Alejandro Escovedo-Broken Bottle.wma"  # no embedded art
+    # "C:\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma"                        # has embedded, but not in a video stream, so will fail with ffmpeg
+    # "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"      # has embedded, no Folder.jpg
+    # "C:\Music\Joshua Davis\The Voice Peformance\Joshau Davis-The Workingman's Hym.m4a"                        # has embedded, no Folder.jpg, datetime string
+    # "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"                                                  # no embedded art even though file explorer shows it
+    # "C:\ProcessedMusic\Crush\Here\Crush-Live.mp3"                                                             # embedded art
+    # "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"                                      # no embedded art
+    # "H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"                                    # no embedded art
+
     # convert audio file specified to mp3 format
-    # "/media/gerald/Music/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
-    # "/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma"
-    # "/home/gerald/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.wma",
-    # "/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a"
-    # "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
-    # "/home/gerald/Music/Genesis/Platinum Collection/Genesis-I Can't Dance.mp3"
-    # "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"   # embedded art, datetime string
-    # "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"                              # no embedded art even though file explorer shows it
-    # "F:\ProcessedMusic\Crush\Here\Crush-Live.mp3"                                         # embedded art
-    # "H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"                # no embedded art
-    # "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"                  # no embedded art
-    # "C:\Music\Alejandro Escovedo\More Miles Than Money- Live 1994-1996\Alejandro Escovedo-Broken Bottle.wma"                    # no embedded art
     # 1 mandatory arg, the audio file path
     # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
@@ -334,13 +363,6 @@ if __name__ == "__main__":
     create_album_parser.set_defaults(func=create_albums)
 
     # extract album art from specified audio file
-    # "/home/gerald/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma"          # has embedded, but not in a video stream, so will fail with ffmpeg
-    # "C:\Music\Alberta Hunter\The Blues\Alberta Hunter - Amtrak Blues.mp3"                                 # no embedded, no Folder.jpg
-    # "C:\Music\38 Special\Special Forces\Caught Up in You.mp3"                                             # no embedded, has Folder.jpg
-    # "C:\ProcessedMusic\Crush\Here\Crush-Live.mp3"                                                         # embedded art
-    # "C:\Music\Joshua Davis\The Voice Peformance\Joshau Davis-The Workingman's Hym.m4a ""                  # has embedded, no Folder.jpg
-    # "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"  # has embedded, no Folder.jpg
-    # "C:\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma"                    # has embedded, but not in a video stream, so will fail with ffmpeg
     # 1 mandatory arg, the path to audio file
     # sys.argv = ['D:\MusicProcessing\main.py', 'extract-art', 'C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma',
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-art', '/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma',
@@ -379,8 +401,8 @@ if __name__ == "__main__":
     # get mutagen metadata tags from all audio files found in top level directory
     # 1 mandatory arg, the tld path
     # 1 optional arg, the file pattern to match
-    # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags-walk', 'C:\Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
-    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
+    # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags-walk', 'C:\Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' | '*.*' } , '--ffprobe' 'True']
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' | *.* }, '--ffprobe', 'True']
     get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Gets metadata tags from audio files")
     get_tags_walk_parser.add_argument("tld", type=str, help="mandatory full path to audio file")
     get_tags_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
@@ -428,16 +450,20 @@ if __name__ == "__main__":
 
     # peak normalize an audio file (destructive)
     # 1 mandatory arg, the path to audio file
-    # "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
-    # "/home/gerald/ProcessedMusic/Crush/Here/Crush-Live.mp3"
-    # "F:\ProcessedMusic\Crush\Here\Crush-Live.mp3"
     # sys.argv = ['D:\MusicProcessing\main.py', 'peak-file', "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"]
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'peak-file', "/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a"]
-    peak_file_parser = subparsers.add_parser("peak-file", help="Peak normalizes an audio file level")
+    peak_file_parser = subparsers.add_parser("peak-file", help="Peak normalizes a mp3 audio file level")
     peak_file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     peak_file_parser.set_defaults(func=peak_file)
 
-    # add replay gain to audio file (non-destructive)
+    # peak normalize all audio files found in top level directory
+    # 1 mandatory arg, the tld path
+    # 1 optional arg, the file pattern to match
+    # sys.argv = ['D:\MusicProcessing\main.py', 'peak-walk', 'C:\Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'peak-walk', '/home/gerald/Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
+    convert_walk_parser = subparsers.add_parser("peak-walk", help="Peak normalizes all mp3 audio files")
+    convert_walk_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    convert_walk_parser.set_defaults(func=convert_walk)
 
     # set album art file
     # 1 mandatory arg, the tld path
