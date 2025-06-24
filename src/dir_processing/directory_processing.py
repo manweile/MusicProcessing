@@ -213,7 +213,7 @@ class DirectoryProcessing():
                 for file in filenames:
                     _, file_extension = os.path.splitext(file)
 
-                    if (file_extension in _AUDIO_EXTS):
+                    if (file_extension.lower() in _AUDIO_EXTS):
                         audio_file_path = os.path.join(dir_path, file)
                         data.append([audio_file_path, file_extension])
                         audio_count += 1
