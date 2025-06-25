@@ -476,7 +476,7 @@ class AudioMetadata():
                     if input_file_ext.lower() not in _AUDIO_EXTS:
                         continue
                     elif file_pattern:
-                        if not fnmatch.fnmatch(file, file_pattern):
+                        if not fnmatch.fnmatch(file, file_pattern.lower()):
                             continue
 
                     input_file_path = os.path.join(dir_path, file)
@@ -791,7 +791,7 @@ class AudioMetadata():
                     if input_file_ext.lower() not in _AUDIO_EXTS:
                         continue
 
-                    if file_pattern and not fnmatch.fnmatch(file, file_pattern):
+                    if file_pattern and not fnmatch.fnmatch(file, file_pattern.lower()):
                         continue
                     else:
                         input_file_path = os.path.join(dir_path, file)
@@ -826,6 +826,48 @@ class AudioMetadata():
             raise Exception(f"Exception: {e} getting metadata type for file: {file_path}")
 
         return tags
+
+    def get_media_info_walk(self, start_path, file_pattern):
+        '''
+        @brief Pretty prints tags for audio files.
+
+        @param file_path {str} The starting point of the directory walk.
+        @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            for dir_path, _, file_names in os.walk(start_path):
+                # the tld Music does contain files, but not audio files
+                if dir_path == start_path:
+                    continue
+
+                for file in file_names:
+                    input_file, input_file_ext = os.path.splitext(file)
+
+                    # file is not mp3, m4a, or wma, so carry on to next file
+                    if input_file_ext.lower() not in _AUDIO_EXTS:
+                        continue
+                    elif file_pattern:
+                        if not fnmatch.fnmatch(file, file_pattern.lower()):
+                            continue
+
+                    input_file_path = os.path.join(dir_path, file)
+
+                    media_info = self.get_media_info(input_file_path)
+                    if media_info:
+                        for key, value in media_info.items():
+                            if isinstance(value, dict):
+                                continue
+                            else:
+                                print(f"key: {key}, value: {value}")
+                    else:
+                        raise ValueError(f"Returned None getting info for audio file: {input_file_path} ")
+
+                    print("\r\n")
+
+        except Exception as e:
+            raise Exception(f"Exception {e} getting media info for file {input_file_path}")
 
 
     def get_m4a_tags(self, file_path):
@@ -964,7 +1006,7 @@ class AudioMetadata():
                     if input_file_ext.lower() not in _AUDIO_EXTS:
                         continue
 
-                    if file_pattern and not fnmatch.fnmatch(file, file_pattern):
+                    if file_pattern and not fnmatch.fnmatch(file, file_pattern.lower()):
                         continue
                     else:
                         tag_file_path = os.path.join(dir_path, file)

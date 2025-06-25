@@ -84,6 +84,16 @@ def get_media_info(file_path):
     metadata.get_media_info(file_path)
 
 
+def get_media_info_walk(start_path, file_pattern):
+    '''
+    @brief Gets media info.
+
+    @param file_path {str} The full path to audio file.
+    '''
+
+    metadata.get_media_info_walk(start_path, file_pattern)
+
+
 def get_media_tags(file_path):
     '''
     @brief Gets media tags.
@@ -237,6 +247,11 @@ def main(args):
             file_path = getattr(args, "file")
             get_media_info(file_path)
 
+        if args.subcommand == "get-media-info-walk":
+            tld_path = getattr(args, "tld")
+            file_pattern = getattr(args, "pattern")
+            get_media_info_walk(tld_path, file_pattern)
+
         if args.subcommand == "get-media-tags":
             file_path = getattr(args, "file")
             get_media_tags(file_path)
@@ -379,10 +394,16 @@ if __name__ == "__main__":
     extract_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
     extract_walk_parser.set_defaults(func=extract_walk)
 
-    # get ffprobe media information for a file or files
+    # get ffprobe media information for a file
     get_media_info_parser = subparsers.add_parser("get-media-info", help="Gets ffprobe media info for audio file")
     get_media_info_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     get_media_info_parser.set_defaults(func=get_media_info)
+
+    # get ffprobe media information for files
+    get_media_info_walk_parser = subparsers.add_parser("get-media-info-walk", help="Gets ffprobe media info for audio files")
+    get_media_info_walk_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    get_media_info_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
+    get_media_info_walk_parser.set_defaults(func=get_media_info_walk)
 
     # get ffprobe media tags for a file or files
     get_media_tags_parser = subparsers.add_parser("get-media-tags", help="Gets ffprobe media tags for audio file")
