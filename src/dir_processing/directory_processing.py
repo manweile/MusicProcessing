@@ -427,7 +427,7 @@ class DirectoryProcessing():
 
             for dir_path, dir_names, file_names in os.walk(start_path):
                 for file in file_names:
-                    if fnmatch.fnmatch(file, file_pattern):
+                    if fnmatch.fnmatch(file, file_pattern.lower()):
                         file_path = os.path.join(dir_path, file)
                         os.remove(file_path)
                         print(f"Deleted: {file_path}")
