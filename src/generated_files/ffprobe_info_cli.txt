@@ -30,12 +30,7 @@ WARNING: Dry run used, not actually running second-pass command
         "max": null
     }
 ]
-gerald@msi-laptop:~$ ffmpeg-normalize /home/gerald/Music/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
-ERROR: Output file path /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here does not exist
-gerald@msi-laptop:~$ sudo mkdir /home/gerald/MusicProcessing/src/generated_files/Crush/Here
-[sudo] password for gerald:
-mkdir: cannot create directory ‘/home/gerald/MusicProcessing/src/generated_files/Crush/Here’: No such file or directory
-gerald@msi-laptop:~$ ffmpeg-normalize /home/gerald/Music/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
+
 gerald@msi-laptop:~$ ffmpeg-normalize /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3 -p -n -f
 WARNING: Input file had loudness range of 8.1. This is larger than the loudness range target (7.0). Normalization will revert to dynamic mode. Choose a higher target loudness range if you want linear normalization. Alternatively, use the --keep-loudness-range-target or --keep-lra-above-loudness-range-target option to keep the target loudness range from the input.
 WARNING: In dynamic mode, the sample rate will automatically be set to 192 kHz by the loudnorm filter. Specify -ar/--sample-rate to override it.
@@ -62,22 +57,7 @@ WARNING: Dry run used, not actually running second-pass command
         "max": null
     }
 ]
-gerald@msi-laptop:~$ ffmpeg -v quiet -show_format -show_streams C:/Music/Crush/Here/Crush-Live.mp3
-gerald@msi-laptop:~$ ffmpeg -v quiet -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
-gerald@msi-laptop:~$ ffmpeg -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
-ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers
-  built with gcc 13 (Ubuntu 13.2.0-23ubuntu3)
-  configuration: --prefix=/usr --extra-version=3ubuntu5 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libglslang --enable-libgme --enable-libgsm --enable-libharfbuzz --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg --enable-openal --enable-opencl --enable-opengl --disable-sndio --enable-libvpl --disable-libmfx --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-ladspa --enable-libbluray --enable-libjack --enable-libpulse --enable-librabbitmq --enable-librist --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libx264 --enable-libzmq --enable-libzvbi --enable-lv2 --enable-sdl2 --enable-libplacebo --enable-librav1e --enable-pocketsphinx --enable-librsvg --enable-libjxl --enable-shared
-  libavutil      58. 29.100 / 58. 29.100
-  libavcodec     60. 31.102 / 60. 31.102
-  libavformat    60. 16.100 / 60. 16.100
-  libavdevice    60.  3.100 / 60.  3.100
-  libavfilter     9. 12.100 /  9. 12.100
-  libswscale      7.  5.100 /  7.  5.100
-  libswresample   4. 12.100 /  4. 12.100
-  libpostproc    57.  3.100 / 57.  3.100
-Unrecognized option 'show_format'.
-Error splitting the argument list: Option not found
+
 gerald@msi-laptop:~$ ffprobe -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers
   built with gcc 13 (Ubuntu 13.2.0-23ubuntu3)
@@ -275,6 +255,7 @@ TAG:MusicBrainz Album Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
 TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
 TAG:date=2002
 [/FORMAT]
+
 gerald@msi-laptop:~$ ffprobe -v quiet -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=0
@@ -424,6 +405,7 @@ TAG:MusicBrainz Album Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
 TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
 TAG:date=2002
 [/FORMAT]
+
 gerald@msi-laptop:~$ ffprobe -hide_banner -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [mp3 @ 0x593a06a01f80] Estimating duration from bitrate, this may be inaccurate
 Input #0, mp3, from '/home/gerald/Music/Crush/Here/Crush-Live.mp3':
@@ -610,6 +592,7 @@ TAG:MusicBrainz Album Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
 TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
 TAG:date=2002
 [/FORMAT]
+
 gerald@msi-laptop:~$ ffprobe -v quiet -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=0
@@ -759,6 +742,7 @@ TAG:MusicBrainz Album Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
 TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
 TAG:date=2002
 [/FORMAT]
+
 gerald@msi-laptop:~$ ffprobe -hide_banner -v quiet -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=0
@@ -908,15 +892,7 @@ TAG:MusicBrainz Album Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
 TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
 TAG:date=2002
 [/FORMAT]
-gerald@msi-laptop:~$ ffprobe -hide_banner -v quiet -i -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
-gerald@msi-laptop:~$ ffprobe -hide_banner -i -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
-Argument '/home/gerald/Music/Crush/Here/Crush-Live.mp3' provided as input filename, but '-show_format' was already specified.
-gerald@msi-laptop:~$ ffprobe -hide_banner -v panic -select_streams v:0 -show_entries /home/gerald/Music/Crush/Here/Crush-Live.mp3
-gerald@msi-laptop:~$ ffprobe  -v panic -select_streams v:0 -show_entries /home/gerald/Music/Crush/Here/Crush-Live.mp3
-gerald@msi-laptop:~$ ffprobe  -v panic -select_streams a:0 -show_entries /home/gerald/Music/Crush/Here/Crush-Live.mp3
-gerald@msi-laptop:~$ ffprobe -hide_banner -v panic -select_streams a:0 -show_entries /home/gerald/Music/Crush/Here/Crush-Live.mp3
-gerald@msi-laptop:~$ ffprobe -hide_banner -i -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
-Argument '/home/gerald/Music/Crush/Here/Crush-Live.mp3' provided as input filename, but '-show_format' was already specified.
+
 gerald@msi-laptop:~$ ffprobe -hide_banner -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [mp3 @ 0x64e65e4a4f80] Estimating duration from bitrate, this may be inaccurate
 Input #0, mp3, from '/home/gerald/Music/Crush/Here/Crush-Live.mp3':
@@ -1103,8 +1079,7 @@ TAG:MusicBrainz Album Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
 TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
 TAG:date=2002
 [/FORMAT]
-gerald@msi-laptop:~$ ffprobe -hide_banner -show_format -show_streams a:0 /home/gerald/Music/Crush/Here/Crush-Live.mp3
-Argument '/home/gerald/Music/Crush/Here/Crush-Live.mp3' provided as input filename, but 'a:0' was already specified.
+
 gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams v:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=1
@@ -1166,6 +1141,7 @@ DISPOSITION:dependent=0
 DISPOSITION:still_image=0
 TAG:comment=Cover (front)
 [/STREAM]
+
 gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams a:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=0
@@ -1214,18 +1190,7 @@ DISPOSITION:metadata=0
 DISPOSITION:dependent=0
 DISPOSITION:still_image=0
 [/STREAM]
-gerald@msi-laptop:~$ ffprobe -hide_banner -show_format -show_streams a:0 /home/gerald/Music/Crush/Here/Crush-Live.mp3
-Argument '/home/gerald/Music/Crush/Here/Crush-Live.mp3' provided as input filename, but 'a:0' was already specified.
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner a:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
-Argument '/home/gerald/Music/Crush/Here/Crush-Live.mp3' provided as input filename, but 'a:0' was already specified.
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner a:0 -show_format /home/gerald/Music/Crush/Here/Crush-Live.mp3
-Argument '/home/gerald/Music/Crush/Here/Crush-Live.mp3' provided as input filename, but 'a:0' was already specified.
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner a:0  /home/gerald/Music/Crush/Here/Crush-Live.mp3
-Argument '/home/gerald/Music/Crush/Here/Crush-Live.mp3' provided as input filename, but 'a:0' was already specified.
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner -show_format /home/gerald/Music/Crush/Here/Crush-Live.mp3 a:0
-Argument 'a:0' provided as input filename, but '/home/gerald/Music/Crush/Here/Crush-Live.mp3' was already specified.
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner -show_format a:0
-a:0: Protocol not found
+
 gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams v:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=1
@@ -1287,6 +1252,7 @@ DISPOSITION:dependent=0
 DISPOSITION:still_image=0
 TAG:comment=Cover (front)
 [/STREAM]
+
 gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams a:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=0
@@ -1335,8 +1301,7 @@ DISPOSITION:metadata=0
 DISPOSITION:dependent=0
 DISPOSITION:still_image=0
 [/STREAM]
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams a:0 -show_streams -show_formats /home/gerald/Music/Crush/Here/Crush-Live.mp3
-Failed to set value '/home/gerald/Music/Crush/Here/Crush-Live.mp3' for option 'show_formats': Option not found
+
 gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams a:0 -show_streams -show_format /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=0
@@ -1426,6 +1391,7 @@ TAG:MusicBrainz Album Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
 TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
 TAG:date=2002
 [/FORMAT]
+
 gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams a:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=0
@@ -1474,6 +1440,7 @@ DISPOSITION:metadata=0
 DISPOSITION:dependent=0
 DISPOSITION:still_image=0
 [/STREAM]
+
 gerald@msi-laptop:~$ ffprobe -v quiet -hide_banner -select_streams a:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=0
@@ -1522,56 +1489,13 @@ DISPOSITION:metadata=0
 DISPOSITION:dependent=0
 DISPOSITION:still_image=0
 [/STREAM]
+
 gerald@msi-laptop:~$ ffprobe -v error -hide_banner -of default=noprint_wrappers=0 -print_format csv -select_streams v:0 -show_format /home/gerald/Music/Crush/Here/Crush-Live.mp3
 format,/home/gerald/Music/Crush/Here/Crush-Live.mp3,2,0,mp3,MP2/3 (MPEG audio layer 2/3),0.000000,245.910567,3970122,129156,51,Live,Crush,1/12,Here,1/1,Pop,CD,2002,2475137d-6745-3951-a361-d4c29798f5d1,Crush,Crush,Crush,Paul Lamb,Latn,Sonic Records,Crush,B000065PP6,2002,627915092229,2 50922,album,official,CA,4fdf7757-ba58-4a4b-a1df-1ad4d102a474,18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6,6d5088d8-e756-47c4-84ae-bc675dee004f,6d5088d8-e756-47c4-84ae-bc675dee004f,a7927f70-2431-3a58-b7ae-48576808cec1,2002
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner -of default=noprint_wrappers=0 -print_format csv -select_streams a:0 -show_format /home/gerald/Music/Crush/Here/Crush-Live.mp3
-format,/home/gerald/Music/Crush/Here/Crush-Live.mp3,2,0,mp3,MP2/3 (MPEG audio layer 2/3),0.000000,245.910567,3970122,129156,51,Live,Crush,1/12,Here,1/1,Pop,CD,2002,2475137d-6745-3951-a361-d4c29798f5d1,Crush,Crush,Crush,Paul Lamb,Latn,Sonic Records,Crush,B000065PP6,2002,627915092229,2 50922,album,official,CA,4fdf7757-ba58-4a4b-a1df-1ad4d102a474,18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6,6d5088d8-e756-47c4-84ae-bc675dee004f,6d5088d8-e756-47c4-84ae-bc675dee004f,a7927f70-2431-3a58-b7ae-48576808cec1,2002
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner -of  -print_format csv -select_streams a:0 -show_format /home/gerald/Music/Crush/Here/Crush-Live.mp3
-Argument '/home/gerald/Music/Crush/Here/Crush-Live.mp3' provided as input filename, but 'csv' was already specified.
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner -of default=noprint_wrappers=0 -print_format csv -select_streams v:0 -show_format /home/gerald/Music/Crush/Here/Crush-Live.mp3
-format,/home/gerald/Music/Crush/Here/Crush-Live.mp3,2,0,mp3,MP2/3 (MPEG audio layer 2/3),0.000000,245.910567,3970122,129156,51,Live,Crush,1/12,Here,1/1,Pop,CD,2002,2475137d-6745-3951-a361-d4c29798f5d1,Crush,Crush,Crush,Paul Lamb,Latn,Sonic Records,Crush,B000065PP6,2002,627915092229,2 50922,album,official,CA,4fdf7757-ba58-4a4b-a1df-1ad4d102a474,18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6,6d5088d8-e756-47c4-84ae-bc675dee004f,6d5088d8-e756-47c4-84ae-bc675dee004f,a7927f70-2431-3a58-b7ae-48576808cec1,2002
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner -of default=noprint_wrappers=0 -print_format csv -select_streams a:0 -show_format /home/gerald/Music/Crush/Here/Crush-Live.mp3
-format,/home/gerald/Music/Crush/Here/Crush-Live.mp3,2,0,mp3,MP2/3 (MPEG audio layer 2/3),0.000000,245.910567,3970122,129156,51,Live,Crush,1/12,Here,1/1,Pop,CD,2002,2475137d-6745-3951-a361-d4c29798f5d1,Crush,Crush,Crush,Paul Lamb,Latn,Sonic Records,Crush,B000065PP6,2002,627915092229,2 50922,album,official,CA,4fdf7757-ba58-4a4b-a1df-1ad4d102a474,18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6,6d5088d8-e756-47c4-84ae-bc675dee004f,6d5088d8-e756-47c4-84ae-bc675dee004f,a7927f70-2431-3a58-b7ae-48576808cec1,2002
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner -of default=noprint_wrappers=0 -print_format flat -select_streams v:0 -show_format  /home/gerald/Music/Crush/Here/Crush-Live.mp3
-format.filename="/home/gerald/Music/Crush/Here/Crush-Live.mp3"
-format.nb_streams=2
-format.nb_programs=0
-format.format_name="mp3"
-format.format_long_name="MP2/3 (MPEG audio layer 2/3)"
-format.start_time="0.000000"
-format.duration="245.910567"
-format.size="3970122"
-format.bit_rate="129156"
-format.probe_score=51
-format.tags.title="Live"
-format.tags.artist="Crush"
-format.tags.track="1/12"
-format.tags.album="Here"
-format.tags.disc="1/1"
-format.tags.genre="Pop"
-format.tags.TMED="CD"
-format.tags.TORY="2002"
-format.tags.MusicBrainz_Release_Track_Id="2475137d-6745-3951-a361-d4c29798f5d1"
-format.tags.album_artist="Crush"
-format.tags.TSO2="Crush"
-format.tags.artist_sort="Crush"
-format.tags.composer="Paul Lamb"
-format.tags.SCRIPT="Latn"
-format.tags.publisher="Sonic Records"
-format.tags.ARTISTS="Crush"
-format.tags.ASIN="B000065PP6"
-format.tags.originalyear="2002"
-format.tags.BARCODE="627915092229"
-format.tags.CATALOGNUMBER="2 50922"
-format.tags.MusicBrainz_Album_Type="album"
-format.tags.MusicBrainz_Album_Status="official"
-format.tags.MusicBrainz_Album_Release_Country="CA"
-format.tags.Acoustid_Id="4fdf7757-ba58-4a4b-a1df-1ad4d102a474"
-format.tags.MusicBrainz_Album_Id="18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6"
-format.tags.MusicBrainz_Artist_Id="6d5088d8-e756-47c4-84ae-bc675dee004f"
-format.tags.MusicBrainz_Album_Artist_Id="6d5088d8-e756-47c4-84ae-bc675dee004f"
-format.tags.MusicBrainz_Release_Group_Id="a7927f70-2431-3a58-b7ae-48576808cec1"
-format.tags.date="2002"
+
+PS C:\users\gmanw> ffprobe -v error -hide_banner -of default=noprint_wrappers=0 -print_format csv -select_streams a:0 -show_format C:\Music\Crush\Here\Crush-Live.mp3
+format,C:\Music\Crush\Here\Crush-Live.mp3,2,0,0,mp3,MP2/3 (MPEG audio layer 2/3),0.000000,245.910567,3970122,129156,51,Live,Crush,1/12,Here,1/1,Pop,CD,2002,2475137d-6745-3951-a361-d4c29798f5d1,Crush,Crush,Crush,Paul Lamb,Latn,Sonic Records,Crush,B000065PP6,2002,627915092229,2 50922,album,official,CA,4fdf7757-ba58-4a4b-a1df-1ad4d102a474,18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6,6d5088d8-e756-47c4-84ae-bc675dee004f,6d5088d8-e756-47c4-84ae-bc675dee004f,a7927f70-2431-3a58-b7ae-48576808cec1,2002
+
 gerald@msi-laptop:~$ ffprobe -v error -hide_banner -of default=noprint_wrappers=0 -print_format flat -select_streams a:0 -show_format  /home/gerald/Music/Crush/Here/Crush-Live.mp3
 format.filename="/home/gerald/Music/Crush/Here/Crush-Live.mp3"
 format.nb_streams=2
@@ -1612,4 +1536,3 @@ format.tags.MusicBrainz_Artist_Id="6d5088d8-e756-47c4-84ae-bc675dee004f"
 format.tags.MusicBrainz_Album_Artist_Id="6d5088d8-e756-47c4-84ae-bc675dee004f"
 format.tags.MusicBrainz_Release_Group_Id="a7927f70-2431-3a58-b7ae-48576808cec1"
 format.tags.date="2002"
-gerald@msi-laptop:~$
