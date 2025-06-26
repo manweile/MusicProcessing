@@ -1,5 +1,7 @@
-import subprocess
+import platform
 import re
+import subprocess
+
 
 '''
 google search: "ffmpeg' python volumedetect example
@@ -15,9 +17,9 @@ def get_volume_info(file_path):
         file_path (str): The path to the input audio or video file.
 
     Returns:
-        dict: A dictionary containing 'mean_volume' and 'max_volume' in dB,
-              or None if detection fails.
+        dict: A dictionary containing 'mean_volume' and 'max_volume' in dB, or None if detection fails.
     """
+
     command = [
         'ffmpeg',
         '-i', file_path,
@@ -56,7 +58,12 @@ def get_volume_info(file_path):
 
 # Example usage:
 if __name__ == "__main__":
-    audio_file = r"C:\Music\Crush\Here\Crush-Live.mp3"  # Replace with your audio/video file
+
+    if platform.system() == "Windows":
+        audio_file = r"C:\Music\Crush\Here\Crush-Live.mp3"
+    elif platform.system() == "Linux":
+        audio_file = r"/home/gerald/Music/Crush/Here/Crush-Live.mp3"  # Replace with your audio/video file
+
     volume_data = get_volume_info(audio_file)
 
     if volume_data:

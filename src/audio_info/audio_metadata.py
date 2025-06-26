@@ -12,6 +12,7 @@ import fnmatch
 import gc
 import os
 import pprint
+import re
 import shutil
 import struct
 import subprocess
@@ -53,24 +54,24 @@ _WMA_TIME_KEYS = {
     'WM/OriginalReleaseYear'
 }
 
-# # the set of pydub generic metadata keys I want to copy to converted & normalized files
-# # these keys also correspond to what Windows displays as file information in File Explorer
-# _GEN_KEYS = {
-#     'album',                    # must have
-#     'album_artist',             # nice to have
-#     'artist',                   # must have
-#     'comment',                  # nice to have, but a PITA to parse/add
-#     'compilation',              # nice to have, but not ID3v2.3
-#     'composer',                 # nice to have
-#     'copyright',                # nice to have
-#     'date',                     # must have
-#     'disc',                     # nice to have
-#     'genre',                    # must have
-#     'originalyear'              # nice to have
-#     'publisher',                # nice to have
-#     'title',                    # must have
-#     'track',                    # nice to have
-# }
+# the set of pydub generic metadata keys I want to copy to converted & normalized files
+# these keys also correspond to what Windows displays as file information in File Explorer
+_GEN_KEYS = {
+    'album',                    # must have
+    'album_artist',             # nice to have
+    'artist',                   # must have
+    'comment',                  # nice to have, but a PITA to parse/add
+    'compilation',              # nice to have, but not ID3v2.3
+    'composer',                 # nice to have
+    'copyright',                # nice to have
+    'date',                     # must have
+    'disc',                     # nice to have
+    'genre',                    # must have
+    'originalyear'              # nice to have
+    'publisher',                # nice to have
+    'title',                    # must have
+    'track',                    # nice to have
+}
 
 _MP3_TIME_KEYS = {
     'TYER',                                 # preferred key
@@ -820,12 +821,12 @@ class AudioMetadata():
             if audio_file is not None and audio_file.tags:
                 tags = audio_file.tags
             else:
-                raise ValueError(f"Returned None loading audio file: {file_path} ")
-                # return None
+                raise ValueError(f"Returned None loading audio file: {file_path}")
         except Exception as e:
             raise Exception(f"Exception: {e} getting metadata type for file: {file_path}")
 
         return tags
+
 
     def get_media_info_walk(self, start_path, file_pattern):
         '''
@@ -886,7 +887,6 @@ class AudioMetadata():
                 tag_info = audio_file.tags
             else:
                 raise ValueError(f"Returned None loading audio file: {file_path} ")
-                # return None
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
@@ -904,8 +904,8 @@ class AudioMetadata():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        media_info = None
         try:
+            media_info = None
             media_info = mediainfo(file_path)
         except Exception as e:
             raise Exception(f"Exception {e} getting media info for file {file_path}")
@@ -924,8 +924,8 @@ class AudioMetadata():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        media_tags = None
         try:
+            media_tags = None
             media_info = mediainfo(file_path)
             if media_info:
                 media_tags = media_info['TAG']
@@ -974,12 +974,36 @@ class AudioMetadata():
             if audio_file is not None:
                 tag_info = audio_file.tags
             else:
-                raise ValueError(f"Returned None loading audio file: {file_path} ")
-                # return None
+                raise ValueError(f"Returned None loading audio file: {file_path}")
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
         return tag_info
+
+
+    def get_sample_rate(self, file_path):
+        '''
+        @brief Gets the sample rate from audio file.
+
+        @param file_path {str} The full path to audio file.
+        @return sample_rate {int} The sample rate in Hz, otherwise None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            sample_rate = None
+            probe = ffmpeg.probe(file_path)
+            audio_stream = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
+
+            if audio_stream and 'sample_rate' in audio_stream:
+                sample_rate = int(audio_stream['sample_rate'])
+
+        except ffmpeg.Error as e:
+            raise Exception(f"An ffmpeg error occurred: {e.stderr.decode()}")
+        except Exception as e:
+            raise Exception(f"Exception {e} getting sample rate for file {file_path}")
+
+        return sample_rate
 
 
     def get_tags_walk(self, file_path, file_pattern, ffprobe=False):
@@ -1041,6 +1065,51 @@ class AudioMetadata():
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
 
+    def get_volume_info(self, file_path):
+        '''
+        @brief Gets mean and max volume from audio file using ffmpeg.
+
+        @param file_path {str} The full path to audio file.
+        @return volumes {dict} The mean and max
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            volumes = dict()
+
+            command = [
+                'ffmpeg',
+                '-i', file_path,
+                '-hide_banner',
+                '-filter:a', 'volumedetect',
+                '-f', 'null',
+                '-'                             # Send output to stdout
+            ]
+
+            # Run FFmpeg and capture stderr (where volumedetect output goes)
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
+
+            # Decode stderr to string and search for volume information
+            output_str = stderr.decode('utf-8')
+
+            mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
+            max_volume_match = re.search(r'max_volume: ([-]?\d+\.\d+) dB', output_str)
+
+            if mean_volume_match and max_volume_match:
+                mean_volume = float(mean_volume_match.group(1))
+                max_volume = float(max_volume_match.group(1))
+                volumes['mean_volume'] = mean_volume
+                volumes['max_volume'] = max_volume
+
+        except ffmpeg.Error as e:
+            raise Exception(f"An ffmpeg error occurred: {e.stderr.decode()}")
+        except Exception as e:
+            raise Exception(f"Exception {e} getting volume for file {file_path}")
+
+        return volumes
+
+
     def get_wma_tags(self, file_path):
         '''
         @brief gets tag information for an wma audio file.
@@ -1056,8 +1125,7 @@ class AudioMetadata():
             if audio_file is not None:
                 tag_info = audio_file.tags
             else:
-                raise ValueError(f"Returned None loading audio file: {file_path} ")
-                # return None
+                raise ValueError(f"Returned None loading audio file: {file_path}")
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
@@ -1096,7 +1164,6 @@ class AudioMetadata():
             print(sorted(unique_keys))
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
-
 
 
     def has_art_tag(self, file_path):
@@ -1482,6 +1549,10 @@ class AudioMetadata():
 
             input_info = self.get_media_info(input_path)
             bitrate = input_info['bit_rate']
+
+            sample_rate = self.get_sample_rate(input_path)
+            volume_info = self.get_volume_info(input_path)
+
             export_name = input_path.name
             export_path = os.path.join(export_dir, export_name)
 
