@@ -385,7 +385,7 @@ class AudioMetadata():
             I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
             '''
 
-            print(f"Beginning converting {input_path.name} from {input_format}")
+            print(f"Beginning conversion on {input_path.name} from {input_format}")
 
             metadata_type = self.get_metadata_type(file_path)
             if metadata_type == _ASF:
@@ -422,11 +422,17 @@ class AudioMetadata():
             '''
 
             cover = os.path.join(input_path_parent, _FOLDER_ART)
-            audio_segment = AudioSegment.from_file(input_path, format=format)
+            if metadata_type == _MP3:
+                audio_segment = AudioSegment.from_mp3(input_path)
+            elif metadata_type == _MP4:
+                audio_segment = AudioSegment.from_file(input_path, format=format)
+            elif metadata_type == _ASF:
+                # pydub doesn't know about wma/asf, so no format forces an autodetect
+                audio_segment = AudioSegment.from_file(input_path)
 
             # the id3v2 version = 3 is important!
             # both pydub (AudioSegment) and mutagen (MP3) need it
-            # and both documentation doesn't really mention it
+            # and both documentations don't really mention it
             audio_segment.export(export_path, export_format, bitrate=bitrate, tags=tags, id3v2_version='3')
 
             # Add or update album art
@@ -447,7 +453,7 @@ class AudioMetadata():
                     )
                 )
             audio_tags.save(v2_version=3)
-            print(f"Finished converting {input_name} to {export_format}\n")
+
         except Exception as e:
             raise Exception(f"Exception {e} converting {input_path} to {export_path}")
 
@@ -1515,7 +1521,7 @@ class AudioMetadata():
             if input_ext.lower() != _AUDIO_EXTS[0]:
                 raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
 
-            print(f"Beginning normalizing {input_path} using ffmpeg-normalize.")
+            print(f"Beginning normalization on {input_path} using ffmpeg-normalize.")
 
             # get the full parent w/o filename so I can start removing unnecessary path components
             input_path_parent = input_path.parent
@@ -1550,8 +1556,10 @@ class AudioMetadata():
             input_info = self.get_media_info(input_path)
             bitrate = input_info['bit_rate']
 
-            sample_rate = self.get_sample_rate(input_path)
+            # sample_rate = self.get_sample_rate(input_path)
             volume_info = self.get_volume_info(input_path)
+            max_volume = volume_info['max_volume']
+            target_level = 0 - max_volume
 
             export_name = input_path.name
             export_path = os.path.join(export_dir, export_name)
@@ -1568,7 +1576,7 @@ class AudioMetadata():
                 "-b:a", bitrate,
                 "--extra-output-options", r"-id3v2_version 3",
                 "--normalization-type", "peak",
-                "--target-level", "0",
+                "--target-level", str(target_level),
                 "-f", "-o", export_path
             ]
 
@@ -1590,10 +1598,10 @@ class AudioMetadata():
 
                 p_out, p_err = p.communicate()
 
-            print(f"Successfully normalized {input_path.stem} to {export_dir} in {sp.elapsed_time} secs\r\n")
+            print(f"Successful normalization on {input_path.stem} in {sp.elapsed_time} secs\r\n")
         except subprocess.CalledProcessError:
             raise Exception(
-                f"ffmpeg-normalize returned error code: {p.returncode}\n\n for command line: {command}\n\n {p_err.decode(errors='ignore')}")
+                f"ffmpeg-normalize returned error code: {p.returncode}\n\n for command line: {command}\n\n Output from ffmpeg-normalize: {p_err.decode(errors='ignore')}")
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 

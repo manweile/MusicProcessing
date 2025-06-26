@@ -995,7 +995,6 @@ class AudioSegment(object):
 
             p_out, p_err = p.communicate()
 
-        print(f"Elapsed conversion time: {sp.elapsed_time}")
         log_subprocess_output(p_out)
         log_subprocess_output(p_err)
 
@@ -1005,6 +1004,8 @@ class AudioSegment(object):
                 f"Command:{conversion_command}\n\n" +
                 "Output from ffmpeg/avlib:\n\n" +
                 f"{p_err.decode(errors='ignore')}")
+        else:
+            print(f"Successful conversion on {input_path.stem} in {sp.elapsed_time} secs\r\n")
 
         output.seek(0)
         out_f.write(output.read())
