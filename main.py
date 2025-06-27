@@ -355,7 +355,8 @@ if __name__ == "__main__":
     # "C:\Music\Joshua Davis\The Voice Peformance\Joshau Davis-The Workingman's Hym.m4a"                                    # has embedded, no Folder.jpg, datetime string
     # "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"                                                              # no embedded art even though file explorer shows it
 
-    # "C:\ProcessedMusic\Crush\Here\Crush-Live.mp3"                                                                         # embedded art
+    # "F:\ConvertedMusic\Arlo Guthrie\Best Songs Of Arlo Guthrie\Arlo Guthrie-Arlo Guthrie.mp3"
+    # "F:\ConvertedMusic\Crush\Here\Crush-Live.mp3"                                                                         # embedded art
 
     # "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"                                                  # no embedded art, has Folder.jpg
     # "H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"                                                # no embedded art

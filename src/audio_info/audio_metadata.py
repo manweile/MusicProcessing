@@ -23,7 +23,6 @@ import mutagen
 import pathvalidate
 from mutagen.asf import ASF
 from mutagen.id3 import APIC, error, ID3, ID3TimeStamp
-# from mutagen.id3 import TALB, TPE2, TPE1, COMM, TCOM, TCOP, TYER, TPOS, TCON, TPUB, TIT2, TRCK, TCMP, TMED, TORY, TDOR, TDRC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4FreeForm
 from pydub import AudioSegment
@@ -48,12 +47,6 @@ _MP4 = "MP4"
 _TPOS = "TPOS"
 _TYER = "TYER"
 
-_WMA_TIME_KEYS = {
-
-    'WM/Year',                              # preferred key
-    'WM/OriginalReleaseYear'
-}
-
 # the set of pydub generic metadata keys I want to copy to converted & normalized files
 # these keys also correspond to what Windows displays as file information in File Explorer
 _GEN_KEYS = {
@@ -73,19 +66,6 @@ _GEN_KEYS = {
     'track',                    # nice to have
 }
 
-_MP3_TIME_KEYS = {
-    'TYER',                                 # preferred key
-    'TORY',
-    'TDRC',
-    'TDOR',
-    'TXXX=originalyear'
-}
-
-_MP4_TIME_KEYS = {
-    '\xa9day',                              # preferred key
-    '----:com.apple.iTunes:originalyear'
-}
-
 # dict of generic to ID3v2.3 (MP3)
 _MP3_KEYS = {
     'album': 'TALB',
@@ -96,13 +76,21 @@ _MP3_KEYS = {
     'date': 'TYER',
     'disc': 'TPOS',
     'genre': 'TCON',
-    'originalyear': 'TORY',                         # keep as is
+    'originalyear': 'TORY',                         # convert to TYER
     'publisher': 'TPUB',
     'title': 'TIT2',
     'track': 'TRCK',
     'originaldate': 'TDOR',                         # ID3v2.4 field to ID3v2.3 TYER
     'release_date': 'TDRC',                         # ID3v2.4 field convert YYYY portion to ID3v2.3 TYER
-    'custom_original_year': 'TXXX=originalyear'     # ID3 user defined original year field convert to ID3v2.3 TORY
+    'custom_original_year': 'TXXX=originalyear'     # ID3 user defined original year field convert to ID3v2.3 TYER
+}
+
+_MP3_TIME_KEYS = {
+    'TYER',                                 # preferred key
+    'TORY',
+    'TDRC',
+    'TDOR',
+    'TXXX=originalyear'
 }
 
 # dict of possible m4a (MP4)
@@ -115,10 +103,15 @@ _M4A_KEYS = {
     'date': '\xa9day',
     'disc': 'disk',
     'genre': '\xa9gen',
-    'publisher': '----:com.apple.iTunes:LABEL',     # using iTunes field, \xa9pub is validity is not certain
+    'originalyear': '----:com.apple.iTunes:originalyear',   # using iTunes filed, mp4 does not have \xa9ory
+    'publisher': '----:com.apple.iTunes:LABEL',             # using iTunes field, mp4 does not have \xa9pub
     'title': '\xa9nam',
-    'track': 'trkn',
-    'originalyear': '----:com.apple.iTunes:originalyear'
+    'track': 'trkn'
+}
+
+_M4A_TIME_KEYS = {
+    '\xa9day',                              # preferred key
+    '----:com.apple.iTunes:originalyear'
 }
 
 # dict of possible wma (ASF)
@@ -131,10 +124,16 @@ _WMA_KEYS = {
     'date': 'WM/Year',
     'disc': 'WM/PartOfSet',
     'genre': 'WM/Genre',
+    'originalyear': 'WM/OriginalReleaseYear',
     'publisher': 'WM/Publisher',
     'title': 'Title',
-    'track': 'WM/TrackNumber',
-    'originalyear': 'WM/OriginalReleaseYear'
+    'track': 'WM/TrackNumber'
+}
+
+_WMA_TIME_KEYS = {
+
+    'WM/Year',                              # preferred key
+    'WM/OriginalReleaseYear'
 }
 
 
@@ -257,6 +256,9 @@ class AudioMetadata():
 
         @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
         @details Only the Windows displayable subset of metadata key/values is preserved.
+        @details Run create_album_dir function then manually move audio files to correct album directories.
+        @details Manually review extant album art and ensure a Folder.jpg exists if possible, in each album directory.
+        @details Finally run extract_art to get embedded art or creas
 
         @param file_path {str} The path for audio file to be converted.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -280,46 +282,21 @@ class AudioMetadata():
             if mount point is media, then usr is immediately followed by drive label, then top level directory
             if mount point is home, then usr is immediately followed by top level directory
 
+            Ubuntu from USB stick: "/media/gerald/Lexar/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
+            anchor = "/", mount point = "media", usr = "gerald", drive label = "Lexar", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
+
+            Ubuntu from hdd: "/home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
+            anchor = "/", mount point = "home", usr = "gerald", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
+
             Windows file path:
             <anchor><tld>\<artist dir>\<album dir>\<song file.ext> = 5 elements
             anchor is always a drive letter + colon + backslash Eg. C:\, H:\
 
-            Ubuntu from USB stick
-            "/media/gerald/Lexar/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
-            anchor = "/",
-            mount point = "media",
-            usr = "gerald",
-            drive label = "Lexar",
-            tld = "Music",
-            artist = "38 Special",
-            album = "Special Forces",
-            file = '38 Special-Caught Up in You.mp3"
+            Windows from USB stick: "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
+            anchor = "H:\", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
 
-            Ubuntu from hdd
-            "/home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
-            anchor = "/",
-            mount point = "home",
-            usr = "gerald",
-            tld = "Music",
-            artist = "38 Special",
-            album = "Special Forces",
-            file = '38 Special-Caught Up in You.mp3"
-
-            Windows from USB stick
-            "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
-            anchor = "H:\",
-            tld = "Music",
-            artist = "38 Special",
-            album = "Special Forces",
-            file = '38 Special-Caught Up in You.mp3"
-
-            Windows from hdd
-            "C:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
-            anchor = "C:\",
-            tld = "Music",
-            artist = "38 Special",
-            album = "Special Forces",
-            file = '38 Special-Caught Up in You.mp3"
+            Windows from hdd: "C:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
+            anchor = "C:\", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
 
             I don't need anchor, mount point, usr, drive label, tld
             I always need artist dir, album dir, and song file
@@ -329,21 +306,8 @@ class AudioMetadata():
             # get the full parent w/o filename so I can start removing unnecessary path components
             input_path_parent = input_path.parent
 
-            r'''
-            /media/gerald/Lexar/Music/38 Special/Special Forces                          # ubuntu usb
-            /home/gerald/Music/38 Special/Special Forces                                 # ubuntu hdd
-            H:\Music\38 Special\Special Forces                                           # windows usb
-            C:\Music\38 Special\Special Forces                                           # windows hdd
-            '''
-
             # remove the anchor (ie. / or H:\), have no use for it
             input_path_parts = input_path_parent.parts[1:]
-
-            '''
-            ['media', 'gerald', 'Lexar', 'Music', '38 Special', 'Special Forces']       # ubuntu usb
-            ['home', 'gerald', 'Music', '38 Special', 'Special Forces']                 # ubuntu hdd
-            ['Music', '38 Special', 'Special Forces']                                   # windows hdd or usb
-            '''
 
             # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
             # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
@@ -377,15 +341,22 @@ class AudioMetadata():
 
             '''
             metadata transfer
-            I dont want every possible tag, just the subset that Windows will display.
+            I dont want every possible tag, just the subset that Windows will display AND are ID3v2.3
 
-            date info is most problematic part of metadata, different audio file types have different date type tags
-            and to make things worse, the date could be a full ISO date, or could just be a 4 digit year string
+            Comments are ASF/ID3v2.3/MP4, MusicBrainz/MP3Tag/puddletag have difficulty displaying,
+            so passing on transferring comment metadata
 
-            I have manually edited all audio files with puddletag/MP3tag/MusicBrainz Picard to have YYYY date
+            Compilation is not ID3v2.3, so passing on transferring compilation metadata
+
+            Date info is most problematic part of metadata, ASF/ID3v2.3/MP4 multiple date type tags,
+            the data types could be a full ISO date, or could just be a 4 digit year string,
+            so I am formatting any found date values to YYYY and mapping to ID3v2.3 TYER field
+
+            I have manually edited all audio files without date to have 1963 as default
             '''
 
-            print(f"Beginning conversion on {input_path.name} from {input_format}")
+            print(f"Beginning conversion on {input_path.stem} from {input_format}")
+            print(f"Source filepath: {file_path}")
 
             metadata_type = self.get_metadata_type(file_path)
             if metadata_type == _ASF:
@@ -409,13 +380,13 @@ class AudioMetadata():
             If a song has does have embedded art, ffmpeg will NOT auto transfer it.
             Many songs have co-located hidden file art, this is a result from all the WMP processing I did.
             I have:
-            - created all the required album sub directories with create_album_dir function.
+            - created all the required album sub directories with create_album_dir function
             - moved the audio files
             - manually reviewed existing AlbumArt*.jpg and Folder.jpg files
             - manually moved Folder.jpg to correct album directory
             - if necessary, rename AlbumArt*.jpg to Folder.jpg
             - deleted extraneous ALbumArt*.jpg's
-            - manually move the renamed Folder.jpg to proper album sub directory
+            - manually moved the renamed Folder.jpg to proper album sub directory
             - create <album dir>.jpg in src/generated_files/Album Art for repeated album names
             End result:
             All album directories now contain a Folder.jpg cover art file
@@ -501,8 +472,8 @@ class AudioMetadata():
         @brief Creates an album sub-directory in an artist directory.
 
         @details Creates the album sub directory for the artist if needed.
-        @details The album name for the directory is drawn from the metadata.
-        @details Also creates csv of all audio file paths, raw album metadata and album directory names.
+        @details The album name for the directory is drawn from the album metadata field.
+        @details Also creates csv of all audio file paths, album metadata values and sanitized album directory names.
 
         @param start_path {str} The tld holding music files.
         @param file_path {str} The full path to audio file.
@@ -834,6 +805,48 @@ class AudioMetadata():
         return tags
 
 
+    def get_m4a_tags(self, file_path):
+        '''
+        @brief gets tag information for an m4a audio file.
+
+        @param file_path {str} The full path to m4a audio file.
+        @return tag_info {MP4Tags} Tag object holding audio file tag info or None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            tag_info = None
+            audio_file = self.load_m4a_file(file_path)
+            if audio_file is not None:
+                tag_info = audio_file.tags
+            else:
+                raise ValueError(f"Returned None loading audio file: {file_path} ")
+        except Exception as e:
+            raise Exception(f"Exception {e} getting tags for file {file_path}")
+
+        return tag_info
+
+
+    def get_media_info(self, file_path):
+        '''
+        @brief Gets media info.
+
+        @details Uses ffmpeg to get all media info from any valid audio file.
+
+        @param file_path {str} The full path to audio file.
+        @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            media_info = None
+            media_info = mediainfo(file_path)
+        except Exception as e:
+            raise Exception(f"Exception {e} getting media info for file {file_path}")
+
+        return media_info
+
+
     def get_media_info_walk(self, start_path, file_pattern):
         '''
         @brief Pretty prints tags for audio files.
@@ -875,48 +888,6 @@ class AudioMetadata():
 
         except Exception as e:
             raise Exception(f"Exception {e} getting media info for file {input_file_path}")
-
-
-    def get_m4a_tags(self, file_path):
-        '''
-        @brief gets tag information for an m4a audio file.
-
-        @param file_path {str} The full path to m4a audio file.
-        @return tag_info {MP4Tags} Tag object holding audio file tag info or None.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            tag_info = None
-            audio_file = self.load_m4a_file(file_path)
-            if audio_file is not None:
-                tag_info = audio_file.tags
-            else:
-                raise ValueError(f"Returned None loading audio file: {file_path} ")
-        except Exception as e:
-            raise Exception(f"Exception {e} getting tags for file {file_path}")
-
-        return tag_info
-
-
-    def get_media_info(self, file_path):
-        '''
-        @brief Gets media info.
-
-        @details Uses ffmpeg to get all media info from any valid audio file.
-
-        @param file_path {str} The full path to audio file.
-        @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            media_info = None
-            media_info = mediainfo(file_path)
-        except Exception as e:
-            raise Exception(f"Exception {e} getting media info for file {file_path}")
-
-        return media_info
 
 
     def get_media_tags(self, file_path):
@@ -1372,17 +1343,18 @@ class AudioMetadata():
                         total_discs = input_tags[m4a_value][0][1]
                         tag_value = f"{disc_num}/{total_discs}"
 
-                    # need to get all possible date years into set, but not add to output dict just yet
-                    if isinstance(metadata_value, str) and m4a_value in _MP4_TIME_KEYS:
+                    # for '\xa9day', ----:com.apple.iTunes:originalyear requires different handling
+                    if isinstance(metadata_value, str) and m4a_value in _M4A_TIME_KEYS:
                         # just in case string is "YYYY-MM-DD"
                         date_value = metadata_value[0:4]
                         date_values.add(date_value)
                         print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
-                    # m4a doesn't have a "native" original year field like "\xa9ory", relies on the iTunes field,
+                    # m4a doesn't have a "native" original year field like "\xa9ory",
+                    # relies on the iTunes field ----:com.apple.iTunes:originalyear,
                     # so need additional step to decode from MP4FreeForm
-                    if isinstance(metadata_value, MP4FreeForm) and m4a_value in _MP4_TIME_KEYS:
+                    if isinstance(metadata_value, MP4FreeForm) and m4a_value in _M4A_TIME_KEYS:
                         decode_value = input_tags[m4a_value][0].decode()
                         # just in case string is "YYYY-MM-DD"
                         date_value = decode_value[0:4]

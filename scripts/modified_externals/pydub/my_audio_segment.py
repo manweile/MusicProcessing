@@ -1000,12 +1000,10 @@ class AudioSegment(object):
 
         if p.returncode != 0:
             raise CouldntEncodeError(
-                f"Encoding failed. ffmpeg/avlib returned error code: {p.returncode}\n\n" +
-                f"Command:{conversion_command}\n\n" +
-                "Output from ffmpeg/avlib:\n\n" +
-                f"{p_err.decode(errors='ignore')}")
+                f"Encoding failed. ffmpeg/avlib returned error code: {p.returncode}\n\nCommand:{conversion_command}\n\n" +
+                f"Output from ffmpeg/avlib:\n\n{p_err.decode(errors='ignore')}")
         else:
-            print(f"Successful conversion on {input_path.stem} in {sp.elapsed_time} secs\r\n")
+            print(f"Successful conversion on {input_path.stem} from {input_path.suffix} in {sp.elapsed_time} secs\r\n")
 
         output.seek(0)
         out_f.write(output.read())
