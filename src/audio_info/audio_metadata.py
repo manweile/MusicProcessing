@@ -256,9 +256,10 @@ class AudioMetadata():
 
         @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
         @details Only the Windows displayable subset of metadata key/values is preserved.
-        @details Run create_album_dir function then manually move audio files to correct album directories.
-        @details Manually review extant album art and ensure a Folder.jpg exists if possible, in each album directory.
-        @details Finally run extract_art to get embedded art or creas
+        @details Run create_album_dir function to ensure there are album directories for every audio file.
+        @details Then manually review extant album art and create and/or move Folder.jpg, if possible, to each album directory.
+        @details Next run extract_art_function to extract embedded art as Folder.jpg if needed, into each album directory.
+        @details Finally run set_album_art function to ensure a Folder.jpg exists in each album directory.
 
         @param file_path {str} The path for audio file to be converted.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -272,6 +273,8 @@ class AudioMetadata():
             # get mp3 audio format & extension from package constants
             export_format = _AUDIO_TYPES[0]
             export_ext = _AUDIO_EXTS[0]
+
+            input_path = Path(file_path)
 
             r'''
             Ubuntu file path:
@@ -301,8 +304,6 @@ class AudioMetadata():
             I don't need anchor, mount point, usr, drive label, tld
             I always need artist dir, album dir, and song file
             '''
-
-            input_path = Path(file_path)
             # get the full parent w/o filename so I can start removing unnecessary path components
             input_path_parent = input_path.parent
 
@@ -339,6 +340,9 @@ class AudioMetadata():
             export_name = input_name + export_ext
             export_path = os.path.join(export_dir, export_name)
 
+            print(f"Beginning conversion on {input_path.stem} from {input_format}")
+            print(f"Source filepath: {file_path}")
+
             '''
             metadata transfer
             I dont want every possible tag, just the subset that Windows will display AND are ID3v2.3
@@ -354,10 +358,6 @@ class AudioMetadata():
 
             I have manually edited all audio files without date to have 1963 as default
             '''
-
-            print(f"Beginning conversion on {input_path.stem} from {input_format}")
-            print(f"Source filepath: {file_path}")
-
             metadata_type = self.get_metadata_type(file_path)
             if metadata_type == _ASF:
                 format = _ASF
@@ -378,21 +378,10 @@ class AudioMetadata():
 
             '''
             If a song has does have embedded art, ffmpeg will NOT auto transfer it.
-            Many songs have co-located hidden file art, this is a result from all the WMP processing I did.
-            I have:
-            - created all the required album sub directories with create_album_dir function
-            - moved the audio files
-            - manually reviewed existing AlbumArt*.jpg and Folder.jpg files
-            - manually moved Folder.jpg to correct album directory
-            - if necessary, rename AlbumArt*.jpg to Folder.jpg
-            - deleted extraneous ALbumArt*.jpg's
-            - manually moved the renamed Folder.jpg to proper album sub directory
-            - create <album dir>.jpg in src/generated_files/Album Art for repeated album names
-            End result:
-            All album directories now contain a Folder.jpg cover art file
+            Therefore all audio files must have co-located cover art.
             '''
-
             cover = os.path.join(input_path_parent, _FOLDER_ART)
+
             if metadata_type == _MP3:
                 audio_segment = AudioSegment.from_mp3(input_path)
             elif metadata_type == _MP4:
