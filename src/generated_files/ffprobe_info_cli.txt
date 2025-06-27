@@ -4,6 +4,12 @@ ffprobe -v error -hide_banner -select_streams a:0 -show_streams -show_format /ho
 
 https://ottverse.com/ffprobe-comprehensive-tutorial-with-examples/
 
+no banner info, select audio 1st stream, show the specific entries codec_name, sample_rate, bit_rate, no [STREAM][/STREAM] wrappers
+PS C:\Users\gmanw> ffprobe -v error -select_streams a:0 -show_entries stream=codec_name,sample_rate,bit_rate -of default=noprint_wrappers=1 C:\Music\Crush\Here\Crush-Live.mp3
+codec_name=mp3
+sample_rate=44100
+bit_rate=128000
+
 gerald@msi-laptop:~$ ffmpeg-normalize /home/gerald/Music/Crush/Here/Crush-Live.mp3 -p -n -f
 WARNING: Input file had loudness range of 8.1. This is larger than the loudness range target (7.0). Normalization will revert to dynamic mode. Choose a higher target loudness range if you want linear normalization. Alternatively, use the --keep-loudness-range-target or --keep-lra-above-loudness-range-target option to keep the target loudness range from the input.
 WARNING: In dynamic mode, the sample rate will automatically be set to 192 kHz by the loudnorm filter. Specify -ar/--sample-rate to override it.
