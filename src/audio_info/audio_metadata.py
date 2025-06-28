@@ -560,9 +560,9 @@ class AudioMetadata():
 
     def extract_album_art(self, file_path):
         '''
-        @brief Wrapper function for extracting and saving embedded album art.
+        @brief Extract and save embedded album art.
 
-        @details Extracts art as Folder.jpg to album directory of input file.
+        @details Extracts art as Folder.jpg to album directory of input audio file.
         @details First tries extraction from video stream (audio file type agnostic),
         then by metadata art tag (from specific audio file type).
 
@@ -1068,8 +1068,6 @@ class AudioMetadata():
                 volumes['mean_volume'] = mean_volume
                 volumes['max_volume'] = max_volume
 
-        except ffmpeg.Error as e:
-            raise Exception(f"An ffmpeg error occurred: {e.stderr.decode()}")
         except Exception as e:
             raise Exception(f"Exception {e} getting volume for file {file_path}")
 
