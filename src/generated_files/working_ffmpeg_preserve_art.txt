@@ -1,1 +1,0 @@
-ffmpeg -i "F:\ProcessedMusic\Crush\Here\Crush-Live.mp3" -c:v copy -ab 128k -map_metadata 0 -id3v2_version 3 "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y

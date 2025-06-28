@@ -1,7 +1,0 @@
-ffmpeg-python==0.2.0
-mediafile==0.13.0
-mutagen==1.47.0
-pathvalidate==3.2.1
-pydub==0.25.1
-tqdm==4.67.1
-yaspin==2.5.0

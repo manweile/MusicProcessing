@@ -1,5 +1,0 @@
-peak normalize:
-ffmpeg-normalize F:\ProcessedMusic\Crush\Here\Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
-
-get stats:
-ffmpeg-normalize /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3 -p -n -f
