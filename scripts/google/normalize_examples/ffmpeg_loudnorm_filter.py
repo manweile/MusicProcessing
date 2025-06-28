@@ -3,16 +3,23 @@
 
 import subprocess
 import json
+import platform
+from subprocess import CalledProcessError
 
-input_file = "input.wav"  # Replace with your input audio file
+if platform.system() == "Linux":
+    input_file = "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
+elif platform.system == "Windows":
+    input_file = r"C:\Music\Crush\Here\Crush-Live.mp3"
 
+# first part, getting the information
 # Construct the FFmpeg command
 command = [
     "ffmpeg",
+    "-hide_banner",
     "-i", input_file,
     "-af", "loudnorm=print_format=json",
-    "-f", "null",  # Output to null to avoid creating an actual output file
-    "-"  # Direct output to stdout for the first pass (stderr for loudnorm stats)
+    "-f", "null",                       # Output to null to avoid creating an actual output file
+    "-"                                 # Direct output to stdout for the first pass (stderr for loudnorm stats)
 ]
 
 # Execute the command and capture stderr
@@ -21,28 +28,28 @@ try:
         command,
         check=True,
         capture_output=True,
-        text=True  # Decode stdout/stderr as text
+        text=True               # Decode stdout/stderr as text
     )
+    # ffmpeg outputs information to stderr
     loudnorm_output = process.stderr
-except subprocess.CalledProcessError as e:
-    print(f"FFmpeg error: {e}")
-    print(f"Stderr: {e.stderr}")
-    exit()
+except CalledProcessError as e:
+    raise CalledProcessError(f"FFmpeg error {e} Stderr: {e.stderr}")
+except Exception as e:
+    raise Exception(f"Exception {e} getting loudnorm filter")
 
 
-# 2nd part
-# Find the JSON part in the stderr output
+# 2nd part, get the JSON in the stderr output
 json_start = loudnorm_output.find('{')
 json_end = loudnorm_output.rfind('}')
 
 if json_start != -1 and json_end != -1:
-    json_string = loudnorm_output[json_start : json_end + 1]
+    json_string = loudnorm_output[json_start: json_end + 1]
 
     # Parse the JSON string
     try:
         loudnorm_data = json.loads(json_string)
         print("Parsed loudnorm data:")
-        print(json.dumps(loudnorm_data, indent=4)) # Pretty print for readability
+        print(json.dumps(loudnorm_data, indent=4))  # Pretty print for readability
 
         # Access specific values, e.g., integrated loudness
         measured_i = loudnorm_data.get("input_i")

@@ -1,4 +1,5 @@
 import ffmpeg
+import platform
 
 '''
 google search: "ffmpeg" python get sample_rate example
@@ -15,6 +16,7 @@ def get_audio_sample_rate(file_path):
     Returns:
         int or None: The sample rate in Hz if found, otherwise None.
     """
+
     try:
         probe = ffmpeg.probe(file_path)
         audio_stream = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
@@ -26,8 +28,14 @@ def get_audio_sample_rate(file_path):
         print(f"Error probing file: {e.stderr.decode()}")
         return None
 
+
 # Example usage:
-audio_file = "your_audio_file.wav"  # Replace with your audio file path
+# audio_file = "your_audio_file.wav"  # Replace with your audio file path
+if platform.system() == "Linux":
+    audio_file = "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
+elif platform.system == "Windows":
+    audio_file = r"C:\Music\Crush\Here\Crush-Live.mp3"
+
 sample_rate = get_audio_sample_rate(audio_file)
 
 if sample_rate:

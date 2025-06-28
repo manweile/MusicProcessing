@@ -1,19 +1,21 @@
 import subprocess
 import json
+import platform
 
 '''
 google search: "ffmpeg" python get bit_rate example
 '''
+
+
 def get_bitrate(file_path):
     """
-    Retrieves the bitrate of a media file using ffprobe.
+    @brief Retrieves the bitrate of a media file using ffprobe.
 
-    Args:
-        file_path (str): The path to the media file.
+    @param file_path (str): The path to the media file.
 
-    Returns:
-        int: The bitrate in bits per second, or None if not found.
+    @return bit_rate {int} The bitrate in bits per second, or None if not found.
     """
+
     command = [
         'ffprobe',
         '-v', 'quiet',
@@ -34,11 +36,16 @@ def get_bitrate(file_path):
         print("Error decoding JSON output from ffprobe.")
         return None
 
+
 # Example usage:
-file = 'input.mp4'  # Replace with your media file
-bitrate = get_bitrate(file)
+# file = 'input.mp4'  # Replace with your media file
+if platform.system() == "Linux":
+    audio_file = "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
+elif platform.system == "Windows":
+    audio_file = r"C:\Music\Crush\Here\Crush-Live.mp3"
+bitrate = get_bitrate(audio_file)
 
 if bitrate is not None:
-    print(f"The bitrate of {file} is: {bitrate} bps")
+    print(f"The bitrate of {audio_file} is: {bitrate} bps")
 else:
-    print(f"Could not determine the bitrate for {file}.")
+    print(f"Could not determine the bitrate for {audio_file}.")
