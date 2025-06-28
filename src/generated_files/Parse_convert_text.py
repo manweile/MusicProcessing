@@ -40,4 +40,4 @@ def parse_text(filepath):
     os.rename(temp_filepath, filepath)
 
 
-parse_text("/home/gerald/MusicProcessing/src/generated_files/convert-walk-all.txt")
+parse_text("/home/gerald/MusicProcessing/src/generated_files/results_files/convert-walk-all.txt")
