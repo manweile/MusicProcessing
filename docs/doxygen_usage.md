@@ -1,0 +1,207 @@
+# Doxygen usage in Music Process Project
+## Documentation Structure
+### Custom Pages
+The easiest way to have a main page is to create a separate file for [custom pages](https://www.doxygen.nl/manual/additional.html#custom_pages).
+
+Doxygen requires this custom page source file type to be:
+- .dox
+- .txt
+  - files to have comments in C/C++ style
+- .md
+  - files to have comments files as Markdown
+
+## Documenting the Code
+I prefer using [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonblocks) & doxygen [javadoc style](https://en.wikipedia.org/wiki/Javadoc) "at sign" [special commands](https://doxygen.nl/manual/commands.html).
+Eg.
+```
+'''
+@brief Wrapper for function that generates a csv containing full file path for an extension
+@details If start_path is not supplied, uses the class top level directory path.
+@details If file extension is not supplied, uses the preset audio types module list.
+@param file_ext {str} The file extension want file paths for.
+@param start_path {str} The starting point of the directory walk.
+'''
+```
+### Use of @details special command
+If you do supply another details command for the next line, then both lines will be concatenated until another command is encountered.
+as in:
+```
+If start_path is not supplied, uses the class top level directory path. If file extension is not supplied, uses the preset audio types module list.
+```
+vs.
+```
+If start_path is not supplied, uses the class top level directory path.
+If file extension is not supplied, uses the preset audio types module list.
+```
+### Use of @var special command
+I strongly suspect the @var special command is slightly buggy.
+In any case, it is very particular in how you use it.
+
+- DO NOT USE IT IN PYTHON DOC STRINGS!!!
+  - you not will not get ANY html output
+- must use a double hash mark followed by singles for subsequent special commands
+- your variable must be an immutable type for the typedef to be output in the html
+- you must use @brief to get a brief description in the variables html output
+- you must use @details to get detailed description in the variable documentation html output
+
+Eg.
+```
+'''
+@var __all__
+@brief Exposes variable for importing by other modules.
+@details  In modules needing the directory, add `from src.generated_files import generated_files`
+'''
+```
+will not produce ANY html output, but this will:
+```
+## @var __all__
+# @brief Exposes variable for importing by other modules.
+# @details  In modules needing the directory, add `from src.generated_files import generated_files`
+```
+#### Weakly typed vs immutable variables
+Weakly typed variables  will NOT get the typedef listed in the html output, but immutable typed variables will.
+Eg.
+```
+## @var generated_files
+# @brief Path to where files created by the project are stored.
+# @details Getting the directory name for importing means will not need a hard coded "magic spell" else where in codebase.
+generated_files = os.path.dirname(os.path.abspath(__file__))
+```
+results in:
+```
+  generated_files = ""
+  Path to where files created by the project are stored.
+```
+whereas:
+```
+## @var generated_files
+# @brief Path to where files created by the project are stored.
+# @details Getting the directory name for importing means will not need a hard coded "magic spell" else where in codebase.
+generated_files = ""
+generated_files = os.path.dirname(os.path.abspath(__file__))
+```
+results in:
+```
+str generated_files = ""
+    Path to where files created by the project are stored.
+```
+## Doxygen Config
+From \docs, run doxygen -x to get a listing of all the changes in the Doxyfile.
+I modify the default Doxyfile with the following:
+
+```
+# The PROJECT_NAME tag is a single word (or a sequence of words surrounded by
+# double-quotes, unless you are using Doxywizard) that should identify the
+# project for which the documentation is generated. This name is used in the
+# title of most generated pages and in a few other places.
+# The default value is: My Project.
+# Use my project name.
+PROJECT_NAME           = "Music Processing"
+
+# By default Python docstrings are displayed as preformatted text and Doxygen's
+# special commands cannot be used. By setting PYTHON_DOCSTRING to NO the
+# Doxygen's special commands can be used and the contents of the docstring
+# documentation blocks is shown as Doxygen documentation.
+# The default value is: YES.
+# If this was left at default, you have to use ! in every python docstring if you also # # want to use the @special commands.
+# e.g. '''!@ipsumlorem ''', which is major PITA.
+PYTHON_DOCSTRING       = NO
+
+# Set the OPTIMIZE_OUTPUT_JAVA tag to YES if your project consists of Java or
+# Python sources only. Doxygen will then generate output that is more tailored
+# for that language. For instance, namespaces will be presented as packages,
+# qualified scopes will look different, etc.
+# The default value is: NO.
+# Well duh, project is 99.999% python ...
+OPTIMIZE_OUTPUT_JAVA   = YES
+
+# If the EXTRACT_ALL tag is set to YES, Doxygen will assume all entities in
+# documentation are documented, even if no documentation was available. Private
+# class members and static file members will be hidden unless the
+# EXTRACT_PRIVATE respectively EXTRACT_STATIC tags are set to YES.
+# Note: This will also disable the warnings about undocumented members that are
+# normally produced when WARNINGS is set to YES.
+# The default value is: NO.
+# It is my responsibility to ensure documentation is filled out, so need this to yes
+EXTRACT_ALL            = YES
+
+# See EXTRACT_ALL notes and reasoning for change from default value of NO.
+EXTRACT_PRIVATE        = YES
+EXTRACT_PRIV_VIRTUAL   = YES
+EXTRACT_PACKAGE        = YES
+EXTRACT_STATIC         = YES
+
+# With the correct setting of option CASE_SENSE_NAMES Doxygen will better be
+# able to match the capabilities of the underlying filesystem. In case the
+# filesystem is case sensitive (i.e. it supports files in the same directory
+# whose names only differ in casing), the option must be set to YES to properly
+# deal with such files in case they appear in the input. For filesystems that
+# are not case sensitive the option should be set to NO to properly deal with
+# output files written for symbols that only differ in casing, such as for two
+# classes, one named CLASS and the other named Class, and to also support
+# references to files without having to specify the exact matching casing. On
+# Windows (including Cygwin) and macOS, users should typically set this option
+# to NO, whereas on Linux or other Unix flavors it should typically be set to
+# YES.
+# Possible values are: SYSTEM, NO and YES.
+# The default value is: SYSTEM.
+# On a Windows system, so set to NO
+# @TODO need to check if SYSTEM will give same results as No on Windows and YES on Ubuntu.
+CASE_SENSE_NAMES       = NO
+
+# If the HIDE_SCOPE_NAMES tag is set to NO then Doxygen will show members with
+# their full class and namespace scopes in the documentation. If set to YES, the
+# scope will be hidden.
+# The default value is: NO.
+# Makes display cleaner, so set to YES
+HIDE_SCOPE_NAMES       = YES
+
+# If the SORT_BRIEF_DOCS tag is set to YES then Doxygen will sort the brief
+# descriptions of file, namespace and class members alphabetically by member
+# name. If set to NO, the members will appear in declaration order. Note that
+# this will also influence the order of the classes in the class list.
+# The default value is: NO.
+# I try to write my code in alphabetical order in any case, so set to YES.
+SORT_BRIEF_DOCS        = YES
+
+# The INPUT tag is used to specify the files and/or directories that contain
+# documented source files. You may enter file names like myfile.cpp or
+# directories like /usr/src/myproject. Separate the files or directories with
+# spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
+# Note: If this tag is empty the current directory is searched.
+# docs dir is sibling of src, so need ../src
+# main.py is program entry point, so needs to included
+# index.dox creates the main page content, so need it too
+# if/when I add unit tests and maybe the standalone scripts will add to tag.
+INPUT                  = ../src
+                         ../main.py
+                         ../index.dox
+
+# The RECURSIVE tag can be used to specify whether or not subdirectories should
+# be searched for input files as well.
+# The default value is: NO.
+# Of course this needs to be YES, my project directory tree is NOT flat.
+RECURSIVE              = YES
+
+# If you want full control over the layout of the generated HTML pages it might
+# be necessary to disable the index and replace it with your own. The
+# DISABLE_INDEX tag can be used to turn on/off the condensed index (tabs) at top
+# of each HTML page. A value of NO enables the index and the value YES disables
+# it. Since the tabs in the index contain the same information as the navigation
+# tree, you can set this option to YES if you also set GENERATE_TREEVIEW to YES.
+# The default value is: YES.
+# This tag requires that the tag GENERATE_HTML is set to YES.
+# I want the condensed index (tabs) at top of each page. Set to NO.
+DISABLE_INDEX          = NO
+
+# When the SHOW_ENUM_VALUES tag is set doxygen will show the specified
+# enumeration values besides the enumeration mnemonics.
+# The default value is: NO.
+# Not sure if this is going to apply in a python project, but set to YES.
+SHOW_ENUM_VALUES       = YES
+
+# If the GENERATE_LATEX tag is set to YES, Doxygen will generate LaTeX output.
+# The default value is: YES.
+# No interest ion latex. Set to NO.
+GENERATE_LATEX         = NO
+```

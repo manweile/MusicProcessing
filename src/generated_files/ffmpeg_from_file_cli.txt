@@ -1,0 +1,297 @@
+from_file:
+ffmpeg -y -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 -acodec pcm_s16le -vn -f wav -
+
+export with cover and tags:
+ffmpeg -y -f wav -i /tmp/tmpao_1w84l -i /home/gerald/Music/Crush/Here/Folder.jpg -map 0 -map 1 -c:v mjpeg -b:a 129156 -metadata TALB=Here -metadata TPE2=Crush -metadata TPE1=Crush -metadata TCOM=Paul Lamb -metadata TPOS=1/1 -metadata TCON=Pop -metadata TPUB=Sonic Records -metadata TIT2=Live -metadata TRCK=1/12 -metadata TMED=CD -metadata TYER=2002 -metadata TCMP=0 -id3v2_version 3 -f mp3 /tmp/tmp7x93x8kw
+
+export with just tags:
+ffmpeg -y -f wav -i /tmp/tmpjt82pnha -b:a 129156 -metadata TALB=Here -metadata TPE2=Crush -metadata TPE1=Crush -metadata TCOM=Paul Lamb -metadata TPOS=1/1 -metadata TCON=Pop -metadata TPUB=Sonic Records -metadata TIT2=Live -metadata TRCK=1/12 -metadata TMED=CD -metadata TYER=2002 -metadata TCMP=0 -id3v2_version 3 -f mp3 /tmp/tmpy7xag0x5
+
+https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg
+loudnorm filter with json output
+PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a loudnorm=print_format=json -f null NUL
+[mp3 @ 00000215ce7a0500] Estimating duration from bitrate, this may be inaccurate
+Input #0, mp3, from 'C:\Music\Crush\Here\Crush-Live.mp3':
+  Metadata:
+    title           : Live
+    artist          : Crush
+    track           : 1/12
+    album           : Here
+    disc            : 1/1
+    genre           : Pop
+    TMED            : CD
+    TORY            : 2002
+    MusicBrainz Release Track Id: 2475137d-6745-3951-a361-d4c29798f5d1
+    album_artist    : Crush
+    TSO2            : Crush
+    artist-sort     : Crush
+    composer        : Paul Lamb
+    SCRIPT          : Latn
+    publisher       : Sonic Records
+    ARTISTS         : Crush
+    ASIN            : B000065PP6
+    originalyear    : 2002
+    BARCODE         : 627915092229
+    CATALOGNUMBER   : 2 50922
+    MusicBrainz Album Type: album
+    MusicBrainz Album Status: official
+    MusicBrainz Album Release Country: CA
+    Acoustid Id     : 4fdf7757-ba58-4a4b-a1df-1ad4d102a474
+    MusicBrainz Album Id: 18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6
+    MusicBrainz Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Album Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1
+    date            : 2002
+  Duration: 00:04:05.91, start: 0.000000, bitrate: 129 kb/s
+  Stream #0:0: Audio: mp3 (mp3float), 44100 Hz, stereo, fltp, 128 kb/s
+  Stream #0:1: Video: mjpeg (Baseline), yuvj420p(pc, bt470bg/unknown/unknown), 500x490 [SAR 1:1 DAR 50:49], 90k tbr, 90k tbn (attached pic)
+    Metadata:
+      comment         : Cover (front)
+Stream mapping:
+  Stream #0:1 -> #0:0 (mjpeg (native) -> wrapped_avframe (native))
+  Stream #0:0 -> #0:1 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, null, to 'NUL':
+  Metadata:
+    title           : Live
+    artist          : Crush
+    track           : 1/12
+    album           : Here
+    disc            : 1/1
+    genre           : Pop
+    TMED            : CD
+    TORY            : 2002
+    MusicBrainz Release Track Id: 2475137d-6745-3951-a361-d4c29798f5d1
+    album_artist    : Crush
+    TSO2            : Crush
+    artist-sort     : Crush
+    composer        : Paul Lamb
+    SCRIPT          : Latn
+    publisher       : Sonic Records
+    ARTISTS         : Crush
+    ASIN            : B000065PP6
+    originalyear    : 2002
+    BARCODE         : 627915092229
+    CATALOGNUMBER   : 2 50922
+    MusicBrainz Album Type: album
+    MusicBrainz Album Status: official
+    MusicBrainz Album Release Country: CA
+    Acoustid Id     : 4fdf7757-ba58-4a4b-a1df-1ad4d102a474
+    MusicBrainz Album Id: 18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6
+    MusicBrainz Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Album Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1
+    date            : 2002
+    encoder         : Lavf62.0.100
+  Stream #0:0: Video: wrapped_avframe, yuvj420p(pc, bt470bg/unknown/unknown, progressive), 500x490 [SAR 1:1 DAR 50:49], q=2-31, 200 kb/s, 90k fps, 90k tbn (attached pic)
+    Metadata:
+      encoder         : Lavc62.0.101 wrapped_avframe
+      comment         : Cover (front)
+  Stream #0:1: Audio: pcm_s16le, 192000 Hz, stereo, s16, 6144 kb/s
+    Metadata:
+      encoder         : Lavc62.0.101 pcm_s16le
+[Parsed_loudnorm_0 @ 00000215ccf96200] e=00:00:00.00 bitrate=N/A speed=1.41e-06x
+{
+        "input_i" : "-16.77",
+        "input_tp" : "-6.66",
+        "input_lra" : "8.10",
+        "input_thresh" : "-26.99",
+        "output_i" : "-23.32",
+        "output_tp" : "-6.00",
+        "output_lra" : "5.40",
+        "output_thresh" : "-33.40",
+        "normalization_type" : "dynamic",
+        "target_offset" : "-0.68"
+}
+[out#0/null @ 00000215ce7a07c0] video:0KiB audio:184438KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=    1 fps=0.1 q=-0.0 Lsize=N/A time=00:00:00.00 bitrate=N/A speed=1.4e-06x
+
+loudnorm filter with summary output:
+PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a loudnorm=print_format=summary -f null NUL
+[mp3 @ 0000027f9c640500] Estimating duration from bitrate, this may be inaccurate
+Input #0, mp3, from 'C:\Music\Crush\Here\Crush-Live.mp3':
+  Metadata:
+    title           : Live
+    artist          : Crush
+    track           : 1/12
+    album           : Here
+    disc            : 1/1
+    genre           : Pop
+    TMED            : CD
+    TORY            : 2002
+    MusicBrainz Release Track Id: 2475137d-6745-3951-a361-d4c29798f5d1
+    album_artist    : Crush
+    TSO2            : Crush
+    artist-sort     : Crush
+    composer        : Paul Lamb
+    SCRIPT          : Latn
+    publisher       : Sonic Records
+    ARTISTS         : Crush
+    ASIN            : B000065PP6
+    originalyear    : 2002
+    BARCODE         : 627915092229
+    CATALOGNUMBER   : 2 50922
+    MusicBrainz Album Type: album
+    MusicBrainz Album Status: official
+    MusicBrainz Album Release Country: CA
+    Acoustid Id     : 4fdf7757-ba58-4a4b-a1df-1ad4d102a474
+    MusicBrainz Album Id: 18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6
+    MusicBrainz Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Album Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1
+    date            : 2002
+  Duration: 00:04:05.91, start: 0.000000, bitrate: 129 kb/s
+  Stream #0:0: Audio: mp3 (mp3float), 44100 Hz, stereo, fltp, 128 kb/s
+  Stream #0:1: Video: mjpeg (Baseline), yuvj420p(pc, bt470bg/unknown/unknown), 500x490 [SAR 1:1 DAR 50:49], 90k tbr, 90k tbn (attached pic)
+    Metadata:
+      comment         : Cover (front)
+Stream mapping:
+  Stream #0:1 -> #0:0 (mjpeg (native) -> wrapped_avframe (native))
+  Stream #0:0 -> #0:1 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, null, to 'NUL':
+  Metadata:
+    title           : Live
+    artist          : Crush
+    track           : 1/12
+    album           : Here
+    disc            : 1/1
+    genre           : Pop
+    TMED            : CD
+    TORY            : 2002
+    MusicBrainz Release Track Id: 2475137d-6745-3951-a361-d4c29798f5d1
+    album_artist    : Crush
+    TSO2            : Crush
+    artist-sort     : Crush
+    composer        : Paul Lamb
+    SCRIPT          : Latn
+    publisher       : Sonic Records
+    ARTISTS         : Crush
+    ASIN            : B000065PP6
+    originalyear    : 2002
+    BARCODE         : 627915092229
+    CATALOGNUMBER   : 2 50922
+    MusicBrainz Album Type: album
+    MusicBrainz Album Status: official
+    MusicBrainz Album Release Country: CA
+    Acoustid Id     : 4fdf7757-ba58-4a4b-a1df-1ad4d102a474
+    MusicBrainz Album Id: 18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6
+    MusicBrainz Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Album Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1
+    date            : 2002
+    encoder         : Lavf62.0.100
+  Stream #0:0: Video: wrapped_avframe, yuvj420p(pc, bt470bg/unknown/unknown, progressive), 500x490 [SAR 1:1 DAR 50:49], q=2-31, 200 kb/s, 90k fps, 90k tbn (attached pic)
+    Metadata:
+      encoder         : Lavc62.0.101 wrapped_avframe
+      comment         : Cover (front)
+  Stream #0:1: Audio: pcm_s16le, 192000 Hz, stereo, s16, 6144 kb/s
+    Metadata:
+      encoder         : Lavc62.0.101 pcm_s16le
+[Parsed_loudnorm_0 @ 0000027f9c677580] e=00:00:00.00 bitrate=N/A speed=1.42e-06x
+Input Integrated:    -16.8 LUFS
+Input True Peak:      -6.7 dBTP
+Input LRA:             8.1 LU
+Input Threshold:     -27.0 LUFS
+
+Output Integrated:   -23.3 LUFS
+Output True Peak:     -6.0 dBTP
+Output LRA:            5.4 LU
+Output Threshold:    -33.4 LUFS
+
+Normalization Type:   Dynamic
+Target Offset:        -0.7 LU
+[out#0/null @ 0000027f9c6407c0] video:0KiB audio:184438KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=    1 fps=0.1 q=-0.0 Lsize=N/A time=00:00:00.00 bitrate=N/A speed=1.41e-06x
+
+volumedetect filter:
+PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a volumedetect -f null NUL
+[mp3 @ 0000014c1c980440] Estimating duration from bitrate, this may be inaccurate
+Input #0, mp3, from 'C:\Music\Crush\Here\Crush-Live.mp3':
+  Metadata:
+    title           : Live
+    artist          : Crush
+    track           : 1/12
+    album           : Here
+    disc            : 1/1
+    genre           : Pop
+    TMED            : CD
+    TORY            : 2002
+    MusicBrainz Release Track Id: 2475137d-6745-3951-a361-d4c29798f5d1
+    album_artist    : Crush
+    TSO2            : Crush
+    artist-sort     : Crush
+    composer        : Paul Lamb
+    SCRIPT          : Latn
+    publisher       : Sonic Records
+    ARTISTS         : Crush
+    ASIN            : B000065PP6
+    originalyear    : 2002
+    BARCODE         : 627915092229
+    CATALOGNUMBER   : 2 50922
+    MusicBrainz Album Type: album
+    MusicBrainz Album Status: official
+    MusicBrainz Album Release Country: CA
+    Acoustid Id     : 4fdf7757-ba58-4a4b-a1df-1ad4d102a474
+    MusicBrainz Album Id: 18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6
+    MusicBrainz Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Album Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1
+    date            : 2002
+  Duration: 00:04:05.91, start: 0.000000, bitrate: 129 kb/s
+  Stream #0:0: Audio: mp3 (mp3float), 44100 Hz, stereo, fltp, 128 kb/s
+  Stream #0:1: Video: mjpeg (Baseline), yuvj420p(pc, bt470bg/unknown/unknown), 500x490 [SAR 1:1 DAR 50:49], 90k tbr, 90k tbn (attached pic)
+    Metadata:
+      comment         : Cover (front)
+[Parsed_volumedetect_0 @ 0000014c1c9b76c0] n_samples: 0
+Stream mapping:
+  Stream #0:1 -> #0:0 (mjpeg (native) -> wrapped_avframe (native))
+  Stream #0:0 -> #0:1 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, null, to 'NUL':
+  Metadata:
+    title           : Live
+    artist          : Crush
+    track           : 1/12
+    album           : Here
+    disc            : 1/1
+    genre           : Pop
+    TMED            : CD
+    TORY            : 2002
+    MusicBrainz Release Track Id: 2475137d-6745-3951-a361-d4c29798f5d1
+    album_artist    : Crush
+    TSO2            : Crush
+    artist-sort     : Crush
+    composer        : Paul Lamb
+    SCRIPT          : Latn
+    publisher       : Sonic Records
+    ARTISTS         : Crush
+    ASIN            : B000065PP6
+    originalyear    : 2002
+    BARCODE         : 627915092229
+    CATALOGNUMBER   : 2 50922
+    MusicBrainz Album Type: album
+    MusicBrainz Album Status: official
+    MusicBrainz Album Release Country: CA
+    Acoustid Id     : 4fdf7757-ba58-4a4b-a1df-1ad4d102a474
+    MusicBrainz Album Id: 18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6
+    MusicBrainz Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Album Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1
+    date            : 2002
+    encoder         : Lavf62.0.100
+  Stream #0:0: Video: wrapped_avframe, yuvj420p(pc, bt470bg/unknown/unknown, progressive), 500x490 [SAR 1:1 DAR 50:49], q=2-31, 200 kb/s, 90k fps, 90k tbn (attached pic)
+    Metadata:
+      encoder         : Lavc62.0.101 wrapped_avframe
+      comment         : Cover (front)
+  Stream #0:1: Audio: pcm_s16le, 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc62.0.101 pcm_s16le
+[Parsed_volumedetect_0 @ 0000014c1b1761c0] n_samples: 21689856
+[Parsed_volumedetect_0 @ 0000014c1b1761c0] mean_volume: -19.9 dB
+[Parsed_volumedetect_0 @ 0000014c1b1761c0] max_volume: -6.7 dB
+[Parsed_volumedetect_0 @ 0000014c1b1761c0] histogram_6db: 12
+[Parsed_volumedetect_0 @ 0000014c1b1761c0] histogram_7db: 1132
+[Parsed_volumedetect_0 @ 0000014c1b1761c0] histogram_8db: 31563
+[out#0/null @ 0000014c1c980a40] video:0KiB audio:42363KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=    1 fps=0.0 q=-0.0 Lsize=N/A time=00:00:00.00 bitrate=N/A speed=4.43e-05x
