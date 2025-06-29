@@ -1,0 +1,53 @@
+gerald@msi-laptop:~$ ffmpeg-normalize /home/gerald/Music/Crush/Here/Crush-Live.mp3 -p -n -f
+WARNING: Input file had loudness range of 8.1. This is larger than the loudness range target (7.0). Normalization will revert to dynamic mode. Choose a higher target loudness range if you want linear normalization. Alternatively, use the --keep-loudness-range-target or --keep-lra-above-loudness-range-target option to keep the target loudness range from the input.
+WARNING: In dynamic mode, the sample rate will automatically be set to 192 kHz by the loudnorm filter. Specify -ar/--sample-rate to override it.
+WARNING: Dry run used, not actually running second-pass command
+[
+    {
+        "input_file": "/home/gerald/Music/Crush/Here/Crush-Live.mp3",
+        "output_file": "normalized/Crush-Live.mkv",
+        "stream_id": 0,
+        "ebu_pass1": {
+            "input_i": -16.77,
+            "input_tp": -6.66,
+            "input_lra": 8.1,
+            "input_thresh": -26.99,
+            "output_i": -22.32,
+            "output_tp": -5.0,
+            "output_lra": 5.4,
+            "output_thresh": -32.4,
+            "normalization_type": "dynamic",
+            "target_offset": -0.68
+        },
+        "ebu_pass2": null,
+        "mean": null,
+        "max": null
+    }
+]
+
+gerald@msi-laptop:~$ ffmpeg-normalize /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3 -p -n -f
+WARNING: Input file had loudness range of 8.1. This is larger than the loudness range target (7.0). Normalization will revert to dynamic mode. Choose a higher target loudness range if you want linear normalization. Alternatively, use the --keep-loudness-range-target or --keep-lra-above-loudness-range-target option to keep the target loudness range from the input.
+WARNING: In dynamic mode, the sample rate will automatically be set to 192 kHz by the loudnorm filter. Specify -ar/--sample-rate to override it.
+WARNING: Dry run used, not actually running second-pass command
+[
+    {
+        "input_file": "/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3",
+        "output_file": "normalized/Crush-Live.mkv",
+        "stream_id": 0,
+        "ebu_pass1": {
+            "input_i": -10.44,
+            "input_tp": 0.56,
+            "input_lra": 8.1,
+            "input_thresh": -20.66,
+            "output_i": -22.32,
+            "output_tp": -4.98,
+            "output_lra": 5.4,
+            "output_thresh": -32.4,
+            "normalization_type": "dynamic",
+            "target_offset": -0.68
+        },
+        "ebu_pass2": null,
+        "mean": null,
+        "max": null
+    }
+]
