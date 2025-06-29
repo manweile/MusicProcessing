@@ -38,14 +38,17 @@ def get_bitrate(file_path):
 
 
 # Example usage:
-# file = 'input.mp4'  # Replace with your media file
-if platform.system() == "Linux":
-    audio_file = "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
-elif platform.system == "Windows":
-    audio_file = r"C:\Music\Crush\Here\Crush-Live.mp3"
-bitrate = get_bitrate(audio_file)
+if __name__ == "__main__":
 
-if bitrate is not None:
-    print(f"The bitrate of {audio_file} is: {bitrate} bps")
-else:
-    print(f"Could not determine the bitrate for {audio_file}.")
+    # file = 'input.mp4'  # Replace with your media file
+    if platform.system() == "Windows":
+        audio_file = r"C:\Music\Crush\Here\Crush-Live.mp3"
+    elif platform.system() == "Linux":
+        audio_file = r"/home/gerald/Music/Crush/Here/Crush-Live.mp3"  # Replace with your audio/video file
+
+    bitrate = get_bitrate(audio_file)
+
+    if bitrate is not None:
+        print(f"The bitrate of {audio_file} is: {bitrate} bps")
+    else:
+        print(f"Could not determine the bitrate for {audio_file}.")

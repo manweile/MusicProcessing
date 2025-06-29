@@ -30,15 +30,17 @@ def get_audio_sample_rate(file_path):
 
 
 # Example usage:
-# audio_file = "your_audio_file.wav"  # Replace with your audio file path
-if platform.system() == "Linux":
-    audio_file = "/home/gerald/Music/Crush/Here/Crush-Live.mp3"
-elif platform.system == "Windows":
-    audio_file = r"C:\Music\Crush\Here\Crush-Live.mp3"
+if __name__ == "__main__":
 
-sample_rate = get_audio_sample_rate(audio_file)
+    # audio_file = "your_audio_file.wav"  # Replace with your audio file path
+    if platform.system() == "Windows":
+        audio_file = r"C:\Music\Crush\Here\Crush-Live.mp3"
+    elif platform.system() == "Linux":
+        audio_file = r"/home/gerald/Music/Crush/Here/Crush-Live.mp3"  # Replace with your audio/video file
 
-if sample_rate:
-    print(f"The sample rate of '{audio_file}' is: {sample_rate} Hz")
-else:
-    print(f"Could not determine the sample rate for '{audio_file}'.")
+    sample_rate = get_audio_sample_rate(audio_file)
+
+    if sample_rate:
+        print(f"The sample rate of '{audio_file}' is: {sample_rate} Hz")
+    else:
+        print(f"Could not determine the sample rate for '{audio_file}'.")
