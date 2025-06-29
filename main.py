@@ -14,12 +14,14 @@ import sys
 
 # local modules
 from src.audio_info import AudioMetadata
+from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
 
 gc.enable()
 
 directory = DirectoryProcessing()
 metadata = AudioMetadata()
+normalization = AudioNormalization()
 
 
 def convert_file(file_path):
@@ -165,7 +167,7 @@ def peak_file(file_path):
     @param file_path {str} The full path to audio file.
     '''
 
-    metadata.peak_normalize_file(file_path)
+    normalization.peak_normalize_file(file_path)
 
 
 def peak_walk(tld_path):
@@ -175,7 +177,7 @@ def peak_walk(tld_path):
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
-    metadata.peak_normalize_walk(tld_path)
+    normalization.peak_normalize_walk(tld_path)
 
 
 def remove_albums(tld_path):

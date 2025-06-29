@@ -12,10 +12,10 @@ import fnmatch
 import gc
 import os
 import pprint
-import re
+# import re
 import shutil
 import struct
-import subprocess
+# import subprocess
 from pathlib import Path
 
 # third party modules
@@ -28,11 +28,11 @@ from mutagen.mp4 import MP4, MP4FreeForm
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 from tqdm import tqdm
-from yaspin import yaspin
-from yaspin.spinners import Spinners
+# from yaspin import yaspin
+# from yaspin.spinners import Spinners
 
 # local modules
-from src import _AUDIO_EXTS, _AUDIO_TYPES
+from src import _AUDIO_EXTS, _AUDIO_TYPES, _EXPORT_TLD, _HOME, _MEDIA
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import generated_files
 
@@ -40,7 +40,6 @@ gc.enable()
 
 _ALBUM_ART = "AlbumArt"
 _ASF = "ASF"
-_EXPORT_TLD = "Music"
 _FOLDER_ART = "Folder.jpg"
 _MP3 = "MP3"
 _MP4 = "MP4"
@@ -312,11 +311,11 @@ class AudioMetadata():
 
             # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
             # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
-            if input_path_parts[0] == "media":
+            if input_path_parts[0] == _MEDIA:
                 # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
                 # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
                 input_path_components = input_path_parts[4:]
-            elif input_path_parts[0] == "home":
+            elif input_path_parts[0] == _HOME:
                 # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
                 # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
                 input_path_components = input_path_parts[3:]
@@ -947,29 +946,29 @@ class AudioMetadata():
         return tag_info
 
 
-    def get_sample_rate(self, file_path):
-        '''
-        @brief Gets the sample rate from audio file.
+    # def get_sample_rate(self, file_path):
+    #     '''
+    #     @brief Gets the sample rate from audio file.
 
-        @param file_path {str} The full path to audio file.
-        @return sample_rate {int} The sample rate in Hz, otherwise None.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
+    #     @param file_path {str} The full path to audio file.
+    #     @return sample_rate {int} The sample rate in Hz, otherwise None.
+    #     @exception Exception A common baseclass exception to handle unforeseen errors.
+    #     '''
 
-        try:
-            sample_rate = None
-            probe = ffmpeg.probe(file_path)
-            audio_stream = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
+    #     try:
+    #         sample_rate = None
+    #         probe = ffmpeg.probe(file_path)
+    #         audio_stream = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
 
-            if audio_stream and 'sample_rate' in audio_stream:
-                sample_rate = int(audio_stream['sample_rate'])
+    #         if audio_stream and 'sample_rate' in audio_stream:
+    #             sample_rate = int(audio_stream['sample_rate'])
 
-        except ffmpeg.Error as e:
-            raise Exception(f"An ffmpeg error occurred: {e.stderr.decode()}")
-        except Exception as e:
-            raise Exception(f"Exception {e} getting sample rate for file {file_path}")
+    #     except ffmpeg.Error as e:
+    #         raise Exception(f"An ffmpeg error occurred: {e.stderr.decode()}")
+    #     except Exception as e:
+    #         raise Exception(f"Exception {e} getting sample rate for file {file_path}")
 
-        return sample_rate
+    #     return sample_rate
 
 
     def get_tags_walk(self, file_path, file_pattern, ffprobe=False):
@@ -1031,47 +1030,47 @@ class AudioMetadata():
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
 
-    def get_volume_info(self, file_path):
-        '''
-        @brief Gets mean and max volume from audio file using ffmpeg.
+    # def get_volume_info(self, file_path):
+    #     '''
+    #     @brief Gets mean and max volume from audio file using ffmpeg.
 
-        @param file_path {str} The full path to audio file.
-        @return volumes {dict} The mean and max
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
+    #     @param file_path {str} The full path to audio file.
+    #     @return volumes {dict} The mean and max
+    #     @exception Exception A common baseclass exception to handle unforeseen errors.
+    #     '''
 
-        try:
-            volumes = dict()
+    #     try:
+    #         volumes = dict()
 
-            command = [
-                'ffmpeg',
-                '-i', file_path,
-                '-hide_banner',
-                '-filter:a', 'volumedetect',
-                '-f', 'null',
-                '-'                             # Send output to stdout
-            ]
+    #         command = [
+    #             'ffmpeg',
+    #             '-i', file_path,
+    #             '-hide_banner',
+    #             '-filter:a', 'volumedetect',
+    #             '-f', 'null',
+    #             '-'                             # Send output to stdout
+    #         ]
 
-            # Run FFmpeg and capture stderr (where volumedetect output goes)
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = process.communicate()
+    #         # Run FFmpeg and capture stderr (where volumedetect output goes)
+    #         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    #         stdout, stderr = process.communicate()
 
-            # Decode stderr to string and search for volume information
-            output_str = stderr.decode('utf-8')
+    #         # Decode stderr to string and search for volume information
+    #         output_str = stderr.decode('utf-8')
 
-            mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
-            max_volume_match = re.search(r'max_volume: ([-]?\d+\.\d+) dB', output_str)
+    #         mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
+    #         max_volume_match = re.search(r'max_volume: ([-]?\d+\.\d+) dB', output_str)
 
-            if mean_volume_match and max_volume_match:
-                mean_volume = float(mean_volume_match.group(1))
-                max_volume = float(max_volume_match.group(1))
-                volumes['mean_volume'] = mean_volume
-                volumes['max_volume'] = max_volume
+    #         if mean_volume_match and max_volume_match:
+    #             mean_volume = float(mean_volume_match.group(1))
+    #             max_volume = float(max_volume_match.group(1))
+    #             volumes['mean_volume'] = mean_volume
+    #             volumes['max_volume'] = max_volume
 
-        except Exception as e:
-            raise Exception(f"Exception {e} getting volume for file {file_path}")
+    #     except Exception as e:
+    #         raise Exception(f"Exception {e} getting volume for file {file_path}")
 
-        return volumes
+    #     return volumes
 
 
     def get_wma_tags(self, file_path):
@@ -1281,26 +1280,26 @@ class AudioMetadata():
         return audio_file
 
 
-    def loudness_normalize_file(self, file_path):
-        '''
-        @todo complete or abandon
-        @brief Normalizes audio file level.
+    # def loudness_normalize_file(self, file_path):
+    #     '''
+    #     @todo complete or abandon
+    #     @brief Normalizes audio file level.
 
-        @details
+    #     @details
 
-        @param file_path {str} The full file path for audio file.
-        @param target_dbfs {float} The target loudness.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
+    #     @param file_path {str} The full file path for audio file.
+    #     @param target_dbfs {float} The target loudness.
+    #     @exception Exception A common baseclass exception to handle unforeseen errors.
+    #     '''
 
-        try:
-            # 1st pass to get loudnorm statistics
+    #     try:
+    #         # 1st pass to get loudnorm statistics
 
-            # 2nd pass to apply loudnorm statistics
+    #         # 2nd pass to apply loudnorm statistics
 
-            pass
-        except Exception as e:
-            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
+    #         pass
+    #     except Exception as e:
+    #         raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 
 
     def map_m4a_tags(self, input_tags):
@@ -1462,145 +1461,145 @@ class AudioMetadata():
         return id3_tags
 
 
-    def peak_normalize_file(self, file_path):
-        '''
-        @brief Peak normalizes audio file level.
+    # def peak_normalize_file(self, file_path):
+    #     '''
+    #     @brief Peak normalizes audio file level.
 
-        @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
-        @details Audio file must be mp3 format.
+    #     @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
+    #     @details Audio file must be mp3 format.
 
-        @param file_path {str} The full file path for audio file.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
+    #     @param file_path {str} The full file path for audio file.
+    #     @exception Exception A common baseclass exception to handle unforeseen errors.
+    #     '''
 
-        try:
-            export_dir = None
-            export_name = None
-            export_path = None
+    #     try:
+    #         export_dir = None
+    #         export_name = None
+    #         export_path = None
 
-            input_path = Path(file_path)
+    #         input_path = Path(file_path)
 
-            input_ext = input_path.suffix
-            if input_ext.lower() != _AUDIO_EXTS[0]:
-                raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
+    #         input_ext = input_path.suffix
+    #         if input_ext.lower() != _AUDIO_EXTS[0]:
+    #             raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
 
-            print(f"Beginning normalization on {input_path} using ffmpeg-normalize.")
+    #         print(f"Beginning normalization on {input_path} using ffmpeg-normalize.")
 
-            # get the full parent w/o filename so I can start removing unnecessary path components
-            input_path_parent = input_path.parent
-            # remove the anchor (ie. / or H:\), have no use for it
-            input_path_parts = input_path_parent.parts[1:]
+    #         # get the full parent w/o filename so I can start removing unnecessary path components
+    #         input_path_parent = input_path.parent
+    #         # remove the anchor (ie. / or H:\), have no use for it
+    #         input_path_parts = input_path_parent.parts[1:]
 
-            # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
-            # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
-            if input_path_parts[0] == "media":
-                # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
-                # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
-                input_path_components = input_path_parts[4:]
-            elif input_path_parts[0] == "home":
-                # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
-                # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
-                input_path_components = input_path_parts[3:]
-            else:
-                # Windows is going to have <tld>/<artist dir>/<album dir>
-                # so 3 elements, we don't want element 1: 'Music'
-                input_path_components = input_path_parts[1:]
+    #         # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
+    #         # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
+    #         if input_path_parts[0] == "media":
+    #             # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
+    #             # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
+    #             input_path_components = input_path_parts[4:]
+    #         elif input_path_parts[0] == "home":
+    #             # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
+    #             # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
+    #             input_path_components = input_path_parts[3:]
+    #         else:
+    #             # Windows is going to have <tld>/<artist dir>/<album dir>
+    #             # so 3 elements, we don't want element 1: 'Music'
+    #             input_path_components = input_path_parts[1:]
 
-            # using fixed storage path because will always know project structure
-            export_dir = os.path.join(generated_files, _EXPORT_TLD)
+    #         # using fixed storage path because will always know project structure
+    #         export_dir = os.path.join(generated_files, _EXPORT_TLD)
 
-            for component in input_path_components:
-                export_dir = os.path.join(export_dir, component)
+    #         for component in input_path_components:
+    #             export_dir = os.path.join(export_dir, component)
 
-            # directory is already extant if we are processing multiple songs for the same artist & album
-            if not os.path.exists(export_dir):
-                os.makedirs(export_dir)
+    #         # directory is already extant if we are processing multiple songs for the same artist & album
+    #         if not os.path.exists(export_dir):
+    #             os.makedirs(export_dir)
 
-            input_info = self.get_media_info(input_path)
-            bitrate = input_info['bit_rate']
+    #         input_info = self.get_media_info(input_path)
+    #         bitrate = input_info['bit_rate']
 
-            # sample_rate = self.get_sample_rate(input_path)
-            volume_info = self.get_volume_info(input_path)
-            max_volume = volume_info['max_volume']
-            if max_volume <= -1:
-                target_level = -1 - max_volume
-            else:
-                target_level = -1
+    #         # sample_rate = self.get_sample_rate(input_path)
+    #         volume_info = self.get_volume_info(input_path)
+    #         max_volume = volume_info['max_volume']
+    #         if max_volume <= -1:
+    #             target_level = -1 - max_volume
+    #         else:
+    #             target_level = -1
 
-            export_name = input_path.name
-            export_path = os.path.join(export_dir, export_name)
+    #         export_name = input_path.name
+    #         export_path = os.path.join(export_dir, export_name)
 
-            # working ubuntu/windows cli:
-            # ffmpeg-normalize ~/ProcessedMusic/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
-            # ffmpeg-normalize F:\ProcessedMusic\Crush\Here\Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
-            # album art and tags are preserved!!!
-            # the extra output option setting the ID3v2.3 is necessary, else can't preserve embedded art
-            command = [
-                "ffmpeg-normalize",
-                input_path,
-                "-c:a", "libmp3lame",
-                "-b:a", bitrate,
-                "--extra-output-options", r"-id3v2_version 3",
-                "--normalization-type", "peak",
-                "--target-level", str(target_level),
-                "-f", "-o", export_path
-            ]
+    #         # working ubuntu/windows cli:
+    #         # ffmpeg-normalize ~/ProcessedMusic/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
+    #         # ffmpeg-normalize F:\ProcessedMusic\Crush\Here\Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
+    #         # album art and tags are preserved!!!
+    #         # the extra output option setting the ID3v2.3 is necessary, else can't preserve embedded art
+    #         command = [
+    #             "ffmpeg-normalize",
+    #             input_path,
+    #             "-c:a", "libmp3lame",
+    #             "-b:a", bitrate,
+    #             "--extra-output-options", r"-id3v2_version 3",
+    #             "--normalization-type", "peak",
+    #             "--target-level", str(target_level),
+    #             "-f", "-o", export_path
+    #         ]
 
-            text = f"Normalizing {input_path.stem}"
-            with yaspin(Spinners.dots, text=text, timer=True) as sp:
-                with open(os.devnull, 'rb') as devnull:
-                    p = subprocess.Popen(
-                        command,
-                        stdin=devnull,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                        universal_newlines=True
-                    )
+    #         text = f"Normalizing {input_path.stem}"
+    #         with yaspin(Spinners.dots, text=text, timer=True) as sp:
+    #             with open(os.devnull, 'rb') as devnull:
+    #                 p = subprocess.Popen(
+    #                     command,
+    #                     stdin=devnull,
+    #                     stdout=subprocess.PIPE,
+    #                     stderr=subprocess.PIPE,
+    #                     universal_newlines=True
+    #                 )
 
-                while True:
-                    line = p.stderr.readline()
-                    if not line:
-                        break
+    #             while True:
+    #                 line = p.stderr.readline()
+    #                 if not line:
+    #                     break
 
-                p_out, p_err = p.communicate()
+    #             p_out, p_err = p.communicate()
 
-            print(f"Successful normalization on {input_path.stem} in {sp.elapsed_time} secs\r\n")
-        except subprocess.CalledProcessError:
-            raise Exception(
-                f"ffmpeg-normalize returned error code: {p.returncode}\n\n for command line: {command}\n\n Output from ffmpeg-normalize: {p_err.decode(errors='ignore')}")
-        except Exception as e:
-            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
+    #         print(f"Successful normalization on {input_path.stem} in {sp.elapsed_time} secs\r\n")
+    #     except subprocess.CalledProcessError:
+    #         raise Exception(
+    #             f"ffmpeg-normalize returned error code: {p.returncode}\n\n for command line: {command}\n\n Output from ffmpeg-normalize: {p_err.decode(errors='ignore')}")
+    #     except Exception as e:
+    #         raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 
 
-    def peak_normalize_walk(self, file_path):
-        '''
-        @brief Peak normalizes mp3 audio files in under starting top level directory.
+    # def peak_normalize_walk(self, file_path):
+    #     '''
+    #     @brief Peak normalizes mp3 audio files in under starting top level directory.
 
-        @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
+    #     @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
 
-        @param file_path {str} The starting point of the directory walk.
-        @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
+    #     @param file_path {str} The starting point of the directory walk.
+    #     @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
+    #     @exception Exception A common baseclass exception to handle unforeseen errors.
+    #     '''
 
-        input_file_ext = None
+    #     input_file_ext = None
 
-        try:
-            input_path = Path(file_path)
+    #     try:
+    #         input_path = Path(file_path)
 
-            for dir_path, _, file_names in os.walk(input_path):
-                for file in file_names:
-                    _, input_file_ext = os.path.splitext(file)
+    #         for dir_path, _, file_names in os.walk(input_path):
+    #             for file in file_names:
+    #                 _, input_file_ext = os.path.splitext(file)
 
-                    # file is not mp3, carry on to next file
-                    if input_file_ext.lower() != _AUDIO_EXTS[0]:
-                        continue
+    #                 # file is not mp3, carry on to next file
+    #                 if input_file_ext.lower() != _AUDIO_EXTS[0]:
+    #                     continue
 
-                    input_file_path = os.path.join(dir_path, file)
-                    self.peak_normalize_file(input_file_path)
+    #                 input_file_path = os.path.join(dir_path, file)
+    #                 self.peak_normalize_file(input_file_path)
 
-        except Exception as e:
-            raise Exception(f"Exception {e} walking {file_path} to normalize audio files")
+    #     except Exception as e:
+    #         raise Exception(f"Exception {e} walking {file_path} to normalize audio files")
 
 
     def set_album_art(self, input_path):
