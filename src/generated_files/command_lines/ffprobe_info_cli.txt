@@ -4,66 +4,38 @@ ffprobe -v error -hide_banner -select_streams a:0 -show_streams -show_format /ho
 
 https://ottverse.com/ffprobe-comprehensive-tutorial-with-examples/
 
+-v error kills banner and metadata, -of default=noprint_wrappers=1 gives just the key=value
+PS C:\Users\gmanw> ffprobe -v error -select_streams a:0  -show_entries stream=sample_rate -of default=noprint_wrappers=1 C:\Music\Crush\Here\Crush-Live.mp3
+sample_rate=44100
+
+PS C:\Users\gmanw> ffprobe -v error -select_streams a:0  -show_entries stream=bit_rate -of default=noprint_wrappers=1 C:\Music\Crush\Here\Crush-Live.mp3
+bit_rate=128000
+
+nokey=1 removes the key, you just get the value
+PS C:\Users\gmanw> ffprobe -v error -select_streams a:0  -show_entries stream=bit_rate -of default=noprint_wrappers=1:nokey=1 C:\Music\Crush\Here\Crush-Live.mp3
+128000
+
 no banner info, select audio 1st stream, show the specific entries codec_name, sample_rate, bit_rate, no [STREAM][/STREAM] wrappers
 PS C:\Users\gmanw> ffprobe -v error -select_streams a:0 -show_entries stream=codec_name,sample_rate,bit_rate -of default=noprint_wrappers=1 C:\Music\Crush\Here\Crush-Live.mp3
 codec_name=mp3
 sample_rate=44100
 bit_rate=128000
 
-gerald@msi-laptop:~$ ffmpeg-normalize /home/gerald/Music/Crush/Here/Crush-Live.mp3 -p -n -f
-WARNING: Input file had loudness range of 8.1. This is larger than the loudness range target (7.0). Normalization will revert to dynamic mode. Choose a higher target loudness range if you want linear normalization. Alternatively, use the --keep-loudness-range-target or --keep-lra-above-loudness-range-target option to keep the target loudness range from the input.
-WARNING: In dynamic mode, the sample rate will automatically be set to 192 kHz by the loudnorm filter. Specify -ar/--sample-rate to override it.
-WARNING: Dry run used, not actually running second-pass command
-[
-    {
-        "input_file": "/home/gerald/Music/Crush/Here/Crush-Live.mp3",
-        "output_file": "normalized/Crush-Live.mkv",
-        "stream_id": 0,
-        "ebu_pass1": {
-            "input_i": -16.77,
-            "input_tp": -6.66,
-            "input_lra": 8.1,
-            "input_thresh": -26.99,
-            "output_i": -22.32,
-            "output_tp": -5.0,
-            "output_lra": 5.4,
-            "output_thresh": -32.4,
-            "normalization_type": "dynamic",
-            "target_offset": -0.68
-        },
-        "ebu_pass2": null,
-        "mean": null,
-        "max": null
-    }
-]
+PS C:\Users\gmanw> ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of json C:\Music\Crush\Here\Crush-Live.mp3
+{
+    "programs": [
 
-gerald@msi-laptop:~$ ffmpeg-normalize /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3 -p -n -f
-WARNING: Input file had loudness range of 8.1. This is larger than the loudness range target (7.0). Normalization will revert to dynamic mode. Choose a higher target loudness range if you want linear normalization. Alternatively, use the --keep-loudness-range-target or --keep-lra-above-loudness-range-target option to keep the target loudness range from the input.
-WARNING: In dynamic mode, the sample rate will automatically be set to 192 kHz by the loudnorm filter. Specify -ar/--sample-rate to override it.
-WARNING: Dry run used, not actually running second-pass command
-[
-    {
-        "input_file": "/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3",
-        "output_file": "normalized/Crush-Live.mkv",
-        "stream_id": 0,
-        "ebu_pass1": {
-            "input_i": -10.44,
-            "input_tp": 0.56,
-            "input_lra": 8.1,
-            "input_thresh": -20.66,
-            "output_i": -22.32,
-            "output_tp": -4.98,
-            "output_lra": 5.4,
-            "output_thresh": -32.4,
-            "normalization_type": "dynamic",
-            "target_offset": -0.68
-        },
-        "ebu_pass2": null,
-        "mean": null,
-        "max": null
-    }
-]
+    ],
+    "stream_groups": [
 
+    ],
+    "streams": [
+        {
+            "sample_rate": "44100"
+        }
+    ]
+}
+this gives you all streams and format containers and banner
 gerald@msi-laptop:~$ ffprobe -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers
   built with gcc 13 (Ubuntu 13.2.0-23ubuntu3)
@@ -262,6 +234,8 @@ TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
 TAG:date=2002
 [/FORMAT]
 
+
+-v qiuet removes the banner
 gerald@msi-laptop:~$ ffprobe -v quiet -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=0
@@ -412,6 +386,7 @@ TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
 TAG:date=2002
 [/FORMAT]
 
+-hide_banner explicitly hides the banner output
 gerald@msi-laptop:~$ ffprobe -hide_banner -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [mp3 @ 0x593a06a01f80] Estimating duration from bitrate, this may be inaccurate
 Input #0, mp3, from '/home/gerald/Music/Crush/Here/Crush-Live.mp3':
@@ -599,156 +574,7 @@ TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
 TAG:date=2002
 [/FORMAT]
 
-gerald@msi-laptop:~$ ffprobe -v quiet -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
-[STREAM]
-index=0
-codec_name=mp3
-codec_long_name=MP3 (MPEG audio layer 3)
-profile=unknown
-codec_type=audio
-codec_tag_string=[0][0][0][0]
-codec_tag=0x0000
-sample_fmt=fltp
-sample_rate=44100
-channels=2
-channel_layout=stereo
-bits_per_sample=0
-initial_padding=0
-id=N/A
-r_frame_rate=0/0
-avg_frame_rate=0/0
-time_base=1/14112000
-start_pts=0
-start_time=0.000000
-duration_ts=3470289858
-duration=245.910562
-bit_rate=128000
-max_bit_rate=N/A
-bits_per_raw_sample=N/A
-nb_frames=N/A
-nb_read_frames=N/A
-nb_read_packets=N/A
-DISPOSITION:default=0
-DISPOSITION:dub=0
-DISPOSITION:original=0
-DISPOSITION:comment=0
-DISPOSITION:lyrics=0
-DISPOSITION:karaoke=0
-DISPOSITION:forced=0
-DISPOSITION:hearing_impaired=0
-DISPOSITION:visual_impaired=0
-DISPOSITION:clean_effects=0
-DISPOSITION:attached_pic=0
-DISPOSITION:timed_thumbnails=0
-DISPOSITION:non_diegetic=0
-DISPOSITION:captions=0
-DISPOSITION:descriptions=0
-DISPOSITION:metadata=0
-DISPOSITION:dependent=0
-DISPOSITION:still_image=0
-[/STREAM]
-[STREAM]
-index=1
-codec_name=mjpeg
-codec_long_name=Motion JPEG
-profile=Baseline
-codec_type=video
-codec_tag_string=[0][0][0][0]
-codec_tag=0x0000
-width=500
-height=490
-coded_width=500
-coded_height=490
-closed_captions=0
-film_grain=0
-has_b_frames=0
-sample_aspect_ratio=1:1
-display_aspect_ratio=50:49
-pix_fmt=yuvj420p
-level=-99
-color_range=pc
-color_space=bt470bg
-color_transfer=unknown
-color_primaries=unknown
-chroma_location=center
-field_order=unknown
-refs=1
-id=N/A
-r_frame_rate=90000/1
-avg_frame_rate=0/0
-time_base=1/90000
-start_pts=N/A
-start_time=N/A
-duration_ts=22131951
-duration=245.910567
-bit_rate=N/A
-max_bit_rate=N/A
-bits_per_raw_sample=8
-nb_frames=N/A
-nb_read_frames=N/A
-nb_read_packets=N/A
-DISPOSITION:default=0
-DISPOSITION:dub=0
-DISPOSITION:original=0
-DISPOSITION:comment=0
-DISPOSITION:lyrics=0
-DISPOSITION:karaoke=0
-DISPOSITION:forced=0
-DISPOSITION:hearing_impaired=0
-DISPOSITION:visual_impaired=0
-DISPOSITION:clean_effects=0
-DISPOSITION:attached_pic=1
-DISPOSITION:timed_thumbnails=0
-DISPOSITION:non_diegetic=0
-DISPOSITION:captions=0
-DISPOSITION:descriptions=0
-DISPOSITION:metadata=0
-DISPOSITION:dependent=0
-DISPOSITION:still_image=0
-TAG:comment=Cover (front)
-[/STREAM]
-[FORMAT]
-filename=/home/gerald/Music/Crush/Here/Crush-Live.mp3
-nb_streams=2
-nb_programs=0
-format_name=mp3
-format_long_name=MP2/3 (MPEG audio layer 2/3)
-start_time=0.000000
-duration=245.910567
-size=3970122
-bit_rate=129156
-probe_score=51
-TAG:title=Live
-TAG:artist=Crush
-TAG:track=1/12
-TAG:album=Here
-TAG:disc=1/1
-TAG:genre=Pop
-TAG:TMED=CD
-TAG:TORY=2002
-TAG:MusicBrainz Release Track Id=2475137d-6745-3951-a361-d4c29798f5d1
-TAG:album_artist=Crush
-TAG:TSO2=Crush
-TAG:artist-sort=Crush
-TAG:composer=Paul Lamb
-TAG:SCRIPT=Latn
-TAG:publisher=Sonic Records
-TAG:ARTISTS=Crush
-TAG:ASIN=B000065PP6
-TAG:originalyear=2002
-TAG:BARCODE=627915092229
-TAG:CATALOGNUMBER=2 50922
-TAG:MusicBrainz Album Type=album
-TAG:MusicBrainz Album Status=official
-TAG:MusicBrainz Album Release Country=CA
-TAG:Acoustid Id=4fdf7757-ba58-4a4b-a1df-1ad4d102a474
-TAG:MusicBrainz Album Id=18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6
-TAG:MusicBrainz Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
-TAG:MusicBrainz Album Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
-TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
-TAG:date=2002
-[/FORMAT]
-
+really don't need _hide_banner or -v quiet one or the other works to hide banner info
 gerald@msi-laptop:~$ ffprobe -hide_banner -v quiet -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=0
@@ -899,193 +725,7 @@ TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
 TAG:date=2002
 [/FORMAT]
 
-gerald@msi-laptop:~$ ffprobe -hide_banner -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
-[mp3 @ 0x64e65e4a4f80] Estimating duration from bitrate, this may be inaccurate
-Input #0, mp3, from '/home/gerald/Music/Crush/Here/Crush-Live.mp3':
-  Metadata:
-    title           : Live
-    artist          : Crush
-    track           : 1/12
-    album           : Here
-    disc            : 1/1
-    genre           : Pop
-    TMED            : CD
-    TORY            : 2002
-    MusicBrainz Release Track Id: 2475137d-6745-3951-a361-d4c29798f5d1
-    album_artist    : Crush
-    TSO2            : Crush
-    artist-sort     : Crush
-    composer        : Paul Lamb
-    SCRIPT          : Latn
-    publisher       : Sonic Records
-    ARTISTS         : Crush
-    ASIN            : B000065PP6
-    originalyear    : 2002
-    BARCODE         : 627915092229
-    CATALOGNUMBER   : 2 50922
-    MusicBrainz Album Type: album
-    MusicBrainz Album Status: official
-    MusicBrainz Album Release Country: CA
-    Acoustid Id     : 4fdf7757-ba58-4a4b-a1df-1ad4d102a474
-    MusicBrainz Album Id: 18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6
-    MusicBrainz Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
-    MusicBrainz Album Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
-    MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1
-    date            : 2002
-  Duration: 00:04:05.91, start: 0.000000, bitrate: 129 kb/s
-  Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
-  Stream #0:1: Video: mjpeg (Baseline), yuvj420p(pc, bt470bg/unknown/unknown), 500x490 [SAR 1:1 DAR 50:49], 90k tbr, 90k tbn (attached pic)
-    Metadata:
-      comment         : Cover (front)
-[STREAM]
-index=0
-codec_name=mp3
-codec_long_name=MP3 (MPEG audio layer 3)
-profile=unknown
-codec_type=audio
-codec_tag_string=[0][0][0][0]
-codec_tag=0x0000
-sample_fmt=fltp
-sample_rate=44100
-channels=2
-channel_layout=stereo
-bits_per_sample=0
-initial_padding=0
-id=N/A
-r_frame_rate=0/0
-avg_frame_rate=0/0
-time_base=1/14112000
-start_pts=0
-start_time=0.000000
-duration_ts=3470289858
-duration=245.910562
-bit_rate=128000
-max_bit_rate=N/A
-bits_per_raw_sample=N/A
-nb_frames=N/A
-nb_read_frames=N/A
-nb_read_packets=N/A
-DISPOSITION:default=0
-DISPOSITION:dub=0
-DISPOSITION:original=0
-DISPOSITION:comment=0
-DISPOSITION:lyrics=0
-DISPOSITION:karaoke=0
-DISPOSITION:forced=0
-DISPOSITION:hearing_impaired=0
-DISPOSITION:visual_impaired=0
-DISPOSITION:clean_effects=0
-DISPOSITION:attached_pic=0
-DISPOSITION:timed_thumbnails=0
-DISPOSITION:non_diegetic=0
-DISPOSITION:captions=0
-DISPOSITION:descriptions=0
-DISPOSITION:metadata=0
-DISPOSITION:dependent=0
-DISPOSITION:still_image=0
-[/STREAM]
-[STREAM]
-index=1
-codec_name=mjpeg
-codec_long_name=Motion JPEG
-profile=Baseline
-codec_type=video
-codec_tag_string=[0][0][0][0]
-codec_tag=0x0000
-width=500
-height=490
-coded_width=500
-coded_height=490
-closed_captions=0
-film_grain=0
-has_b_frames=0
-sample_aspect_ratio=1:1
-display_aspect_ratio=50:49
-pix_fmt=yuvj420p
-level=-99
-color_range=pc
-color_space=bt470bg
-color_transfer=unknown
-color_primaries=unknown
-chroma_location=center
-field_order=unknown
-refs=1
-id=N/A
-r_frame_rate=90000/1
-avg_frame_rate=0/0
-time_base=1/90000
-start_pts=N/A
-start_time=N/A
-duration_ts=22131951
-duration=245.910567
-bit_rate=N/A
-max_bit_rate=N/A
-bits_per_raw_sample=8
-nb_frames=N/A
-nb_read_frames=N/A
-nb_read_packets=N/A
-DISPOSITION:default=0
-DISPOSITION:dub=0
-DISPOSITION:original=0
-DISPOSITION:comment=0
-DISPOSITION:lyrics=0
-DISPOSITION:karaoke=0
-DISPOSITION:forced=0
-DISPOSITION:hearing_impaired=0
-DISPOSITION:visual_impaired=0
-DISPOSITION:clean_effects=0
-DISPOSITION:attached_pic=1
-DISPOSITION:timed_thumbnails=0
-DISPOSITION:non_diegetic=0
-DISPOSITION:captions=0
-DISPOSITION:descriptions=0
-DISPOSITION:metadata=0
-DISPOSITION:dependent=0
-DISPOSITION:still_image=0
-TAG:comment=Cover (front)
-[/STREAM]
-[FORMAT]
-filename=/home/gerald/Music/Crush/Here/Crush-Live.mp3
-nb_streams=2
-nb_programs=0
-format_name=mp3
-format_long_name=MP2/3 (MPEG audio layer 2/3)
-start_time=0.000000
-duration=245.910567
-size=3970122
-bit_rate=129156
-probe_score=51
-TAG:title=Live
-TAG:artist=Crush
-TAG:track=1/12
-TAG:album=Here
-TAG:disc=1/1
-TAG:genre=Pop
-TAG:TMED=CD
-TAG:TORY=2002
-TAG:MusicBrainz Release Track Id=2475137d-6745-3951-a361-d4c29798f5d1
-TAG:album_artist=Crush
-TAG:TSO2=Crush
-TAG:artist-sort=Crush
-TAG:composer=Paul Lamb
-TAG:SCRIPT=Latn
-TAG:publisher=Sonic Records
-TAG:ARTISTS=Crush
-TAG:ASIN=B000065PP6
-TAG:originalyear=2002
-TAG:BARCODE=627915092229
-TAG:CATALOGNUMBER=2 50922
-TAG:MusicBrainz Album Type=album
-TAG:MusicBrainz Album Status=official
-TAG:MusicBrainz Album Release Country=CA
-TAG:Acoustid Id=4fdf7757-ba58-4a4b-a1df-1ad4d102a474
-TAG:MusicBrainz Album Id=18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6
-TAG:MusicBrainz Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
-TAG:MusicBrainz Album Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
-TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
-TAG:date=2002
-[/FORMAT]
-
+-select_streams v:0 gets video stream info - cover art 'cause this is an audio file
 gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams v:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=1
@@ -1148,6 +788,7 @@ DISPOSITION:still_image=0
 TAG:comment=Cover (front)
 [/STREAM]
 
+and this -select_stream a:0 gets jus the audio
 gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams a:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 [STREAM]
 index=0
@@ -1197,311 +838,16 @@ DISPOSITION:dependent=0
 DISPOSITION:still_image=0
 [/STREAM]
 
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams v:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
-[STREAM]
-index=1
-codec_name=mjpeg
-codec_long_name=Motion JPEG
-profile=Baseline
-codec_type=video
-codec_tag_string=[0][0][0][0]
-codec_tag=0x0000
-width=500
-height=490
-coded_width=500
-coded_height=490
-closed_captions=0
-film_grain=0
-has_b_frames=0
-sample_aspect_ratio=1:1
-display_aspect_ratio=50:49
-pix_fmt=yuvj420p
-level=-99
-color_range=pc
-color_space=bt470bg
-color_transfer=unknown
-color_primaries=unknown
-chroma_location=center
-field_order=unknown
-refs=1
-id=N/A
-r_frame_rate=90000/1
-avg_frame_rate=0/0
-time_base=1/90000
-start_pts=N/A
-start_time=N/A
-duration_ts=22131951
-duration=245.910567
-bit_rate=N/A
-max_bit_rate=N/A
-bits_per_raw_sample=8
-nb_frames=N/A
-nb_read_frames=N/A
-nb_read_packets=N/A
-DISPOSITION:default=0
-DISPOSITION:dub=0
-DISPOSITION:original=0
-DISPOSITION:comment=0
-DISPOSITION:lyrics=0
-DISPOSITION:karaoke=0
-DISPOSITION:forced=0
-DISPOSITION:hearing_impaired=0
-DISPOSITION:visual_impaired=0
-DISPOSITION:clean_effects=0
-DISPOSITION:attached_pic=1
-DISPOSITION:timed_thumbnails=0
-DISPOSITION:non_diegetic=0
-DISPOSITION:captions=0
-DISPOSITION:descriptions=0
-DISPOSITION:metadata=0
-DISPOSITION:dependent=0
-DISPOSITION:still_image=0
-TAG:comment=Cover (front)
-[/STREAM]
-
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams a:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
-[STREAM]
-index=0
-codec_name=mp3
-codec_long_name=MP3 (MPEG audio layer 3)
-profile=unknown
-codec_type=audio
-codec_tag_string=[0][0][0][0]
-codec_tag=0x0000
-sample_fmt=fltp
-sample_rate=44100
-channels=2
-channel_layout=stereo
-bits_per_sample=0
-initial_padding=0
-id=N/A
-r_frame_rate=0/0
-avg_frame_rate=0/0
-time_base=1/14112000
-start_pts=0
-start_time=0.000000
-duration_ts=3470289858
-duration=245.910562
-bit_rate=128000
-max_bit_rate=N/A
-bits_per_raw_sample=N/A
-nb_frames=N/A
-nb_read_frames=N/A
-nb_read_packets=N/A
-DISPOSITION:default=0
-DISPOSITION:dub=0
-DISPOSITION:original=0
-DISPOSITION:comment=0
-DISPOSITION:lyrics=0
-DISPOSITION:karaoke=0
-DISPOSITION:forced=0
-DISPOSITION:hearing_impaired=0
-DISPOSITION:visual_impaired=0
-DISPOSITION:clean_effects=0
-DISPOSITION:attached_pic=0
-DISPOSITION:timed_thumbnails=0
-DISPOSITION:non_diegetic=0
-DISPOSITION:captions=0
-DISPOSITION:descriptions=0
-DISPOSITION:metadata=0
-DISPOSITION:dependent=0
-DISPOSITION:still_image=0
-[/STREAM]
-
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams a:0 -show_streams -show_format /home/gerald/Music/Crush/Here/Crush-Live.mp3
-[STREAM]
-index=0
-codec_name=mp3
-codec_long_name=MP3 (MPEG audio layer 3)
-profile=unknown
-codec_type=audio
-codec_tag_string=[0][0][0][0]
-codec_tag=0x0000
-sample_fmt=fltp
-sample_rate=44100
-channels=2
-channel_layout=stereo
-bits_per_sample=0
-initial_padding=0
-id=N/A
-r_frame_rate=0/0
-avg_frame_rate=0/0
-time_base=1/14112000
-start_pts=0
-start_time=0.000000
-duration_ts=3470289858
-duration=245.910562
-bit_rate=128000
-max_bit_rate=N/A
-bits_per_raw_sample=N/A
-nb_frames=N/A
-nb_read_frames=N/A
-nb_read_packets=N/A
-DISPOSITION:default=0
-DISPOSITION:dub=0
-DISPOSITION:original=0
-DISPOSITION:comment=0
-DISPOSITION:lyrics=0
-DISPOSITION:karaoke=0
-DISPOSITION:forced=0
-DISPOSITION:hearing_impaired=0
-DISPOSITION:visual_impaired=0
-DISPOSITION:clean_effects=0
-DISPOSITION:attached_pic=0
-DISPOSITION:timed_thumbnails=0
-DISPOSITION:non_diegetic=0
-DISPOSITION:captions=0
-DISPOSITION:descriptions=0
-DISPOSITION:metadata=0
-DISPOSITION:dependent=0
-DISPOSITION:still_image=0
-[/STREAM]
-[FORMAT]
-filename=/home/gerald/Music/Crush/Here/Crush-Live.mp3
-nb_streams=2
-nb_programs=0
-format_name=mp3
-format_long_name=MP2/3 (MPEG audio layer 2/3)
-start_time=0.000000
-duration=245.910567
-size=3970122
-bit_rate=129156
-probe_score=51
-TAG:title=Live
-TAG:artist=Crush
-TAG:track=1/12
-TAG:album=Here
-TAG:disc=1/1
-TAG:genre=Pop
-TAG:TMED=CD
-TAG:TORY=2002
-TAG:MusicBrainz Release Track Id=2475137d-6745-3951-a361-d4c29798f5d1
-TAG:album_artist=Crush
-TAG:TSO2=Crush
-TAG:artist-sort=Crush
-TAG:composer=Paul Lamb
-TAG:SCRIPT=Latn
-TAG:publisher=Sonic Records
-TAG:ARTISTS=Crush
-TAG:ASIN=B000065PP6
-TAG:originalyear=2002
-TAG:BARCODE=627915092229
-TAG:CATALOGNUMBER=2 50922
-TAG:MusicBrainz Album Type=album
-TAG:MusicBrainz Album Status=official
-TAG:MusicBrainz Album Release Country=CA
-TAG:Acoustid Id=4fdf7757-ba58-4a4b-a1df-1ad4d102a474
-TAG:MusicBrainz Album Id=18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6
-TAG:MusicBrainz Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
-TAG:MusicBrainz Album Artist Id=6d5088d8-e756-47c4-84ae-bc675dee004f
-TAG:MusicBrainz Release Group Id=a7927f70-2431-3a58-b7ae-48576808cec1
-TAG:date=2002
-[/FORMAT]
-
-gerald@msi-laptop:~$ ffprobe -v error -hide_banner -select_streams a:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
-[STREAM]
-index=0
-codec_name=mp3
-codec_long_name=MP3 (MPEG audio layer 3)
-profile=unknown
-codec_type=audio
-codec_tag_string=[0][0][0][0]
-codec_tag=0x0000
-sample_fmt=fltp
-sample_rate=44100
-channels=2
-channel_layout=stereo
-bits_per_sample=0
-initial_padding=0
-id=N/A
-r_frame_rate=0/0
-avg_frame_rate=0/0
-time_base=1/14112000
-start_pts=0
-start_time=0.000000
-duration_ts=3470289858
-duration=245.910562
-bit_rate=128000
-max_bit_rate=N/A
-bits_per_raw_sample=N/A
-nb_frames=N/A
-nb_read_frames=N/A
-nb_read_packets=N/A
-DISPOSITION:default=0
-DISPOSITION:dub=0
-DISPOSITION:original=0
-DISPOSITION:comment=0
-DISPOSITION:lyrics=0
-DISPOSITION:karaoke=0
-DISPOSITION:forced=0
-DISPOSITION:hearing_impaired=0
-DISPOSITION:visual_impaired=0
-DISPOSITION:clean_effects=0
-DISPOSITION:attached_pic=0
-DISPOSITION:timed_thumbnails=0
-DISPOSITION:non_diegetic=0
-DISPOSITION:captions=0
-DISPOSITION:descriptions=0
-DISPOSITION:metadata=0
-DISPOSITION:dependent=0
-DISPOSITION:still_image=0
-[/STREAM]
-
-gerald@msi-laptop:~$ ffprobe -v quiet -hide_banner -select_streams a:0 -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
-[STREAM]
-index=0
-codec_name=mp3
-codec_long_name=MP3 (MPEG audio layer 3)
-profile=unknown
-codec_type=audio
-codec_tag_string=[0][0][0][0]
-codec_tag=0x0000
-sample_fmt=fltp
-sample_rate=44100
-channels=2
-channel_layout=stereo
-bits_per_sample=0
-initial_padding=0
-id=N/A
-r_frame_rate=0/0
-avg_frame_rate=0/0
-time_base=1/14112000
-start_pts=0
-start_time=0.000000
-duration_ts=3470289858
-duration=245.910562
-bit_rate=128000
-max_bit_rate=N/A
-bits_per_raw_sample=N/A
-nb_frames=N/A
-nb_read_frames=N/A
-nb_read_packets=N/A
-DISPOSITION:default=0
-DISPOSITION:dub=0
-DISPOSITION:original=0
-DISPOSITION:comment=0
-DISPOSITION:lyrics=0
-DISPOSITION:karaoke=0
-DISPOSITION:forced=0
-DISPOSITION:hearing_impaired=0
-DISPOSITION:visual_impaired=0
-DISPOSITION:clean_effects=0
-DISPOSITION:attached_pic=0
-DISPOSITION:timed_thumbnails=0
-DISPOSITION:non_diegetic=0
-DISPOSITION:captions=0
-DISPOSITION:descriptions=0
-DISPOSITION:metadata=0
-DISPOSITION:dependent=0
-DISPOSITION:still_image=0
-[/STREAM]
-
+gets video stream info in csv row format
+Note there is no header row! would have to get the heaer row seperately!
 gerald@msi-laptop:~$ ffprobe -v error -hide_banner -of default=noprint_wrappers=0 -print_format csv -select_streams v:0 -show_format /home/gerald/Music/Crush/Here/Crush-Live.mp3
 format,/home/gerald/Music/Crush/Here/Crush-Live.mp3,2,0,mp3,MP2/3 (MPEG audio layer 2/3),0.000000,245.910567,3970122,129156,51,Live,Crush,1/12,Here,1/1,Pop,CD,2002,2475137d-6745-3951-a361-d4c29798f5d1,Crush,Crush,Crush,Paul Lamb,Latn,Sonic Records,Crush,B000065PP6,2002,627915092229,2 50922,album,official,CA,4fdf7757-ba58-4a4b-a1df-1ad4d102a474,18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6,6d5088d8-e756-47c4-84ae-bc675dee004f,6d5088d8-e756-47c4-84ae-bc675dee004f,a7927f70-2431-3a58-b7ae-48576808cec1,2002
 
+and the csv audio version
 PS C:\users\gmanw> ffprobe -v error -hide_banner -of default=noprint_wrappers=0 -print_format csv -select_streams a:0 -show_format C:\Music\Crush\Here\Crush-Live.mp3
 format,C:\Music\Crush\Here\Crush-Live.mp3,2,0,0,mp3,MP2/3 (MPEG audio layer 2/3),0.000000,245.910567,3970122,129156,51,Live,Crush,1/12,Here,1/1,Pop,CD,2002,2475137d-6745-3951-a361-d4c29798f5d1,Crush,Crush,Crush,Paul Lamb,Latn,Sonic Records,Crush,B000065PP6,2002,627915092229,2 50922,album,official,CA,4fdf7757-ba58-4a4b-a1df-1ad4d102a474,18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6,6d5088d8-e756-47c4-84ae-bc675dee004f,6d5088d8-e756-47c4-84ae-bc675dee004f,a7927f70-2431-3a58-b7ae-48576808cec1,2002
 
+flat output format
 gerald@msi-laptop:~$ ffprobe -v error -hide_banner -of default=noprint_wrappers=0 -print_format flat -select_streams a:0 -show_format  /home/gerald/Music/Crush/Here/Crush-Live.mp3
 format.filename="/home/gerald/Music/Crush/Here/Crush-Live.mp3"
 format.nb_streams=2
