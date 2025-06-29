@@ -1281,7 +1281,7 @@ class AudioMetadata():
         return audio_file
 
 
-    def loudness_normalize_file(self, file_path, target_dbfs):
+    def loudness_normalize_file(self, file_path):
         '''
         @todo complete or abandon
         @brief Normalizes audio file level.
@@ -1294,6 +1294,10 @@ class AudioMetadata():
         '''
 
         try:
+            # 1st pass to get loudnorm statistics
+
+            # 2nd pass to apply loudnorm statistics
+
             pass
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
@@ -1518,7 +1522,10 @@ class AudioMetadata():
             # sample_rate = self.get_sample_rate(input_path)
             volume_info = self.get_volume_info(input_path)
             max_volume = volume_info['max_volume']
-            target_level = 0 - max_volume
+            if max_volume <= -1:
+                target_level = -1 - max_volume
+            else:
+                target_level = -1
 
             export_name = input_path.name
             export_path = os.path.join(export_dir, export_name)
