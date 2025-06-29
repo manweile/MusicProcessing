@@ -1,3 +1,4 @@
+#  google search: ffmpeg get sample rate python
 import subprocess
 import json
 import platform
