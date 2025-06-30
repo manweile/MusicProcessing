@@ -52,7 +52,8 @@ def create_albums(tld_path):
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
-    metadata.create_album_dir(tld_path)
+    # metadata.create_album_dir(tld_path)
+    directory.create_album_dir(tld_path)
 
 
 def extract_art(file_path):

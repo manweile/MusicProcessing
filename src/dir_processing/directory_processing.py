@@ -16,11 +16,13 @@ import os
 import sys
 from operator import itemgetter
 
+# third party modules
+import pathvalidate
+from tqdm import tqdm
+
 # local modules
-from src import _AUDIO_EXTS
-from src import _AUDIO_TYPES
-# generated files package does not have any modules,
-# just a package variable the __all__ list exposes via __init__.py
+from src import _AUDIO_EXTS, _AUDIO_TYPES
+from src.audio_info import AudioMetadata
 from src.generated_files import generated_files
 
 gc.enable()
@@ -123,6 +125,113 @@ class DirectoryProcessing():
                 raise OSError(f"OSError {e} setting path {tld_path}")
         except Exception as e:
             raise Exception(f"Exception {e} setting path {tld_path}")
+
+
+    def create_album_dir(self, start_path):
+        '''
+        @brief Creates an album sub-directory in an artist directory.
+
+        @details Creates the album sub directory for the artist if needed.
+        @details The album name for the directory is drawn from the album metadata field.
+        @details Also creates csv of all audio file paths, album metadata values and sanitized album directory names.
+
+        @param start_path {str} The tld holding music files.
+        @param file_path {str} The full path to audio file.
+        @exception ValueError An inappropriate argument value of correct type error.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        album_dirs = set()
+        data = []
+        csv_filename = "created_album_dirs.csv"
+        header_row = ["audio file path", "album metadata", "album directory"]
+
+        try:
+            # dir_processing = DirectoryProcessing(start_path)
+            metadata = AudioMetadata()
+
+            # get the artist dirs under tld
+            tld_content = os.listdir(start_path)
+            len_tld_content = len(tld_content)
+            tld_bar = tqdm(desc=f'Processing {start_path} content', total=len_tld_content, unit=' items')
+
+            # top level directory consists of artist directories, playlist files and couple other sundry files
+            for tld_item in tld_content:
+                # update the progress bar before processing artist directory
+                # else we will have a mismatch in the bar processed/total display
+                # we only want artist directories, playlist/sundry files don't count
+                tld_item_path = os.path.join(start_path, tld_item)
+                if os.path.isfile(tld_item_path):
+                    tld_bar.update(1)
+                    continue
+
+                # since we skip tld items that are files,
+                # now we need to check tld items that are directories
+                artist_content = os.listdir(tld_item_path)
+                # want to know if we have any empty artist directories so we can deal with them later
+                if os.path.isdir(tld_item_path) and not artist_content:
+                    print(f"{tld_item_path} is an empty artist directory")
+                    tld_bar.update(1)
+                    continue
+
+                # now we can look at what's in the current artist 1st level directory
+                for artist_item in artist_content:
+                    # we don't care about existing album 2nd level dirs
+                    artist_item_path = os.path.join(tld_item_path, artist_item)
+                    if os.path.isdir(artist_item_path):
+                        continue
+
+                    # if we find an audio file, we need a album sub-directory for it
+                    # as artist dirs are supposed to only contain album sub dirs
+                    if os.path.isfile(artist_item_path):
+                        _, file_ext = os.path.splitext(artist_item)
+
+                    # audio files are supposed to be in an album sub dir
+                    if file_ext.lower() in _AUDIO_EXTS:
+                        audio_file = artist_item_path
+                        # using ffprobe function cause it is audio file type agnostic
+                        # file_media_tags = self.get_media_tags(audio_file)
+                        file_media_tags = metadata.get_media_tags(audio_file)
+                    else:
+                        # we found a non audio file
+                        continue
+
+                    if 'album' in file_media_tags.keys():
+                        # the album metadata should have had all / removed manually,
+                        # but do replace anyways, it would wreak havoc by creating nested dirs
+                        album = file_media_tags['album'].replace("/", "-")
+
+                        # sanitize because the metadata might have characters invalid for directory names
+                        # platform is "Windows" because it is more restrictive (therefore os universal),
+                        # the characters \, :, *, ?, ", <, >, | will be replaced by "-"
+                        # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
+                        album_dir = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
+
+                        data.append([audio_file, album, album_dir])
+                        album_dirs.add(album_dir)
+
+                        # make the album sub directory is REQUIRED before moving the audio file
+                        # dir_processing.make_album_dir(tld_item_path, album_dir)
+                        self.make_album_dir(tld_item_path, album_dir)
+
+                        # now transfer the audio file to new album directory
+                        destination_dir = os.path.join(tld_item_path, album_dir)
+                        # dir_processing.move_audio_file(audio_file, destination_dir)
+                        self.move_audio_file(audio_file, destination_dir)
+                    else:
+                        print(f"{audio_file} is missing album metadata")
+                        continue
+
+                tld_bar.update(1)
+
+            tld_bar.close()
+            # dir_processing.create_csv(csv_filename, data, generated_files, header_row, 0)
+            self.create_csv(csv_filename, data, generated_files, header_row, 0)
+            print(f"Created {len(album_dirs)} album dirs")
+        except ValueError as e:
+            raise Exception(f"ValueError {e} sanitizing album metadata {album}")
+        except Exception as e:
+            raise Exception(f"Exception {e} creating sub-dirs for {start_path}")
 
 
     def create_csv(self, csv_filename, data, csv_dir, header_row=None, sort_col=None):
