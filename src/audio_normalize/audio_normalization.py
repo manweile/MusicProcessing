@@ -29,6 +29,10 @@ from src.generated_files import generated_files
 
 gc.enable()
 
+_I = "-16.0"        # ffmpeg loudnorm integrated loudness target RBU 128 default: -24.0 to -23.0, I want louder (less negative)
+_LRA = "11.0"       # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
+_TP = "-2.0"        # ffmpeg loudnorm maximum true peak RBU 128 default: -2.0, I will keep that
+
 
 class AudioNormalization():
     '''
@@ -52,7 +56,7 @@ class AudioNormalization():
         @brief Gets the sample rate from audio file.
 
         @param file_path {str} The full path to audio file.
-        @return sample_rate {int} The sample rate in Hz, otherwise None.
+        @return sample_rate {str} The sample rate in Hz, otherwise None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -62,7 +66,7 @@ class AudioNormalization():
             audio_stream = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
 
             if audio_stream and 'sample_rate' in audio_stream:
-                sample_rate = int(audio_stream['sample_rate'])
+                sample_rate = audio_stream['sample_rate']
 
         except ffmpeg.Error as e:
             raise Exception(f"An ffmpeg error occurred: {e.stderr.decode()}")
@@ -131,36 +135,41 @@ class AudioNormalization():
             # @todo research if sample rate is >=192k, do i really need to apply loudnorm?
             sample_rate = self.get_sample_rate(file_path)
 
-            # loudnorm https://k.ylo.ph/2016/04/04/loudnorm.html
-            # rbu 128 https://ffmpeg.org/ffmpeg-filters.html#loudnorm
-            # AES https://www.aes.org/technical/documents/AESTD1004_1_15_10.pdf
-            # https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg
-            #
-            # integrated loudness target I=-16 rbu 128 def: -24.0 to -23.0      I want louder (less negative): -16.0
-            # maximum true peak TP=-2.0 rbu 128 def: -2.0
-            # loudness range target LRA=11 rbu 128 def: 7.0                     I want wider range so will use 11.0
-            # 1st pass to get loudnorm statistics
-            # ffmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 -af loudnorm=I=-16:TP=-2.0:LRA=11:print_format=json -f null -
-            # {
-            #         "input_i" : "-27.61",
-            #         "input_tp" : "-4.47",
-            #         "input_lra" : "18.06",
-            #         "input_thresh" : "-39.20",
-            #         "output_i" : "-16.58",
-            #         "output_tp" : "-1.50",
-            #         "output_lra" : "14.78",
-            #         "output_thresh" : "-27.71",
-            #         "normalization_type" : "dynamic",
-            #         "target_offset" : "0.58"
-            # }
+            r'''
+            loudnorm https://k.ylo.ph/2016/04/04/loudnorm.html
+            rbu 128 https://ffmpeg.org/ffmpeg-filters.html#loudnorm
+            AES https://www.aes.org/technical/documents/AESTD1004_1_15_10.pdf
+            https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg
+
+            1st pass to get loudnorm statistics
+            Output to null to avoid creating an actual output file
+            Direct output to stdout for the first pass (stderr for loudnorm stats)
+
+            ffmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 \
+            -af loudnorm=I=-16:TP=-2.0:LRA=11:print_format=json \
+            -f null -
+
+            {
+                    "input_i" : "-27.61",
+                    "input_tp" : "-4.47",
+                    "input_lra" : "18.06",
+                    "input_thresh" : "-39.20",
+                    "output_i" : "-16.58",
+                    "output_tp" : "-1.50",
+                    "output_lra" : "14.78",
+                    "output_thresh" : "-27.71",
+                    "normalization_type" : "dynamic",
+                    "target_offset" : "0.58"
+            }
+            '''
+            loudnorm_stats = "loudnorm=I=" + _I + ":TP=" + _TP + ":LRA=" + _LRA + ":print_format=json"
             first_command = [
                 "ffmpeg",
                 "-hide_banner",
                 "-i", file_path,
                 "-af",
-                "loudnorm=I=-16.0:TP=-2.0:LRA=11:print_format=json",
-                "-f", "null",                                       # Output to null to avoid creating an actual output file
-                "-"                                                 # Direct output to stdout for the first pass (stderr for loudnorm stats)
+                loudnorm_stats,
+                "-f", "null", "-"
             ]
 
             process = subprocess.run(
@@ -195,12 +204,14 @@ class AudioNormalization():
             measured_thresh = loudnorm_data.get("input_thresh")
             offset = loudnorm_data.get("target_offset")
 
+            loudnorm_apply = loudnorm_stats +
             second_pass = [
                 "ffmpeg",
                 "-hide_banner",
                 "-i", file_path,
-                "-af",
-                "loudnorm=I=-16.0:TP=-2.0:LRA=11
+                "-af", loudnorm_apply,
+                "-ar", sample_rate,
+                export_path
             ]
 
             # 2nd pass to apply loudnorm statistics
@@ -244,10 +255,9 @@ class AudioNormalization():
             if input_ext.lower() != _AUDIO_EXTS[0]:
                 raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
 
-            print(f"Beginning normalization on {input_path} using ffmpeg-normalize.")
-
             # get the full parent w/o filename so I can start removing unnecessary path components
             input_path_parent = input_path.parent
+
             # remove the anchor (ie. / or H:\), have no use for it
             input_path_parts = input_path_parent.parts[1:]
 
@@ -276,19 +286,21 @@ class AudioNormalization():
             if not os.path.exists(export_dir):
                 os.makedirs(export_dir)
 
-            input_info = self.get_media_info(input_path)
-            bitrate = input_info['bit_rate']
+            export_name = input_path.name
+            export_path = os.path.join(export_dir, export_name)
+
+            # get the input file info - want bitrate so can preserve the quality in exported file
+            media_info = self.get_media_info(input_path)
+            bitrate = media_info['bit_rate']
 
             # @todo research setting for headroom and re-write
             volume_info = self.get_volume_info(input_path)
             max_volume = volume_info['max_volume']
+
             if max_volume <= -1:
                 target_level = -1 - max_volume
             else:
                 target_level = -1
-
-            export_name = input_path.name
-            export_path = os.path.join(export_dir, export_name)
 
             # working ubuntu/windows cli:
             # ffmpeg-normalize ~/ProcessedMusic/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
@@ -297,7 +309,7 @@ class AudioNormalization():
             # the extra output option setting the ID3v2.3 is necessary, else can't preserve embedded art
             command = [
                 "ffmpeg-normalize",
-                input_path,
+                file_path,
                 "-c:a", "libmp3lame",
                 "-b:a", bitrate,
                 "--extra-output-options", r"-id3v2_version 3",
@@ -306,6 +318,7 @@ class AudioNormalization():
                 "-f", "-o", export_path
             ]
 
+            print(f"Beginning peak normalization on {input_path} using ffmpeg-normalize.")
             text = f"Normalizing {input_path.stem}"
             with yaspin(Spinners.dots, text=text, timer=True) as sp:
                 with open(os.devnull, 'rb') as devnull:
@@ -330,6 +343,7 @@ class AudioNormalization():
                 f"ffmpeg-normalize returned error code: {p.returncode}\n\n for command line: {command}\n\n Output from ffmpeg-normalize: {p_err.decode(errors='ignore')}")
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
+
 
     # @todo generalize for peak, rbu, and rms normalization
     def peak_normalize_walk(self, file_path):
