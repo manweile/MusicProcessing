@@ -201,27 +201,6 @@ class AudioMetadata():
             raise Exception(f"Exception {e} extracting embedded art from tag data")
 
 
-    def __write_data(self, file_path, image_data):
-        '''
-        @brief Writes image data for audio file to separate jpeg file.
-
-        @param file_path {str} The full path to audio file.
-        @param image_data {bytearray} The image bytes extracted from audio file.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            if image_data:
-                input_path = Path(file_path)
-                album_path = input_path.parent
-                output_file = os.path.join(album_path, _FOLDER_ART)
-                with open(output_file, 'wb') as img_file:
-                    img_file.write(image_data)
-                print(f"Album art written from {input_path.name} and saved to {album_path}")
-        except Exception as e:
-            raise Exception(f"Exception: {e} writing embedded art from {file_path}")
-
-
     def __update_id3(self, date_values, id3_tags):
         '''
         @brief Updates tags dictionary with newest year value and ands default disc value if needed.
@@ -247,6 +226,27 @@ class AudioMetadata():
             raise Exception(f"Exception: {e} updating tags")
 
         return id3_tags
+
+
+    def __write_data(self, file_path, image_data):
+        '''
+        @brief Writes image data for audio file to separate jpeg file.
+
+        @param file_path {str} The full path to audio file.
+        @param image_data {bytearray} The image bytes extracted from audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            if image_data:
+                input_path = Path(file_path)
+                album_path = input_path.parent
+                output_file = os.path.join(album_path, _FOLDER_ART)
+                with open(output_file, 'wb') as img_file:
+                    img_file.write(image_data)
+                print(f"Album art written from {input_path.name} and saved to {album_path}")
+        except Exception as e:
+            raise Exception(f"Exception: {e} writing embedded art from {file_path}")
 
 
     def convert_file(self, file_path):
