@@ -9,53 +9,6 @@ ffmpeg -y -f wav -i /tmp/tmpjt82pnha -b:a 129156 -metadata TALB=Here -metadata T
 
 https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg
 
-parsed output:
-loudnorm filter with input params and with json output:
-gerald@msi-laptop:~$ fmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 -af loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json -f null NULL
-[Parsed_loudnorm_0 @ 0x5bf87c8cca80]
-{
-	"input_i" : "-16.77",
-	"input_tp" : "-6.66",
-	"input_lra" : "8.10",
-	"input_thresh" : "-26.99",
-	"output_i" : "-15.35",
-	"output_tp" : "-1.50",
-	"output_lra" : "5.60",
-	"output_thresh" : "-25.46",
-	"normalization_type" : "dynamic",
-	"target_offset" : "-0.65"
-}
-
-loudnorm filter w/o input params and with json output
-PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a loudnorm=print_format=json -f null NUL
-[Parsed_loudnorm_0 @ 00000215ccf96200] e=00:00:00.00 bitrate=N/A speed=1.41e-06x
-{
-        "input_i" : "-16.77",
-        "input_tp" : "-6.66",
-        "input_lra" : "8.10",
-        "input_thresh" : "-26.99",
-        "output_i" : "-23.32",
-        "output_tp" : "-6.00",
-        "output_lra" : "5.40",
-        "output_thresh" : "-33.40",
-        "normalization_type" : "dynamic",
-        "target_offset" : "-0.68"
-}
-
-loudnorm filter w/o input params and with summary output:
-PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a loudnorm=print_format=summary -f null NUL
-[Parsed_loudnorm_0 @ 0000027f9c677580] e=00:00:00.00 bitrate=N/A speed=1.42e-06x
-Input Integrated:    -16.8 LUFS
-Input True Peak:      -6.7 dBTP
-Input LRA:             8.1 LU
-Input Threshold:     -27.0 LUFS
-Output Integrated:   -23.3 LUFS
-Output True Peak:     -6.0 dBTP
-Output LRA:            5.4 LU
-Output Threshold:    -33.4 LUFS
-Normalization Type:   Dynamic
-Target Offset:        -0.7 LU
-
 volumedetect filter:
 PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a volumedetect -f null NUL
 [Parsed_volumedetect_0 @ 0000014c1b1761c0] n_samples: 21689856
