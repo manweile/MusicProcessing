@@ -9,10 +9,13 @@
 # standard modules
 import ffmpeg
 import gc
+import json
 import os
 import re
 import subprocess
+from json import JSONDecodeError
 from pathlib import Path
+from subprocess import CalledProcessError
 
 # third party modules
 # from pydub import AudioSegment
@@ -126,20 +129,18 @@ class AudioNormalization():
         try:
             # get original sample rate for down sampling
             # @todo research if sample rate is >=192k, do i really need to apply loudnorm?
+            sample_rate = self.get_sample_rate(file_path)
+
             # loudnorm https://k.ylo.ph/2016/04/04/loudnorm.html
             # rbu 128 https://ffmpeg.org/ffmpeg-filters.html#loudnorm
             # AES https://www.aes.org/technical/documents/AESTD1004_1_15_10.pdf
             # https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg
-            # @todo decide what  I, TP, LRA are needed
-            # integrated loudness target I=-16 rbu 128 def: -24.0 to -23.0 aes def: -20 to -16  I want louder (less negative): -16.0
-            # maximum true peak TP=-1.5 rbu 128 def: -2.0 aes def: -3.0 to 0.0                  I want the head room, so will use -2.0
-            # loudness range target LRA=11 rbu 128 def: 7.0 aes def: ??                         I want wider range so will use 11.0
+            #
+            # integrated loudness target I=-16 rbu 128 def: -24.0 to -23.0      I want louder (less negative): -16.0
+            # maximum true peak TP=-2.0 rbu 128 def: -2.0
+            # loudness range target LRA=11 rbu 128 def: 7.0                     I want wider range so will use 11.0
             # 1st pass to get loudnorm statistics
-            # ffmpeg
-            # -i in.wav
-            # -af loudnorm=I=-16:TP=-1.5:LRA=11
-            #   :print_format=json
-            # -f null -
+            # ffmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 -af loudnorm=I=-16:TP=-2.0:LRA=11:print_format=json -f null -
             # {
             #         "input_i" : "-27.61",
             #         "input_tp" : "-4.47",
@@ -152,11 +153,60 @@ class AudioNormalization():
             #         "normalization_type" : "dynamic",
             #         "target_offset" : "0.58"
             # }
+            first_command = [
+                "ffmpeg",
+                "-hide_banner",
+                "-i", file_path,
+                "-af",
+                "loudnorm=I=-16.0:TP=-2.0:LRA=11:print_format=json",
+                "-f", "null",                                       # Output to null to avoid creating an actual output file
+                "-"                                                 # Direct output to stdout for the first pass (stderr for loudnorm stats)
+            ]
+
+            process = subprocess.run(
+                first_command,
+                check=True,
+                capture_output=True,
+                text=True               # Decode stdout/stderr as text
+            )
+            # ffmpeg outputs information to stderr
+            loudnorm_output = process.stderr
+        except CalledProcessError as e:
+            raise CalledProcessError(f"FFmpeg error {e} Stderr: {e.stderr}")
+        except Exception as e:
+            raise Exception(f"Exception {e} getting loudnorm filter")
+
+        try:
+            json_start = loudnorm_output.find('{')
+            json_end = loudnorm_output.rfind('}')
+
+            if json_start != -1 and json_end != -1:
+                json_string = loudnorm_output[json_start: json_end + 1]
+            else:
+                raise Exception(f"Could not find JSON output in loudnorm stderr\n{json_string}")
+
+            loudnorm_data = json.loads(json_string)
+            print(json.dumps(loudnorm_data, indent=4))  # Pretty print for readability
+
+            # Access specific values, e.g., integrated loudness
+            measured_i = loudnorm_data.get("input_i")
+            measured_lra = loudnorm_data.get("input_lra")
+            measured_tp = loudnorm_data.get("input_tp")
+            measured_thresh = loudnorm_data.get("input_thresh")
+            offset = loudnorm_data.get("target_offset")
+
+            second_pass = [
+                "ffmpeg",
+                "-hide_banner",
+                "-i", file_path,
+                "-af",
+                "loudnorm=I=-16.0:TP=-2.0:LRA=11
+            ]
 
             # 2nd pass to apply loudnorm statistics
             # ffmpeg
             # -i in.wav
-            # -af loudnorm=I=-16:TP=-1.5:LRA=11             # needs to be same as 1st pass
+            # -af loudnorm=I=-16:TP=-2.0:LRA=11             # needs to be same as 1st pass
             #   :measured_I=-27.61                          # from 1st pass input_i
             #   :measured_LRA=18.06                         # from 1st pass input_lra
             #   :measured_TP=-4.47                          # from 1st pass input_tp
@@ -165,20 +215,9 @@ class AudioNormalization():
             #   :linear=true
             #   :print_format=summary                       # consider json, like 1st pass
             # -ar 48k out.wav                               # necessary to down sample back to original because loudnorm auto up samples to 192k
-            # Input Integrated:    -27.5 LUFS
-            # Input True Peak:      -4.5 dBTP
-            # Input LRA:            18.1 LU
-            # Input Threshold:     -39.2 LUFS
 
-            # Output Integrated:   -16.0 LUFS
-            # Output True Peak:     -1.5 dBTP
-            # Output LRA:           14.6 LU
-            # Output Threshold:    -27.2 LUFS
-
-            # Normalization Type:   Dynamic
-            # Target Offset:        +0.0 LU
-
-            pass
+        except JSONDecodeError as e:
+            raise JSONDecodeError(f"JSON parsing error: {e} with {json_string}")
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 
