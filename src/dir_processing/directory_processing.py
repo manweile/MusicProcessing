@@ -15,6 +15,7 @@ import shutil
 import os
 import sys
 from operator import itemgetter
+from pathlib import Path
 
 # third party modules
 import pathvalidate
@@ -54,6 +55,23 @@ class DirectoryProcessing():
                     raise Exception(f"Exception {e} setting path {tld_path}")
         else:
             pass
+
+
+    def __export_path(self, file_path):
+        '''
+        @brief Creates export path for audio file conversions and normalizations.
+
+        @details Creates export directory if it doesn't exist.
+
+        @param file_path {str} The full file path for audio file.
+        @return export_path {Path} The full export file path.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            pass
+        except Exception as e:
+            raise Exception(f"Exception {e} getting export path {file_path}")
 
 
     def __ext_file_list(self, file_ext, start_path):
