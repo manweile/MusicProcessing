@@ -1,0 +1,33 @@
+stat source for coded function:
+PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3 -vn -af loudnorm=I=-16:TP=-2.0:LRA=11:print_format=json -f null NULL
+[Parsed_loudnorm_0 @ 000001aeb6540740] peed=31.3x
+{
+        "input_i" : "-16.77",
+        "input_tp" : "-6.66",
+        "input_lra" : "8.10",
+        "input_thresh" : "-26.99",
+        "output_i" : "-15.36",
+        "output_tp" : "-2.00",
+        "output_lra" : "5.60",
+        "output_thresh" : "-25.47",
+        "normalization_type" : "dynamic",
+        "target_offset" : "-0.64"
+}
+[out#0/null @ 000001aeb64ee740] video:0KiB audio:184438KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+size=N/A time=00:04:06.00 bitrate=N/A speed=31.5x
+
+normalization source for coded function:
+PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3  -id3v2_version 3 -af loudnorm=I=-16:TP=-2.0:LRA=11:measured_I=-16.77:measured_LRA=8.10:measured_TP=-6.66:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json -threads 5 -ar 44100 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
+[Parsed_loudnorm_0 @ 000001d6760e0180] KiB time=N/A bitrate=N/A speed=N/A
+{
+        "input_i" : "-16.73",
+        "input_tp" : "-6.73",
+        "input_lra" : "8.00",
+        "input_thresh" : "-26.93",
+        "output_i" : "-15.96",
+        "output_tp" : "-5.96",
+        "output_lra" : "8.10",
+        "output_thresh" : "-26.16",
+        "normalization_type" : "linear",
+        "target_offset" : "-0.04"
+}
