@@ -19,13 +19,12 @@ from pathlib import Path
 from subprocess import CalledProcessError
 
 # third party modules
-# from pydub import AudioSegment
-# from pydub.utils import mediainfo
 from yaspin import yaspin
 from yaspin.spinners import Spinners
 
 # local modules
 from src import _AUDIO_EXTS, _AUDIO_TYPES, _EXPORT_TLD, _HOME, _MEDIA
+from src.dir_processing import DirectoryProcessing
 from src.generated_files import generated_files
 
 gc.enable()
@@ -67,6 +66,7 @@ class AudioNormalization():
             # get original sample rate for down sampling
             # @todo research if sample rate is >=192k, do i really need to apply loudnorm?
             sample_rate = self.get_sample_rate(file_path)
+            export_path = DirectoryProcessing.path_info(file_path)
 
             r'''
             loudnorm https://k.ylo.ph/2016/04/04/loudnorm.html
@@ -95,18 +95,26 @@ class AudioNormalization():
                     "target_offset" : "0.58"
             }
             '''
-            loudnorm_stats = "loudnorm=I=" + _I + ":TP=" + _TP + ":LRA=" + _LRA + ":print_format=json"
-            first_command = [
+
+            # loudnorm_stats = "loudnorm=I=" + _I + ":TP=" + _TP + ":LRA=" + _LRA
+            # first_command = [
+            #     "ffmpeg",
+            #     "-hide_banner",
+            #     "-i", file_path,
+            #     "-af",
+            #     loudnorm_stats + ":print_format=json",
+            #     "-f", "null", "-"
+            # ]
+            first_pass = [
                 "ffmpeg",
                 "-hide_banner",
                 "-i", file_path,
-                "-af",
-                loudnorm_stats,
+                "-af", (f"loudnorm=I{_I}:TP={_TP}:LRA={_LRA}:print_format=json"),
                 "-f", "null", "-"
             ]
 
             process = subprocess.run(
-                first_command,
+                first_pass,
                 check=True,
                 capture_output=True,
                 text=True               # Decode stdout/stderr as text
@@ -137,33 +145,92 @@ class AudioNormalization():
             measured_thresh = loudnorm_data.get("input_thresh")
             offset = loudnorm_data.get("target_offset")
 
-            loudnorm_apply = loudnorm_stats +
+            '''
+            2nd pass to apply loudnorm statistics
+            I, TP, and LRA need to same as first pass
+            measured lra from 1st pass input_lra
+            measured tp from 1st pass input_tp
+            measured thresh from 1st pass input_thresh
+            offset from 1st pass target_offset
+            necessary to down sample back to original because loudnorm auto up samples to 192k
+            ffmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 /
+            -af loudnorm=I=-16:TP=-2.0:LRA=11:measured_I=-27.61:measured_LRA=18.06:measured_TP=-4.47:measured_thresh=-39.20:offset=0.58 /
+            :linear=true:print_format=summary -ar 44100 /
+            /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
+            '''
+
+            # loudnorm_apply = ""
+            # loudnorm_apply += loudnorm_stats
+            # loudnorm_apply += ":measured_I="
+            # loudnorm_apply += measured_i
+            # loudnorm_apply += ":measured_LRA="
+            # loudnorm_apply += measured_lra
+            # loudnorm_apply += ":measured_TP="
+            # loudnorm_apply += measured_tp
+            # loudnorm_apply += ":measured_thresh="
+            # loudnorm_apply += measured_thresh
+            # loudnorm_apply += ":offset="
+            # loudnorm_apply += offset
+            # loudnorm_apply += ":linear=true:print_format=summary"
+
+            # second_pass = [
+            #     "ffmpeg",
+            #     "-hide_banner",
+            #     "-i", file_path,
+            #     "-af", loudnorm_apply,
+            #     "-ar", sample_rate,
+            #     export_path
+            # ]
             second_pass = [
                 "ffmpeg",
                 "-hide_banner",
                 "-i", file_path,
-                "-af", loudnorm_apply,
+                "-af", (f"loudnorm=I{_I}:TP={_TP}:LRA={_LRA}"
+                        f"measured_I={measured_i}:measured_TP={measured_tp}:"
+                        f"measured_LRA={measured_lra}:measured_thresh={measured_thresh}:"
+                        f"offset={offset}:linear=true"),
                 "-ar", sample_rate,
                 export_path
             ]
-
-            # 2nd pass to apply loudnorm statistics
-            # ffmpeg
-            # -i in.wav
-            # -af loudnorm=I=-16:TP=-2.0:LRA=11             # needs to be same as 1st pass
-            #   :measured_I=-27.61                          # from 1st pass input_i
-            #   :measured_LRA=18.06                         # from 1st pass input_lra
-            #   :measured_TP=-4.47                          # from 1st pass input_tp
-            #   :measured_thresh=-39.20                     # from 1st pass input_thresh
-            #   :offset=0.58                                # from 1st pass target_offset
-            #   :linear=true
-            #   :print_format=summary                       # consider json, like 1st pass
-            # -ar 48k out.wav                               # necessary to down sample back to original because loudnorm auto up samples to 192k
+            subprocess.run(second_pass, check=True)
 
         except JSONDecodeError as e:
             raise JSONDecodeError(f"JSON parsing error: {e} with {json_string}")
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
+
+
+    def get_bitrate(file_path):
+        """
+        @brief Retrieves the bitrate of a media file using ffprobe.
+
+        @param file_path (str): The path to the media file.
+
+        @return bit_rate {int} The bitrate in bits per second, or None if not found.
+        """
+
+        try:
+            bit_rate = None
+            command = [
+                'ffprobe',
+                '-v', 'quiet',
+                '-print_format', 'json',
+                '-show_entries', 'format=bit_rate',
+                file_path
+            ]
+
+            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            data = json.loads(result.stdout)
+
+            if 'format' in data and 'bit_rate' in data['format']:
+                bit_rate = int(data['format']['bit_rate'])
+
+        except CalledProcessError as e:
+            raise CalledProcessError(f"Error {e} executing ffprobe")
+        except JSONDecodeError as e:
+            raise JSONDecodeError(f"Error {e} decoding JSON output from ffprobe.")
+
+        return bit_rate
 
 
     def get_sample_rate(self, file_path):
