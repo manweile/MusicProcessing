@@ -53,7 +53,7 @@ class AudioNormalization():
 
     def ebu_normalize_file(self, file_path):
         '''
-        @todo complete
+        @todo complete add yaspin update exceptions
         @brief Normalizes audio file level to ebu r128 standard.
 
         @details see https://k.ylo.ph/2016/04/04/loudnorm.html for an example.
@@ -67,7 +67,6 @@ class AudioNormalization():
             # @todo research if sample rate is >=192k, do i really need to apply loudnorm?
             sample_rate = self.get_sample_rate(file_path)
             export_path = DirectoryProcessing.path_info(file_path)
-
             r'''
             loudnorm https://k.ylo.ph/2016/04/04/loudnorm.html
             rbu 128 https://ffmpeg.org/ffmpeg-filters.html#loudnorm
@@ -75,127 +74,138 @@ class AudioNormalization():
             https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg
 
             1st pass to get loudnorm statistics
-            Output to null to avoid creating an actual output file
+            -hide_banner to reduce output clutter
+            -vn to save cycles by not dealing with video stream
+            -af loudnorm audio filter with desired I integrated loudness target, LRA loudness range target, TP max true peak, output in json format
+            -f Output to null to avoid creating an actual output file
             Direct output to stdout for the first pass (stderr for loudnorm stats)
 
-            ffmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 \
-            -af loudnorm=I=-16:TP=-2.0:LRA=11:print_format=json \
-            -f null -
+            PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3 -vn /
+            -af loudnorm=I=-16:TP=-2.0:LRA=11:print_format=json /
+            -f null NULL
 
+            [Parsed_loudnorm_0 @ 000001b9bb260740] peed=31.3x
             {
-                    "input_i" : "-27.61",
-                    "input_tp" : "-4.47",
-                    "input_lra" : "18.06",
-                    "input_thresh" : "-39.20",
-                    "output_i" : "-16.58",
-                    "output_tp" : "-1.50",
-                    "output_lra" : "14.78",
-                    "output_thresh" : "-27.71",
+                    "input_i" : "-16.77",
+                    "input_tp" : "-6.66",
+                    "input_lra" : "8.10",
+                    "input_thresh" : "-26.99",
+                    "output_i" : "-15.36",
+                    "output_tp" : "-2.00",
+                    "output_lra" : "5.60",
+                    "output_thresh" : "-25.47",
                     "normalization_type" : "dynamic",
-                    "target_offset" : "0.58"
+                    "target_offset" : "-0.64"
             }
             '''
 
-            # loudnorm_stats = "loudnorm=I=" + _I + ":TP=" + _TP + ":LRA=" + _LRA
-            # first_command = [
-            #     "ffmpeg",
-            #     "-hide_banner",
-            #     "-i", file_path,
-            #     "-af",
-            #     loudnorm_stats + ":print_format=json",
-            #     "-f", "null", "-"
-            # ]
-            first_pass = [
+            stats_command = [
                 "ffmpeg",
                 "-hide_banner",
                 "-i", file_path,
-                "-af", (f"loudnorm=I{_I}:TP={_TP}:LRA={_LRA}:print_format=json"),
+                "-vn",
+                "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:print_format=json"),
                 "-f", "null", "-"
             ]
 
-            process = subprocess.run(
-                first_pass,
+            stats_process = subprocess.run(
+                stats_command,
                 check=True,
                 capture_output=True,
                 text=True               # Decode stdout/stderr as text
             )
             # ffmpeg outputs information to stderr
-            loudnorm_output = process.stderr
-        except CalledProcessError as e:
-            raise CalledProcessError(f"FFmpeg error {e} Stderr: {e.stderr}")
-        except Exception as e:
-            raise Exception(f"Exception {e} getting loudnorm filter")
+            stats_output = stats_process.stderr
 
-        try:
-            json_start = loudnorm_output.find('{')
-            json_end = loudnorm_output.rfind('}')
+            json_start = stats_output.find('{')
+            json_end = stats_output.rfind('}')
 
             if json_start != -1 and json_end != -1:
-                json_string = loudnorm_output[json_start: json_end + 1]
+                json_string = stats_output[json_start: json_end + 1]
             else:
-                raise Exception(f"Could not find JSON output in loudnorm stderr\n{json_string}")
+                raise Exception(f"Could not find JSON output in ffmpeg loudnorm stats stderr\n{json_string}")
 
-            loudnorm_data = json.loads(json_string)
-            print(json.dumps(loudnorm_data, indent=4))  # Pretty print for readability
+            stats_data = json.loads(json_string)
+            print(json.dumps(stats_data, indent=4))  # Pretty print for readability
 
             # Access specific values, e.g., integrated loudness
-            measured_i = loudnorm_data.get("input_i")
-            measured_lra = loudnorm_data.get("input_lra")
-            measured_tp = loudnorm_data.get("input_tp")
-            measured_thresh = loudnorm_data.get("input_thresh")
-            offset = loudnorm_data.get("target_offset")
+            measured_i = stats_data.get("input_i")
+            measured_lra = stats_data.get("input_lra")
+            measured_tp = stats_data.get("input_tp")
+            measured_thresh = stats_data.get("input_thresh")
+            offset = stats_data.get("target_offset")
 
-            '''
+            r'''
             2nd pass to apply loudnorm statistics
-            I, TP, and LRA need to same as first pass
-            measured lra from 1st pass input_lra
-            measured tp from 1st pass input_tp
-            measured thresh from 1st pass input_thresh
-            offset from 1st pass target_offset
-            necessary to down sample back to original because loudnorm auto up samples to 192k
-            ffmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 /
-            -af loudnorm=I=-16:TP=-2.0:LRA=11:measured_I=-27.61:measured_LRA=18.06:measured_TP=-4.47:measured_thresh=-39.20:offset=0.58 /
-            :linear=true:print_format=summary -ar 44100 /
-            /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
+            -hide_banner to reduce output clutter
+            do not need a -map_metadata 0 by default if flag omitted, metadata is copied globally from first input file
+            -id3v2 3 to enforce ID3v2.3 tags, otherwise will default to ID3v2.4 and album art will NOT be copied (it's a known bug)
+            -af loudnorm audio filter same I integrated loudness target, LRA loudness range target, TP max true peak,
+            and from first pass, measured_I=input_i, measured_LRA=input_lra, measured_TP=input_tp, measured_thresh=input_thresh, offset=target_offset,
+            linear=true to normalize by linearly scaling source audio, output in json format
+            -ar input file sample_rate, 1st pass loudnorm filter auto up scales to 192 khz, so need to down scale to original
+            -y on the output file to force an overwrite if needed
+
+            PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3 -id3v2_version 3 /
+            -af loudnorm=I=-16:TP=-2.0:LRA=11:measured_I=-16.77:measured_LRA=8.10:measured_TP=-6.66:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json /
+            -ar 44100 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
+
+            [Parsed_loudnorm_0 @ 0000021b0d796e80] 8KiB time=N/A bitrate=N/A speed=N/A
+            {
+                    "input_i" : "-16.73",
+                    "input_tp" : "-6.73",
+                    "input_lra" : "8.00",
+                    "input_thresh" : "-26.93",
+                    "output_i" : "-15.96",
+                    "output_tp" : "-5.96",
+                    "output_lra" : "8.10",
+                    "output_thresh" : "-26.16",
+                    "normalization_type" : "linear",
+                    "target_offset" : "-0.04"
+            }
             '''
 
-            # loudnorm_apply = ""
-            # loudnorm_apply += loudnorm_stats
-            # loudnorm_apply += ":measured_I="
-            # loudnorm_apply += measured_i
-            # loudnorm_apply += ":measured_LRA="
-            # loudnorm_apply += measured_lra
-            # loudnorm_apply += ":measured_TP="
-            # loudnorm_apply += measured_tp
-            # loudnorm_apply += ":measured_thresh="
-            # loudnorm_apply += measured_thresh
-            # loudnorm_apply += ":offset="
-            # loudnorm_apply += offset
-            # loudnorm_apply += ":linear=true:print_format=summary"
-
-            # second_pass = [
-            #     "ffmpeg",
-            #     "-hide_banner",
-            #     "-i", file_path,
-            #     "-af", loudnorm_apply,
-            #     "-ar", sample_rate,
-            #     export_path
-            # ]
-            second_pass = [
+            normalize_command = [
                 "ffmpeg",
                 "-hide_banner",
                 "-i", file_path,
-                "-af", (f"loudnorm=I{_I}:TP={_TP}:LRA={_LRA}"
+                "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}"
                         f"measured_I={measured_i}:measured_TP={measured_tp}:"
                         f"measured_LRA={measured_lra}:measured_thresh={measured_thresh}:"
-                        f"offset={offset}:linear=true"),
+                        f"offset={offset}:linear=true"
+                        f":print_format=json"
+                        ),
                 "-ar", sample_rate,
-                export_path
+                export_path, "-y"
             ]
-            subprocess.run(second_pass, check=True)
 
+            normalize_process = subprocess.run(
+                normalize_command,
+                check=True,
+                capture_output=True,
+                text=True
+            )
+            normalize_output = normalize_process.stderr
+
+            json_start = stats_output.find('{')
+            json_end = stats_output.rfind('}')
+
+            if json_start != -1 and json_end != -1:
+                json_string = normalize_output[json_start: json_end + 1]
+            else:
+                raise Exception(f"Could not find JSON output in ffmpeg loudnorm normalize stderr\n{json_string}")
+
+            normalize_data = json.loads(json_string)
+            print(json.dumps(normalize_data, indent=4))
+            normalization_type = normalize_data.get("normalization_type")
+
+            if normalization_type != "linear":
+                print(f"ffmpeg used normalization type: {normalization_type}")
+
+        except CalledProcessError as e:
+            raise CalledProcessError(f"FFmpeg error {e} Stderr:\n{e.stderr}")
         except JSONDecodeError as e:
-            raise JSONDecodeError(f"JSON parsing error: {e} with {json_string}")
+            raise JSONDecodeError(f"JSON parsing error: {e} with\n{json_string}")
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 
@@ -308,6 +318,7 @@ class AudioNormalization():
 
     def peak_normalize_file(self, file_path):
         '''
+        @todo use DirectoryProcessing.path_info()
         @brief Peak normalizes audio file level.
 
         @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
@@ -445,9 +456,9 @@ class AudioNormalization():
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 
 
-    # @todo generalize for peak, rbu, and rms normalization
     def peak_normalize_walk(self, file_path):
         '''
+        @todo generalize for peak, ebu, and rms normalization
         @brief Peak normalizes mp3 audio files in under starting top level directory.
 
         @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.

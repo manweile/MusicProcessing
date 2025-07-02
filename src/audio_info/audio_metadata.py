@@ -252,6 +252,7 @@ class AudioMetadata():
 
     def convert_file(self, file_path):
         '''
+        @todo use DirectoryProcessing.path_info()
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file.
 
         @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
