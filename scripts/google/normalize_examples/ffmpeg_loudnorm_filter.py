@@ -5,7 +5,7 @@ import platform
 from subprocess import CalledProcessError
 
 
-def loudnorm_two_pass(input_file):
+def loudnorm_first_pass(input_file):
     # first part, getting the information
     # Construct the FFmpeg command
     # since integrated loudness target, max true peak and loudness target range not set, defaults -24, -2 & 7 are used
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     elif platform.system() == "Linux":
         audio_file = r"/home/gerald/Music/Crush/Here/Crush-Live.mp3"  # Replace with your audio/video file
 
-    loudnorm_two_pass(audio_file)
+    loudnorm_first_pass(audio_file)
 
     '''
     import subprocess
