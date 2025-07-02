@@ -4,7 +4,10 @@ ffprobe -v error -hide_banner -select_streams a:0 -show_streams -show_format /ho
 
 https://ottverse.com/ffprobe-comprehensive-tutorial-with-examples/
 
--v error kills banner and metadata, -of default=noprint_wrappers=1 gives just the key=value
+-v error kills banner and metadata, 
+select_stream a:0 gives first audio stream (should be ONLY audio stream)
+-show_entries=sample_ratew specifies return only sample_rate,
+-of default=noprint_wrappers=1 specifies no [FORMAT} etc gives just the key=value
 PS C:\Users\gmanw> ffprobe -v error -select_streams a:0  -show_entries stream=sample_rate -of default=noprint_wrappers=1 C:\Music\Crush\Here\Crush-Live.mp3
 sample_rate=44100
 
