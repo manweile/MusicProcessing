@@ -10,6 +10,7 @@
 import ffmpeg
 import gc
 import json
+import math
 import os
 import re
 import subprocess
@@ -49,74 +50,6 @@ class AudioNormalization():
         '''
 
         pass
-
-
-    def get_sample_rate(self, file_path):
-        '''
-        @brief Gets the sample rate from audio file.
-
-        @param file_path {str} The full path to audio file.
-        @return sample_rate {str} The sample rate in Hz, otherwise None.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            sample_rate = None
-            probe = ffmpeg.probe(file_path)
-            audio_stream = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
-
-            if audio_stream and 'sample_rate' in audio_stream:
-                sample_rate = audio_stream['sample_rate']
-
-        except ffmpeg.Error as e:
-            raise Exception(f"An ffmpeg error occurred: {e.stderr.decode()}")
-        except Exception as e:
-            raise Exception(f"Exception {e} getting sample rate for file {file_path}")
-
-        return sample_rate
-
-
-    def get_volume_info(self, file_path):
-        '''
-        @brief Gets mean and max volume from audio file using ffmpeg.
-
-        @param file_path {str} The full path to audio file.
-        @return volumes {dict} The mean and max
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            volumes = dict()
-
-            command = [
-                'ffmpeg',
-                '-i', file_path,
-                '-hide_banner',
-                '-filter:a', 'volumedetect',
-                '-f', 'null',
-                '-'                             # Send output to stdout
-            ]
-
-            # Run FFmpeg and capture stderr (where volumedetect output goes)
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = process.communicate()
-
-            # Decode stderr to string and search for volume information
-            output_str = stderr.decode('utf-8')
-
-            mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
-            max_volume_match = re.search(r'max_volume: ([-]?\d+\.\d+) dB', output_str)
-
-            if mean_volume_match and max_volume_match:
-                mean_volume = float(mean_volume_match.group(1))
-                max_volume = float(max_volume_match.group(1))
-                volumes['mean_volume'] = mean_volume
-                volumes['max_volume'] = max_volume
-
-        except Exception as e:
-            raise Exception(f"Exception {e} getting volume for file {file_path}")
-
-        return volumes
 
 
     def ebu_normalize_file(self, file_path):
@@ -233,6 +166,79 @@ class AudioNormalization():
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 
 
+    def get_sample_rate(self, file_path):
+        '''
+        @brief Gets the sample rate from audio file.
+
+        @param file_path {str} The full path to audio file.
+        @return sample_rate {str} The sample rate in Hz, otherwise None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            sample_rate = None
+            probe = ffmpeg.probe(file_path)
+            audio_stream = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
+
+            if audio_stream and 'sample_rate' in audio_stream:
+                sample_rate = audio_stream['sample_rate']
+
+        except ffmpeg.Error as e:
+            raise Exception(f"An ffmpeg error occurred: {e.stderr.decode()}")
+        except Exception as e:
+            raise Exception(f"Exception {e} getting sample rate for file {file_path}")
+
+        return sample_rate
+
+
+    def get_volume_info(self, file_path):
+        '''
+        @brief Gets mean and max volume from audio file using ffmpeg.
+
+        @details
+        @param file_path {str} The full path to audio file.
+        @return volumes {dict} The mean and max volumes of audio file in decibels relative to max PCM value.
+        Key                 |Value
+        --------------------|----------------------------------------
+        mean_value {str}    |the root mean square volume {float}
+        max_volume {str}    |the per-sample maximum volume {float}
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            volumes = dict()
+
+            command = [
+                'ffmpeg',
+                '-i', file_path,
+                '-hide_banner',
+                '-filter:a', 'volumedetect',
+                '-f', 'null',
+                '-'                             # Send output to stdout
+            ]
+
+            # Run FFmpeg and capture stderr (where volumedetect output goes)
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
+
+            # Decode stderr to string and search for volume information
+            output_str = stderr.decode('utf-8')
+
+            mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
+            max_volume_match = re.search(r'max_volume: ([-]?\d+\.\d+) dB', output_str)
+
+            if mean_volume_match and max_volume_match:
+                mean_volume = float(mean_volume_match.group(1))
+                max_volume = float(max_volume_match.group(1))
+                volumes['mean_volume'] = mean_volume
+                volumes['max_volume'] = max_volume
+
+        except Exception as e:
+            raise Exception(f"Exception {e} getting volume for file {file_path}")
+
+        return volumes
+
+
     def peak_normalize_file(self, file_path):
         '''
         @brief Peak normalizes audio file level.
@@ -286,23 +292,50 @@ class AudioNormalization():
             if not os.path.exists(export_dir):
                 os.makedirs(export_dir)
 
-            export_name = input_path.name
+            # get mp3 audio format & extension from package constants
+            export_format = _AUDIO_TYPES[0]
+            export_ext = _AUDIO_EXTS[0]
+
+            input_name = input_path.stem
+
+            export_name = input_name + export_ext
             export_path = os.path.join(export_dir, export_name)
 
+            input_format = os.path.splitext(file_path)[1].lower()[1:]
+            input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
+            input_path_dir = os.path.dirname(file_path)
+            print(f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}")
+            print(f"Source directory path: {input_path_dir}")
+            # input_format = input_path.suffix[1:].lower()
+            # print(f"Beginning peak normalization on {input_path.stem} from {input_format} to {export_format}")
+            # print(f"Source directory path: {input_path_parent}")
+
             # get the input file info - want bitrate so can preserve the quality in exported file
-            media_info = self.get_media_info(input_path)
+            media_info = self.get_media_info(file_path)
+            # media_info = self.get_media_info(input_path)
             bitrate = media_info['bit_rate']
 
             # @todo research setting for headroom and re-write
-            volume_info = self.get_volume_info(input_path)
-            max_volume = volume_info['max_volume']
+            volume_info = self.get_volume_info(file_path)
+            # volume_info = self.get_volume_info(input_path)
+            # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
+            max_volume = math.floor(volume_info['max_volume'])
 
             if max_volume <= -1:
                 target_level = -1 - max_volume
-            else:
-                target_level = -1
+            elif max_volume > -1 and max_volume <= 0:
+                print(f"{input_path_stem} has max volume: {max_volume}, normalization not needed")
+                return
+            elif max_volume > 0:
+                print(f"{input_path_stem} has max volume: {max_volume}, process with Goldwave or Audacity")
+                return
 
-            # working ubuntu/windows cli:
+            # @todo switch to ffmpeg
+            # ffmpeg -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a "volume=6dB" -c:v copy -ab 128k -map_metadata 0 -id3v2_version 3 "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-live.mp3" -y
+            # use target_level in volume
+            # use bit_rate in -ab
+
+            # working ffmpeg-normalize ubuntu/windows cli:
             # ffmpeg-normalize ~/ProcessedMusic/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
             # ffmpeg-normalize F:\ProcessedMusic\Crush\Here\Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
             # album art and tags are preserved!!!
