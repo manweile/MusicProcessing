@@ -22,7 +22,7 @@ import pathvalidate
 from tqdm import tqdm
 
 # local modules
-from src import _AUDIO_EXTS, _AUDIO_TYPES
+from src import _AUDIO_EXTS, _AUDIO_TYPES, _EXPORT_TLD, _HOME, _MEDIA
 from src.audio_info import AudioMetadata
 from src.generated_files import generated_files
 
@@ -57,19 +57,70 @@ class DirectoryProcessing():
             pass
 
 
-    def __export_path(self, file_path):
+    def __path_info(self, file_path):
         '''
         @brief Creates export path for audio file conversions and normalizations.
 
         @details Creates export directory if it doesn't exist.
 
         @param file_path {str} The full file path for audio file.
-        @return export_path {Path} The full export file path.
+        @return path_info {Dict} The export path information.
+        "export_path": export path {str}
+        "export_ext": export format {str}
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
-            pass
+            path_info = dict()
+            export_dir = None
+            export_name = None
+            export_path = None
+
+            input_path = Path(file_path)
+
+            input_ext = input_path.suffix
+            if input_ext.lower() != _AUDIO_EXTS[0]:
+                raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
+
+            # get the full parent w/o filename so I can start removing unnecessary path components
+            input_path_parent = input_path.parent
+
+            # remove the anchor (ie. / or H:\), have no use for it
+            input_path_parts = input_path_parent.parts[1:]
+
+            # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
+            # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
+            if input_path_parts[0] == _MEDIA:
+                # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
+                # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
+                input_path_components = input_path_parts[4:]
+            elif input_path_parts[0] == _HOME:
+                # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
+                # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
+                input_path_components = input_path_parts[3:]
+            else:
+                # Windows is going to have <tld>/<artist dir>/<album dir>
+                # so 3 elements, we don't want element 1: 'Music'
+                input_path_components = input_path_parts[1:]
+
+            # using fixed storage path because will always know project structure
+            export_dir = os.path.join(generated_files, _EXPORT_TLD)
+
+            for component in input_path_components:
+                export_dir = os.path.join(export_dir, component)
+
+            # directory is already extant if we are processing multiple songs for the same artist & album
+            if not os.path.exists(export_dir):
+                os.makedirs(export_dir)
+
+            # get mp3 audio format & extension from package constants
+            export_format = _AUDIO_TYPES[0]
+            export_ext = _AUDIO_EXTS[0]
+
+            input_name = input_path.stem
+
+            export_name = input_name + export_ext
+            export_path = os.path.join(export_dir, export_name)
         except Exception as e:
             raise Exception(f"Exception {e} getting export path {file_path}")
 
