@@ -1,0 +1,10 @@
+from_file:
+ffmpeg -y -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 -acodec pcm_s16le -vn -f wav -
+
+export with cover and tags:
+ffmpeg -y -f wav -i /tmp/tmpao_1w84l -i /home/gerald/Music/Crush/Here/Folder.jpg -map 0 -map 1 -c:v mjpeg -b:a 129156 -metadata TALB=Here -metadata TPE2=Crush -metadata TPE1=Crush -metadata TCOM=Paul Lamb -metadata TPOS=1/1 -metadata TCON=Pop -metadata TPUB=Sonic Records -metadata TIT2=Live -metadata TRCK=1/12 -metadata TMED=CD -metadata TYER=2002 -metadata TCMP=0 -id3v2_version 3 -f mp3 /tmp/tmp7x93x8kw
+
+export with just tags:
+ffmpeg -y -f wav -i /tmp/tmpjt82pnha -b:a 129156 -metadata TALB=Here -metadata TPE2=Crush -metadata TPE1=Crush -metadata TCOM=Paul Lamb -metadata TPOS=1/1 -metadata TCON=Pop -metadata TPUB=Sonic Records -metadata TIT2=Live -metadata TRCK=1/12 -metadata TMED=CD -metadata TYER=2002 -metadata TCMP=0 -id3v2_version 3 -f mp3 /tmp/tmpy7xag0x5
+
+https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg
