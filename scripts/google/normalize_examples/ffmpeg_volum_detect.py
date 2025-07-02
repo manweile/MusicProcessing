@@ -5,7 +5,7 @@ import subprocess
 
 '''
 google search: "ffmpeg' python volumedetect example
-https://superuser.com/questions/323119/how-can-i-normalize-audio-using-ffmpeg
+also https://superuser.com/questions/323119/how-can-i-normalize-audio-using-ffmpeg
 '''
 
 
