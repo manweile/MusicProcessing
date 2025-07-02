@@ -12,10 +12,8 @@ import fnmatch
 import gc
 import os
 import pprint
-# import re
 import shutil
 import struct
-# import subprocess
 from pathlib import Path
 
 # third party modules
@@ -28,11 +26,9 @@ from mutagen.mp4 import MP4, MP4FreeForm
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 from tqdm import tqdm
-# from yaspin import yaspin
-# from yaspin.spinners import Spinners
 
 # local modules
-from src import _AUDIO_EXTS, _AUDIO_TYPES, _EXPORT_TLD, _HOME, _MEDIA
+from src import _AUDIO_EXTS, _AUDIO_TYPES
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import generated_files
 
@@ -265,89 +261,89 @@ class AudioMetadata():
         '''
 
         try:
-            export_dir = None
-            export_name = None
-            export_path = None
+            # export_dir = None
+            # export_name = None
+            # export_path = None
 
-            input_path = Path(file_path)
+            # input_path = Path(file_path)
 
-            input_ext = input_path.suffix
-            if input_ext.lower() != _AUDIO_EXTS[0]:
-                raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
+            # input_ext = input_path.suffix
+            # if input_ext.lower() != _AUDIO_EXTS[0]:
+            #     raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
 
-            r'''
-            Ubuntu file path:
-            <anchor><mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>/<song file.ext> = 8 elements
-            <anchor><mount point>/<usr>/<tld>/<artist dir>/<album dir>/<song file.ext> = 7 elements
-            anchor is drive (always an empty string) + root (always a forward slash) Eg. "" + "/" = "/"
-            mount point is either "home" (a hdd) or "media" (an usb)
-            if mount point is media, then usr is immediately followed by drive label, then top level directory
-            if mount point is home, then usr is immediately followed by top level directory
+            # r'''
+            # Ubuntu file path:
+            # <anchor><mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>/<song file.ext> = 8 elements
+            # <anchor><mount point>/<usr>/<tld>/<artist dir>/<album dir>/<song file.ext> = 7 elements
+            # anchor is drive (always an empty string) + root (always a forward slash) Eg. "" + "/" = "/"
+            # mount point is either "home" (a hdd) or "media" (an usb)
+            # if mount point is media, then usr is immediately followed by drive label, then top level directory
+            # if mount point is home, then usr is immediately followed by top level directory
 
-            Ubuntu from USB stick: "/media/gerald/Lexar/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
-            anchor = "/", mount point = "media", usr = "gerald", drive label = "Lexar", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
+            # Ubuntu from USB stick: "/media/gerald/Lexar/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
+            # anchor = "/", mount point = "media", usr = "gerald", drive label = "Lexar", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
 
-            Ubuntu from hdd: "/home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
-            anchor = "/", mount point = "home", usr = "gerald", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
+            # Ubuntu from hdd: "/home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
+            # anchor = "/", mount point = "home", usr = "gerald", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
 
-            Windows file path:
-            <anchor><tld>\<artist dir>\<album dir>\<song file.ext> = 5 elements
-            anchor is always a drive letter + colon + backslash Eg. C:\, H:\
+            # Windows file path:
+            # <anchor><tld>\<artist dir>\<album dir>\<song file.ext> = 5 elements
+            # anchor is always a drive letter + colon + backslash Eg. C:\, H:\
 
-            Windows from USB stick: "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
-            anchor = "H:\", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
+            # Windows from USB stick: "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
+            # anchor = "H:\", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
 
-            Windows from hdd: "C:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
-            anchor = "C:\", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
+            # Windows from hdd: "C:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
+            # anchor = "C:\", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
 
-            I don't need anchor, mount point, usr, drive label, tld
-            I always need artist dir, album dir, and song file
-            '''
-            # get the full parent w/o filename so I can start removing unnecessary path components
-            input_path_parent = input_path.parent
+            # I don't need anchor, mount point, usr, drive label, tld
+            # I always need artist dir, album dir, and song file
+            # '''
+            # # get the full parent w/o filename so I can start removing unnecessary path components
+            # input_path_parent = input_path.parent
 
-            # remove the anchor (ie. / or H:\), have no use for it
-            input_path_parts = input_path_parent.parts[1:]
+            # # remove the anchor (ie. / or H:\), have no use for it
+            # input_path_parts = input_path_parent.parts[1:]
 
-            # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
-            # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
-            if input_path_parts[0] == _MEDIA:
-                # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
-                # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
-                input_path_components = input_path_parts[4:]
-            elif input_path_parts[0] == _HOME:
-                # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
-                # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
-                input_path_components = input_path_parts[3:]
-            else:
-                # Windows is going to have <tld>/<artist dir>/<album dir>
-                # so 3 elements, we don't want element 1: 'Music'
-                input_path_components = input_path_parts[1:]
+            # # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
+            # # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
+            # if input_path_parts[0] == _MEDIA:
+            #     # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
+            #     # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
+            #     input_path_components = input_path_parts[4:]
+            # elif input_path_parts[0] == _HOME:
+            #     # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
+            #     # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
+            #     input_path_components = input_path_parts[3:]
+            # else:
+            #     # Windows is going to have <tld>/<artist dir>/<album dir>
+            #     # so 3 elements, we don't want element 1: 'Music'
+            #     input_path_components = input_path_parts[1:]
 
-            # using fixed storage path because will always know project structure
-            export_dir = os.path.join(generated_files, _EXPORT_TLD)
+            # # using fixed storage path because will always know project structure
+            # export_dir = os.path.join(generated_files, _EXPORT_TLD)
 
-            for component in input_path_components:
-                export_dir = os.path.join(export_dir, component)
+            # for component in input_path_components:
+            #     export_dir = os.path.join(export_dir, component)
 
-            # directory is already extant if we are processing multiple songs for the same artist & album
-            if not os.path.exists(export_dir):
-                os.makedirs(export_dir)
+            # # directory is already extant if we are processing multiple songs for the same artist & album
+            # if not os.path.exists(export_dir):
+            #     os.makedirs(export_dir)
 
-            # get mp3 audio format & extension from package constants
+            # # get mp3 extension from package constants
+            # export_ext = _AUDIO_EXTS[0]
+
+            # input_name = input_path.stem
+            # export_name = input_name + export_ext
+            # export_path = os.path.join(export_dir, export_name)
+            export_path = DirectoryProcessing.path_info(file_path)
+
             export_format = _AUDIO_TYPES[0]
-            export_ext = _AUDIO_EXTS[0]
-
-            input_name = input_path.stem
-
-            export_name = input_name + export_ext
-            export_path = os.path.join(export_dir, export_name)
-
             input_format = os.path.splitext(file_path)[1].lower()[1:]
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
-            input_path_dir = os.path.dirname(file_path)
+            input_path_parent = os.path.dirname(file_path)
             print(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
-            print(f"Source directory path: {input_path_dir}")
+            print(f"Source directory path: {input_path_parent}")
             # input_format = input_path.suffix[1:].lower()
             # print(f"Beginning conversion on {input_path.stem} from {input_format} to {export_format}")
             # print(f"Source directory path: {input_path_parent}")
@@ -382,7 +378,7 @@ class AudioMetadata():
                 tags = self.map_m4a_tags(input_tags)
 
             # get the input file info - want bitrate so can preserve the quality in exported file
-            media_info = self.get_media_info(input_path)
+            media_info = self.get_media_info(file_path)
             bitrate = media_info['bit_rate']
 
             '''
@@ -392,12 +388,12 @@ class AudioMetadata():
             cover = os.path.join(input_path_parent, _FOLDER_ART)
 
             if metadata_type == _MP3:
-                audio_segment = AudioSegment.from_mp3(input_path)
+                audio_segment = AudioSegment.from_mp3(file_path)
             elif metadata_type == _MP4:
-                audio_segment = AudioSegment.from_file(input_path, format=format)
+                audio_segment = AudioSegment.from_file(file_path, format=format)
             elif metadata_type == _ASF:
                 # pydub doesn't know about wma/asf, so no format forces an autodetect
-                audio_segment = AudioSegment.from_file(input_path)
+                audio_segment = AudioSegment.from_file(file_path)
 
             # the id3v2 version = 3 is important!
             # both pydub (AudioSegment) and mutagen (MP3) need it
@@ -424,7 +420,7 @@ class AudioMetadata():
             audio_tags.save(v2_version=3)
 
         except Exception as e:
-            raise Exception(f"Exception {e} converting {input_path} to {export_path}")
+            raise Exception(f"Exception {e} converting {file_path} to {export_path}")
 
 
     def convert_walk(self, start_path, file_pattern):
@@ -465,106 +461,106 @@ class AudioMetadata():
                 raise Exception(f"Exception {e} walking {start_path} to convert audio files to mp3")
 
 
-    # def create_album_dir(self, start_path):
-    #     '''
-    #     @brief Creates an album sub-directory in an artist directory.
+    def create_album_dir(self, start_path):
+        '''
+        @brief Creates an album sub-directory in an artist directory.
 
-    #     @details Creates the album sub directory for the artist if needed.
-    #     @details The album name for the directory is drawn from the album metadata field.
-    #     @details Also creates csv of all audio file paths, album metadata values and sanitized album directory names.
+        @details Creates the album sub directory for the artist if needed.
+        @details The album name for the directory is drawn from the album metadata field.
+        @details Also creates csv of all audio file paths, album metadata values and sanitized album directory names.
 
-    #     @param start_path {str} The tld holding music files.
-    #     @param file_path {str} The full path to audio file.
-    #     @exception ValueError An inappropriate argument value of correct type error.
-    #     @exception Exception A common baseclass exception to handle unforeseen errors.
-    #     '''
+        @param start_path {str} The tld holding music files.
+        @param file_path {str} The full path to audio file.
+        @exception ValueError An inappropriate argument value of correct type error.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
 
-    #     album_dirs = set()
-    #     data = []
-    #     csv_filename = "created_album_dirs.csv"
-    #     header_row = ["audio file path", "album metadata", "album directory"]
+        album_dirs = set()
+        data = []
+        csv_filename = "created_album_dirs.csv"
+        header_row = ["audio file path", "album metadata", "album directory"]
 
-    #     try:
-    #         dir_processing = DirectoryProcessing(start_path)
+        try:
+            dir_processing = DirectoryProcessing(start_path)
 
-    #         # get the artist dirs under tld
-    #         tld_content = os.listdir(start_path)
-    #         len_tld_content = len(tld_content)
-    #         tld_bar = tqdm(desc=f'Processing {start_path} content', total=len_tld_content, unit=' items')
+            # get the artist dirs under tld
+            tld_content = os.listdir(start_path)
+            len_tld_content = len(tld_content)
+            tld_bar = tqdm(desc=f'Processing {start_path} content', total=len_tld_content, unit=' items')
 
-    #         # top level directory consists of artist directories, playlist files and couple other sundry files
-    #         for tld_item in tld_content:
-    #             # update the progress bar before processing artist directory
-    #             # else we will have a mismatch in the bar processed/total display
-    #             # we only want artist directories, playlist/sundry files don't count
-    #             tld_item_path = os.path.join(start_path, tld_item)
-    #             if os.path.isfile(tld_item_path):
-    #                 tld_bar.update(1)
-    #                 continue
+            # top level directory consists of artist directories, playlist files and couple other sundry files
+            for tld_item in tld_content:
+                # update the progress bar before processing artist directory
+                # else we will have a mismatch in the bar processed/total display
+                # we only want artist directories, playlist/sundry files don't count
+                tld_item_path = os.path.join(start_path, tld_item)
+                if os.path.isfile(tld_item_path):
+                    tld_bar.update(1)
+                    continue
 
-    #             # since we skip tld items that are files,
-    #             # now we need to check tld items that are directories
-    #             artist_content = os.listdir(tld_item_path)
-    #             # want to know if we have any empty artist directories so we can deal with them later
-    #             if os.path.isdir(tld_item_path) and not artist_content:
-    #                 print(f"{tld_item_path} is an empty artist directory")
-    #                 tld_bar.update(1)
-    #                 continue
+                # since we skip tld items that are files,
+                # now we need to check tld items that are directories
+                artist_content = os.listdir(tld_item_path)
+                # want to know if we have any empty artist directories so we can deal with them later
+                if os.path.isdir(tld_item_path) and not artist_content:
+                    print(f"{tld_item_path} is an empty artist directory")
+                    tld_bar.update(1)
+                    continue
 
-    #             # now we can look at what's in the current artist 1st level directory
-    #             for artist_item in artist_content:
-    #                 # we don't care about existing album 2nd level dirs
-    #                 artist_item_path = os.path.join(tld_item_path, artist_item)
-    #                 if os.path.isdir(artist_item_path):
-    #                     continue
+                # now we can look at what's in the current artist 1st level directory
+                for artist_item in artist_content:
+                    # we don't care about existing album 2nd level dirs
+                    artist_item_path = os.path.join(tld_item_path, artist_item)
+                    if os.path.isdir(artist_item_path):
+                        continue
 
-    #                 # if we find an audio file, we need a album sub-directory for it
-    #                 # as artist dirs are supposed to only contain album sub dirs
-    #                 if os.path.isfile(artist_item_path):
-    #                     _, file_ext = os.path.splitext(artist_item)
+                    # if we find an audio file, we need a album sub-directory for it
+                    # as artist dirs are supposed to only contain album sub dirs
+                    if os.path.isfile(artist_item_path):
+                        _, file_ext = os.path.splitext(artist_item)
 
-    #                 # audio files are supposed to be in an album sub dir
-    #                 if file_ext.lower() in _AUDIO_EXTS:
-    #                     audio_file = artist_item_path
-    #                     # using ffprobe function cause it is audio file type agnostic
-    #                     file_media_tags = self.get_media_tags(audio_file)
-    #                 else:
-    #                     # we found a non audio file
-    #                     continue
+                    # audio files are supposed to be in an album sub dir
+                    if file_ext.lower() in _AUDIO_EXTS:
+                        audio_file = artist_item_path
+                        # using ffprobe function cause it is audio file type agnostic
+                        file_media_tags = self.get_media_tags(audio_file)
+                    else:
+                        # we found a non audio file
+                        continue
 
-    #                 if 'album' in file_media_tags.keys():
-    #                     # the album metadata should have had all / removed manually,
-    #                     # but do replace anyways, it would wreak havoc by creating nested dirs
-    #                     album = file_media_tags['album'].replace("/", "-")
+                    if 'album' in file_media_tags.keys():
+                        # the album metadata should have had all / removed manually,
+                        # but do replace anyways, it would wreak havoc by creating nested dirs
+                        album = file_media_tags['album'].replace("/", "-")
 
-    #                     # sanitize because the metadata might have characters invalid for directory names
-    #                     # platform is "Windows" because it is more restrictive (therefore os universal),
-    #                     # the characters \, :, *, ?, ", <, >, | will be replaced by "-"
-    #                     # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
-    #                     album_dir = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
+                        # sanitize because the metadata might have characters invalid for directory names
+                        # platform is "Windows" because it is more restrictive (therefore os universal),
+                        # the characters \, :, *, ?, ", <, >, | will be replaced by "-"
+                        # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
+                        album_dir = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
 
-    #                     data.append([audio_file, album, album_dir])
-    #                     album_dirs.add(album_dir)
+                        data.append([audio_file, album, album_dir])
+                        album_dirs.add(album_dir)
 
-    #                     # make the album sub directory is REQUIRED before moving the audio file
-    #                     dir_processing.make_album_dir(tld_item_path, album_dir)
+                        # make the album sub directory is REQUIRED before moving the audio file
+                        dir_processing.make_album_dir(tld_item_path, album_dir)
 
-    #                     # now transfer the audio file to new album directory
-    #                     destination_dir = os.path.join(tld_item_path, album_dir)
-    #                     dir_processing.move_audio_file(audio_file, destination_dir)
-    #                 else:
-    #                     print(f"{audio_file} is missing album metadata")
-    #                     continue
+                        # now transfer the audio file to new album directory
+                        destination_dir = os.path.join(tld_item_path, album_dir)
+                        dir_processing.move_audio_file(audio_file, destination_dir)
+                    else:
+                        print(f"{audio_file} is missing album metadata")
+                        continue
 
-    #             tld_bar.update(1)
+                tld_bar.update(1)
 
-    #         tld_bar.close()
-    #         dir_processing.create_csv(csv_filename, data, generated_files, header_row, 0)
-    #         print(f"Created {len(album_dirs)} album dirs")
-    #     except ValueError as e:
-    #         raise Exception(f"ValueError {e} sanitizing album metadata {album}")
-    #     except Exception as e:
-    #         raise Exception(f"Exception {e} creating sub-dirs for {start_path}")
+            tld_bar.close()
+            dir_processing.create_csv(csv_filename, data, generated_files, header_row, 0)
+            print(f"Created {len(album_dirs)} album dirs")
+        except ValueError as e:
+            raise Exception(f"ValueError {e} sanitizing album metadata {album}")
+        except Exception as e:
+            raise Exception(f"Exception {e} creating sub-dirs for {start_path}")
 
 
     def extract_album_art(self, file_path):
