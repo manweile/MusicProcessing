@@ -269,11 +269,11 @@ class AudioMetadata():
             export_name = None
             export_path = None
 
-            # get mp3 audio format & extension from package constants
-            export_format = _AUDIO_TYPES[0]
-            export_ext = _AUDIO_EXTS[0]
-
             input_path = Path(file_path)
+
+            input_ext = input_path.suffix
+            if input_ext.lower() != _AUDIO_EXTS[0]:
+                raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
 
             r'''
             Ubuntu file path:
@@ -334,13 +334,23 @@ class AudioMetadata():
             if not os.path.exists(export_dir):
                 os.makedirs(export_dir)
 
+            # get mp3 audio format & extension from package constants
+            export_format = _AUDIO_TYPES[0]
+            export_ext = _AUDIO_EXTS[0]
+
             input_name = input_path.stem
-            input_format = input_path.suffix[1:].lower()
+
             export_name = input_name + export_ext
             export_path = os.path.join(export_dir, export_name)
 
-            print(f"Beginning conversion on {input_path.stem} from {input_format}")
-            print(f"Source filepath: {file_path}")
+            input_format = os.path.splitext(file_path)[1].lower()[1:]
+            input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
+            input_path_dir = os.path.dirname(file_path)
+            print(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
+            print(f"Source directory path: {input_path_dir}")
+            # input_format = input_path.suffix[1:].lower()
+            # print(f"Beginning conversion on {input_path.stem} from {input_format} to {export_format}")
+            # print(f"Source directory path: {input_path_parent}")
 
             '''
             metadata transfer
