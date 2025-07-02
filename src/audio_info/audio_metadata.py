@@ -45,20 +45,25 @@ _TYER = "TYER"
 # the set of pydub generic metadata keys I want to copy to converted & normalized files
 # these keys also correspond to what Windows displays as file information in File Explorer
 _GEN_KEYS = {
-    'album',                    # must have
-    'album_artist',             # nice to have
-    'artist',                   # must have
-    'comment',                  # nice to have, but a PITA to parse/add
-    'compilation',              # nice to have, but not ID3v2.3
-    'composer',                 # nice to have
-    'copyright',                # nice to have
-    'date',                     # must have
-    'disc',                     # nice to have
-    'genre',                    # must have
-    'originalyear'              # nice to have
-    'publisher',                # nice to have
-    'title',                    # must have
-    'track',                    # nice to have
+    'album',                    # must have                             ffmpeg mapping: TALB
+    'album_artist',             # nice to have                          ffmpeg mapping: TPE2
+    'artist',                   # must have                             ffmpeg mapping: TPE1
+    'comment',                  # PITA, handled as ID3v2.4              ffmpeg mapping: COMM
+    'compilation',              # PITA, is ID3v2.4                      ffmpeg mapping: TCMP
+    'composer',                 # nice to have                          ffmpeg mapping: TCOM
+    'copyright',                # nice to have                          ffmpeg mapping: TCOP
+    'date',                     # must have                              ffmpeg mapping: TDRC    is ID3v2.4
+    'disc',                     # nice to have                          ffmpeg mapping: TPOS
+    'encoder',                  # not interested                        ffmpeg mapping: TSSE
+    'encoded_by',               # not interested                        ffmpeg mapping: TENC
+    'genre',                    # must have                             ffmpeg mapping: TCON
+    'language'                  # not interested                        ffmpeg mapping: TLAN
+    'lyrics',                   # not interested                        ffmpeg mapping: USLT
+    'originalyear',             # nice to have                          ffmpeg mapping: TORY
+    'performer',                # not interested                        ffmpeg mapping: TPE3
+    'publisher',                # nice to have                          ffmpeg mapping: TPUB
+    'title',                    # must have                             ffmpeg mapping: TIT2
+    'track'                     # nice to have                          ffmpeg mapping: TRCK
 }
 
 # dict of generic to ID3v2.3 (MP3)
