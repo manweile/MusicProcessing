@@ -1,0 +1,25 @@
+ist pass to get the max volume
+PS C:\Users\gmanw> ffmpeg -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a "volumedetect" -map 0:a -f null NUL
+[Parsed_volumedetect_0 @ 0000025e2a057b80] n_samples: 21689856
+[Parsed_volumedetect_0 @ 0000025e2a057b80] mean_volume: -19.9 dB
+[Parsed_volumedetect_0 @ 0000025e2a057b80] max_volume: -6.7 dB
+[Parsed_volumedetect_0 @ 0000025e2a057b80] histogram_6db: 12
+[Parsed_volumedetect_0 @ 0000025e2a057b80] histogram_7db: 1132
+[Parsed_volumedetect_0 @ 0000025e2a057b80] histogram_8db: 31563
+
+normalize to max volume less some headroom, copy album art (video stream), retain original bit rate, copy audio stream metadata, ensure ID3v2.3 tags, overwrite if output exists
+PS C:\Users\gmanw> ffmpeg -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a "volume=6dB" -c:v copy -ab 128k -map_metadata 0 -id3v2_version 3 "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
+
+get normalized max volume
+Note:
+pre mean vol: -19.9, post mean vol: -14.3
+pre max vol: -6.7, post max vol: -0.4
+histograms shifted up from 6/7/8 to 0/1/2/3
+PS C:\Users\gmanw> ffmpeg -hide_banner -i "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -filter:a "volumedetect" -map 0:a -f null NUL
+[Parsed_volumedetect_0 @ 000001edb7522ac0] n_samples: 21689856
+[Parsed_volumedetect_0 @ 000001edb7522ac0] mean_volume: -14.3 dB
+[Parsed_volumedetect_0 @ 000001edb7522ac0] max_volume: -0.4 dB
+[Parsed_volumedetect_0 @ 000001edb7522ac0] histogram_0db: 10
+[Parsed_volumedetect_0 @ 000001edb7522ac0] histogram_1db: 694
+[Parsed_volumedetect_0 @ 000001edb7522ac0] histogram_2db: 14090
+[Parsed_volumedetect_0 @ 000001edb7522ac0] histogram_3db: 73408
