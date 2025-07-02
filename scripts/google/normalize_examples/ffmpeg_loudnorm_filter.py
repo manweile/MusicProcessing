@@ -1,4 +1,7 @@
-# google search: Ffmpeg loudnorm filter output parsing python
+# google search:
+# Ffmpeg loudnorm filter output parsing python
+# use ffmpeg loudnorm first pass python
+
 import subprocess
 import json
 import platform
