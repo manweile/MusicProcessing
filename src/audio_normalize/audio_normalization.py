@@ -37,12 +37,12 @@ _TP = "-2.0"        # ffmpeg loudnorm maximum true peak RBU 128 default: -2.0, I
 
 class AudioNormalization():
     '''
-    @brief Defines the base metadata processing used by project.
+    @brief Defines the base normalization processing used by project.
     '''
 
     def __init__(self):
         '''
-        @brief Initializes the AudioMetadata class.
+        @brief Initializes the AudioNormalization class.
 
         @details A basic class implementation with no instantiation parameters.
 
