@@ -1,4 +1,91 @@
-this cli throws a false error
+ffmpeg to extract embedded art from an audio file to a jpg
+-hide_banner to reduce output clutter
+-an to ignore audio stream
+-vcodec copy to copy art
+-update 1 to overwrite output file with 1 frame (which is all video stream has for an embedded art image).
+Not using update 1 will result in false error (as seen in the false error cli). 
+-y to overwrite existing output file.
+
+PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -an -vcodec copy -update 1 D:\MusicProcessing\src\generated_files\Music\Crush\Here\cover.jpg -y
+[mp3 @ 0000027257d507c0] Estimating duration from bitrate, this may be inaccurate
+Input #0, mp3, from 'C:\Music\Crush\Here\Crush-Live.mp3':
+  Metadata:
+    title           : Live
+    artist          : Crush
+    track           : 1/12
+    album           : Here
+    disc            : 1/1
+    genre           : Pop
+    TMED            : CD
+    TORY            : 2002
+    MusicBrainz Release Track Id: 2475137d-6745-3951-a361-d4c29798f5d1
+    album_artist    : Crush
+    TSO2            : Crush
+    artist-sort     : Crush
+    composer        : Paul Lamb
+    SCRIPT          : Latn
+    publisher       : Sonic Records
+    ARTISTS         : Crush
+    ASIN            : B000065PP6
+    originalyear    : 2002
+    BARCODE         : 627915092229
+    CATALOGNUMBER   : 2 50922
+    MusicBrainz Album Type: album
+    MusicBrainz Album Status: official
+    MusicBrainz Album Release Country: CA
+    Acoustid Id     : 4fdf7757-ba58-4a4b-a1df-1ad4d102a474
+    MusicBrainz Album Id: 18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6
+    MusicBrainz Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Album Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1
+    date            : 2002
+  Duration: 00:04:05.91, start: 0.000000, bitrate: 129 kb/s
+  Stream #0:0: Audio: mp3 (mp3float), 44100 Hz, stereo, fltp, 128 kb/s
+  Stream #0:1: Video: mjpeg (Baseline), yuvj420p(pc, bt470bg/unknown/unknown), 500x490 [SAR 1:1 DAR 50:49], 90k tbr, 90k tbn (attached pic)
+    Metadata:
+      comment         : Cover (front)
+Stream mapping:
+  Stream #0:1 -> #0:0 (copy)
+Output #0, image2, to 'D:\MusicProcessing\src\generated_files\Music\Crush\Here\cover.jpg':
+  Metadata:
+    title           : Live
+    artist          : Crush
+    track           : 1/12
+    album           : Here
+    disc            : 1/1
+    genre           : Pop
+    TMED            : CD
+    TORY            : 2002
+    MusicBrainz Release Track Id: 2475137d-6745-3951-a361-d4c29798f5d1
+    album_artist    : Crush
+    TSO2            : Crush
+    artist-sort     : Crush
+    composer        : Paul Lamb
+    SCRIPT          : Latn
+    publisher       : Sonic Records
+    ARTISTS         : Crush
+    ASIN            : B000065PP6
+    originalyear    : 2002
+    BARCODE         : 627915092229
+    CATALOGNUMBER   : 2 50922
+    MusicBrainz Album Type: album
+    MusicBrainz Album Status: official
+    MusicBrainz Album Release Country: CA
+    Acoustid Id     : 4fdf7757-ba58-4a4b-a1df-1ad4d102a474
+    MusicBrainz Album Id: 18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6
+    MusicBrainz Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Album Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
+    MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1
+    date            : 2002
+    encoder         : Lavf62.0.100
+  Stream #0:0: Video: mjpeg (Baseline), yuvj420p(pc, bt470bg/unknown/unknown), 500x490 [SAR 1:1 DAR 50:49], q=2-31, 90k tbr, 90k tbn (attached pic)
+    Metadata:
+      comment         : Cover (front)
+Press [q] to stop, [?] for help
+[out#0/image2 @ 0000027257d67c00] video:28KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=    1 fps=0.0 q=-1.0 Lsize=N/A time=N/A bitrate=N/A speed=N/A
+
+this cli throws a false error because there is no -update 1 flag.
 gerald@msi-laptop:~$ ffmpeg -hide_banner -i ~/Music/Crush/Here/Crush-Live.mp3 -an -vcodec copy ~/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg -y
 [mp3 @ 0x572e9617c840] Estimating duration from bitrate, this may be inaccurate
 Input #0, mp3, from '/home/gerald/Music/Crush/Here/Crush-Live.mp3':
