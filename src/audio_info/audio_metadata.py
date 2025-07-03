@@ -332,6 +332,7 @@ class AudioMetadata():
             # and both documentations don't really mention it
             audio_segment.export(export_path, export_format, bitrate=bitrate, tags=tags, id3v2_version='3')
 
+            # @todo this might have to be its own def in AudioArt
             # Add or update album art
             try:
                 audio_tags = MP3(export_path, ID3=ID3, v2_version=3)
@@ -614,6 +615,7 @@ class AudioMetadata():
 
     def extract_ffmpeg_python_art(self, file_path):
         '''
+        @todo consider deletion
         @brief Extracts and saves embedded album art.
 
         @details Uses ffmpeg-python module and is audio file type agnostic.
@@ -1077,7 +1079,9 @@ class AudioMetadata():
 
 
     def has_video_stream(self, file_path):
-        '''
+        r'''
+        @todo consider writing own ffmpeg.probe
+        @todo refer to C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\ffmpeg\_probe.py
         @brief Checks if an audio file has a video stream.
 
         @details Audio files can have embedded art in video streams.
