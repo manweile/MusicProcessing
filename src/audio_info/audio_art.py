@@ -37,6 +37,8 @@ _MP3 = "MP3"
 _MP4 = "MP4"
 
 
+# @todo implement in main.py and elsewhere it is needed
+
 class AudioArt():
     '''
     @brief Defines the base art processing class used by project.
