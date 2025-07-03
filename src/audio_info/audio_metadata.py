@@ -14,8 +14,10 @@ import os
 import pprint
 import shutil
 import struct
+import subprocess
 from ffmpeg import Error
 from pathlib import Path
+from subprocess import CalledProcessError
 
 # third party modules
 import mutagen
@@ -568,14 +570,57 @@ class AudioMetadata():
 
     def extract_ffmpeg_art(self, file_path):
         '''
-        @todo convert to ffmpeg
         @brief Extracts and saves embedded album art.
 
         @details Uses ffmpeg and is audio file type agnostic.
         @details Input file must have a video stream and an art tag.
 
         @param file_path {str} The full path to audio file.
-        @exception Error A ffmpeg error.
+        @exception CalledProcessError A subprocess error from ffmpeg command execution.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            input_path = Path(file_path)
+            album_path = input_path.parent
+
+            output_file = os.path.join(album_path, _FOLDER_ART)
+
+            # -hide_banner to reduce output clutter
+            # -an specifies ignore audio stream
+            # -map 0:v specifies 1st input file use video stream
+            # -map_metadata -1 specifies discard all alphanumeric metadata from input file
+            # the use of -map and -map_metadata will result in smaller jpg file than vcodec copy or -c:v copy - empirically tested
+            # -update 1 specifies overwrite output file with 1 frame from video
+            # (which is all we want, the embedded art IS the 1st and only frame from video stream)
+            # -y to overwrite output file if needed
+            command = [
+                'ffmpeg', '-hide_banner',
+                '-i', file_path,
+                '-an',
+                '-map', '0:v',
+                '-map_metadata', '-1',
+                '-update', '1',
+                output_file, '-y'
+            ]
+
+            subprocess.run(command, check=True, capture_output=True, text=True)
+            print(f"Album art extracted from {input_path.name} and saved to {album_path}")
+        except CalledProcessError as e:
+            raise CalledProcessError(f"Error extracting album art: {e}\n\nFFmpeg output: {e.stderr}")
+        except Exception as e:
+            raise Exception(f"Exception {e} extracting art from {input_path}")
+
+
+    def extract_ffmpeg_python_art(self, file_path):
+        '''
+        @brief Extracts and saves embedded album art.
+
+        @details Uses ffmpeg-python module and is audio file type agnostic.
+        @details Input file must have a video stream and an art tag.
+
+        @param file_path {str} The full path to audio file.
+        @exception Error A ffmpeg-python module error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -1040,7 +1085,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to audio file.
         @return has_video {boolean} Returns true if video stream is present, false otherwise.
-        @exception Error A ffmpeg error.
+        @exception Error A ffmpeg-python module error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
