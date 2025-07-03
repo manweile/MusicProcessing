@@ -14,6 +14,7 @@ import math
 import os
 import re
 import subprocess
+from ffmpeg import Error
 from json import JSONDecodeError
 from pathlib import Path
 from subprocess import CalledProcessError
@@ -59,9 +60,9 @@ class AudioNormalization():
         @details see https://k.ylo.ph/2016/04/04/loudnorm.html for an example.
 
         @param file_path {str} The full file path for audio file.
-        @exception CalledProcessError a subprocess error.
-        @exception JSONDecodeError as json decoding error.
+        @exception CalledProcessError A subprocess error from ffmpeg command execution.
         @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception JSONDecodeError as json decoding error.
         '''
 
         try:
@@ -116,6 +117,7 @@ class AudioNormalization():
                 capture_output=True,
                 text=True               # Decode stdout/stderr as text
             )
+
             # ffmpeg outputs information to stderr
             stats_output = stats_process.stderr
 
@@ -189,8 +191,8 @@ class AudioNormalization():
             )
             normalize_output = normalize_process.stderr
 
-            json_start = stats_output.find('{')
-            json_end = stats_output.rfind('}')
+            json_start = normalize_output.find('{')
+            json_end = normalize_output.rfind('}')
 
             if json_start != -1 and json_end != -1:
                 json_string = normalize_output[json_start: json_end + 1]
@@ -199,6 +201,7 @@ class AudioNormalization():
 
             normalize_data = json.loads(json_string)
             print(json.dumps(normalize_data, indent=4))
+
             normalization_type = normalize_data.get("normalization_type")
 
             if normalization_type != "linear":
@@ -206,10 +209,10 @@ class AudioNormalization():
 
         except CalledProcessError as e:
             raise CalledProcessError(f"FFmpeg error {e} Stderr:\n{e.stderr}")
-        except JSONDecodeError as e:
-            raise JSONDecodeError(f"JSON parsing error: {e} with\n{json_string}")
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
+        except JSONDecodeError as e:
+            raise JSONDecodeError(f"JSON parsing error: {e} with\n{json_string}")
 
 
     def get_bitrate(file_path):
@@ -219,6 +222,9 @@ class AudioNormalization():
         @param file_path (str): The path to the media file.
 
         @return bit_rate {int} The bitrate in bits per second, or None if not found.
+        @exception CalledProcessError A subprocess error from ffprobe command execution.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception JSONDecodeError as json decoding error.
         """
 
         try:
@@ -239,6 +245,8 @@ class AudioNormalization():
 
         except CalledProcessError as e:
             raise CalledProcessError(f"Error {e} executing ffprobe")
+        except Exception as e:
+            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
         except JSONDecodeError as e:
             raise JSONDecodeError(f"Error {e} decoding JSON output from ffprobe.")
 
@@ -251,6 +259,7 @@ class AudioNormalization():
 
         @param file_path {str} The full path to audio file.
         @return sample_rate {str} The sample rate in Hz, otherwise None.
+        @exception Error A ffmpeg-python module error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -262,7 +271,7 @@ class AudioNormalization():
             if audio_stream and 'sample_rate' in audio_stream:
                 sample_rate = audio_stream['sample_rate']
 
-        except ffmpeg.Error as e:
+        except Error as e:
             raise Exception(f"An ffmpeg error occurred: {e.stderr.decode()}")
         except Exception as e:
             raise Exception(f"Exception {e} getting sample rate for file {file_path}")
@@ -327,6 +336,7 @@ class AudioNormalization():
         @details Audio file must be mp3 format.
 
         @param file_path {str} The full file path for audio file.
+        @exception CalledProcessError A subprocess error from ffmpeg-normalize command execution.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -386,18 +396,13 @@ class AudioNormalization():
             input_path_dir = os.path.dirname(file_path)
             print(f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}")
             print(f"Source directory path: {input_path_dir}")
-            # input_format = input_path.suffix[1:].lower()
-            # print(f"Beginning peak normalization on {input_path.stem} from {input_format} to {export_format}")
-            # print(f"Source directory path: {input_path_parent}")
 
             # get the input file info - want bitrate so can preserve the quality in exported file
             media_info = self.get_media_info(file_path)
             # media_info = self.get_media_info(input_path)
             bitrate = media_info['bit_rate']
 
-            # @todo research setting for headroom and re-write
             volume_info = self.get_volume_info(file_path)
-            # volume_info = self.get_volume_info(input_path)
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
             max_volume = math.floor(volume_info['max_volume'])
 
@@ -451,7 +456,7 @@ class AudioNormalization():
                 p_out, p_err = p.communicate()
 
             print(f"Successful normalization on {input_path.stem} in {sp.elapsed_time} secs\r\n")
-        except subprocess.CalledProcessError:
+        except CalledProcessError:
             raise Exception(
                 f"ffmpeg-normalize returned error code: {p.returncode}\n\n for command line: {command}\n\n Output from ffmpeg-normalize: {p_err.decode(errors='ignore')}")
         except Exception as e:
