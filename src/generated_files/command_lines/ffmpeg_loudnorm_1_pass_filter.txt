@@ -1,3 +1,6 @@
+NOTE:
+-f null - is os agnostic. Otherwise, Linux: -f null /dev/null Windows: -f null NULL
+
 parsed output:
 loudnorm filter with input params and with json output:
 gerald@msi-laptop:~$ ffmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 -af loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json -f null -
@@ -19,7 +22,7 @@ gerald@msi-laptop:~$ ffmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-
 
 parsed output:
 loudnorm filter with different input params and with json output:
-gerald@msi-laptop:~$ ffmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 -af loudnorm=I=-16:TP=-2.0:LRA=11:print_format=json -f null NULL
+gerald@msi-laptop:~$ ffmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 -af loudnorm=I=-16:TP=-2.0:LRA=11:print_format=json -f null /dev/null
 [Parsed_loudnorm_0 @ 0x5bf87c8cca80]
 {
 	"input_i" : "-16.77",
@@ -87,7 +90,7 @@ size=N/A time=00:04:06.00 bitrate=N/A speed=31.4x
 full output:
 
 loudnorm filter with input params and with json output:
-gerald@msi-laptop:~$ fmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 -af loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json -f null NULL
+gerald@msi-laptop:~$ fmpeg -hide_banner -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 -af loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json -f null /dev/null
 [mp3 @ 0x5bf87c8a2800] Estimating duration from bitrate, this may be inaccurate
 Input #0, mp3, from '/home/gerald/Music/Crush/Here/Crush-Live.mp3':
   Metadata:

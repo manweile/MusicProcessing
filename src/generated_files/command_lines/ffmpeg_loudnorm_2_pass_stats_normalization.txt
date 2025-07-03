@@ -1,3 +1,15 @@
+ffmpeg loudnorm is ebu 128 normalization and requires 2 passes: 1st for normalization stats which are then used in 2nd pass which does the normalization.
+
+pre-requirement:
+retrieve sample rate to use for -ar because stats pass up scales to 192 kHz, need to down scale back to original in 2nd pass
+
+1st pass:
+-hide_banner to reduce output clutter
+-vn to ignore video stream for faster processing
+I=-16, TP=-2.0, LRA=11 so get slightly louder output 
+set print_format=json for easier output parsing
+-f null NULL (-f null /dev/null for Linux) so don't create an output file, just get stats
+
 stat source for coded function:
 PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3 -vn -af loudnorm=I=-16:TP=-2.0:LRA=11:print_format=json -f null NULL
 [Parsed_loudnorm_0 @ 000001aeb6540740] peed=31.3x
@@ -16,8 +28,21 @@ PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3 -vn
 [out#0/null @ 000001aeb64ee740] video:0KiB audio:184438KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
 size=N/A time=00:04:06.00 bitrate=N/A speed=31.5x
 
+2nd pass:
+-hide_banner to reduce output clutter
+-id3v2_version 3 is required to ensure proper embedded art transfer. Known ffmpeg bug, confirmed empirically.
+-threads # is optional, if used, make sure you know # of cores in CPU
+-y to overwrite existing output.
+use stats pass input_i for measured_I
+use stats pass input_lra for measured_LRA
+use stats pass input_tp for measured_TP
+use stats pass target_offset for offset
+use stats pass input_thresh for measured_thresh
+set linear=True for normalization type
+set print_format=json for easier output parsing
+
 normalization source for coded function:
-PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3  -id3v2_version 3 -af loudnorm=I=-16:TP=-2.0:LRA=11:measured_I=-16.77:measured_LRA=8.10:measured_TP=-6.66:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json -threads 5 -ar 44100 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
+PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3 -id3v2_version 3 -af loudnorm=I=-16:TP=-2.0:LRA=11:measured_I=-16.77:measured_LRA=8.10:measured_TP=-6.66:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json -threads 5 -ar 44100 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
 [Parsed_loudnorm_0 @ 000001d6760e0180] KiB time=N/A bitrate=N/A speed=N/A
 {
         "input_i" : "-16.73",
@@ -31,3 +56,6 @@ PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3  -i
         "normalization_type" : "linear",
         "target_offset" : "-0.04"
 }
+
+post-requirement:
+retrieve normalization_type to check it is dynamic - anything else means probably have clipping in output file.
