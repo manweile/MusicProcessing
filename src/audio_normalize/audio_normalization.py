@@ -53,12 +53,14 @@ class AudioNormalization():
 
     def ebu_normalize_file(self, file_path):
         '''
-        @todo complete add yaspin update exceptions
+        @todo complete add yaspin, update exceptions
         @brief Normalizes audio file level to ebu r128 standard.
 
         @details see https://k.ylo.ph/2016/04/04/loudnorm.html for an example.
 
         @param file_path {str} The full file path for audio file.
+        @exception CalledProcessError a subprocess error.
+        @exception JSONDecodeError as json decoding error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
