@@ -7,14 +7,14 @@
 '''
 
 # standard modules
-import ffmpeg
+# import ffmpeg
 import gc
 import json
 import math
 import os
 import re
 import subprocess
-from ffmpeg import Error
+# from ffmpeg import Error
 from json import JSONDecodeError
 from pathlib import Path
 from subprocess import CalledProcessError
@@ -24,9 +24,8 @@ from yaspin import yaspin
 from yaspin.spinners import Spinners
 
 # local modules
-from src import _AUDIO_EXTS, _AUDIO_TYPES, _EXPORT_TLD, _HOME, _MEDIA
+from src import _AUDIO_EXTS, _AUDIO_TYPES
 from src.dir_processing import DirectoryProcessing
-from src.generated_files import generated_files
 
 gc.enable()
 
@@ -180,7 +179,7 @@ class AudioNormalization():
                         f"offset={offset}:linear=true"
                         f":print_format=json"
                         ),
-                "-ar", sample_rate,
+                "-ar", str(sample_rate),
                 export_path, "-y"
             ]
 
@@ -256,27 +255,40 @@ class AudioNormalization():
 
     def get_sample_rate(self, file_path):
         '''
-        @todo replace ffmpeg.probe with my own ffmpeg subprocess code
         @brief Gets the sample rate from audio file.
 
         @param file_path {str} The full path to audio file.
-        @return sample_rate {str} The sample rate in Hz, otherwise None.
-        @exception Error A ffmpeg-python module error.
+        @return sample_rate {int} The sample rate in Hz, otherwise None.
+        @exception CalledProcessError A subprocess error from ffprobe command execution.
         @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception IndexError An index error finding audio stream or sample rate information.
+        @exception JSONDecodeError A json decoding error.
         '''
 
         try:
             sample_rate = None
-            probe = ffmpeg.probe(file_path)
-            audio_stream = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
+            command = [
+                'ffprobe',
+                '-v', 'error',
+                '-select_streams', 'a:0',  # Select the first audio stream
+                '-show_entries', 'stream=sample_rate',
+                '-of', 'json',
+                file_path
+            ]
+            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            data = json.loads(result.stdout)
 
-            if audio_stream and 'sample_rate' in audio_stream:
-                sample_rate = audio_stream['sample_rate']
+            if 'streams' in data and data['streams']:
+                sample_rate = int(data['streams'][0]['sample_rate'])
 
-        except Error as e:
-            raise Exception(f"An ffmpeg error occurred: {e.stderr.decode()}")
+        except CalledProcessError as e:
+            raise CalledProcessError(f"Error: {e} running ffprobe on audio file: {file_path}\n\nStderr: {e.stderr}")
         except Exception as e:
-            raise Exception(f"Exception {e} getting sample rate for file {file_path}")
+            raise Exception(f"Exception {e} getting sample rate for audio file: {file_path}")
+        except IndexError as e:
+            raise IndexError(f"Error: {e} no audio stream found or sample rate information missing for audio file: {file_path}")
+        except JSONDecodeError as e:
+            raise JSONDecodeError(f"Error: {e} decoding JSON output from ffprobe on audio file: {file_path}")
 
         return sample_rate
 
@@ -331,7 +343,6 @@ class AudioNormalization():
 
     def peak_normalize_file(self, file_path):
         '''
-        @todo use DirectoryProcessing.path_info()
         @brief Peak normalizes audio file level.
 
         @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
@@ -401,6 +412,7 @@ class AudioNormalization():
             print(f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}")
             print(f"Source directory path: {input_path_dir}")
 
+            # @todo replace with my get_bit_rate
             # get the input file info - want bitrate so can preserve the quality in exported file
             media_info = self.get_media_info(file_path)
             # media_info = self.get_media_info(input_path)
