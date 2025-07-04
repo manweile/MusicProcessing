@@ -1,0 +1,49 @@
+https://samplecraze.com/2019/01/03/normalisation-peak-and-rms/
+
+https://stackoverflow.com/questions/36679177/rms-normalize-ffmpeg
+
+from google ai overview (are peak and rms normalization the same thing)
+Peak normalization adjusts the audio so the loudest sample reaches a specified level, typically 0dBFS,
+while RMS normalization adjusts the audio based on its average power or loudness over time.
+
+Peak Normalization:
+This method focuses on the highest amplitude (peak) in the audio signal.
+It boosts or attenuates the entire audio signal so that the loudest point reaches the target level (e.g., 0dBFS).
+
+RMS Normalization:
+This method considers the average power or loudness of the audio signal over a period of time.
+It adjusts the audio so that the RMS level matches the target level.
+
+Key Differences:
+Target:
+Peak normalization targets the highest peak in the audio,
+while RMS normalization targets the average power or loudness.
+
+Result:
+Peak normalization can result in a more dynamic sound,
+but it may lead to clipping if the peaks are too high.
+
+RMS normalization can create a more consistent perceived loudness,
+but it can also reduce the dynamic range if the RMS level is too high.
+
+Use Cases:
+Peak normalization is useful for avoiding clipping and ensuring consistency in digital audio systems.
+
+RMS normalization is often used to balance the perceived loudness of different audio tracks,
+making them sound more similar in loudness.
+
+Effects on Dynamic Range:
+Peak normalization can reduce the dynamic range if the peaks are very high.
+
+RMS normalization can reduce the dynamic range if the RMS level is high.
+
+basic rms algorithm:
+do an ffmpeg volumedetect
+GET the returned mean_volume
+use the mean_volume value in volume filter
+
+basic peak algorithm
+do an ffmpeg volumedetect
+GET the returned max_volume
+target_peak = headroom - max_volume, where headroom is -2, -1, or 0.
+use the target_peak value in volume filter
