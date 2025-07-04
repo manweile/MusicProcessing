@@ -1,5 +1,5 @@
 parsed volumedetect filter:
-PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a volumedetect -f null NUL
+PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -vn -filter:a volumedetect -f null NUL
 [Parsed_volumedetect_0 @ 0000014c1b1761c0] n_samples: 21689856
 [Parsed_volumedetect_0 @ 0000014c1b1761c0] mean_volume: -19.9 dB
 [Parsed_volumedetect_0 @ 0000014c1b1761c0] max_volume: -6.7 dB
@@ -8,9 +8,9 @@ PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -fi
 [Parsed_volumedetect_0 @ 0000014c1b1761c0] histogram_8db: 31563
 
 full output:
-PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a volumedetect -f null NUL
-[mp3 @ 0000014c1c980440] Estimating duration from bitrate, this may be inaccurate
-Input #0, mp3, from 'C:\Music\Crush\Here\Crush-Live.mp3':
+gerald@msi-laptop:~$ ffmpeg -hide_banner -i ~/Music/Crush/Here/Crush-Live.mp3 -vn -filter:a volumedetect -f null -
+[mp3 @ 0x5a7ab5ec4800] Estimating duration from bitrate, this may be inaccurate
+Input #0, mp3, from '/home/gerald/Music/Crush/Here/Crush-Live.mp3':
   Metadata:
     title           : Live
     artist          : Crush
@@ -42,16 +42,15 @@ Input #0, mp3, from 'C:\Music\Crush\Here\Crush-Live.mp3':
     MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1
     date            : 2002
   Duration: 00:04:05.91, start: 0.000000, bitrate: 129 kb/s
-  Stream #0:0: Audio: mp3 (mp3float), 44100 Hz, stereo, fltp, 128 kb/s
+  Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
   Stream #0:1: Video: mjpeg (Baseline), yuvj420p(pc, bt470bg/unknown/unknown), 500x490 [SAR 1:1 DAR 50:49], 90k tbr, 90k tbn (attached pic)
     Metadata:
       comment         : Cover (front)
-[Parsed_volumedetect_0 @ 0000014c1c9b76c0] n_samples: 0
+[Parsed_volumedetect_0 @ 0x5a7ab5eccfc0] n_samples: 0
 Stream mapping:
-  Stream #0:1 -> #0:0 (mjpeg (native) -> wrapped_avframe (native))
-  Stream #0:0 -> #0:1 (mp3 (mp3float) -> pcm_s16le (native))
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
 Press [q] to stop, [?] for help
-Output #0, null, to 'NUL':
+Output #0, null, to 'pipe:':
   Metadata:
     title           : Live
     artist          : Crush
@@ -82,19 +81,15 @@ Output #0, null, to 'NUL':
     MusicBrainz Album Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f
     MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1
     date            : 2002
-    encoder         : Lavf62.0.100
-  Stream #0:0: Video: wrapped_avframe, yuvj420p(pc, bt470bg/unknown/unknown, progressive), 500x490 [SAR 1:1 DAR 50:49], q=2-31, 200 kb/s, 90k fps, 90k tbn (attached pic)
+    encoder         : Lavf60.16.100
+  Stream #0:0: Audio: pcm_s16le, 44100 Hz, stereo, s16, 1411 kb/s
     Metadata:
-      encoder         : Lavc62.0.101 wrapped_avframe
-      comment         : Cover (front)
-  Stream #0:1: Audio: pcm_s16le, 44100 Hz, stereo, s16, 1411 kb/s
-    Metadata:
-      encoder         : Lavc62.0.101 pcm_s16le
-[Parsed_volumedetect_0 @ 0000014c1b1761c0] n_samples: 21689856
-[Parsed_volumedetect_0 @ 0000014c1b1761c0] mean_volume: -19.9 dB
-[Parsed_volumedetect_0 @ 0000014c1b1761c0] max_volume: -6.7 dB
-[Parsed_volumedetect_0 @ 0000014c1b1761c0] histogram_6db: 12
-[Parsed_volumedetect_0 @ 0000014c1b1761c0] histogram_7db: 1132
-[Parsed_volumedetect_0 @ 0000014c1b1761c0] histogram_8db: 31563
-[out#0/null @ 0000014c1c980a40] video:0KiB audio:42363KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
-frame=    1 fps=0.0 q=-0.0 Lsize=N/A time=00:00:00.00 bitrate=N/A speed=4.43e-05x
+      encoder         : Lavc60.31.102 pcm_s16le
+[out#0/null @ 0x5a7ab5ecac00] video:0kB audio:42363kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: unknown
+size=N/A time=00:04:05.89 bitrate=N/A speed= 435x
+[Parsed_volumedetect_0 @ 0x5a7ab5eef100] n_samples: 21689856
+[Parsed_volumedetect_0 @ 0x5a7ab5eef100] mean_volume: -19.9 dB
+[Parsed_volumedetect_0 @ 0x5a7ab5eef100] max_volume: -6.7 dB
+[Parsed_volumedetect_0 @ 0x5a7ab5eef100] histogram_6db: 12
+[Parsed_volumedetect_0 @ 0x5a7ab5eef100] histogram_7db: 1132
+[Parsed_volumedetect_0 @ 0x5a7ab5eef100] histogram_8db: 31563
