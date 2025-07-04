@@ -70,6 +70,7 @@ class AudioNormalization():
             # @todo research if sample rate is >=192k, do i really need to apply loudnorm?
             sample_rate = self.get_sample_rate(file_path)
             export_path = DirectoryProcessing.path_info(file_path)
+
             r'''
             loudnorm https://k.ylo.ph/2016/04/04/loudnorm.html
             rbu 128 https://ffmpeg.org/ffmpeg-filters.html#loudnorm
@@ -255,6 +256,7 @@ class AudioNormalization():
 
     def get_sample_rate(self, file_path):
         '''
+        @todo replace ffmpeg.probe with my own ffmpeg subprocess code
         @brief Gets the sample rate from audio file.
 
         @param file_path {str} The full path to audio file.
@@ -340,57 +342,59 @@ class AudioNormalization():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
+        # try:
+        #     export_dir = None
+        #     export_name = None
+        #     export_path = None
+
+        #     input_path = Path(file_path)
+
+        #     input_ext = input_path.suffix
+        #     if input_ext.lower() != _AUDIO_EXTS[0]:
+        #         raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
+
+        #     # get the full parent w/o filename so I can start removing unnecessary path components
+        #     input_path_parent = input_path.parent
+
+        #     # remove the anchor (ie. / or H:\), have no use for it
+        #     input_path_parts = input_path_parent.parts[1:]
+
+        #     # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
+        #     # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
+        #     if input_path_parts[0] == _MEDIA:
+        #         # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
+        #         # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
+        #         input_path_components = input_path_parts[4:]
+        #     elif input_path_parts[0] == _HOME:
+        #         # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
+        #         # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
+        #         input_path_components = input_path_parts[3:]
+        #     else:
+        #         # Windows is going to have <tld>/<artist dir>/<album dir>
+        #         # so 3 elements, we don't want element 1: 'Music'
+        #         input_path_components = input_path_parts[1:]
+
+        #     # using fixed storage path because will always know project structure
+        #     export_dir = os.path.join(generated_files, _EXPORT_TLD)
+
+        #     for component in input_path_components:
+        #         export_dir = os.path.join(export_dir, component)
+
+        #     # directory is already extant if we are processing multiple songs for the same artist & album
+        #     if not os.path.exists(export_dir):
+        #         os.makedirs(export_dir)
+
+        #     # get mp3 audio format & extension from package constants
+        #     export_ext = _AUDIO_EXTS[0]
+
+        #     input_name = input_path.stem
+
+        #     export_name = input_name + export_ext
+        #     export_path = os.path.join(export_dir, export_name)
         try:
-            export_dir = None
-            export_name = None
-            export_path = None
+            export_path = DirectoryProcessing.path_info(file_path)
 
-            input_path = Path(file_path)
-
-            input_ext = input_path.suffix
-            if input_ext.lower() != _AUDIO_EXTS[0]:
-                raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
-
-            # get the full parent w/o filename so I can start removing unnecessary path components
-            input_path_parent = input_path.parent
-
-            # remove the anchor (ie. / or H:\), have no use for it
-            input_path_parts = input_path_parent.parts[1:]
-
-            # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
-            # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
-            if input_path_parts[0] == _MEDIA:
-                # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
-                # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
-                input_path_components = input_path_parts[4:]
-            elif input_path_parts[0] == _HOME:
-                # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
-                # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
-                input_path_components = input_path_parts[3:]
-            else:
-                # Windows is going to have <tld>/<artist dir>/<album dir>
-                # so 3 elements, we don't want element 1: 'Music'
-                input_path_components = input_path_parts[1:]
-
-            # using fixed storage path because will always know project structure
-            export_dir = os.path.join(generated_files, _EXPORT_TLD)
-
-            for component in input_path_components:
-                export_dir = os.path.join(export_dir, component)
-
-            # directory is already extant if we are processing multiple songs for the same artist & album
-            if not os.path.exists(export_dir):
-                os.makedirs(export_dir)
-
-            # get mp3 audio format & extension from package constants
             export_format = _AUDIO_TYPES[0]
-            export_ext = _AUDIO_EXTS[0]
-
-            input_name = input_path.stem
-
-            export_name = input_name + export_ext
-            export_path = os.path.join(export_dir, export_name)
-
             input_format = os.path.splitext(file_path)[1].lower()[1:]
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_dir = os.path.dirname(file_path)
@@ -435,9 +439,21 @@ class AudioNormalization():
                 "--target-level", str(target_level),
                 "-f", "-o", export_path
             ]
+            '''
+            command = [
+                "ffmpeg", "-hide_banner",
+                "-i", file_path,
+                "-c:a", "libmp3lame",
+                "-b:a", bitrate,
+                "-id3v2_version 3",
+                "--normalization-type", "peak",
+                "--target-level", str(target_level),
+                "-f", "-o", export_path, "-y"
+            ]
 
-            print(f"Beginning peak normalization on {input_path} using ffmpeg-normalize.")
-            text = f"Normalizing {input_path.stem}"
+            '''
+
+            text = f"Normalizing {input_path_stem}"
             with yaspin(Spinners.dots, text=text, timer=True) as sp:
                 with open(os.devnull, 'rb') as devnull:
                     p = subprocess.Popen(
@@ -455,7 +471,7 @@ class AudioNormalization():
 
                 p_out, p_err = p.communicate()
 
-            print(f"Successful normalization on {input_path.stem} in {sp.elapsed_time} secs\r\n")
+            print(f"Successful normalization on {input_path_stem} in {sp.elapsed_time} secs\r\n")
         except CalledProcessError:
             raise Exception(
                 f"ffmpeg-normalize returned error code: {p.returncode}\n\n for command line: {command}\n\n Output from ffmpeg-normalize: {p_err.decode(errors='ignore')}")
@@ -463,9 +479,42 @@ class AudioNormalization():
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 
 
+    def normalize_walk(self, tld_path, norm_type):
+        '''
+        @brief Normalizes all audio files in specified top level directory per input normalization type.
+
+        @param tld_path {str} The top level directory path that contains all the music files.
+        @param norm_type {str} The type of normalization to perform.
+        '''
+
+        try:
+            input_file_ext = None
+            input_path = Path(tld_path)
+
+            for dir_path, _, file_names in os.walk(input_path):
+                for file in file_names:
+                    _, input_file_ext = os.path.splitext(file)
+
+                    # file is not mp3, carry on to next file
+                    if input_file_ext.lower() != _AUDIO_EXTS[0]:
+                        continue
+
+                    input_file_path = os.path.join(dir_path, file)
+
+                    if norm_type == "ebu":
+                        self.ebu_normalize_file(input_file_path)
+                    elif norm_type == "peak":
+                        self.peak_normalize_file(input_file_path)
+                    elif norm_type == "rms":
+                        pass
+
+        except Exception as e:
+            raise Exception(f"Exception {e} walking {tld_path} to  {norm_type} normalize audio files")
+
+
     def peak_normalize_walk(self, file_path):
         '''
-        @todo generalize for peak, ebu, and rms normalization
+        @todo generalize in new def for peak, ebu, rms normalization then remove this def
         @brief Peak normalizes mp3 audio files in under starting top level directory.
 
         @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.

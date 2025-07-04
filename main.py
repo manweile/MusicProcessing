@@ -13,12 +13,13 @@ import platform
 import sys
 
 # local modules
+from src.audio_info import AudioArt
 from src.audio_info import AudioMetadata
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
 
 gc.enable()
-
+art = AudioArt()
 directory = DirectoryProcessing()
 metadata = AudioMetadata()
 normalization = AudioNormalization()
@@ -62,7 +63,8 @@ def extract_art(file_path):
     @param file_path {str} The full path to audio file.
     '''
 
-    metadata.extract_album_art(file_path)
+    # metadata.extract_album_art(file_path)
+    art.extract_album_art(file_path)
 
 
 def extract_walk(tld_path, file_pattern):
@@ -73,7 +75,8 @@ def extract_walk(tld_path, file_pattern):
     @param file_pattern {str} The file pattern we want to delete.
     '''
 
-    metadata.extract_walk(tld_path, file_pattern)
+    # metadata.extract_walk(tld_path, file_pattern)
+    art.extract_walk(tld_path, file_pattern)
 
 
 def get_media_info(file_path):
@@ -160,6 +163,27 @@ def list_type(tld_path, file_ext=None):
     directory.get_ext_file_list(file_ext, tld_path)
 
 
+def loud_file(file_path):
+    '''
+    @brief EBU 128 Loudness normalizes the specified audio file.
+
+    @param file_path {str} The full path to audio file.
+    '''
+
+    normalization.ebu_normalize_file(file_path)
+
+
+def normalize_walk(tld_path, norm_type):
+    '''
+    @brief Normalizes all audio files in specified top level directory per input normalization type.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    @param norm_type {str} The type of normalization to perform.
+    '''
+
+    normalization.normalize_walk(tld_path, norm_type)
+
+
 def peak_file(file_path):
     '''
     @brief Peak normalize the specified audio file.
@@ -172,6 +196,7 @@ def peak_file(file_path):
 
 def peak_walk(tld_path):
     '''
+    @todo remove after normalize-walks tests good
     @brief Peak normalizes all audio files in specified top level directory.
 
     @param tld_path {str} The top level directory path that contains all the music files.
@@ -208,7 +233,8 @@ def set_album_art(tld_path):
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
-    metadata.set_album_art(tld_path)
+    # metadata.set_album_art(tld_path)
+    art.set_album_art(tld_path)
 
 
 def main(args):
