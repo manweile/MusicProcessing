@@ -31,13 +31,18 @@ output_file = '/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here
 #     print(f"An unexpected error occurred: {e}")
 
 # working ubuntu cli:
-# ffmpeg-normalize ~/ProcessedMusic/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
+# ffmpeg-normalize ~/ProcessedMusic/Crush/Here/Crush-Live.mp3
+# -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3"
+# --normalization-type peak
+# --target-level 0
+# -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
+
 # working windows powershell cli:
 # ffmpeg-normalize F:\ProcessedMusic\Crush\Here\Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
 # album art and tags are preserved!!!
 
 try:
-    # Example for EBU R128 normalization
+    # Example for EBU R128 normalization, t -23, tp -2 and lrt 7 are ebu r128 default values
     command = [
         'ffmpeg-normalize',
         input_file,
