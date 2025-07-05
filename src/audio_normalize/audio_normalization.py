@@ -31,7 +31,7 @@ gc.enable()
 
 _I = "-16.0"        # ffmpeg loudnorm integrated loudness target RBU 128 default: -24.0 to -23.0, I want louder (less negative)
 _LRA = "11.0"       # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
-_TP = "-2.0"        # ffmpeg loudnorm maximum true peak RBU 128 default: -2.0, I will keep that
+_TP = "-2.0"        # ffmpeg loudnorm (and peak) maximum true peak RBU 128 default: -2.0, I will keep that
 
 
 class AudioNormalization():
@@ -353,55 +353,6 @@ class AudioNormalization():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        # try:
-        #     export_dir = None
-        #     export_name = None
-        #     export_path = None
-
-        #     input_path = Path(file_path)
-
-        #     input_ext = input_path.suffix
-        #     if input_ext.lower() != _AUDIO_EXTS[0]:
-        #         raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
-
-        #     # get the full parent w/o filename so I can start removing unnecessary path components
-        #     input_path_parent = input_path.parent
-
-        #     # remove the anchor (ie. / or H:\), have no use for it
-        #     input_path_parts = input_path_parent.parts[1:]
-
-        #     # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
-        #     # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
-        #     if input_path_parts[0] == _MEDIA:
-        #         # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
-        #         # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
-        #         input_path_components = input_path_parts[4:]
-        #     elif input_path_parts[0] == _HOME:
-        #         # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
-        #         # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
-        #         input_path_components = input_path_parts[3:]
-        #     else:
-        #         # Windows is going to have <tld>/<artist dir>/<album dir>
-        #         # so 3 elements, we don't want element 1: 'Music'
-        #         input_path_components = input_path_parts[1:]
-
-        #     # using fixed storage path because will always know project structure
-        #     export_dir = os.path.join(generated_files, _EXPORT_TLD)
-
-        #     for component in input_path_components:
-        #         export_dir = os.path.join(export_dir, component)
-
-        #     # directory is already extant if we are processing multiple songs for the same artist & album
-        #     if not os.path.exists(export_dir):
-        #         os.makedirs(export_dir)
-
-        #     # get mp3 audio format & extension from package constants
-        #     export_ext = _AUDIO_EXTS[0]
-
-        #     input_name = input_path.stem
-
-        #     export_name = input_name + export_ext
-        #     export_path = os.path.join(export_dir, export_name)
         try:
             export_path = DirectoryProcessing.path_info(file_path)
 
@@ -412,23 +363,22 @@ class AudioNormalization():
             print(f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}")
             print(f"Source directory path: {input_path_dir}")
 
-            # @todo replace with my get_bit_rate
             # get the input file info - want bitrate so can preserve the quality in exported file
-            # media_info = self.get_media_info(file_path)
-            # bitrate = media_info['bit_rate']
             bitrate = self.get_bitrate(file_path)
 
             volume_info = self.get_volume_info(file_path)
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
             max_volume = math.floor(volume_info['max_volume'])
 
-            if max_volume <= -1:
-                target_level = -1 - max_volume
-            elif max_volume > -1 and max_volume <= 0:
-                print(f"{input_path_stem} has max volume: {max_volume}, normalization not needed")
+            if max_volume == 0.0:
+                print(f"{input_path_stem} has max volume: {max_volume}, peak normalization not needed")
                 return
-            elif max_volume > 0:
-                print(f"{input_path_stem} has max volume: {max_volume}, process with Goldwave or Audacity")
+
+            adjustment = 0 + _TP - max_volume
+            clip_amount = max_volume + adjustment
+
+            if clip_amount > 0:
+                print(f"peak normalizing by {_TP} minus {max_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
                 return
 
             # @todo switch to ffmpeg
@@ -441,30 +391,28 @@ class AudioNormalization():
             # ffmpeg-normalize F:\ConvertedMusic\Crush\Here\Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
             # album art and tags are preserved!!!
             # the extra output option setting the ID3v2.3 is necessary, else can't preserve embedded art
-            command = [
-                "ffmpeg-normalize",
-                file_path,
-                "-c:a", "libmp3lame",
-                "-b:a", bitrate,
-                "--extra-output-options", r"-id3v2_version 3",
-                "--normalization-type", "peak",
-                "--target-level", str(target_level),
-                "-f", "-o", export_path
-            ]
-            r'''
-            ffmpeg -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a "volume=6dB" -c:v copy -ab 128k -map_metadata 0 -id3v2_version 3 "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
+            # command = [
+            #     "ffmpeg-normalize",
+            #     file_path,
+            #     "-c:a", "libmp3lame",
+            #     "-b:a", bitrate,
+            #     "--extra-output-options", r"-id3v2_version 3",
+            #     "--normalization-type", "peak",
+            #     "--target-level", str(adjustment),
+            #     "-f", "-o", export_path
+            # ]
+
+            # ffmpeg -hide_banner -y -i F:\ConvertedMusic\Crush\Here\Crush-Live.mp3 -filter:a "volume=6dB" -c:v copy -c:a libmp3lame -b:a 128k -id3v2_version 3 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-Live.mp3
             command = [
                 "ffmpeg", "-hide_banner", "-y",
                 "-i", file_path,
+                "-filter:a", (f"volume={adjustment}dB"),
+                "c:v copy",
                 "-c:a", "libmp3lame",
-                "-b:a", bitrate,
+                "-b:a", str(bitrate),
                 "-id3v2_version 3",
-                "--normalization-type", "peak",
-                "--target-level", str(target_level),
-                "-f", "-o", export_path
+                "export_path"
             ]
-
-            '''
 
             text = f"Normalizing {input_path_stem}"
             with yaspin(Spinners.dots, text=text, timer=True) as sp:
