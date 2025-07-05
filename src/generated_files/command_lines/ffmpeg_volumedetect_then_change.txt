@@ -1,4 +1,7 @@
-ist pass to get the max volume
+volume changing on max_volume of source file is Peak normalization!!
+volume changing on mean_volume of source is RMS normalization!!
+
+1st pass to get the max volume
 PS C:\Users\gmanw> ffmpeg -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a "volumedetect" -map 0:a -f null NUL
 [Parsed_volumedetect_0 @ 0000025e2a057b80] n_samples: 21689856
 [Parsed_volumedetect_0 @ 0000025e2a057b80] mean_volume: -19.9 dB
@@ -8,7 +11,15 @@ PS C:\Users\gmanw> ffmpeg -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a "volum
 [Parsed_volumedetect_0 @ 0000025e2a057b80] histogram_8db: 31563
 
 normalize to max volume less some headroom, copy album art (video stream), retain original bit rate, copy audio stream metadata, ensure ID3v2.3 tags, overwrite if output exists
-PS C:\Users\gmanw> ffmpeg -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a "volume=6dB" -c:v copy -ab 128k -map_metadata 0 -id3v2_version 3 "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
+PS C:\Users\gmanw> ffmpeg
+-i C:\Music\Crush\Here\Crush-Live.mp3
+-filter:a "volume=6dB"
+-c:v copy
+-ab 128k
+-map_metadata 0
+-id3v2_version 3
+"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3"
+-y
 
 get normalized max volume
 Note:
