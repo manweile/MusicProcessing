@@ -1,0 +1,24 @@
+ffmpeg ~/ConvertedMusic/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
+
+Namespace(input=['/home/gerald/ConvertedMusic/Crush/Here/Crush-Live.mp3'], output=['/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3'], output_folder='normalized', force=True, debug=False, verbose=False, quiet=False, dry_run=False, progress=False, normalization_type='peak', target_level=0.0, print_stats=False, replaygain=False, loudness_range_target=7.0, keep_loudness_range_target=False, keep_lra_above_loudness_range_target=False, true_peak=-2.0, offset=0.0, lower_only=False, auto_lower_loudness_target=False, dual_mono=False, dynamic=False, audio_codec='libmp3lame', audio_bitrate='128k', sample_rate=None, audio_channels=None, keep_original_audio=False, pre_filter=None, post_filter=None, video_disable=False, video_codec='copy', subtitle_disable=False, metadata_disable=False, chapters_disable=False, extra_input_options=None, extra_output_options='-id3v2_version 3', output_format=None, extension='mkv')
+
+['/usr/bin/ffmpeg', '-i', '/home/gerald/ConvertedMusic/Crush/Here/Crush-Live.mp3', '-c', 'copy', '-t', '0', '-map', '0', '-f', 'null', '/dev/null']
+
+['/usr/bin/ffmpeg', '-hide_banner', '-y', '-i', '/home/gerald/ConvertedMusic/Crush/Here/Crush-Live.mp3', '-filter_complex', '[0:0]volume=6.655748dB[norm0]', '-map_metadata', '0', '-map_metadata:s:a:0', '0:s:a:0', '-map_metadata:s:v:0', '0:s:v:0', '-map_chapters', '0', '-map', '0:1', '-c:v', 'copy', '-map', '[norm0]', '-c:a', 'libmp3lame', '-b:a', '128k', '-c:s', 'copy', '-id3v2_version', '3', '/tmp/tmp4lmh0aba/out.mp3']
+
+this is close to what I want
+the volume is supply from a 1st pass max value and user input target_level (I will use -1) where adjustment = 0 + target_level - self.loudness_statistics["max"]
+['/usr/bin/ffmpeg', '-progress', '-', '-nostats',
+'-hide_banner', '-y', '-i', '/home/gerald/ConvertedMusic/Crush/Here/Crush-Live.mp3',
+'-filter_complex', '[0:0]volume=6.655748dB[norm0]',
+'-map_metadata', '0',
+'-map_metadata:s:a:0', '0:s:a:0',
+'-map_metadata:s:v:0', '0:s:v:0',
+'-map_chapters', '0',
+'-map', '0:1', '-c:v', 'copy',
+'-map', '[norm0]',
+'-c:a', 'libmp3lame',
+'-b:a', '128k',
+'-c:s', 'copy',
+'-id3v2_version', '3',
+'/tmp/tmp4lmh0aba/out.mp3']
