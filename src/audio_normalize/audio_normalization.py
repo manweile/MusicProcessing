@@ -414,9 +414,9 @@ class AudioNormalization():
 
             # @todo replace with my get_bit_rate
             # get the input file info - want bitrate so can preserve the quality in exported file
-            media_info = self.get_media_info(file_path)
-            # media_info = self.get_media_info(input_path)
-            bitrate = media_info['bit_rate']
+            # media_info = self.get_media_info(file_path)
+            # bitrate = media_info['bit_rate']
+            bitrate = self.get_bitrate(file_path)
 
             volume_info = self.get_volume_info(file_path)
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
@@ -437,8 +437,8 @@ class AudioNormalization():
             # use bit_rate in -ab
 
             # working ffmpeg-normalize ubuntu/windows cli:
-            # ffmpeg-normalize ~/ProcessedMusic/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
-            # ffmpeg-normalize F:\ProcessedMusic\Crush\Here\Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
+            # ffmpeg-normalize ~/ConvertedMusic/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
+            # ffmpeg-normalize F:\ConvertedMusic\Crush\Here\Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
             # album art and tags are preserved!!!
             # the extra output option setting the ID3v2.3 is necessary, else can't preserve embedded art
             command = [
@@ -451,16 +451,17 @@ class AudioNormalization():
                 "--target-level", str(target_level),
                 "-f", "-o", export_path
             ]
-            '''
+            r'''
+            ffmpeg -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a "volume=6dB" -c:v copy -ab 128k -map_metadata 0 -id3v2_version 3 "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
             command = [
-                "ffmpeg", "-hide_banner",
+                "ffmpeg", "-hide_banner", "-y",
                 "-i", file_path,
                 "-c:a", "libmp3lame",
                 "-b:a", bitrate,
                 "-id3v2_version 3",
                 "--normalization-type", "peak",
                 "--target-level", str(target_level),
-                "-f", "-o", export_path, "-y"
+                "-f", "-o", export_path
             ]
 
             '''
