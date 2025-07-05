@@ -44,7 +44,7 @@ class AudioArt():
     @brief Defines the base art processing class used by project.
     '''
 
-    def __init(self):
+    def __init__(self):
         '''
         @brief Initializes the AudioArt class.
 
@@ -54,6 +54,7 @@ class AudioArt():
         '''
 
         pass
+
 
     def __unpack_asf_image(self, data):
         '''
