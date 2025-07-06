@@ -367,7 +367,7 @@ if __name__ == "__main__":
     # "/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshau Davis-The Workingman's Hym.m4a"                          # has embedded, no Folder.jpg, datetime string
     # "/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a"                                                    # embedded art
 
-    # "/home/gerald/ProcessedMusic/Crush/Here/Crush-Live.mp3"                                                               # embedded art
+    # "/home/gerald/ConvertedMusic/Crush/Here/Crush-Live.mp3"                                                               # embedded art
 
     # "/media/gerald/Music/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"                                 # no embedded, has Folder.jpg
     # "/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma"                               # no embedded art
