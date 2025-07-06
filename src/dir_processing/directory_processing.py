@@ -351,7 +351,7 @@ class DirectoryProcessing():
             raise Exception(f"Exception {e} moving {audio_file} from {os.path.dirname(file_path)} to {destination_dir}")
 
 
-    def path_info(self, file_path):
+    def path_info(file_path):
         '''
         @brief Creates export path for audio file conversions and normalizations.
 

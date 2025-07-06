@@ -215,7 +215,7 @@ class AudioNormalization():
             raise JSONDecodeError(f"JSON parsing error: {e} with\n{json_string}")
 
 
-    def get_bitrate(file_path):
+    def get_bitrate(self, file_path):
         """
         @brief Retrieves the bitrate of a media file using ffprobe.
 
@@ -374,7 +374,7 @@ class AudioNormalization():
                 print(f"{input_path_stem} has max volume: {max_volume}, peak normalization not needed")
                 return
 
-            adjustment = 0 + _TP - max_volume
+            adjustment = 0 + float(_TP) - max_volume
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
