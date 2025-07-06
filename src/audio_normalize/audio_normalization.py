@@ -33,6 +33,8 @@ _I = "-16.0"        # ffmpeg loudnorm integrated loudness target RBU 128 default
 _LRA = "11.0"       # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
 _TP = "-2.0"        # ffmpeg loudnorm (and peak) maximum true peak RBU 128 default: -2.0, I will keep that
 
+directory = DirectoryProcessing()
+
 
 class AudioNormalization():
     '''
@@ -51,6 +53,51 @@ class AudioNormalization():
         pass
 
 
+    def __loudnorm_json_parse(self, input_process):
+        '''
+        @brief Parse json element out of ffmpeg loudnorm subprocess stderr output.
+
+        @details The subprocess stderr is expected to have a single json element.
+        @param input_process {CompletedProcess} A completed subprocess object.
+        @return input_data {dict} FFmpeg loudnorm statistics.
+        Key                         |Value
+        ----------------------------|----------------------------------------------------------------
+        input_i {str}               | input integrated loudness {str} (numeric)
+        input_tp {str}              | input maximum true peak {str} (numeric)
+        input_lra {str}             | input loudness range target {str} (numeric)
+        input_thresh {str}          | input threshold {str} (numeric)
+        output_i{str}               | output integrated loudness {str} (numeric)
+        output_tp {str}             | output maximum true peak {str} (numeric)
+        output_lra {str}            | output loudness range target {str} (numeric)
+        output_thresh {str}         | output threshold {str} (numeric)
+        normalization_type {str}    | scaling type to apply {str} (alphabetic)
+        target_offset {str}         | offset gain applied before true peak limiter {str} (numeric)
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception JSONDecodeError as json decoding error.
+        '''
+
+        try:
+            input_data = None
+            json_input = input_process.stderr
+
+            json_start = json_input.find('{')
+            json_end = json_input.rfind('}')
+
+            if json_start != -1 and json_end != -1:
+                json_string = json_input[json_start: json_end + 1]
+            else:
+                raise Exception(f"Could not find JSON output in subprocess stderr\n{json_string}")
+
+            input_data = json.loads(json_string)
+            print(json.dumps(input_data, indent=4))
+        except Exception as e:
+            raise Exception(f"Exception {e} parsing subprocess object")
+        except JSONDecodeError as e:
+            raise JSONDecodeError(f"JSON parsing error: {e} with\n{json_string}")
+
+        return input_data
+
+
     def ebu_normalize_file(self, file_path):
         '''
         @todo complete add yaspin, update exceptions
@@ -65,13 +112,22 @@ class AudioNormalization():
         '''
 
         try:
+            export_path = directory.path_info(file_path)
+
+            export_format = _AUDIO_TYPES[0]
+            input_format = os.path.splitext(file_path)[1].lower()[1:]
+            input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
+            input_path_dir = os.path.dirname(file_path)
+
+            print(f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}")
+            print(f"Source directory path: {input_path_dir}")
+
             # get original sample rate for down sampling
             # @todo research if sample rate is >=192k, do i really need to apply loudnorm?
             sample_rate = self.get_sample_rate(file_path)
-            export_path = DirectoryProcessing.path_info(file_path)
+            export_path = directory.path_info(file_path)
 
             r'''
-            loudnorm https://k.ylo.ph/2016/04/04/loudnorm.html
             rbu 128 https://ffmpeg.org/ffmpeg-filters.html#loudnorm
             AES https://www.aes.org/technical/documents/AESTD1004_1_15_10.pdf
             https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg
@@ -83,11 +139,13 @@ class AudioNormalization():
             -f Output to null to avoid creating an actual output file
             Direct output to stdout for the first pass (stderr for loudnorm stats)
 
-            PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3 -vn /
-            -af loudnorm=I=-16:TP=-2.0:LRA=11:print_format=json /
-            -f null NULL
+            PS C:\Users\gmanw>
+            ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3
+            -vn
+            -af loudnorm=I=-16:TP=-2.0:LRA=11:print_format=json
+            -f null -
 
-            [Parsed_loudnorm_0 @ 000001b9bb260740] peed=31.3x
+            [Parsed_loudnorm_0 @ 000001b9bb260740] speed=31.3x
             {
                     "input_i" : "-16.77",
                     "input_tp" : "-6.66",
@@ -111,26 +169,31 @@ class AudioNormalization():
                 "-f", "null", "-"
             ]
 
-            stats_process = subprocess.run(
-                stats_command,
-                check=True,
-                capture_output=True,
-                text=True               # Decode stdout/stderr as text
-            )
+            text = f"Getting Ebu R128 normalizing stats for {input_path_stem}"
+            # @todo Write def for yaspin subprocess.run w/ yaspin return CalledProcess object and yaspin sp
+            with yaspin(text) as sp:
+                stats_process = subprocess.run(
+                    stats_command,
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
 
-            # ffmpeg outputs information to stderr
-            stats_output = stats_process.stderr
+            # # ffmpeg outputs information to stderr, not to stdout
+            # stats_output = stats_process.stderr
 
-            json_start = stats_output.find('{')
-            json_end = stats_output.rfind('}')
+            # json_start = stats_output.find('{')
+            # json_end = stats_output.rfind('}')
 
-            if json_start != -1 and json_end != -1:
-                json_string = stats_output[json_start: json_end + 1]
-            else:
-                raise Exception(f"Could not find JSON output in ffmpeg loudnorm stats stderr\n{json_string}")
+            # if json_start != -1 and json_end != -1:
+            #     json_string = stats_output[json_start: json_end + 1]
+            # else:
+            #     raise Exception(f"Could not find JSON output in ffmpeg loudnorm stats stderr\n{json_string}")
 
-            stats_data = json.loads(json_string)
-            print(json.dumps(stats_data, indent=4))  # Pretty print for readability
+            # stats_data = json.loads(json_string)
+            # print(json.dumps(stats_data, indent=4))
+
+            stats_data = self.__loudnorm_json_parse(stats_process)
 
             # Access specific values, e.g., integrated loudness
             measured_i = stats_data.get("input_i")
@@ -150,9 +213,12 @@ class AudioNormalization():
             -ar input file sample_rate, 1st pass loudnorm filter auto up scales to 192 khz, so need to down scale to original
             -y on the output file to force an overwrite if needed
 
-            PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3 -id3v2_version 3 /
-            -af loudnorm=I=-16:TP=-2.0:LRA=11:measured_I=-16.77:measured_LRA=8.10:measured_TP=-6.66:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json /
-            -ar 44100 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
+            PS C:\Users\gmanw>
+            ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3
+            -id3v2_version 3
+            -af loudnorm=I=-16:TP=-2.0:LRA=11:measured_I=-16.77:measured_LRA=8.10:measured_TP=-6.66:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json
+            -ar 44100
+            D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
 
             [Parsed_loudnorm_0 @ 0000021b0d796e80] 8KiB time=N/A bitrate=N/A speed=N/A
             {
@@ -183,39 +249,46 @@ class AudioNormalization():
                 export_path, "-y"
             ]
 
-            normalize_process = subprocess.run(
-                normalize_command,
-                check=True,
-                capture_output=True,
-                text=True
-            )
-            normalize_output = normalize_process.stderr
+            text = f"Ebu R128 normalizing {input_path_stem}"
+            # @ todo write a def for subprocess.run w yaspin must return CalledProcess object from subprocess.run and yaspin sp
+            with yaspin(text) as sp:
+                normalize_process = subprocess.run(
+                    normalize_command,
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
 
-            json_start = normalize_output.find('{')
-            json_end = normalize_output.rfind('}')
+            # normalize_output = normalize_process.stderr
 
-            if json_start != -1 and json_end != -1:
-                json_string = normalize_output[json_start: json_end + 1]
-            else:
-                raise Exception(f"Could not find JSON output in ffmpeg loudnorm normalize stderr\n{json_string}")
+            # json_start = normalize_output.find('{')
+            # json_end = normalize_output.rfind('}')
 
-            normalize_data = json.loads(json_string)
-            print(json.dumps(normalize_data, indent=4))
+            # if json_start != -1 and json_end != -1:
+            #     json_string = normalize_output[json_start: json_end + 1]
+            # else:
+            #     raise Exception(f"Could not find JSON output in ffmpeg loudnorm normalize stderr\n{json_string}")
+
+            # normalize_data = json.loads(json_string)
+            # print(json.dumps(normalize_data, indent=4))
+
+            normalize_data = self.__loudnorm_json_parse(normalize_process)
 
             normalization_type = normalize_data.get("normalization_type")
 
             if normalization_type != "linear":
                 print(f"ffmpeg used normalization type: {normalization_type}")
 
+            print(f"Successful ebu r128 normalization on {input_path_stem} in {sp.elapsed_time:.2f} secs")
         except CalledProcessError as e:
-            raise CalledProcessError(f"FFmpeg error {e} Stderr:\n{e.stderr}")
+            raise CalledProcessError(f"Error while ebu r128 normalizing {file_path}: {e}\nFFmpeg output: {e.stderr}")
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
         except JSONDecodeError as e:
-            raise JSONDecodeError(f"JSON parsing error: {e} with\n{json_string}")
+            raise JSONDecodeError(f"JSON parsing error: {e}")
 
 
-    def get_bitrate(self, file_path):
+    def get_bit_rate(self, file_path):
         """
         @brief Retrieves the bitrate of a media file using ffprobe.
 
@@ -236,15 +309,16 @@ class AudioNormalization():
                 '-show_entries', 'format=bit_rate',
                 file_path
             ]
-
+            # @ todo write a def for subprocess.run w/o yaspin must return CalledProcess object from subprocess.run
             result = subprocess.run(command, capture_output=True, text=True, check=True)
+            # unlike ffmpeg, ffprobe does use stdout
             data = json.loads(result.stdout)
 
             if 'format' in data and 'bit_rate' in data['format']:
                 bit_rate = int(data['format']['bit_rate'])
 
         except CalledProcessError as e:
-            raise CalledProcessError(f"Error {e} executing ffprobe")
+            raise CalledProcessError(f"Error {e} executing ffprobe for bit rate")
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
         except JSONDecodeError as e:
@@ -275,7 +349,9 @@ class AudioNormalization():
                 '-of', 'json',
                 file_path
             ]
+            # @ todo write a def for subprocess.run w/o yaspin
             result = subprocess.run(command, capture_output=True, text=True, check=True)
+            # unlike ffmpeg, ffprobe does use stdout
             data = json.loads(result.stdout)
 
             if 'streams' in data and data['streams']:
@@ -295,6 +371,8 @@ class AudioNormalization():
 
     def get_volume_info(self, file_path):
         '''
+        @todo convert to subprocess.run
+        @todo add CalledprocessError exception handling
         @brief Gets mean and max volume from audio file using ffmpeg.
 
         @details
@@ -321,6 +399,7 @@ class AudioNormalization():
 
             # Run FFmpeg and capture stderr (where volumedetect output goes)
             process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # ffmpeg does not use stdout
             stdout, stderr = process.communicate()
 
             # Decode stderr to string and search for volume information
@@ -343,6 +422,7 @@ class AudioNormalization():
 
     def peak_normalize_file(self, file_path):
         '''
+        @todo debug & finish
         @brief Peak normalizes audio file level.
 
         @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
@@ -354,17 +434,18 @@ class AudioNormalization():
         '''
 
         try:
-            export_path = DirectoryProcessing.path_info(file_path)
+            export_path = directory.path_info(file_path)
 
             export_format = _AUDIO_TYPES[0]
             input_format = os.path.splitext(file_path)[1].lower()[1:]
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_dir = os.path.dirname(file_path)
+
             print(f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}")
             print(f"Source directory path: {input_path_dir}")
 
             # get the input file info - want bitrate so can preserve the quality in exported file
-            bitrate = self.get_bitrate(file_path)
+            bitrate = self.get_bit_rate(file_path)
 
             volume_info = self.get_volume_info(file_path)
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
@@ -374,74 +455,59 @@ class AudioNormalization():
                 print(f"{input_path_stem} has max volume: {max_volume}, peak normalization not needed")
                 return
 
-            adjustment = 0 + float(_TP) - max_volume
+            adjustment = 0 + float(_TP) - float(max_volume)
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
                 print(f"peak normalizing by {_TP} minus {max_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
                 return
 
-            # @todo switch to ffmpeg
-            # ffmpeg -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a "volume=6dB" -c:v copy -ab 128k -map_metadata 0 -id3v2_version 3 "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-live.mp3" -y
-            # use target_level in volume
-            # use bit_rate in -ab
+            r'''
+            working ffmpeg peak normalization cli
+            ffmpeg -hide_banner -y -i F:\ConvertedMusic\Crush\Here\Crush-Live.mp3 -filter:a "volume=6dB" -c:v copy -c:a libmp3lame -b:a 128k -id3v2_version 3 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-Live.mp3
+            ffmpeg -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a "volume=6dB" -c:v copy -ab 128k -map_metadata 0 -id3v2_version 3 "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
 
-            # working ffmpeg-normalize ubuntu/windows cli:
-            # ffmpeg-normalize ~/ConvertedMusic/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
-            # ffmpeg-normalize F:\ConvertedMusic\Crush\Here\Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
-            # album art and tags are preserved!!!
-            # the extra output option setting the ID3v2.3 is necessary, else can't preserve embedded art
-            # command = [
-            #     "ffmpeg-normalize",
-            #     file_path,
-            #     "-c:a", "libmp3lame",
-            #     "-b:a", bitrate,
-            #     "--extra-output-options", r"-id3v2_version 3",
-            #     "--normalization-type", "peak",
-            #     "--target-level", str(adjustment),
-            #     "-f", "-o", export_path
-            # ]
+            ffmpeg -hide_banner -y
+            -i ~/ConvertedMusic/Crush/Here/Crush-Live.mp3
+            -filter:a "volume=6dB"
+            -c:v copy
+            -c:a libmp3lame
+            -b:a 128k
+            -id3v2_version 3
+            ~/MusicProcessing/src/generated_files/Music/Crush/Here/Peak-Crush-Live.mp3
+            '''
 
-            # ffmpeg -hide_banner -y -i F:\ConvertedMusic\Crush\Here\Crush-Live.mp3 -filter:a "volume=6dB" -c:v copy -c:a libmp3lame -b:a 128k -id3v2_version 3 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-Live.mp3
             command = [
                 "ffmpeg", "-hide_banner", "-y",
                 "-i", file_path,
-                "-filter:a", (f"volume={adjustment}dB"),
-                "c:v copy",
+                "-filter:a", (f'"volume={adjustment}dB"'),
+                "c:v", "copy",
                 "-c:a", "libmp3lame",
                 "-b:a", str(bitrate),
-                "-id3v2_version 3",
-                "export_path"
+                "-id3v2_version", "3",
+                export_path
             ]
 
-            text = f"Normalizing {input_path_stem}"
-            with yaspin(Spinners.dots, text=text, timer=True) as sp:
-                with open(os.devnull, 'rb') as devnull:
-                    p = subprocess.Popen(
-                        command,
-                        stdin=devnull,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                        universal_newlines=True
-                    )
+            text = f"Peak normalizing {input_path_stem}"
+            # @ todo write a def for subprocess.run w/ yaspin object return
+            with yaspin(text) as sp:
+                result = subprocess.run(
+                    command,
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
 
-                while True:
-                    line = p.stderr.readline()
-                    if not line:
-                        break
-
-                p_out, p_err = p.communicate()
-
-            print(f"Successful normalization on {input_path_stem} in {sp.elapsed_time} secs\r\n")
-        except CalledProcessError:
-            raise Exception(
-                f"ffmpeg-normalize returned error code: {p.returncode}\n\n for command line: {command}\n\n Output from ffmpeg-normalize: {p_err.decode(errors='ignore')}")
+            print(f"Successful peak normalization on {input_path_stem} in {sp.elapsed_time:.2f} secs")
+        except CalledProcessError as e:
+            raise CalledProcessError(f"Error while peak normalizing {input_path_stem}: {e}\nFFmpeg output: {e.stderr}")
         except Exception as e:
-            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
+            raise Exception(f"Exception {e} peak normalizing audio file: {file_path}")
 
 
     def normalize_walk(self, tld_path, norm_type):
         '''
+        @todo test & finish
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
         @param tld_path {str} The top level directory path that contains all the music files.
@@ -466,16 +532,16 @@ class AudioNormalization():
                         self.ebu_normalize_file(input_file_path)
                     elif norm_type == "peak":
                         self.peak_normalize_file(input_file_path)
-                    elif norm_type == "rms":
-                        pass
+                    # elif norm_type == "rms":
+                    #     pass
 
         except Exception as e:
-            raise Exception(f"Exception {e} walking {tld_path} to  {norm_type} normalize audio files")
+            raise Exception(f"Exception {e} on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files")
 
 
     def peak_normalize_walk(self, file_path):
         '''
-        @todo generalize in new def for peak, ebu, rms normalization then remove this def
+        @todo remove after new def for all types finished
         @brief Peak normalizes mp3 audio files in under starting top level directory.
 
         @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.

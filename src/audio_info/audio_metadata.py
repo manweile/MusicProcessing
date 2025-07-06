@@ -161,6 +161,7 @@ class AudioMetadata():
 
     def __unpack_asf_image(self, data):
         '''
+        @todo delete, moved to audio_art.py
         @brief Unpack image data from a WM/Picture tag.
 
         @details https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243
@@ -236,6 +237,7 @@ class AudioMetadata():
 
     def __write_data(self, file_path, image_data):
         '''
+        @todo delete, moved to audio_art.py
         @brief Writes image data for audio file to separate jpeg file.
 
         @param file_path {str} The full path to audio file.
@@ -500,6 +502,7 @@ class AudioMetadata():
 
     def extract_album_art(self, file_path):
         '''
+        @todo delete, moved to audio_art.py
         @brief Extract and save embedded album art.
 
         @details Extracts art as Folder.jpg to album directory of input audio file.
@@ -550,6 +553,7 @@ class AudioMetadata():
 
     def extract_asf_art(self, file_path):
         '''
+        @todo delete, moved to audio_art.py
         @brief Extracts cover art from wma files
 
         @details Input file is expected to have embedded cover art.
@@ -573,6 +577,7 @@ class AudioMetadata():
 
     def extract_ffmpeg_art(self, file_path):
         '''
+        @todo delete, moved to audio_art.py
         @brief Extracts and saves embedded album art.
 
         @details Uses ffmpeg and is audio file type agnostic.
@@ -617,7 +622,7 @@ class AudioMetadata():
 
     def extract_ffmpeg_python_art(self, file_path):
         '''
-        @todo consider deletion
+        @todo delete, removing all ffmpeg-python usage
         @brief Extracts and saves embedded album art.
 
         @details Uses ffmpeg-python module and is audio file type agnostic.
@@ -662,6 +667,7 @@ class AudioMetadata():
 
     def extract_m4a_art(self, file_path):
         '''
+        @todo delete, moved to audio_art.py
         @brief Extracts cover art from m4a files
 
         @details Input file is expected to have cover art.
@@ -691,6 +697,7 @@ class AudioMetadata():
 
     def extract_mp3_art(self, file_path):
         '''
+        @todo delete, moved to audio_art.py
         @brief Extracts cover art from wma files.
 
         @details Input file is expected to have cover art.
@@ -713,6 +720,7 @@ class AudioMetadata():
 
     def extract_walk(self, start_path, file_pattern):
         '''
+        @todo delete, moved to audio_art.py
         @brief Extracts all embedded album art from audio files.
 
         @details Extracts embedded art from m4a, mp3, and wma files.
@@ -1082,6 +1090,7 @@ class AudioMetadata():
 
     def has_video_stream(self, file_path):
         r'''
+        @todo delete, moved to audio_art.py
         @todo consider writing own ffmpeg.probe
         @todo refer to C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\ffmpeg\_probe.py
         @brief Checks if an audio file has a video stream.
@@ -1361,6 +1370,7 @@ class AudioMetadata():
 
     def set_album_art(self, input_path):
         '''
+        @todo delete, moved to audio_art.py
         @brief Sets album art file for an album directory.
 
         @details First check to see a folder art file is present in album directory.

@@ -337,7 +337,7 @@ class AudioArt():
 
     def has_video_stream(self, file_path):
         r'''
-        @todo consider writing own ffmpeg.probe
+        @todo write own ffmpeg.probe
         @todo refer to C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\ffmpeg\_probe.py
         @brief Checks if an audio file has a video stream.
 
