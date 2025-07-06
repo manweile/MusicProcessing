@@ -7,7 +7,7 @@ google search: "ffmpeg" python get bit_rate example
 '''
 
 
-def get_bitrate(file_path):
+def get_bit_rate(file_path):
     """
     @brief Retrieves the bitrate of a media file using ffprobe.
 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     elif platform.system() == "Linux":
         audio_file = r"/home/gerald/Music/Crush/Here/Crush-Live.mp3"  # Replace with your audio/video file
 
-    bitrate = get_bitrate(audio_file)
+    bitrate = get_bit_rate(audio_file)
 
     if bitrate is not None:
         print(f"The bitrate of {audio_file} is: {bitrate} bps")
