@@ -139,6 +139,8 @@ _WMA_TIME_KEYS = {
     'WM/OriginalReleaseYear'
 }
 
+directory = DirectoryProcessing()
+
 
 class AudioMetadata():
     '''
@@ -269,7 +271,7 @@ class AudioMetadata():
         '''
 
         try:
-            export_path = DirectoryProcessing.path_info(file_path)
+            export_path = directory.path_info(file_path)
 
             export_format = _AUDIO_TYPES[0]
             input_format = os.path.splitext(file_path)[1].lower()[1:]
