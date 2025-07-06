@@ -44,7 +44,7 @@ def test(in_file, out_file):
 if __name__ == "__main__":
     if platform.system() == "Windows":
         in_file = r"C:\Music\Crush\Here\Crush-Live.mp3"
-        out_file = r"C:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-Live.mp3"
+        out_file = r"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-Live.mp3"
     elif platform.system() == "Linux":
         in_file = r"/home/gerald/Music/Crush/Here/Crush-Live.mp3"
         out_file = r"/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Peak-Crush-Live.mp3"

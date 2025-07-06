@@ -7,7 +7,6 @@
 '''
 
 # standard modules
-# import ffmpeg
 import gc
 import json
 import math
@@ -58,6 +57,19 @@ class AudioNormalization():
         @brief Parse json element out of ffmpeg loudnorm subprocess stderr output.
 
         @details The subprocess stderr is expected to have a single json element.
+        Expecting this in input_process.stderr, from a ffmpeg loudnorn run
+        {
+            "input_i" : "-16.77",
+            "input_tp" : "-6.66",
+            "input_lra" : "8.10",
+            "input_thresh" : "-26.99",
+            "output_i" : "-15.36",
+            "output_tp" : "-2.00",
+            "output_lra" : "5.60",
+            "output_thresh" : "-25.47",
+            "normalization_type" : "dynamic",
+            "target_offset" : "-0.64"
+        }
         @param input_process {CompletedProcess} A completed subprocess object.
         @return input_data {dict} FFmpeg loudnorm statistics.
         Key                         |Value
@@ -96,6 +108,65 @@ class AudioNormalization():
             raise JSONDecodeError(f"JSON parsing error: {e} with\n{json_string}")
 
         return input_data
+
+
+    def __spinner_subprocess(self, text, command):
+        '''
+        @brief Runs command in subprocess with a spinner
+
+        @details Runs subprocess for command, returns stdin & stderr
+        @param text {str} Text for spinner to display.
+        @param command {str} Command for subprocess  to run.
+        @return results (process, spinner) ({CompletedProcess}, {Yaspin}) Tuple containing completed process and spinner objects
+        @exception CalledProcessError A subprocess error from ffmpeg command execution.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            with yaspin(text) as spinner:
+                # check enables CalledProcessError throwing,
+                # capture output to get stdout & stderr
+                # text decodes stdout/stderr as text
+                process = subprocess.run(
+                    command,
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
+            return process, spinner
+        except CalledProcessError as e:
+            raise CalledProcessError(f"CompletedProcess error {e} for command: {command}\nffmpeg output: {e.stderr}")
+        except Exception as e:
+            raise Exception(f"Exception {e} processing command: {command}")
+
+
+    def __subprocess(self, text, command):
+        '''
+        @brief Runs command in subprocess with a spinner
+
+        @details Runs subprocess for command, returns stdin & stderr.
+        @param text {str} Text for spinner to display.
+        @param command {str} Command for subprocess  to run.
+        @return process {CompletedProcess} Completed process object.
+        @exception CalledProcessError A subprocess error from ffmpeg command execution.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            # check enables CalledProcessError throwing,
+            # capture output to get stdout & stderr
+            # text decodes stdout/stderr as text
+            process = subprocess.run(
+                command,
+                check=True,
+                capture_output=True,
+                text=True
+            )
+            return process
+        except CalledProcessError as e:
+            raise CalledProcessError(f"CompletedProcess error {e} for command: {command}\nffmpeg output: {e.stderr}")
+        except Exception as e:
+            raise Exception(f"Exception {e} processing command: {command}")
 
 
     def ebu_normalize_file(self, file_path):
@@ -146,18 +217,7 @@ class AudioNormalization():
             -f null -
 
             [Parsed_loudnorm_0 @ 000001b9bb260740] speed=31.3x
-            {
-                    "input_i" : "-16.77",
-                    "input_tp" : "-6.66",
-                    "input_lra" : "8.10",
-                    "input_thresh" : "-26.99",
-                    "output_i" : "-15.36",
-                    "output_tp" : "-2.00",
-                    "output_lra" : "5.60",
-                    "output_thresh" : "-25.47",
-                    "normalization_type" : "dynamic",
-                    "target_offset" : "-0.64"
-            }
+
             '''
 
             stats_command = [
@@ -170,7 +230,7 @@ class AudioNormalization():
             ]
 
             text = f"Getting Ebu R128 normalizing stats for {input_path_stem}"
-            # @todo Write def for yaspin subprocess.run w/ yaspin return CalledProcess object and yaspin sp
+            # @todo Write def
             with yaspin(text) as sp:
                 stats_process = subprocess.run(
                     stats_command,
@@ -350,7 +410,12 @@ class AudioNormalization():
                 file_path
             ]
             # @ todo write a def for subprocess.run w/o yaspin
-            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                command,
+                capture_output=True,
+                check=True,
+                text=True
+                )
             # unlike ffmpeg, ffprobe does use stdout
             data = json.loads(result.stdout)
 
