@@ -43,6 +43,7 @@ class DirectoryProcessing():
             try:
                 if os.path.isdir(tld_path):
                     self._tld_path = tld_path
+
             except OSError as e:
                 if e.errno == errno.ENOENT:
                     raise OSError(f"Exception: Path {tld_path} not found")
@@ -84,6 +85,7 @@ class DirectoryProcessing():
 
             self.create_csv(csv_filename, data, csv_dir, header_row, None)
             print(f"Found {type_count} {file_ext} files")
+
         except Exception as e:
             raise Exception(f"Exception {e} getting files for extension {file_ext} in {start_path}")
 
@@ -114,6 +116,7 @@ class DirectoryProcessing():
         try:
             if os.path.isdir(tld_path):
                 self._tld_path = tld_path
+
         except OSError as e:
             if e.errno == errno.ENOENT:
                 raise OSError(f"OSError path {tld_path} not found")
@@ -155,6 +158,7 @@ class DirectoryProcessing():
 
             csv_file_writer.writerows(sorted_data)
             csv_outfile.close()
+
         except Exception as e:
             raise Exception(f"Exception {e} writing {csv_filename}")
 
@@ -257,6 +261,7 @@ class DirectoryProcessing():
             print(f"Found {other_count} non-audio files")
 
             print(f"Found {tot_count} total files")
+
         except Exception as e:
             raise Exception(f"Exception {e} getting files for {start_path}")
 
@@ -290,6 +295,7 @@ class DirectoryProcessing():
 
         @param  file_path {str} The full audio file path.
         @return file_ext {str} The file type of audio file or None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         file_ext = None
@@ -300,6 +306,7 @@ class DirectoryProcessing():
                 _, split_extension = os.path.splitext(file_path)
                 # want the type, not the full extension with the period
                 file_ext = split_extension[1:]
+
         except Exception:
             print('File type error: {} occurred'.format(sys.exec_info()[0]))
 
@@ -324,6 +331,7 @@ class DirectoryProcessing():
         if not os.path.exists(music_dir):
             try:
                 os.mkdir(music_dir)
+
             except Exception as e:
                 if e.errno == errno.EACCES:
                     raise OSError(f"Exception: permission denied for creating {music_dir}")
@@ -347,6 +355,7 @@ class DirectoryProcessing():
 
         try:
             shutil.move(file_path, destination_path)
+
         except Exception as e:
             raise Exception(f"Exception {e} moving {audio_file} from {os.path.dirname(file_path)} to {destination_dir}")
 
@@ -440,6 +449,7 @@ class DirectoryProcessing():
 
             export_name = input_name + export_ext
             export_path = os.path.join(export_dir, export_name)
+
         except Exception as e:
             raise Exception(f"Exception {e} getting export path {file_path}")
 
@@ -490,6 +500,7 @@ class DirectoryProcessing():
                         dir_count += 1
 
             print(f"removed {dir_count} empty album directories")
+
         except Exception as e:
             if e.errno == errno.EACCES:
                 raise OSError(f"Exception: permission denied for deleting {artist_item_path}")
