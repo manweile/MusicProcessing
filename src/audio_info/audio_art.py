@@ -26,6 +26,7 @@ from mutagen.mp4 import MP4
 
 # local modules
 from src import _AUDIO_EXTS
+from src.audio_normalize import AudioNormalization
 from src.generated_files import generated_files
 
 gc.enable()
@@ -35,6 +36,8 @@ _ASF = "ASF"
 _FOLDER_ART = "Folder.jpg"
 _MP3 = "MP3"
 _MP4 = "MP4"
+
+normalization = AudioNormalization()
 
 
 class AudioArt():
@@ -232,10 +235,9 @@ class AudioArt():
                 output_file, '-y'
             ]
 
-            subprocess.run(command, check=True, capture_output=True, text=True)
+            _ = normalization.subprocess_run(command)
             print(f"Album art extracted from {input_path.name} and saved to {album_path}")
-        except CalledProcessError as e:
-            raise CalledProcessError(f"Error extracting album art: {e}\n\nFFmpeg output: {e.stderr}")
+
         except Exception as e:
             raise Exception(f"Exception {e} extracting art from {input_path}")
 
