@@ -7,16 +7,14 @@
 '''
 
 # standard modules
-import ffmpeg
 import fnmatch
 import gc
+import json
 import os
 import shutil
 import struct
-import subprocess
-from ffmpeg import Error
 from pathlib import Path
-from subprocess import CalledProcessError
+from json import JSONDecodeError
 
 # third party modules
 from mutagen.asf import ASF
@@ -338,9 +336,7 @@ class AudioArt():
 
 
     def has_video_stream(self, file_path):
-        r'''
-        @todo write own ffmpeg.probe
-        @todo refer to C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\ffmpeg\_probe.py
+        '''
         @brief Checks if an audio file has a video stream.
 
         @details Audio files can have embedded art in video streams.
@@ -348,18 +344,35 @@ class AudioArt():
 
         @param file_path {str} The full path to audio file.
         @return has_video {boolean} Returns true if video stream is present, false otherwise.
-        @exception Error A ffmpeg-python module error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
             has_stream = False
-            probe = ffmpeg.probe(file_path)
+
+            # -hide_banner reduce output clutter
+            # -select_streams v:0 only want video stream
+            # -show_streams gets all information about each media stream in the input
+            # -of json output information in json format
+            command = [
+                'ffprobe',
+                '-hide_banner',
+                '-select_streams', 'v:0',
+                '-show_streams',
+                '-of', 'json',
+                file_path
+            ]
+
+            probe_process = normalization.subprocess_run(command)
+            # ffprobe outputs to stdout, unlike ffmpeg
+            probe = json.loads(probe_process.stdout)
+
             for stream in probe['streams']:
                 if stream['codec_type'] == 'video':
                     has_stream = True
-        except Error as e:
-            print(f"An ffmpeg error occurred: {e.stderr.decode()}")
+
+        except JSONDecodeError as e:
+            raise JSONDecodeError(f"Error: {e} decoding JSON output from ffprobe on audio file: {file_path}")
         except Exception as e:
             raise Exception(f"Exception {e} extracting art from {file_path}")
 
