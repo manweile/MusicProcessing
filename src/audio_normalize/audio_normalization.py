@@ -102,10 +102,10 @@ class AudioNormalization():
             input_data = json.loads(json_string)
             print(json.dumps(input_data, indent=4))
 
-        except Exception as e:
-            raise Exception(f"Exception {e} parsing subprocess object")
         except JSONDecodeError as e:
             raise JSONDecodeError(f"JSON parsing error: {e} with\n{json_string}")
+        except Exception as e:
+            raise Exception(f"Exception {e} parsing subprocess object")
 
         return input_data
 
@@ -224,12 +224,13 @@ class AudioNormalization():
                 print(f"ffmpeg used normalization type: {normalization_type}")
 
             print(f"Successful ebu r128 normalization on {input_path_stem} in {normalize_time:.2f} secs")
+
         except CalledProcessError as e:
             raise CalledProcessError(f"Error while ebu r128 normalizing {file_path}: {e}\nFFmpeg output: {e.stderr}")
-        except Exception as e:
-            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
         except JSONDecodeError as e:
             raise JSONDecodeError(f"JSON parsing error: {e}")
+        except Exception as e:
+            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 
 
     def get_bit_rate(self, file_path):
@@ -247,6 +248,10 @@ class AudioNormalization():
 
         try:
             bit_rate = None
+
+            # -v quiet suppress output clutter (-hide_banner works too)
+            # -print_format json for json output
+            # -show_entries format=bit_rate
             command = [
                 'ffprobe',
                 '-v', 'quiet',
@@ -254,13 +259,6 @@ class AudioNormalization():
                 '-show_entries', 'format=bit_rate',
                 file_path
             ]
-
-            # result = subprocess.run(
-            #     command,
-            #     capture_output=True,
-            #     text=True,
-            #     check=True
-            # )
 
             result = self.subprocess_run(command)
             # unlike ffmpeg, ffprobe does use stdout
@@ -271,22 +269,20 @@ class AudioNormalization():
 
         except CalledProcessError as e:
             raise CalledProcessError(f"Error {e} executing ffprobe for bit rate")
-        except Exception as e:
-            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
         except JSONDecodeError as e:
             raise JSONDecodeError(f"Error {e} decoding JSON output from ffprobe.")
+        except Exception as e:
+            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 
         return bit_rate
 
 
     def get_sample_rate(self, file_path):
         '''
-        @todo clean up
         @brief Gets the sample rate from audio file.
 
         @param file_path {str} The full path to audio file.
         @return sample_rate {int} The sample rate in Hz, otherwise None.
-        @exception CalledProcessError A subprocess error from ffprobe command execution.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         @exception IndexError An index error finding audio stream or sample rate information.
         @exception JSONDecodeError A json decoding error.
@@ -294,21 +290,20 @@ class AudioNormalization():
 
         try:
             sample_rate = None
+
+            # -v error or -hide_banner, either work to reduce clutter
+            # -select_streams a:0 only want audio stream
+            # -show_entries stream=sample_rate we only get the one entry specified
+            # -of json to output in json format
             command = [
                 'ffprobe',
                 '-v', 'error',
-                '-select_streams', 'a:0',  # Select the first audio stream
+                '-select_streams', 'a:0',
                 '-show_entries', 'stream=sample_rate',
                 '-of', 'json',
                 file_path
             ]
 
-            # result = subprocess.run(
-            #     command,
-            #     capture_output=True,
-            #     check=True,
-            #     text=True
-            # )
             result = self.subprocess_run(command)
             # unlike ffmpeg, ffprobe does use stdout
             data = json.loads(result.stdout)
@@ -316,14 +311,12 @@ class AudioNormalization():
             if 'streams' in data and data['streams']:
                 sample_rate = int(data['streams'][0]['sample_rate'])
 
-        except CalledProcessError as e:
-            raise CalledProcessError(f"Error: {e} running ffprobe on audio file: {file_path}\n\nStderr: {e.stderr}")
-        except Exception as e:
-            raise Exception(f"Exception {e} getting sample rate for audio file: {file_path}")
         except IndexError as e:
             raise IndexError(f"Error: {e} no audio stream found or sample rate information missing for audio file: {file_path}")
         except JSONDecodeError as e:
             raise JSONDecodeError(f"Error: {e} decoding JSON output from ffprobe on audio file: {file_path}")
+        except Exception as e:
+            raise Exception(f"Exception {e} getting sample rate for audio file: {file_path}")
 
         return sample_rate
 
@@ -466,7 +459,7 @@ class AudioNormalization():
 
     def normalize_walk(self, tld_path, norm_type):
         '''
-        @todo test & finish
+        @todo test
         @todo decide if I want rms normalization
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
@@ -536,6 +529,7 @@ class AudioNormalization():
         @brief Runs command in subprocess with a spinner.
 
         @details Runs subprocess for command, returns stdin & stderr.
+
         @param text {str} Text for spinner to display.
         @param command {str} Command for subprocess  to run.
         @return results (process, spinner) ({CompletedProcess}, {Yaspin}) Tuple containing completed process and spinner objects.
@@ -568,6 +562,7 @@ class AudioNormalization():
         @brief Runs command in subprocess.
 
         @details Runs subprocess for command, returns stdin & stderr.
+
         @param text {str} Text for spinner to display.
         @param command {str} Command for subprocess  to run.
         @return process {CompletedProcess} Completed process object.
