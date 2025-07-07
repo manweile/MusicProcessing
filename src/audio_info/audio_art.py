@@ -99,6 +99,7 @@ class AudioArt():
             image_data = data[pos:pos + size]
 
             return (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
+
         except Exception as e:
             raise Exception(f"Exception {e} extracting embedded art from tag data")
 
@@ -120,6 +121,7 @@ class AudioArt():
                 with open(output_file, 'wb') as img_file:
                     img_file.write(image_data)
                 print(f"Album art written from {input_path.name} and saved to {album_path}")
+
         except Exception as e:
             raise Exception(f"Exception: {e} writing embedded art from {file_path}")
 
@@ -170,6 +172,7 @@ class AudioArt():
             else:
                 print(f"No album art present in {file_path}")
                 return
+
         except Exception as e:
             raise Exception(f"Exception {e} extracting art from {file_path}")
 
@@ -193,6 +196,7 @@ class AudioArt():
             mime_type, image_data, type_indicator, image_description = self.__unpack_asf_image(picture_data)
 
             self.__write_data(file_path, image_data)
+
         except Exception as e:
             raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
 
@@ -265,6 +269,7 @@ class AudioArt():
                 image_data = artwork
 
             self.__write_data(file_path, image_data)
+
         except Exception as e:
             raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
 
@@ -287,6 +292,7 @@ class AudioArt():
                 image_data = tag.data
 
             self.__write_data(file_path, image_data)
+
         except Exception as e:
             raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
 
@@ -328,6 +334,7 @@ class AudioArt():
                     else:
                         input_file_path = os.path.join(dir_path, file)
                         self.extract_album_art(input_file_path)
+
         except Exception as e:
             if file_pattern:
                 raise Exception(f"Exception {e} walking {start_path} to convert {file_pattern} audio files to mp3")
@@ -344,6 +351,7 @@ class AudioArt():
 
         @param file_path {str} The full path to audio file.
         @return has_video {boolean} Returns true if video stream is present, false otherwise.
+        @exception JSONDecodeError as json decoding error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -422,5 +430,6 @@ class AudioArt():
                     print(f"Set {album_art_jpg} as {_FOLDER_ART} for {album_path}")
                 else:
                     print(f"No album art set for {album_path}")
+
         except Exception as e:
             raise Exception(f"Exception {e} setting album art for {album_path}")
