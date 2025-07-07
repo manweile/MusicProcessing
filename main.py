@@ -262,7 +262,7 @@ def main(args):
             tld_path = getattr(args, "tld")
             create_albums(tld_path)
 
-        if args.subcommand == "extract-art":
+        if args.subcommand == "extract-file":
             file_path = getattr(args, "file")
             extract_art(file_path)
 
@@ -420,7 +420,7 @@ if __name__ == "__main__":
     # 1 mandatory arg, the path to audio file
     # sys.argv = ['D:\MusicProcessing\main.py', 'extract-art', 'C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma',
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-art', '/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma',
-    extract_art_parser = subparsers.add_parser("extract-art", help="Extracts embedded art from audio file")
+    extract_art_parser = subparsers.add_parser("extract-file", help="Extracts embedded art from audio file")
     extract_art_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     extract_art_parser.set_defaults(func=extract_art)
 
