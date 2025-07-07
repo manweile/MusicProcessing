@@ -548,6 +548,7 @@ class AudioMetadata():
             media_info = mediainfo(file_path)
             if media_info:
                 media_tags = media_info['TAG']
+
         except Exception as e:
             raise Exception(f"Exception {e} getting media tags for file {file_path}")
 
@@ -572,6 +573,7 @@ class AudioMetadata():
                 metadata_type = audio_file.__class__.__name__
             else:
                 return None
+
         except Exception as e:
             raise Exception(f"Exception: {e} getting metadata type for file: {file_path}")
 
@@ -594,6 +596,7 @@ class AudioMetadata():
                 tag_info = audio_file.tags
             else:
                 raise ValueError(f"Returned None loading audio file: {file_path}")
+
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
@@ -655,6 +658,7 @@ class AudioMetadata():
                                 print()
                         else:
                             print(f"{tag_file_path} has no metadata")
+
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
@@ -675,6 +679,7 @@ class AudioMetadata():
                 tag_info = audio_file.tags
             else:
                 raise ValueError(f"Returned None loading audio file: {file_path}")
+
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
@@ -711,6 +716,7 @@ class AudioMetadata():
                         unique_keys.update(file_keys)
 
             print(sorted(unique_keys))
+
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
@@ -742,6 +748,7 @@ class AudioMetadata():
                 has_art = True
             elif 'APIC:' in audio_tags:
                 has_art = True
+
         except Exception as e:
             raise Exception(f"Exception {e} checking for album art tag in file {file_path}")
 
@@ -764,6 +771,7 @@ class AudioMetadata():
             audio_file = mutagen.File(file_path)
             if audio_file is None:
                 return None
+
         except Exception as e:
             raise Exception(f"Exception {e} loading audio file: {file_path}")
 
@@ -787,6 +795,7 @@ class AudioMetadata():
                 audio_file = MP4(file_path)
                 if audio_file is None:
                     return None
+
         except Exception as e:
             raise Exception(f"Exception {e} loading audio file: {file_path}")
 
@@ -810,6 +819,7 @@ class AudioMetadata():
                 audio_file = MP3(file_path)
                 if audio_file is None:
                     return None
+
         except Exception as e:
             raise Exception(f"Exception {e} loading audio file: {file_path}")
 
@@ -833,6 +843,7 @@ class AudioMetadata():
                 audio_file = ASF(file_path)
                 if audio_file is None:
                     return None
+
         except Exception as e:
             raise Exception(f"Exception {e} loading audio file: {file_path}")
 
