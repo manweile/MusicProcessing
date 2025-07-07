@@ -110,69 +110,6 @@ class AudioNormalization():
         return input_data
 
 
-    def spinner_subprocess_run(self, text, command):
-        '''
-        @brief Runs command in subprocess with a spinner.
-
-        @details Runs subprocess for command, returns stdin & stderr.
-        @param text {str} Text for spinner to display.
-        @param command {str} Command for subprocess  to run.
-        @return results (process, spinner) ({CompletedProcess}, {Yaspin}) Tuple containing completed process and spinner objects.
-        @exception CalledProcessError A subprocess error from ffmpeg command execution.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            with yaspin(Spinners.dots, text, timer=True) as spinner:
-                # check enables CalledProcessError throwing,
-                # capture output to get stdout & stderr
-                # text decodes stdout/stderr as text
-                process = subprocess.run(
-                    command,
-                    check=True,
-                    capture_output=True,
-                    text=True
-                )
-
-            return process, spinner
-
-        except CalledProcessError as e:
-            raise CalledProcessError(f"CompletedProcess error {e} for command: {command}\nffmpeg output: {e.stderr}")
-        except Exception as e:
-            raise Exception(f"Exception {e} processing command: {command}")
-
-
-    def subprocess_run(self, command):
-        '''
-        @brief Runs command in subprocess.
-
-        @details Runs subprocess for command, returns stdin & stderr.
-        @param text {str} Text for spinner to display.
-        @param command {str} Command for subprocess  to run.
-        @return process {CompletedProcess} Completed process object.
-        @exception CalledProcessError A subprocess error from ffmpeg command execution.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            # check enables CalledProcessError throwing,
-            # capture output to get stdout & stderr
-            # text decodes stdout/stderr as text
-            process = subprocess.run(
-                command,
-                check=True,
-                capture_output=True,
-                text=True
-            )
-
-            return process
-
-        except CalledProcessError as e:
-            raise CalledProcessError(f"CompletedProcess error {e} for command: {command}\nffmpeg output: {e.stderr}")
-        except Exception as e:
-            raise Exception(f"Exception {e} processing command: {command}")
-
-
     def ebu_normalize_file(self, file_path):
         '''
         @todo clean up
@@ -489,9 +426,6 @@ class AudioNormalization():
 
             r'''
             working ffmpeg peak normalization cli
-            ffmpeg -hide_banner -y -i F:\ConvertedMusic\Crush\Here\Crush-Live.mp3 -filter:a "volume=6dB" -c:v copy -c:a libmp3lame -b:a 128k -id3v2_version 3 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-Live.mp3
-            ffmpeg -i C:\Music\Crush\Here\Crush-Live.mp3 -filter:a "volume=6dB" -c:v copy -ab 128k -map_metadata 0 -id3v2_version 3 "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
-
             ffmpeg -hide_banner -y
             -i ~/ConvertedMusic/Crush/Here/Crush-Live.mp3
             -filter:a "volume=6dB"
@@ -595,3 +529,66 @@ class AudioNormalization():
 
         except Exception as e:
             raise Exception(f"Exception {e} walking {file_path} to normalize audio files")
+
+
+    def spinner_subprocess_run(self, text, command):
+        '''
+        @brief Runs command in subprocess with a spinner.
+
+        @details Runs subprocess for command, returns stdin & stderr.
+        @param text {str} Text for spinner to display.
+        @param command {str} Command for subprocess  to run.
+        @return results (process, spinner) ({CompletedProcess}, {Yaspin}) Tuple containing completed process and spinner objects.
+        @exception CalledProcessError A subprocess error from ffmpeg command execution.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            with yaspin(Spinners.dots, text, timer=True) as spinner:
+                # check enables CalledProcessError throwing,
+                # capture output to get stdout & stderr
+                # text decodes stdout/stderr as text
+                process = subprocess.run(
+                    command,
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
+
+            return process, spinner
+
+        except CalledProcessError as e:
+            raise CalledProcessError(f"CompletedProcess error {e} for command: {command}\nffmpeg output: {e.stderr}")
+        except Exception as e:
+            raise Exception(f"Exception {e} processing command: {command}")
+
+
+    def subprocess_run(self, command):
+        '''
+        @brief Runs command in subprocess.
+
+        @details Runs subprocess for command, returns stdin & stderr.
+        @param text {str} Text for spinner to display.
+        @param command {str} Command for subprocess  to run.
+        @return process {CompletedProcess} Completed process object.
+        @exception CalledProcessError A subprocess error from ffmpeg command execution.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            # check enables CalledProcessError throwing,
+            # capture output to get stdout & stderr
+            # text decodes stdout/stderr as text
+            process = subprocess.run(
+                command,
+                check=True,
+                capture_output=True,
+                text=True
+            )
+
+            return process
+
+        except CalledProcessError as e:
+            raise CalledProcessError(f"CompletedProcess error {e} for command: {command}\nffmpeg output: {e.stderr}")
+        except Exception as e:
+            raise Exception(f"Exception {e} processing command: {command}")
