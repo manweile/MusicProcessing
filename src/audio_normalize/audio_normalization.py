@@ -117,7 +117,6 @@ class AudioNormalization():
         @details see https://k.ylo.ph/2016/04/04/loudnorm.html for an example.
 
         @param file_path {str} The full file path for audio file.
-        @exception CalledProcessError A subprocess error from ffmpeg command execution.
         @exception JSONDecodeError as json decoding error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -185,7 +184,7 @@ class AudioNormalization():
                 "ffmpeg",
                 "-hide_banner",
                 "-i", file_path,
-                "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}"
+                "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:"
                         f"measured_I={measured_i}:measured_TP={measured_tp}:"
                         f"measured_LRA={measured_lra}:measured_thresh={measured_thresh}:"
                         f"offset={offset}:linear=true"
@@ -206,8 +205,6 @@ class AudioNormalization():
 
             print(f"Successful ebu r128 normalization on {input_path_stem} in {normalize_time:.2f} secs")
 
-        except CalledProcessError as e:
-            raise CalledProcessError(f"Error while ebu r128 normalizing {file_path}: {e}\nFFmpeg output: {e.stderr}")
         except JSONDecodeError as e:
             raise JSONDecodeError(f"JSON parsing error: {e}")
         except Exception as e:
@@ -221,7 +218,6 @@ class AudioNormalization():
         @param file_path (str): The path to the media file.
 
         @return bit_rate {int} The bitrate in bits per second, or None if not found.
-        @exception CalledProcessError A subprocess error from ffprobe command execution.
         @exception JSONDecodeError as json decoding error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -247,8 +243,6 @@ class AudioNormalization():
             if 'format' in data and 'bit_rate' in data['format']:
                 bit_rate = int(data['format']['bit_rate'])
 
-        except CalledProcessError as e:
-            raise CalledProcessError(f"Error {e} executing ffprobe for bit rate")
         except JSONDecodeError as e:
             raise JSONDecodeError(f"Error {e} decoding JSON output from ffprobe.")
         except Exception as e:
@@ -472,7 +466,7 @@ class AudioNormalization():
             return process, spinner
 
         except CalledProcessError as e:
-            raise CalledProcessError(f"CompletedProcess error {e} for command: {command}\nffmpeg output: {e.stderr}")
+            raise Exception(f"CalledProcessError returncode:{e.returncode}, with stderr: {e.stderr} on command {e.cmd}")
         except Exception as e:
             raise Exception(f"Exception {e} processing command: {command}")
 
@@ -504,7 +498,6 @@ class AudioNormalization():
             return process
 
         except CalledProcessError as e:
-            # raise CalledProcessError(f"CompletedProcess error {e.stderr} for command: {command}")
-            raise Exception(process.returncode, command, process.stdout, process.stderr)
+            raise Exception(f"CalledProcessError returncode:{e.returncode}, with stderr: {e.stderr} on command {e.cmd}")
         except Exception as e:
             raise Exception(f"Exception {e} processing command: {command}")
