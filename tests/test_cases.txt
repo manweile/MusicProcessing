@@ -1,0 +1,24 @@
+directory processing tests
+    convert_file(file_path)
+    convert_walk(tld_path, file_pattern)
+    create_album_dir(tld_path)
+    get_audio_file_list
+    get_ext_file_list
+    remove_album_dir
+    remove_pattern
+
+audio info tests
+
+    audio metadata tests
+        get_any_tags(file_path)
+        get_media_info(file_path)
+        get_media_info_walk(start_path, file_pattern)
+        get_media_tags(file_path)
+        get_tags_walk(tld_path, file_pattern, ffprobe)
+
+    audio art tests
+        extract_album_art(file_path)
+        extract_walk(tld_path, file_pattern)
+
+audio normalization tests
+    ebu_normalize_file(file_path)
