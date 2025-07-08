@@ -1,24 +1,107 @@
-directory processing tests
-    convert_file(file_path)
-    convert_walk(tld_path, file_pattern)
-    create_album_dir(tld_path)
-    get_audio_file_list
-    get_ext_file_list
-    remove_album_dir
-    remove_pattern
+package inits:
+    src module:
+        __init__
 
-audio info tests
+        audio info module:
+            __init__
 
-    audio metadata tests
-        get_any_tags(file_path)
-        get_media_info(file_path)
-        get_media_info_walk(start_path, file_pattern)
-        get_media_tags(file_path)
-        get_tags_walk(tld_path, file_pattern, ffprobe)
+        generated file module:
+            __init__
 
-    audio art tests
-        extract_album_art(file_path)
-        extract_walk(tld_path, file_pattern)
+module inits:
+    audio art module:
+        __init__(self)
 
-audio normalization tests
-    ebu_normalize_file(file_path)
+    audio metadata module:
+        __init__(self)
+
+    audio normalize module:
+        __init__(self)
+
+    dir processing module:
+        __init__(self)
+
+project command line defs:
+    audio info module
+            audio art module
+                extract_file(file_path)
+                extract_walk(tld_path, file_pattern)
+                set_album_art(tld_path)
+
+            audio metadata module
+                convert_file(file_path)
+                convert_walk(tld_path, file_pattern)
+                create_albums(tld_path)
+                get_media_info(file_path)
+                get_media_info_walk(start_path, file_pattern)
+                get_media_tags(file_path)
+                get_any_tags(file_path)
+                get_tags_walk(tld_path, file_pattern, ffprobe)
+                get_unique_media(tld_path)
+
+    audio normalization module
+        ebu_file(file_path)
+        normalize_walk(tld_path, norm_type)
+        peak_file(file_path)
+
+    directory processing module
+        list_audio(tld_path)
+        list_type(file_ext, tld_path)
+        remove_albums(tld_path)
+        remove_pattern(tld_path, file_pattern)
+
+public helper defs:
+    audio info module:
+        audio art module:
+            extract_asf_art(self, file_path)
+            extract_ffmpeg_art(self, file_path)
+            extract_m4a_art(self, file_path)
+            extract_mp3_art(self, file_path)
+            has_video_stream(self, file_path)
+
+        audio metadata module:
+            get_m4a_tags(self, file_path)
+            get_metadata_type(self, file_path)
+            get_mp3_tags(self, file_path)
+            get_wma_tags(self, file_path)
+            has_art_tag(self, file_path)
+            load_any_file(self, file_path)
+            load_m4a_file(self, file_path)
+            load_mp3_file(self, file_path)
+            load_wma_file(self, file_path)
+            map_m4a_tags(self, input_tags)
+            map_mp3_tags(self, input_tags)
+            map_wma_tags(self, input_tags)
+
+        audio normalize module:
+            get_bit_rate(self, file_path)
+            get_sample_rate(self, file_path)
+            get_volume_info(self, file_path)
+            spinner_subprocess_run(self, text, command)
+            subprocess_run(self, command)
+
+        dir processing module:
+            tld_path(self)
+            tld_path(self, tld_path)
+            create_csv(self, csv_filename, data, csv_dir, header_row=None, sort_col=None)
+            get_file_ext(self, file_path)
+            make_album_dir(self, artist_dirpath, album_dir)
+            move_audio_file(self, file_path, destination_dir)
+            path_info(self, file_path)
+
+private helper defs:
+    audio info module:
+        audio art module:
+            __unpack_asf_image(self, data)
+            __write_data(self, file_path, image_data)
+
+        audio metadata module:
+            __update_id3(self, date_values, id3_tags)
+
+    audio normalize module:
+        __loudnorm_json_parse(self, input_process)
+
+    dir processing module:
+        __ext_file_list(self, file_ext, start_path)
+
+
