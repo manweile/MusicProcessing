@@ -382,16 +382,17 @@ class AudioNormalization():
                 return
 
             # -hide_banner to reduce output clutter
-            # -filter:a "volume=6dB" where dB is the adjustment value from volume stats return
+            # -filter:a volume=6dB where dB is the adjustment value from volume stats return
             # -c:v copy to copy embedded art
+            # since no explicit -map_metadata, the default global copy will happen,on both streams
             # -c:a libmp3lame to keep same encoding
             # -b:a 128k where bit rate in bps, not kbps
-            # -id3v2_version 3 required to properly copy embedded art, kn own ffmpeg bug
+            # -id3v2_version 3 required to properly copy embedded art, known ffmpeg bug
             # -y on the output file to force an overwrite if needed
             command = [
                 "ffmpeg", "-hide_banner",
                 "-i", file_path,
-                "-filter:a", (f'"volume={adjustment:.2f}dB"'),
+                "-filter:a", (f"volume={adjustment:.2f}dB"),
                 "-c:v", "copy",
                 "-c:a", "libmp3lame",
                 "-b:a", str(bitrate),
