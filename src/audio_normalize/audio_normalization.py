@@ -112,7 +112,6 @@ class AudioNormalization():
 
     def ebu_normalize_file(self, file_path):
         '''
-        @todo clean up
         @brief Normalizes audio file level to ebu r128 standard.
 
         @details see https://k.ylo.ph/2016/04/04/loudnorm.html for an example.
@@ -135,7 +134,6 @@ class AudioNormalization():
             print(f"Source directory path: {input_path_dir}")
 
             # get original sample rate for down sampling
-            # @todo research if sample rate is >=192k, do i really need to apply loudnorm?
             sample_rate = self.get_sample_rate(file_path)
             export_path = directory.path_info(file_path)
 
@@ -218,7 +216,6 @@ class AudioNormalization():
 
     def get_bit_rate(self, file_path):
         '''
-        @todo clean up
         @brief Retrieves the bitrate of a media file using ffprobe.
 
         @param file_path (str): The path to the media file.
@@ -418,8 +415,6 @@ class AudioNormalization():
 
     def normalize_walk(self, tld_path, norm_type):
         '''
-        @todo test
-        @todo decide if I want rms normalization
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
         @param tld_path {str} The top level directory path that contains all the music files.
@@ -444,43 +439,9 @@ class AudioNormalization():
                         self.ebu_normalize_file(input_file_path)
                     elif norm_type == "peak":
                         self.peak_normalize_file(input_file_path)
-                    # elif norm_type == "rms":
-                    #     pass
 
         except Exception as e:
             raise Exception(f"Exception {e} on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files")
-
-
-    # def peak_normalize_walk(self, file_path):
-    #     '''
-    #     @todo remove after normalize_walk def for all types finished
-    #     @brief Peak normalizes mp3 audio files in under starting top level directory.
-
-    #     @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
-
-    #     @param file_path {str} The starting point of the directory walk.
-    #     @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
-    #     @exception Exception A common baseclass exception to handle unforeseen errors.
-    #     '''
-
-    #     input_file_ext = None
-
-    #     try:
-    #         input_path = Path(file_path)
-
-    #         for dir_path, _, file_names in os.walk(input_path):
-    #             for file in file_names:
-    #                 _, input_file_ext = os.path.splitext(file)
-
-    #                 # file is not mp3, carry on to next file
-    #                 if input_file_ext.lower() != _AUDIO_EXTS[0]:
-    #                     continue
-
-    #                 input_file_path = os.path.join(dir_path, file)
-    #                 self.peak_normalize_file(input_file_path)
-
-    #     except Exception as e:
-    #         raise Exception(f"Exception {e} walking {file_path} to normalize audio files")
 
 
     def spinner_subprocess_run(self, text, command):
@@ -543,6 +504,7 @@ class AudioNormalization():
             return process
 
         except CalledProcessError as e:
-            raise CalledProcessError(f"CompletedProcess error {e} for command: {command}\nffmpeg output: {e.stderr}")
+            # raise CalledProcessError(f"CompletedProcess error {e.stderr} for command: {command}")
+            raise Exception(process.returncode, command, process.stdout, process.stderr)
         except Exception as e:
             raise Exception(f"Exception {e} processing command: {command}")
