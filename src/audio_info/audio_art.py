@@ -209,7 +209,6 @@ class AudioArt():
         @details Input file must have a video stream and an art tag.
 
         @param file_path {str} The full path to audio file.
-        @exception CalledProcessError A subprocess error from ffmpeg command execution.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
