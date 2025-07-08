@@ -1,0 +1,1 @@
+python D:\MusicProcessing\main.py convert-walk C:\Music | Tee-Object D:\MusicProcessing\src\generated_files\results_files\convert-walk-all-july-8.txt

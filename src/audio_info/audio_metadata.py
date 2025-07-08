@@ -43,7 +43,7 @@ _TYER = "TYER"
 # these keys also correspond to what Windows displays as file information in File Explorer
 _GEN_KEYS = {
     'album',                # must have                     ffmpeg mapping: TALB
-    'album_artist',         # nice to have                  ffmpeg mapping: TPE2
+    'album_artist',         # must have                     ffmpeg mapping: TPE2
     'artist',               # must have                     ffmpeg mapping: TPE1
     'comment',              # PITA, handled as ID3v2.4      ffmpeg mapping: COMM
     'compilation',          # PITA, is ID3v2.4              ffmpeg mapping: TCMP
@@ -209,16 +209,12 @@ class AudioMetadata():
             '''
             metadata transfer
             I dont want every possible tag, just the subset that Windows will display AND are ID3v2.3
-
-            Comments are ASF/ID3v2.3/MP4, MusicBrainz/MP3Tag/puddletag have difficulty displaying,
+            Comments are ASF/ID3v2.3/MP4, but MusicBrainz/MP3Tag/puddletag have difficulty displaying,
             so passing on transferring comment metadata
-
             Compilation is not ID3v2.3, so passing on transferring compilation metadata
-
             Date info is most problematic part of metadata, ASF/ID3v2.3/MP4 multiple date type tags,
             the data types could be a full ISO date, or could just be a 4 digit year string,
             so I am formatting any found date values to YYYY and mapping to ID3v2.3 TYER field
-
             I have manually edited all audio files without date to have 1963 as default
             '''
 
@@ -235,6 +231,9 @@ class AudioMetadata():
                 format = _MP4
                 input_tags = self.get_m4a_tags(file_path)
                 tags = self.map_m4a_tags(input_tags)
+            else:
+                print(f"Non-standard metadata type: {metadata_type} for file: {os.path.basename(file_path)}")
+                return
 
             # get the input file info - want bitrate so can preserve the quality in exported file
             media_info = self.get_media_info(file_path)
@@ -255,8 +254,7 @@ class AudioMetadata():
                 # pydub doesn't know about wma/asf, so no format forces an autodetect
                 audio_segment = AudioSegment.from_file(file_path)
 
-            # the id3v2 version = 3 is important!
-            # both pydub (AudioSegment) and mutagen (MP3) need it
+            # the id3v2 version = 3 is important, lack of is known ffmpeg(pydub)/mutagen bug
             # and both documentations don't really mention it
             audio_segment.export(export_path, export_format, bitrate=bitrate, tags=tags, id3v2_version='3')
 
@@ -265,14 +263,16 @@ class AudioMetadata():
                 audio_tags = MP3(export_path, ID3=ID3, v2_version=3)
                 audio_tags.add_tags()
             except error:
-                pass                        # Tags already exist
+                # Tags already exist, no worries
+                pass
 
+            # encoding/type = 3 specifies UTF-8/front cover
             with open(cover, "rb") as album_art_file:
                 audio_tags.tags.add(
                     APIC(
-                        encoding=3,         # UTF-8
+                        encoding=3,
                         mime="image/jpeg",
-                        type=3,             # Front Cover
+                        type=3,
                         desc="Cover",
                         data=album_art_file.read()
                     )

@@ -18,14 +18,13 @@ There are many things I need to do:
     - convert APEv2 to ID3v2.3
   - ensure all songs have these tags:
     - album
+    - album artist
     - artist
     - date
     - genre
     - title
     - front cover album art
   - if possible, populate these "nice to have" tags:
-    - album artist
-    - comment
     - composer
     - copyright
     - disc
