@@ -66,7 +66,7 @@ def ebu_file(file_path):
     normalization.ebu_normalize_file(file_path)
 
 
-def extract_art(file_path):
+def extract_file(file_path):
     '''
     @brief Extracts and saves embedded album art from specified audio file.
 
@@ -171,16 +171,6 @@ def list_type(tld_path, file_ext=None):
     '''
 
     directory.get_ext_file_list(file_ext, tld_path)
-
-
-def loud_file(file_path):
-    '''
-    @brief EBU 128 Loudness normalizes the specified audio file.
-
-    @param file_path {str} The full path to audio file.
-    '''
-
-    normalization.ebu_normalize_file(file_path)
 
 
 def normalize_walk(tld_path, norm_type):
@@ -332,7 +322,7 @@ def main(args):
             file_pattern = getattr(args, "pattern")
             remove_pattern(tld_path, file_pattern)
 
-        if args.subcommand == "set-art":
+        if args.subcommand == "set-album-art":
             tld_path = getattr(args, "tld")
             set_album_art(tld_path)
 
@@ -417,9 +407,9 @@ if __name__ == "__main__":
     # 1 mandatory arg, the tld path
     # sys.argv = ['D:\MusicProcessing\main.py', 'create-album', 'C:\Music']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'create-album', '/home/gerald/Music']
-    create_album_parser = subparsers.add_parser("create-albums", help="Create album sub-directories")
-    create_album_parser.add_argument("tld", type=str, help="mandatory top level directory")
-    create_album_parser.set_defaults(func=create_albums)
+    create_albums_parser = subparsers.add_parser("create-albums", help="Create album sub-directories")
+    create_albums_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    create_albums_parser.set_defaults(func=create_albums)
 
     # ebu normalize an audio file (destructive)
     # 1 mandatory arg, the path to audio file
@@ -433,9 +423,9 @@ if __name__ == "__main__":
     # 1 mandatory arg, the path to audio file
     # sys.argv = ['D:\MusicProcessing\main.py', 'extract-art', 'C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma',
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-art', '/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma',
-    extract_art_parser = subparsers.add_parser("extract-file", help="Extracts embedded art from audio file")
-    extract_art_parser.add_argument("file", type=str, help="mandatory full path to audio file")
-    extract_art_parser.set_defaults(func=extract_art)
+    extract_file_parser = subparsers.add_parser("extract-file", help="Extracts embedded art from audio file")
+    extract_file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
+    extract_file_parser.set_defaults(func=extract_file)
 
     # extract album art from all audio files found in top level directory
     # 1 mandatory arg, the tld path
@@ -482,9 +472,9 @@ if __name__ == "__main__":
     get_tags_walk_parser.add_argument("--ffprobe", type=bool, help="optional ffprobe tags")
     get_tags_walk_parser.set_defaults(func=get_tags_walk)
 
-    get_unique_media_keys = subparsers.add_parser("get-unique-media", help="Gets set of unique ffprobe tags from collection")
-    get_unique_media_keys.add_argument("tld", type=str, help="mandatory top level directory")
-    get_unique_media_keys.set_defaults(func=get_unique_media)
+    get_unique_media_parser = subparsers.add_parser("get-unique-media", help="Gets set of unique ffprobe tags from collection")
+    get_unique_media_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    get_unique_media_parser.set_defaults(func=get_unique_media)
 
     # list all audio files
     # 1 mandatory arg, the tld path
@@ -516,9 +506,9 @@ if __name__ == "__main__":
     # 1 mandatory arg, the tld path
     # sys.argv = ['D:\MusicProcessing\main.py', 'remove-album', 'C:\Music']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'remove-album', '/home/gerald/Music']
-    remove_album_parser = subparsers.add_parser("remove-albums", help="Remove empty album sub-directories")
-    remove_album_parser.add_argument("tld", type=str, help="mandatory top level directory")
-    remove_album_parser.set_defaults(func=remove_albums)
+    remove_albums_parser = subparsers.add_parser("remove-albums", help="Remove empty album sub-directories")
+    remove_albums_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    remove_albums_parser.set_defaults(func=remove_albums)
 
     # remove files matching specified file pattern
     # 2 mandatory args, the tld path and the file pattern
@@ -541,9 +531,9 @@ if __name__ == "__main__":
     # 1 mandatory arg, the tld path
     # sys.argv = ['D:\MusicProcessing\main.py', 'set-art', 'C:\Music']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'set-art', '/home/gerald/Music']
-    set_album_parser = subparsers.add_parser("set-art", help="Set album art file")
-    set_album_parser.add_argument("tld", type=str, help="mandatory top level directory")
-    set_album_parser.set_defaults(func=set_album_art)
+    set_album_art_parser = subparsers.add_parser("set-album-art", help="Set album art file")
+    set_album_art_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    set_album_art_parser.set_defaults(func=set_album_art)
 
     args = parser.parse_args()
     main(args)
