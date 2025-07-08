@@ -341,6 +341,37 @@ class AudioNormalization():
         return volumes
 
 
+    def normalize_walk(self, tld_path, norm_type):
+        '''
+        @brief Normalizes all audio files in specified top level directory per input normalization type.
+
+        @param tld_path {str} The top level directory path that contains all the music files.
+        @param norm_type {str} The type of normalization to perform.
+        '''
+
+        try:
+            input_file_ext = None
+            input_path = Path(tld_path)
+
+            for dir_path, _, file_names in os.walk(input_path):
+                for file in file_names:
+                    _, input_file_ext = os.path.splitext(file)
+
+                    # file is not mp3, carry on to next file
+                    if input_file_ext.lower() != _AUDIO_EXTS[0]:
+                        continue
+
+                    input_file_path = os.path.join(dir_path, file)
+
+                    if norm_type == "ebu":
+                        self.ebu_normalize_file(input_file_path)
+                    elif norm_type == "peak":
+                        self.peak_normalize_file(input_file_path)
+
+        except Exception as e:
+            raise Exception(f"Exception {e} on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files")
+
+
     def peak_normalize_file(self, file_path):
         '''
         @brief Peak normalizes audio file level.
@@ -406,37 +437,6 @@ class AudioNormalization():
 
         except Exception as e:
             raise Exception(f"Exception {e} peak normalizing audio file: {file_path}")
-
-
-    def normalize_walk(self, tld_path, norm_type):
-        '''
-        @brief Normalizes all audio files in specified top level directory per input normalization type.
-
-        @param tld_path {str} The top level directory path that contains all the music files.
-        @param norm_type {str} The type of normalization to perform.
-        '''
-
-        try:
-            input_file_ext = None
-            input_path = Path(tld_path)
-
-            for dir_path, _, file_names in os.walk(input_path):
-                for file in file_names:
-                    _, input_file_ext = os.path.splitext(file)
-
-                    # file is not mp3, carry on to next file
-                    if input_file_ext.lower() != _AUDIO_EXTS[0]:
-                        continue
-
-                    input_file_path = os.path.join(dir_path, file)
-
-                    if norm_type == "ebu":
-                        self.ebu_normalize_file(input_file_path)
-                    elif norm_type == "peak":
-                        self.peak_normalize_file(input_file_path)
-
-        except Exception as e:
-            raise Exception(f"Exception {e} on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files")
 
 
     def spinner_subprocess_run(self, text, command):
