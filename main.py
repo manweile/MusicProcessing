@@ -56,6 +56,16 @@ def create_albums(tld_path):
     metadata.create_album_dir(tld_path)
 
 
+def ebu_file(file_path):
+    '''
+    @brief EBU R128 normalize the specified audio file.
+
+    @param file_path {str} The full path to audio file.
+    '''
+
+    normalization.ebu_normalize_file(file_path)
+
+
 def extract_art(file_path):
     '''
     @brief Extracts and saves embedded album art from specified audio file.
@@ -194,17 +204,6 @@ def peak_file(file_path):
     normalization.peak_normalize_file(file_path)
 
 
-def peak_walk(tld_path):
-    '''
-    @todo remove after normalize-walks tests good
-    @brief Peak normalizes all audio files in specified top level directory.
-
-    @param tld_path {str} The top level directory path that contains all the music files.
-    '''
-
-    normalization.peak_normalize_walk(tld_path)
-
-
 def remove_albums(tld_path):
     '''
     @brief Remove empty album directories from specified top level directory.
@@ -262,6 +261,10 @@ def main(args):
             tld_path = getattr(args, "tld")
             create_albums(tld_path)
 
+        if args.subcommand == "ebu-file":
+            file_path = getattr(args, "file")
+            ebu_file(file_path)
+
         if args.subcommand == "extract-file":
             file_path = getattr(args, "file")
             extract_art(file_path)
@@ -311,13 +314,14 @@ def main(args):
             file_ext = getattr(args, "ext")
             list_type(tld_path, file_ext)
 
+        if args.subcommand == "normalize-walk":
+            tld_path = getattr(args, "tld")
+            norm_type = getattr(args, "type")
+            normalize_walk(tld_path, norm_type)
+
         if args.subcommand == "peak-file":
             file_path = getattr(args, "file")
             peak_file(file_path)
-
-        if args.subcommand == "peak-walk":
-            tld_path = getattr(args, "tld")
-            peak_walk(tld_path)
 
         if args.subcommand == "remove-albums":
             tld_path = getattr(args, "tld")
@@ -356,44 +360,45 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Music Processing')
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
-    # "/home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"                                        # no embedded, has Folder.jpg
-    # "/home/gerald/Music/Alberta Hunter/The Blues/Alberta Hunter - Amtrak Blues.mp3"                                       # no embedded, no Folder.jpg
-    # "/home/gerald/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.wma"    # no embedded art
-    # "/home/gerald/Music/Arlo Guthrie/Best Songs Of Arlo Guthrie/Arlo Guthrie-Arlo Guthrie.MP3"                            # capped extension
-    # "/home/gerald/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma"                          # has embedded, but not in a video stream, so will fail with ffmpeg
-    # "/home/gerald/Music/Crush/Here/Crush-Live.mp3"                                                                        # embedded art
-    # "/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma"        # has embedded, no Folder.jpg
-    # "/home/gerald/Music/Genesis/Platinum Collection/Genesis-I Can't Dance.mp3"                                            # embedded art
-    # "/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshau Davis-The Workingman's Hym.m4a"                          # has embedded, no Folder.jpg, datetime string
-    # "/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a"                                                    # embedded art
+    r'''
+    "/home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"                                        # no embedded, has Folder.jpg
+    "/home/gerald/Music/Alberta Hunter/The Blues/Alberta Hunter - Amtrak Blues.mp3"                                       # no embedded, no Folder.jpg
+    "/home/gerald/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.wma"    # no embedded art
+    "/home/gerald/Music/Arlo Guthrie/Best Songs Of Arlo Guthrie/Arlo Guthrie-Arlo Guthrie.MP3"                            # capped extension
+    "/home/gerald/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma"                          # has embedded, but not in a video stream, so will fail with ffmpeg
+    "/home/gerald/Music/Crush/Here/Crush-Live.mp3"                                                                        # embedded art
+    "/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma"        # has embedded, no Folder.jpg
+    "/home/gerald/Music/Genesis/Platinum Collection/Genesis-I Can't Dance.mp3"                                            # embedded art
+    "/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshau Davis-The Workingman's Hym.m4a"                          # has embedded, no Folder.jpg, datetime string
+    "/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a"                                                    # embedded art
 
-    # "/home/gerald/ConvertedMusic/Crush/Here/Crush-Live.mp3"                                                               # embedded art
+    "/home/gerald/ConvertedMusic/Crush/Here/Crush-Live.mp3"                                                               # embedded art
 
-    # "/media/gerald/Music/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"                                 # no embedded, has Folder.jpg
-    # "/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma"                               # no embedded art
+    "/media/gerald/Music/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"                                 # no embedded, has Folder.jpg
+    "/media/gerald/Music/Music/The Eagles/Hotel California/The Eagles-Hotel California.wma"                               # no embedded art
 
-    # "C:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"                                                  # no embedded, has Folder.jpg
-    # "C:\Music\Alberta Hunter\The Blues\Alberta Hunter - Amtrak Blues.mp3"                                                 # no embedded, no Folder.jpg
-    # "C:\Music\Alejandro Escovedo\More Miles Than Money- Live 1994-1996\Alejandro Escovedo-Broken Bottle.wma"              # no embedded art
-    # "C:\Music\Arlo Guthrie\Best Songs Of Arlo Guthrie\Arlo Guthrie-Arlo Guthrie.MP3"                                      # capped extension
-    # "C:\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma"                                    # has embedded, but not in a video stream, so will fail with ffmpeg
-    # "C:\Music\Crush\Here\Crush-Live.mp3"                                                                                  # embedded art
-    # "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"                  # has embedded, no Folder.jpg
-    # "C:\Music\Genesis\Platinum Collection/Genesis-I Can't Dance.mp3"                                                      # embedded art
-    # "C:\Music\Joshua Davis\The Voice Peformance\Joshau Davis-The Workingman's Hym.m4a"                                    # has embedded, no Folder.jpg, datetime string
-    # "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"                                                              # no embedded art even though file explorer shows it
+    "C:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"                                                  # no embedded, has Folder.jpg
+    "C:\Music\Alberta Hunter\The Blues\Alberta Hunter - Amtrak Blues.mp3"                                                 # no embedded, no Folder.jpg
+    "C:\Music\Alejandro Escovedo\More Miles Than Money- Live 1994-1996\Alejandro Escovedo-Broken Bottle.wma"              # no embedded art
+    "C:\Music\Arlo Guthrie\Best Songs Of Arlo Guthrie\Arlo Guthrie-Arlo Guthrie.MP3"                                      # capped extension
+    "C:\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma"                                    # has embedded, but not in a video stream, so will fail with ffmpeg
+    "C:\Music\Crush\Here\Crush-Live.mp3"                                                                                  # embedded art
+    "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"                  # has embedded, no Folder.jpg
+    "C:\Music\Genesis\Platinum Collection/Genesis-I Can't Dance.mp3"                                                      # embedded art
+    "C:\Music\Joshua Davis\The Voice Peformance\Joshau Davis-The Workingman's Hym.m4a"                                    # has embedded, no Folder.jpg, datetime string
+    "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"                                                              # no embedded art even though file explorer shows it
 
-    # "F:\ConvertedMusic\Arlo Guthrie\Best Songs Of Arlo Guthrie\Arlo Guthrie-Arlo Guthrie.mp3"                             # post conversion from .MP3 to .mp3
-    # "F:\ConvertedMusic\Crush\Here\Crush-Live.mp3"                                                                         # embedded art
+    "F:\ConvertedMusic\Arlo Guthrie\Best Songs Of Arlo Guthrie\Arlo Guthrie-Arlo Guthrie.mp3"                             # post conversion from .MP3 to .mp3
+    "F:\ConvertedMusic\Crush\Here\Crush-Live.mp3"                                                                         # embedded art
 
-    # "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"                                                  # no embedded art, has Folder.jpg
-    # "H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"                                                # no embedded art
+    "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"                                                  # no embedded art, has Folder.jpg
+    "H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"                                                # no embedded art
+    '''
 
     # convert audio file specified to mp3 format
     # 1 mandatory arg, the audio file path
     # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
-
     convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
     convert_file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     convert_file_parser.set_defaults(func=convert_file)
@@ -415,6 +420,14 @@ if __name__ == "__main__":
     create_album_parser = subparsers.add_parser("create-albums", help="Create album sub-directories")
     create_album_parser.add_argument("tld", type=str, help="mandatory top level directory")
     create_album_parser.set_defaults(func=create_albums)
+
+    # ebu normalize an audio file (destructive)
+    # 1 mandatory arg, the path to audio file
+    # sys.argv = ['D:\MusicProcessing\main.py', 'ebu-file', "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'ebu-file', "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp4"]
+    ebu_file_parser = subparsers.add_parser("ebu-file", help="EBU R128 normalizes a mp3 audio file level")
+    ebu_file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
+    ebu_file_parser.set_defaults(func=ebu_file)
 
     # extract album art from specified audio file
     # 1 mandatory arg, the path to audio file
@@ -491,6 +504,14 @@ if __name__ == "__main__":
     list_type_parser.add_argument("--ext", type=str, help='optional file extension')
     list_type_parser.set_defaults(func=list_type)
 
+    # normalize mp3 files from tld
+    # 2 mandatory arg, the tld path and the normalization type (ebu or peak)
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'normalize-walk', '/home/gerald/ConvertedMusic', 'ebu' | 'peak']
+    normalize_walk_parser = subparsers.add_parser("normalize-walk", help="Normalizes files with specified pattern")
+    normalize_walk_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    normalize_walk_parser.add_argument("type", type=str, help="mandatory normalization type")
+    normalize_walk_parser.set_defaults(func=normalize_walk)
+
     # remove empty album directories
     # 1 mandatory arg, the tld path
     # sys.argv = ['D:\MusicProcessing\main.py', 'remove-album', 'C:\Music']
@@ -515,15 +536,6 @@ if __name__ == "__main__":
     peak_file_parser = subparsers.add_parser("peak-file", help="Peak normalizes a mp3 audio file level")
     peak_file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     peak_file_parser.set_defaults(func=peak_file)
-
-    # peak normalize all audio files found in top level directory
-    # 1 mandatory arg, the tld path
-    # 1 optional arg, the file pattern to match
-    # sys.argv = ['D:\MusicProcessing\main.py', 'peak-walk', 'C:\Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
-    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'peak-walk', '/home/gerald/Music', '--pattern', '*.mp3' | '*.m4a' | '*.wma']
-    convert_walk_parser = subparsers.add_parser("peak-walk", help="Peak normalizes all mp3 audio files")
-    convert_walk_parser.add_argument("tld", type=str, help="mandatory top level directory")
-    convert_walk_parser.set_defaults(func=convert_walk)
 
     # set album art file
     # 1 mandatory arg, the tld path
