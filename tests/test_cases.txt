@@ -24,12 +24,40 @@ module inits:
 project command line defs:
     audio info module
             audio art module
+                set up:
+                    tld/artists/albums with mix of mp3, m4a, wma ???
                 extract_file(file_path)
-
+                    test cases:
+                        non-extant audio file
+                        a *.wav file
+                        audio file w/o art tag w/o video stream - will need to create
+                        audio file w/o art tag w video stream   - will need to create
+                        audio file file w art tag w/o video stream  - Billie Holiday-Georgia On My Mind.wma
+                        audio file w art tag w video stream
                 extract_walk(tld_path, file_pattern)
+                    test cases:
+                        non-extant tld
+                        extant tld w/o bad files
+                        extant tld w good files
                 set_album_art(tld_path)
+                    set up: needs own set up different from extract art/ extract walk cause they must run before set album art??
+                        tld/artists/albums with at least 1 audio file, type doesn't matter
+                        AlbumArt/<album dir>.jpg where <album dir> in tld/artists/albums
+                            album dir w Folder.jpg
+                            album dir w/o Folder.jpg w AlbumArt/<album dir>.jpg
+                            album dir w/o Folder.jpg w/o AlbumArt/<album dir>.jpg
+                    test cases:
+                            extant tld
+                            non-extant tld
+                            album dir w Folder.jpg
+                            album dir w/o Folder.jpg w AlbumArt/<album dir>.jpg
+                            album dir w/o Folder.jpg w/o AlbumArt/<album dir>.jpg
+                    test cases:
+                        ???
 
             audio metadata module
+                set up:
+                    ???
                 convert_file(file_path)
                     set up:
                         convert_file_tld/artist/album/*.mp3 file with metadata & co-located Folder.jpg
@@ -37,6 +65,10 @@ project command line defs:
                         convert_file_tld/artist/album/*.wma file with metadata & co-located Folder.jpg
                         convert_file_tld/Arlo Guthrie/Best Songs Of Arlo Guthrie/Arlo Guthrie-Arlo Guthrie.MP3"     # capped extension, from PreppedMusic
                         convert_file_tld/Joshua Davis/The Voice Peformance/Joshau Davis-The Workingman's Hym.m4a"   # datetime string, from PreppedMusic
+                        file with TDRC, TDOR, TYER, TORY, TXXX=originalyear
+                        filer with '\xa9day', '----:com.apple.iTunes:originalyear'
+                        file with '----:com.apple.iTunes:LABEL'
+                        file with 'WM/Year' and 'WM/OriginalReleaseYear'
                     happy path:
                         convert_file_tld/artist/album/*.mp3
                         convert_file_tld/artist/album/*.m4a
@@ -45,6 +77,7 @@ project command line defs:
                         convert_file_tld/Arlo Guthrie/Best Songs Of Arlo Guthrie/Arlo Guthrie-Arlo Guthrie.MP3"     # capped extension
                         convert_file_tld/Joshua Davis/The Voice Peformance/Joshau Davis-The Workingman's Hym.m4a"   # datetime string from Source or Prepped??
                         convert_file_tld/artist/album/*.wav                                                         # invalid metadata type
+                        Source\Genesis songs with \ in album name
 
                 convert_walk(tld_path, file_pattern)
                     set up:
@@ -54,6 +87,9 @@ project command line defs:
                             nm4a pattern
                             wma pattern
                             no pattern
+                            invalid tld
+                            start from artist dir
+                            start from album dir
                 create_albums(tld_path)
                     F:\SourceMusic\Crush\Crush-Live.mp3
 
@@ -65,15 +101,40 @@ project command line defs:
                 get_unique_media(tld_path)
 
     audio normalization module
+        set up:
+            tld/artists/albums/*.mp3
         ebu_file(file_path)
+            test cases:
+                mp3 that will clip (any of the Cat Stevens)
+                mp3 that will not clip Brenda Lee Xmas?
         normalize_walk(tld_path, norm_type)
+            test cases:
+                non extant tld
+                extant tld
         peak_file(file_path)
+            test case:
 
     directory processing module
+        set up:
+            tld/artists/albums with known # of mp3, m4a, wma, m3u, other non audio files
         list_audio(tld_path)
+            test cases:
+
         list_type(file_ext, tld_path)
+            test cases:
+                run for wma ext
+                run for m4a ext
+                run for mp3 ext
+                run for no ext
         remove_albums(tld_path)
+            set up:
+
+            test cases:
+
         remove_pattern(tld_path, file_pattern)
+            set up:
+
+            test cases:
 
 public helper defs:
     audio info module:
