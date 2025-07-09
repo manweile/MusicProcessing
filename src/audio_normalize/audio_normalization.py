@@ -134,7 +134,6 @@ class AudioNormalization():
 
             # get original sample rate for down sampling
             sample_rate = self.get_sample_rate(file_path)
-            export_path = directory.path_info(file_path)
 
             r'''
             rbu 128 https://ffmpeg.org/ffmpeg-filters.html#loudnorm
