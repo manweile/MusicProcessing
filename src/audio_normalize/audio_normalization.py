@@ -187,8 +187,6 @@ class AudioNormalization():
             normalize_command = [
                 "ffmpeg",
                 "-hide_banner",
-                "ffmpeg",
-                "-hide_banner",
                 "-i", file_path,
                 "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:"
                         f"measured_I={measured_i}:measured_TP={measured_tp}:"
