@@ -11,6 +11,7 @@ def parse_text(filepath):
     '''
     if line not empty, check what text we have:
         if line contains "Beginning", copy to output file
+        if line contains "Source directory path", copy to output file
         if line contains "metadata:", copy to output file
         if line contains "key:", copy to output file
         if line contains "Converting", iterate to next line
@@ -24,6 +25,8 @@ def parse_text(filepath):
             # if we dont have text, blank line is not copied to output
             if line.strip():
                 if "Beginning conversion on" in line:
+                    outfile.write(line)
+                elif "Source directory path" in line:
                     outfile.write(line)
                 elif "metadata: " in line:
                     outfile.write(line)
