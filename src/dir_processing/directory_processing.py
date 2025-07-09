@@ -379,8 +379,8 @@ class DirectoryProcessing():
             input_path = Path(file_path)
 
             input_ext = input_path.suffix
-            if input_ext.lower() != _AUDIO_EXTS[0]:
-                raise Exception(f"File {input_path} is not an {_AUDIO_TYPES[0]}")
+            if input_ext.lower() not in _AUDIO_EXTS:
+                raise Exception(f"File {input_path} is not in {_AUDIO_TYPES}")
 
             r'''
             Ubuntu file path:
