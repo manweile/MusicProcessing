@@ -55,7 +55,7 @@ project command line defs:
                             wma pattern
                             no pattern
                 create_albums(tld_path)
-                    SourceMusic\Crush\Crush-Live.mp3
+                    F:\SourceMusic\Crush\Crush-Live.mp3
 
                 get_media_info(file_path)
                 get_media_info_walk(start_path, file_pattern)
