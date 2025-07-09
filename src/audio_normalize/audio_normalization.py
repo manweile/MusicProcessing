@@ -83,8 +83,8 @@ class AudioNormalization():
         output_thresh {str}         | output threshold {str} (numeric)
         normalization_type {str}    | scaling type to apply {str} (alphabetic)
         target_offset {str}         | offset gain applied before true peak limiter {str} (numeric)
-        @exception Exception A common baseclass exception to handle unforeseen errors.
         @exception JSONDecodeError as json decoding error.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -129,7 +129,7 @@ class AudioNormalization():
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_dir = os.path.dirname(file_path)
 
-            print(f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}")
+            print(f"Beginning normalization on: {input_path_stem} from {input_format} to {export_format}")
             print(f"Source directory path: {input_path_dir}")
 
             # get original sample rate for down sampling
@@ -148,17 +148,27 @@ class AudioNormalization():
             Direct output to stdout for the first pass (stderr for loudnorm stats)
             '''
 
+            # stats_command = [
+            #     "ffmpeg",
+            #     "-hide_banner",
+            #     "-i", file_path,
+            #     "-vn",
+            #     "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:print_format=json"),
+            #     "-f", "null", "-"
+            # ]
             stats_command = [
                 "ffmpeg",
                 "-hide_banner",
                 "-i", file_path,
                 "-vn",
-                "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:print_format=json"),
+                "-af", "loudnorm=print_format=json",
                 "-f", "null", "-"
             ]
 
-            text = f"Getting Ebu R128 normalizing stats for {input_path_stem}"
+            text = "Getting normalizing stats"
             stats_process, stats_spinner = self.spinner_subprocess_run(text, stats_command)
+
+            print("Pre normalization stats:")
             stats_data = self.__loudnorm_json_parse(stats_process)
             stats_time = stats_spinner.elapsed_time
 
@@ -181,6 +191,8 @@ class AudioNormalization():
 
             normalize_command = [
                 "ffmpeg",
+                "-hide_banner",            normalize_command = [
+                "ffmpeg",
                 "-hide_banner",
                 "-i", file_path,
                 "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:"
@@ -192,20 +204,31 @@ class AudioNormalization():
                 "-ar", str(sample_rate),
                 export_path, "-y"
             ]
+                "-i", file_path,
+                "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:"
+                        f"measured_I={measured_i}:measured_TP={measured_tp}:"
+                        f"measured_LRA={measured_lra}:measured_thresh={measured_thresh}:"
+                        f"offset={offset}:linear=true"
+                        f":print_format=json"
+                        ),
+                "-ar", str(sample_rate),
+                export_path, "-y"
+            ]
 
-            text = f"Ebu R128 normalizing {input_path_stem}"
+            text = "Normalizing audio"
             normalize_process, normalize_spinner = self.spinner_subprocess_run(text, normalize_command)
+
             normalize_time = normalize_spinner.elapsed_time + stats_time
+
+            print("Post normalization stats:")
             normalize_data = self.__loudnorm_json_parse(normalize_process)
+
             normalization_type = normalize_data.get("normalization_type")
-
             if normalization_type != "linear":
-                print(f"ffmpeg used normalization type: {normalization_type}")
+                print(f"FFMPEG used normalization type: {normalization_type}")
 
-            print(f"Successful ebu r128 normalization on {input_path_stem} in {normalize_time:.2f} secs")
+            print(f"Successful normalization on: {input_path_stem} in {normalize_time:.2f} secs\n")
 
-        except JSONDecodeError as e:
-            raise JSONDecodeError(f"JSON parsing error: {e}")
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
 
@@ -452,7 +475,7 @@ class AudioNormalization():
         '''
 
         try:
-            with yaspin(Spinners.dots, text, timer=True) as spinner:
+            with yaspin(text=text, timer=True) as spinner:
                 # check enables CalledProcessError throwing,
                 # capture output to get stdout & stderr
                 # text decodes stdout/stderr as text

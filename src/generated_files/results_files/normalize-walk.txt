@@ -1,0 +1,92 @@
+Beginning normalization on: Brenda Lee - Rockin' Around The Christmas Tree from mp3 to mp3
+Source directory path: /home/gerald/ConvertedMusic/Brenda Lee/Now Christmas Traditional
+Pre normalization stats:
+{
+    "input_i": "-19.97",
+    "input_tp": "-8.04",
+    "input_lra": "5.10",
+    "input_thresh": "-30.06",
+    "output_i": "-15.23",
+    "output_tp": "-2.49",
+    "output_lra": "5.20",
+    "output_thresh": "-25.29",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.77"
+}
+Post normalization stats:
+{
+    "input_i": "-19.93",
+    "input_tp": "-8.14",
+    "input_lra": "5.10",
+    "input_thresh": "-29.98",
+    "output_i": "-15.96",
+    "output_tp": "-4.17",
+    "output_lra": "5.10",
+    "output_thresh": "-26.02",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Successful normalization on: Brenda Lee - Rockin' Around The Christmas Tree in 8.99 secs
+
+Beginning normalization on: Cat Stevens-Where Do The Children Play from mp3 to mp3
+Source directory path: /home/gerald/ConvertedMusic/Cat Stevens/Remember
+Pre normalization stats:
+{
+    "input_i": "-18.32",
+    "input_tp": "0.14",
+    "input_lra": "9.80",
+    "input_thresh": "-28.84",
+    "output_i": "-14.26",
+    "output_tp": "-2.00",
+    "output_lra": "4.80",
+    "output_thresh": "-24.38",
+    "normalization_type": "dynamic",
+    "target_offset": "-1.74"
+}
+Post normalization stats:
+{
+    "input_i": "-18.32",
+    "input_tp": "0.14",
+    "input_lra": "9.80",
+    "input_thresh": "-28.84",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "8.20",
+    "output_thresh": "-26.30",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+FFMPEG used normalization type: dynamic
+Successful normalization on: Cat Stevens-Where Do The Children Play in 26.42 secs
+
+Beginning normalization on: Cat Stevens-Moonshadow from mp3 to mp3
+Source directory path: /home/gerald/ConvertedMusic/Cat Stevens/Remember
+Pre normalization stats:
+{
+    "input_i": "-19.28",
+    "input_tp": "-1.15",
+    "input_lra": "11.40",
+    "input_thresh": "-29.76",
+    "output_i": "-14.52",
+    "output_tp": "-2.00",
+    "output_lra": "7.20",
+    "output_thresh": "-24.69",
+    "normalization_type": "dynamic",
+    "target_offset": "-1.48"
+}
+Post normalization stats:
+{
+    "input_i": "-19.28",
+    "input_tp": "-1.15",
+    "input_lra": "11.40",
+    "input_thresh": "-29.76",
+    "output_i": "-15.82",
+    "output_tp": "-2.00",
+    "output_lra": "9.60",
+    "output_thresh": "-26.20",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.18"
+}
+FFMPEG used normalization type: dynamic
+Successful normalization on: Cat Stevens-Moonshadow in 19.83 secs
+
