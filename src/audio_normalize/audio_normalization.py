@@ -27,8 +27,11 @@ from src.dir_processing import DirectoryProcessing
 
 gc.enable()
 
-_I = "-16.0"        # ffmpeg loudnorm integrated loudness target RBU 128 default: -24.0 to -23.0, I want louder (less negative)
-_LRA = "11.0"       # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
+# _I = "-16.0"        # ffmpeg loudnorm integrated loudness target RBU 128 default: -24.0 to -23.0, I want louder (less negative)
+# _LRA = "11.0"       # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
+# _TP = "-2.0"        # ffmpeg loudnorm (and peak) maximum true peak RBU 128 default: -2.0, I will keep that
+_I = "-23.0"        # ffmpeg loudnorm integrated loudness target RBU 128 default: -24.0 to -23.0, I want louder (less negative)
+_LRA = "7.0"       # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
 _TP = "-2.0"        # ffmpeg loudnorm (and peak) maximum true peak RBU 128 default: -2.0, I will keep that
 
 directory = DirectoryProcessing()
@@ -148,20 +151,12 @@ class AudioNormalization():
             Direct output to stdout for the first pass (stderr for loudnorm stats)
             '''
 
-            # stats_command = [
-            #     "ffmpeg",
-            #     "-hide_banner",
-            #     "-i", file_path,
-            #     "-vn",
-            #     "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:print_format=json"),
-            #     "-f", "null", "-"
-            # ]
             stats_command = [
                 "ffmpeg",
                 "-hide_banner",
                 "-i", file_path,
                 "-vn",
-                "-af", "loudnorm=print_format=json",
+                "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:print_format=json"),
                 "-f", "null", "-"
             ]
 
@@ -191,19 +186,9 @@ class AudioNormalization():
 
             normalize_command = [
                 "ffmpeg",
-                "-hide_banner",            normalize_command = [
+                "-hide_banner",
                 "ffmpeg",
                 "-hide_banner",
-                "-i", file_path,
-                "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:"
-                        f"measured_I={measured_i}:measured_TP={measured_tp}:"
-                        f"measured_LRA={measured_lra}:measured_thresh={measured_thresh}:"
-                        f"offset={offset}:linear=true"
-                        f":print_format=json"
-                        ),
-                "-ar", str(sample_rate),
-                export_path, "-y"
-            ]
                 "-i", file_path,
                 "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:"
                         f"measured_I={measured_i}:measured_TP={measured_tp}:"
