@@ -408,23 +408,23 @@ class AudioArt():
                 if not file_names:
                     continue
 
-                album_path = Path(dir_path)                     # Eg. "C:\Music\Albert Collins\Best Of The Blues, Vol. 1
+                album_path = Path(dir_path)                                     # Eg. "C:\Music\Albert Collins\Best Of The Blues, Vol. 1
                 album_content = os.listdir(album_path)
 
                 if _FOLDER_ART in album_content:
                     continue
 
                 # check in AlbumArt folder if a jpg for album name exists
-                album_dir_name = os.path.basename(dir_path)     # should be "Best Of The Blues, Vol. 1"
-                album_jpg = album_dir_name + ".jpg"             # should be "Best Of The Blues, Vol. 1.jpg"
+                album_dir_name = os.path.basename(dir_path)                     # should be "Best Of The Blues, Vol. 1"
+                album_jpg = album_dir_name + ".jpg"                             # should be "Best Of The Blues, Vol. 1.jpg"
 
                 # get the album art directory, per the project hierarchy
-                album_art_dir = os.path.join(generated_files, _ALBUM_ART)
+                album_art_dir = os.path.join(generated_files, _ALBUM_ART)       # D:\MusicProcessing\src\generated_files\ALbumArt
                 album_art_dir_content = os.listdir(album_art_dir)
 
                 if album_jpg in album_art_dir_content:
-                    album_art_jpg = os.path.join(album_art_dir, album_jpg)
-                    folder_jpg = os.path.join(album_path, _FOLDER_ART)
+                    album_art_jpg = os.path.join(album_art_dir, album_jpg)      # D:\MusicProcessing\src\generated_files\ALbumArt\Best Of The Blues, Vol. 1.jpg
+                    folder_jpg = os.path.join(album_path, _FOLDER_ART)          # C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Folder.jpg
                     shutil.copy(album_art_jpg, folder_jpg)
                     print(f"Set {album_art_jpg} as {_FOLDER_ART} for {album_path}")
                 else:
