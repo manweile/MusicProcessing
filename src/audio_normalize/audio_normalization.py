@@ -458,7 +458,7 @@ class AudioNormalization():
         '''
 
         try:
-            with yaspin(text=text, timer=True) as spinner:
+            with yaspin(Spinners.dots, text=text, timer=True) as spinner:
                 # check enables CalledProcessError throwing,
                 # capture output to get stdout & stderr
                 # text decodes stdout/stderr as text
