@@ -32,35 +32,39 @@ gc.enable()
 
 # _I = "-16.0"        # ffmpeg loudnorm integrated loudness target RBU 128 default: -24.0 to -23.0, I want louder (less negative)
 # _LRA = "11.0"       # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
-# _TP = "-2.0"        # ffmpeg loudnorm (and peak) maximum true peak RBU 128 default: -2.0, I will keep that
+# _TP = "-2.0"        # ffmpeg loudnorm (and peak & rms too) maximum true peak RBU 128 default: -2.0, I will keep that
 _I = "-23.0"            # ffmpeg loudnorm integrated loudness target RBU 128 default: -24.0 to -23.0, I want louder (less negative)
 _LRA = "7.0"            # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
-_TP = "-2.0"            # ffmpeg loudnorm (and peak) maximum true peak RBU 128 default: -2.0, I will keep that
+_TP = "-2.0"            # ffmpeg loudnorm (and peak & rms too) maximum true peak RBU 128 default: -2.0, I will keep that
 
 _LOG_EXT = '.log'
 _PWD_ENV = os.getenv('PWD')
 
 directory = DirectoryProcessing()
-
+date_time_format = "%Y-%m-%d_%H%M-%S"
 start_execution = datetime.now()
-start_datetime = datetime.strftime(start_execution, '%Y%m%d-%H%M%S')
-log_filename = "normalization" + '_' + start_datetime + _LOG_EXT
+# start_datetime = datetime.strftime(start_execution, '%Y%m%d-%H%M%S')
+start_datetime = datetime.strftime(start_execution, date_time_format)
+log_filename = "normalization" + '_' + str(start_datetime) + _LOG_EXT
 log_filepath = os.path.join(generated_files, log_filename)
 log_formatter = logging.Formatter('%(message)s')
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
+# override the default logging level WARN to lower level so we can also log INFO level messages
 logger.setLevel(logging.DEBUG)
 
-fh = logging.FileHandler(log_filepath)
-fh.setLevel(logging.DEBUG)
-fh.setFormatter(log_formatter)
+# file handler logs debug level to log file only, no output to console
+file_handler = logging.FileHandler(log_filepath)
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(log_formatter)
 
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-ch.setFormatter(log_formatter)
+# stream handler logs info level to log file and outputs to console
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+stream_handler.setFormatter(log_formatter)
 
-logger.addHandler(fh)
-logger.addHandler(ch)
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 
 class AudioNormalization():
@@ -130,7 +134,7 @@ class AudioNormalization():
 
             input_data = json.loads(json_string)
             # print(json.dumps(input_data, indent=4))
-            logger.info(json.dumps(input_data, indent=4))
+            # logger.info(json.dumps(input_data, indent=4))
 
         except JSONDecodeError as e:
             raise JSONDecodeError(f"JSON parsing error: {e} with\n{json_string}")
@@ -159,16 +163,16 @@ class AudioNormalization():
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_dir = os.path.dirname(file_path)
 
-            # print(f"Beginning normalization on: {input_path_stem} from {input_format} to {export_format}")
+            # print(f"Beginning ebu normalization on: {input_path_stem} from {input_format} to {export_format}")
             # print(f"Source directory path: {input_path_dir}")
-            beginning_text = f"Beginning normalization on: {input_path_stem} from {input_format} to {export_format}"
+            beginning_text = f"Beginning ebu normalization on: {input_path_stem} from {input_format} to {export_format}"
             source_text = f"Source directory path: {input_path_dir}"
             logger.info(beginning_text)
             logger.info(source_text)
 
             # get original sample rate for down sampling
             sample_rate = self.get_sample_rate(file_path)
-            logger.info(f"sample rate: {sample_rate}")
+            logger.debug(f"Source sample rate: {sample_rate} hz")
 
             r'''
             rbu 128 https://ffmpeg.org/ffmpeg-filters.html#loudnorm
@@ -193,15 +197,17 @@ class AudioNormalization():
             ]
 
             text = "Getting normalizing stats"
-            logger.info(text)
-            logger.info(stats_command)
+            logger.debug(text)
+            logger.debug(stats_command)
             stats_process, stats_spinner = self.spinner_subprocess_run(text, stats_command)
 
 
             # print("Pre normalization stats:")
             pre_text = "Pre normalization stats:"
-            logger.info(pre_text)
+            logger.debug(pre_text)
             stats_data = self.__loudnorm_json_parse(stats_process)
+            # print(json.dumps(stats_data, indent=4))
+            logger.debug(json.dumps(stats_data, indent=4))
             stats_time = stats_spinner.elapsed_time
 
             # Access specific values, e.g., integrated loudness
@@ -225,6 +231,7 @@ class AudioNormalization():
                 "ffmpeg",
                 "-hide_banner",
                 "-i", file_path,
+                "-id3v2_version", "3",
                 "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:"
                         f"measured_I={measured_i}:measured_TP={measured_tp}:"
                         f"measured_LRA={measured_lra}:measured_thresh={measured_thresh}:"
@@ -236,26 +243,28 @@ class AudioNormalization():
             ]
 
             text = "Normalizing audio"
-            logger.info(text)
-            logger.info(normalize_command)
+            logger.debug(text)
+            logger.debug(normalize_command)
             normalize_process, normalize_spinner = self.spinner_subprocess_run(text, normalize_command)
 
             normalize_time = normalize_spinner.elapsed_time + stats_time
 
             # print("Post normalization stats:")
             post_text = "Post normalization stats:"
-            logger.info(post_text)
+            logger.debug(post_text)
             normalize_data = self.__loudnorm_json_parse(normalize_process)
+            # print(json.dumps(normalize_data, indent=4))
+            logger.debug(json.dumps(normalize_data, indent=4))
 
             normalization_type = normalize_data.get("normalization_type")
             if normalization_type != "linear":
                 # print(f"FFMPEG used normalization type: {normalization_type}")
-                ffmpeg_text = f"FFMPEG used normalization type: {normalization_type}"
-                logger.info(ffmpeg_text)
+                results_text = f"FFMPEG used {normalization_type} normalization on {input_path_stem} in {normalize_time:.2f} secs\n "
+            else:
+                # print(f"Successful normalization on: {input_path_stem} in {normalize_time:.2f} secs\n")
+                results_text = f"Successful linear normalization on {input_path_stem} in {normalize_time:.2f} secs\n"
 
-            # print(f"Successful normalization on: {input_path_stem} in {normalize_time:.2f} secs\n")
-            success_text = f"Successful normalization on: {input_path_stem} in {normalize_time:.2f} secs\n"
-            logger.info(success_text)
+            logger.info(results_text)
 
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
@@ -441,25 +450,35 @@ class AudioNormalization():
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_dir = os.path.dirname(file_path)
 
-            print(f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}")
-            print(f"Source directory path: {input_path_dir}")
+            # print(f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}")
+            # print(f"Source directory path: {input_path_dir}")
+
+            beginning_text = f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}"
+            source_text = f"Source directory path: {input_path_dir}"
+            logger.info(beginning_text)
+            logger.info(source_text)
 
             # want bitrate so can preserve the quality in exported file
             bitrate = self.get_bit_rate(file_path)
+            logger.debug(f"bit rate: {bitrate}")
 
             volume_info = self.get_volume_info(file_path)
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
             max_volume = math.floor(volume_info['max_volume'])
 
             if max_volume == 0.0:
-                print(f"{input_path_stem} has max volume: {max_volume}, peak normalization not needed")
+                # print(f"{input_path_stem} has max volume: {max_volume}, peak normalization not needed")
+                unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume}, peak normalization not needed")
+                logger.info(unnecessary_text)
                 return
 
             adjustment = 0 + float(_TP) - float(max_volume)
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
-                print(f"peak normalizing by {_TP} minus {max_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
+                # print(f"peak normalizing by {_TP} minus {max_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
+                peak_text = print(f"peak normalizing by {_TP} minus {max_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
+                logger.debug(peak_text)
                 return
 
             # -hide_banner to reduce output clutter
@@ -482,8 +501,91 @@ class AudioNormalization():
             ]
 
             text = f"Peak normalizing {input_path_stem}"
+            logger.debug(text)
+            logger.debug(command)
             _, spinner = self.spinner_subprocess_run(text, command)
-            print(f"Successful peak normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs")
+            # print(f"Successful peak normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs")
+            success_text = f"Successful peak normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
+            logger.info(success_text)
+
+        except Exception as e:
+            raise Exception(f"Exception {e} peak normalizing audio file: {file_path}")
+
+
+    def rms_normalize_file(self, file_path):
+        '''
+        @brief RMS normalizes audio file level.
+
+        @details Automatically finds mean amplitude ands scales entire audio to maximize mean without clipping.
+        @details Audio file must be mp3 format, and already processed by convert_file function.
+
+        @param file_path {str} The full file path for audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            export_path = directory.path_info(file_path)
+
+            export_format = _AUDIO_TYPES[0]
+            input_format = os.path.splitext(file_path)[1].lower()[1:]
+            input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
+            input_path_dir = os.path.dirname(file_path)
+
+            beginning_text = f"Beginning rms normalization on {input_path_stem} from {input_format} to {export_format}"
+            source_text = f"Source directory path: {input_path_dir}"
+            logger.info(beginning_text)
+            logger.info(source_text)
+
+            # want bitrate so can preserve the quality in exported file
+            bitrate = self.get_bit_rate(file_path)
+            logger.debug(f"bit rate: {bitrate}")
+
+            volume_info = self.get_volume_info(file_path)
+            # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
+            mean_volume = math.floor(volume_info['mean_volume'])
+            max_volume = math.floor(volume_info['max_volume'])
+
+            if max_volume == 0.0:
+                # print(f"{input_path_stem} has max volume: {max_volume}, rms normalization not needed")
+                unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume}, rms normalization not needed")
+                logger.info(unnecessary_text)
+                return
+
+            adjustment = float(_TP) - float(mean_volume)
+            clip_amount = max_volume + adjustment
+
+            if clip_amount > 0:
+                # print(f"rms normalizing by {_TP} minus {max_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
+                peak_text = print(f"rms normalizing by {_TP} minus {mean_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
+                logger.debug(peak_text)
+                return
+
+            # -hide_banner to reduce output clutter
+            # -filter:a volume=6dB where dB is the adjustment value from volume stats return
+            # -c:v copy to copy embedded art
+            # since no explicit -map_metadata, the default global copy will happen,on both streams
+            # -c:a libmp3lame to keep same encoding
+            # -b:a 128k where bit rate in bps, not kbps
+            # -id3v2_version 3 required to properly copy embedded art, known ffmpeg bug
+            # -y on the output file to force an overwrite if needed
+            command = [
+                "ffmpeg", "-hide_banner",
+                "-i", file_path,
+                "-filter:a", (f"volume={adjustment:.2f}dB"),
+                "-c:v", "copy",
+                "-c:a", "libmp3lame",
+                "-b:a", str(bitrate),
+                "-id3v2_version", "3",
+                export_path, '-y'
+            ]
+
+            text = f"rms normalizing {input_path_stem}"
+            logger.debug(text)
+            logger.debug(command)
+            _, spinner = self.spinner_subprocess_run(text, command)
+            # print(f"Successful rms normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs")
+            success_text = f"Successful rms normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
+            logger.info(success_text)
 
         except Exception as e:
             raise Exception(f"Exception {e} peak normalizing audio file: {file_path}")
