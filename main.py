@@ -341,8 +341,8 @@ if __name__ == "__main__":
 
     os_name = platform.system()
     if os_name == "Windows":
-        if sys.stdout.encoding != "utf-8":
-            sys.stdout.reconfigure(encoding="utf-8")
+        if sys.stdout.encoding != "utf-16":
+            sys.stdout.reconfigure(encoding="utf-16")
     elif os_name == "Linux":
         if sys.stdout.encoding != "utf-8":
             sys.stdout.reconfigure(encoding="utf-8")
