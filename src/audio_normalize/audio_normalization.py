@@ -9,10 +9,12 @@
 # standard modules
 import gc
 import json
+import logging
 import math
 import os
 import re
 import subprocess
+from datetime import datetime
 from json import JSONDecodeError
 from pathlib import Path
 from subprocess import CalledProcessError
@@ -24,17 +26,41 @@ from yaspin.spinners import Spinners
 # local modules
 from src import _AUDIO_EXTS, _AUDIO_TYPES
 from src.dir_processing import DirectoryProcessing
+from src.generated_files import generated_files
 
 gc.enable()
 
 # _I = "-16.0"        # ffmpeg loudnorm integrated loudness target RBU 128 default: -24.0 to -23.0, I want louder (less negative)
 # _LRA = "11.0"       # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
 # _TP = "-2.0"        # ffmpeg loudnorm (and peak) maximum true peak RBU 128 default: -2.0, I will keep that
-_I = "-23.0"        # ffmpeg loudnorm integrated loudness target RBU 128 default: -24.0 to -23.0, I want louder (less negative)
-_LRA = "7.0"       # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
-_TP = "-2.0"        # ffmpeg loudnorm (and peak) maximum true peak RBU 128 default: -2.0, I will keep that
+_I = "-23.0"            # ffmpeg loudnorm integrated loudness target RBU 128 default: -24.0 to -23.0, I want louder (less negative)
+_LRA = "7.0"            # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
+_TP = "-2.0"            # ffmpeg loudnorm (and peak) maximum true peak RBU 128 default: -2.0, I will keep that
+
+_LOG_EXT = '.log'
+_PWD_ENV = os.getenv('PWD')
 
 directory = DirectoryProcessing()
+
+start_execution = datetime.now()
+start_datetime = datetime.strftime(start_execution, '%Y%m%d-%H%M%S')
+log_filename = "normalization" + '_' + start_datetime + _LOG_EXT
+log_filepath = os.path.join(generated_files, log_filename)
+log_formatter = logging.Formatter('%(message)s')
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+fh = logging.FileHandler(log_filepath)
+fh.setLevel(logging.DEBUG)
+fh.setFormatter(log_formatter)
+
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+ch.setFormatter(log_formatter)
+
+logger.addHandler(fh)
+logger.addHandler(ch)
 
 
 class AudioNormalization():
@@ -103,7 +129,8 @@ class AudioNormalization():
                 raise Exception(f"Could not find JSON output in subprocess stderr\n{json_string}")
 
             input_data = json.loads(json_string)
-            print(json.dumps(input_data, indent=4))
+            # print(json.dumps(input_data, indent=4))
+            logger.info(json.dumps(input_data, indent=4))
 
         except JSONDecodeError as e:
             raise JSONDecodeError(f"JSON parsing error: {e} with\n{json_string}")
@@ -132,11 +159,16 @@ class AudioNormalization():
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_dir = os.path.dirname(file_path)
 
-            print(f"Beginning normalization on: {input_path_stem} from {input_format} to {export_format}")
-            print(f"Source directory path: {input_path_dir}")
+            # print(f"Beginning normalization on: {input_path_stem} from {input_format} to {export_format}")
+            # print(f"Source directory path: {input_path_dir}")
+            beginning_text = f"Beginning normalization on: {input_path_stem} from {input_format} to {export_format}"
+            source_text = f"Source directory path: {input_path_dir}"
+            logger.info(beginning_text)
+            logger.info(source_text)
 
             # get original sample rate for down sampling
             sample_rate = self.get_sample_rate(file_path)
+            logger.info(f"sample rate: {sample_rate}")
 
             r'''
             rbu 128 https://ffmpeg.org/ffmpeg-filters.html#loudnorm
@@ -161,9 +193,14 @@ class AudioNormalization():
             ]
 
             text = "Getting normalizing stats"
+            logger.info(text)
+            logger.info(stats_command)
             stats_process, stats_spinner = self.spinner_subprocess_run(text, stats_command)
 
-            print("Pre normalization stats:")
+
+            # print("Pre normalization stats:")
+            pre_text = "Pre normalization stats:"
+            logger.info(pre_text)
             stats_data = self.__loudnorm_json_parse(stats_process)
             stats_time = stats_spinner.elapsed_time
 
@@ -199,18 +236,26 @@ class AudioNormalization():
             ]
 
             text = "Normalizing audio"
+            logger.info(text)
+            logger.info(normalize_command)
             normalize_process, normalize_spinner = self.spinner_subprocess_run(text, normalize_command)
 
             normalize_time = normalize_spinner.elapsed_time + stats_time
 
-            print("Post normalization stats:")
+            # print("Post normalization stats:")
+            post_text = "Post normalization stats:"
+            logger.info(post_text)
             normalize_data = self.__loudnorm_json_parse(normalize_process)
 
             normalization_type = normalize_data.get("normalization_type")
             if normalization_type != "linear":
-                print(f"FFMPEG used normalization type: {normalization_type}")
+                # print(f"FFMPEG used normalization type: {normalization_type}")
+                ffmpeg_text = f"FFMPEG used normalization type: {normalization_type}"
+                logger.info(ffmpeg_text)
 
-            print(f"Successful normalization on: {input_path_stem} in {normalize_time:.2f} secs\n")
+            # print(f"Successful normalization on: {input_path_stem} in {normalize_time:.2f} secs\n")
+            success_text = f"Successful normalization on: {input_path_stem} in {normalize_time:.2f} secs\n"
+            logger.info(success_text)
 
         except Exception as e:
             raise Exception(f"Exception {e} normalizing audio file: {file_path}")
