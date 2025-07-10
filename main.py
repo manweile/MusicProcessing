@@ -257,7 +257,7 @@ def main(args):
 
         if args.subcommand == "extract-file":
             file_path = getattr(args, "file")
-            extract_art(file_path)
+            extract_file(file_path)
 
         if args.subcommand == "extract-walk":
             tld_path = getattr(args, "tld")
