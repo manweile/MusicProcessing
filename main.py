@@ -9,8 +9,6 @@
 import argparse
 import gc
 import pprint
-import platform
-import sys
 
 # local modules
 from src.audio_info import AudioArt
@@ -73,7 +71,6 @@ def extract_file(file_path):
     @param file_path {str} The full path to audio file.
     '''
 
-    # metadata.extract_album_art(file_path)
     art.extract_album_art(file_path)
 
 
@@ -85,7 +82,6 @@ def extract_walk(tld_path, file_pattern):
     @param file_pattern {str} The file pattern we want to delete.
     '''
 
-    # metadata.extract_walk(tld_path, file_pattern)
     art.extract_walk(tld_path, file_pattern)
 
 
@@ -119,7 +115,7 @@ def get_media_tags(file_path):
     metadata.get_media_tags(file_path)
 
 
-def get_tags(file_path):
+def get_any_tags(file_path):
     '''
     @brief Gets metadata from specified audio file.
 
@@ -232,7 +228,6 @@ def set_album_art(tld_path):
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
-    # metadata.set_album_art(tld_path)
     art.set_album_art(tld_path)
 
 
@@ -287,9 +282,9 @@ def main(args):
             file_path = getattr(args, "file")
             get_media_tags(file_path)
 
-        if args.subcommand == "get-tags":
+        if args.subcommand == "get-any-tags":
             file_path = getattr(args, "file")
-            tags = get_tags(file_path)
+            tags = get_any_tags(file_path)
             # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
             # not as a simple dict of string key/value
             # so need mutagen pprint and splitlines to "format" into simple dict
@@ -352,14 +347,6 @@ if __name__ == "__main__":
 
     @details Parses and validates input arguments.
     '''
-
-    # os_name = platform.system()
-    # if os_name == "Windows":
-    #     if sys.stdout.encoding != "utf-16":
-    #         sys.stdout.reconfigure(encoding="utf-16")
-    # elif os_name == "Linux":
-    #     if sys.stdout.encoding != "utf-8":
-    #         sys.stdout.reconfigure(encoding="utf-8")
 
     parser = argparse.ArgumentParser(description='Music Processing')
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
@@ -460,7 +447,6 @@ if __name__ == "__main__":
     get_media_info_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     get_media_info_parser.set_defaults(func=get_media_info)
 
-    # @todo check on need to rename defs to reflect ffprobe vs mutagen
     # get ffprobe media information for files
     # 1 mandatory arg, the tld path
     # 1 optional arg, the file pattern to match
@@ -471,10 +457,10 @@ if __name__ == "__main__":
     get_media_info_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
     get_media_info_walk_parser.set_defaults(func=get_media_info_walk)
 
-    # @todo check on need to rename defs to reflect ffprobe vs mutagen
     # get ffprobe media tags for a file or files
     # 1 mandatory arg, the path to audio file
-
+    # sys.argv = ['D:\MusicProcessing\main.py', 'get-media-tags', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-media-tags', '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
     get_media_tags_parser = subparsers.add_parser("get-media-tags", help="Gets ffprobe media tags for audio file")
     get_media_tags_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     get_media_tags_parser.set_defaults(func=get_media_tags)
@@ -483,13 +469,14 @@ if __name__ == "__main__":
     # 1 mandatory arg, the path to audio file
     # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags', '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
-    get_tags_parser = subparsers.add_parser("get-tags", help="Gets metadata tags from audio file")
+    get_tags_parser = subparsers.add_parser("get-any-tags", help="Gets metadata tags from audio file")
     get_tags_parser.add_argument("file", type=str, help="mandatory full path to audio file")
-    get_tags_parser.set_defaults(func=get_tags)
+    get_tags_parser.set_defaults(func=get_any_tags)
 
-    # get mutagen metadata tags from all audio files found in top level directory
+    # get metadata tags from all audio files found in top level directory
     # 1 mandatory arg, the tld path
     # 1 optional arg, the file pattern to match
+    # 1 optional arg, use ffprobe boolean
     # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags-walk', 'C:\Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' | '*.*' } , '--ffprobe' 'True']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' | *.* }, '--ffprobe', 'True']
     get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Gets metadata tags from audio files")
@@ -498,6 +485,10 @@ if __name__ == "__main__":
     get_tags_walk_parser.add_argument("--ffprobe", type=bool, help="optional ffprobe tags")
     get_tags_walk_parser.set_defaults(func=get_tags_walk)
 
+    # gets set of unique ffprobe metadata tag keys for entire collection
+    # 1 mandatory arg, the tld path
+    # sys.argv = ['D:\MusicProcessing\main.py', 'get-unique-media', 'C:\Music']
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-unique-media', '/home/gerald/Music']
     get_unique_media_parser = subparsers.add_parser("get-unique-media", help="Gets set of unique ffprobe tags from collection")
     get_unique_media_parser.add_argument("tld", type=str, help="mandatory top level directory")
     get_unique_media_parser.set_defaults(func=get_unique_media)

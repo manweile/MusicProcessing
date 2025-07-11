@@ -961,19 +961,9 @@ class AudioSegment(object):
         '''
         YASPIN NEW CODE STARTS
         '''
-        # import platform
         from pathlib import Path
         from yaspin import yaspin
         from yaspin.spinners import Spinners
-
-        # might need to handle extended unicode printing
-        # os_name = platform.system()
-        # if os_name == "Windows":
-        #     if sys.stdout.encoding != "utf-8":
-        #         sys.stdout.reconfigure(encoding="utf-8")
-        # elif os_name == "linux":
-        #     if sys.stdout.encoding != "utf-8":
-        #         sys.stdout.reconfigure(encoding="utf-8")
 
         input_path = Path(out_f.name)
         input_file_name = input_path.stem
