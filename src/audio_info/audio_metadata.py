@@ -417,6 +417,7 @@ class AudioMetadata():
             tld_bar.close()
             dir_processing.create_csv(csv_filename, data, generated_files, header_row, 0)
             print(f"Created {len(album_dirs)} album dirs")
+
         except ValueError as e:
             raise Exception(f"ValueError {e} sanitizing album metadata {album}")
         except Exception as e:
@@ -441,6 +442,7 @@ class AudioMetadata():
                 tags = audio_file.tags
             else:
                 raise ValueError(f"Returned None loading audio file: {file_path}")
+
         except Exception as e:
             raise Exception(f"Exception: {e} getting metadata type for file: {file_path}")
 
@@ -463,6 +465,7 @@ class AudioMetadata():
                 tag_info = audio_file.tags
             else:
                 raise ValueError(f"Returned None loading audio file: {file_path} ")
+
         except Exception as e:
             raise Exception(f"Exception {e} getting tags for file {file_path}")
 
@@ -483,6 +486,7 @@ class AudioMetadata():
         try:
             media_info = None
             media_info = mediainfo(file_path)
+
         except Exception as e:
             raise Exception(f"Exception {e} getting media info for file {file_path}")
 
