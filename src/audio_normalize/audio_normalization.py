@@ -417,6 +417,8 @@ class AudioNormalization():
                         self.ebu_normalize_file(input_file_path)
                     elif norm_type == "peak":
                         self.peak_normalize_file(input_file_path)
+                    elif norm_type == "rms":
+                        self.rms_normalize_file(input_file_path)
 
         except Exception as e:
             raise Exception(f"Exception {e} on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files")
