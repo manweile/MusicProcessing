@@ -101,7 +101,7 @@ class AudioArt():
             return (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
 
         except Exception as e:
-            raise Exception(f"Exception {e} extracting embedded art from tag data")
+            raise Exception(f"Exception {e} extracting asf embedded art from tag data")
 
 
     def __write_data(self, file_path, image_data):
@@ -237,7 +237,7 @@ class AudioArt():
             ]
 
             _ = normalization.subprocess_run(command)
-            print(f"Album art extracted from {input_path.name} and saved to {album_path}")
+            print(f"FFMPEG extracted album art from {input_path.name} and saved to {album_path}")
 
         except Exception as e:
             raise Exception(f"Exception {e} extracting art from {input_path}")
@@ -336,9 +336,9 @@ class AudioArt():
 
         except Exception as e:
             if file_pattern:
-                raise Exception(f"Exception {e} walking {start_path} to convert {file_pattern} audio files to mp3")
+                raise Exception(f"Exception {e} walking {start_path} to extract art from {file_pattern} audio files")
             else:
-                raise Exception(f"Exception {e} walking {start_path} to convert audio files to mp3")
+                raise Exception(f"Exception {e} walking {start_path} to extract art from audio files")
 
 
     def has_video_stream(self, file_path):
