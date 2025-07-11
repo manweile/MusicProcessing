@@ -30,21 +30,26 @@ from src.generated_files import generated_files
 
 gc.enable()
 
-# _I = "-16.0"        # ffmpeg loudnorm integrated loudness target RBU 128 default: -24.0 to -23.0, I want louder (less negative)
-# _LRA = "11.0"       # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
-# _TP = "-2.0"        # ffmpeg loudnorm (and peak & rms too) maximum true peak RBU 128 default: -2.0, I will keep that
-_I = "-23.0"            # ffmpeg loudnorm integrated loudness target RBU 128 default: -24.0 to -23.0, I want louder (less negative)
-_LRA = "7.0"            # ffmpeg loudnorm loudness range target RBU 128 default: 7, I want wider range
-_TP = "-2.0"            # ffmpeg loudnorm (and peak & rms too) maximum true peak RBU 128 default: -2.0, I will keep that
+r'''
+AES https://www.aes.org/technical/documents/AESTD1004_1_15_10.pdf
+ffmpeg loudnorm integrated loudness target EBU R128 default: -24.0,
+I want -16, which is the AES recommendation for streamed files
+ffmpeg loudnorm loudness range target EBU R128 default: 7,
+I want wider range because most of my collection has a wider range
+ffmpeg loudnorm maximum true peak EBU R128 default: -2.0,
+I will keep that cause I want the extra headroom space vs -1.0 or 0.0
+'''
+_I = "-16.0"
+_LRA = "11.0"
+_TP = "-2.0"
 
+_DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
 _LOG_EXT = '.log'
-_PWD_ENV = os.getenv('PWD')
 
 directory = DirectoryProcessing()
-date_time_format = "%Y-%m-%d_%H%M-%S"
+
 start_execution = datetime.now()
-# start_datetime = datetime.strftime(start_execution, '%Y%m%d-%H%M%S')
-start_datetime = datetime.strftime(start_execution, date_time_format)
+start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
 log_filename = "normalization" + '_' + str(start_datetime) + _LOG_EXT
 log_filepath = os.path.join(generated_files, log_filename)
 log_formatter = logging.Formatter('%(message)s')
@@ -133,8 +138,6 @@ class AudioNormalization():
                 raise Exception(f"Could not find JSON output in subprocess stderr\n{json_string}")
 
             input_data = json.loads(json_string)
-            # print(json.dumps(input_data, indent=4))
-            # logger.info(json.dumps(input_data, indent=4))
 
         except JSONDecodeError as e:
             raise JSONDecodeError(f"JSON parsing error: {e} with\n{json_string}")
@@ -148,7 +151,9 @@ class AudioNormalization():
         '''
         @brief Normalizes audio file level to ebu r128 standard.
 
-        @details see https://k.ylo.ph/2016/04/04/loudnorm.html for an example.
+        @details see https://k.ylo.ph/2016/04/04/loudnorm.html for algorithm & example.
+        @details see https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg for example
+        @details see https://ffmpeg.org/ffmpeg-filters.html#loudnorm for documentation.
 
         @param file_path {str} The full file path for audio file.
         @exception JSONDecodeError as json decoding error.
@@ -163,8 +168,6 @@ class AudioNormalization():
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_dir = os.path.dirname(file_path)
 
-            # print(f"Beginning ebu normalization on: {input_path_stem} from {input_format} to {export_format}")
-            # print(f"Source directory path: {input_path_dir}")
             beginning_text = f"Beginning ebu normalization on: {input_path_stem} from {input_format} to {export_format}"
             source_text = f"Source directory path: {input_path_dir}"
             logger.info(beginning_text)
@@ -174,17 +177,12 @@ class AudioNormalization():
             sample_rate = self.get_sample_rate(file_path)
             logger.debug(f"Source sample rate: {sample_rate} hz")
 
-            r'''
-            rbu 128 https://ffmpeg.org/ffmpeg-filters.html#loudnorm
-            AES https://www.aes.org/technical/documents/AESTD1004_1_15_10.pdf
-            https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg
-
+            '''
             1st pass to get loudnorm statistics
             -hide_banner to reduce output clutter
             -vn to save cycles by not dealing with video stream
-            -af loudnorm audio filter with desired I integrated loudness target, LRA loudness range target, TP max true peak, output in json format
+            -af loudnorm audio filter with my desired I integrated loudness target, LRA loudness range target, TP max true peak, output in json format
             -f Output to null to avoid creating an actual output file
-            Direct output to stdout for the first pass (stderr for loudnorm stats)
             '''
 
             stats_command = [
@@ -201,16 +199,13 @@ class AudioNormalization():
             logger.debug(stats_command)
             stats_process, stats_spinner = self.spinner_subprocess_run(text, stats_command)
 
-
-            # print("Pre normalization stats:")
             pre_text = "Pre normalization stats:"
             logger.debug(pre_text)
             stats_data = self.__loudnorm_json_parse(stats_process)
-            # print(json.dumps(stats_data, indent=4))
             logger.debug(json.dumps(stats_data, indent=4))
             stats_time = stats_spinner.elapsed_time
 
-            # Access specific values, e.g., integrated loudness
+            # Access the loudnorm results needed for 2nd pass
             measured_i = stats_data.get("input_i")
             measured_lra = stats_data.get("input_lra")
             measured_tp = stats_data.get("input_tp")
@@ -221,7 +216,7 @@ class AudioNormalization():
             # -hide_banner to reduce output clutter
             # do not need a -map_metadata 0 by default if flag omitted, metadata is copied globally from first input file
             # -id3v2 3 to enforce ID3v2.3 tags, otherwise will default to ID3v2.4 and album art will NOT be copied (it's a known bug)
-            # -af loudnorm audio filter same I integrated loudness target, LRA loudness range target, TP max true peak,
+            # -af loudnorm audio filter needs same I integrated loudness target, LRA loudness range target, TP max true peak,
             # and from first pass, measured_I=input_i, measured_LRA=input_lra, measured_TP=input_tp, measured_thresh=input_thresh, offset=target_offset,
             # linear=true to normalize by linearly scaling source audio, output in json format
             # -ar input file sample_rate, 1st pass loudnorm filter auto up scales to 192 khz, so need to down scale to original
@@ -249,19 +244,15 @@ class AudioNormalization():
 
             normalize_time = normalize_spinner.elapsed_time + stats_time
 
-            # print("Post normalization stats:")
             post_text = "Post normalization stats:"
             logger.debug(post_text)
             normalize_data = self.__loudnorm_json_parse(normalize_process)
-            # print(json.dumps(normalize_data, indent=4))
             logger.debug(json.dumps(normalize_data, indent=4))
 
             normalization_type = normalize_data.get("normalization_type")
             if normalization_type != "linear":
-                # print(f"FFMPEG used normalization type: {normalization_type}")
                 results_text = f"FFMPEG used {normalization_type} normalization on {input_path_stem} in {normalize_time:.2f} secs\n "
             else:
-                # print(f"Successful normalization on: {input_path_stem} in {normalize_time:.2f} secs\n")
                 results_text = f"Successful linear normalization on {input_path_stem} in {normalize_time:.2f} secs\n"
 
             logger.info(results_text)
@@ -450,9 +441,6 @@ class AudioNormalization():
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_dir = os.path.dirname(file_path)
 
-            # print(f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}")
-            # print(f"Source directory path: {input_path_dir}")
-
             beginning_text = f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}"
             source_text = f"Source directory path: {input_path_dir}"
             logger.info(beginning_text)
@@ -467,7 +455,6 @@ class AudioNormalization():
             max_volume = math.floor(volume_info['max_volume'])
 
             if max_volume == 0.0:
-                # print(f"{input_path_stem} has max volume: {max_volume}, peak normalization not needed")
                 unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume}, peak normalization not needed")
                 logger.info(unnecessary_text)
                 return
@@ -476,7 +463,6 @@ class AudioNormalization():
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
-                # print(f"peak normalizing by {_TP} minus {max_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
                 peak_text = print(f"peak normalizing by {_TP} minus {max_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
                 logger.debug(peak_text)
                 return
@@ -504,7 +490,6 @@ class AudioNormalization():
             logger.debug(text)
             logger.debug(command)
             _, spinner = self.spinner_subprocess_run(text, command)
-            # print(f"Successful peak normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs")
             success_text = f"Successful peak normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
             logger.info(success_text)
 
@@ -546,7 +531,6 @@ class AudioNormalization():
             max_volume = math.floor(volume_info['max_volume'])
 
             if max_volume == 0.0:
-                # print(f"{input_path_stem} has max volume: {max_volume}, rms normalization not needed")
                 unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume}, rms normalization not needed")
                 logger.info(unnecessary_text)
                 return
@@ -555,7 +539,6 @@ class AudioNormalization():
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
-                # print(f"rms normalizing by {_TP} minus {max_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
                 peak_text = print(f"rms normalizing by {_TP} minus {mean_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
                 logger.debug(peak_text)
                 return
@@ -583,7 +566,6 @@ class AudioNormalization():
             logger.debug(text)
             logger.debug(command)
             _, spinner = self.spinner_subprocess_run(text, command)
-            # print(f"Successful rms normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs")
             success_text = f"Successful rms normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
             logger.info(success_text)
 
