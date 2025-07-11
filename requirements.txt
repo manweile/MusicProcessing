@@ -1,7 +1,7 @@
-# dependency of tqdm
-colorama==0.4.6
-# dependency of yaspin
-termcolor===2.3.0
+# external library dependencies
+colorama==0.4.6                         # dependency of tqdm
+termcolor===2.3.0                       # dependency of yaspin
+# required project external libraries
 mutagen==1.47.0
 pathvalidate==3.2.1
 pydub==0.25.1
