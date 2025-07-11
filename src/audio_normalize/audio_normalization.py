@@ -163,12 +163,10 @@ class AudioNormalization():
         try:
             export_path = directory.path_info(file_path)
 
-            export_format = _AUDIO_TYPES[0]
-            input_format = os.path.splitext(file_path)[1].lower()[1:]
-            input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
+            input_path_basename = os.path.basename(file_path)
             input_path_dir = os.path.dirname(file_path)
 
-            beginning_text = f"Beginning ebu normalization on: {input_path_stem} from {input_format} to {export_format}"
+            beginning_text = f"Beginning ebu normalization on: {input_path_basename}"
             source_text = f"Source directory path: {input_path_dir}"
             logger.info(beginning_text)
             logger.info(source_text)
@@ -204,6 +202,7 @@ class AudioNormalization():
             stats_data = self.__loudnorm_json_parse(stats_process)
             logger.debug(json.dumps(stats_data, indent=4))
             stats_time = stats_spinner.elapsed_time
+            logger.info(f"Analyzed loudnorm stats in {stats_time:.2f} secs")
 
             # Access the loudnorm results needed for 2nd pass
             measured_i = stats_data.get("input_i")
@@ -242,18 +241,19 @@ class AudioNormalization():
             logger.debug(normalize_command)
             normalize_process, normalize_spinner = self.spinner_subprocess_run(text, normalize_command)
 
-            normalize_time = normalize_spinner.elapsed_time + stats_time
-
             post_text = "Post normalization stats:"
             logger.debug(post_text)
             normalize_data = self.__loudnorm_json_parse(normalize_process)
             logger.debug(json.dumps(normalize_data, indent=4))
+            normalization_time = normalize_spinner.elapsed_time
+            logger.info(f"Applied normalization in {normalization_time:.2f} secs")
+            total_time = normalize_spinner.elapsed_time + stats_time
 
             normalization_type = normalize_data.get("normalization_type")
             if normalization_type != "linear":
-                results_text = f"FFMPEG used {normalization_type} normalization on {input_path_stem} in {normalize_time:.2f} secs\n "
+                results_text = f"FFMPEG used {normalization_type} normalization on {input_path_basename} in total time {total_time:.2f} secs\n "
             else:
-                results_text = f"Successful linear normalization on {input_path_stem} in {normalize_time:.2f} secs\n"
+                results_text = f"Successful linear normalization on {input_path_basename} in total time {total_time:.2f} secs\n"
 
             logger.info(results_text)
 
@@ -457,17 +457,21 @@ class AudioNormalization():
             max_volume = math.floor(volume_info['max_volume'])
 
             if max_volume == 0.0:
-                unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume}, peak normalization not needed")
+                unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume:.2f} dB, peak normalization not needed")
                 logger.info(unnecessary_text)
                 return
+            else:
+                logger.debug(f"max volume: {max_volume:.2f} dB")
 
             adjustment = 0 + float(_TP) - float(max_volume)
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
-                peak_text = print(f"peak normalizing by {_TP} minus {max_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
+                peak_text = print(f"peak normalizing by {_TP} minus {max_volume:.2f} dB equaling {adjustment:.2f} dB will result in clipping level: {clip_amount:.2f} dB in {export_path}")
                 logger.debug(peak_text)
                 return
+            else:
+                logger.debug(f"adjustment: {adjustment:.2f} dB")
 
             # -hide_banner to reduce output clutter
             # -filter:a volume=6dB where dB is the adjustment value from volume stats return
@@ -531,9 +535,11 @@ class AudioNormalization():
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
             mean_volume = math.floor(volume_info['mean_volume'])
             max_volume = math.floor(volume_info['max_volume'])
+            logger.debug(f"floor mean volume: {mean_volume:.2f}")
+            logger.debug(f"floor max volume: {max_volume:.2f}")
 
             if max_volume == 0.0:
-                unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume}, rms normalization not needed")
+                unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume:.2f}, rms normalization not needed")
                 logger.info(unnecessary_text)
                 return
 
@@ -541,9 +547,11 @@ class AudioNormalization():
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
-                peak_text = print(f"rms normalizing by {_TP} minus {mean_volume} equaling {adjustment} will result in clipping level: {clip_amount} dB in {export_path}")
-                logger.debug(peak_text)
+                peak_text = print(f"rms normalizing by {_TP} minus {mean_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB in {export_path}")
+                logger.info(peak_text)
                 return
+            else:
+                logger.debug(f"adjustment: {adjustment:.2f} dB")
 
             # -hide_banner to reduce output clutter
             # -filter:a volume=6dB where dB is the adjustment value from volume stats return
