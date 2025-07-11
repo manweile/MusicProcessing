@@ -1,5 +1,6 @@
 NOTE:
 -f null - is os agnostic. Otherwise, Linux: -f null /dev/null Windows: -f null NULL
+os.devnull works too
 
 parsed output:
 loudnorm filter with input params and with json output:
