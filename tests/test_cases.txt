@@ -28,17 +28,20 @@ project command line defs:
                     tld/artists/albums with mix of mp3, m4a, wma ???
                 extract_file(file_path)
                     test cases:
-                        non-extant audio file
-                        a *.wav file
-                        audio file w/o art tag w/o video stream - will need to create
-                        audio file w/o art tag w video stream   - will need to create
-                        audio file file w art tag w/o video stream  - Billie Holiday-Georgia On My Mind.wma
-                        audio file w art tag w video stream
+                        non-extant audio file                       - use something like C:\MusicProcessing\tests\Music\<artist>\<album>\doesnotexist.mp3
+                        a *.wav file                                - will need to create, pick a mp3 w stream & art tag and convert to wav
+                        audio file w/o art tag w/o video stream     - will need to create, save in approp C:\MusicProcessing\tests\Music\<artist>\<album>
+                        audio file w/o art tag w video stream       - will need to create, save in approp C:\MusicProcessing\tests\Music\<artist>\<album>
+                        audio file file w art tag w/o video stream  - Billie Holiday-Georgia On My Mind.wma, save in approp C:\MusicProcessing\tests\Music\<artist>\<album>
+                        audio file w art tag w video stream         - find one example of all 3 types, save in approp C:\MusicProcessing\tests\Music\<artist>\<album>
                 extract_walk(tld_path, file_pattern)
                     test cases:
-                        non-extant tld
+                        non-extant tld                              - something like "C:\DoesNotExist and /home/gerald/DoesNotExist
+                        empty tld                                   - create something like C:\MusicProcessing\tests\EmptyTld\
+                        empty artist directory                      - create something like C:\MusicProcessing\tests\TestTld\EmptyArtist\
+                        empty album directory                       - create something like C:\MusicProcessing\tests\TestTld\TestArtist\EmptyAlbum\
                         extant tld w/o bad files
-                        extant tld w good files
+                        extant tld w good files                     - find 3 types of files w video stream and art tag
                 set_album_art(tld_path)
                     set up: needs own set up different from extract art/ extract walk cause they must run before set album art??
                         tld/artists/albums with at least 1 audio file, type doesn't matter
