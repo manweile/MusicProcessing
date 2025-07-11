@@ -961,7 +961,7 @@ class AudioSegment(object):
         '''
         YASPIN NEW CODE STARTS
         '''
-        import platform
+        # import platform
         from pathlib import Path
         from yaspin import yaspin
         from yaspin.spinners import Spinners
