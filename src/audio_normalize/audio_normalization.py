@@ -211,13 +211,6 @@ class AudioNormalization():
             measured_thresh = stats_data.get("input_thresh")
             offset = stats_data.get("target_offset")
 
-            '''
-            if stats_data.get("input_lra") > _LRA  then will get reversion to dynamic
-            eg 1) stats_data.get("input_lra") = 8.1 is < _LRA = 11 (Crush-Live.mp3) where loudnorm using _I = "-16.0" _LRA = "11.0" _TP = "-2.0"
-            eg 2) stats_data.get("input_lra") = 8.1 is > _LRA = 11 (Crush-Live.mp3) where loudnorm using _I = "-23.0" _LRA = "7" _TP = "-2.0"
-            to keep eg 2 from going dynamic, would have to increase the loudnorm _LRA in 2nd pass to at least 8.1
-
-            '''
             # 2nd pass to apply loudnorm statistics
             # -hide_banner to reduce output clutter
             # do not need a -map_metadata 0 by default if flag omitted, metadata is copied globally from first input file
