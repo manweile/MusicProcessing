@@ -38,11 +38,11 @@ frame=    1 fps=1.0 q=-0.0 Lsize=N/A time=00:04:05.89 bitrate=N/A speed= 239x
 [Parsed_ebur128_0 @ 0x627dc3d33240] Summary:
 
   Integrated loudness:
-    I:         -16.7 LUFS
-    Threshold: -26.9 LUFS
+    I:         -16.7 LUFS               same as loudnorm Input Integrated:    -16.8 LUFS 
+    Threshold: -26.9 LUFS               same as loudnorm Input Threshold:     -27.0 LUFS
 
   Loudness range:
-    LRA:         7.9 LU
+    LRA:         7.9 LU                 same as loudnorm Input LRA:             8.1 LU
     Threshold: -36.9 LUFS
     LRA low:   -22.4 LUFS
     LRA high:  -14.5 LUFS

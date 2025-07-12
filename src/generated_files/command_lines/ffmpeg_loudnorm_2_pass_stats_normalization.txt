@@ -42,7 +42,9 @@ set linear=True for normalization type
 set print_format=json for easier output parsing
 
 normalization source for coded function:
-PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3 -id3v2_version 3 -af loudnorm=I=-16:TP=-2.0:LRA=11:measured_I=-16.77:measured_LRA=8.10:measured_TP=-6.66:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json -threads 5 -ar 44100 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
+PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here/Crush-Live.mp3 -id3v2_version 3 -af loudnorm=I=-16:TP=-2.0:LRA=11
+                    :measured_I=-16.77:measured_LRA=8.10:measured_TP=-6.66:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json 
+                    -threads 5 -ar 44100 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
 [Parsed_loudnorm_0 @ 000001d6760e0180] KiB time=N/A bitrate=N/A speed=N/A
 {
         "input_i" : "-16.73",

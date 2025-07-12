@@ -1,0 +1,1 @@
+['C:\\ffmpeg\\bin\\ffmpeg.EXE', '-hide_banner', '-y', '-i', 'C:\\Music\\Cat Stevens\\Remember\\Cat Stevens-Where Do The Children Play.mp3', '-map', '0:0', '-filter_complex', '[0:0]loudnorm=i=-23.0:lra=7.0:tp=-2.0:offset=0.0:print_format=json', '-vn', '-sn', '-f', 'null', 'nul']
