@@ -4,7 +4,14 @@ the input audio MUST have embedded art
 -c:v copy transfers embedded art, BUT -id3v2_version 3 is needed to ensure copy happens! This is a known ffmpeg bug, confirmed by empirical testing.
 -ab 128k ensures the bit rate is preserved. Without bit rate, ffmpeg WILL downgrade the bit rate, as seen from empirical testing.
 -y to overwrite an existing output file
-PS C:\Users\gmanw> ffmpeg -hide_banner -i "C:\Music\Crush\Here\Crush-Live.mp3" -c:v copy -id3v2_version 3 -ab 128k "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
+
+ffmpeg -hide_banner 
+-i "C:\Music\Crush\Here\Crush-Live.mp3" 
+-c:v copy -id3v2_version 3 
+-ab 128k 
+"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
+
+PS C:\Users\gmanw> ffmpeg -hide_banner -i "C:\Music\Crush\Here\Crush-Live.mp3"  -ab 128k -c:v copy -id3v2_version 3 "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
 [mp3 @ 0000021498a908c0] Estimating duration from bitrate, this may be inaccurate
 Input #0, mp3, from 'C:\Music\Crush\Here\Crush-Live.mp3':
   Metadata:
