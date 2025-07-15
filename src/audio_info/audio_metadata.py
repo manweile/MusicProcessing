@@ -240,11 +240,14 @@ class AudioMetadata():
             bitrate = media_info['bit_rate']
 
             '''
-            If a song has does have embedded art, ffmpeg will NOT auto transfer it.
+            If a song has does have embedded art, pydub will NOT auto transfer it while doing a conversion.
             Therefore all audio files must have co-located cover art.
             '''
 
             cover = os.path.join(input_path_parent, _FOLDER_ART)
+            if not os.path.exists(cover):
+                print(f"album directory {input_path_parent} does not contain a {_FOLDER_ART} file.")
+                return
 
             if metadata_type == _MP3:
                 audio_segment = AudioSegment.from_mp3(file_path)
