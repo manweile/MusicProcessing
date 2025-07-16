@@ -8,10 +8,10 @@
 
 # standard modules
 import gc
+import logging
 import os
-# import platform
+from datetime import datetime
 from pathlib import Path
-
 # third party modules
 
 # local modules
@@ -21,7 +21,58 @@ from src.generated_files import generated_files
 
 gc.enable()
 
+_DELIMITER = ","
+
+# @todo move these into src.__init__.py
+# @todo figure out one time declaration for logging
+# @todo the only thing that really changes is the log filename
+# @tdo google search: python logging def for many modules
+# @todo https://docs.python.org/3/library/logging.html
+# https://docs.python.org/3/howto/logging.html#logging-advanced-tutorial
+_DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
+_LOG_EXT = '.log'
+_LOG_FORMAT_MESSAGE = '%(message)s'
+_LOG_FORMAT_ERRORS = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+
 directory = DirectoryProcessing()
+
+start_execution = datetime.now()
+start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
+
+# debug & info logging
+log_filename = "playlist" + '_' + str(start_datetime) + _LOG_EXT
+log_filepath = os.path.join(generated_files, log_filename)
+
+# error/exception logging
+error_logname = "error" + '_' + str(start_datetime) + _LOG_EXT
+error_filepath = os.path.join(generated_files, error_logname)
+
+# always want name of executing function for hierarchal logging
+logger = logging.getLogger(__name__)
+# override the default logging level WARN to lowest level so we can also log INFO level messages
+logger.setLevel(logging.DEBUG)
+
+# debug and info log format & handlers for normal function output
+message_log_formatter = logging.Formatter(_LOG_FORMAT_MESSAGE)
+
+# file handler logs debug level to log file only, no output to console
+file_handler = logging.FileHandler(log_filepath)
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(message_log_formatter)
+logger.addHandler(file_handler)
+
+# stream handler logs info level to log file and outputs to console
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+stream_handler.setFormatter(message_log_formatter)
+logger.addHandler(stream_handler)
+
+# error log format & handler for the code breaking stuff, need output to console and log file
+error_log_formatter = logging.Formatter(_LOG_FORMAT_ERRORS)
+error_handler = logging.StreamHandler()
+error_handler.setLevel(logging.WARNING)
+error_handler.setFormatter(error_log_formatter)
+logger.addHandler(error_handler)
 
 
 class AudioPlaylist():
@@ -55,12 +106,12 @@ class AudioPlaylist():
         '''
 
         audio = None
-        delimiter = ","
+        # delimiter = ","
 
         try:
-            index = line.find(delimiter)
+            index = line.find(_DELIMITER)
             if index != -1:
-                input_audio = line[index + len(delimiter):]
+                input_audio = line[index + len(_DELIMITER):]
                 # get the audio file name ext, may have to change it
                 input_ext = os.path.splitext(os.path.basename(input_audio))[1]
                 # wma and m4a files need mp3 extension
@@ -70,7 +121,8 @@ class AudioPlaylist():
                 else:
                     audio = input_audio
             else:
-                raise Exception(f"No file delimiter in {line}")
+                # raise Exception(f"No file delimiter in {line}")
+                logger.warn(f"No file delimiter in {line}")
 
             return audio
 
@@ -147,7 +199,6 @@ class AudioPlaylist():
 
         extheader = "#EXTM3U"
         extinf = "#EXTINF:"
-        extinf_delimiter = ","
 
         try:
             # new m3u file gets created in generated files directory so can later be move to correct tld
@@ -168,13 +219,32 @@ class AudioPlaylist():
                             audio_file = self.get_audio_name(line)
                             if audio_file:
                                 audio_file_path = directory.get_file_directory(start_path, audio_file)
+                            else:
+                                # log issue with line
+                                logger.warn(f"unable to get audio file name from {line} in {input_basename}")
+                                continue
+
+                            if audio_file_path:
+                                found_file = Path(audio_file_path)
+                                found_parts = found_file.parts()
+                                file = found_parts[-1:]
+                                album = found_parts[-2:-1]
+                                artist = found_parts[-3:-2]
+                                relative_path = os.path.join(artist, album, file)
+                                new_extinf = extinf + "0" + _DELIMITER + audio_file
+                                outfile.write(new_extinf)
+                                outfile.write(relative_path)
+                            else:
+                                # print(f"{audio_file} not found in {start_path}")
+                                logger.info(f"{audio_file} not found in {start_path}")
+                                continue
 
                             # comma_index = line.find(extinf_delimiter)
                             # if comma_index != -1:
                             #     input_audio_file = line[comma_index + len(extinf_delimiter):]
                             #     # get the audio file name ext, may have to change it
                             #     input_audio_ext = os.path.splitext(os.path.basename(input_audio_file))[1]
-                            #     # wma and m4a files need mp3 extstention
+                            #     # wma and m4a files need mp3 extension
                             #     if input_audio_ext != _AUDIO_EXTS[0]:
                             #         input_audio_stem = os.path.splitext(os.path.basename(input_audio_file))[0]
                             #         audio_file = input_audio_stem + _AUDIO_EXTS[0]
