@@ -9,12 +9,13 @@
 # standard modules
 import gc
 import os
+import platform
 # from pathlib import Path
 
 # third party modules
 
 # local modules
-# from src import _PLAYLIST_EXTS, _PLAYLIST_TYPES
+from src import _AUDIO_EXTS
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import generated_files
 
@@ -40,23 +41,34 @@ class AudioPlaylist():
         pass
 
 
-    def update_paths(self, file_path):
+    def update_paths(self, start_path, input_m3u):
         '''
         @brief Updates an old playlist relative pathing.
 
         @details Walks through a m3u playlist updating relative paths.
+        @details The updated playlist is created in generated files directory.
+        @details The new file is expected to be moved to the correct top level directory  for the relative paths.
 
-        @param file_path {str} The path for audio file to be converted.
+        @param start_path {str} The top level directory where playlist is located.
+        @param input_m3u {str} The full file path to playlist needing conversion.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         r'''
         see https://en.wikipedia.org/wiki/M3U
         My playlists are relative pathed (unlike windows pls files, which are absolute pathed).
-        Because I use relative pathing, m3u files MUST live in the top level directory.
+        Because I use relative pathing, m3u files MUST live in the top level directory ie in \Music
+        Also, my m3u's are played on Windows OS,not ubuntu, so \, not / path separator.
+        So a proper relative path will be <artist>\<album>\<title>.mp3
 
-        I can ignore the header line (#EXTM3U)
-        The track info (#EXTINF:0) line, after the comma, give me the filename I need to find
-        The relative pathing - the line after the track info - is what I need to verify or update
+        I can ignore the header line (#EXTM3U), just need to copy it to new file.
+        The track info (#EXTINF:0) tag, up to the comma, is also copied as is.
+        The file name is after the comma, which will usually give the file name, but necessarily the correct file extension.
+        If the file ext is NOT mp3, it needs to change to mp3 (from m4a or wma), and then search for the mp3 filename.
+        If the file name & mp3 ext is not found, need to print error and return.
+        If the filename & mp3 ext is found, I need the artist\album path
+        Now I can update the #EXTINF:0 tag by adding the correct file name & mp3 ext after the comma.
+        After that, verify or update the relative path.
 
         eg 1 incorrect relative path, because there is no album 2nd level directory
         #EXTINF:0,Daughtry-Home.mp3
@@ -66,11 +78,18 @@ class AudioPlaylist():
         #EXTINF:0,Sawyer Fredricks - Shots Fired.mp3
         Sawyer Fredericks\A Good Storm\Sawyer Fredricks - Shots Fired.mp3
 
-        eg 3 incorrect relative path because the album directory changed
+        eg 3 incorrect relative path because the artist and album directory changed
+        #EXTINF:0,Annie Lennox - Into the West.mp3
+        Annie Lennox\Annie Lennox - Into the West.mp3
+        /home/gerald/Music/The Lord of the Rings/The Return of the King/Annie Lennox - Into the West.mp3
 
+        eg 4 incorrect relative path because the no album dir and file name changed - .38 Special-Teacher, Teacher.mp3 to 38 Special-Teacher,Teacher.mp3
+        #EXTINF:0,.38 Special-Teacher, Teacher.mp3
+        38 Special\.38 Special-Teacher, Teacher.mp3
 
-        eg 4 incorrect relative path because the file name changed
-
+        eg 5 incorrect relative path because file extension changed wma to mp3
+        #EXTINF:0,Creedence Clearwater Revival-Fortunate Son.wma
+        Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma
 
         #EXTM3U
         #EXTINF:0,Daughtry-Home.mp3
@@ -78,11 +97,47 @@ class AudioPlaylist():
 
         #EXTINF:0,Sawyer Fredricks - Shots Fired.mp3
         Sawyer Fredericks\A Good Storm\Sawyer Fredricks - Shots Fired.mp3
+
+        #EXTINF:0,Annie Lennox - Into the West.mp3
+        Annie Lennox\Annie Lennox - Into the West.mp3
+
+        #EXTINF:0,.38 Special-Teacher, Teacher.mp3
+        38 Special\.38 Special-Teacher, Teacher.mp3
+
+        #EXTINF:0,Creedence Clearwater Revival-Fortunate Son.wma
+        Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma
         '''
+
+        extheader = "#EXTM3U"
+        extinf = "#EXTINF:"
+        extinf_delimiter = ","
+
         try:
+            # new m3u file gets created in generated files directory so can later be move to correct tld
             export_path = generated_files
-            export_name = os.path.basename(file_path)
-            export_file = os.path.join(export_path, export_name)
+            input_basename = os.path.basename(input_m3u)
+            export_m3u = os.path.join(export_path, input_basename)
+
+            # open input m3u for reading and export m3u for writing
+            with open(input_m3u, 'r') as infile, open(export_m3u, 'w') as outfile:
+                for line in infile:
+                    # if we dont have text, blank line is not copied to output
+                    if line.strip():
+                        if extheader in line:
+                            # the ext header is simply copied over
+                            outfile.write(line)
+                        elif extinf in line:
+                            # get the audio file name after the comma
+                            comma_index = line.find(extinf_delimiter)
+                            if comma_index != -1:
+                                audio_file = line[comma_index + len(extinf_delimiter):]
+                                # get the audio file name ext
+                                audio_ext = os.path.splitext(os.path.basename(audio_file))[1]
+                                # wma and m4a files need mp3 extstention
+                                if audio_ext != _AUDIO_EXTS[0]:
+                                    pass
+                                # search for the audio file, need the artist & album dirs
+                                # do this in another def, prob in
 
         except Exception as e:
-            raise Exception(f"Exception {e} updating {file_path}")
+            raise Exception(f"Exception {e} updating {input_m3u}")
