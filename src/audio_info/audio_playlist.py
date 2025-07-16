@@ -9,8 +9,8 @@
 # standard modules
 import gc
 import os
-import platform
-# from pathlib import Path
+# import platform
+from pathlib import Path
 
 # third party modules
 
@@ -39,6 +39,43 @@ class AudioPlaylist():
         '''
 
         pass
+
+
+    def get_audio_name(self, line):
+        '''
+        @brief Gets audio file name from a #EXTINF line
+
+        @details The audio file extension may have changed from wma or m4a to mp3
+        @details A  extinf tag containing line is in format: #EXTINF:N,<name>.<ext>,
+        where N is length of song in seconds, or -1 or 0, and
+        @details <ext> is one of mp3, m4a, or wma.
+        @param line (str) Line of text read from m3u file containing a #EXTINF tag
+        @return audio_file {str} Audio file name with extension, otherwise None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        audio = None
+        delimiter = ","
+
+        try:
+            index = line.find(delimiter)
+            if index != -1:
+                input_audio = line[index + len(delimiter):]
+                # get the audio file name ext, may have to change it
+                input_ext = os.path.splitext(os.path.basename(input_audio))[1]
+                # wma and m4a files need mp3 extension
+                if input_ext != _AUDIO_EXTS[0]:
+                    input_stem = os.path.splitext(os.path.basename(input_audio))[0]
+                    audio = input_stem + _AUDIO_EXTS[0]
+                else:
+                    audio = input_audio
+            else:
+                raise Exception(f"No file delimiter in {line}")
+
+            return audio
+
+        except Exception as e:
+            raise Exception(f"Exception {e} getting file name from {line}")
 
 
     def update_paths(self, start_path, input_m3u):
@@ -127,17 +164,38 @@ class AudioPlaylist():
                             # the ext header is simply copied over
                             outfile.write(line)
                         elif extinf in line:
-                            # get the audio file name after the comma
-                            comma_index = line.find(extinf_delimiter)
-                            if comma_index != -1:
-                                audio_file = line[comma_index + len(extinf_delimiter):]
-                                # get the audio file name ext
-                                audio_ext = os.path.splitext(os.path.basename(audio_file))[1]
-                                # wma and m4a files need mp3 extstention
-                                if audio_ext != _AUDIO_EXTS[0]:
-                                    pass
-                                # search for the audio file, need the artist & album dirs
-                                # do this in another def, prob in
+                            # get the audio file name, change ext to mp3 if needed
+                            audio_file = self.get_audio_name(line)
+                            if audio_file:
+                                audio_file_path = directory.get_file_directory(start_path, audio_file)
+
+                            # comma_index = line.find(extinf_delimiter)
+                            # if comma_index != -1:
+                            #     input_audio_file = line[comma_index + len(extinf_delimiter):]
+                            #     # get the audio file name ext, may have to change it
+                            #     input_audio_ext = os.path.splitext(os.path.basename(input_audio_file))[1]
+                            #     # wma and m4a files need mp3 extstention
+                            #     if input_audio_ext != _AUDIO_EXTS[0]:
+                            #         input_audio_stem = os.path.splitext(os.path.basename(input_audio_file))[0]
+                            #         audio_file = input_audio_stem + _AUDIO_EXTS[0]
+                            #     else:
+                            #         audio_file = input_audio_file
+
+                            #     # search for the audio file, need the artist & album dirs
+                            #     audio_file_path = directory.get_file_directory(start_path, audio_file)
+                            #     if audio_file_path:
+                            #         found_file = Path(audio_file_path)
+                            #         found_parts = found_file.parts()
+                            #         file = found_parts[-1:]
+                            #         album = found_parts[-2:-1]
+                            #         artist = found_parts[-3:-2]
+                            #         relative_path = os.path.join(artist, album, file)
+                            #         new_extinf = extinf + "0" + extinf_delimiter + audio_file
+                            #         outfile.write(new_extinf)
+                            #         outfile.write(relative_path)
+                            #     else:
+                            #         print(f"{audio_file} not found in {start_path}")
+                            #         continue
 
         except Exception as e:
             raise Exception(f"Exception {e} updating {input_m3u}")

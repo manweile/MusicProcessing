@@ -19,7 +19,7 @@ def get_first_subdirectory(path_str):
 
 
 # Example usage:
-directory_path = r"C:\Music" # Current directory
+directory_path = r"C:\Music"  # Current directory
 first_subdir = get_first_subdirectory(directory_path)
 
 if first_subdir:

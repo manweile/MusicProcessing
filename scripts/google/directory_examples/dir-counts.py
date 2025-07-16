@@ -1,5 +1,6 @@
 import os
 
+
 def count_directories_by_level(start_path):
     """
     Recursively counts directories by their level (depth) from the start_path.

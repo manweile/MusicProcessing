@@ -287,6 +287,26 @@ class DirectoryProcessing():
                 self.__ext_file_list(file_ext, start_path)
 
 
+    def get_file_directory(self, file_name, start_path):
+        '''
+        @brief Finds the directory path of a file given its name and a starting search path.
+
+        @param filename (str) The name of the file to find.
+        @param start_path (str) The root directory to start from.
+        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            for root, dirs, files in os.walk(start_path):
+                if file_name in files:
+                    return root
+
+            return None
+
+        except Exception as e:
+            raise Exception(f"Exception {e} getting directory path for {file_name} and starting path {start_path}")
+
+
     def get_file_ext(self, file_path):
         '''
         @brief Returns the file type of audio file without leading period.
