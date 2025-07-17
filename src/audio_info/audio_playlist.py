@@ -159,26 +159,32 @@ class AudioPlaylist():
         Now I can update the #EXTINF:0 tag by adding the correct file name & mp3 ext after the comma.
         After that, verify or update the relative path.
 
-        eg 1 incorrect relative path, because there is no album 2nd level directory
-        #EXTINF:0,Daughtry-Home.mp3
-        Daughtry\Daughtry-Home.mp3
+        eg 1 no album 2nd level directory
+        ie Daughtry\Leave This Town\Daughtry-No Surprise.mp3
+        #EXTINF:0,Daughtry-No Surprise.mp3
+        Daughtry\Daughtry-No Surprise.mp3
 
         eg 2 correct relative path
         #EXTINF:0,Sawyer Fredricks - Shots Fired.mp3
         Sawyer Fredericks\A Good Storm\Sawyer Fredricks - Shots Fired.mp3
 
-        eg 3 incorrect relative path because the artist and album directory changed
+        eg 3 artist directory changed
+        ie The Lord of the Rings\The Return of the King\Annie Lennox - Into the West.mp3
         #EXTINF:0,Annie Lennox - Into the West.mp3
-        Annie Lennox\Annie Lennox - Into the West.mp3
-        /home/gerald/Music/The Lord of the Rings/The Return of the King/Annie Lennox - Into the West.mp3
+        Annie Lennox\Return of the King\Annie Lennox - Into the West.mp3
 
-        eg 4 incorrect relative path because the no album dir and file name changed - .38 Special-Teacher, Teacher.mp3 to 38 Special-Teacher,Teacher.mp3
+        eg 4 artist name change, no album dir, file name changed
+        ie .38 Special-Teacher, Teacher.mp3 to 38 Special-Teacher,Teacher.mp3
         #EXTINF:0,.38 Special-Teacher, Teacher.mp3
         38 Special\.38 Special-Teacher, Teacher.mp3
 
-        eg 5 incorrect relative path because file extension changed wma to mp3
+        eg 5 file extension changed wma to mp3
         #EXTINF:0,Creedence Clearwater Revival-Fortunate Son.wma
         Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma
+
+        eg 6 file extension changed to m4a to mp3
+        #EXTINF:0,The Eagles-Desperado.m4a
+        The Eagles\Desperado\The Eagles-Desperado.m4a
 
         #EXTM3U
         #EXTINF:0,Daughtry-Home.mp3
