@@ -245,6 +245,16 @@ def update_paths(tld_path, input_m3u):
     playlist.update_paths(tld_path, input_m3u)
 
 
+def update_walk(tld_path):
+    '''
+    @brief Updates an old playlist relative pathing.
+
+    @param start_path {str} The top level directory where playlists are located.
+    '''
+
+    playlist.update_walk(tld_path)
+
+
 def main(args):
     '''
     @brief Module entry point.
@@ -353,6 +363,10 @@ def main(args):
             tld_path = getattr(args, "tld")
             input_m3u = getattr(args, "m3u")
             update_paths(tld_path, input_m3u)
+
+        if args.subcommand == "update-walk":
+            tld_path = getattr(args, "tld")
+            update_walk(tld_path)
 
     except NotImplementedError:
         raise NotImplementedError(f"Command {args.subcommand} does not exist")
@@ -586,6 +600,15 @@ if __name__ == "__main__":
     update_m3u_parsers = subparsers.add_parser("update-m3u", help="Update playlist paths")
     update_m3u_parsers.add_argument("tld", type=str, help="mandatory top level directory")
     update_m3u_parsers.add_argument("m3u", type=str, help="mandatory m3u file path")
+    update_m3u_parsers.set_defaults(func=update_paths)
+
+    # update m3u playlist walk
+    # 1 mandatory arg, the tld path
+    # sys.argv = ['D:\MusicProcessing\main.py'', 'update-walk', 'D:\MusicProcessing\tests\Music']
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'update-walk', '~/MusicProcessing/tests/Music']
+    update_walk_parsers = subparsers.add_parser("update-walk", help="Update playlist paths")
+    update_walk_parsers.add_argument("tld", type=str, help="mandatory top level directory")
+    update_walk_parsers.set_defaults(func=update_walk)
 
     args = parser.parse_args()
     main(args)

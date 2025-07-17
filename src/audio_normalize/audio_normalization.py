@@ -50,7 +50,7 @@ directory = DirectoryProcessing()
 
 start_execution = datetime.now()
 start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
-log_filename = "normalization" + '_' + str(start_datetime) + _LOG_EXT
+log_filename = "normalization" + _LOG_EXT
 log_filepath = os.path.join(generated_files, log_filename)
 log_formatter = logging.Formatter('%(message)s')
 

@@ -14,7 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 # local modules
-from src import _AUDIO_EXTS
+from src import _AUDIO_EXTS, _PLAYLIST_EXTS
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import generated_files
 
@@ -38,7 +38,8 @@ start_execution = datetime.now()
 start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
 
 # debug & info logging
-log_filename = "playlist" + '_' + str(start_datetime) + _LOG_EXT
+# log_filename = "playlist" + '_' + str(start_datetime) + _LOG_EXT
+log_filename = "playlist" + _LOG_EXT
 log_filepath = os.path.join(generated_files, log_filename)
 
 # error/exception logging
@@ -108,8 +109,9 @@ class AudioPlaylist():
 
             return audio
 
-        except Exception as e:
-            raise Exception(f"Exception {e} getting file name from {line}")
+        except Exception:
+            logger.info(f"line: {line}")
+            logger.critical("Exception", exc_info=True)
 
 
     def update_paths(self, tld_path, input_m3u):
@@ -169,8 +171,37 @@ class AudioPlaylist():
                                 outfile.write("\n")
                             else:
                                 print(f"{audio_file} not found in {tld_path}")
-                                logger.info(f"{audio_file} not found in {tld_path}")
+                                logger.info(f"{audio_file} from {input_basename} not found in {tld_path}")
                                 continue
 
-        except Exception as e:
-            raise Exception(f"Exception {e} updating {input_m3u}")
+            logger.info(f"Updated {input_basename}")
+
+        except Exception:
+            logger.info(f"tld_path: {tld_path}, input_m3u: {input_m3u}")
+            logger.critical("Exception", exc_info=True)
+
+
+    def update_walk(self, tld_path):
+        '''
+
+        '''
+
+        try:
+            input_path = Path(tld_path)
+
+            for dir_path, _, file_names in os.walk(input_path):
+                for file in file_names:
+                    _, input_file_ext = os.path.splitext(file)
+
+                    # file is not mp3, m4a, or wma, so carry on to next file
+                    if input_file_ext.lower() not in _PLAYLIST_EXTS:
+                        continue
+
+                    input_file_path = os.path.join(dir_path, file)
+                    self.update_paths(dir_path, input_file_path)
+
+            logger.info(f"Updated m3u files in {tld_path}")
+
+        except Exception:
+            logger.info(f"tld_path: {tld_path}")
+            logger.critical("Exception", exc_info=True)
