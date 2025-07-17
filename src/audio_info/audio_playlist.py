@@ -174,7 +174,7 @@ class AudioPlaylist():
                                 logger.info(f"{audio_file} from {input_basename} not found in {tld_path}")
                                 continue
 
-            logger.info(f"Updated {input_basename}")
+            logger.info(f"Updated {input_basename}\n")
 
         except Exception:
             logger.info(f"tld_path: {tld_path}, input_m3u: {input_m3u}")
@@ -200,7 +200,7 @@ class AudioPlaylist():
                     input_file_path = os.path.join(dir_path, file)
                     self.update_paths(dir_path, input_file_path)
 
-            logger.info(f"Updated m3u files in {tld_path}")
+            logger.info(f"Updated m3u files in {tld_path}\n")
 
         except Exception:
             logger.info(f"tld_path: {tld_path}")
