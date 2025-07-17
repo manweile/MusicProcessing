@@ -287,7 +287,7 @@ class DirectoryProcessing():
                 self.__ext_file_list(file_ext, start_path)
 
 
-    def get_file_directory(self, file_name, start_path):
+    def get_file_directory(self, start_path, file_name):
         '''
         @brief Finds the directory path of a file given its name and a starting search path.
 

@@ -13,14 +13,17 @@ import pprint
 # local modules
 from src.audio_info import AudioArt
 from src.audio_info import AudioMetadata
+from src.audio_info import AudioPlaylist
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
 
 gc.enable()
+
 art = AudioArt()
 directory = DirectoryProcessing()
 metadata = AudioMetadata()
 normalization = AudioNormalization()
+playlist = AudioPlaylist()
 
 
 def convert_file(file_path):
@@ -231,6 +234,17 @@ def set_album_art(tld_path):
     art.set_album_art(tld_path)
 
 
+def update_paths(tld_path, input_m3u):
+    '''
+    @brief Updates an old playlist relative pathing.
+
+    @param start_path {str} The top level directory where playlist is located.
+    @param input_m3u {str} The full file path to playlist needing conversion.
+    '''
+
+    playlist.update_paths(tld_path, input_m3u)
+
+
 def main(args):
     '''
     @brief Module entry point.
@@ -334,6 +348,11 @@ def main(args):
         if args.subcommand == "set-album-art":
             tld_path = getattr(args, "tld")
             set_album_art(tld_path)
+
+        if args.subcommand == "update-m3u":
+            tld_path = getattr(args, "tld")
+            input_m3u = getattr(args, "m3u")
+            update_paths(tld_path, input_m3u)
 
     except NotImplementedError:
         raise NotImplementedError(f"Command {args.subcommand} does not exist")
@@ -559,6 +578,14 @@ if __name__ == "__main__":
     set_album_art_parser = subparsers.add_parser("set-album-art", help="Set album art file")
     set_album_art_parser.add_argument("tld", type=str, help="mandatory top level directory")
     set_album_art_parser.set_defaults(func=set_album_art)
+
+    # update m3u playlist
+    # 2 mandatory args, the tld path and the m3u path
+    # sys.argv = ['D:\MusicProcessing\main.py'', 'update-m3u', 'D:\MusicProcessing\tests\Music', 'D:\MusicProcessing\tests/Music\test.m3u']
+    # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'update-m3u', '~/MusicProcessing/tests/Music', '~/MusicProcessing/tests/Music/test.m3u']
+    update_m3u_parsers = subparsers.add_parser("update-m3u", help="Update playlist paths")
+    update_m3u_parsers.add_argument("tld", type=str, help="mandatory top level directory")
+    update_m3u_parsers.add_argument("m3u", type=str, help="mandatory m3u file path")
 
     args = parser.parse_args()
     main(args)
