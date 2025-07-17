@@ -1,6 +1,7 @@
 F:\NormalizedMusic directory is the result of normalization on ConvertedMusic directory.
 
-Created Jun 23, this directory must be updated after debug normalization def. F:\ConvertedMusic is up to date as of Jul 9.
+Created Jul 12, this directory was updated on Jul 13th after debugging normalization def.
+F:\ConvertedMusic is up to date as of Jul 9.
 
 Only audio files are present.
 All audio files are in mp3 format.
