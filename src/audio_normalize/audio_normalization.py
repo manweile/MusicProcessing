@@ -44,6 +44,7 @@ _LRA = "11.0"
 _TP = "-2.0"
 
 _DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
+_LOG_DIR = "logs"
 _LOG_EXT = '.log'
 
 directory = DirectoryProcessing()
@@ -51,7 +52,7 @@ directory = DirectoryProcessing()
 start_execution = datetime.now()
 start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
 log_filename = "normalization" + _LOG_EXT
-log_filepath = os.path.join(generated_files, log_filename)
+log_filepath = os.path.join(generated_files, _LOG_DIR, log_filename)
 log_formatter = logging.Formatter('%(message)s')
 
 logger = logging.getLogger(__name__)

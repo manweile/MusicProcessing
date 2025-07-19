@@ -29,6 +29,7 @@ _DELIMITER = ","
 # @todo https://docs.python.org/3/library/logging.html
 # https://docs.python.org/3/howto/logging.html#logging-advanced-tutorial
 _DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
+_LOG_DIR = "logs"
 _LOG_EXT = '.log'
 _LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 
@@ -40,11 +41,11 @@ start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
 # debug & info logging
 # log_filename = "playlist" + '_' + str(start_datetime) + _LOG_EXT
 log_filename = "playlist" + _LOG_EXT
-log_filepath = os.path.join(generated_files, log_filename)
+log_filepath = os.path.join(generated_files, _LOG_DIR, log_filename)
 
 # error/exception logging
 error_logname = "error" + '_' + str(start_datetime) + _LOG_EXT
-error_filepath = os.path.join(generated_files, error_logname)
+error_filepath = os.path.join(generated_files, _LOG_DIR, error_logname)
 
 # always want name of executing function for hierarchal logging
 logger = logging.getLogger(__name__)
