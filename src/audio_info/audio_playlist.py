@@ -170,7 +170,7 @@ class AudioPlaylist():
                                 outfile.write(relative_path)
                                 outfile.write("\n")
                             else:
-                                print(f"{audio_file} not found in {tld_path}")
+                                print(f"{audio_file} from {input_basename} not found in {tld_path}")
                                 logger.info(f"{audio_file} from {input_basename} not found in {tld_path}")
                                 continue
 
