@@ -108,3 +108,69 @@
 
 2025-07-18 21:10:05,887 — src.audio_info.audio_playlist — INFO — update_paths:177 — Updated Favourites.m3u
 
+2025-07-19 15:47:34,620 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Bob Seger.m3u
+
+2025-07-19 15:47:35,353 — src.audio_info.audio_playlist — INFO — update_paths:175 — Bear McCreary-All Along The Watchtower (From 'Crossroads, Part 2').mp3 from BSG.m3u not found in G:\Music
+2025-07-19 15:47:35,353 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated BSG.m3u
+
+2025-07-19 15:47:44,937 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Canuck Rock.m3u
+
+2025-07-19 15:47:48,678 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Country Romance.m3u
+
+2025-07-19 15:47:56,638 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Country.m3u
+
+2025-07-19 15:47:57,460 — src.audio_info.audio_playlist — INFO — update_paths:175 — Marion Raven-It's All Coming Back to Me Now.mp3 from Duets.m3u not found in G:\Music
+2025-07-19 15:47:57,980 — src.audio_info.audio_playlist — INFO — update_paths:175 — Elton John & Billy Joel - Piano Man.mp3 from Duets.m3u not found in G:\Music
+2025-07-19 15:47:58,165 — src.audio_info.audio_playlist — INFO — update_paths:175 — Stevie Nicks & Lindsey Buckingham-Stephanie.mp3 from Duets.m3u not found in G:\Music
+2025-07-19 15:47:58,935 — src.audio_info.audio_playlist — INFO — update_paths:175 — Stevie Nicks & Lindsay Buckingham - Crying in the Night.mp3 from Duets.m3u not found in G:\Music
+2025-07-19 15:47:58,935 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Duets.m3u
+
+2025-07-19 15:47:59,556 — src.audio_info.audio_playlist — INFO — update_paths:175 — Enya-Far And Away.mp3 from Enya.m3u not found in G:\Music
+2025-07-19 15:48:00,588 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Enya.m3u
+
+2025-07-19 15:48:14,885 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Favourites.m3u
+
+2025-07-19 15:48:17,102 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Fleetwood Mac.m3u
+
+2025-07-19 15:48:19,344 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Folk.m3u
+
+2025-07-19 15:48:23,186 — src.audio_info.audio_playlist — INFO — update_paths:175 — Gordon Lightfoot-Wherefor and Why.mp3 from Gordon Lightfoot.m3u not found in G:\Music
+2025-07-19 15:48:23,425 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Gordon Lightfoot.m3u
+
+2025-07-19 15:48:24,550 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Hard Rock.m3u
+
+2025-07-19 15:48:25,627 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Mike Oldfield Instrumental.m3u
+
+2025-07-19 15:48:26,526 — src.audio_info.audio_playlist — INFO — update_paths:175 — Howard Shore & Neil Finn-Neil Finn - Song of the Lonely Mountain.mp3 from New Age.m3u not found in G:\Music
+2025-07-19 15:48:26,815 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated New Age.m3u
+
+2025-07-19 15:48:29,125 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Prog Rock.m3u
+
+2025-07-19 15:48:30,893 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Relax.m3u
+
+2025-07-19 15:48:35,511 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Romance.m3u
+
+2025-07-19 15:48:36,615 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Sawyer.m3u
+
+2025-07-19 15:48:37,925 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Symphonic Rock and Pop.m3u
+
+2025-07-19 15:48:38,502 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated The Planets.m3u
+
+2025-07-19 15:48:39,164 — src.audio_info.audio_playlist — INFO — update_paths:175 — Howard Shore & Neil Finn-Neil Finn - Song of the Lonely Mountain.mp3 from Tolkein.m3u not found in G:\Music
+2025-07-19 15:48:39,350 — src.audio_info.audio_playlist — INFO — update_paths:175 — Howard Shore, Richard Armitage & The Dwarf Cast-Richard Armitage - Misty Mountains.mp3 from Tolkein.m3u not found in G:\Music
+2025-07-19 15:48:39,644 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Tolkein.m3u
+
+2025-07-19 15:48:42,692 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Tragically Hip.m3u
+
+2025-07-19 15:48:44,859 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Val triste.m3u
+
+2025-07-19 15:48:45,232 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Workout1.m3u
+
+2025-07-19 15:48:45,718 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Workout_15_2.m3u
+
+2025-07-19 15:48:45,924 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Workout_15_3.m3u
+
+2025-07-19 15:48:47,386 — src.audio_info.audio_playlist — INFO — update_paths:178 — Updated Xmas.m3u
+
+2025-07-19 15:48:47,556 — src.audio_info.audio_playlist — INFO — update_walk:204 — Updated m3u files in G:\Music
+
