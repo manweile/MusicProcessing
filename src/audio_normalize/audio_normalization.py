@@ -45,8 +45,7 @@ _TP = "-2.0"
 
 _DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
 _LOG_DIR = "logs"
-_LOG_EXT = '.log'
-_LOG_DIR = 'logs'
+_LOG_EXT = ".log"
 
 directory = DirectoryProcessing()
 

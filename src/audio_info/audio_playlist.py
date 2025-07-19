@@ -30,8 +30,7 @@ _DELIMITER = ","
 # https://docs.python.org/3/howto/logging.html#logging-advanced-tutorial
 _DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
 _LOG_DIR = "logs"
-_LOG_EXT = '.log'
-_LOG_DIR = 'logs'
+_LOG_EXT = ".log"
 _LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 
 directory = DirectoryProcessing()
