@@ -29,6 +29,7 @@ _DELIMITER = ","
 # @todo https://docs.python.org/3/library/logging.html
 # https://docs.python.org/3/howto/logging.html#logging-advanced-tutorial
 _DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
+_LOG_DIR = "logs"
 _LOG_EXT = '.log'
 _LOG_DIR = 'logs'
 _LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
@@ -45,7 +46,7 @@ log_filepath = os.path.join(generated_files, _LOG_DIR, log_filename)
 
 # error/exception logging
 error_logname = "error" + '_' + str(start_datetime) + _LOG_EXT
-error_filepath = os.path.join(generated_files, error_logname)
+error_filepath = os.path.join(generated_files, _LOG_DIR, error_logname)
 
 # always want name of executing function for hierarchal logging
 logger = logging.getLogger(__name__)
@@ -171,7 +172,7 @@ class AudioPlaylist():
                                 outfile.write(relative_path)
                                 outfile.write("\n")
                             else:
-                                print(f"{audio_file} not found in {tld_path}")
+                                print(f"{audio_file} from {input_basename} not found in {tld_path}")
                                 logger.info(f"{audio_file} from {input_basename} not found in {tld_path}")
                                 continue
 
