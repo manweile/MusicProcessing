@@ -374,6 +374,19 @@ def main(args):
         raise Exception(f"Exception {e} executing subcommand {args.subcommand}")
 
 
+# def create_parser():
+#     '''
+
+#     '''
+#     parent_parser = argparse.ArgumentParser(add_help=False)
+#     parent_parser.add_argument("tld", type=str, help="mandatory top level directory")
+#     parent_parser.add_argument("file", type=str, help="mandatory full path to audio file")
+#     main_parser = argparse.ArgumentParser(description="Music Processing")
+#     subparsers = main_parser.add_subparsers(title="subcommands", dest="subcommand", help="Available commands")
+#     convert_file_parser = subparsers.add_parser("convert-file", parents=[parent_parser], help="Converts an audio file to mp3")
+#     convert_file_parser.set_defaults(func=convert_file)
+
+
 if __name__ == "__main__":
     '''
     @brief Top level script environment entry point
@@ -381,8 +394,18 @@ if __name__ == "__main__":
     @details Parses and validates input arguments.
     '''
 
-    parser = argparse.ArgumentParser(description='Music Processing')
-    subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
+    # Define a parent parser with common arguments
+    file_parser = argparse.ArgumentParser(add_help=False)
+    file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
+
+    tld_parser = argparse.ArgumentParser(add_help=False)
+    tld_parser.add_argument("tld", type=str, help="mandatory top level directory")
+
+    optional_pattern_parser = argparse.ArgumentParser(add_help=False)
+    optional_pattern_parser.add_argument("--pattern", type=str, help="optional file pattern")
+
+    mandatory_pattern_parser = argparse.ArgumentParser(add_help=False)
+    mandatory_pattern_parser.add_argument("pattern", type=str, help="mandatory file pattern")
 
     r'''
     "/home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"                                        # no embedded, has Folder.jpg
@@ -419,12 +442,15 @@ if __name__ == "__main__":
     "H:\Music\The Eagles\Hotel California\The Eagles-Hotel California.wma"                                                # no embedded art
     '''
 
+    parser = argparse.ArgumentParser(description='Music Processing')
+    subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
+
     # convert audio file specified to mp3 format
     # 1 mandatory arg, the audio file path
     # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
-    convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
-    convert_file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
+    convert_file_parser = subparsers.add_parser("convert-file", parents=[file_parser], help="Converts an audio file to mp3")
+    # convert_file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     convert_file_parser.set_defaults(func=convert_file)
 
     # convert all audio files found in top level directory
@@ -432,9 +458,9 @@ if __name__ == "__main__":
     # 1 optional arg, the file pattern to match
     # sys.argv = ['D:\MusicProcessing\main.py', 'convert-walk', 'C:\Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' } ]
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-walk', '/home/gerald/Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' } ]
-    convert_walk_parser = subparsers.add_parser("convert-walk", help="Converts all audio files to mp3")
-    convert_walk_parser.add_argument("tld", type=str, help="mandatory top level directory")
-    convert_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
+    convert_walk_parser = subparsers.add_parser("convert-walk", parents=[tld_parser, optional_pattern_parser], help="Converts all audio files to mp3")
+    # convert_walk_parser.add_argument("tld", type=str, help="mandatory top level directory")
+    # convert_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
     convert_walk_parser.set_defaults(func=convert_walk)
 
     # create album directories
