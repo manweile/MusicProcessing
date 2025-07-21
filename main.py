@@ -255,166 +255,166 @@ def update_walk(tld_path):
     playlist.update_walk(tld_path)
 
 
-def create_parser():
-    '''
-    @brief Parses and validates input arguments.
+# def create_parser():
+#     '''
+#     @brief Parses and validates input arguments.
 
-    @return args {argparse.Namespace} The parsed input arguments.
-    '''
+#     @return args {argparse.Namespace} The parsed input arguments.
+#     '''
 
-    # Define a parent parsers for repeated arguments
-    file_parser = argparse.ArgumentParser(add_help=False)
-    file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
+#     # Define a parent parsers for repeated arguments
+#     file_parser = argparse.ArgumentParser(add_help=False)
+#     file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
 
-    tld_parser = argparse.ArgumentParser(add_help=False)
-    tld_parser.add_argument("tld", type=str, help="mandatory top level directory")
+#     tld_parser = argparse.ArgumentParser(add_help=False)
+#     tld_parser.add_argument("tld", type=str, help="mandatory top level directory")
 
-    pattern_parser = argparse.ArgumentParser(add_help=False)
-    pattern_parser.add_argument("--pattern", type=str, help="optional file pattern")
+#     pattern_parser = argparse.ArgumentParser(add_help=False)
+#     pattern_parser.add_argument("--pattern", type=str, help="optional file pattern")
 
-    # define the main and sub parsers
-    parser = argparse.ArgumentParser(description='Music Processing')
-    subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
+#     # define the main and sub parsers
+#     parser = argparse.ArgumentParser(description='Music Processing')
+#     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
-    # convert audio file specified to mp3 format
-    # 1 mandatory arg, the audio file path
-    # python main.py convert-file "F:\PreppedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"
-    convert_file_parser = subparsers.add_parser("convert-file", parents=[file_parser], help="Converts an audio file to mp3")
-    convert_file_parser.set_defaults(func=convert_file)
+#     # convert audio file specified to mp3 format
+#     # 1 mandatory arg, the audio file path
+#     # python main.py convert-file "F:\PreppedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"
+#     convert_file_parser = subparsers.add_parser("convert-file", parents=[file_parser], help="Converts an audio file to mp3")
+#     convert_file_parser.set_defaults(func=convert_file)
 
-    # convert all audio files found in top level directory
-    # 1 mandatory arg, the tld path. 1 optional arg, the file pattern to match
-    # python main.py convert-walk C:\Music --pattern { *.mp3 | *.m4a | *.wma }
-    convert_walk_parser = subparsers.add_parser("convert-walk", parents=[tld_parser, pattern_parser], help="Converts all audio files to mp3")
-    convert_walk_parser.set_defaults(func=convert_walk)
+#     # convert all audio files found in top level directory
+#     # 1 mandatory arg, the tld path. 1 optional arg, the file pattern to match
+#     # python main.py convert-walk C:\Music --pattern { *.mp3 | *.m4a | *.wma }
+#     convert_walk_parser = subparsers.add_parser("convert-walk", parents=[tld_parser, pattern_parser], help="Converts all audio files to mp3")
+#     convert_walk_parser.set_defaults(func=convert_walk)
 
-    # create album directories
-    # 1 mandatory arg, the tld path
-    # python main.py create-album C:\Music
-    create_albums_parser = subparsers.add_parser("create-albums", parents=[tld_parser], help="Create album sub-directories")
-    create_albums_parser.set_defaults(func=create_albums)
+#     # create album directories
+#     # 1 mandatory arg, the tld path
+#     # python main.py create-album C:\Music
+#     create_albums_parser = subparsers.add_parser("create-albums", parents=[tld_parser], help="Create album sub-directories")
+#     create_albums_parser.set_defaults(func=create_albums)
 
-    # ebu normalize an audio file (destructive)
-    # 1 mandatory arg, the path to audio file
-    # python main.py ebu-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
-    ebu_file_parser = subparsers.add_parser("ebu-file", parents=[file_parser], help="EBU R128 normalizes a mp3 audio file level")
-    ebu_file_parser.set_defaults(func=ebu_file)
+#     # ebu normalize an audio file (destructive)
+#     # 1 mandatory arg, the path to audio file
+#     # python main.py ebu-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
+#     ebu_file_parser = subparsers.add_parser("ebu-file", parents=[file_parser], help="EBU R128 normalizes a mp3 audio file level")
+#     ebu_file_parser.set_defaults(func=ebu_file)
 
-    # extract album art from specified audio file
-    # 1 mandatory arg, the path to audio file
-    # python main.py extract-art "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"
-    extract_file_parser = subparsers.add_parser("extract-file", parents=[file_parser], help="Extracts embedded art from audio file")
-    extract_file_parser.set_defaults(func=extract_file)
+#     # extract album art from specified audio file
+#     # 1 mandatory arg, the path to audio file
+#     # python main.py extract-art "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"
+#     extract_file_parser = subparsers.add_parser("extract-file", parents=[file_parser], help="Extracts embedded art from audio file")
+#     extract_file_parser.set_defaults(func=extract_file)
 
-    # extract album art from all audio files found in top level directory
-    # 1 mandatory arg, the tld path, 1 optional arg, the file pattern to match
-    # python main.py extract-walk C:\Music --pattern { *.mp3 | *.m4a | *.wma }
-    extract_walk_parser = subparsers.add_parser("extract-walk", parents=[tld_parser, pattern_parser], help="Extracts embedded art from all audio files")
-    extract_walk_parser.set_defaults(func=extract_walk)
+#     # extract album art from all audio files found in top level directory
+#     # 1 mandatory arg, the tld path, 1 optional arg, the file pattern to match
+#     # python main.py extract-walk C:\Music --pattern { *.mp3 | *.m4a | *.wma }
+#     extract_walk_parser = subparsers.add_parser("extract-walk", parents=[tld_parser, pattern_parser], help="Extracts embedded art from all audio files")
+#     extract_walk_parser.set_defaults(func=extract_walk)
 
-    # get ffprobe media information for a file
-    # 1 mandatory arg, the path to audio file
-    # python main.py get-media-info "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
-    get_media_info_parser = subparsers.add_parser("get-media-info", parents=[file_parser], help="Gets ffprobe media info for audio file")
-    get_media_info_parser.set_defaults(func=get_media_info)
+#     # get ffprobe media information for a file
+#     # 1 mandatory arg, the path to audio file
+#     # python main.py get-media-info "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
+#     get_media_info_parser = subparsers.add_parser("get-media-info", parents=[file_parser], help="Gets ffprobe media info for audio file")
+#     get_media_info_parser.set_defaults(func=get_media_info)
 
-    # get ffprobe media information for files
-    # 1 mandatory arg, the tld path, 1 optional arg, the file pattern to match
-    # python main.py get-media-info-walk C:\Music --pattern { *.mp3 | *.m4a | *.wma | *.* }
-    get_media_info_walk_parser = subparsers.add_parser("get-media-info-walk", parents=[tld_parser, pattern_parser], help="Gets ffprobe media info for audio files")
-    get_media_info_walk_parser.set_defaults(func=get_media_info_walk)
+#     # get ffprobe media information for files
+#     # 1 mandatory arg, the tld path, 1 optional arg, the file pattern to match
+#     # python main.py get-media-info-walk C:\Music --pattern { *.mp3 | *.m4a | *.wma | *.* }
+#     get_media_info_walk_parser = subparsers.add_parser("get-media-info-walk", parents=[tld_parser, pattern_parser], help="Gets ffprobe media info for audio files")
+#     get_media_info_walk_parser.set_defaults(func=get_media_info_walk)
 
-    # get ffprobe media tags for a file or files
-    # 1 mandatory arg, the path to audio file
-    # python main.py get-media-tags "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
-    get_media_tags_parser = subparsers.add_parser("get-media-tags", parents=[file_parser], help="Gets ffprobe media tags for audio file")
-    get_media_tags_parser.set_defaults(func=get_media_tags)
+#     # get ffprobe media tags for a file or files
+#     # 1 mandatory arg, the path to audio file
+#     # python main.py get-media-tags "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
+#     get_media_tags_parser = subparsers.add_parser("get-media-tags", parents=[file_parser], help="Gets ffprobe media tags for audio file")
+#     get_media_tags_parser.set_defaults(func=get_media_tags)
 
-    # get mutagen metadata tags for file
-    # 1 mandatory arg, the path to audio file
-    # python main.py get-tags "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
-    get_tags_parser = subparsers.add_parser("get-any-tags", parents=[file_parser], help="Gets metadata tags from audio file")
-    get_tags_parser.set_defaults(func=get_any_tags)
+#     # get mutagen metadata tags for file
+#     # 1 mandatory arg, the path to audio file
+#     # python main.py get-tags "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
+#     get_tags_parser = subparsers.add_parser("get-any-tags", parents=[file_parser], help="Gets metadata tags from audio file")
+#     get_tags_parser.set_defaults(func=get_any_tags)
 
-    # get metadata tags from all audio files found in top level directory
-    # 1 mandatory arg, the tld path, 1 optional arg, the file pattern to match, 1 optional arg, use ffprobe boolean
-    # python main.py get-tags-walk C:\Music --pattern { *.mp3 | *.m4a | *.wma | *.* } --ffprobe True
-    get_tags_walk_parser = subparsers.add_parser("get-tags-walk", parents=[tld_parser, pattern_parser], help="Gets metadata tags from audio files")
-    get_tags_walk_parser.add_argument("--ffprobe", type=bool, help="optional ffprobe tags")
-    get_tags_walk_parser.set_defaults(func=get_tags_walk)
+#     # get metadata tags from all audio files found in top level directory
+#     # 1 mandatory arg, the tld path, 1 optional arg, the file pattern to match, 1 optional arg, use ffprobe boolean
+#     # python main.py get-tags-walk C:\Music --pattern { *.mp3 | *.m4a | *.wma | *.* } --ffprobe True
+#     get_tags_walk_parser = subparsers.add_parser("get-tags-walk", parents=[tld_parser, pattern_parser], help="Gets metadata tags from audio files")
+#     get_tags_walk_parser.add_argument("--ffprobe", type=bool, help="optional ffprobe tags")
+#     get_tags_walk_parser.set_defaults(func=get_tags_walk)
 
-    # gets set of unique ffprobe metadata tag keys for entire collection
-    # 1 mandatory arg, the tld path
-    # python main.py get-unique-media C:\Music
-    get_unique_media_parser = subparsers.add_parser("get-unique-media", parents=[tld_parser], help="Gets set of unique ffprobe tags from collection")
-    get_unique_media_parser.set_defaults(func=get_unique_media)
+#     # gets set of unique ffprobe metadata tag keys for entire collection
+#     # 1 mandatory arg, the tld path
+#     # python main.py get-unique-media C:\Music
+#     get_unique_media_parser = subparsers.add_parser("get-unique-media", parents=[tld_parser], help="Gets set of unique ffprobe tags from collection")
+#     get_unique_media_parser.set_defaults(func=get_unique_media)
 
-    # list all audio files
-    # 1 mandatory arg, the tld path
-    # python main.py list-audio C:\Music
-    list_audio_parser = subparsers.add_parser("list-audio", parents=[tld_parser], help="Generates a csv containing full path for all audio files")
-    list_audio_parser.set_defaults(func=list_audio)
+#     # list all audio files
+#     # 1 mandatory arg, the tld path
+#     # python main.py list-audio C:\Music
+#     list_audio_parser = subparsers.add_parser("list-audio", parents=[tld_parser], help="Generates a csv containing full path for all audio files")
+#     list_audio_parser.set_defaults(func=list_audio)
 
-    # list files by extension
-    # 1 mandatory arg, the tld path, 1 optional arg, the file extension
-    # python main.py list-type C:\Music --ext { mp3 | m4a | wma | abc }
-    list_type_parser = subparsers.add_parser("list-type", parents=[tld_parser], help="Generates a csv containing full file path for an audio file type")
-    list_type_parser.add_argument("--ext", type=str, help='optional file extension')
-    list_type_parser.set_defaults(func=list_type)
+#     # list files by extension
+#     # 1 mandatory arg, the tld path, 1 optional arg, the file extension
+#     # python main.py list-type C:\Music --ext { mp3 | m4a | wma | abc }
+#     list_type_parser = subparsers.add_parser("list-type", parents=[tld_parser], help="Generates a csv containing full file path for an audio file type")
+#     list_type_parser.add_argument("--ext", type=str, help='optional file extension')
+#     list_type_parser.set_defaults(func=list_type)
 
-    # normalize mp3 files from tld
-    # 2 mandatory arg, the tld path and the normalization type (ebu, peak, rms)
-    # python main.py normalize-walk F:\ConvertedMusic { ebu | peak | rms }
-    normalize_walk_parser = subparsers.add_parser("normalize-walk", parents=[tld_parser], help="Normalizes files with specified pattern")
-    normalize_walk_parser.add_argument("type", type=str, help="mandatory normalization type")
-    normalize_walk_parser.set_defaults(func=normalize_walk)
+#     # normalize mp3 files from tld
+#     # 2 mandatory arg, the tld path and the normalization type (ebu, peak, rms)
+#     # python main.py normalize-walk F:\ConvertedMusic { ebu | peak | rms }
+#     normalize_walk_parser = subparsers.add_parser("normalize-walk", parents=[tld_parser], help="Normalizes files with specified pattern")
+#     normalize_walk_parser.add_argument("type", type=str, help="mandatory normalization type")
+#     normalize_walk_parser.set_defaults(func=normalize_walk)
 
-    # remove empty album directories
-    # 1 mandatory arg, the tld path
-    # python main.py remove-album C:\Music
-    remove_albums_parser = subparsers.add_parser("remove-albums", parents=[tld_parser], help="Remove empty album sub-directories")
-    remove_albums_parser.set_defaults(func=remove_albums)
+#     # remove empty album directories
+#     # 1 mandatory arg, the tld path
+#     # python main.py remove-album C:\Music
+#     remove_albums_parser = subparsers.add_parser("remove-albums", parents=[tld_parser], help="Remove empty album sub-directories")
+#     remove_albums_parser.set_defaults(func=remove_albums)
 
-    # remove files matching specified file pattern
-    # 2 mandatory args, the tld path and the file pattern
-    # python main.py remove-pattern C:\Music { AlbumArtSmall.jpg | AlbumArt*Small.jpg | *.db | *.ini }
-    remove_pattern_parser = subparsers.add_parser("remove-pattern", parents=[tld_parser], help="Removes files with specified pattern")
-    remove_pattern_parser.add_argument("pattern", type=str, help="mandatory file pattern")
-    remove_pattern_parser.set_defaults(func=remove_pattern)
+#     # remove files matching specified file pattern
+#     # 2 mandatory args, the tld path and the file pattern
+#     # python main.py remove-pattern C:\Music { AlbumArtSmall.jpg | AlbumArt*Small.jpg | *.db | *.ini }
+#     remove_pattern_parser = subparsers.add_parser("remove-pattern", parents=[tld_parser], help="Removes files with specified pattern")
+#     remove_pattern_parser.add_argument("pattern", type=str, help="mandatory file pattern")
+#     remove_pattern_parser.set_defaults(func=remove_pattern)
 
-    # peak normalize an audio file (destructive)
-    # 1 mandatory arg, the path to audio file
-    # python main.py peak-file  "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
-    peak_file_parser = subparsers.add_parser("peak-file", parents=[file_parser], help="Peak normalizes a mp3 audio file level")
-    peak_file_parser.set_defaults(func=peak_file)
+#     # peak normalize an audio file (destructive)
+#     # 1 mandatory arg, the path to audio file
+#     # python main.py peak-file  "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
+#     peak_file_parser = subparsers.add_parser("peak-file", parents=[file_parser], help="Peak normalizes a mp3 audio file level")
+#     peak_file_parser.set_defaults(func=peak_file)
 
-    # rms normalize an audio file (destructive)
-    # 1 mandatory arg, the path to audio file
-    # python main.py rms-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
-    rms_file_parser = subparsers.add_parser("rms-file", parents=[file_parser], help="Rms normalizes a mp3 audio file level")
-    rms_file_parser.set_defaults(func=rms_file)
+#     # rms normalize an audio file (destructive)
+#     # 1 mandatory arg, the path to audio file
+#     # python main.py rms-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
+#     rms_file_parser = subparsers.add_parser("rms-file", parents=[file_parser], help="Rms normalizes a mp3 audio file level")
+#     rms_file_parser.set_defaults(func=rms_file)
 
-    # set album art file
-    # 1 mandatory arg, the tld path
-    # python main.py set-art C:\Music
-    set_album_art_parser = subparsers.add_parser("set-album-art", parents=[tld_parser], help="Set album art file")
-    set_album_art_parser.set_defaults(func=set_album_art)
+#     # set album art file
+#     # 1 mandatory arg, the tld path
+#     # python main.py set-art C:\Music
+#     set_album_art_parser = subparsers.add_parser("set-album-art", parents=[tld_parser], help="Set album art file")
+#     set_album_art_parser.set_defaults(func=set_album_art)
 
-    # update m3u playlist
-    # 2 mandatory args, the tld path and the m3u path
-    # python main.py update-m3u D:\MusicProcessing\tests\Music D:\MusicProcessing\tests/Music\test.m3u
-    update_m3u_parsers = subparsers.add_parser("update-m3u", parents=[tld_parser], help="Update playlist paths")
-    update_m3u_parsers.add_argument("m3u", type=str, help="mandatory m3u file path")
-    update_m3u_parsers.set_defaults(func=update_paths)
+#     # update m3u playlist
+#     # 2 mandatory args, the tld path and the m3u path
+#     # python main.py update-m3u D:\MusicProcessing\tests\Music D:\MusicProcessing\tests/Music\test.m3u
+#     update_m3u_parsers = subparsers.add_parser("update-m3u", parents=[tld_parser], help="Update playlist paths")
+#     update_m3u_parsers.add_argument("m3u", type=str, help="mandatory m3u file path")
+#     update_m3u_parsers.set_defaults(func=update_paths)
 
-    # update m3u playlist walk
-    # 1 mandatory arg, the tld path
-    # python main.py update-walk D:\MusicProcessing\tests\Music
-    update_walk_parsers = subparsers.add_parser("update-walk", parents=[tld_parser], help="Update playlist paths")
-    update_walk_parsers.set_defaults(func=update_walk)
+#     # update m3u playlist walk
+#     # 1 mandatory arg, the tld path
+#     # python main.py update-walk D:\MusicProcessing\tests\Music
+#     update_walk_parsers = subparsers.add_parser("update-walk", parents=[tld_parser], help="Update playlist paths")
+#     update_walk_parsers.set_defaults(func=update_walk)
 
-    args = parser.parse_args()
-    return args
+#     args = parser.parse_args()
+#     return args
 
 
 def main(args):
@@ -541,11 +541,6 @@ if __name__ == "__main__":
     @brief Top level script environment entry point.
     '''
 
-    args = create_parser
-    main(args)
-
-
-    '''
     parser = argparse.ArgumentParser(description='Music Processing')
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
@@ -740,6 +735,7 @@ if __name__ == "__main__":
     update_walk_parsers.add_argument("tld", type=str, help="mandatory top level directory")
     update_walk_parsers.set_defaults(func=update_walk)
 
+    # args = create_parser()
     args = parser.parse_args()
     main(args)
-    '''
+
