@@ -8,6 +8,7 @@
 # standard modules
 import argparse
 import gc
+import logging
 import pprint
 
 # local modules
@@ -17,6 +18,8 @@ from src.audio_info import AudioPlaylist
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
 
+# name the root logger
+_logger = logging.getLogger(__name__)
 gc.enable()
 
 art = AudioArt()
