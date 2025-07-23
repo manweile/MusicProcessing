@@ -9,7 +9,9 @@
 import argparse
 import gc
 import logging
+import os
 import pprint
+from datetime import datetime
 
 # local modules
 from src.audio_info import AudioArt
@@ -17,10 +19,32 @@ from src.audio_info import AudioMetadata
 from src.audio_info import AudioPlaylist
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
+from src.generated_files import generated_files as _GENERATED_FILES
 
-# name the root logger
-_logger = logging.getLogger(__name__)
 gc.enable()
+
+_DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
+_FILE_LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+_LOG_DIR = "logs"
+_LOG_EXT = ".log"
+
+start_execution = datetime.now()
+start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
+
+log_filename = "main" + _LOG_EXT
+log_filepath = os.path.join(_GENERATED_FILES, _LOG_DIR, log_filename)
+
+logger = logging.getLogger(__name__)
+# override the default logging level WARN to lowest level so we can log all level messages
+logger.setLevel(logging.DEBUG)
+
+# file handler logs debug level to log file only, no output to console
+file_log_formatter = logging.Formatter(_FILE_LOG_FORMAT)
+file_handler = logging.FileHandler(log_filepath, mode="a", encoding="utf-8")
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(file_log_formatter)
+
+logger.addHandler(file_handler)
 
 art = AudioArt()
 directory = DirectoryProcessing()
@@ -533,11 +557,6 @@ def main(args):
             tld_path = getattr(args, "tld")
             update_walk(tld_path)
 
-    except NotImplementedError:
-        raise NotImplementedError(f"Command {args.subcommand} does not exist")
-    except Exception as e:
-        raise Exception(f"Exception {e} executing subcommand {args.subcommand}")
-
 
 if __name__ == "__main__":
     '''
@@ -742,4 +761,3 @@ if __name__ == "__main__":
     # args = create_parser()
     args = parser.parse_args()
     main(args)
-

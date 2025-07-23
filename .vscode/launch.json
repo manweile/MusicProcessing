@@ -23,6 +23,16 @@
             "justMyCode": false
         },
         {
+            "name": "Python Debugger: Not Implemented with args input",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/scripts/google/logging/not_implemented.py",
+            "args": "${command:pickArgs}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",  // <-- this is key
+            "justMyCode": false
+        },
+        {
             "name": "Python Debugger: Output file parsing",
             "type": "debugpy",
             "request": "launch",

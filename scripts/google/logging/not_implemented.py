@@ -1,0 +1,56 @@
+import argparse
+import logging
+import sys
+
+# Configure logging
+filename = "not_implemented.log"
+format = '\n%(asctime)s - %(levelname)s - %(message)s'
+logging.basicConfig(filename=filename, level=logging.DEBUG, format=format, filemode="a", encoding="utf-8")
+logger = logging.getLogger(__name__)
+
+
+class CustomArgumentParser(argparse.ArgumentParser):
+    def _print_message(self, message, file=None):
+        # Check if the message is intended for stderr
+        if file is sys.stderr:
+            logger.error(f"Argparse Error: {message.strip()}")
+        else:
+            super()._print_message(message, file)
+
+
+def some_function_that_might_not_be_implemented():
+    """A placeholder for a function that might raise NotImplementedError."""
+    raise NotImplementedError("This feature is not yet implemented.")
+
+
+def some_function_that_has_exception():
+    raise Exception("An Exception has occurred in main")
+
+
+def main(args):
+    """The main function of the application."""
+    logger.info("Starting main application.")
+
+    if args.subcommand == "warning":
+        some_function_that_might_not_be_implemented()
+    elif args.subcommand == "exception":
+        some_function_that_has_exception()
+
+    logger.info("Main application finished successfully.")
+
+
+if __name__ == "__main__":
+    try:
+        parser = CustomArgumentParser(description='Test Logger with args')
+        subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
+
+        warning_parser = subparsers.add_parser("warning")
+        exception_parser = subparsers.add_parser("exception")
+
+
+        args = parser.parse_args()
+        main(args)
+    except NotImplementedError:
+        logger.warning(msg="A NotImplementedError occurred in main", stack_info=True)
+    except Exception as e:
+        logger.exception(e, stack_info=True)
