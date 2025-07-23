@@ -31,33 +31,26 @@ _DELIMITER = ","
 _DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
 _LOG_DIR = "logs"
 _LOG_EXT = ".log"
-_LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+_FILE_LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 
 directory = DirectoryProcessing()
 
 start_execution = datetime.now()
 start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
 
-# debug & info logging
-# log_filename = "playlist" + '_' + str(start_datetime) + _LOG_EXT
 log_filename = "playlist" + _LOG_EXT
 log_filepath = os.path.join(generated_files, _LOG_DIR, log_filename)
 
-# error/exception logging
-error_logname = "error" + '_' + str(start_datetime) + _LOG_EXT
-error_filepath = os.path.join(generated_files, _LOG_DIR, error_logname)
-
-# always want name of executing function for hierarchal logging
 logger = logging.getLogger(__name__)
 # override the default logging level WARN to lowest level so we can log all level messages
 logger.setLevel(logging.DEBUG)
 
-# debug and info log format & handlers for normal function output
-message_log_formatter = logging.Formatter(_LOG_FORMAT)
-
 # file handler logs debug level to log file only, no output to console
-file_handler = logging.FileHandler(log_filepath)
-file_handler.setFormatter(message_log_formatter)
+file_log_formatter = logging.Formatter(_FILE_LOG_FORMAT)
+file_handler = logging.FileHandler(log_filepath, mode="a", encoding="utf-8")
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(file_log_formatter)
+
 logger.addHandler(file_handler)
 
 
@@ -137,6 +130,7 @@ class AudioPlaylist():
 
         extheader = "#EXTM3U"
         extinf = "#EXTINF:"
+        comment = "#:"
 
         try:
             # new m3u file gets created in generated files directory so can later be move to correct tld
@@ -151,13 +145,17 @@ class AudioPlaylist():
                         if extheader in line:
                             # the ext header is simply copied over
                             outfile.write(line)
+                        elif comment in line:
+                            continue
                         elif extinf in line:
                             # get the audio file name, change ext to mp3 if needed
                             audio_file = self.get_audio_name(line.strip("\n"))
+                            old_path = infile.readline().strip("\n")
+
                             if audio_file:
                                 audio_file_path = directory.get_file_directory(tld_path, audio_file)
                             else:
-                                logger.warning(f"unable to get audio file name from {line.strip("\n")} in {input_basename}")
+                                logger.warning(f"unable to get audio file name from line: {line.strip("\n")} for relative path: {old_path} in {input_basename}")
                                 continue
 
                             if audio_file_path:

@@ -46,28 +46,32 @@ _TP = "-2.0"
 _DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
 _LOG_DIR = "logs"
 _LOG_EXT = ".log"
+_FILE_LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+_STREAM_LOG_FORMAT = '%(message)s'
 
 directory = DirectoryProcessing()
 
 start_execution = datetime.now()
 start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
+
 log_filename = "normalization" + _LOG_EXT
 log_filepath = os.path.join(generated_files, _LOG_DIR, log_filename)
-log_formatter = logging.Formatter('%(message)s')
 
 logger = logging.getLogger(__name__)
 # override the default logging level WARN to lower level so we can also log INFO level messages
 logger.setLevel(logging.DEBUG)
 
 # file handler logs debug level to log file only, no output to console
-file_handler = logging.FileHandler(log_filepath)
+file_log_formatter = logging.Formatter(_FILE_LOG_FORMAT)
+file_handler = logging.FileHandler(log_filepath, mode="a", encoding="utf-8")
 file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(log_formatter)
+file_handler.setFormatter(file_log_formatter)
 
 # stream handler logs info level to log file and outputs to console
+stream_log_formatter = logging.Formatter(_STREAM_LOG_FORMAT)
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.INFO)
-stream_handler.setFormatter(log_formatter)
+stream_handler.setFormatter(stream_log_formatter)
 
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)

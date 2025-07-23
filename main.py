@@ -551,7 +551,7 @@ if __name__ == "__main__":
     # 1 mandatory arg, the audio file path
     # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
-    convert_file_parser = subparsers.add_parser("convert-file" help="Converts an audio file to mp3")
+    convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
     convert_file_parser.add_argument("file", type=str, help="mandatory full path to audio file")
     convert_file_parser.set_defaults(func=convert_file)
 
@@ -723,6 +723,7 @@ if __name__ == "__main__":
 
     # update m3u playlist
     # 2 mandatory args, the tld path and the m3u path
+    # update-m3u D:\MusicProcessing\tests\Music D:\MusicProcessing\tests\Music\test.m3u
     # sys.argv = ['D:\MusicProcessing\main.py'', 'update-m3u', 'D:\MusicProcessing\tests\Music', 'D:\MusicProcessing\tests/Music\test.m3u']
     # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'update-m3u', '~/MusicProcessing/tests/Music', '~/MusicProcessing/tests/Music/test.m3u']
     update_m3u_parsers = subparsers.add_parser("update-m3u", help="Update playlist paths")
