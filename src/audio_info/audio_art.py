@@ -25,7 +25,7 @@ from mutagen.mp4 import MP4
 # local modules
 from src import _AUDIO_EXTS
 from src.audio_normalize import AudioNormalization
-from src.generated_files import generated_files
+from src.generated_files import generated_files as _GENERATED_FILES
 
 gc.enable()
 
@@ -419,7 +419,7 @@ class AudioArt():
                 album_jpg = album_dir_name + ".jpg"                             # should be "Best Of The Blues, Vol. 1.jpg"
 
                 # get the album art directory, per the project hierarchy
-                album_art_dir = os.path.join(generated_files, _ALBUM_ART)       # D:\MusicProcessing\src\generated_files\ALbumArt
+                album_art_dir = os.path.join(_GENERATED_FILES, _ALBUM_ART)       # D:\MusicProcessing\src\generated_files\ALbumArt
                 album_art_dir_content = os.listdir(album_art_dir)
 
                 if album_jpg in album_art_dir_content:

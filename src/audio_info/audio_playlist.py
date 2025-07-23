@@ -16,7 +16,7 @@ from pathlib import Path
 # local modules
 from src import _AUDIO_EXTS, _PLAYLIST_EXTS
 from src.dir_processing import DirectoryProcessing
-from src.generated_files import generated_files
+from src.generated_files import generated_files as _GENERATED_FILES
 
 gc.enable()
 
@@ -39,7 +39,7 @@ start_execution = datetime.now()
 start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
 
 log_filename = "playlist" + _LOG_EXT
-log_filepath = os.path.join(generated_files, _LOG_DIR, log_filename)
+log_filepath = os.path.join(_GENERATED_FILES, _LOG_DIR, log_filename)
 
 logger = logging.getLogger(__name__)
 # override the default logging level WARN to lowest level so we can log all level messages
@@ -134,7 +134,7 @@ class AudioPlaylist():
 
         try:
             # new m3u file gets created in generated files directory so can later be move to correct tld
-            export_path = generated_files
+            export_path = _GENERATED_FILES
             input_basename = os.path.basename(input_m3u)
             export_m3u = os.path.join(export_path, input_basename)
 
