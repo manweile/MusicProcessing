@@ -20,8 +20,6 @@ from src.generated_files import generated_files as _GENERATED_FILES
 
 gc.enable()
 
-_DELIMITER = ","
-
 # @todo move these into src.__init__.py
 # @todo figure out one time declaration for logging
 # @todo the only thing that really changes is the log filename
@@ -29,11 +27,9 @@ _DELIMITER = ","
 # @todo https://docs.python.org/3/library/logging.html
 # https://docs.python.org/3/howto/logging.html#logging-advanced-tutorial
 _DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
+_FILE_LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 _LOG_DIR = "logs"
 _LOG_EXT = ".log"
-_FILE_LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
-
-directory = DirectoryProcessing()
 
 start_execution = datetime.now()
 start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
@@ -52,6 +48,10 @@ file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(file_log_formatter)
 
 logger.addHandler(file_handler)
+
+_DELIMITER = ","
+
+directory = DirectoryProcessing()
 
 
 class AudioPlaylist():
