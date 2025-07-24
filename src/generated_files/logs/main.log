@@ -1,0 +1,4 @@
+2025-07-23 21:48:15,292 — __main__ — ERROR — _print_message:72 — Argparse Error: usage: main.py [-h]
+               {convert-file,convert-walk,create-albums,ebu-file,extract-file,extract-walk,get-media-info,get-media-info-walk,get-media-tags,get-any-tags,get-tags-walk,get-unique-media,list-audio,list-type,normalize-walk,remove-albums,remove-pattern,peak-file,rms-file,set-album-art,update-m3u,update-walk}
+               ...
+2025-07-23 21:48:15,293 — __main__ — ERROR — _print_message:72 — Argparse Error: main.py: error: argument subcommand: invalid choice: 'v' (choose from 'convert-file', 'convert-walk', 'create-albums', 'ebu-file', 'extract-file', 'extract-walk', 'get-media-info', 'get-media-info-walk', 'get-media-tags', 'get-any-tags', 'get-tags-walk', 'get-unique-media', 'list-audio', 'list-type', 'normalize-walk', 'remove-albums', 'remove-pattern', 'peak-file', 'rms-file', 'set-album-art', 'update-m3u', 'update-walk')
