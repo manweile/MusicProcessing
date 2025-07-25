@@ -43,7 +43,7 @@ logger.setLevel(logging.DEBUG)
 # file handler logs debug level to log file only, no output to console
 file_log_formatter = logging.Formatter(_FILE_LOG_FORMAT)
 file_handler = logging.FileHandler(log_filepath, mode="a", encoding="utf-8")
-file_handler.setLevel(logging.DEBUG)
+# file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(file_log_formatter)
 
 logger.addHandler(file_handler)
@@ -57,7 +57,7 @@ playlist = AudioPlaylist()
 
 class CustomArgumentParser(argparse.ArgumentParser):
     '''
-    @brief Custom argument parser so NotImplemented errors can be logged.
+    @brief Custom argument parser so argparse errors can be logged.
 
     @details https://stackoverflow.com/questions/48633847/python-argparse-errors-to-file
     '''
@@ -66,11 +66,12 @@ class CustomArgumentParser(argparse.ArgumentParser):
         '''
         @brief Override argparse.ArgumentParser._print_message so stderr gets logged instead of output to console.
 
-        @param message {str} The error message.
-        @param file {TextIOWrapper} A file-like object.
+        @param message {str} The error message to log.
+        @param file {TextIOWrapper} A file-like object for stderr.
         '''
 
-        # want to log errors if the message is intended for stderr
+        # want to log errors if the message is intended for stderr,
+        # unlike the super method which writes to console
         if message:
             if file is sys.stderr:
                 logger.error(f"Argparse Error: {message.strip()}")
@@ -787,7 +788,5 @@ if __name__ == "__main__":
         args = parser.parse_args()
         main(args)
 
-    # except NotImplementedError:
-    #     logger.error(msg="A NotImplementedError occurred in main", stack_info=True)
     except Exception as e:
         logger.exception(e, stack_info=True)

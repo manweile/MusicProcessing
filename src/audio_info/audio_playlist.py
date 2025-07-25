@@ -103,9 +103,9 @@ class AudioPlaylist():
 
             return audio
 
-        except Exception:
+        except Exception as e:
             logger.info(f"line: {line}")
-            logger.critical("Exception", exc_info=True)
+            logger.critical(e, exc_info=True)
 
 
     def update_paths(self, tld_path, input_m3u):
@@ -175,9 +175,9 @@ class AudioPlaylist():
 
             logger.info(f"Updated {input_basename}\n")
 
-        except Exception:
+        except Exception as e:
             logger.info(f"tld_path: {tld_path}, input_m3u: {input_m3u}")
-            logger.critical("Exception", exc_info=True)
+            logger.critical(e, exc_info=True)
 
 
     def update_walk(self, tld_path):
@@ -201,6 +201,6 @@ class AudioPlaylist():
 
             logger.info(f"Updated m3u files in {tld_path}\n")
 
-        except Exception:
+        except Exception as e:
             logger.info(f"tld_path: {tld_path}")
-            logger.critical("Exception", exc_info=True)
+            logger.critical(e, exc_info=True)

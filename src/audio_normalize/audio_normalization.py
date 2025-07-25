@@ -61,20 +61,13 @@ logger = logging.getLogger(__name__)
 # override the default logging level WARN to lower level so we can also log INFO level messages
 logger.setLevel(logging.DEBUG)
 
-# file handler logs debug level to log file only, no output to console
+# file handler logs to log file only, no output to console
 file_log_formatter = logging.Formatter(_FILE_LOG_FORMAT)
 file_handler = logging.FileHandler(log_filepath, mode="a", encoding="utf-8")
-file_handler.setLevel(logging.DEBUG)
+# file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(file_log_formatter)
 
-# stream handler logs info level to log file and outputs to console
-stream_log_formatter = logging.Formatter(_STREAM_LOG_FORMAT)
-stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.INFO)
-stream_handler.setFormatter(stream_log_formatter)
-
 logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
 
 
 class AudioNormalization():
@@ -178,7 +171,7 @@ class AudioNormalization():
 
             # get original sample rate for down sampling
             sample_rate = self.get_sample_rate(file_path)
-            logger.debug(f"Source sample rate: {sample_rate} hz")
+            logger.info(f"Source sample rate: {sample_rate} hz")
 
             '''
             1st pass to get loudnorm statistics
@@ -198,14 +191,14 @@ class AudioNormalization():
             ]
 
             text = "Getting normalizing stats"
-            logger.debug(text)
-            logger.debug(stats_command)
+            logger.info(text)
+            logger.info(stats_command)
             stats_process, stats_spinner = self.spinner_subprocess_run(text, stats_command)
 
             pre_text = "Pre normalization stats:"
-            logger.debug(pre_text)
+            logger.info(pre_text)
             stats_data = self.__loudnorm_json_parse(stats_process)
-            logger.debug(json.dumps(stats_data, indent=4))
+            logger.info(json.dumps(stats_data, indent=4))
             stats_time = stats_spinner.elapsed_time
             logger.info(f"Analyzed loudnorm stats in {stats_time:.2f} secs")
 
@@ -242,14 +235,14 @@ class AudioNormalization():
             ]
 
             text = "Normalizing audio"
-            logger.debug(text)
-            logger.debug(normalize_command)
+            logger.info(text)
+            logger.info(normalize_command)
             normalize_process, normalize_spinner = self.spinner_subprocess_run(text, normalize_command)
 
             post_text = "Post normalization stats:"
-            logger.debug(post_text)
+            logger.info(post_text)
             normalize_data = self.__loudnorm_json_parse(normalize_process)
-            logger.debug(json.dumps(normalize_data, indent=4))
+            logger.info(json.dumps(normalize_data, indent=4))
             normalization_time = normalize_spinner.elapsed_time
             logger.info(f"Applied normalization in {normalization_time:.2f} secs")
             total_time = normalize_spinner.elapsed_time + stats_time
@@ -455,7 +448,7 @@ class AudioNormalization():
 
             # want bitrate so can preserve the quality in exported file
             bitrate = self.get_bit_rate(file_path)
-            logger.debug(f"bit rate: {bitrate}")
+            logger.info(f"bit rate: {bitrate}")
 
             volume_info = self.get_volume_info(file_path)
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
@@ -466,17 +459,17 @@ class AudioNormalization():
                 logger.info(unnecessary_text)
                 return
             else:
-                logger.debug(f"max volume: {max_volume:.2f} dB")
+                logger.info(f"max volume: {max_volume:.2f} dB")
 
             adjustment = 0 + float(_TP) - float(max_volume)
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
                 peak_text = print(f"peak normalizing by {_TP} minus {max_volume:.2f} dB equaling {adjustment:.2f} dB will result in clipping level: {clip_amount:.2f} dB in {export_path}")
-                logger.debug(peak_text)
+                logger.info(peak_text)
                 return
             else:
-                logger.debug(f"adjustment: {adjustment:.2f} dB")
+                logger.info(f"adjustment: {adjustment:.2f} dB")
 
             # -hide_banner to reduce output clutter
             # -filter:a volume=6dB where dB is the adjustment value from volume stats return
@@ -498,8 +491,8 @@ class AudioNormalization():
             ]
 
             text = f"Peak normalizing {input_path_stem}"
-            logger.debug(text)
-            logger.debug(command)
+            logger.info(text)
+            logger.info(command)
             _, spinner = self.spinner_subprocess_run(text, command)
             success_text = f"Successful peak normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
             logger.info(success_text)
@@ -534,14 +527,14 @@ class AudioNormalization():
 
             # want bitrate so can preserve the quality in exported file
             bitrate = self.get_bit_rate(file_path)
-            logger.debug(f"bit rate: {bitrate}")
+            logger.info(f"bit rate: {bitrate}")
 
             volume_info = self.get_volume_info(file_path)
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
             mean_volume = math.floor(volume_info['mean_volume'])
             max_volume = math.floor(volume_info['max_volume'])
-            logger.debug(f"floor mean volume: {mean_volume:.2f}")
-            logger.debug(f"floor max volume: {max_volume:.2f}")
+            logger.info(f"floor mean volume: {mean_volume:.2f}")
+            logger.info(f"floor max volume: {max_volume:.2f}")
 
             if max_volume == 0.0:
                 unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume:.2f}, rms normalization not needed")
@@ -556,7 +549,7 @@ class AudioNormalization():
                 logger.info(peak_text)
                 return
             else:
-                logger.debug(f"adjustment: {adjustment:.2f} dB")
+                logger.info(f"adjustment: {adjustment:.2f} dB")
 
             # -hide_banner to reduce output clutter
             # -filter:a volume=6dB where dB is the adjustment value from volume stats return
@@ -578,8 +571,8 @@ class AudioNormalization():
             ]
 
             text = f"rms normalizing {input_path_stem}"
-            logger.debug(text)
-            logger.debug(command)
+            logger.info(text)
+            logger.info(command)
             _, spinner = self.spinner_subprocess_run(text, command)
             success_text = f"Successful rms normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
             logger.info(success_text)

@@ -10,6 +10,7 @@
 import fnmatch
 import gc
 import json
+import logging
 import os
 import shutil
 import struct
@@ -28,6 +29,29 @@ from src.audio_normalize import AudioNormalization
 from src.generated_files import generated_files as _GENERATED_FILES
 
 gc.enable()
+
+_DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
+_FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+_LOG_DIR = "logs"
+_LOG_EXT = ".log"
+
+start_execution = datetime.now()
+start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
+
+log_filename = "playlist" + _LOG_EXT
+log_filepath = os.path.join(_GENERATED_FILES, _LOG_DIR, log_filename)
+
+logger = logging.getLogger(__name__)
+# override the default logging level WARN to lowest level so we can log all level messages
+logger.setLevel(logging.DEBUG)
+
+# file handler logs debug level to log file only, no output to console
+file_log_formatter = logging.Formatter(_FILE_LOG_FORMAT)
+file_handler = logging.FileHandler(log_filepath, mode="a", encoding="utf-8")
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(file_log_formatter)
+
+logger.addHandler(file_handler)
 
 _ALBUM_ART = "AlbumArt"
 _ASF = "ASF"
@@ -100,8 +124,10 @@ class AudioArt():
 
             return (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
 
+            # except Exception as e:
+            #     raise Exception(f"Exception {e} extracting asf embedded art from tag data")
         except Exception as e:
-            raise Exception(f"Exception {e} extracting asf embedded art from tag data")
+            logger.critical(e, exc_info=True)
 
 
     def __write_data(self, file_path, image_data):
@@ -123,7 +149,8 @@ class AudioArt():
                 print(f"Album art written from {input_path.name} and saved to {album_path}")
 
         except Exception as e:
-            raise Exception(f"Exception: {e} writing embedded art from {file_path}")
+            # raise Exception(f"Exception: {e} writing embedded art from {file_path}")
+            logger.critical(e, exc_info=True)
 
 
     def extract_album_art(self, file_path):
@@ -174,7 +201,8 @@ class AudioArt():
                 return
 
         except Exception as e:
-            raise Exception(f"Exception {e} extracting art from {file_path}")
+            # raise Exception(f"Exception {e} extracting art from {file_path}")
+            logger.critical(e, exc_info=True)
 
 
     def extract_asf_art(self, file_path):
@@ -198,7 +226,8 @@ class AudioArt():
             self.__write_data(file_path, image_data)
 
         except Exception as e:
-            raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
+            # raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
+            logger.critical(e, exc_info=True)
 
 
     def extract_ffmpeg_art(self, file_path):
@@ -240,7 +269,8 @@ class AudioArt():
             print(f"FFMPEG extracted album art from {input_path.name} and saved to {album_path}")
 
         except Exception as e:
-            raise Exception(f"Exception {e} extracting art from {input_path}")
+            # raise Exception(f"Exception {e} extracting art from {input_path}")
+            logger.critical(e, exc_info=True)
 
 
     def extract_m4a_art(self, file_path):
@@ -270,7 +300,8 @@ class AudioArt():
             self.__write_data(file_path, image_data)
 
         except Exception as e:
-            raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
+            # raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
+            logger.critical(e, exc_info=True)
 
 
     def extract_mp3_art(self, file_path):
@@ -293,7 +324,8 @@ class AudioArt():
             self.__write_data(file_path, image_data)
 
         except Exception as e:
-            raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
+            # raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
+            logger.critical(e, exc_info=True)
 
 
     def extract_walk(self, start_path, file_pattern):
@@ -338,7 +370,8 @@ class AudioArt():
             if file_pattern:
                 raise Exception(f"Exception {e} walking {start_path} to extract art from {file_pattern} audio files")
             else:
-                raise Exception(f"Exception {e} walking {start_path} to extract art from audio files")
+                # raise Exception(f"Exception {e} walking {start_path} to extract art from audio files")
+                logger.critical(e, exc_info=True)
 
 
     def has_video_stream(self, file_path):
