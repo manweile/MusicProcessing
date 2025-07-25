@@ -1,10 +1,13 @@
 import argparse
+import inspect
 import logging
+import os
 import sys
-import warnings
+
 
 # Configure logging
-filename = "not_implemented.log"
+filepath = os.path.dirname(os.path.abspath(__file__))
+filename = os.path.join(filepath, "not_implemented.log")
 format = '\n%(asctime)s - %(levelname)s - %(message)s'
 logging.basicConfig(filename=filename, level=logging.DEBUG, format=format, filemode="a", encoding="utf-8")
 logger = logging.getLogger(__name__)
@@ -20,16 +23,21 @@ class CustomArgumentParser(argparse.ArgumentParser):
 
 
 def some_function_that_has_warning():
-    logger.warning("A warning has occurred in main")
+    frame = inspect.currentframe()
+    def_name = frame.f_code.co_name
+    file_path = __file__
+    file_name = os.path.splitext(os.path.basename(file_path))[0]
+    file_def = file_name + "." + def_name
+
+    logger.warning(f"A warning has occurred in {file_def}")
 
 
 def some_function_that_might_not_be_implemented():
-    """A placeholder for a function that might raise NotImplementedError."""
-    raise NotImplementedError("A not implemented error has occurred in main")
+    raise NotImplementedError()
 
 
 def some_function_that_has_exception():
-    raise Exception("An exception has occurred in main")
+    raise Exception()
 
 
 def main(args):
@@ -59,6 +67,6 @@ if __name__ == "__main__":
         args = parser.parse_args()
         main(args)
     except NotImplementedError:
-        logger.error(msg="A NotImplementedError occurred in main", stack_info=True)
-    except Exception as e:
-        logger.exception(e, stack_info=True)
+        logger.error("NotImplementedError", exc_info=True)
+    except Exception:
+        logger.exception("Exception", stack_info=True)
