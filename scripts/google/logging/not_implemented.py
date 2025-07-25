@@ -1,6 +1,7 @@
 import argparse
 import logging
 import sys
+import warnings
 
 # Configure logging
 filename = "not_implemented.log"
@@ -18,23 +19,29 @@ class CustomArgumentParser(argparse.ArgumentParser):
             super()._print_message(message, file)
 
 
+def some_function_that_has_warning():
+    logger.warning("A warning has occurred in main")
+
+
 def some_function_that_might_not_be_implemented():
     """A placeholder for a function that might raise NotImplementedError."""
-    raise NotImplementedError("This feature is not yet implemented.")
+    raise NotImplementedError("A not implemented error has occurred in main")
 
 
 def some_function_that_has_exception():
-    raise Exception("An Exception has occurred in main")
+    raise Exception("An exception has occurred in main")
 
 
 def main(args):
     """The main function of the application."""
     logger.info("Starting main application.")
 
-    if args.subcommand == "warning":
+    if args.subcommand == "error":
         some_function_that_might_not_be_implemented()
     elif args.subcommand == "exception":
         some_function_that_has_exception()
+    elif args.subcommand == "warning":
+        some_function_that_has_warning()
 
     logger.info("Main application finished successfully.")
 
@@ -45,12 +52,13 @@ if __name__ == "__main__":
         subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
         warning_parser = subparsers.add_parser("warning")
+        error_parser = subparsers.add_parser("error")
         exception_parser = subparsers.add_parser("exception")
 
 
         args = parser.parse_args()
         main(args)
     except NotImplementedError:
-        logger.warning(msg="A NotImplementedError occurred in main", stack_info=True)
+        logger.error(msg="A NotImplementedError occurred in main", stack_info=True)
     except Exception as e:
         logger.exception(e, stack_info=True)

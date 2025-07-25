@@ -25,7 +25,7 @@ from src.generated_files import generated_files as _GENERATED_FILES
 gc.enable()
 
 _DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
-_FILE_LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+_FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 _LOG_DIR = "logs"
 _LOG_EXT = ".log"
 
@@ -35,8 +35,9 @@ start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
 log_filename = "main" + _LOG_EXT
 log_filepath = os.path.join(_GENERATED_FILES, _LOG_DIR, log_filename)
 
+# logging.basicConfig(filename=log_filepath, level=logging.DEBUG, format=_FILE_LOG_FORMAT, filemode="a", encoding="utf-8")
 logger = logging.getLogger(__name__)
-# override the default logging level WARN to lowest level so we can log all level messages
+# # override the default logging level WARN to lowest level so we can log all level messages
 logger.setLevel(logging.DEBUG)
 
 # file handler logs debug level to log file only, no output to console
@@ -56,22 +57,25 @@ playlist = AudioPlaylist()
 
 class CustomArgumentParser(argparse.ArgumentParser):
     '''
-    @details Custom argument parser so NotImplemented exceptions can be logged.
+    @brief Custom argument parser so NotImplemented errors can be logged.
+
+    @details https://stackoverflow.com/questions/48633847/python-argparse-errors-to-file
     '''
 
     def _print_message(self, message, file=None):
         '''
-        @brief Override _print_message so stderr gets logged instead of output to console.
+        @brief Override argparse.ArgumentParser._print_message so stderr gets logged instead of output to console.
 
         @param message {str} The error message.
-        @param file {TextIOWrapper} A stderr object.
+        @param file {TextIOWrapper} A file-like object.
         '''
 
         # want to log errors if the message is intended for stderr
-        if file is sys.stderr:
-            logger.error(f"Argparse Error: {message.strip()}")
-        else:
-            super()._print_message(message, file)
+        if message:
+            if file is sys.stderr:
+                logger.error(f"Argparse Error: {message.strip()}")
+            else:
+                super()._print_message(message, file)
 
 
 def convert_file(file_path):
@@ -783,7 +787,7 @@ if __name__ == "__main__":
         args = parser.parse_args()
         main(args)
 
-    except NotImplementedError:
-        logger.warning(msg="A NotImplementedError occurred in main", stack_info=True)
+    # except NotImplementedError:
+    #     logger.error(msg="A NotImplementedError occurred in main", stack_info=True)
     except Exception as e:
         logger.exception(e, stack_info=True)

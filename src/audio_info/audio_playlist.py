@@ -27,7 +27,7 @@ gc.enable()
 # @todo https://docs.python.org/3/library/logging.html
 # https://docs.python.org/3/howto/logging.html#logging-advanced-tutorial
 _DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
-_FILE_LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+_FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 _LOG_DIR = "logs"
 _LOG_EXT = ".log"
 

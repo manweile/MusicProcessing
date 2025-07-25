@@ -370,3 +370,466 @@ Stack (most recent call last):
 2025-07-22 22:01:23,974 - ERROR - Argparse Error: usage: not_implemented.py [-h] {warning,exception} ...
 
 2025-07-22 22:01:23,975 - ERROR - Argparse Error: not_implemented.py: error: argument subcommand: invalid choice: 'v' (choose from 'warning', 'exception')
+
+2025-07-24 15:05:15,331 - INFO - Starting main application.
+
+2025-07-24 15:05:45,616 - ERROR - An Exception has occurred in main
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 52, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 37, in main
+    some_function_that_has_exception()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 27, in some_function_that_has_exception
+    raise Exception("An Exception has occurred in main")
+Exception: An Exception has occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 56, in <module>
+    logger.exception(e, stack_info=True)
+
+2025-07-24 15:07:07,610 - INFO - Starting main application.
+
+2025-07-24 15:07:12,937 - ERROR - An Exception has occurred in main
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 52, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 37, in main
+    some_function_that_has_exception()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 27, in some_function_that_has_exception
+    raise Exception("An Exception has occurred in main")
+Exception: An Exception has occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 56, in <module>
+    logger.exception(e, stack_info=True)
+
+2025-07-24 15:07:57,426 - INFO - Starting main application.
+
+2025-07-24 15:08:16,496 - ERROR - An Exception has occurred in main
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 52, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 37, in main
+    some_function_that_has_exception()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 27, in some_function_that_has_exception
+    raise Exception("An Exception has occurred in main")
+Exception: An Exception has occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 56, in <module>
+    logger.exception(e, stack_info=True)
+
+2025-07-24 15:09:45,981 - INFO - Starting main application.
+
+2025-07-24 15:09:49,594 - WARNING - A NotImplementedError occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 54, in <module>
+    logger.warning(msg="A NotImplementedError occurred in main", stack_info=True)
+
+2025-07-24 16:07:35,896 - ERROR - Argparse Error: usage: not_implemented.py [-h] {warning,exception} ...
+
+2025-07-24 16:08:05,300 - ERROR - Argparse Error: not_implemented.py: error: argument subcommand: invalid choice: 'WARNING' (choose from 'warning', 'exception')
+
+2025-07-24 16:08:48,046 - INFO - Starting main application.
+
+2025-07-24 16:08:48,046 - INFO - Main application finished successfully.
+
+2025-07-24 16:09:21,312 - ERROR - Argparse Error: usage: not_implemented.py [-h] {warning,exception} ...
+
+2025-07-24 16:09:28,515 - ERROR - Argparse Error: not_implemented.py: error: argument subcommand: invalid choice: '1' (choose from 'warning', 'exception')
+
+2025-07-24 16:09:47,712 - INFO - Starting main application.
+
+2025-07-24 16:09:53,474 - ERROR - An Exception has occurred in main
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 52, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 37, in main
+    some_function_that_has_exception()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 27, in some_function_that_has_exception
+    raise Exception("An Exception has occurred in main")
+Exception: An Exception has occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 56, in <module>
+    logger.exception(e, stack_info=True)
+
+2025-07-24 16:10:18,006 - INFO - Starting main application.
+
+2025-07-24 16:10:23,132 - ERROR - An Exception has occurred in main
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 52, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 37, in main
+    some_function_that_has_exception()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 27, in some_function_that_has_exception
+    raise Exception("An Exception has occurred in main")
+Exception: An Exception has occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 56, in <module>
+    logger.exception(e, stack_info=True)
+
+2025-07-24 16:10:47,420 - INFO - Starting main application.
+
+2025-07-24 16:12:42,427 - ERROR - An Exception has occurred in main
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 52, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 37, in main
+    some_function_that_has_exception()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 27, in some_function_that_has_exception
+    raise Exception("An Exception has occurred in main")
+Exception: An Exception has occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 56, in <module>
+    logger.exception(e, stack_info=True)
+
+2025-07-24 16:19:43,765 - INFO - Starting main application.
+
+2025-07-24 16:19:43,769 - WARNING - A NotImplementedError occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 54, in <module>
+    logger.warning(msg="A NotImplementedError occurred in main", stack_info=True)
+
+2025-07-24 16:20:24,809 - WARNING - Argparse Error: usage: not_implemented.py [-h] {warning,exception} ...
+
+2025-07-24 16:20:26,729 - WARNING - Argparse Error: not_implemented.py: error: argument subcommand: invalid choice: 'w' (choose from 'warning', 'exception')
+
+2025-07-24 16:21:20,663 - ERROR - Argparse Error: usage: not_implemented.py [-h] {warning,exception} ...
+
+2025-07-24 16:21:23,173 - ERROR - Argparse Error: not_implemented.py: error: argument subcommand: invalid choice: 'w' (choose from 'warning', 'exception')
+
+2025-07-24 16:27:16,316 - INFO - Starting main application.
+
+2025-07-24 16:27:16,316 - ERROR - An Exception has occurred in main
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 52, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 37, in main
+    some_function_that_has_exception()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 27, in some_function_that_has_exception
+    raise Exception("An Exception has occurred in main")
+Exception: An Exception has occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 56, in <module>
+    logger.exception(e, stack_info=True)
+
+2025-07-24 16:28:10,899 - INFO - Starting main application.
+
+2025-07-24 16:28:15,558 - ERROR - An Exception has occurred in main
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 52, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 37, in main
+    some_function_that_has_exception()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 27, in some_function_that_has_exception
+    raise Exception("An Exception has occurred in main")
+Exception: An Exception has occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 56, in <module>
+    logger.exception(e, stack_info=True)
+
+2025-07-24 16:29:18,816 - INFO - Starting main application.
+
+2025-07-24 16:29:18,832 - ERROR - A NotImplementedError occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 54, in <module>
+    logger.error(msg="A NotImplementedError occurred in main", stack_info=True)
+
+2025-07-24 16:36:30,892 - INFO - Starting main application.
+
+2025-07-24 16:36:47,666 - ERROR - A NotImplementedError occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 62, in <module>
+    logger.error(msg="A NotImplementedError occurred in main", stack_info=True)
+
+2025-07-24 16:37:13,017 - INFO - Starting main application.
+
+2025-07-24 16:37:18,822 - ERROR - An exception has occurred in main
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 60, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 42, in main
+    some_function_that_has_exception()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 32, in some_function_that_has_exception
+    raise Exception("An exception has occurred in main")
+Exception: An exception has occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 64, in <module>
+    logger.exception(e, stack_info=True)
+
+2025-07-24 16:39:51,908 - INFO - Starting main application.
+
+2025-07-24 16:40:00,038 - ERROR - An exception has occurred in main
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 60, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 42, in main
+    some_function_that_has_exception()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 32, in some_function_that_has_exception
+    raise Exception("An exception has occurred in main")
+Exception: An exception has occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 64, in <module>
+    logger.exception(e, stack_info=True)
+
+2025-07-24 16:40:41,932 - ERROR - Argparse Error: usage: not_implemented.py [-h] {warning,error,exception} ...
+
+2025-07-24 16:41:10,675 - ERROR - Argparse Error: not_implemented.py: error: argument subcommand: invalid choice: 'v' (choose from 'warning', 'error', 'exception')
+
+2025-07-24 16:41:44,769 - INFO - Starting main application.
+
+2025-07-24 16:41:44,769 - INFO - Main application finished successfully.
+
+2025-07-24 16:43:54,743 - INFO - Starting main application.
+
+2025-07-24 16:43:54,743 - WARNING - A warning has occurred in main
+
+2025-07-24 16:43:54,744 - INFO - Main application finished successfully.
+
+2025-07-24 16:50:57,941 - ERROR - Argparse Error: usage: not_implemented.py [-h] {warning,error,exception} ...
+
+2025-07-24 16:51:47,000 - ERROR - Argparse Error: not_implemented.py: error: argument subcommand: invalid choice: 'v' (choose from 'warning', 'error', 'exception')
+
+2025-07-24 16:52:04,861 - INFO - Starting main application.
+
+2025-07-24 16:52:08,049 - ERROR - A NotImplementedError occurred in main
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 62, in <module>
+    logger.error(msg="A NotImplementedError occurred in main", stack_info=True)

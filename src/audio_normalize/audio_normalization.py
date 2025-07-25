@@ -46,7 +46,7 @@ _TP = "-2.0"
 _DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
 _LOG_DIR = "logs"
 _LOG_EXT = ".log"
-_FILE_LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+_FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 _STREAM_LOG_FORMAT = '%(message)s'
 
 directory = DirectoryProcessing()
