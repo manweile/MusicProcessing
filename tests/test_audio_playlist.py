@@ -18,7 +18,7 @@ from src.audio_info import AudioPlaylist
 
 # local modules
 from src import _EXPORT_TLD
-from src.generated_files import generated_files as _GENERATED_FILES
+from src.generated_files import generated_files as GENERATED_FILES
 
 gc.enable()
 
@@ -39,7 +39,7 @@ class TestAudioPlaylist(unittest.TestCase):
 
         input_m3u = os.path.join(_TESTS_PATH, _EXPORT_TLD, "test.m3u")
         input_tld = os.path.join(_TESTS_PATH, _EXPORT_TLD)
-        generated_m3u = os.path.join(_GENERATED_FILES, "test.m3u")
+        generated_m3u = os.path.join(GENERATED_FILES, "test.m3u")
         expected_m3u = os.path.join(_TESTS_PATH, _EXPORT_TLD, "expected.m3u")
 
         # @todo how do I run AudioPlaylist.update_paths??

@@ -20,7 +20,7 @@ from src.audio_info import AudioMetadata
 from src.audio_info import AudioPlaylist
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
-from src.generated_files import generated_files as _GENERATED_FILES
+from src.generated_files import generated_files as GENERATED_FILES
 
 gc.enable()
 
@@ -33,7 +33,7 @@ start_execution = datetime.now()
 start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
 
 log_filename = "main" + _LOG_EXT
-log_filepath = os.path.join(_GENERATED_FILES, _LOG_DIR, log_filename)
+log_filepath = os.path.join(GENERATED_FILES, _LOG_DIR, log_filename)
 
 # logging.basicConfig(filename=log_filepath, level=logging.DEBUG, format=_FILE_LOG_FORMAT, filemode="a", encoding="utf-8")
 logger = logging.getLogger(__name__)

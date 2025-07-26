@@ -28,7 +28,7 @@ from tqdm import tqdm
 from src import _AUDIO_EXTS, _AUDIO_TYPES
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
-from src.generated_files import generated_files as _GENERATED_FILES
+from src.generated_files import generated_files as GENERATED_FILES
 
 gc.enable()
 
@@ -418,7 +418,7 @@ class AudioMetadata():
                 tld_bar.update(1)
 
             tld_bar.close()
-            dir_processing.create_csv(csv_filename, data, _GENERATED_FILES, header_row, 0)
+            dir_processing.create_csv(csv_filename, data, GENERATED_FILES, header_row, 0)
             print(f"Created {len(album_dirs)} album dirs")
 
         except ValueError as e:

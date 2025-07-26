@@ -26,7 +26,7 @@ from yaspin.spinners import Spinners
 # local modules
 from src import _AUDIO_EXTS, _AUDIO_TYPES
 from src.dir_processing import DirectoryProcessing
-from src.generated_files import generated_files as _GENERATED_FILES
+from src.generated_files import generated_files as GENERATED_FILES
 
 gc.enable()
 
@@ -55,7 +55,7 @@ start_execution = datetime.now()
 start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
 
 log_filename = "normalization" + _LOG_EXT
-log_filepath = os.path.join(_GENERATED_FILES, _LOG_DIR, log_filename)
+log_filepath = os.path.join(GENERATED_FILES, _LOG_DIR, log_filename)
 
 logger = logging.getLogger(__name__)
 # override the default logging level WARN to lower level so we can also log INFO level messages

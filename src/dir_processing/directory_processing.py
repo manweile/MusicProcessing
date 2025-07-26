@@ -19,7 +19,7 @@ from pathlib import Path
 
 # local modules
 from src import _AUDIO_EXTS, _AUDIO_TYPES, _EXPORT_TLD, _HOME, _MEDIA
-from src.generated_files import generated_files as _GENERATED_FILES
+from src.generated_files import generated_files as GENERATED_FILES
 
 gc.enable()
 
@@ -68,7 +68,7 @@ class DirectoryProcessing():
 
         data = []
         csv_filename = "found_" + file_ext + ".csv"
-        csv_dir = _GENERATED_FILES
+        csv_dir = GENERATED_FILES
         header_row = [file_ext + " file path"]
         type_count = 0
 
@@ -182,7 +182,7 @@ class DirectoryProcessing():
         album_count = 0
         artist_count = 0
         csv_count = 0
-        csv_dir = _GENERATED_FILES
+        csv_dir = GENERATED_FILES
         csv_filename = "found_audio_files.csv"
         dir_count = 0
         file_extension = None
@@ -453,7 +453,7 @@ class DirectoryProcessing():
                 input_path_components = input_path_parts[1:]
 
             # using fixed storage path because will always know project structure
-            export_dir = os.path.join(_GENERATED_FILES, _EXPORT_TLD)
+            export_dir = os.path.join(GENERATED_FILES, _EXPORT_TLD)
 
             for component in input_path_components:
                 export_dir = os.path.join(export_dir, component)
