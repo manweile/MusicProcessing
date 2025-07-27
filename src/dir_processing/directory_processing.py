@@ -19,7 +19,7 @@ from pathlib import Path
 
 # local modules
 from src import AUDIO_EXTS, AUDIO_TYPES, EXPORT_TLD, HOME, MEDIA
-from src.generated_files import generated_files as GENERATED_FILES
+from src.generated_files import GENERATED_FILES
 
 gc.enable()
 

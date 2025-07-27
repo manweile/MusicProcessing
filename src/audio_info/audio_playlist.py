@@ -14,9 +14,9 @@ from datetime import datetime
 from pathlib import Path
 
 # local modules
-from src import AUDIO_EXTS, _PLAYLIST_EXTS
+from src import AUDIO_EXTS, PLAYLIST_EXTS
 from src.dir_processing import DirectoryProcessing
-from src.generated_files import generated_files as GENERATED_FILES
+from src.generated_files import GENERATED_FILES
 
 gc.enable()
 
@@ -27,22 +27,22 @@ gc.enable()
 # @todo https://docs.python.org/3/library/logging.html
 # https://docs.python.org/3/howto/logging.html#logging-advanced-tutorial
 _DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
-_FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
-_LOG_DIR = "logs"
-_LOG_EXT = ".log"
+FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+LOG_DIR = "logs"
+LOG_EXT = ".log"
 
 start_execution = datetime.now()
 start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
 
-log_filename = "playlist" + _LOG_EXT
-log_filepath = os.path.join(GENERATED_FILES, _LOG_DIR, log_filename)
+log_filename = "playlist" + LOG_EXT
+log_filepath = os.path.join(GENERATED_FILES, LOG_DIR, log_filename)
 
 logger = logging.getLogger(__name__)
 # override the default logging level WARN to lowest level so we can log all level messages
 logger.setLevel(logging.DEBUG)
 
 # file handler logs debug level to log file only, no output to console
-file_log_formatter = logging.Formatter(_FILE_LOG_FORMAT)
+file_log_formatter = logging.Formatter(FILE_LOG_FORMAT)
 file_handler = logging.FileHandler(log_filepath, mode="a", encoding="utf-8")
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(file_log_formatter)
@@ -193,7 +193,7 @@ class AudioPlaylist():
                     _, input_file_ext = os.path.splitext(file)
 
                     # file is not mp3, m4a, or wma, so carry on to next file
-                    if input_file_ext.lower() not in _PLAYLIST_EXTS:
+                    if input_file_ext.lower() not in PLAYLIST_EXTS:
                         continue
 
                     input_file_path = os.path.join(dir_path, file)

@@ -18,7 +18,7 @@ from src.audio_info import AudioPlaylist
 
 # local modules
 from src import EXPORT_TLD
-from src.generated_files import generated_files as GENERATED_FILES
+from src.generated_files import GENERATED_FILES
 
 gc.enable()
 

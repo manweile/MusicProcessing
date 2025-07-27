@@ -28,7 +28,7 @@ from tqdm import tqdm
 from src import AUDIO_EXTS, AUDIO_TYPES
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
-from src.generated_files import generated_files as GENERATED_FILES
+from src.generated_files import GENERATED_FILES
 
 gc.enable()
 

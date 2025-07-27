@@ -25,7 +25,7 @@ from yaspin.spinners import Spinners
 # local modules
 from src import AUDIO_EXTS, AUDIO_TYPES
 from src.dir_processing import DirectoryProcessing
-from src.generated_files import generated_files as GENERATED_FILES
+from src.generated_files import GENERATED_FILES
 
 gc.enable()
 
@@ -42,22 +42,22 @@ _I = "-16.0"
 _LRA = "11.0"
 _TP = "-2.0"
 
-_LOG_DIR = "logs"
-_LOG_EXT = ".log"
-_FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+LOG_DIR = "logs"
+LOG_EXT = ".log"
+FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 _STREAM_LOG_FORMAT = '%(message)s'
 
 directory = DirectoryProcessing()
 
-log_filename = "normalization" + _LOG_EXT
-log_filepath = os.path.join(GENERATED_FILES, _LOG_DIR, log_filename)
+log_filename = "normalization" + LOG_EXT
+log_filepath = os.path.join(GENERATED_FILES, LOG_DIR, log_filename)
 
 logger = logging.getLogger(__name__)
 # override the default logging level WARN to lower level so we can also log INFO level messages
 logger.setLevel(logging.DEBUG)
 
 # file handler logs to log file only, no output to console
-file_log_formatter = logging.Formatter(_FILE_LOG_FORMAT)
+file_log_formatter = logging.Formatter(FILE_LOG_FORMAT)
 file_handler = logging.FileHandler(log_filepath, mode="a", encoding="utf-8")
 # file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(file_log_formatter)
