@@ -67,6 +67,7 @@
         "inputfile",
         "intlimits",
         "ismap",
+        "jsonlogger",
         "labelfontname",
         "libclang",
         "LOGFILE",
