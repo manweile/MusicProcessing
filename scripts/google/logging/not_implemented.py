@@ -1,3 +1,4 @@
+# google ai search line python how to log argparse invalid command to log instead of console
 import argparse
 import inspect
 import logging
@@ -6,9 +7,13 @@ import sys
 
 
 # Configure logging
-filepath = os.path.dirname(os.path.abspath(__file__))
-filename = os.path.join(filepath, "not_implemented.log")
-format = '\n%(asctime)s - %(levelname)s - %(message)s'
+dirpath = os.path.dirname(os.path.abspath(__file__))
+basename = os.path.basename(__file__)
+stem = os.path.splitext(basename)[0]
+file = stem + ".log"
+filename = os.path.join(dirpath, file)
+# format = '\n%(asctime)s - %(levelname)s - %(message)s'
+format = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 logging.basicConfig(filename=filename, level=logging.DEBUG, format=format, filemode="a", encoding="utf-8")
 logger = logging.getLogger(__name__)
 

@@ -1288,3 +1288,60 @@ Stack (most recent call last):
     exec(code, run_globals)
   File "/home/gerald/MusicProcessing/scripts/google/logging/not_implemented.py", line 72, in <module>
     logger.exception("Exception", stack_info=True)
+
+2025-07-27 13:26:41,863 - INFO - Starting main application.
+
+2025-07-27 13:26:41,864 - ERROR - NotImplementedError
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/scripts/google/logging/not_implemented.py", line 72, in <module>
+    main(args)
+  File "/home/gerald/MusicProcessing/scripts/google/logging/not_implemented.py", line 52, in main
+    some_function_that_might_not_be_implemented()
+  File "/home/gerald/MusicProcessing/scripts/google/logging/not_implemented.py", line 40, in some_function_that_might_not_be_implemented
+    raise NotImplementedError()
+NotImplementedError
+
+2025-07-27 13:29:36,158 — __main__ — INFO — main:50 — Starting main application.
+
+2025-07-27 13:29:36,159 — __main__ — ERROR — <module>:75 — NotImplementedError
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/scripts/google/logging/not_implemented.py", line 73, in <module>
+    main(args)
+  File "/home/gerald/MusicProcessing/scripts/google/logging/not_implemented.py", line 53, in main
+    some_function_that_might_not_be_implemented()
+  File "/home/gerald/MusicProcessing/scripts/google/logging/not_implemented.py", line 41, in some_function_that_might_not_be_implemented
+    raise NotImplementedError()
+NotImplementedError
+
+2025-07-27 13:31:29,024 — __main__ — INFO — main:50 — Starting main application.
+
+2025-07-27 13:31:29,084 — __main__ — ERROR — <module>:77 — Exception
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/scripts/google/logging/not_implemented.py", line 73, in <module>
+    main(args)
+  File "/home/gerald/MusicProcessing/scripts/google/logging/not_implemented.py", line 55, in main
+    some_function_that_has_exception()
+  File "/home/gerald/MusicProcessing/scripts/google/logging/not_implemented.py", line 45, in some_function_that_has_exception
+    raise Exception()
+Exception
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/scripts/google/logging/not_implemented.py", line 77, in <module>
+    logger.exception("Exception", stack_info=True)
+
+2025-07-27 13:33:08,971 — __main__ — INFO — main:50 — Starting main application.
