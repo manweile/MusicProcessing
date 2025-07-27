@@ -14,7 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 # local modules
-from src import _AUDIO_EXTS, _PLAYLIST_EXTS
+from src import AUDIO_EXTS, _PLAYLIST_EXTS
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import generated_files as GENERATED_FILES
 
@@ -93,9 +93,9 @@ class AudioPlaylist():
                 # get the audio file name ext, may have to change it
                 input_ext = os.path.splitext(os.path.basename(input_audio))[1]
                 # wma and m4a files need mp3 extension
-                if input_ext != _AUDIO_EXTS[0]:
+                if input_ext != AUDIO_EXTS[0]:
                     input_stem = os.path.splitext(os.path.basename(input_audio))[0]
-                    audio = input_stem + _AUDIO_EXTS[0]
+                    audio = input_stem + AUDIO_EXTS[0]
                 else:
                     audio = input_audio
             else:

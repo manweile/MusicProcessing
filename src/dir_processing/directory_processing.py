@@ -18,7 +18,7 @@ from operator import itemgetter
 from pathlib import Path
 
 # local modules
-from src import _AUDIO_EXTS, _AUDIO_TYPES, _EXPORT_TLD, _HOME, _MEDIA
+from src import AUDIO_EXTS, AUDIO_TYPES, EXPORT_TLD, HOME, MEDIA
 from src.generated_files import generated_files as GENERATED_FILES
 
 gc.enable()
@@ -215,16 +215,16 @@ class DirectoryProcessing():
                 for file in filenames:
                     _, file_extension = os.path.splitext(file)
 
-                    if (file_extension.lower() in _AUDIO_EXTS):
+                    if (file_extension.lower() in AUDIO_EXTS):
                         audio_file_path = os.path.join(dir_path, file)
                         data.append([audio_file_path, file_extension])
                         audio_count += 1
 
-                        if file_extension == _AUDIO_EXTS[0]:
+                        if file_extension == AUDIO_EXTS[0]:
                             mp3_count += 1
-                        elif file_extension == _AUDIO_EXTS[1]:
+                        elif file_extension == AUDIO_EXTS[1]:
                             m4a_count += 1
-                        elif file_extension == _AUDIO_EXTS[2]:
+                        elif file_extension == AUDIO_EXTS[2]:
                             wma_count += 1
                     else:
                         if file_extension == ".csv":
@@ -249,9 +249,9 @@ class DirectoryProcessing():
             print(f"Found {album_count} album directories")
             print(f"Found {dir_count} total directories")
 
-            print(f"Found {mp3_count} {_AUDIO_TYPES[0]} files")
-            print(f"Found {m4a_count} {_AUDIO_TYPES[1]} files")
-            print(f"Found {wma_count} {_AUDIO_TYPES[2]} files")
+            print(f"Found {mp3_count} {AUDIO_TYPES[0]} files")
+            print(f"Found {m4a_count} {AUDIO_TYPES[1]} files")
+            print(f"Found {wma_count} {AUDIO_TYPES[2]} files")
             print(f"Found {audio_count} total audio files")
 
             print(f"Found {csv_count} csv files")
@@ -283,7 +283,7 @@ class DirectoryProcessing():
         if (file_ext):
             self.__ext_file_list(file_ext, start_path)
         else:
-            for file_ext in _AUDIO_TYPES:
+            for file_ext in AUDIO_TYPES:
                 self.__ext_file_list(file_ext, start_path)
 
 
@@ -399,8 +399,8 @@ class DirectoryProcessing():
             input_path = Path(file_path)
 
             input_ext = input_path.suffix
-            if input_ext.lower() not in _AUDIO_EXTS:
-                raise Exception(f"File {input_path} is not in {_AUDIO_TYPES}")
+            if input_ext.lower() not in AUDIO_EXTS:
+                raise Exception(f"File {input_path} is not in {AUDIO_TYPES}")
 
             r'''
             Ubuntu file path:
@@ -439,11 +439,11 @@ class DirectoryProcessing():
 
             # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
             # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
-            if input_path_parts[0] == _MEDIA:
+            if input_path_parts[0] == MEDIA:
                 # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
                 # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
                 input_path_components = input_path_parts[4:]
-            elif input_path_parts[0] == _HOME:
+            elif input_path_parts[0] == HOME:
                 # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
                 # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
                 input_path_components = input_path_parts[3:]
@@ -453,7 +453,7 @@ class DirectoryProcessing():
                 input_path_components = input_path_parts[1:]
 
             # using fixed storage path because will always know project structure
-            export_dir = os.path.join(GENERATED_FILES, _EXPORT_TLD)
+            export_dir = os.path.join(GENERATED_FILES, EXPORT_TLD)
 
             for component in input_path_components:
                 export_dir = os.path.join(export_dir, component)
@@ -463,7 +463,7 @@ class DirectoryProcessing():
                 os.makedirs(export_dir)
 
             # get mp3 audio extension from package constants
-            export_ext = _AUDIO_EXTS[0]
+            export_ext = AUDIO_EXTS[0]
 
             input_name = input_path.stem
 

@@ -25,7 +25,7 @@ from pydub.utils import mediainfo
 from tqdm import tqdm
 
 # local modules
-from src import _AUDIO_EXTS, _AUDIO_TYPES
+from src import AUDIO_EXTS, AUDIO_TYPES
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import generated_files as GENERATED_FILES
@@ -199,7 +199,7 @@ class AudioMetadata():
         try:
             export_path = directory.path_info(file_path)
 
-            export_format = _AUDIO_TYPES[0]
+            export_format = AUDIO_TYPES[0]
             input_format = os.path.splitext(file_path)[1].lower()[1:]
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_parent = os.path.dirname(file_path)
@@ -308,7 +308,7 @@ class AudioMetadata():
                     _, input_file_ext = os.path.splitext(file)
 
                     # file is not mp3, m4a, or wma, so carry on to next file
-                    if input_file_ext.lower() not in _AUDIO_EXTS:
+                    if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
                     elif file_pattern:
                         if not fnmatch.fnmatch(file, file_pattern.lower()):
@@ -383,7 +383,7 @@ class AudioMetadata():
                         _, file_ext = os.path.splitext(artist_item)
 
                     # audio files are supposed to be in an album sub dir
-                    if file_ext.lower() in _AUDIO_EXTS:
+                    if file_ext.lower() in AUDIO_EXTS:
                         audio_file = artist_item_path
                         # using ffprobe function cause it is audio file type agnostic
                         file_media_tags = self.get_media_tags(audio_file)
@@ -515,7 +515,7 @@ class AudioMetadata():
                     input_file, input_file_ext = os.path.splitext(file)
 
                     # file is not mp3, m4a, or wma, so carry on to next file
-                    if input_file_ext.lower() not in _AUDIO_EXTS:
+                    if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
                     elif file_pattern:
                         if not fnmatch.fnmatch(file, file_pattern.lower()):
@@ -631,7 +631,7 @@ class AudioMetadata():
                     input_file, input_file_ext = os.path.splitext(file)
 
                     # we don't touch non-audio files like jpg's
-                    if input_file_ext.lower() not in _AUDIO_EXTS:
+                    if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
 
                     if file_pattern and not fnmatch.fnmatch(file, file_pattern.lower()):
@@ -713,7 +713,7 @@ class AudioMetadata():
                     input_file, input_file_ext = os.path.splitext(file)
 
                     # we don't touch non-audio files like jpg's
-                    if input_file_ext.lower() not in _AUDIO_EXTS:
+                    if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
 
                     tag_file_path = os.path.join(dir_path, file)
@@ -741,7 +741,7 @@ class AudioMetadata():
             has_art = False
             file_name, file_ext = os.path.splitext(file_path)
 
-            if file_ext.lower() not in _AUDIO_EXTS:
+            if file_ext.lower() not in AUDIO_EXTS:
                 raise Exception(f"File: {file_name} has invalid extension: {file_ext}")
 
             audio_tags = self.get_any_tags(file_path)

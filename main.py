@@ -12,7 +12,6 @@ import logging
 import os
 import pprint
 import sys
-from datetime import datetime
 
 # local modules
 from src.audio_info import AudioArt
@@ -24,13 +23,10 @@ from src.generated_files import generated_files as GENERATED_FILES
 
 gc.enable()
 
-_DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
+
 _FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 _LOG_DIR = "logs"
 _LOG_EXT = ".log"
-
-start_execution = datetime.now()
-start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
 
 log_filename = "main" + _LOG_EXT
 log_filepath = os.path.join(GENERATED_FILES, _LOG_DIR, log_filename)

@@ -14,7 +14,6 @@ import math
 import os
 import re
 import subprocess
-from datetime import datetime
 from json import JSONDecodeError
 from pathlib import Path
 from subprocess import CalledProcessError
@@ -24,7 +23,7 @@ from yaspin import yaspin
 from yaspin.spinners import Spinners
 
 # local modules
-from src import _AUDIO_EXTS, _AUDIO_TYPES
+from src import AUDIO_EXTS, AUDIO_TYPES
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import generated_files as GENERATED_FILES
 
@@ -43,16 +42,12 @@ _I = "-16.0"
 _LRA = "11.0"
 _TP = "-2.0"
 
-_DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
 _LOG_DIR = "logs"
 _LOG_EXT = ".log"
 _FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 _STREAM_LOG_FORMAT = '%(message)s'
 
 directory = DirectoryProcessing()
-
-start_execution = datetime.now()
-start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
 
 log_filename = "normalization" + _LOG_EXT
 log_filepath = os.path.join(GENERATED_FILES, _LOG_DIR, log_filename)
@@ -406,7 +401,7 @@ class AudioNormalization():
                     _, input_file_ext = os.path.splitext(file)
 
                     # file is not mp3, carry on to next file
-                    if input_file_ext.lower() != _AUDIO_EXTS[0]:
+                    if input_file_ext.lower() != AUDIO_EXTS[0]:
                         continue
 
                     input_file_path = os.path.join(dir_path, file)
@@ -436,7 +431,7 @@ class AudioNormalization():
         try:
             export_path = directory.path_info(file_path)
 
-            export_format = _AUDIO_TYPES[0]
+            export_format = AUDIO_TYPES[0]
             input_format = os.path.splitext(file_path)[1].lower()[1:]
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_dir = os.path.dirname(file_path)
@@ -515,7 +510,7 @@ class AudioNormalization():
         try:
             export_path = directory.path_info(file_path)
 
-            export_format = _AUDIO_TYPES[0]
+            export_format = AUDIO_TYPES[0]
             input_format = os.path.splitext(file_path)[1].lower()[1:]
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_dir = os.path.dirname(file_path)

@@ -24,7 +24,7 @@ from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 
 # local modules
-from src import _AUDIO_EXTS
+from src import AUDIO_EXTS
 from src.audio_normalize import AudioNormalization
 from src.generated_files import generated_files as GENERATED_FILES
 
@@ -171,7 +171,7 @@ class AudioArt():
 
             # we don't touch non-audio files like m3u etc
             input_file_ext = input_path.suffix
-            if input_file_ext.lower() not in _AUDIO_EXTS:
+            if input_file_ext.lower() not in AUDIO_EXTS:
                 return
 
             # file with video stream can use audio type agnostic extraction
@@ -347,7 +347,7 @@ class AudioArt():
                 for file in file_names:
                     _, input_file_ext = os.path.splitext(file)
                     # we don't touch non-audio files like m3u etc
-                    if input_file_ext.lower() not in _AUDIO_EXTS:
+                    if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
 
                     if file_pattern and not fnmatch.fnmatch(file, file_pattern.lower()):

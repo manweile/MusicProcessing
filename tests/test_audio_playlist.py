@@ -17,7 +17,7 @@ from src.audio_info import AudioPlaylist
 # import ipsumlorem
 
 # local modules
-from src import _EXPORT_TLD
+from src import EXPORT_TLD
 from src.generated_files import generated_files as GENERATED_FILES
 
 gc.enable()
@@ -37,10 +37,10 @@ class TestAudioPlaylist(unittest.TestCase):
         @brief Tests if the updated m3u file is equal to expected results.
         '''
 
-        input_m3u = os.path.join(_TESTS_PATH, _EXPORT_TLD, "test.m3u")
-        input_tld = os.path.join(_TESTS_PATH, _EXPORT_TLD)
+        input_m3u = os.path.join(_TESTS_PATH, EXPORT_TLD, "test.m3u")
+        input_tld = os.path.join(_TESTS_PATH, EXPORT_TLD)
         generated_m3u = os.path.join(GENERATED_FILES, "test.m3u")
-        expected_m3u = os.path.join(_TESTS_PATH, _EXPORT_TLD, "expected.m3u")
+        expected_m3u = os.path.join(_TESTS_PATH, EXPORT_TLD, "expected.m3u")
 
         # @todo how do I run AudioPlaylist.update_paths??
         playlist.update_paths(input_tld, input_m3u)
