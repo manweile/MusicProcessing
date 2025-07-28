@@ -25,6 +25,7 @@ from mutagen.mp4 import MP4
 
 # local modules
 from src import AUDIO_EXTS
+from src.audio_info import AudioMetadata
 from src.audio_normalize import AudioNormalization
 from src.generated_files import GENERATED_FILES
 
@@ -49,12 +50,13 @@ file_handler.setFormatter(file_log_formatter)
 
 logger.addHandler(file_handler)
 
-_ALBUM_ART = "AlbumArt"
+ALBUM_ART = "AlbumArt"
 _ASF = "ASF"
-_FOLDER_ART = "Folder.jpg"
+FOLDER_ART = "Folder.jpg"
 _MP3 = "MP3"
 _MP4 = "MP4"
 
+metadata = AudioMetadata()
 normalization = AudioNormalization()
 
 
@@ -137,7 +139,7 @@ class AudioArt():
             if image_data:
                 input_path = Path(file_path)
                 album_path = input_path.parent
-                output_file = os.path.join(album_path, _FOLDER_ART)
+                output_file = os.path.join(album_path, FOLDER_ART)
 
                 with open(output_file, 'wb') as img_file:
                     img_file.write(image_data)
@@ -166,7 +168,7 @@ class AudioArt():
 
             # don't need to waste cycles if we have a Folder.jpg from a previous execution
             album_contents = os.listdir(album_path)
-            if _FOLDER_ART in album_contents:
+            if FOLDER_ART in album_contents:
                 return
 
             # we don't touch non-audio files like m3u etc
@@ -184,7 +186,7 @@ class AudioArt():
             # no matter what extraction method, file must have an art tag
             if self.has_art_tag(input_path):
                 # each audio file type has different extraction method
-                metadata_type = self.get_metadata_type(input_path)
+                metadata_type = metadata.get_metadata_type(file_path)
                 if metadata_type == _ASF:
                     self.extract_asf_art(file_path)
                 elif metadata_type == _MP3:
@@ -238,7 +240,7 @@ class AudioArt():
             input_path = Path(file_path)
             album_path = input_path.parent
 
-            output_file = os.path.join(album_path, _FOLDER_ART)
+            output_file = os.path.join(album_path, FOLDER_ART)
 
             # -hide_banner to reduce output clutter
             # -an specifies ignore audio stream
@@ -341,7 +343,7 @@ class AudioArt():
 
                 # don't need to waste cycles if we have a Folder.jpg from a previous iteration
                 dir_contents = os.listdir(dir_path)
-                if _FOLDER_ART in dir_contents:
+                if FOLDER_ART in dir_contents:
                     continue
 
                 for file in file_names:
@@ -433,7 +435,7 @@ class AudioArt():
                 album_path = Path(dir_path)                                     # Eg. "C:\Music\Albert Collins\Best Of The Blues, Vol. 1
                 album_content = os.listdir(album_path)
 
-                if _FOLDER_ART in album_content:
+                if FOLDER_ART in album_content:
                     continue
 
                 # check in AlbumArt folder if a jpg for album name exists
@@ -441,14 +443,14 @@ class AudioArt():
                 album_jpg = album_dir_name + ".jpg"                             # should be "Best Of The Blues, Vol. 1.jpg"
 
                 # get the album art directory, per the project hierarchy
-                album_art_dir = os.path.join(GENERATED_FILES, _ALBUM_ART)       # D:\MusicProcessing\src\generated_files\ALbumArt
+                album_art_dir = os.path.join(GENERATED_FILES, ALBUM_ART)       # D:\MusicProcessing\src\generated_files\ALbumArt
                 album_art_dir_content = os.listdir(album_art_dir)
 
                 if album_jpg in album_art_dir_content:
                     album_art_jpg = os.path.join(album_art_dir, album_jpg)      # D:\MusicProcessing\src\generated_files\ALbumArt\Best Of The Blues, Vol. 1.jpg
-                    folder_jpg = os.path.join(album_path, _FOLDER_ART)          # C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Folder.jpg
+                    folder_jpg = os.path.join(album_path, FOLDER_ART)          # C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Folder.jpg
                     shutil.copy(album_art_jpg, folder_jpg)
-                    logger.info(f"Set {album_art_jpg} as {_FOLDER_ART} for {album_path}")
+                    logger.info(f"Set {album_art_jpg} as {FOLDER_ART} for {album_path}")
                 else:
                     logger.warning(f"No album art set for {album_path}")
 

@@ -33,7 +33,7 @@ from src.generated_files import GENERATED_FILES
 gc.enable()
 
 _ASF = "ASF"
-_FOLDER_ART = "Folder.jpg"
+FOLDER_ART = "Folder.jpg"
 _MP3 = "MP3"
 _MP4 = "MP4"
 _TPOS = "TPOS"
@@ -244,9 +244,9 @@ class AudioMetadata():
             Therefore all audio files must have co-located cover art.
             '''
 
-            cover = os.path.join(input_path_parent, _FOLDER_ART)
+            cover = os.path.join(input_path_parent, FOLDER_ART)
             if not os.path.exists(cover):
-                print(f"album directory {input_path_parent} does not contain a {_FOLDER_ART} file.")
+                print(f"album directory {input_path_parent} does not contain a {FOLDER_ART} file.")
                 return
 
             if metadata_type == _MP3:
