@@ -24,7 +24,7 @@ from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 
 # local modules
-from src import AUDIO_EXTS
+from src import AUDIO_EXTS, AUDIO_FILES, FOLDER_ART
 from src.audio_info import AudioMetadata
 from src.audio_normalize import AudioNormalization
 from src.generated_files import GENERATED_FILES
@@ -51,10 +51,6 @@ file_handler.setFormatter(file_log_formatter)
 logger.addHandler(file_handler)
 
 ALBUM_ART = "AlbumArt"
-_ASF = "ASF"
-FOLDER_ART = "Folder.jpg"
-_MP3 = "MP3"
-_MP4 = "MP4"
 
 metadata = AudioMetadata()
 normalization = AudioNormalization()
@@ -187,11 +183,11 @@ class AudioArt():
             if self.has_art_tag(input_path):
                 # each audio file type has different extraction method
                 metadata_type = metadata.get_metadata_type(file_path)
-                if metadata_type == _ASF:
+                if metadata_type == AUDIO_FILES[2]:
                     self.extract_asf_art(file_path)
-                elif metadata_type == _MP3:
+                elif metadata_type == AUDIO_FILES[0]:
                     self.extract_mp3_art(file_path)
-                elif metadata_type == _MP4:
+                elif metadata_type == AUDIO_FILES[1]:
                     self.extract_m4a_art(file_path)
             else:
                 logger.warning(f"No metadata tag album art present in {file_path}")

@@ -8,6 +8,11 @@
 # @details use this when working with os library
 AUDIO_EXTS = [".mp3", ".m4a", ".wma"]
 
+## @var AUDIO_FILES
+# @brief audio file type to mutagen class mapping
+# @details use this when working with mutagen library
+AUDIO_FILES = ["MP3", "MP4", "ASF"]
+
 ## @var AUDIO_TYPES
 # @brief audio file types in my collection
 # @details use this when you just need the type
@@ -66,6 +71,7 @@ UTF8 = "utf-8"
 ## @var __all__
 # @brief Exposes variables for importing by other modules.
 # @details In modules needing the constant add `from src import AUDIO_EXTS`
+# @details In modules needing the constant add `from src import AUDIO_FILES`
 # @details In modules needing the constant add `from src import AUDIO_TYPES`
 # @details In modules needing the constant add 'from src import EXPORT_TLD`
 # @details In modules needing the constant add 'from src import HOME`
@@ -77,4 +83,4 @@ UTF8 = "utf-8"
 # @details In modules needing the constant add `from src import PLAYLIST_EXTS`
 # @details In modules needing the constant add `from src import PLAYLIST_TYPES`
 # @details In modules needing the constant add `from src import UTF8'
-__all__ = ["AUDIO_EXTS", "AUDIO_TYPES", "EXPORT_TLD", "FILE_LOG_FORMAT", "FOLDER_ART", "HOME", "LOG_DIR", "LOG_EXT", "MEDIA", "PLAYLIST_EXTS", "PLAYLIST_TYPES", "UTF8"]
+__all__ = ["AUDIO_EXTS", "AUDIO_FILES", "AUDIO_TYPES", "EXPORT_TLD", "FILE_LOG_FORMAT", "FOLDER_ART", "HOME", "LOG_DIR", "LOG_EXT", "MEDIA", "PLAYLIST_EXTS", "PLAYLIST_TYPES", "UTF8"]

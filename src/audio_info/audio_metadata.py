@@ -25,23 +25,19 @@ from pydub.utils import mediainfo
 from tqdm import tqdm
 
 # local modules
-from src import AUDIO_EXTS, AUDIO_TYPES
+from src import AUDIO_EXTS, AUDIO_FILES, AUDIO_TYPES, FOLDER_ART
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import GENERATED_FILES
 
 gc.enable()
 
-_ASF = "ASF"
-FOLDER_ART = "Folder.jpg"
-_MP3 = "MP3"
-_MP4 = "MP4"
-_TPOS = "TPOS"
-_TYER = "TYER"
+TPOS = "TPOS"
+TYER = "TYER"
 
 # the set of pydub generic metadata keys I want to copy to converted & normalized files
 # these keys also correspond to what Windows displays as file information in File Explorer
-_GEN_KEYS = {
+GEN_KEYS = {
     'album',                # must have                     ffmpeg mapping: TALB
     'album_artist',         # must have                     ffmpeg mapping: TPE2
     'artist',               # must have                     ffmpeg mapping: TPE1
@@ -64,7 +60,7 @@ _GEN_KEYS = {
 }
 
 # dict of generic to ID3v2.3 (MP3)
-_MP3_KEYS = {
+MP3_KEYS = {
     'album': 'TALB',
     'album_artist': 'TPE2',
     'artist': 'TPE1',
@@ -82,7 +78,7 @@ _MP3_KEYS = {
     'custom_original_year': 'TXXX=originalyear'             # ID3 user defined original year field convert to ID3v2.3 TYER
 }
 
-_MP3_TIME_KEYS = {
+MP3_TIME_KEYS = {
     'TYER',                                                 # preferred key
     'TORY',
     'TDRC',
@@ -91,7 +87,7 @@ _MP3_TIME_KEYS = {
 }
 
 # dict of possible m4a (MP4)
-_M4A_KEYS = {
+M4A_KEYS = {
     'album': '\xa9alb',
     'album_artist': 'aART',
     'artist': '\xa9ART',
@@ -106,13 +102,13 @@ _M4A_KEYS = {
     'track': 'trkn'
 }
 
-_M4A_TIME_KEYS = {
+M4A_TIME_KEYS = {
     '\xa9day',                                              # preferred key
     '----:com.apple.iTunes:originalyear'
 }
 
 # dict of possible wma (ASF)
-_WMA_KEYS = {
+WMA_KEYS = {
     'album': 'WM/AlbumTitle',
     'album_artist': 'WM/AlbumArtist',
     'artist': 'Author',
@@ -127,7 +123,7 @@ _WMA_KEYS = {
     'track': 'WM/TrackNumber'
 }
 
-_WMA_TIME_KEYS = {
+WMA_TIME_KEYS = {
 
     'WM/Year',                                              # preferred key
     'WM/OriginalReleaseYear'
@@ -167,10 +163,10 @@ class AudioMetadata():
             # want newest date from unique dates found
             if date_values:
                 max_date = max(date_values, key=int)
-                id3_tags[_TYER] = max_date
+                id3_tags[TYER] = max_date
 
-            if "TPOS" not in id3_tags:
-                id3_tags[_TPOS] = "1/1"
+            if TPOS not in id3_tags:
+                id3_tags[TPOS] = "1/1"
 
             for key, value in id3_tags.items():
                 print(f"key: {key}, value: {value}")
@@ -219,16 +215,16 @@ class AudioMetadata():
             '''
 
             metadata_type = self.get_metadata_type(file_path)
-            if metadata_type == _ASF:
-                format = _ASF
+            if metadata_type == AUDIO_FILES[2]:
+                format = AUDIO_FILES[2]
                 input_tags = self.get_wma_tags(file_path)
                 tags = self.map_wma_tags(input_tags)
-            elif metadata_type == _MP3:
-                format = _MP3
+            elif metadata_type == AUDIO_FILES[0]:
+                format = AUDIO_FILES[0]
                 input_tags = self.get_mp3_tags(file_path)
                 tags = self.map_mp3_tags(input_tags)
-            elif metadata_type == _MP4:
-                format = _MP4
+            elif metadata_type == AUDIO_FILES[1]:
+                format = AUDIO_FILES[1]
                 input_tags = self.get_m4a_tags(file_path)
                 tags = self.map_m4a_tags(input_tags)
             else:
@@ -249,11 +245,13 @@ class AudioMetadata():
                 print(f"album directory {input_path_parent} does not contain a {FOLDER_ART} file.")
                 return
 
-            if metadata_type == _MP3:
+            if metadata_type == AUDIO_FILES[0]:
+                # pydub has an MP3 file loader
                 audio_segment = AudioSegment.from_mp3(file_path)
-            elif metadata_type == _MP4:
+            elif metadata_type == AUDIO_FILES[1]:
+                # pydub does know about MP4 format, so pass it in
                 audio_segment = AudioSegment.from_file(file_path, format=format)
-            elif metadata_type == _ASF:
+            elif metadata_type == AUDIO_FILES[2]:
                 # pydub doesn't know about wma/asf, so no format forces an autodetect
                 audio_segment = AudioSegment.from_file(file_path)
 
@@ -643,11 +641,11 @@ class AudioMetadata():
                             input_tags = self.get_media_tags(tag_file_path)
                         else:
                             metadata_type = self.get_metadata_type(tag_file_path)
-                            if metadata_type == _ASF:
+                            if metadata_type == AUDIO_FILES[2]:
                                 input_tags = self.get_wma_tags(tag_file_path)
-                            elif metadata_type == _MP3:
+                            elif metadata_type == AUDIO_FILES[0]:
                                 input_tags = self.get_mp3_tags(tag_file_path)
-                            elif metadata_type == _MP4:
+                            elif metadata_type == AUDIO_FILES[1]:
                                 input_tags = self.get_m4a_tags(tag_file_path)
 
                         if input_tags:
@@ -871,11 +869,11 @@ class AudioMetadata():
         try:
             id3_tags = {}
             date_values = set()
-            for metadata_field, m4a_value in _M4A_KEYS.items():
+            for metadata_field, m4a_value in M4A_KEYS.items():
                 m4a_tag = input_tags.get(m4a_value)
 
                 if m4a_tag:
-                    mp3_key = _MP3_KEYS[metadata_field]
+                    mp3_key = MP3_KEYS[metadata_field]
                     metadata_value = input_tags[m4a_value][0]
 
                     if isinstance(metadata_value, tuple) and m4a_value == "trkn":
@@ -889,7 +887,7 @@ class AudioMetadata():
                         tag_value = f"{disc_num}/{total_discs}"
 
                     # for '\xa9day', ----:com.apple.iTunes:originalyear requires different handling
-                    if isinstance(metadata_value, str) and m4a_value in _M4A_TIME_KEYS:
+                    if isinstance(metadata_value, str) and m4a_value in M4A_TIME_KEYS:
                         # just in case string is "YYYY-MM-DD"
                         date_value = metadata_value[0:4]
                         date_values.add(date_value)
@@ -899,7 +897,7 @@ class AudioMetadata():
                     # m4a doesn't have a "native" original year field like "\xa9ory",
                     # relies on the iTunes field ----:com.apple.iTunes:originalyear,
                     # so need additional step to decode from MP4FreeForm
-                    if isinstance(metadata_value, MP4FreeForm) and m4a_value in _M4A_TIME_KEYS:
+                    if isinstance(metadata_value, MP4FreeForm) and m4a_value in M4A_TIME_KEYS:
                         decode_value = input_tags[m4a_value][0].decode()
                         # just in case string is "YYYY-MM-DD"
                         date_value = decode_value[0:4]
@@ -940,15 +938,15 @@ class AudioMetadata():
         try:
             id3_tags = {}
             date_values = set()
-            for metadata_field, mp3_value in _MP3_KEYS.items():
+            for metadata_field, mp3_value in MP3_KEYS.items():
 
                 mp3_tag = input_tags.get(mp3_value)
                 if mp3_tag:
-                    mp3_key = _MP3_KEYS[metadata_field]
+                    mp3_key = MP3_KEYS[metadata_field]
                     metadata_value = input_tags[mp3_value].text[0]
 
                     # need to get all possible date years into set, but not add to output dict just yet
-                    if isinstance(metadata_value, ID3TimeStamp) and (mp3_value in _MP3_TIME_KEYS):
+                    if isinstance(metadata_value, ID3TimeStamp) and (mp3_value in MP3_TIME_KEYS):
                         # just in case string is "YYYY-MM-DD"
                         date_value = metadata_value.text[0:4]
                         date_values.add(date_value)
@@ -983,15 +981,15 @@ class AudioMetadata():
         try:
             id3_tags = {}
             date_values = set()
-            for metadata_field, wma_value in _WMA_KEYS.items():
+            for metadata_field, wma_value in WMA_KEYS.items():
                 wma_tag = input_tags.get(wma_value)
 
                 if wma_tag:
-                    mp3_key = _MP3_KEYS[metadata_field]
+                    mp3_key = MP3_KEYS[metadata_field]
                     metadata_value = input_tags[wma_value][0].value
 
                     # need to get all possible date years into set, but not add to output dict just yet
-                    if isinstance(metadata_value, str) and (wma_value in _WMA_TIME_KEYS):
+                    if isinstance(metadata_value, str) and (wma_value in WMA_TIME_KEYS):
                         # just in case string is "YYYY-MM-DD"
                         date_value = metadata_value[0:4]
                         date_values.add(date_value)
