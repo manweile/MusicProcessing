@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 '''
+@file main.py
 @brief Music Processing project executable script.
 
 @details Run this script with appropriate input arguments to process audio files.
+
+@author Gerald Manweiler
+@copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
 # standard modules
@@ -15,8 +19,7 @@ import sys
 
 # local modules
 from src import FILE_LOG_FORMAT
-from src import LOG_DIR
-from src import LOG_EXT
+from src import LOG_DIR, LOG_EXT
 from src import UTF8
 from src.audio_info import AudioArt
 from src.audio_info import AudioMetadata
@@ -35,7 +38,7 @@ log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
 
 logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=FILE_LOG_FORMAT, filemode="a", encoding=UTF8)
 logger = logging.getLogger(__name__)
-# # override the default logging level WARN to lowest level so we can log all level messages
+# override the default logging level WARN to lowest level so we can log all level messages
 logger.setLevel(logging.DEBUG)
 
 art = AudioArt()

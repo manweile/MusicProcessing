@@ -10,44 +10,28 @@
 import gc
 import logging
 import os
-from datetime import datetime
 from pathlib import Path
 
 # local modules
-from src import AUDIO_EXTS, PLAYLIST_EXTS
+from src import AUDIO_EXTS
+from src import FILE_LOG_FORMAT
+from src import LOG_DIR, LOG_EXT
+from src import PLAYLIST_EXTS
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import GENERATED_FILES
 
 gc.enable()
 
-# @todo move these into src.__init__.py
-# @todo figure out one time declaration for logging
-# @todo the only thing that really changes is the log filename
-# @tdo google search: python logging def for many modules
-# @todo https://docs.python.org/3/library/logging.html
-# https://docs.python.org/3/howto/logging.html#logging-advanced-tutorial
-_DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
-FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
-LOG_DIR = "logs"
-LOG_EXT = ".log"
+# Configure logging
+basename = os.path.basename(__file__)
+stem = os.path.splitext(basename)[0]
+file = stem + LOG_EXT
+log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
 
-start_execution = datetime.now()
-start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
-
-log_filename = "playlist" + LOG_EXT
-log_filepath = os.path.join(GENERATED_FILES, LOG_DIR, log_filename)
-
+logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=FILE_LOG_FORMAT, filemode="a", encoding=UTF8)
 logger = logging.getLogger(__name__)
 # override the default logging level WARN to lowest level so we can log all level messages
 logger.setLevel(logging.DEBUG)
-
-# file handler logs debug level to log file only, no output to console
-file_log_formatter = logging.Formatter(FILE_LOG_FORMAT)
-file_handler = logging.FileHandler(log_filepath, mode="a", encoding="utf-8")
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(file_log_formatter)
-
-logger.addHandler(file_handler)
 
 _DELIMITER = ","
 

@@ -24,31 +24,26 @@ from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 
 # local modules
-from src import AUDIO_EXTS, AUDIO_FILES, FOLDER_ART
+from src import AUDIO_EXTS, AUDIO_FILES
+from src import FILE_LOG_FORMAT, FOLDER_ART
+from src import LOG_DIR, LOG_EXT
+from src import UTF8
 from src.audio_info import AudioMetadata
 from src.audio_normalize import AudioNormalization
 from src.generated_files import GENERATED_FILES
 
 gc.enable()
 
-FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
-LOG_DIR = "logs"
-LOG_EXT = ".log"
+# Configure logging
+basename = os.path.basename(__file__)
+stem = os.path.splitext(basename)[0]
+file = stem + LOG_EXT
+log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
 
-log_filename = "playlist" + LOG_EXT
-log_filepath = os.path.join(GENERATED_FILES, LOG_DIR, log_filename)
-
+logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=FILE_LOG_FORMAT, filemode="a", encoding=UTF8)
 logger = logging.getLogger(__name__)
 # override the default logging level WARN to lowest level so we can log all level messages
 logger.setLevel(logging.DEBUG)
-
-# file handler logs debug level to log file only, no output to console
-file_log_formatter = logging.Formatter(FILE_LOG_FORMAT)
-file_handler = logging.FileHandler(log_filepath, mode="a", encoding="utf-8")
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(file_log_formatter)
-
-logger.addHandler(file_handler)
 
 ALBUM_ART = "AlbumArt"
 

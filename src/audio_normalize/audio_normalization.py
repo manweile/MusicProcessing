@@ -24,10 +24,24 @@ from yaspin.spinners import Spinners
 
 # local modules
 from src import AUDIO_EXTS, AUDIO_TYPES
+from src import LOG_DIR, LOG_EXT
+from src import FILE_LOG_FORMAT
+from src import UTF8
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import GENERATED_FILES
 
 gc.enable()
+
+# Configure logging
+basename = os.path.basename(__file__)
+stem = os.path.splitext(basename)[0]
+file = stem + LOG_EXT
+log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
+
+logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=FILE_LOG_FORMAT, filemode="a", encoding=UTF8)
+logger = logging.getLogger(__name__)
+# override the default logging level WARN to lowest level so we can log all level messages
+logger.setLevel(logging.DEBUG)
 
 r'''
 AES https://www.aes.org/technical/documents/AESTD1004_1_15_10.pdf
@@ -38,31 +52,11 @@ I want wider range because most of my collection has a wider range
 ffmpeg loudnorm maximum true peak EBU R128 default: -2.0,
 I will keep that cause I want the extra headroom space vs -1.0 or 0.0
 '''
-_I = "-16.0"
-_LRA = "11.0"
-_TP = "-2.0"
-
-LOG_DIR = "logs"
-LOG_EXT = ".log"
-FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
-_STREAM_LOG_FORMAT = '%(message)s'
+ILT = "-16.0"
+LRA = "11.0"
+TP = "-2.0"
 
 directory = DirectoryProcessing()
-
-log_filename = "normalization" + LOG_EXT
-log_filepath = os.path.join(GENERATED_FILES, LOG_DIR, log_filename)
-
-logger = logging.getLogger(__name__)
-# override the default logging level WARN to lower level so we can also log INFO level messages
-logger.setLevel(logging.DEBUG)
-
-# file handler logs to log file only, no output to console
-file_log_formatter = logging.Formatter(FILE_LOG_FORMAT)
-file_handler = logging.FileHandler(log_filepath, mode="a", encoding="utf-8")
-# file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(file_log_formatter)
-
-logger.addHandler(file_handler)
 
 
 class AudioNormalization():
@@ -181,7 +175,7 @@ class AudioNormalization():
                 "-hide_banner",
                 "-i", file_path,
                 "-vn",
-                "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:print_format=json"),
+                "-af", (f"loudnorm=I={ILT}:TP={TP}:LRA={LRA}:print_format=json"),
                 "-f", "null", "-"
             ]
 
@@ -219,7 +213,7 @@ class AudioNormalization():
                 "-hide_banner",
                 "-i", file_path,
                 "-id3v2_version", "3",
-                "-af", (f"loudnorm=I={_I}:TP={_TP}:LRA={_LRA}:"
+                "-af", (f"loudnorm=I={ILT}:TP={TP}:LRA={LRA}:"
                         f"measured_I={measured_i}:measured_TP={measured_tp}:"
                         f"measured_LRA={measured_lra}:measured_thresh={measured_thresh}:"
                         f"offset={offset}:linear=true"
@@ -456,11 +450,11 @@ class AudioNormalization():
             else:
                 logger.info(f"max volume: {max_volume:.2f} dB")
 
-            adjustment = 0 + float(_TP) - float(max_volume)
+            adjustment = 0 + float(TP) - float(max_volume)
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
-                peak_text = print(f"peak normalizing by {_TP} minus {max_volume:.2f} dB equaling {adjustment:.2f} dB will result in clipping level: {clip_amount:.2f} dB in {export_path}")
+                peak_text = print(f"peak normalizing by {TP} minus {max_volume:.2f} dB equaling {adjustment:.2f} dB will result in clipping level: {clip_amount:.2f} dB in {export_path}")
                 logger.info(peak_text)
                 return
             else:
@@ -536,11 +530,11 @@ class AudioNormalization():
                 logger.info(unnecessary_text)
                 return
 
-            adjustment = float(_TP) - float(mean_volume)
+            adjustment = float(TP) - float(mean_volume)
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
-                peak_text = print(f"rms normalizing by {_TP} minus {mean_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB in {export_path}")
+                peak_text = print(f"rms normalizing by {TP} minus {mean_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB in {export_path}")
                 logger.info(peak_text)
                 return
             else:

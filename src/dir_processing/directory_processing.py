@@ -11,6 +11,7 @@ import csv
 import errno
 import fnmatch
 import gc
+import logging
 import shutil
 import os
 import sys
@@ -18,10 +19,28 @@ from operator import itemgetter
 from pathlib import Path
 
 # local modules
-from src import AUDIO_EXTS, AUDIO_TYPES, EXPORT_TLD, HOME, MEDIA
+from src import AUDIO_EXTS, AUDIO_TYPES
+from src import EXPORT_TLD
+from src import FILE_LOG_FORMAT
+from src import HOME
+from src import LOG_DIR, LOG_EXT
+from src import MEDIA
+from src import PLAYLIST_EXTS
+from src import UTF8
 from src.generated_files import GENERATED_FILES
 
 gc.enable()
+
+# Configure logging
+basename = os.path.basename(__file__)
+stem = os.path.splitext(basename)[0]
+file = stem + LOG_EXT
+log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
+
+logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=FILE_LOG_FORMAT, filemode="a", encoding=UTF8)
+logger = logging.getLogger(__name__)
+# override the default logging level WARN to lowest level so we can log all level messages
+logger.setLevel(logging.DEBUG)
 
 
 class DirectoryProcessing():
@@ -229,7 +248,7 @@ class DirectoryProcessing():
                     else:
                         if file_extension == ".csv":
                             csv_count += 1
-                        elif file_extension == ".m3u":
+                        elif file_extension == PLAYLIST_EXTS[0]:
                             m3u_count += 1
                         elif file_extension == ".txt":
                             txt_count += 1
