@@ -3,8 +3,6 @@
 @brief Holds package level constants used by other modules.
 '''
 
-# from Mp3Tag program, I know I have these audio/playlist file extensions and types
-
 ## @var AUDIO_EXTS
 # @brief audio file extensions in my collection
 # @details use this when working with os library
@@ -24,6 +22,11 @@ EXPORT_TLD = "Music"
 # @brief log file format
 # @details use this to set log file format
 FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+
+## @var FOLDER_ART
+# @brief name of album art jpg
+# @details use this when need to set album art file name
+FOLDER_ART = "Folder.jpg"
 
 ## @var HOME
 # @brief linux hdd mount point
@@ -55,16 +58,23 @@ PLAYLIST_EXTS = [".m3u"]
 # @details use this when you just need the type
 PLAYLIST_TYPES = ["m3u"]
 
+## @var UTF8
+# @brief utf encoding for file writing
+# @details use this when configuring file access
+UTF8 = "utf-8"
+
 ## @var __all__
 # @brief Exposes variables for importing by other modules.
-# @details  In modules needing the constant add `from src.AUDIO_EXTS import AUDIO_EXTS`
-# @details  In modules needing the constant add `from src.AUDIO_TYPES import AUDIO_TYPES`
-# @details  In modules needing the constant add 'from src.EXPORT_TLD import EXPORT_TLD`
-# @details  In modules needing the constant add 'from src.HOME import HOME`
-# @details  In modules needing the constant add 'from src.FILE_LOG_FORMAT import FILE_LOG_FORMAT
-# @details  In modules needing the constant add 'from src.LOG_DIR import LOG_DIR
-# @details  In modules needing the constant add 'from src.LOG_EXT import LOG_EXT
-# @details  In modules needing the constant add 'from src.MEDIA import MEDIA`
-# @details  In modules needing the constant add `from src.PLAYLIST_EXTS import PLAYLIST_EXTS`
-# @details  In modules needing the constant add `from src.PLAYLIST_TYPES import PLAYLIST_TYPES`
-__all__ = ["AUDIO_EXTS", "AUDIO_TYPES", "EXPORT_TLD", "FILE_LOG_FORMAT", "HOME", "LOG_DIR", "LOG_EXT", "MEDIA", "PLAYLIST_EXTS", "PLAYLIST_TYPES"]
+# @details In modules needing the constant add `from src import AUDIO_EXTS`
+# @details In modules needing the constant add `from src import AUDIO_TYPES`
+# @details In modules needing the constant add 'from src import EXPORT_TLD`
+# @details In modules needing the constant add 'from src import HOME`
+# @details In modules needing the constant add 'from src import FILE_LOG_FORMAT
+# @details In modules needing the constant add 'from src import FOLDER_ART'
+# @details In modules needing the constant add 'from src import LOG_DIR
+# @details In modules needing the constant add 'from src import LOG_EXT
+# @details In modules needing the constant add 'from src import MEDIA`
+# @details In modules needing the constant add `from src import PLAYLIST_EXTS`
+# @details In modules needing the constant add `from src import PLAYLIST_TYPES`
+# @details In modules needing the constant add `from src import UTF8'
+__all__ = ["AUDIO_EXTS", "AUDIO_TYPES", "EXPORT_TLD", "FILE_LOG_FORMAT", "FOLDER_ART", "HOME", "LOG_DIR", "LOG_EXT", "MEDIA", "PLAYLIST_EXTS", "PLAYLIST_TYPES", "UTF8"]
