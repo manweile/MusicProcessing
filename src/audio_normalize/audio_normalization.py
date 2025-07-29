@@ -628,6 +628,7 @@ class AudioNormalization():
             return process
 
         except CalledProcessError as e:
+            # @todo exception log the e values, then raise
             raise Exception(f"CalledProcessError returncode:{e.returncode}, with stderr: {e.stderr} on command {e.cmd}")
         except Exception as e:
             raise Exception(f"Exception {e} processing command: {command}")
