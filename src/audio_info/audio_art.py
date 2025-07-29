@@ -24,10 +24,9 @@ from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 
 # local modules
-from src import AUDIO_EXTS, AUDIO_FILES
+from src import AUDIO_EXTS
 from src import FOLDER_ART
 from src import FILE_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging modules
-from src.audio_info import AudioMetadata
 from src.audio_normalize import AudioNormalization
 from src.generated_files import GENERATED_FILES
 
@@ -46,7 +45,7 @@ logger.setLevel(logging.DEBUG)
 
 ALBUM_ART = "AlbumArt"
 
-metadata = AudioMetadata()
+# metadata = AudioMetadata()
 normalization = AudioNormalization()
 
 
@@ -113,7 +112,8 @@ class AudioArt():
             return (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
 
         except Exception:
-            logger.critical("Exception unpacking asf image from tag data", stack_info=True)
+            logger.exception("Exception unpacking asf image from tag data", stack_info=True)
+            raise
 
 
     def __write_data(self, file_path, image_data):
@@ -137,7 +137,8 @@ class AudioArt():
                 logger.info(f"Album art written from {input_path.name} and saved to {album_path}")
 
         except Exception:
-            logger.critical(f"Exception writing image data from {file_path}", stack_info=True)
+            logger.exception(f"Exception writing image data from {file_path}", stack_info=True)
+            raise
 
 
     def extract_album_art(self, file_path):
@@ -175,20 +176,19 @@ class AudioArt():
 
             # no matter what extraction method, file must have an art tag
             if self.has_art_tag(input_path):
-                # each audio file type has different extraction method
-                metadata_type = metadata.get_metadata_type(file_path)
-                if metadata_type == AUDIO_FILES[2]:
-                    self.extract_asf_art(file_path)
-                elif metadata_type == AUDIO_FILES[0]:
+                if input_file_ext.lower() == AUDIO_EXTS[0]:
                     self.extract_mp3_art(file_path)
-                elif metadata_type == AUDIO_FILES[1]:
+                elif input_file_ext.lower() == AUDIO_EXTS[1]:
                     self.extract_m4a_art(file_path)
+                elif input_file_ext.lower() == AUDIO_EXTS[2]:
+                    self.extract_asf_art(file_path)
             else:
                 logger.warning(f"No metadata tag album art present in {file_path}")
                 return
 
         except Exception:
-            logger.critical(f"Exception extracting album art from {file_path}", stack_info=True)
+            logger.exception(f"Exception extracting album art from {file_path}", stack_info=True)
+            raise
 
 
     def extract_asf_art(self, file_path):
@@ -212,7 +212,8 @@ class AudioArt():
             self.__write_data(file_path, image_data)
 
         except Exception:
-            logger.critical(f"Exception extracting asf art from {file_path}", stack_info=True)
+            logger.exception(f"Exception extracting asf art from {file_path}", stack_info=True)
+            raise
 
 
     def extract_ffmpeg_art(self, file_path):
@@ -254,7 +255,8 @@ class AudioArt():
             logger.info(f"FFMPEG extracted album art from {input_path.name} and saved to {album_path}")
 
         except Exception:
-            logger.critical(f"Exception using ffmpeg to extract art from {input_path}", stack_info=True)
+            logger.exception(f"Exception using ffmpeg to extract art from {input_path}", stack_info=True)
+            raise
 
 
     def extract_m4a_art(self, file_path):
@@ -284,7 +286,8 @@ class AudioArt():
             self.__write_data(file_path, image_data)
 
         except Exception:
-            logger.critical(f"Exception extracting m4a art from {file_path}", stack_info=True)
+            logger.exception(f"Exception extracting m4a art from {file_path}", stack_info=True)
+            raise
 
 
     def extract_mp3_art(self, file_path):
@@ -306,8 +309,9 @@ class AudioArt():
 
             self.__write_data(file_path, image_data)
 
-        except Exception as e:
+        except Exception:
             logger.critical(f"Exception extracting mp3 embedded art from {file_path}", stack_info=True)
+            raise
 
 
     def extract_walk(self, start_path, file_pattern):
@@ -350,9 +354,11 @@ class AudioArt():
 
         except Exception:
             if file_pattern:
-                logger.critical(f"Exception walking {start_path} to extract art from {file_pattern} audio files", stackInfo=True)
+                logger.exception(f"Exception walking {start_path} to extract art from {file_pattern} audio files", stackInfo=True)
+                raise
             else:
-                logger.critical(f"Exception walking {start_path} to extract art from audio files", stack_info=True)
+                logger.exception(f"Exception walking {start_path} to extract art from audio files", stack_info=True)
+                raise
 
 
     def has_video_stream(self, file_path):
@@ -394,10 +400,12 @@ class AudioArt():
 
         except JSONDecodeError:
             logger.error(f"JSONDecodeError on audio file: {file_path}", exc_info=True)
+            raise
         except Exception:
-            logger.critical(f"Exception extracting video stream from {file_path}", stackInfo=True)
-
-        return has_stream
+            logger.exception(f"Exception extracting video stream from {file_path}", stackInfo=True)
+            raise
+        else:
+            return has_stream
 
 
     def set_album_art(self, input_path):
@@ -445,4 +453,5 @@ class AudioArt():
                     logger.warning(f"No album art set for {album_path}")
 
         except Exception:
-            logger.critical(f"Exception setting album art for {album_path}", stack_info=True)
+            logger.exception(f"Exception setting album art for {album_path}", stack_info=True)
+            raise
