@@ -27,9 +27,8 @@ from tqdm import tqdm
 
 # local modules
 from src import AUDIO_EXTS, AUDIO_FILES, AUDIO_TYPES
-from src import FILE_LOG_FORMAT, FOLDER_ART
-from src import LOG_DIR, LOG_EXT
-from src import UTF8
+from src import FOLDER_ART
+from src import FILE_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging modules
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import GENERATED_FILES
@@ -46,6 +45,11 @@ logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=FILE_LOG_
 logger = logging.getLogger(__name__)
 # override the default logging level WARN to lowest level so we can log all level messages
 logger.setLevel(logging.DEBUG)
+
+# metadata class needs 2 file handlers:
+# information for normal audio processing events
+# error for abnormal situations
+
 
 TPOS = "TPOS"
 TYER = "TYER"
@@ -183,11 +187,12 @@ class AudioMetadata():
             if TPOS not in id3_tags:
                 id3_tags[TPOS] = "1/1"
 
-            for key, value in id3_tags.items():
-                print(f"key: {key}, value: {value}")
+            # @todo remove, this can be logged by calling function if needed
+            # for key, value in id3_tags.items():
+            #     print(f"key: {key}, value: {value}")
 
-        except Exception as e:
-            raise Exception(f"Exception: {e} updating tags")
+        except Exception as error:
+            raise Exception(f"Exception: {error} updating tags")
 
         return id3_tags
 
@@ -208,12 +213,21 @@ class AudioMetadata():
         '''
 
         try:
+            # @todo check for None
+            # if None, print to console and return
+            # path_info does an ext check and logs if unacceptable ext & prints to console
+            # for or raises Exception for unhandled errors
             export_path = directory.path_info(file_path)
 
+            # @todo check for a Folder.jpg colocated with audio file
+
+            # export format is always mp3
             export_format = AUDIO_TYPES[0]
+
             input_format = os.path.splitext(file_path)[1].lower()[1:]
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_parent = os.path.dirname(file_path)
+            # @todo this needs to go to a txt file
             print(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
             print(f"Source directory path: {input_path_parent}")
 

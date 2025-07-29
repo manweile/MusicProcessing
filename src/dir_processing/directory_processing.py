@@ -21,12 +21,9 @@ from pathlib import Path
 # local modules
 from src import AUDIO_EXTS, AUDIO_TYPES
 from src import EXPORT_TLD
-from src import FILE_LOG_FORMAT
-from src import HOME
-from src import LOG_DIR, LOG_EXT
-from src import MEDIA
+from src import FILE_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8         # logging modules
+from src import HOME, MEDIA                                     # ubuntu mount points
 from src import PLAYLIST_EXTS
-from src import UTF8
 from src.generated_files import GENERATED_FILES
 
 gc.enable()
@@ -406,7 +403,7 @@ class DirectoryProcessing():
         @details Creates export directory if it doesn't exist.
 
         @param file_path {str} The full file path for audio file.
-        @return export_path {str} The export path.
+        @return export_path {str} The export path, otherwise None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -419,6 +416,11 @@ class DirectoryProcessing():
 
             input_ext = input_path.suffix
             if input_ext.lower() not in AUDIO_EXTS:
+                # @todo log a warning, output to console, and return None??
+                # file not being audio type is not a fatal IF I deal with it now
+                # calling method can handle the None
+                # @todo consider a custom exception NotAudioType
+                # logging.error()
                 raise Exception(f"File {input_path} is not in {AUDIO_TYPES}")
 
             r'''
@@ -489,8 +491,10 @@ class DirectoryProcessing():
             export_name = input_name + export_ext
             export_path = os.path.join(export_dir, export_name)
 
-        except Exception as e:
-            raise Exception(f"Exception {e} getting export path {file_path}")
+        except Exception as error:
+            # @todo something unforeseen happened
+            # log the exception and reraise the exception error
+            raise Exception(f"Exception {error} getting export path {file_path}")
 
         return export_path
 
