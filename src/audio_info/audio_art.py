@@ -165,6 +165,7 @@ class AudioArt():
             # we don't touch non-audio files like m3u etc
             input_file_ext = input_path.suffix
             if input_file_ext.lower() not in AUDIO_EXTS:
+                logger.warning(f"{input_path.name} is not an audio file")
                 return
 
             # file with video stream can use audio type agnostic extraction
@@ -172,7 +173,7 @@ class AudioArt():
                 self.extract_ffmpeg_art(input_path)
                 return
             else:
-                logger.warning(f"No video stream album art present in {file_path}")
+                logger.info(f"No video stream album art present in {file_path}")
 
             # no matter what extraction method, file must have an art tag
             if self.has_art_tag(input_path):
