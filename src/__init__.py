@@ -74,13 +74,27 @@ UTF8 = "utf-8"
 # @details In modules needing the constant add `from src import AUDIO_FILES`
 # @details In modules needing the constant add `from src import AUDIO_TYPES`
 # @details In modules needing the constant add 'from src import EXPORT_TLD`
-# @details In modules needing the constant add 'from src import HOME`
 # @details In modules needing the constant add 'from src import FILE_LOG_FORMAT
 # @details In modules needing the constant add 'from src import FOLDER_ART'
+# @details In modules needing the constant add 'from src import HOME`
 # @details In modules needing the constant add 'from src import LOG_DIR
 # @details In modules needing the constant add 'from src import LOG_EXT
 # @details In modules needing the constant add 'from src import MEDIA`
 # @details In modules needing the constant add `from src import PLAYLIST_EXTS`
 # @details In modules needing the constant add `from src import PLAYLIST_TYPES`
 # @details In modules needing the constant add `from src import UTF8'
-__all__ = ["AUDIO_EXTS", "AUDIO_FILES", "AUDIO_TYPES", "EXPORT_TLD", "FILE_LOG_FORMAT", "FOLDER_ART", "HOME", "LOG_DIR", "LOG_EXT", "MEDIA", "PLAYLIST_EXTS", "PLAYLIST_TYPES", "UTF8"]
+__all__ = [
+    "AUDIO_EXTS",
+    "AUDIO_FILES",
+    "AUDIO_TYPES",
+    "EXPORT_TLD",
+    "FILE_LOG_FORMAT",
+    "FOLDER_ART",
+    "HOME",
+    "LOG_DIR",
+    "LOG_EXT",
+    "MEDIA",
+    "PLAYLIST_EXTS",
+    "PLAYLIST_TYPES",
+    "UTF8"
+    ]

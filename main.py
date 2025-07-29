@@ -18,9 +18,7 @@ import pprint
 import sys
 
 # local modules
-from src import FILE_LOG_FORMAT
-from src import LOG_DIR, LOG_EXT
-from src import UTF8
+from src import FILE_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging modules
 from src.audio_info import AudioArt
 from src.audio_info import AudioMetadata
 from src.audio_info import AudioPlaylist
@@ -30,6 +28,9 @@ from src.generated_files import GENERATED_FILES
 
 gc.enable()
 
+# @todo write a def for this, not sure where it will live though
+# param __file__
+# return log_filename
 # Configure logging
 basename = os.path.basename(__file__)
 stem = os.path.splitext(basename)[0]

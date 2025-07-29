@@ -25,9 +25,8 @@ from mutagen.mp4 import MP4
 
 # local modules
 from src import AUDIO_EXTS, AUDIO_FILES
-from src import FILE_LOG_FORMAT, FOLDER_ART
-from src import LOG_DIR, LOG_EXT
-from src import UTF8
+from src import FOLDER_ART
+from src import FILE_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging modules
 from src.audio_info import AudioMetadata
 from src.audio_normalize import AudioNormalization
 from src.generated_files import GENERATED_FILES

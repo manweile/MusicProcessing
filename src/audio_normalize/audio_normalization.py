@@ -24,9 +24,7 @@ from yaspin.spinners import Spinners
 
 # local modules
 from src import AUDIO_EXTS, AUDIO_TYPES
-from src import LOG_DIR, LOG_EXT
-from src import FILE_LOG_FORMAT
-from src import UTF8
+from src import FILE_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging modules
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import GENERATED_FILES
 

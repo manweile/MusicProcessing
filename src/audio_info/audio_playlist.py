@@ -14,8 +14,7 @@ from pathlib import Path
 
 # local modules
 from src import AUDIO_EXTS
-from src import FILE_LOG_FORMAT
-from src import LOG_DIR, LOG_EXT
+from src import FILE_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging modules
 from src import PLAYLIST_EXTS
 from src.dir_processing import DirectoryProcessing
 from src.generated_files import GENERATED_FILES
