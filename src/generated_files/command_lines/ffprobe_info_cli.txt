@@ -39,6 +39,36 @@ PS C:\Users\gmanw> ffprobe -v error -select_streams a:0 -show_entries stream=sam
     ]
 }
 
+this song, originally from F:\PreppedMusic, does not actually have a video stream, even though mp3tag/file explorer show album art.
+
+D:\MusicProcessing\tests\Music\Billie Holiday\Georgia On My Mind>ffprobe -hide_banner -select_streams v:0 -show_streams -of json "Billie Holiday-Georgia On My Mind.wma"
+{
+Input #0, asf, from 'Billie Holiday-Georgia On My Mind.wma':
+  Metadata:
+    DeviceConformanceTemplate: L2
+    artist          : Billie Holiday
+    title           : Georgia On My Mind
+    IsVBR           : 0
+    WM/BeatsPerMinute: 0
+    MediaFoundationVersion: 2.112
+    WM/UniqueFileIdentifier: ;
+    WM/Provider     : User Feedback
+    Albumartistsort : Holiday, Billie
+    WM/ArtistSortOrder: Holiday, Billie
+    album           : Georgia on My Mind
+    WM/Year         : 1997
+    track           : 13
+    WM/Track        : 12
+    genre           : Blues
+    album_artist    : Billie Holiday
+    publisher       : FMCG
+  Duration: 00:03:04.78, start: 0.000000, bitrate: 198 kb/s
+  Stream #0:0: Audio: wmav2 (a[1][0][0] / 0x0161), 44100 Hz, 2 channels, fltp, 192 kb/s
+    "streams": [
+
+    ]
+}
+
 this gives you all streams and format containers and banner
 gerald@msi-laptop:~$ ffprobe -show_format -show_streams /home/gerald/Music/Crush/Here/Crush-Live.mp3
 ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers

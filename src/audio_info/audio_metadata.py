@@ -777,11 +777,11 @@ class AudioMetadata():
                 raise Exception(f"File: {file_name} has no metadata")
 
             if 'WM/Picture' in audio_tags:
-                has_art = True
+                has_art = True          # ASF/wma
             elif 'covr' in audio_tags:
-                has_art = True
+                has_art = True          # MP4/m4a
             elif 'APIC:' in audio_tags:
-                has_art = True
+                has_art = True          # ID3/mp3
 
         except Exception as e:
             raise Exception(f"Exception {e} checking for album art tag in file {file_path}")

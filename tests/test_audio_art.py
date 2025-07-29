@@ -8,17 +8,28 @@
 
 # standard modules
 import gc
+import logging
 import os
 import unittest
 
 # local modules
+from src import EXPORT_TLD
+from src import FILE_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging modules
 from src.audio_info import AudioArt
-
-# local modules
-from src import EXPORT_TLD, FOLDER_ART
 from src.generated_files import GENERATED_FILES
 
 gc.enable()
+
+# Configure logging
+basename = os.path.basename(__file__)
+stem = os.path.splitext(basename)[0]
+file = stem + LOG_EXT
+log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
+
+logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=FILE_LOG_FORMAT, filemode="a", encoding=UTF8)
+logger = logging.getLogger(__name__)
+# override the default logging level WARN to lowest level so we can log all level messages
+logger.setLevel(logging.DEBUG)
 
 # get the dir path for test location need it to find audio files
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -71,37 +82,32 @@ class TestAudioArt(unittest.TestCase):
         not sure how to test
     '''
 
-    def test_extract_album_art(self):
+    def test_has_video_stream_false(self):
         '''
-        @brief Tests if album art is extracted from audio file.
+        @brief Tests if audio file does not have video stream.
         '''
 
-        pass
+        try:
+            # input_audio = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
+            input_audio = os.path.join(TESTS_TLD, "Billie Holiday", "Billie Holiday-Georgia On My Mind.wma")
+            self.assertFalse(art.has_video_stream(input_audio))
+        except Exception:
+            logger.exception("Exception", stackInfo=True)
 
 
-    # def test_update_m3u(self):
-    #     '''
-    #     @brief Tests if the updated m3u file is equal to expected results.
-    #     '''
+    def test_has_video_stream_true(self):
+        '''
+        @brief Tests if audio file does have video stream.
+        '''
 
-    #     input_m3u = os.path.join(_TESTS_PATH, EXPORT_TLD, "test.m3u")
-    #     input_tld = os.path.join(_TESTS_PATH, EXPORT_TLD)
-    #     generated_m3u = os.path.join(GENERATED_FILES, "test.m3u")
-    #     expected_m3u = os.path.join(_TESTS_PATH, EXPORT_TLD, "expected.m3u")
-
-    #     playlist.update_paths(input_tld, input_m3u)
-
-    #     self.assertTrue(os.path.exists(generated_m3u))
-
-    #     with open(generated_m3u, "r") as generated_file, open(expected_m3u, "r") as expected_file:
-    #         generated_content = generated_file.read()
-    #         expected_content = expected_file.read()
-    #         self.assertEqual(generated_content, expected_content, "File contents should be equal")
+        input_audio = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
+        self.assertTrue(art.has_video_stream(input_audio))
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(TestAudioArt('test_extract_album_art'))
+    suite.addTest(TestAudioArt('test_has_video_stream_false'))
+    suite.addTest(TestAudioArt('test_has_video_stream_true'))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
