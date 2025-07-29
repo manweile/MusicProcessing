@@ -13,7 +13,7 @@ stem = os.path.splitext(basename)[0]
 file = stem + ".log"
 filename = os.path.join(dirpath, file)
 # format = '\n%(asctime)s - %(levelname)s - %(message)s'
-format = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+format = '\n%(asctime)s — %(levelname)s - %(name)s — %(module)s.%(funcName)s:%(lineno)d — %(message)s'
 logging.basicConfig(filename=filename, level=logging.DEBUG, format=format, filemode="a", encoding="utf-8")
 logger = logging.getLogger(__name__)
 
@@ -49,12 +49,12 @@ def main(args):
     """The main function of the application."""
     logger.info("Starting main application.")
 
-    if args.subcommand == "error":
+    if args.subcommand == "warning":
+        some_function_that_has_warning()
+    elif args.subcommand == "error":
         some_function_that_might_not_be_implemented()
     elif args.subcommand == "exception":
         some_function_that_has_exception()
-    elif args.subcommand == "warning":
-        some_function_that_has_warning()
 
     logger.info("Main application finished successfully.")
 
@@ -64,9 +64,12 @@ if __name__ == "__main__":
         parser = CustomArgumentParser(description='Test Logger with args')
         subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
+        debug_parser = subparsers.add_parser("debug")
+        info_parser = subparsers.add_parser("info")
         warning_parser = subparsers.add_parser("warning")
         error_parser = subparsers.add_parser("error")
         exception_parser = subparsers.add_parser("exception")
+        critical_parser = subparsers.add_parser("critical")
 
 
         args = parser.parse_args()

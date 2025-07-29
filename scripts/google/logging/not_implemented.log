@@ -1345,3 +1345,177 @@ Stack (most recent call last):
     logger.exception("Exception", stack_info=True)
 
 2025-07-27 13:33:08,971 — __main__ — INFO — main:50 — Starting main application.
+
+2025-07-28 15:36:16,715 — INFO - __main__ — not_implemented.main:50 — Starting main application.
+
+2025-07-28 15:36:16,715 — WARNING - __main__ — not_implemented.some_function_that_has_warning:37 — A warning has occurred in not_implemented.some_function_that_has_warning
+
+2025-07-28 15:36:16,715 — INFO - __main__ — not_implemented.main:59 — Main application finished successfully.
+
+2025-07-28 15:39:18,800 — INFO - __main__ — not_implemented.main:50 — Starting main application.
+
+2025-07-28 15:39:18,800 — ERROR - __main__ — not_implemented.<module>:75 — NotImplementedError
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 73, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 53, in main
+    some_function_that_might_not_be_implemented()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 41, in some_function_that_might_not_be_implemented
+    raise NotImplementedError()
+NotImplementedError
+
+2025-07-28 15:40:50,026 — INFO - __main__ — not_implemented.main:50 — Starting main application.
+
+2025-07-28 15:41:24,643 — INFO - __main__ — not_implemented.main:50 — Starting main application.
+
+2025-07-28 15:41:56,699 — INFO - __main__ — not_implemented.main:50 — Starting main application.
+
+2025-07-28 15:41:56,709 — ERROR - __main__ — not_implemented.<module>:75 — NotImplementedError
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 73, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 53, in main
+    some_function_that_might_not_be_implemented()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 41, in some_function_that_might_not_be_implemented
+    raise NotImplementedError()
+NotImplementedError
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 75, in <module>
+    logger.error("NotImplementedError", stack_info=True, exc_info=True)
+
+2025-07-28 15:43:55,142 — ERROR - __main__ — not_implemented._print_message:25 — Argparse Error: usage: not_implemented.py [-h] {warning,error,exception} ...
+
+2025-07-28 15:43:55,142 — ERROR - __main__ — not_implemented._print_message:25 — Argparse Error: not_implemented.py: error: argument subcommand: invalid choice: 'v' (choose from 'warning', 'error', 'exception')
+
+2025-07-28 15:45:24,998 — INFO - __main__ — not_implemented.main:50 — Starting main application.
+
+2025-07-28 15:45:24,998 — INFO - __main__ — not_implemented.main:59 — Main application finished successfully.
+
+2025-07-28 15:47:32,140 — ERROR - __main__ — not_implemented._print_message:25 — Argparse Error: usage: not_implemented.py [-h] {warning,error,exception} ...
+
+2025-07-28 15:47:32,140 — ERROR - __main__ — not_implemented._print_message:25 — Argparse Error: not_implemented.py: error: argument subcommand: invalid choice: 'v' (choose from 'warning', 'error', 'exception')
+
+2025-07-28 15:47:53,794 — INFO - __main__ — not_implemented.main:50 — Starting main application.
+
+2025-07-28 15:47:53,794 — INFO - __main__ — not_implemented.main:59 — Main application finished successfully.
+
+2025-07-28 15:48:52,994 — ERROR - __main__ — not_implemented._print_message:25 — Argparse Error: usage: not_implemented.py [-h] {warning,error,exception} ...
+
+2025-07-28 15:48:57,612 — ERROR - __main__ — not_implemented._print_message:25 — Argparse Error: not_implemented.py: error: argument subcommand: invalid choice: 'ddd' (choose from 'warning', 'error', 'exception')
+
+2025-07-28 15:49:18,478 — INFO - __main__ — not_implemented.main:50 — Starting main application.
+
+2025-07-28 15:49:26,785 — ERROR - __main__ — not_implemented.<module>:75 — NotImplementedError 
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 73, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 55, in main
+    some_function_that_might_not_be_implemented()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 41, in some_function_that_might_not_be_implemented
+    raise NotImplementedError()
+NotImplementedError
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 75, in <module>
+    logger.error(f"NotImplementedError {error}", stack_info=True, exc_info=True)
+
+2025-07-28 16:22:30,517 — INFO - __main__ — not_implemented.main:50 — Starting main application.
+
+2025-07-28 16:22:30,517 — INFO - __main__ — not_implemented.main:59 — Main application finished successfully.
+
+2025-07-28 16:23:18,430 — ERROR - __main__ — not_implemented._print_message:25 — Argparse Error: usage: not_implemented.py [-h] {debug,info,warning,error,critical} ...
+
+2025-07-28 16:23:21,045 — ERROR - __main__ — not_implemented._print_message:25 — Argparse Error: not_implemented.py: error: argument subcommand: invalid choice: 'v' (choose from 'debug', 'info', 'warning', 'error', 'critical')
+
+2025-07-28 16:25:07,270 — INFO - __main__ — not_implemented.main:50 — Starting main application.
+
+2025-07-28 16:25:16,303 — ERROR - __main__ — not_implemented.<module>:80 — Exception
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 76, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 57, in main
+    some_function_that_has_exception()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 45, in some_function_that_has_exception
+    raise Exception()
+Exception
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 80, in <module>
+    logger.exception("Exception", stack_info=True)
+
+2025-07-28 16:26:25,824 — INFO - __main__ — not_implemented.main:50 — Starting main application.
+
+2025-07-28 16:26:31,101 — ERROR - __main__ — not_implemented.<module>:78 — NotImplementedError
+Traceback (most recent call last):
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 76, in <module>
+    main(args)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 55, in main
+    some_function_that_might_not_be_implemented()
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 41, in some_function_that_might_not_be_implemented
+    raise NotImplementedError()
+NotImplementedError
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/scripts/google/logging/not_implemented.py", line 78, in <module>
+    logger.error("NotImplementedError", stack_info=True, exc_info=True)
