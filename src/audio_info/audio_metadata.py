@@ -215,10 +215,6 @@ class AudioMetadata():
         '''
 
         try:
-            # @todo check for None
-            # if None, print to console and return
-            # path_info does an ext check and logs if unacceptable ext & prints to console
-            # for or raises Exception for unhandled errors
             export_path = directory.path_info(file_path)
 
             if not export_path:
@@ -233,6 +229,7 @@ class AudioMetadata():
             input_format = os.path.splitext(file_path)[1].lower()[1:]
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             input_path_parent = os.path.dirname(file_path)
+
             # @todo this needs to go to a txt file
             print(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
             print(f"Source directory path: {input_path_parent}")
@@ -263,6 +260,7 @@ class AudioMetadata():
                 input_tags = self.get_m4a_tags(file_path)
                 tags = self.map_m4a_tags(input_tags)
             else:
+                # @todo log this
                 print(f"Non-standard metadata type: {metadata_type} for file: {os.path.basename(file_path)}")
                 return
 
@@ -277,6 +275,7 @@ class AudioMetadata():
 
             cover = os.path.join(input_path_parent, FOLDER_ART)
             if not os.path.exists(cover):
+                # @todo log this
                 print(f"album directory {input_path_parent} does not contain a {FOLDER_ART} file.")
                 return
 
@@ -399,6 +398,7 @@ class AudioMetadata():
                 artist_content = os.listdir(tld_item_path)
                 # want to know if we have any empty artist directories so we can deal with them later
                 if os.path.isdir(tld_item_path) and not artist_content:
+                    # @todo log this
                     print(f"{tld_item_path} is an empty artist directory")
                     tld_bar.update(1)
                     continue
@@ -445,6 +445,7 @@ class AudioMetadata():
                         destination_dir = os.path.join(tld_item_path, album_dir)
                         dir_processing.move_audio_file(audio_file, destination_dir)
                     else:
+                        # @todo log this
                         print(f"{audio_file} is missing album metadata")
                         continue
 
@@ -452,6 +453,7 @@ class AudioMetadata():
 
             tld_bar.close()
             dir_processing.create_csv(csv_filename, data, GENERATED_FILES, header_row, 0)
+            # @todo log this
             print(f"Created {len(album_dirs)} album dirs")
 
         except ValueError as e:
@@ -566,6 +568,7 @@ class AudioMetadata():
                     else:
                         raise ValueError(f"Returned None getting info for audio file: {input_file_path} ")
 
+                    #  @todo remove
                     print("\r\n")
 
         except Exception as e:
@@ -685,11 +688,14 @@ class AudioMetadata():
 
                         if input_tags:
                             if ffprobe:
+                                # @todo log this
                                 print(f"{tag_file_path} has {len(input_tags)} ffprobe tags")
                                 # want one key/value pair per line
+                                # @todo log this
                                 pprint.pprint(input_tags)
                                 print()
                             else:
+                                # @todo log this
                                 print(f"{tag_file_path} has {len(input_tags)} {metadata_type} tags")
                                 # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
                                 # not as a simple dict of string key/value
@@ -697,6 +703,7 @@ class AudioMetadata():
                                 pprint.pprint(input_tags.pprint().splitlines())
                                 print()
                         else:
+                            # @todo log this
                             print(f"{tag_file_path} has no metadata")
 
         except Exception as e:
@@ -754,7 +761,7 @@ class AudioMetadata():
                     file_keys = input_tags.keys()
                     if file_keys:
                         unique_keys.update(file_keys)
-
+            # @todo log this
             print(sorted(unique_keys))
 
         except Exception as e:
@@ -926,6 +933,7 @@ class AudioMetadata():
                         # just in case string is "YYYY-MM-DD"
                         date_value = metadata_value[0:4]
                         date_values.add(date_value)
+                        # @todo log this
                         print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
@@ -937,6 +945,7 @@ class AudioMetadata():
                         # just in case string is "YYYY-MM-DD"
                         date_value = decode_value[0:4]
                         date_values.add(date_value)
+                        # @todo log this
                         print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
@@ -948,6 +957,7 @@ class AudioMetadata():
                     if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
+                    # @todo log this
                     print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
@@ -985,12 +995,14 @@ class AudioMetadata():
                         # just in case string is "YYYY-MM-DD"
                         date_value = metadata_value.text[0:4]
                         date_values.add(date_value)
+                        # @todo log this
                         print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
                     if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
+                    # @todo log this
                     print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
@@ -1038,6 +1050,7 @@ class AudioMetadata():
                     if isinstance(metadata_value, int):
                         tag_value = metadata_value
 
+                    # @todo log this
                     print(f"metadata: {metadata_field:<20} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
