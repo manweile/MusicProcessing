@@ -26,27 +26,28 @@ from mutagen.mp4 import MP4
 # local modules
 from src import AUDIO_EXTS
 from src import FOLDER_ART
-from src import FILE_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging modules
-from src.audio_normalize import AudioNormalization
+from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
 from src.generated_files import GENERATED_FILES
+from src.audio_normalize import AudioNormalization
 
 gc.enable()
+
+normalization = AudioNormalization()
 
 # Configure logging
 basename = os.path.basename(__file__)
 stem = os.path.splitext(basename)[0]
 file = stem + LOG_EXT
 log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
+# override the default logging level WARN to lowest level so we can log all levels
+logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
 
-logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=FILE_LOG_FORMAT, filemode="a", encoding=UTF8)
+# create logger for module and restrict to module
+# use raise in exception handling if we need send something inter-module
 logger = logging.getLogger(__name__)
-# override the default logging level WARN to lowest level so we can log all level messages
-logger.setLevel(logging.DEBUG)
+logger.propagate = False
 
 ALBUM_ART = "AlbumArt"
-
-# metadata = AudioMetadata()
-normalization = AudioNormalization()
 
 
 class AudioArt():
@@ -160,6 +161,7 @@ class AudioArt():
             # don't need to waste cycles if we have a Folder.jpg from a previous execution
             album_contents = os.listdir(album_path)
             if FOLDER_ART in album_contents:
+                logger.warning(f"{album_path} has a {FOLDER_ART}")
                 return
 
             # we don't touch non-audio files like m3u etc
@@ -168,14 +170,16 @@ class AudioArt():
                 logger.warning(f"{input_path.name} is not an audio file")
                 return
 
+            # primary extraction method because it is is file type agnostic
             # file with video stream can use audio type agnostic extraction
             if self.has_video_stream(input_path):
                 self.extract_ffmpeg_art(input_path)
                 return
             else:
-                logger.info(f"No video stream album art present in {file_path}")
+                logger.warning(f"No video stream album art present in {file_path}")
 
-            # no matter what extraction method, file must have an art tag
+            # secondary extraction method because it is dependent on file type
+            # and file must have an art metadata tag
             if self.has_art_tag(input_path):
                 if input_file_ext.lower() == AUDIO_EXTS[0]:
                     self.extract_mp3_art(file_path)
@@ -311,7 +315,7 @@ class AudioArt():
             self.__write_data(file_path, image_data)
 
         except Exception:
-            logger.critical(f"Exception extracting mp3 embedded art from {file_path}", stack_info=True)
+            logger.exception(f"Exception extracting mp3 embedded art from {file_path}", stack_info=True)
             raise
 
 
