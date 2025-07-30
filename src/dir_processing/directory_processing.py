@@ -21,7 +21,7 @@ from pathlib import Path
 # local modules
 from src import AUDIO_EXTS, AUDIO_TYPES
 from src import EXPORT_TLD
-from src import FILE_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8         # logging modules
+from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8         # logging constants
 from src import HOME, MEDIA                                     # ubuntu mount points
 from src import PLAYLIST_EXTS
 from src.generated_files import GENERATED_FILES
@@ -33,11 +33,13 @@ basename = os.path.basename(__file__)
 stem = os.path.splitext(basename)[0]
 file = stem + LOG_EXT
 log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
+# override the default logging level WARN to lowest level so we can log all levels
+logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
 
-logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=FILE_LOG_FORMAT, filemode="a", encoding=UTF8)
+# create logger for module and restrict to module
+# use raise in exception handling if we need send something inter-module
 logger = logging.getLogger(__name__)
-# override the default logging level WARN to lowest level so we can log all level messages
-logger.setLevel(logging.DEBUG)
+logger.propagate = False
 
 
 class DirectoryProcessing():
@@ -47,12 +49,12 @@ class DirectoryProcessing():
 
     def __init__(self, tld_path=None):
         '''
-        @brief      Initializes the DirectoryProcessing class.
+        @brief Initializes the DirectoryProcessing class.
 
-        @param      tld_path {str} Optional, the top level directory path that contains all the music files.
-        @return     DirectoryProcessing {instance} An instance of the class.
-        @exception  OSError An os error.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param tld_path {str} Optional, the top level directory path that contains all the music files.
+        @return DirectoryProcessing {instance} An instance of the class.
+        @exception OSError An os error.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         if tld_path is not None:
@@ -62,9 +64,11 @@ class DirectoryProcessing():
 
             except OSError as e:
                 if e.errno == errno.ENOENT:
-                    raise OSError(f"Exception: Path {tld_path} not found")
+                    logger.error(f"Exception: Path {tld_path} not found", exc_info=True)
+                    raise
                 else:
-                    raise Exception(f"Exception {e} setting path {tld_path}")
+                    logger.exception(f"Exception setting path {tld_path}", stack_info=True)
+                    raise
         else:
             pass
 
@@ -77,9 +81,9 @@ class DirectoryProcessing():
         @details The csv file is sorted in directory path as found by os walk top down order.
         @details The csv file is created in the designated generated files directory.
 
-        @param      file_ext {str} The file type want file paths for.
-        @param      start_path {str} The starting point of the directory walk.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param file_ext {str} The file type want file paths for.
+        @param start_path {str} The starting point of the directory walk.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         data = []
@@ -100,10 +104,11 @@ class DirectoryProcessing():
                         type_count += 1
 
             self.create_csv(csv_filename, data, csv_dir, header_row, None)
-            print(f"Found {type_count} {file_ext} files")
+            logger.info(f"Found {type_count} {file_ext} files")
 
-        except Exception as e:
-            raise Exception(f"Exception {e} getting files for extension {file_ext} in {start_path}")
+        except Exception:
+            logger.exception("Exception getting files for extension {file_ext} in {start_path}", stack_info=True)
+            raise
 
 
     @property
@@ -124,9 +129,9 @@ class DirectoryProcessing():
 
         @details The top level directory is expected to exist already.
 
-        @param      tld_path {str} The top level directory path that contains all the music files.
-        @exception  OSError An os path not found or other os error.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param tld_path {str} The top level directory path that contains all the music files.
+        @exception OSError An os path not found or other os error.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -135,11 +140,14 @@ class DirectoryProcessing():
 
         except OSError as e:
             if e.errno == errno.ENOENT:
-                raise OSError(f"OSError path {tld_path} not found")
+                logger.error(f"OSError path {tld_path} not found", exc_info=True)
+                raise OSError
             else:
-                raise OSError(f"OSError {e} setting path {tld_path}")
-        except Exception as e:
-            raise Exception(f"Exception {e} setting path {tld_path}")
+                logger.error(f"OSError setting path {tld_path}", exc_info=True)
+                raise OSError
+        except Exception:
+            logger.exception(f"Exception setting path {tld_path}", stack_info=True)
+            raise
 
 
     def create_csv(self, csv_filename, data, csv_dir, header_row=None, sort_col=None):
@@ -149,12 +157,12 @@ class DirectoryProcessing():
         @details Creates a csv file in specified directory.
         @details Header row and sorting are optional.
 
-        @param      csv_filename {str} Filename for csv.
-        @param      data [{str}] Data to write into csv. Expected to be 1 line per element.
-        @param      csv_dir {str} Path for csv file.
-        @param      header_row [{str}] Optional, the starting row naming fields.
-        @param      sort_col {int} Optional, the column to sort data on.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param csv_filename {str} Filename for csv.
+        @param data [{str}] Data to write into csv. Expected to be 1 line per element.
+        @param csv_dir {str} Path for csv file.
+        @param header_row [{str}] Optional, the starting row naming fields.
+        @param sort_col {int} Optional, the column to sort data on.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -175,8 +183,9 @@ class DirectoryProcessing():
             csv_file_writer.writerows(sorted_data)
             csv_outfile.close()
 
-        except Exception as e:
-            raise Exception(f"Exception {e} writing {csv_filename}")
+        except Exception:
+            logger.exception("Exception writing {csv_filename}", stack_info=True)
+            raise
 
 
     def get_audio_file_list(self, start_path):
@@ -187,8 +196,8 @@ class DirectoryProcessing():
         @details The csv file is created in the designated generated files directory.
         @details The csv has 2 columns, full file path for audio file and extension.
 
-        @param      start_path {str} Optional, the starting point of the directory walk.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param start_path {str} Optional, the starting point of the directory walk.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         data = []
@@ -211,7 +220,6 @@ class DirectoryProcessing():
         tot_count = 0
         txt_count = 0
         wma_count = 0
-
 
         if start_path is None:
             start_path = self._tld_path
@@ -278,8 +286,9 @@ class DirectoryProcessing():
 
             print(f"Found {tot_count} total files")
 
-        except Exception as e:
-            raise Exception(f"Exception {e} getting files for {start_path}")
+        except Exception:
+            logger.exception("Exception getting files for {start_path}", stack_info=True)
+            raise
 
 
     def get_ext_file_list(self, file_ext, start_path):
@@ -293,14 +302,18 @@ class DirectoryProcessing():
         @param  start_path {str} Optional, the starting point of the directory walk.
         '''
 
-        if start_path is None:
-            start_path = self._tld_path
+        try:
+            if start_path is None:
+                start_path = self._tld_path
 
-        if (file_ext):
-            self.__ext_file_list(file_ext, start_path)
-        else:
-            for file_ext in AUDIO_TYPES:
+            if (file_ext):
                 self.__ext_file_list(file_ext, start_path)
+            else:
+                for file_ext in AUDIO_TYPES:
+                    self.__ext_file_list(file_ext, start_path)
+        except Exception:
+            logger.exception(f"Exception getting file list for files with {file_ext} for {start_path}", stack_info=True)
+            raise
 
 
     def get_file_directory(self, start_path, file_name):
@@ -319,8 +332,9 @@ class DirectoryProcessing():
 
             return None
 
-        except Exception as e:
-            raise Exception(f"Exception {e} getting directory path for {file_name} and starting path {start_path}")
+        except Exception:
+            logger.exception("Exception getting directory path for {file_name} and starting path {start_path}", stack_info=True)
+            raise
 
 
     def get_file_ext(self, file_path):
@@ -344,9 +358,11 @@ class DirectoryProcessing():
                 file_ext = split_extension[1:]
 
         except Exception:
-            print('File type error: {} occurred'.format(sys.exec_info()[0]))
-
-        return file_ext
+            # print('File type error: {} occurred'.format(sys.exec_info()[0]))
+            logger.exception("Exception getting file extension", stack_info=True)
+            raise
+        else:
+            return file_ext
 
 
     def make_album_dir(self, artist_dirpath, album_dir):
@@ -370,9 +386,11 @@ class DirectoryProcessing():
 
             except Exception as e:
                 if e.errno == errno.EACCES:
-                    raise OSError(f"Exception: permission denied for creating {music_dir}")
+                    logger.error(f"Exception: permission denied for creating {music_dir}", exc_info=True)
+                    raise OSError
                 else:
-                    raise Exception(f"Exception {e} creating {music_dir}")
+                    logger.exception("Exception creating {music_dir}", stack_info=True)
+                    raise
 
 
     def move_audio_file(self, file_path, destination_dir):
@@ -392,8 +410,9 @@ class DirectoryProcessing():
         try:
             shutil.move(file_path, destination_path)
 
-        except Exception as e:
-            raise Exception(f"Exception {e} moving {audio_file} from {os.path.dirname(file_path)} to {destination_dir}")
+        except Exception:
+            logger.exception(f"Exception moving {audio_file} from {os.path.dirname(file_path)} to {destination_dir}", stack_info=True)
+            raise
 
 
     def path_info(self, file_path):
@@ -416,12 +435,8 @@ class DirectoryProcessing():
 
             input_ext = input_path.suffix
             if input_ext.lower() not in AUDIO_EXTS:
-                # @todo log a warning, output to console, and return None??
-                # file not being audio type is not a fatal IF I deal with it now
-                # calling method can handle the None
-                # @todo consider a custom exception NotAudioType
-                # logging.error()
-                raise Exception(f"File {input_path} is not in {AUDIO_TYPES}")
+                logger.warning(f"File {input_path} is not in {AUDIO_TYPES}")
+                return None
 
             r'''
             Ubuntu file path:
@@ -491,12 +506,11 @@ class DirectoryProcessing():
             export_name = input_name + export_ext
             export_path = os.path.join(export_dir, export_name)
 
-        except Exception as error:
-            # @todo something unforeseen happened
-            # log the exception and reraise the exception error
-            raise Exception(f"Exception {error} getting export path {file_path}")
-
-        return export_path
+        except Exception:
+            logger.exception(f"Exception getting export path {file_path}", stack_info=True)
+            raise
+        else:
+            return export_path
 
 
     def remove_album_dir(self, start_path):
@@ -542,13 +556,15 @@ class DirectoryProcessing():
                         os.rmdir(artist_item_path)
                         dir_count += 1
 
-            print(f"removed {dir_count} empty album directories")
+            logger.info(f"removed {dir_count} empty album directories")
 
         except Exception as e:
             if e.errno == errno.EACCES:
-                raise OSError(f"Exception: permission denied for deleting {artist_item_path}")
+                logger.error(f"Exception: permission denied for deleting {artist_item_path}", exc_info=True)
+                raise OSError
             else:
-                raise Exception(f"Exception {e} deleting {artist_item_path}")
+                logger.exception(f"Exception deleting {artist_item_path}", stack_info=True)
+                raise
 
 
     def remove_pattern(self, start_path, file_pattern):
@@ -581,6 +597,8 @@ class DirectoryProcessing():
 
         except Exception as e:
             if e.errno == errno.EACCES:
-                raise OSError(f"Exception: permission denied for deleting {file_path}")
+                logger.error(f"Exception: permission denied for deleting {file_path}", exc_info=True)
+                raise OSError
             else:
-                raise Exception(f"Exception {e} deleting file {file_path}")
+                logger.exception(f"Exception deleting file {file_path}", stack_info=True)
+                raise
