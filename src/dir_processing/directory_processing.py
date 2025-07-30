@@ -14,14 +14,13 @@ import gc
 import logging
 import shutil
 import os
-import sys
 from operator import itemgetter
 from pathlib import Path
 
 # local modules
 from src import AUDIO_EXTS, AUDIO_TYPES
 from src import EXPORT_TLD
-from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8         # logging constants
+from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8        # logging constants
 from src import HOME, MEDIA                                     # ubuntu mount points
 from src import PLAYLIST_EXTS
 from src.generated_files import GENERATED_FILES
@@ -65,7 +64,7 @@ class DirectoryProcessing():
             except OSError as e:
                 if e.errno == errno.ENOENT:
                     logger.error(f"Exception: Path {tld_path} not found", exc_info=True)
-                    raise
+                    raise OSError
                 else:
                     logger.exception(f"Exception setting path {tld_path}", stack_info=True)
                     raise
