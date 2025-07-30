@@ -1,0 +1,2 @@
+class PathInfoError(Exception):
+    pass

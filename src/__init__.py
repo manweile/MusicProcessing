@@ -3,6 +3,8 @@
 @brief Holds package level constants used by other modules.
 '''
 
+from errors import PathInfoError
+
 ## @var AUDIO_EXTS
 # @brief audio file extensions in my collection
 # @details use this when working with os library
@@ -23,10 +25,10 @@ AUDIO_TYPES = ["mp3", "m4a", "wma"]
 # @details use this when exporting manipulated audio files
 EXPORT_TLD = "Music"
 
-## @var FILE_LOG_FORMAT
-# @brief log file format
-# @details use this to set log file format
-FILE_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+## @var ERROR_LOG_FORMAT
+# @brief error log file format
+# @details use this to set error logging file format
+ERROR_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 
 ## @var FOLDER_ART
 # @brief name of album art jpg
@@ -74,7 +76,7 @@ UTF8 = "utf-8"
 # @details In modules needing the constant add `from src import AUDIO_FILES`
 # @details In modules needing the constant add `from src import AUDIO_TYPES`
 # @details In modules needing the constant add 'from src import EXPORT_TLD`
-# @details In modules needing the constant add 'from src import FILE_LOG_FORMAT
+# @details In modules needing the constant add 'from src import ERROR_LOG_FORMAT
 # @details In modules needing the constant add 'from src import FOLDER_ART'
 # @details In modules needing the constant add 'from src import HOME`
 # @details In modules needing the constant add 'from src import LOG_DIR
@@ -88,7 +90,7 @@ __all__ = [
     "AUDIO_FILES",
     "AUDIO_TYPES",
     "EXPORT_TLD",
-    "FILE_LOG_FORMAT",
+    "ERROR_LOG_FORMAT",
     "FOLDER_ART",
     "HOME",
     "LOG_DIR",
@@ -96,5 +98,6 @@ __all__ = [
     "MEDIA",
     "PLAYLIST_EXTS",
     "PLAYLIST_TYPES",
-    "UTF8"
-    ]
+    "UTF8",
+    "PathInfoError"
+]
