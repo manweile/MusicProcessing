@@ -26,6 +26,7 @@ from yaspin.spinners import Spinners
 from src import AUDIO_EXTS, AUDIO_TYPES
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
 from src.generated_files import GENERATED_FILES
+from src import PathInfoError
 from src.dir_processing import DirectoryProcessing
 
 gc.enable()
@@ -149,6 +150,10 @@ class AudioNormalization():
 
         try:
             export_path = directory.path_info(file_path)
+
+            if not export_path:
+                logger.error(f"No export path created for {file_path}")
+                raise PathInfoError
 
             input_path_basename = os.path.basename(file_path)
             input_path_dir = os.path.dirname(file_path)
@@ -425,6 +430,10 @@ class AudioNormalization():
         try:
             export_path = directory.path_info(file_path)
 
+            if not export_path:
+                logger.error(f"No export path created for {file_path}")
+                raise PathInfoError
+
             export_format = AUDIO_TYPES[0]
             input_format = os.path.splitext(file_path)[1].lower()[1:]
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
@@ -503,6 +512,10 @@ class AudioNormalization():
 
         try:
             export_path = directory.path_info(file_path)
+
+            if not export_path:
+                logger.error(f"No export path created for {file_path}")
+                raise PathInfoError
 
             export_format = AUDIO_TYPES[0]
             input_format = os.path.splitext(file_path)[1].lower()[1:]
