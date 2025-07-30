@@ -26,7 +26,7 @@ from yaspin.spinners import Spinners
 from src import AUDIO_EXTS, AUDIO_TYPES
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
 from src.generated_files import GENERATED_FILES
-from src import PathInfoError
+from src.errors import PathInfoError
 from src.dir_processing import DirectoryProcessing
 
 gc.enable()

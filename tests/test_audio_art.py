@@ -88,11 +88,10 @@ class TestAudioArt(unittest.TestCase):
         '''
 
         try:
-            # input_audio = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
-            input_audio = os.path.join(TESTS_TLD, "Billie Holiday", "Billie Holiday-Georgia On My Mind.wma")
+            input_audio = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
             self.assertFalse(art.has_video_stream(input_audio))
         except Exception:
-            logger.exception("Exception", stackInfo=True)
+            logger.exception("Exception", stack_info=True)
 
 
     def test_has_video_stream_true(self):

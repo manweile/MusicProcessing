@@ -359,7 +359,7 @@ class AudioArt():
 
         except Exception:
             if file_pattern:
-                logger.exception(f"Exception walking {start_path} to extract art from {file_pattern} audio files", stackInfo=True)
+                logger.exception(f"Exception walking {start_path} to extract art from {file_pattern} audio files", stack_info=True)
                 raise
             else:
                 logger.exception(f"Exception walking {start_path} to extract art from audio files", stack_info=True)
@@ -407,7 +407,7 @@ class AudioArt():
             logger.error(f"JSONDecodeError on audio file: {file_path}", exc_info=True)
             raise
         except Exception:
-            logger.exception(f"Exception extracting video stream from {file_path}", stackInfo=True)
+            logger.exception(f"Exception extracting video stream from {file_path}", stack_info=True)
             raise
         else:
             return has_stream

@@ -3,7 +3,7 @@
 @brief Holds package level constants used by other modules.
 '''
 
-from errors import PathInfoError
+from src.errors import PathInfoError
 
 ## @var AUDIO_EXTS
 # @brief audio file extensions in my collection
