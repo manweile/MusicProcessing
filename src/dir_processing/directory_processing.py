@@ -187,6 +187,32 @@ class DirectoryProcessing():
             raise
 
 
+    def create_txt(self, txt_filename, data, txt_dir):
+        '''
+        @brief Creates a txt file
+
+        @details Creates a txt file in specified directory.
+
+        @param txt_filename {str} Filename for txt.
+        @param data [{str}] Data to write into txt. Expected to be 1 line per element.
+        @param txt_dir {str} Path for txt file.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            txt_path = os.path.join(txt_dir, txt_filename)
+
+            # need to append cause expecting many runs
+            txt_outfile = open(txt_path, mode='a', encoding='windows-1252', newline='')
+            txt_outfile.writelines([item + "\n" for item in data])
+            txt_outfile.close()
+
+        except Exception:
+            logger.exception("Exception writing {txt_path}", stack_info=True)
+            raise
+
+
     def get_audio_file_list(self, start_path):
         '''
         @brief Generates a csv containing full path for all audio files.

@@ -26,6 +26,7 @@ from yaspin.spinners import Spinners
 from src import AUDIO_EXTS, AUDIO_TYPES
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
 from src.generated_files import GENERATED_FILES
+from src.errors import JSONOutputError
 from src.errors import PathInfoError
 from src.dir_processing import DirectoryProcessing
 
@@ -123,16 +124,20 @@ class AudioNormalization():
             if json_start != -1 and json_end != -1:
                 json_string = json_input[json_start: json_end + 1]
             else:
-                raise Exception(f"Could not find JSON output in subprocess stderr\n{json_string}")
+                # raise Exception(f"Could not find JSON output in subprocess stderr\n{json_string}")
+                logger.error(f"Could not find JSON output in subprocess stderr\n{json_string}", exc_info=True)
+                raise JSONOutputError
 
             input_data = json.loads(json_string)
 
-        except JSONDecodeError as e:
-            raise JSONDecodeError(f"JSON parsing error: {e} with\n{json_string}")
-        except Exception as e:
-            raise Exception(f"Exception {e} parsing subprocess object")
-
-        return input_data
+        except JSONDecodeError:
+            logger.error(f"JSON parsing error with\n{json_string}", exc_info=True)
+            raise
+        except Exception:
+            logger.exception("Exception parsing ffmpeg loudnorm subprocess stderr", stack_info=True)
+            raise
+        else:
+            return input_data
 
 
     def ebu_normalize_file(self, file_path):
@@ -148,11 +153,14 @@ class AudioNormalization():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
+        data = []
+        txt_filename = "ebu_normalized.txt"
+
         try:
             export_path = directory.path_info(file_path)
 
             if not export_path:
-                logger.error(f"No export path created for {file_path}")
+                logger.error(f"No export path created for {file_path}", exc_info=True)
                 raise PathInfoError
 
             input_path_basename = os.path.basename(file_path)
@@ -160,12 +168,15 @@ class AudioNormalization():
 
             beginning_text = f"Beginning ebu normalization on: {input_path_basename}"
             source_text = f"Source directory path: {input_path_dir}"
-            logger.info(beginning_text)
-            logger.info(source_text)
+            # logger.info(beginning_text)
+            # logger.info(source_text)
+            data.append[beginning_text]
+            data.append(source_text)
 
             # get original sample rate for down sampling
             sample_rate = self.get_sample_rate(file_path)
-            logger.info(f"Source sample rate: {sample_rate} hz")
+            # logger.info(f"Source sample rate: {sample_rate} hz")
+            data.append(f"Source sample rate: {sample_rate} hz")
 
             '''
             1st pass to get loudnorm statistics
@@ -185,16 +196,21 @@ class AudioNormalization():
             ]
 
             text = "Getting normalizing stats"
-            logger.info(text)
-            logger.info(stats_command)
+            # logger.info(text)
+            # logger.info(stats_command)
+            data.append(text)
+            data.append(stats_command)
             stats_process, stats_spinner = self.spinner_subprocess_run(text, stats_command)
 
             pre_text = "Pre normalization stats:"
-            logger.info(pre_text)
+            # logger.info(pre_text)
+            data.append(pre_text)
             stats_data = self.__loudnorm_json_parse(stats_process)
-            logger.info(json.dumps(stats_data, indent=4))
+            # logger.info(json.dumps(stats_data, indent=4))
+            data.append(json.dumps(stats_data, indent=4))
             stats_time = stats_spinner.elapsed_time
-            logger.info(f"Analyzed loudnorm stats in {stats_time:.2f} secs")
+            # logger.info(f"Analyzed loudnorm stats in {stats_time:.2f} secs")
+            data.append(f"Analyzed loudnorm stats in {stats_time:.2f} secs")
 
             # Access the loudnorm results needed for 2nd pass
             measured_i = stats_data.get("input_i")
@@ -229,16 +245,22 @@ class AudioNormalization():
             ]
 
             text = "Normalizing audio"
-            logger.info(text)
-            logger.info(normalize_command)
+            # logger.info(text)
+            # logger.info(normalize_command)
+            data.append(text)
+            data.append(normalize_command)
             normalize_process, normalize_spinner = self.spinner_subprocess_run(text, normalize_command)
 
             post_text = "Post normalization stats:"
-            logger.info(post_text)
+            # logger.info(post_text)
+            data.append(post_text)
             normalize_data = self.__loudnorm_json_parse(normalize_process)
-            logger.info(json.dumps(normalize_data, indent=4))
+            # logger.info(json.dumps(normalize_data, indent=4))
+            data.append(json.dumps(normalize_data, indent=4))
             normalization_time = normalize_spinner.elapsed_time
-            logger.info(f"Applied normalization in {normalization_time:.2f} secs")
+            # logger.info(f"Applied normalization in {normalization_time:.2f} secs")
+            data.append(f"Applied normalization in {normalization_time:.2f} secs")
+
             total_time = normalize_spinner.elapsed_time + stats_time
 
             normalization_type = normalize_data.get("normalization_type")
@@ -247,10 +269,13 @@ class AudioNormalization():
             else:
                 results_text = f"Successful linear normalization on {input_path_basename} in total time {total_time:.2f} secs\n"
 
-            logger.info(results_text)
+            # logger.info(results_text)
+            data.append(results_text)
+            directory.create_txt(txt_filename, data)
 
-        except Exception as e:
-            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
+        except Exception:
+            logger.exception(f"Exception normalizing audio file: {file_path}", stack_info=True)
+            raise
 
 
     def get_bit_rate(self, file_path):
@@ -285,12 +310,14 @@ class AudioNormalization():
             if 'format' in data and 'bit_rate' in data['format']:
                 bit_rate = int(data['format']['bit_rate'])
 
-        except JSONDecodeError as e:
-            raise JSONDecodeError(f"Error {e} decoding JSON output from ffprobe.")
-        except Exception as e:
-            raise Exception(f"Exception {e} normalizing audio file: {file_path}")
-
-        return bit_rate
+        except JSONDecodeError:
+            logger.error("Error decoding JSON output from ffprobe", exc_info=True)
+            raise
+        except Exception:
+            logger.exception(f"Exception normalizing audio file: {file_path}", stack_info=True)
+            raise
+        else:
+            return bit_rate
 
 
     def get_sample_rate(self, file_path):
@@ -328,13 +355,16 @@ class AudioNormalization():
                 sample_rate = int(data['streams'][0]['sample_rate'])
 
         except IndexError as e:
-            raise IndexError(f"Error: {e} no audio stream found or sample rate information missing for audio file: {file_path}")
+            logger.error(f"Error: {e} no audio stream found or sample rate information missing for audio file: {file_path}", exc_info=True)
+            raise
         except JSONDecodeError as e:
-            raise JSONDecodeError(f"Error: {e} decoding JSON output from ffprobe on audio file: {file_path}")
-        except Exception as e:
-            raise Exception(f"Exception {e} getting sample rate for audio file: {file_path}")
-
-        return sample_rate
+            logger.error(f"Error: {e} decoding JSON output from ffprobe on audio file: {file_path}", exc_info=True)
+            raise
+        except Exception:
+            logger.exception(f"Exception getting sample rate for audio file: {file_path}", stack_info=True)
+            raise
+        else:
+            return sample_rate
 
 
     def get_volume_info(self, file_path):
@@ -377,10 +407,11 @@ class AudioNormalization():
                 volumes['mean_volume'] = mean_volume
                 volumes['max_volume'] = max_volume
 
-        except Exception as e:
-            raise Exception(f"Exception {e} getting volume for file {file_path}")
-
-        return volumes
+        except Exception:
+            logger.exception(f"Exception getting volume for file {file_path}", stack_info=True)
+            raise
+        else:
+            return volumes
 
 
     def normalize_walk(self, tld_path, norm_type):
@@ -390,7 +421,7 @@ class AudioNormalization():
         @param tld_path {str} The top level directory path that contains all the music files.
         @param norm_type {str} The type of normalization to perform.
         '''
-
+        # @todo implement logging,
         try:
             input_file_ext = None
             input_path = Path(tld_path)
@@ -426,7 +457,7 @@ class AudioNormalization():
         @param file_path {str} The full file path for audio file.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
-
+        # @todo implement logging, use create_txt
         try:
             export_path = directory.path_info(file_path)
 
@@ -509,7 +540,7 @@ class AudioNormalization():
         @param file_path {str} The full file path for audio file.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
-
+        # @todo implement logging, use create_txt
         try:
             export_path = directory.path_info(file_path)
 
@@ -579,8 +610,9 @@ class AudioNormalization():
             success_text = f"Successful rms normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
             logger.info(success_text)
 
-        except Exception as e:
-            raise Exception(f"Exception {e} peak normalizing audio file: {file_path}")
+        except Exception:
+            logger.exception(f"Exception peak normalizing audio file: {file_path}", stack_info=True)
+            raise
 
 
     def spinner_subprocess_run(self, text, command):
@@ -608,12 +640,14 @@ class AudioNormalization():
                     text=True
                 )
 
-            return process, spinner
-
         except CalledProcessError as e:
-            raise Exception(f"CalledProcessError returncode:{e.returncode}, with stderr: {e.stderr} on command {e.cmd}")
-        except Exception as e:
-            raise Exception(f"Exception {e} processing command: {command}")
+            logger.exception(f"CalledProcessError returncode:{e.returncode}, with stderr: {e.stderr} on command {e.cmd}", stack_info=True)
+            raise
+        except Exception:
+            logger.exception(f"Exception processing command: {command}", stack_info=True)
+            raise
+        else:
+            return process, spinner
 
 
     def subprocess_run(self, command):
@@ -640,10 +674,11 @@ class AudioNormalization():
                 text=True
             )
 
-            return process
-
         except CalledProcessError as e:
-            # @todo exception log the e values, then raise
-            raise Exception(f"CalledProcessError returncode:{e.returncode}, with stderr: {e.stderr} on command {e.cmd}")
-        except Exception as e:
-            raise Exception(f"Exception {e} processing command: {command}")
+            logger.exception(f"CalledProcessError returncode:{e.returncode}, with stderr: {e.stderr} on command {e.cmd}", stack_info=True)
+            raise
+        except Exception:
+            logger.exception(f"Exception processing command: {command}", stack_info=True)
+            raise
+        else:
+            return process

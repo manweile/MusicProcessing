@@ -3,6 +3,7 @@
 @brief Holds package level constants used by other modules.
 '''
 
+from src.errors import JSONOutputError
 from src.errors import PathInfoError
 
 ## @var AUDIO_EXTS
@@ -99,5 +100,6 @@ __all__ = [
     "PLAYLIST_EXTS",
     "PLAYLIST_TYPES",
     "UTF8",
+    "JSONOutputError",
     "PathInfoError"
 ]
