@@ -161,7 +161,7 @@ class AudioNormalization():
 
             if not export_path:
                 logger.error(f"No export path created for {file_path}", exc_info=True)
-                raise PathInfoError
+                raise PathInfoError(f"No export path created for {file_path}")
 
             input_path_basename = os.path.basename(file_path)
             input_path_dir = os.path.dirname(file_path)

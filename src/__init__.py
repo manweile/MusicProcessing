@@ -5,6 +5,7 @@
 
 from src.errors import JSONOutputError
 from src.errors import PathInfoError
+from src.errors import MusicProcessingError
 
 ## @var AUDIO_EXTS
 # @brief audio file extensions in my collection
@@ -101,5 +102,6 @@ __all__ = [
     "PLAYLIST_TYPES",
     "UTF8",
     "JSONOutputError",
-    "PathInfoError"
+    "PathInfoError",
+    "MusicProcessingError"
 ]
