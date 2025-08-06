@@ -54,3 +54,9 @@ Stack (most recent call last):
     if method() is not None:
   File "D:\MusicProcessing\tests\test_audio_art.py", line 95, in test_has_video_stream_false
     logger.exception("Exception", stack_info=True)
+
+2025-08-06 15:16:38,315 — src.dir_processing.directory_processing — WARNING — path_info:463 — File D:\MusicProcessing\tests\Music\expected.m3u is not in ['mp3', 'm4a', 'wma']
+
+2025-08-06 15:17:55,918 — src.dir_processing.directory_processing — WARNING — path_info:463 — File D:\MusicProcessing\tests\Music\expected.m3u is not in ['mp3', 'm4a', 'wma']
+
+2025-08-06 15:25:33,770 — src.dir_processing.directory_processing — WARNING — path_info:463 — File D:\MusicProcessing\tests\Music\expected.m3u is not in ['mp3', 'm4a', 'wma']
