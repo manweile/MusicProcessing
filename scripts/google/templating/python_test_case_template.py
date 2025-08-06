@@ -3,7 +3,7 @@ from string import Template
 template_string = """
 \'\'\'
 @file ${file_name}.py
-@brief Defines the ${class_description} class.
+@brief Defines the ${file_brief} class.
 
 @author Gerald Manweiler
 @copyright @showdate "%Y" GWN Software. All rights reserved.
@@ -13,6 +13,7 @@ template_string = """
 import gc
 import logging
 import os
+import unittest
 
 # third party modules
 # import ipsumlorem
@@ -36,28 +37,38 @@ logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG
 logger = logging.getLogger(__name__)
 logger.propagate = False
 
+# instantiate module levels vars here
 
-class ${class_name}():
+
+# instantiate classes here
+
+
+
+class ${class_name}(unittest.TestCase):
     \'\'\'
-    @brief Defines the base ${class_description} processing used by project.
+    @brief Tests ${class_brief} class functions.
     \'\'\'
 
-    def __init__(self):
+    def test_my_function(self):
         \'\'\'
-        @brief Initialize the ${class_name} class.
-
-        @details A basic class implementation with no instantiation parameters.
-
-        @return ${class_name} {instance} An instance of the class.
+        @brief Tests ipsum lorem
         \'\'\'
 
         pass
+
+
+if __name__ == \"__main__\":
+    unittest.main(verbosity=${verbosity})
+
 """
 
 data = {
-    "file_name": "my_module",
-    "class_description": "my class",
-    "class_name": "MyClass"
+    "file_name": "test_my_module",
+    "file_brief": "test my module",
+    "class_name": "TestMyClass",
+    "class_brief": "MyClass",
+    "verbosity": 2
+
 }
 
 template = Template(template_string)
