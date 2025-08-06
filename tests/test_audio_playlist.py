@@ -22,7 +22,7 @@ from src.generated_files import GENERATED_FILES
 
 gc.enable()
 
-_TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
+TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 
 playlist = AudioPlaylist()
 
@@ -37,10 +37,10 @@ class TestAudioPlaylist(unittest.TestCase):
         @brief Tests if the updated m3u file is equal to expected results.
         '''
 
-        input_m3u = os.path.join(_TESTS_PATH, EXPORT_TLD, "test.m3u")
-        input_tld = os.path.join(_TESTS_PATH, EXPORT_TLD)
+        input_m3u = os.path.join(TESTS_PATH, EXPORT_TLD, "test.m3u")
+        input_tld = os.path.join(TESTS_PATH, EXPORT_TLD)
         generated_m3u = os.path.join(GENERATED_FILES, "test.m3u")
-        expected_m3u = os.path.join(_TESTS_PATH, EXPORT_TLD, "expected.m3u")
+        expected_m3u = os.path.join(TESTS_PATH, EXPORT_TLD, "expected.m3u")
 
         # @todo how do I run AudioPlaylist.update_paths??
         playlist.update_paths(input_tld, input_m3u)
