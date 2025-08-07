@@ -38,7 +38,7 @@ logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG
 # create logger for module and restrict to module
 # use raise in exception handling if we need send something inter-module
 logger = logging.getLogger(__name__)
-# logger.propagate = False
+logger.propagate = False
 
 
 class DirectoryProcessing():
