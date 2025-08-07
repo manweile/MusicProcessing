@@ -347,19 +347,21 @@ class DirectoryProcessing():
 
         @param filename (str) The name of the file to find.
         @param start_path (str) The root directory to start from.
+        @return dir_path {str} The directory path for file, None if not found.
         @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
+        dir_path = None
         try:
             for root, dirs, files in os.walk(start_path):
                 if file_name in files:
-                    return root
-
-            return None
+                    dir_path = root
 
         except Exception:
             logger.exception("Exception getting directory path for {file_name} and starting path {start_path}", stack_info=True)
             raise
+        else:
+            return dir_path
 
 
     def get_file_ext(self, file_path):
@@ -368,7 +370,7 @@ class DirectoryProcessing():
 
         @details Returns the file type using os library as opposed to getting it from audio metadata.
 
-        @param  file_path {str} The full audio file path.
+        @param file_path {str} The full audio file path.
         @return file_ext {str} The file type of audio file or None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -383,7 +385,6 @@ class DirectoryProcessing():
                 file_ext = split_extension[1:]
 
         except Exception:
-            # print('File type error: {} occurred'.format(sys.exec_info()[0]))
             logger.exception("Exception getting file extension", stack_info=True)
             raise
         else:
@@ -397,10 +398,10 @@ class DirectoryProcessing():
         @details The album name for the directory is drawn from the metadata.
         @details The audio file(s) for the created album directory will moved into the created directory by another function.
 
-        @param      artist_dirpath {str} The absolute path artist directory the new album directory will be created in.
-        @param      album_dir {str} The sanitized & validated name of the album for new album directory.
-        @exception  OSError An os permission error.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param artist_dirpath {str} The absolute path artist directory the new album directory will be created in.
+        @param album_dir {str} The sanitized & validated name of the album for new album directory.
+        @exception OSError An os permission error.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         music_dir = os.path.join(artist_dirpath, album_dir)
@@ -424,9 +425,9 @@ class DirectoryProcessing():
 
         @details The destination path must exist already.
 
-        @param      file_path {str} File path for audio file.
-        @param      destination_path {str} New directory for audio file.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param file_path {str} File path for audio file.
+        @param destination_path {str} New directory for audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         audio_file = os.path.basename(file_path)
@@ -545,9 +546,9 @@ class DirectoryProcessing():
         @details Walks through top level directory to remove empty second level album directories contained in artist first level directories.
         @details Without a start path input, the top level directory MUST have been set.
 
-        @param      start_path {str} The starting point of the directory walk.
-        @exception  OSError An os permission error.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param start_path {str} The starting point of the directory walk.
+        @exception OSError An os permission error.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         dir_count = 0
@@ -599,10 +600,10 @@ class DirectoryProcessing():
         @details Walks through top level directory and removes files matching specified file pattern.
         @details Without a start path input, the top level directory MUST have been set.
 
-        @param      start_path {str} Optional, the starting point of the directory walk.
-        @param      file_pattern {str} The file pattern we want to delete.
-        @exception  OSError An os permission error.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param start_path {str} Optional, the starting point of the directory walk.
+        @param file_pattern {str} The file pattern we want to delete.
+        @exception OSError An os permission error.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
