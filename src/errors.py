@@ -1,6 +1,6 @@
 class PathInfoError(Exception):
     '''
-    @brief Indicates an error occurred in  path_info function
+    @brief Indicates an error occurred in  path info function.
     '''
 
     def __init__(self, message="A PathInfoError occurred"):
@@ -10,13 +10,19 @@ class PathInfoError(Exception):
 
 class JSONOutputError(Exception):
     '''
-    @brief
+    @brief Indicates error occurred finding json output.
     '''
-    pass
+
+    def __init__(self, message="A JSONOutputError occurred"):
+        self.message = message
+        super().__init__(self.message)
 
 
 class MusicProcessingError(Exception):
     '''
-    @brief Generic
+    @brief Indicates a generic music processing error occurred.
     '''
-    pass
+
+    def __init__(self, message="A MusicProcessingError occurred"):
+        self.message = message
+        super().__init__(self.message)
