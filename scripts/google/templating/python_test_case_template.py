@@ -11,7 +11,6 @@ template_string = """
 
 # standard modules
 import gc
-import logging
 import os
 import unittest
 
@@ -19,29 +18,27 @@ import unittest
 # import ipsumlorem
 
 # local modules
-from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
-from src.generated_files import GENERATED_FILES
+# from src import AUDIO_EXTS, AUDIO_TYPES
+# from src import EXPORT_TLD
+# from src import FOLDER_ART
+# from src import HOME, MEDIA                                     # ubuntu mount points
+# from src import PLAYLIST_EXTS
+# from src.generated_files import GENERATED_FILES
+# from src.audio_info import AudioArt
+# from src.audio_info import AudioPlaylist
+# from src.audio_normalize import AudioNormalization
+# from src.dir_processing import DirectoryProcessing
 
 gc.enable()
 
-# Configure logging
-basename = os.path.basename(__file__)
-stem = os.path.splitext(basename)[0]
-file = stem + LOG_EXT
-log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
-# override the default logging level WARN to lowest level so we can log all levels
-logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
-
-# create logger for module and restrict to module
-# use raise in exception handling if we need send something inter-module
-logger = logging.getLogger(__name__)
-logger.propagate = False
-
 # instantiate module levels vars here
-
+TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 
 # instantiate classes here
-
+# art = AudioArt()
+# directory = DirectoryProcessing()
+# normalization = AudioNormalization()
+# playlist = AudioPlaylist()
 
 
 class ${class_name}(unittest.TestCase):
@@ -49,24 +46,30 @@ class ${class_name}(unittest.TestCase):
     @brief Tests ${class_brief} class functions.
     \'\'\'
 
-    def test_my_function(self):
+    def ${def_name}(self):
         \'\'\'
-        @brief Tests ipsum lorem
+        @brief Tests ${def_brief}.
         \'\'\'
 
         pass
 
 
 if __name__ == \"__main__\":
-    unittest.main(verbosity=${verbosity})
+    suite = unittest.TestSuite()
+    suite.addTest(${class_name}(\'test_my_function\'))
 
+    runner = unittest.TextTestRunner(verbosity=${verbosity})
+    runner.run(suite)
 """
 
+# @todo argparse this
 data = {
     "file_name": "test_my_module",
     "file_brief": "test my module",
     "class_name": "TestMyClass",
     "class_brief": "MyClass",
+    "def_name": "test_my_function",
+    "def_brief": "my function purpose",
     "verbosity": 2
 
 }
