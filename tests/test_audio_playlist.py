@@ -43,6 +43,8 @@ class TestAudioPlaylist(unittest.TestCase):
     @brief Tests AudioPlaylist class functions.
     '''
 
+    # @todo improve granularity of test case; refer to test.m3u
+    # may require re-write of playlist code
     def test_update_m3u(self):
         '''
         @brief Tests if the updated m3u file is equal to expected results.
@@ -54,7 +56,6 @@ class TestAudioPlaylist(unittest.TestCase):
         generated_m3u = os.path.join(GENERATED_FILES, "test.m3u")
         expected_m3u = os.path.join(TESTS_TLD, "expected.m3u")
 
-        # @todo how do I run AudioPlaylist.update_paths??
         playlist.update_paths(input_tld, input_m3u)
 
         self.assertTrue(os.path.exists(generated_m3u))
