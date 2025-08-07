@@ -56,7 +56,7 @@ class ${class_name}(unittest.TestCase):
 
 if __name__ == \"__main__\":
     suite = unittest.TestSuite()
-    suite.addTest(${class_name}(\'test_my_function\'))
+    suite.addTest(${class_name}(\'${def_name}\'))
 
     runner = unittest.TextTestRunner(verbosity=${verbosity})
     runner.run(suite)
