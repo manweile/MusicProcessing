@@ -13,14 +13,8 @@ import logging
 import math
 import os
 import re
-import subprocess
 from json import JSONDecodeError
 from pathlib import Path
-from subprocess import CalledProcessError
-
-# third party modules
-from yaspin import yaspin
-from yaspin.spinners import Spinners
 
 # local modules
 from src import AUDIO_EXTS, AUDIO_TYPES
@@ -29,10 +23,12 @@ from src.generated_files import GENERATED_FILES
 from src.errors import JSONOutputError
 from src.errors import PathInfoError
 from src.dir_processing import DirectoryProcessing
+from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
 
 directory = DirectoryProcessing()
+subprocess_utils = SubprocessUtilities()
 
 # Configure logging
 basename = os.path.basename(__file__)
@@ -124,7 +120,6 @@ class AudioNormalization():
             if json_start != -1 and json_end != -1:
                 json_string = json_input[json_start: json_end + 1]
             else:
-                # raise Exception(f"Could not find JSON output in subprocess stderr\n{json_string}")
                 logger.error(f"Could not find JSON output in subprocess stderr\n{json_string}", exc_info=True)
                 raise JSONOutputError
 
@@ -168,14 +163,11 @@ class AudioNormalization():
 
             beginning_text = f"Beginning ebu normalization on: {input_path_basename}"
             source_text = f"Source directory path: {input_path_dir}"
-            # logger.info(beginning_text)
-            # logger.info(source_text)
             data.append[beginning_text]
             data.append(source_text)
 
             # get original sample rate for down sampling
             sample_rate = self.get_sample_rate(file_path)
-            # logger.info(f"Source sample rate: {sample_rate} hz")
             data.append(f"Source sample rate: {sample_rate} hz")
 
             '''
@@ -196,20 +188,15 @@ class AudioNormalization():
             ]
 
             text = "Getting normalizing stats"
-            # logger.info(text)
-            # logger.info(stats_command)
             data.append(text)
             data.append(stats_command)
-            stats_process, stats_spinner = self.spinner_subprocess_run(text, stats_command)
+            stats_process, stats_spinner = subprocess_utils.spinner_subprocess_run(text, stats_command)
 
             pre_text = "Pre normalization stats:"
-            # logger.info(pre_text)
             data.append(pre_text)
             stats_data = self.__loudnorm_json_parse(stats_process)
-            # logger.info(json.dumps(stats_data, indent=4))
             data.append(json.dumps(stats_data, indent=4))
             stats_time = stats_spinner.elapsed_time
-            # logger.info(f"Analyzed loudnorm stats in {stats_time:.2f} secs")
             data.append(f"Analyzed loudnorm stats in {stats_time:.2f} secs")
 
             # Access the loudnorm results needed for 2nd pass
@@ -245,20 +232,15 @@ class AudioNormalization():
             ]
 
             text = "Normalizing audio"
-            # logger.info(text)
-            # logger.info(normalize_command)
             data.append(text)
             data.append(normalize_command)
-            normalize_process, normalize_spinner = self.spinner_subprocess_run(text, normalize_command)
+            normalize_process, normalize_spinner = subprocess_utils.spinner_subprocess_run(text, normalize_command)
 
             post_text = "Post normalization stats:"
-            # logger.info(post_text)
             data.append(post_text)
             normalize_data = self.__loudnorm_json_parse(normalize_process)
-            # logger.info(json.dumps(normalize_data, indent=4))
             data.append(json.dumps(normalize_data, indent=4))
             normalization_time = normalize_spinner.elapsed_time
-            # logger.info(f"Applied normalization in {normalization_time:.2f} secs")
             data.append(f"Applied normalization in {normalization_time:.2f} secs")
 
             total_time = normalize_spinner.elapsed_time + stats_time
@@ -269,12 +251,11 @@ class AudioNormalization():
             else:
                 results_text = f"Successful linear normalization on {input_path_basename} in total time {total_time:.2f} secs\n"
 
-            # logger.info(results_text)
             data.append(results_text)
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, GENERATED_FILES)
 
         except Exception:
-            logger.exception(f"Exception normalizing audio file: {file_path}", stack_info=True)
+            logger.exception(f"Exception while ebu normalizing audio file: {file_path}", stack_info=True)
             raise
 
 
@@ -303,7 +284,8 @@ class AudioNormalization():
                 file_path
             ]
 
-            result = self.subprocess_run(command)
+            result = subprocess_utils.subprocess_run(command)
+
             # unlike ffmpeg, ffprobe does use stdout
             data = json.loads(result.stdout)
 
@@ -347,7 +329,8 @@ class AudioNormalization():
                 file_path
             ]
 
-            result = self.subprocess_run(command)
+            result = subprocess_utils.subprocess_run(command)
+
             # unlike ffmpeg, ffprobe does use stdout
             data = json.loads(result.stdout)
 
@@ -394,7 +377,8 @@ class AudioNormalization():
                 '-f', 'null', '-'
             ]
 
-            process = self.subprocess_run(command)
+            process = subprocess_utils.subprocess_run(command)
+
             # ffmpeg sends its output to stderr, not stdout
             output_str = process.stderr
 
@@ -421,7 +405,7 @@ class AudioNormalization():
         @param tld_path {str} The top level directory path that contains all the music files.
         @param norm_type {str} The type of normalization to perform.
         '''
-        # @todo implement logging,
+
         try:
             input_file_ext = None
             input_path = Path(tld_path)
@@ -443,8 +427,9 @@ class AudioNormalization():
                     elif norm_type == "rms":
                         self.rms_normalize_file(input_file_path)
 
-        except Exception as e:
-            raise Exception(f"Exception {e} on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files")
+        except Exception:
+            logger.exception(f"Exception on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files")
+            raise
 
 
     def peak_normalize_file(self, file_path):
@@ -457,12 +442,15 @@ class AudioNormalization():
         @param file_path {str} The full file path for audio file.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
-        # @todo implement logging, use create_txt
+
+        data = []
+        txt_filename = "peak_normalized.txt"
+
         try:
             export_path = directory.path_info(file_path)
 
             if not export_path:
-                logger.error(f"No export path created for {file_path}")
+                logger.error(f"No export path created for {file_path}", exc_info=True)
                 raise PathInfoError
 
             export_format = AUDIO_TYPES[0]
@@ -472,12 +460,12 @@ class AudioNormalization():
 
             beginning_text = f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}"
             source_text = f"Source directory path: {input_path_dir}"
-            logger.info(beginning_text)
-            logger.info(source_text)
+            data.append(beginning_text)
+            data.append(source_text)
 
             # want bitrate so can preserve the quality in exported file
             bitrate = self.get_bit_rate(file_path)
-            logger.info(f"bit rate: {bitrate}")
+            data.append(f"bit rate: {bitrate}")
 
             volume_info = self.get_volume_info(file_path)
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
@@ -485,20 +473,20 @@ class AudioNormalization():
 
             if max_volume == 0.0:
                 unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume:.2f} dB, peak normalization not needed")
-                logger.info(unnecessary_text)
+                data.append(unnecessary_text)
                 return
             else:
-                logger.info(f"max volume: {max_volume:.2f} dB")
+                data.append(f"max volume: {max_volume:.2f} dB")
 
             adjustment = 0 + float(TP) - float(max_volume)
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
                 peak_text = print(f"peak normalizing by {TP} minus {max_volume:.2f} dB equaling {adjustment:.2f} dB will result in clipping level: {clip_amount:.2f} dB in {export_path}")
-                logger.info(peak_text)
+                data.append(peak_text)
                 return
             else:
-                logger.info(f"adjustment: {adjustment:.2f} dB")
+                data.append(f"adjustment: {adjustment:.2f} dB")
 
             # -hide_banner to reduce output clutter
             # -filter:a volume=6dB where dB is the adjustment value from volume stats return
@@ -520,14 +508,18 @@ class AudioNormalization():
             ]
 
             text = f"Peak normalizing {input_path_stem}"
-            logger.info(text)
-            logger.info(command)
-            _, spinner = self.spinner_subprocess_run(text, command)
-            success_text = f"Successful peak normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
-            logger.info(success_text)
+            data.append(text)
+            data.append(command)
 
-        except Exception as e:
-            raise Exception(f"Exception {e} peak normalizing audio file: {file_path}")
+            _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
+
+            success_text = f"Successful peak normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
+            data.append(success_text)
+            directory.create_txt(txt_filename, data, GENERATED_FILES)
+
+        except Exception:
+            logger.exception(f"Exception while peak normalizing audio file: {file_path}", stack_info=True)
+            raise
 
 
     def rms_normalize_file(self, file_path):
@@ -540,12 +532,15 @@ class AudioNormalization():
         @param file_path {str} The full file path for audio file.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
-        # @todo implement logging, use create_txt
+
+        data = []
+        txt_filename = "rms_normalized.txt"
+
         try:
             export_path = directory.path_info(file_path)
 
             if not export_path:
-                logger.error(f"No export path created for {file_path}")
+                logger.error(f"No export path created for {file_path}", exc_info=True)
                 raise PathInfoError
 
             export_format = AUDIO_TYPES[0]
@@ -555,34 +550,36 @@ class AudioNormalization():
 
             beginning_text = f"Beginning rms normalization on {input_path_stem} from {input_format} to {export_format}"
             source_text = f"Source directory path: {input_path_dir}"
-            logger.info(beginning_text)
-            logger.info(source_text)
+            data.append[beginning_text]
+            data.append(source_text)
 
             # want bitrate so can preserve the quality in exported file
             bitrate = self.get_bit_rate(file_path)
-            logger.info(f"bit rate: {bitrate}")
+            data.append(f"bit rate: {bitrate}")
 
             volume_info = self.get_volume_info(file_path)
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
             mean_volume = math.floor(volume_info['mean_volume'])
             max_volume = math.floor(volume_info['max_volume'])
-            logger.info(f"floor mean volume: {mean_volume:.2f}")
-            logger.info(f"floor max volume: {max_volume:.2f}")
+            data.append(f"floor mean volume: {mean_volume:.2f}")
+            data.append(f"floor max volume: {max_volume:.2f}")
 
             if max_volume == 0.0:
                 unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume:.2f}, rms normalization not needed")
-                logger.info(unnecessary_text)
+                data.append(unnecessary_text)
                 return
+            else:
+                data.append(f"max volume: {max_volume:.2f} dB")
 
             adjustment = float(TP) - float(mean_volume)
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
                 peak_text = print(f"rms normalizing by {TP} minus {mean_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB in {export_path}")
-                logger.info(peak_text)
+                data.append(peak_text)
                 return
             else:
-                logger.info(f"adjustment: {adjustment:.2f} dB")
+                data.append(f"adjustment: {adjustment:.2f} dB")
 
             # -hide_banner to reduce output clutter
             # -filter:a volume=6dB where dB is the adjustment value from volume stats return
@@ -604,81 +601,15 @@ class AudioNormalization():
             ]
 
             text = f"rms normalizing {input_path_stem}"
-            logger.info(text)
-            logger.info(command)
-            _, spinner = self.spinner_subprocess_run(text, command)
+            data.append(text)
+            data.append(command)
+
+            _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
+
             success_text = f"Successful rms normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
-            logger.info(success_text)
+            data.append(success_text)
+            directory.create_txt(txt_filename, data, GENERATED_FILES)
 
         except Exception:
-            logger.exception(f"Exception peak normalizing audio file: {file_path}", stack_info=True)
+            logger.exception(f"Exception while rms normalizing audio file: {file_path}", stack_info=True)
             raise
-
-
-    def spinner_subprocess_run(self, text, command):
-        '''
-        @brief Runs command in subprocess with a spinner.
-
-        @details Runs subprocess for command, returns stdin & stderr.
-
-        @param text {str} Text for spinner to display.
-        @param command {str} Command for subprocess  to run.
-        @return results (process, spinner) ({CompletedProcess}, {Yaspin}) Tuple containing completed process and spinner objects.
-        @exception CalledProcessError A subprocess error from ffmpeg command execution.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            with yaspin(Spinners.dots, text=text, timer=True) as spinner:
-                # check enables CalledProcessError throwing,
-                # capture output to get stdout & stderr
-                # text decodes stdout/stderr as text
-                process = subprocess.run(
-                    command,
-                    check=True,
-                    capture_output=True,
-                    text=True
-                )
-
-        except CalledProcessError as e:
-            logger.exception(f"CalledProcessError returncode:{e.returncode}, with stderr: {e.stderr} on command {e.cmd}", stack_info=True)
-            raise
-        except Exception:
-            logger.exception(f"Exception processing command: {command}", stack_info=True)
-            raise
-        else:
-            return process, spinner
-
-
-    def subprocess_run(self, command):
-        '''
-        @brief Runs command in subprocess.
-
-        @details Runs subprocess for command, returns stdin & stderr.
-
-        @param text {str} Text for spinner to display.
-        @param command {str} Command for subprocess  to run.
-        @return process {CompletedProcess} Completed process object.
-        @exception CalledProcessError A subprocess error from ffmpeg command execution.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            # check enables CalledProcessError throwing,
-            # capture output to get stdout & stderr
-            # text decodes stdout/stderr as text
-            process = subprocess.run(
-                command,
-                check=True,
-                capture_output=True,
-                text=True
-            )
-
-        except CalledProcessError as e:
-            logger.exception(f"CalledProcessError returncode:{e.returncode}, with stderr: {e.stderr} on command {e.cmd}", stack_info=True)
-            raise
-        except Exception:
-            logger.exception(f"Exception processing command: {command}", stack_info=True)
-            raise
-        else:
-            return process
