@@ -429,7 +429,7 @@ class DirectoryProcessing():
 
         try:
             if not os.path.exists(dir_path):
-                os.mkdir(dir_path)
+                os.makedirs(dir_path)
             else:
                 logger.info(f"{dir_path} already exists")
                 return
