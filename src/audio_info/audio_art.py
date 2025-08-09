@@ -29,10 +29,12 @@ from src import FOLDER_ART
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
 from src.generated_files import GENERATED_FILES
 from src.audio_normalize import AudioNormalization
+from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
 
 normalization = AudioNormalization()
+subprocess_utils = SubprocessUtilities()
 
 # Configure logging
 basename = os.path.basename(__file__)
@@ -256,7 +258,7 @@ class AudioArt():
                 output_file, '-y'
             ]
 
-            _ = normalization.subprocess_run(command)
+            _ = subprocess_utils.subprocess_run(command)
             logger.info(f"FFMPEG extracted album art from {input_path.name} and saved to {album_path}")
 
         except Exception:
@@ -395,7 +397,7 @@ class AudioArt():
                 file_path
             ]
 
-            probe_process = normalization.subprocess_run(command)
+            probe_process = subprocess_utils.subprocess_run(command)
             # ffprobe outputs to stdout, unlike ffmpeg
             probe = json.loads(probe_process.stdout)
 
