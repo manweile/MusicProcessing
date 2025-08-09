@@ -416,18 +416,6 @@ class DirectoryProcessing():
         except Exception:
             logger.exception(f"Exception creating music directory {music_dir}", stack_info=True)
             raise
-        # @todo remove when tested
-        # if not os.path.exists(music_dir):
-        #     try:
-        #         os.mkdir(music_dir)
-
-        #     except Exception as e:
-        #         if e.errno == errno.EACCES:
-        #             logger.error(f"Exception: permission denied for creating {music_dir}", exc_info=True)
-        #             raise OSError
-        #         else:
-        #             logger.exception("Exception creating {music_dir}", stack_info=True)
-        #             raise
 
 
     def make_dir(self, dir_path):

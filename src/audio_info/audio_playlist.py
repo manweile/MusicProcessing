@@ -17,6 +17,7 @@ from src import AUDIO_EXTS
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
 from src import PLAYLIST_EXTS
 from src.generated_files import GENERATED_FILES
+from src import PlaylistError
 from src.dir_processing import DirectoryProcessing
 
 gc.enable()
@@ -36,7 +37,7 @@ logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG
 logger = logging.getLogger(__name__)
 logger.propagate = False
 
-_DELIMITER = ","
+DELIMITER = ","
 
 
 class AudioPlaylist():
@@ -72,11 +73,14 @@ class AudioPlaylist():
         audio = None
 
         try:
-            index = line.find(_DELIMITER)
+            index = line.find(DELIMITER)
+
             if index != -1:
-                input_audio = line[index + len(_DELIMITER):]
+                input_audio = line[index + len(DELIMITER):]
+
                 # get the audio file name ext, may have to change it
                 input_ext = os.path.splitext(os.path.basename(input_audio))[1]
+
                 # wma and m4a files need mp3 extension
                 if input_ext != AUDIO_EXTS[0]:
                     input_stem = os.path.splitext(os.path.basename(input_audio))[0]
@@ -84,13 +88,12 @@ class AudioPlaylist():
                 else:
                     audio = input_audio
             else:
-                logger.warning(f"No file delimiter in {line}")
+                raise PlaylistError(f"No file delimiter in {line}")
 
+        except Exception:
+            logger.exception(f"Exception getting audio name from {line}", stack_info=True)
+        else:
             return audio
-
-        except Exception as e:
-            logger.info(f"line: {line}")
-            logger.critical(e, exc_info=True)
 
 
     def update_paths(self, tld_path, input_m3u):
@@ -149,25 +152,23 @@ class AudioPlaylist():
                                 album = found_parts[-1]
                                 artist = found_parts[-2]
                                 relative_path = os.path.join(artist, album, audio_file) + "\n"
-                                new_extinf = extinf + "0" + _DELIMITER + audio_file + "\n"
+                                new_extinf = extinf + "0" + DELIMITER + audio_file + "\n"
                                 outfile.write(new_extinf)
                                 outfile.write(relative_path)
                                 outfile.write("\n")
                             else:
-                                print(f"{audio_file} from {input_basename} not found in {tld_path}")
-                                logger.info(f"{audio_file} from {input_basename} not found in {tld_path}")
+                                logger.warning(f"{audio_file} from {input_basename} not found in {tld_path}")
                                 continue
 
+        except Exception:
+            logger.exception(f"Exception updating playlist tld_path: {tld_path}, input_m3u: {input_m3u}", stack_info=True)
+        else:
             logger.info(f"Updated {input_basename}\n")
-
-        except Exception as e:
-            logger.info(f"tld_path: {tld_path}, input_m3u: {input_m3u}")
-            logger.critical(e, exc_info=True)
 
 
     def update_walk(self, tld_path):
         '''
-
+        @todo finish doc header
         '''
 
         try:
@@ -177,15 +178,14 @@ class AudioPlaylist():
                 for file in file_names:
                     _, input_file_ext = os.path.splitext(file)
 
-                    # file is not mp3, m4a, or wma, so carry on to next file
+                    # file is not m3u, carry on to next file
                     if input_file_ext.lower() not in PLAYLIST_EXTS:
                         continue
 
                     input_file_path = os.path.join(dir_path, file)
                     self.update_paths(dir_path, input_file_path)
 
+        except Exception:
+            logger.exception(f"Exception updating m3u files in tld_path: {tld_path}", stack_info=True)
+        else:
             logger.info(f"Updated m3u files in {tld_path}\n")
-
-        except Exception as e:
-            logger.info(f"tld_path: {tld_path}")
-            logger.critical(e, exc_info=True)

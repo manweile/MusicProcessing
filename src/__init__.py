@@ -5,6 +5,7 @@
 
 from src.errors import JSONOutputError
 from src.errors import PathInfoError
+from src.errors import PlaylistError
 from src.errors import MusicProcessingError
 
 ## @var AUDIO_EXTS
@@ -103,5 +104,6 @@ __all__ = [
     "UTF8",
     "JSONOutputError",
     "PathInfoError",
+    "PlaylistError",
     "MusicProcessingError"
 ]

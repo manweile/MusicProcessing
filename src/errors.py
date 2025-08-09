@@ -8,6 +8,16 @@ class PathInfoError(Exception):
         super().__init__(self.message)
 
 
+class PlaylistError(Exception):
+    '''
+    @brief Indicates an error occurred in playlist class.
+    '''
+
+    def __init__(self, message="A PlaylistError occurred"):
+        self.message = message
+        super().__init__(self.message)
+
+
 class JSONOutputError(Exception):
     '''
     @brief Indicates error occurred finding json output.
