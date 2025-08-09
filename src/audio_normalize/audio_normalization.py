@@ -157,6 +157,8 @@ class AudioNormalization():
             if not export_path:
                 logger.error(f"No export path created for {file_path}", exc_info=True)
                 raise PathInfoError(f"No export path created for {file_path}")
+            else:
+                directory.make_dir(export_path)
 
             input_path_basename = os.path.basename(file_path)
             input_path_dir = os.path.dirname(file_path)
@@ -451,7 +453,9 @@ class AudioNormalization():
 
             if not export_path:
                 logger.error(f"No export path created for {file_path}", exc_info=True)
-                raise PathInfoError
+                raise PathInfoError(f"No export path created for {file_path}")
+            else:
+                directory.make_dir(export_path)
 
             export_format = AUDIO_TYPES[0]
             input_format = os.path.splitext(file_path)[1].lower()[1:]
@@ -541,7 +545,9 @@ class AudioNormalization():
 
             if not export_path:
                 logger.error(f"No export path created for {file_path}", exc_info=True)
-                raise PathInfoError
+                raise PathInfoError(f"No export path created for {file_path}")
+            else:
+                directory.make_dir(export_path)
 
             export_format = AUDIO_TYPES[0]
             input_format = os.path.splitext(file_path)[1].lower()[1:]
