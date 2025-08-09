@@ -21,7 +21,7 @@ from pathlib import Path
 from src import AUDIO_EXTS, AUDIO_TYPES
 from src import EXPORT_TLD
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8        # logging constants
-from src import HOME, MEDIA                                     # ubuntu mount points
+# from src import HOME, MEDIA                                     # ubuntu mount points
 from src import PLAYLIST_EXTS
 from src.generated_files import GENERATED_FILES
 
@@ -409,19 +409,50 @@ class DirectoryProcessing():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        music_dir = os.path.join(artist_dirpath, album_dir)
+        try:
+            music_dir = os.path.join(artist_dirpath, album_dir)
+            self.make_dir(music_dir)
 
-        if not os.path.exists(music_dir):
-            try:
-                os.mkdir(music_dir)
+        except Exception:
+            logger.exception(f"Exception creating music directory {music_dir}", stack_info=True)
+            raise
+        # @todo remove when tested
+        # if not os.path.exists(music_dir):
+        #     try:
+        #         os.mkdir(music_dir)
 
-            except Exception as e:
-                if e.errno == errno.EACCES:
-                    logger.error(f"Exception: permission denied for creating {music_dir}", exc_info=True)
-                    raise OSError
-                else:
-                    logger.exception("Exception creating {music_dir}", stack_info=True)
-                    raise
+        #     except Exception as e:
+        #         if e.errno == errno.EACCES:
+        #             logger.error(f"Exception: permission denied for creating {music_dir}", exc_info=True)
+        #             raise OSError
+        #         else:
+        #             logger.exception("Exception creating {music_dir}", stack_info=True)
+        #             raise
+
+
+    def make_dir(self, dir_path):
+        '''
+        @brief Creates a directory.
+
+        @param dir_path {str} The path to create.
+        @exception OSError An os permission error.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            if not os.path.exists(dir_path):
+                os.mkdir(dir_path)
+            else:
+                logger.info(f"{dir_path} already exists")
+                return
+
+        except Exception as e:
+            if e.errno == errno.EACCES:
+                logger.error(f"Exception: permission denied for creating {dir_path}", exc_info=True)
+                raise OSError
+            else:
+                logger.exception(f"Exception creating {dir_path}", stack_info=True)
+                raise
 
 
     def move_audio_file(self, file_path, destination_dir):
@@ -504,30 +535,15 @@ class DirectoryProcessing():
             # remove the anchor (ie. / or H:\), have no use for it
             input_path_parts = input_path_parent.parts[1:]
 
-            # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
-            # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
-            if input_path_parts[0] == MEDIA:
-                # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
-                # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
-                input_path_components = input_path_parts[4:]
-            elif input_path_parts[0] == HOME:
-                # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
-                # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
-                input_path_components = input_path_parts[3:]
-            else:
-                # Windows is going to have <tld>/<artist dir>/<album dir>
-                # so 3 elements, we don't want element 1: 'Music'
-                input_path_components = input_path_parts[1:]
-
             # using fixed storage path because will always know project structure
             export_dir = os.path.join(GENERATED_FILES, EXPORT_TLD)
 
-            for component in input_path_components:
-                export_dir = os.path.join(export_dir, component)
+            full_len = len(input_path_parts)
+            artist_len = full_len - 2
 
-            # directory is already extant if we are processing multiple songs for the same artist & album
-            if not os.path.exists(export_dir):
-                os.makedirs(export_dir)
+            # iterate over last 2 elements, which will be artist and album directories
+            for i in range(artist_len, full_len):
+                export_dir = os.path.join(export_dir, input_path_parts[i])
 
             # get mp3 audio extension from package constants
             export_ext = AUDIO_EXTS[0]
@@ -542,6 +558,51 @@ class DirectoryProcessing():
             raise
         else:
             return export_path
+            # @todo remove when tested
+            # get the full parent w/o filename so I can start removing unnecessary path components
+            # input_path_parent = input_path.parent
+
+            # remove the anchor (ie. / or H:\), have no use for it
+            # input_path_parts = input_path_parent.parts[1:]
+
+            # # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
+            # # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
+            # if input_path_parts[0] == MEDIA:
+            #     # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
+            #     # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
+            #     input_path_components = input_path_parts[4:]
+            # elif input_path_parts[0] == HOME:
+            #     # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
+            #     # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
+            #     input_path_components = input_path_parts[3:]
+            # else:
+            #     # Windows is going to have <tld>/<artist dir>/<album dir>
+            #     # so 3 elements, we don't want element 1: 'Music'
+            #     input_path_components = input_path_parts[1:]
+
+            # using fixed storage path because will always know project structure
+            # export_dir = os.path.join(GENERATED_FILES, EXPORT_TLD)
+
+            # for component in input_path_components:
+            #     export_dir = os.path.join(export_dir, component)
+
+            # directory is already extant if we are processing multiple songs for the same artist & album
+            # if not os.path.exists(export_dir):
+            #     os.makedirs(export_dir)
+
+            # get mp3 audio extension from package constants
+            # export_ext = AUDIO_EXTS[0]
+
+            # input_name = input_path.stem
+
+            # export_name = input_name + export_ext
+            # export_path = os.path.join(export_dir, export_name)
+
+        # except Exception:
+        #     logger.exception(f"Exception getting export path {file_path}", stack_info=True)
+        #     raise
+        # else:
+        #     return export_path
 
 
     def remove_album_dir(self, start_path):

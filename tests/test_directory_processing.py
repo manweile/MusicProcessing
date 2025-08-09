@@ -16,6 +16,7 @@ from unittest.mock import patch
 # local modules
 from src import AUDIO_TYPES
 from src import EXPORT_TLD
+from src.generated_files import GENERATED_FILES
 from src.dir_processing import DirectoryProcessing
 
 gc.enable()
@@ -44,9 +45,23 @@ class TestDirectoryProcessing(unittest.TestCase):
         mock_warning.assert_called_once_with(f"File {input_path} is not in {AUDIO_TYPES}")
 
 
+    def test_path_info(self):
+        '''
+        @brief Tests getting a path info for audio file.
+        '''
+
+        audio_file = os.path.join(EXPORT_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
+        file_path = os.path.join(TESTS_PATH, audio_file)
+        path_info = directory.path_info(file_path)
+
+        expected_info = os.path.join(GENERATED_FILES, EXPORT_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
+        self.assertEqual(path_info, expected_info)
+
+
 if __name__ == "__main__":
     suite = unittest.TestSuite()
     suite.addTest(TestDirectoryProcessing('test_path_info_not_audio'))
+    suite.addTest(TestDirectoryProcessing('test_path_info'))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)

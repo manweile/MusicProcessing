@@ -218,8 +218,10 @@ class AudioMetadata():
             export_path = directory.path_info(file_path)
 
             if not export_path:
-                logger.error(f"No export path created for {file_path}")
-                raise PathInfoError
+                logger.error(f"No export path created for {file_path}", exc_info=True)
+                raise PathInfoError(f"No export path created for {file_path}")
+            else:
+                directory.make_dir(export_path)
 
             # @todo check for a Folder.jpg colocated with audio file
 
