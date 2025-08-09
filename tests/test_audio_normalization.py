@@ -20,7 +20,10 @@ from src.audio_normalize import AudioNormalization
 gc.enable()
 
 # D:\MusicProcessing\tests\
-TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
+TESTS_TLD = os.path.dirname(os.path.abspath(__file__))
+MP3_FILE = os.path.join("Crush", "Here", "Crush-Live.mp3")
+NORM_FILE = os.path.join(GENERATED_FILES, EXPORT_TLD, MP3_FILE)
+SRC_FILE = os.path.join(TESTS_TLD, EXPORT_TLD, MP3_FILE)
 
 normalization = AudioNormalization()
 
@@ -31,9 +34,13 @@ class TestAudioNormalization(unittest.TestCase):
     '''
 
     def tearDown(self):
-        # Clean up: delete the temporary directory after each test
-        if os.path.exists(self.test_dir):
-            shutil.rmtree(self.test_dir)
+        '''
+        @brief Clean up the created audio file and directory.
+        '''
+
+        expected_tld = os.path.join(GENERATED_FILES, EXPORT_TLD)
+        if os.path.exists(expected_tld):
+            shutil.rmtree(expected_tld)
 
 
     def test_peak_normalize_file(self):
@@ -41,32 +48,8 @@ class TestAudioNormalization(unittest.TestCase):
         @brief Tests peak normalize audio file level.
         '''
 
-        # source audio file:
-        audio_file = os.path.join("Crush", "Here", "Crush-Live.mp3")
-        file_path = os.path.join(TESTS_PATH, EXPORT_TLD, audio_file)
-
-        normalization.peak_normalize_file(file_path)
-
-        r'''
-        Normal operations input audio paths:
-        D:\MusicCrush\Here\Crush-Live.mp3
-        /home/gerald/Music/Crush/Here/Crush-Live.mp3
-
-        Test operations input audio paths:
-        D:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3
-        /home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3
-
-        peak_normalize_file will call path_info function for an export path,
-        and since the source audio file has 2 extra directory levels,
-        path_info will generate an export path offset by the 2 extra directories.
-
-        So the excepted path needs to reflect the additional directory levels:
-        D:\MusicProcessing\src\generated_files\Music\tests\Music\Crush\Here\Crush-Live.mp3
-        /home/gerald/MusicProcessing/src/generated_files/Music/tests/Music/Crush/Here/Crush-Live.mp3
-        '''
-        expected_mp3 = os.path.join(GENERATED_FILES, EXPORT_TLD, audio_file)
-        self.assertTrue(os.path.exists(expected_mp3))
-        # @todo need to remove the generated mp3 after success
+        normalization.peak_normalize_file(SRC_FILE)
+        self.assertTrue(os.path.exists(NORM_FILE))
 
 
 if __name__ == "__main__":
