@@ -139,14 +139,18 @@ class AudioNormalization():
         '''
         @brief Normalizes audio file level to ebu r128 standard.
 
-        @details see https://k.ylo.ph/2016/04/04/loudnorm.html for algorithm & example.
-        @details see https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg for example
-        @details see https://ffmpeg.org/ffmpeg-filters.html#loudnorm for documentation.
+        @details See https://k.ylo.ph/2016/04/04/loudnorm.html for algorithm & example.
+        @details See https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg for example
+        @details See https://ffmpeg.org/ffmpeg-filters.html#loudnorm for documentation.
+        @details The audio  file MUST be an mp3.
 
-        @param file_path {str} The full file path for audio file.
+        @param file_path {str} The full file path for mp3 audio file.
         @exception JSONDecodeError as json decoding error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
+
+        # @todo add mp3 only guard
+
 
         data = []
         txt_filename = "ebu_normalized.txt"
@@ -158,7 +162,7 @@ class AudioNormalization():
                 logger.error(f"No export path created for {file_path}", exc_info=True)
                 raise PathInfoError(f"No export path created for {file_path}")
             else:
-                directory.make_dir(export_path)
+                directory.make_dir(os.path.dirname(export_path))
 
             input_path_basename = os.path.basename(file_path)
             input_path_dir = os.path.dirname(file_path)
@@ -455,7 +459,7 @@ class AudioNormalization():
                 logger.error(f"No export path created for {file_path}", exc_info=True)
                 raise PathInfoError(f"No export path created for {file_path}")
             else:
-                directory.make_dir(export_path)
+                directory.make_dir(os.path.dirname(export_path))
 
             export_format = AUDIO_TYPES[0]
             input_format = os.path.splitext(file_path)[1].lower()[1:]
@@ -547,7 +551,7 @@ class AudioNormalization():
                 logger.error(f"No export path created for {file_path}", exc_info=True)
                 raise PathInfoError(f"No export path created for {file_path}")
             else:
-                directory.make_dir(export_path)
+                directory.make_dir(os.path.dirname(export_path))
 
             export_format = AUDIO_TYPES[0]
             input_format = os.path.splitext(file_path)[1].lower()[1:]
