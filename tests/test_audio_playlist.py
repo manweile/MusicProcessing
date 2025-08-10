@@ -21,6 +21,9 @@ gc.enable()
 
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
+EXPECTED_M3U = os.path.join(TESTS_TLD, "expected.m3u")
+INPUT_M3U = os.path.join(TESTS_TLD, "test.m3u")
+GENERATED_M3U = os.path.join(GENERATED_FILES, "test.m3u")
 
 playlist = AudioPlaylist()
 
@@ -29,6 +32,15 @@ class TestAudioPlaylist(unittest.TestCase):
     '''
     @brief Tests AudioPlaylist class functions.
     '''
+
+    def tearDown(self):
+        '''
+        @brief Clean up the created playlist file.
+        '''
+
+        if os.path.exists(GENERATED_M3U):
+            os.path.remove(GENERATED_M3U)
+
 
     def test_get_audio_name_mp3(self):
         '''
@@ -78,17 +90,12 @@ class TestAudioPlaylist(unittest.TestCase):
         '''
         @brief Tests if the updated m3u file is equal to expected results.
         '''
-        # @todo improve granularity of test case; refer to test.m3u
-        # may require re-write of playlist code
-        input_m3u = os.path.join(TESTS_TLD, "test.m3u")
-        generated_m3u = os.path.join(GENERATED_FILES, "test.m3u")
-        expected_m3u = os.path.join(TESTS_TLD, "expected.m3u")
 
-        playlist.update_paths(TESTS_TLD, input_m3u)
+        playlist.update_paths(TESTS_TLD, INPUT_M3U)
 
-        self.assertTrue(os.path.exists(generated_m3u))
+        self.assertTrue(os.path.exists(GENERATED_M3U))
 
-        with open(generated_m3u, "r") as generated_file, open(expected_m3u, "r") as expected_file:
+        with open(GENERATED_M3U, "r") as generated_file, open(EXPECTED_M3U, "r") as expected_file:
             generated_content = generated_file.read()
             expected_content = expected_file.read()
             self.assertEqual(generated_content, expected_content, "File contents should be equal")
@@ -96,7 +103,7 @@ class TestAudioPlaylist(unittest.TestCase):
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    # suite.addTest(TestAudioPlaylist('test_update_m3u'))
+    suite.addTest(TestAudioPlaylist('test_update_m3u'))
     suite.addTest(TestAudioPlaylist('test_get_audio_name_mp3'))
     suite.addTest(TestAudioPlaylist('test_get_audio_name_wma'))
     suite.addTest(TestAudioPlaylist('test_get_audio_name_m4a'))
