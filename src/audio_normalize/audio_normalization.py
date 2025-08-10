@@ -142,25 +142,26 @@ class AudioNormalization():
         @details See https://k.ylo.ph/2016/04/04/loudnorm.html for algorithm & example.
         @details See https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg for example
         @details See https://ffmpeg.org/ffmpeg-filters.html#loudnorm for documentation.
-        @details The audio  file MUST be an mp3.
+        @details Audio file must be mp3 format, and already processed by convert_file function.
 
         @param file_path {str} The full file path for mp3 audio file.
         @exception JSONDecodeError as json decoding error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        # @todo add mp3 only guard
-
-
         data = []
         txt_filename = "ebu_normalized.txt"
 
         try:
+            _, input_file_ext = os.path.splitext(file_path)
+            if input_file_ext.lower() != AUDIO_EXTS[0]:
+                logger.warning(f"{file_path} is not an mp3")
+                return
+
             export_path = directory.path_info(file_path)
 
             if not export_path:
-                logger.error(f"No export path created for {file_path}", exc_info=True)
-                raise PathInfoError(f"No export path created for {file_path}")
+                raise PathInfoError()
             else:
                 directory.make_dir(os.path.dirname(export_path))
 
@@ -260,6 +261,8 @@ class AudioNormalization():
             data.append(results_text)
             directory.create_txt(txt_filename, data, GENERATED_FILES)
 
+        except PathInfoError:
+            logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
         except Exception:
             logger.exception(f"Exception while ebu normalizing audio file: {file_path}", stack_info=True)
             raise
@@ -422,6 +425,7 @@ class AudioNormalization():
 
                     # file is not mp3, carry on to next file
                     if input_file_ext.lower() != AUDIO_EXTS[0]:
+                        logger.info(f"{file} is not an mp3, continuing to next file")
                         continue
 
                     input_file_path = os.path.join(dir_path, file)
@@ -445,7 +449,7 @@ class AudioNormalization():
         @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
         @details Audio file must be mp3 format, and already processed by convert_file function.
 
-        @param file_path {str} The full file path for audio file.
+        @param file_path {str} The full file path for mp3 audio file.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -453,11 +457,15 @@ class AudioNormalization():
         txt_filename = "peak_normalized.txt"
 
         try:
+            _, input_file_ext = os.path.splitext(file_path)
+            if input_file_ext.lower() != AUDIO_EXTS[0]:
+                logger.warning(f"{file_path} is not an mp3")
+                return
+
             export_path = directory.path_info(file_path)
 
             if not export_path:
-                logger.error(f"No export path created for {file_path}", exc_info=True)
-                raise PathInfoError(f"No export path created for {file_path}")
+                raise PathInfoError()
             else:
                 directory.make_dir(os.path.dirname(export_path))
 
@@ -525,6 +533,8 @@ class AudioNormalization():
             data.append(success_text)
             directory.create_txt(txt_filename, data, GENERATED_FILES)
 
+        except PathInfoError:
+            logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
         except Exception:
             logger.exception(f"Exception while peak normalizing audio file: {file_path}", stack_info=True)
             raise
@@ -537,7 +547,7 @@ class AudioNormalization():
         @details Automatically finds mean amplitude ands scales entire audio to maximize mean without clipping.
         @details Audio file must be mp3 format, and already processed by convert_file function.
 
-        @param file_path {str} The full file path for audio file.
+        @param file_path {str} The full file path for mp3 audio file.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -545,11 +555,15 @@ class AudioNormalization():
         txt_filename = "rms_normalized.txt"
 
         try:
+            _, input_file_ext = os.path.splitext(file_path)
+            if input_file_ext.lower() != AUDIO_EXTS[0]:
+                logger.warning(f"{file_path} is not an mp3")
+                return
+
             export_path = directory.path_info(file_path)
 
             if not export_path:
-                logger.error(f"No export path created for {file_path}", exc_info=True)
-                raise PathInfoError(f"No export path created for {file_path}")
+                raise PathInfoError()
             else:
                 directory.make_dir(os.path.dirname(export_path))
 
@@ -620,6 +634,8 @@ class AudioNormalization():
             data.append(success_text)
             directory.create_txt(txt_filename, data, GENERATED_FILES)
 
+        except PathInfoError:
+            logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
         except Exception:
             logger.exception(f"Exception while rms normalizing audio file: {file_path}", stack_info=True)
             raise
