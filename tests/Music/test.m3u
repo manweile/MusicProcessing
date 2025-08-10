@@ -1,8 +1,4 @@
 #EXTM3U
-#:should fail, file not found in tld
-#EXTINF:0,Daughtry-Home.mp3
-Daughtry/Daughtry-Home.mp3
-
 #:should pass
 #EXTINF:0,Sawyer Fredricks - Shots Fired.mp3
 Sawyer Fredericks/A Good Storm/Sawyer Fredricks - Shots Fired.mp3
@@ -10,10 +6,6 @@ Sawyer Fredericks/A Good Storm/Sawyer Fredricks - Shots Fired.mp3
 #:should pass with new artist: The Lord of the Rings
 #EXTINF:0,Annie Lennox - Into the West.mp3
 Annie Lennox/Return of the King/Annie Lennox - Into the West.mp3
-
-#:should fail, file not found because of renaming
-#EXTINF:0,.38 Special-Teacher, Teacher.mp3
-38 Special/Teachers/.38 Special-Teacher, Teacher.mp3
 
 #:should pass with wma to mp3
 #EXTINF:0,Creedence Clearwater Revival-Fortunate Son.wma
@@ -26,6 +18,14 @@ The Eagles/Desperado/The Eagles-Desperado.m4a
 #:should pass with new album dir: Devil's Got a new Disguise-The very Best of Aerosmith
 #EXTINF:0,Aerosmith-Dream On.mp3
 Aerosmith/Devil's Got a New Disguise_ The Very Bes/Aerosmith-Dream On.mp3
+
+#:should fail, file not found in tld
+#EXTINF:0,Daughtry-Home.mp3
+Daughtry/Daughtry-Home.mp3
+
+#:should fail, file not found because of renaming
+#EXTINF:0,.38 Special-Teacher, Teacher.mp3
+38 Special/Teachers/.38 Special-Teacher, Teacher.mp3
 
 #:should fail, bad EXTINF tag, no delimiter
 #EXTINF:0The Eagles-Desperado.m4a
