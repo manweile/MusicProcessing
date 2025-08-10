@@ -218,8 +218,7 @@ class AudioMetadata():
             export_path = directory.path_info(file_path)
 
             if not export_path:
-                logger.error(f"No export path created for {file_path}", exc_info=True)
-                raise PathInfoError(f"No export path created for {file_path}")
+                raise PathInfoError()
             else:
                 directory.make_dir(os.path.dirname(export_path))
 
@@ -262,7 +261,7 @@ class AudioMetadata():
                 input_tags = self.get_m4a_tags(file_path)
                 tags = self.map_m4a_tags(input_tags)
             else:
-                # @todo log this
+                # @todo raise MusicProcessingError then log it in excpetion handler
                 print(f"Non-standard metadata type: {metadata_type} for file: {os.path.basename(file_path)}")
                 return
 
@@ -316,6 +315,8 @@ class AudioMetadata():
                 )
             audio_tags.save(v2_version=3)
 
+        except PathInfoError:
+            logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
         except Exception as e:
             raise Exception(f"Exception {e} converting {file_path} to {export_path}")
 
@@ -504,12 +505,16 @@ class AudioMetadata():
             if audio_file is not None:
                 tag_info = audio_file.tags
             else:
-                raise ValueError(f"Returned None loading audio file: {file_path} ")
+                raise ValueError()
 
-        except Exception as e:
-            raise Exception(f"Exception {e} getting tags for file {file_path}")
-
-        return tag_info
+        except ValueError:
+            logger.exception(f"ValueError returned None loading audio file: {file_path}", exc_info=True)
+            raise
+        except Exception:
+            logger.exception(f"Exception getting tags for file {file_path}")
+            raise
+        else:
+            return tag_info
 
 
     def get_media_info(self, file_path):
@@ -527,10 +532,10 @@ class AudioMetadata():
             media_info = None
             media_info = mediainfo(file_path)
 
-        except Exception as e:
-            raise Exception(f"Exception {e} getting media info for file {file_path}")
-
-        return media_info
+        except Exception:
+            raise Exception(f"Exception getting media info for file {file_path}")
+        else:
+            return media_info
 
 
     def get_media_info_walk(self, start_path, file_pattern):
