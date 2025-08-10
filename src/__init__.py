@@ -1,12 +1,14 @@
 '''
 @package src
-@brief Holds package level constants used by other modules.
+@brief Holds package level constants and imports used by other modules.
 '''
 
+# using absolute import as don't expect to be re-organizing directories
 from src.errors import JSONOutputError
 from src.errors import PathInfoError
 from src.errors import PlaylistError
 from src.errors import MusicProcessingError
+from src.subprocess_utils import SubprocessUtilities
 
 ## @var AUDIO_EXTS
 # @brief audio file extensions in my collection
@@ -38,11 +40,6 @@ ERROR_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)
 # @details use this when need to set album art file name
 FOLDER_ART = "Folder.jpg"
 
-## @var HOME
-# @brief linux hdd mount point
-# @details use this when parsing linux hdd path
-HOME = "home"
-
 ## @var LOG_DIR
 # @brief final part of log files directory path
 # @details use this to set log files directory path
@@ -52,11 +49,6 @@ LOG_DIR = "logs"
 # @brief log file extension
 # @details use this to set extension for log files
 LOG_EXT = ".log"
-
-## @var MEDIA
-# @brief linux usb mount point
-# @details use this when parsing linux usb path
-MEDIA = "media"
 
 ## @var PLAYLIST_EXTS
 # @brief playlist file extensions in my collection
@@ -81,29 +73,22 @@ UTF8 = "utf-8"
 # @details In modules needing the constant add 'from src import EXPORT_TLD`
 # @details In modules needing the constant add 'from src import ERROR_LOG_FORMAT
 # @details In modules needing the constant add 'from src import FOLDER_ART'
-# @details In modules needing the constant add 'from src import HOME`
 # @details In modules needing the constant add 'from src import LOG_DIR
 # @details In modules needing the constant add 'from src import LOG_EXT
-# @details In modules needing the constant add 'from src import MEDIA`
 # @details In modules needing the constant add `from src import PLAYLIST_EXTS`
 # @details In modules needing the constant add `from src import PLAYLIST_TYPES`
 # @details In modules needing the constant add `from src import UTF8'
+# @details In modules needing the error class, add `from src.errors import JSONOutputError'
+# @details In modules needing the error class, add `from src.errors import PathInfoError'
+# @details In modules needing the error class, add `from src.errors import PlaylistError'
+# @details In modules needing the error class, add `from src.errors import MusicProcessingError'
+# @details In modules needing the class, add `from src.errors import SubprocessUtilities'
 __all__ = [
-    "AUDIO_EXTS",
-    "AUDIO_FILES",
-    "AUDIO_TYPES",
+    "AUDIO_EXTS", "AUDIO_FILES", "AUDIO_TYPES",
     "EXPORT_TLD",
-    "ERROR_LOG_FORMAT",
+    "ERROR_LOG_FORMAT", "LOG_DIR", "LOG_EXT",  "UTF8",
     "FOLDER_ART",
-    "HOME",
-    "LOG_DIR",
-    "LOG_EXT",
-    "MEDIA",
-    "PLAYLIST_EXTS",
-    "PLAYLIST_TYPES",
-    "UTF8",
-    "JSONOutputError",
-    "PathInfoError",
-    "PlaylistError",
-    "MusicProcessingError"
+    "PLAYLIST_EXTS", "PLAYLIST_TYPES",
+    "JSONOutputError", "PathInfoError", "PlaylistError", "MusicProcessingError",
+    "SubprocessUtilities"
 ]

@@ -21,7 +21,6 @@ import unittest
 # from src import AUDIO_EXTS, AUDIO_TYPES
 # from src import EXPORT_TLD
 # from src import FOLDER_ART
-# from src import HOME, MEDIA                                     # ubuntu mount points
 # from src import PLAYLIST_EXTS
 # from src.generated_files import GENERATED_FILES
 # from src.audio_info import AudioArt
