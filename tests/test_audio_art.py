@@ -8,7 +8,6 @@
 
 # standard modules
 import gc
-import logging
 import os
 import unittest
 
@@ -18,21 +17,7 @@ from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging cons
 from src.generated_files import GENERATED_FILES
 from src.audio_info import AudioArt
 
-
 gc.enable()
-
-# Configure logging
-basename = os.path.basename(__file__)
-stem = os.path.splitext(basename)[0]
-file = stem + LOG_EXT
-log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
-# override the default logging level WARN to lowest level so we can log all levels
-logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
-
-# create logger for module and restrict to module
-# use raise in exception handling if we need send something inter-module
-logger = logging.getLogger(__name__)
-logger.propagate = False
 
 # get the dir path for test location need it to find audio files
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -90,11 +75,8 @@ class TestAudioArt(unittest.TestCase):
         @brief Tests if audio file does not have video stream.
         '''
 
-        try:
-            input_audio = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
-            self.assertFalse(art.has_video_stream(input_audio))
-        except Exception:
-            logger.exception("Exception", stack_info=True)
+        input_audio = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
+        self.assertFalse(art.has_video_stream(input_audio))
 
 
     def test_has_video_stream_true(self):
