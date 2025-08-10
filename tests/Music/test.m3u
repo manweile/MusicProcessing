@@ -27,6 +27,6 @@ The Eagles/Desperado/The Eagles-Desperado.m4a
 #EXTINF:0,Aerosmith-Dream On.mp3
 Aerosmith/Devil's Got a New Disguise_ The Very Bes/Aerosmith-Dream On.mp3
 
-#:should fail, bad EXTINF tag
+#:should fail, bad EXTINF tag, no delimiter
 #EXTINF:0The Eagles-Desperado.m4a
 The Eagles/Desperado/The Eagles-Desperado.m4a
