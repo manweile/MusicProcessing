@@ -88,8 +88,10 @@ class AudioPlaylist():
                 else:
                     audio = input_audio
             else:
-                raise PlaylistError(f"No file delimiter in {line}")
+                raise PlaylistError()
 
+        except PlaylistError:
+            logger.exception(f"No file delimiter in {line}")
         except Exception:
             logger.exception(f"Exception getting audio name from {line}", stack_info=True)
         else:

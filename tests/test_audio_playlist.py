@@ -10,6 +10,7 @@
 import gc
 import os
 import unittest
+from unittest.mock import patch
 
 # local modules
 from src import EXPORT_TLD
@@ -29,13 +30,56 @@ class TestAudioPlaylist(unittest.TestCase):
     @brief Tests AudioPlaylist class functions.
     '''
 
-    # @todo improve granularity of test case; refer to test.m3u
-    # may require re-write of playlist code
+    def test_get_audio_name_mp3(self):
+        '''
+        @brief Tests getting mp3 audio file name from a m3u #EXTINF line
+        '''
+
+        line = "#EXTINF:0,Sawyer Fredricks - Shots Fired.mp3"
+        expected_audio = "Sawyer Fredricks - Shots Fired.mp3"
+        result_audio = playlist.get_audio_name(line)
+        self.assertEqual(expected_audio, result_audio)
+
+
+    def test_get_audio_name_wma(self):
+        '''
+        @brief Tests getting wma audio file name from a m3u #EXTINF line
+        '''
+
+        line = "#EXTINF:0,Creedence Clearwater Revival-Fortunate Son.wma"
+        expected_audio = "Creedence Clearwater Revival-Fortunate Son.mp3"
+        result_audio = playlist.get_audio_name(line)
+        self.assertEqual(expected_audio, result_audio)
+
+
+    def test_get_audio_name_m4a(self):
+        '''
+        @brief Tests getting m4a audio file name from a m3u #EXTINF line
+        '''
+
+        line = "#EXTINF:0,The Eagles-Desperado.m4a"
+        expected_audio = "The Eagles-Desperado.mp3"
+        result_audio = playlist.get_audio_name(line)
+        self.assertEqual(expected_audio, result_audio)
+
+
+    @patch('src.audio_info.audio_playlist.logger.exception')
+    def test_get_audio_name_error(self, mock_warning):
+        '''
+        @brief Tests getting audio file name from a m3u #EXTINF line without delimiter
+        '''
+
+        line = "#EXTINF:0The Eagles-Desperado.m4a"
+        playlist.get_audio_name(line)
+        mock_warning.assert_called_once_with(f"No file delimiter in {line}")
+
+
     def test_update_m3u(self):
         '''
         @brief Tests if the updated m3u file is equal to expected results.
         '''
-
+        # @todo improve granularity of test case; refer to test.m3u
+        # may require re-write of playlist code
         input_m3u = os.path.join(TESTS_TLD, "test.m3u")
         generated_m3u = os.path.join(GENERATED_FILES, "test.m3u")
         expected_m3u = os.path.join(TESTS_TLD, "expected.m3u")
@@ -51,4 +95,12 @@ class TestAudioPlaylist(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    suite = unittest.TestSuite()
+    # suite.addTest(TestAudioPlaylist('test_update_m3u'))
+    suite.addTest(TestAudioPlaylist('test_get_audio_name_mp3'))
+    suite.addTest(TestAudioPlaylist('test_get_audio_name_wma'))
+    suite.addTest(TestAudioPlaylist('test_get_audio_name_m4a'))
+    suite.addTest(TestAudioPlaylist('test_get_audio_name_error'))
+
+    runner = unittest.TextTestRunner(verbosity=2)
+    runner.run(suite)
