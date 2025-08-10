@@ -13,7 +13,6 @@ import unittest
 
 # local modules
 from src import EXPORT_TLD
-from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
 from src.generated_files import GENERATED_FILES
 from src.audio_info import AudioArt
 
@@ -87,11 +86,23 @@ class TestAudioArt(unittest.TestCase):
         input_audio = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
         self.assertTrue(art.has_video_stream(input_audio))
 
+    def test_extract_asf_art(self):
+        '''
+
+        '''
+
+        input_audio = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
+        art.extract_asf_art(input_audio)
+        # @todo
+        # assert exists Folder.jpg in Album dir
+        # add teardown to remove folder jpg in album dir
+
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
     suite.addTest(TestAudioArt('test_has_video_stream_false'))
     suite.addTest(TestAudioArt('test_has_video_stream_true'))
+    suite.addTest(TestAudioArt('test_extract_asf_art'))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
