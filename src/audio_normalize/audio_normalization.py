@@ -263,6 +263,7 @@ class AudioNormalization():
 
         except PathInfoError:
             logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
+            raise
         except Exception:
             logger.exception(f"Exception while ebu normalizing audio file: {file_path}", stack_info=True)
             raise
@@ -457,15 +458,10 @@ class AudioNormalization():
         txt_filename = "peak_normalized.txt"
 
         try:
-            _, input_file_ext = os.path.splitext(file_path)
-            if input_file_ext.lower() != AUDIO_EXTS[0]:
-                logger.warning(f"{file_path} is not an mp3")
-                return
-
             export_path = directory.path_info(file_path)
 
             if not export_path:
-                raise PathInfoError()
+                raise PathInfoError(message=f"File {file_path} is not in {AUDIO_TYPES}")
             else:
                 directory.make_dir(os.path.dirname(export_path))
 
@@ -535,6 +531,7 @@ class AudioNormalization():
 
         except PathInfoError:
             logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
+            return
         except Exception:
             logger.exception(f"Exception while peak normalizing audio file: {file_path}", stack_info=True)
             raise
@@ -555,15 +552,10 @@ class AudioNormalization():
         txt_filename = "rms_normalized.txt"
 
         try:
-            _, input_file_ext = os.path.splitext(file_path)
-            if input_file_ext.lower() != AUDIO_EXTS[0]:
-                logger.warning(f"{file_path} is not an mp3")
-                return
-
             export_path = directory.path_info(file_path)
 
             if not export_path:
-                raise PathInfoError()
+                raise PathInfoError(message=f"File {file_path} is not in {AUDIO_TYPES}")
             else:
                 directory.make_dir(os.path.dirname(export_path))
 
@@ -636,6 +628,7 @@ class AudioNormalization():
 
         except PathInfoError:
             logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
+            return
         except Exception:
             logger.exception(f"Exception while rms normalizing audio file: {file_path}", stack_info=True)
             raise

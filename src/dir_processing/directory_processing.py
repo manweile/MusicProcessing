@@ -481,7 +481,7 @@ class DirectoryProcessing():
 
             input_ext = input_path.suffix
             if input_ext.lower() not in AUDIO_EXTS:
-                logger.warning(f"File {input_path} is not in {AUDIO_TYPES}")
+                # logger.warning(f"File {input_path} is not in {AUDIO_TYPES}")
                 return None
 
             r'''
