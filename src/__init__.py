@@ -8,7 +8,6 @@ from src.errors import JSONOutputError
 from src.errors import PathInfoError
 from src.errors import PlaylistError
 from src.errors import MusicProcessingError
-from src.subprocess_utils import SubprocessUtilities
 
 ## @var AUDIO_EXTS
 # @brief audio file extensions in my collection
@@ -82,13 +81,11 @@ UTF8 = "utf-8"
 # @details In modules needing the error class, add `from src.errors import PathInfoError'
 # @details In modules needing the error class, add `from src.errors import PlaylistError'
 # @details In modules needing the error class, add `from src.errors import MusicProcessingError'
-# @details In modules needing the class, add `from src.errors import SubprocessUtilities'
 __all__ = [
     "AUDIO_EXTS", "AUDIO_FILES", "AUDIO_TYPES",
     "EXPORT_TLD",
     "ERROR_LOG_FORMAT", "LOG_DIR", "LOG_EXT",  "UTF8",
     "FOLDER_ART",
     "PLAYLIST_EXTS", "PLAYLIST_TYPES",
-    "JSONOutputError", "PathInfoError", "PlaylistError", "MusicProcessingError",
-    "SubprocessUtilities"
+    "JSONOutputError", "PathInfoError", "PlaylistError", "MusicProcessingError"
 ]
