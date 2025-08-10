@@ -508,10 +508,10 @@ class AudioMetadata():
                 raise ValueError()
 
         except ValueError:
-            logger.exception(f"ValueError returned None loading audio file: {file_path}", exc_info=True)
+            logger.exception(f"ValueError returned None loading audio file: {file_path}", stack_info=True)
             raise
         except Exception:
-            logger.exception(f"Exception getting tags for file {file_path}")
+            logger.exception(f"Exception getting tags for file {file_path}", stack_info=True)
             raise
         else:
             return tag_info

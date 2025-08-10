@@ -438,7 +438,7 @@ class AudioNormalization():
                         self.rms_normalize_file(input_file_path)
 
         except Exception:
-            logger.exception(f"Exception on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files")
+            logger.exception(f"Exception on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files", stack_info=True)
             raise
 
 

@@ -91,7 +91,7 @@ class AudioPlaylist():
                 raise PlaylistError()
 
         except PlaylistError:
-            logger.exception(f"No file delimiter in {line}")
+            logger.exception(f"No file delimiter in {line}", stack_info=True)
         except Exception:
             logger.exception(f"Exception getting audio name from {line}", stack_info=True)
         else:
