@@ -43,6 +43,12 @@ class TestAudioNormalization(unittest.TestCase):
             shutil.rmtree(expected_tld)
 
 
+    # @todo add ebu normalize
+    # @todo add rms normalize
+    # @todo add a PathInfoError from one of the normalize defs test
+    # @todo add a mp3 only error from one of the normalize defs test
+
+
     def test_peak_normalize_file(self):
         '''
         @brief Tests peak normalize audio file level.
