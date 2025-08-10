@@ -203,9 +203,6 @@ class DirectoryProcessing():
             txt_path = os.path.join(txt_dir, txt_filename)
 
             # need to append cause expecting many runs
-            # txt_outfile = open(txt_path, mode='a', encoding='windows-1252', newline='')
-            # txt_outfile.writelines([item + "\n" for item in data])
-            # txt_outfile.close()
             txt_outfile = open(txt_path, mode='a', encoding='windows-1252', newline='')
             for item in data:
                 txt_outfile.write(f"{item}\n")
