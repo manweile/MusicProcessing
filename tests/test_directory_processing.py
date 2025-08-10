@@ -23,6 +23,7 @@ gc.enable()
 
 # instantiate module levels vars here
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
+TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 
 # instantiate classes here
 directory = DirectoryProcessing()
@@ -32,6 +33,29 @@ class TestDirectoryProcessing(unittest.TestCase):
     '''
     @brief Tests DirectoryProcessing class functions.
     '''
+
+    def test_get_file_directory_none(self):
+        '''
+        @brief Tests could not find the directory path of a file given its name and a starting search path.
+        '''
+
+        file_name = "Daughtry-Home.mp3"
+        start_path = TESTS_TLD
+        dir_path = directory.get_file_directory(start_path, file_name)
+        self.assertIsNone(dir_path)
+
+
+    def test_get_file_directory(self):
+        '''
+        @brief Tests could find the directory path of a file given its name and a starting search path.
+        '''
+
+        file_name = "Sawyer Fredricks - Shots Fired.mp3"
+        start_path = TESTS_TLD
+        dir_path = directory.get_file_directory(start_path, file_name)
+        self.assertIsNotNone(dir_path)
+        self.assertTrue(os.path.isdir(dir_path))
+
 
     @patch('src.dir_processing.directory_processing.logger.warning')
     def test_path_info_not_audio(self, mock_warning):
@@ -54,12 +78,15 @@ class TestDirectoryProcessing(unittest.TestCase):
         file_path = os.path.join(TESTS_PATH, audio_file)
         path_info = directory.path_info(file_path)
 
+        # successful path_info returns a mp3 file name in generated_files/Music
         expected_info = os.path.join(GENERATED_FILES, EXPORT_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
         self.assertEqual(path_info, expected_info)
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
+    suite.addTest(TestDirectoryProcessing('test_get_file_directory_none'))
+    suite.addTest(TestDirectoryProcessing('test_get_file_directory'))
     suite.addTest(TestDirectoryProcessing('test_path_info_not_audio'))
     suite.addTest(TestDirectoryProcessing('test_path_info'))
 
