@@ -73,9 +73,10 @@ class AudioArt():
         '''
         @brief Unpack image data from a WM/Picture tag.
 
-        @details https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243
+        @details https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243.
         @details This function is treated as "untrusted" and could throw all manner of exceptions (out-of-bounds, etc.).
 
+        @param data {bytearray} The byte attribute data from asf audio WM/Picture tag.
         @return (mime, image_data, type, description) ({str}, {bytes}, {int}, {str}) Tuple containing the MIME type, the raw image data, a type indicator, and
         the image's description.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -200,7 +201,7 @@ class AudioArt():
 
     def extract_asf_art(self, file_path):
         '''
-        @brief Extracts cover art from wma files
+        @brief Extracts cover art from wma files.
 
         @details Input file is expected to have embedded cover art.
 
