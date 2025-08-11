@@ -378,7 +378,7 @@ class AudioArt():
 
         @param file_path {str} The full path to audio file.
         @return has_video {boolean} Returns true if video stream is present, false otherwise.
-        @exception JSONDecodeError as json decoding error.
+        @exception JSONDecodeError A json decoding error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
