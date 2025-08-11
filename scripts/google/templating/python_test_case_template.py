@@ -24,6 +24,7 @@ import unittest
 # from src import PLAYLIST_EXTS
 # from src.generated_files import GENERATED_FILES
 # from src.audio_info import AudioArt
+# from src.audio_info import AudioMetadata
 # from src.audio_info import AudioPlaylist
 # from src.audio_normalize import AudioNormalization
 # from src.dir_processing import DirectoryProcessing
@@ -36,6 +37,7 @@ TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 # instantiate classes here
 # art = AudioArt()
 # directory = DirectoryProcessing()
+# metadata = AudioMetadata()
 # normalization = AudioNormalization()
 # playlist = AudioPlaylist()
 
