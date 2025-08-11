@@ -190,15 +190,11 @@ class AudioMetadata():
             if TPOS not in id3_tags:
                 id3_tags[TPOS] = "1/1"
 
-            # @todo write to txt file
-            # for key, value in id3_tags.items():
-            #     print(f"key: {key}, value: {value}")
-
         except Exception:
-            logger.exception(f"Exception updating id3 tags", stack_info=True)
+            logger.exception("Exception updating id3 tags", stack_info=True)
             raise
-
-        return id3_tags
+        else:
+            return id3_tags
 
 
     def convert_file(self, file_path):
@@ -215,6 +211,8 @@ class AudioMetadata():
         @param file_path {str} The path for audio file to be converted.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
+        data = []
+        txt_filename = "convert_file.txt"
 
         try:
             export_path = directory.path_info(file_path)
@@ -234,8 +232,10 @@ class AudioMetadata():
             input_path_parent = os.path.dirname(file_path)
 
             # @todo this needs to go to a txt file
-            print(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
-            print(f"Source directory path: {input_path_parent}")
+            # print(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
+            # print(f"Source directory path: {input_path_parent}")
+            data.append(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
+            data.append(f"Source directory path: {input_path_parent}")
 
             '''
             metadata transfer
@@ -264,8 +264,8 @@ class AudioMetadata():
                 tags = self.map_m4a_tags(input_tags)
             else:
                 # @todo raise MusicProcessingError then log it in exception handler
-                print(f"Non-standard metadata type: {metadata_type} for file: {os.path.basename(file_path)}")
-                return
+                logger.error(f"MusicProcessingError non-standard metadata type: {metadata_type} for file: {os.path.basename(file_path)}")
+                raise MusicProcessingError()
 
             # get the input file info - want bitrate so can preserve the quality in exported file
             media_info = self.get_media_info(file_path)
@@ -319,6 +319,8 @@ class AudioMetadata():
                 )
             audio_tags.save(v2_version=3)
 
+        except MusicProcessingError:
+            raise
         except PathInfoError:
             logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
             raise
