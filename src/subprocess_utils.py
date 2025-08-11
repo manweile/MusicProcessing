@@ -54,6 +54,18 @@ class SubprocessUtilities():
         pass
 
 
+    def popen_pipe(self, command):
+        '''
+        @brief Runs command in new process.
+
+        @details Asynchronous execution of command with redirection to stdout.
+        @param command {str} Command for subprocess  to run.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        pass
+
+
     def spinner_subprocess_run(self, text, command):
         '''
         @brief Runs command in subprocess with a spinner.

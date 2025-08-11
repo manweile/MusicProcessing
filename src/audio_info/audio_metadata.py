@@ -222,18 +222,20 @@ class AudioMetadata():
             else:
                 directory.make_dir(os.path.dirname(export_path))
 
-            # @todo check for a Folder.jpg colocated with audio file
+            '''
+            If a song has does have embedded art, pydub will NOT auto transfer it while doing a conversion.
+            Therefore all audio files must have co-located cover art.
+            '''
+            input_path_parent = os.path.dirname(file_path)
+            cover = os.path.join(input_path_parent, FOLDER_ART)
+            if not os.path.exists(cover):
+                logger.warning(f"album directory {input_path_parent} does not contain a {FOLDER_ART} file.")
+                raise MusicProcessingError()
 
             # export format is always mp3
             export_format = AUDIO_TYPES[0]
-
             input_format = os.path.splitext(file_path)[1].lower()[1:]
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
-            input_path_parent = os.path.dirname(file_path)
-
-            # @todo this needs to go to a txt file
-            # print(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
-            # print(f"Source directory path: {input_path_parent}")
             data.append(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
             data.append(f"Source directory path: {input_path_parent}")
 
@@ -248,7 +250,6 @@ class AudioMetadata():
             so I am formatting any found date values to YYYY and mapping to ID3v2.3 TYER field
             I have manually edited all audio files without date to have 1963 as default
             '''
-
             metadata_type = self.get_metadata_type(file_path)
             if metadata_type == AUDIO_FILES[2]:
                 format = AUDIO_FILES[2]
@@ -263,24 +264,12 @@ class AudioMetadata():
                 input_tags = self.get_m4a_tags(file_path)
                 tags = self.map_m4a_tags(input_tags)
             else:
-                # @todo raise MusicProcessingError then log it in exception handler
                 logger.error(f"MusicProcessingError non-standard metadata type: {metadata_type} for file: {os.path.basename(file_path)}")
                 raise MusicProcessingError()
 
             # get the input file info - want bitrate so can preserve the quality in exported file
             media_info = self.get_media_info(file_path)
             bitrate = media_info['bit_rate']
-
-            '''
-            If a song has does have embedded art, pydub will NOT auto transfer it while doing a conversion.
-            Therefore all audio files must have co-located cover art.
-            '''
-
-            cover = os.path.join(input_path_parent, FOLDER_ART)
-            if not os.path.exists(cover):
-                # @todo log this
-                print(f"album directory {input_path_parent} does not contain a {FOLDER_ART} file.")
-                return
 
             # @todo write my own ffmpeg converter, so dont need pydub
             if metadata_type == AUDIO_FILES[0]:
@@ -301,9 +290,8 @@ class AudioMetadata():
             try:
                 audio_tags = MP3(export_path, ID3=ID3, v2_version=3)
                 audio_tags.add_tags()
-                # @todo figure out better error handling
             except error:
-                # Tags already exist, no worries
+                # means tags already exist, no worries
                 pass
 
             # encoding/type = 3 specifies UTF-8/front cover
@@ -318,6 +306,8 @@ class AudioMetadata():
                     )
                 )
             audio_tags.save(v2_version=3)
+
+            directory.create_txt(txt_filename, data, GENERATED_FILES)
 
         except MusicProcessingError:
             raise
@@ -412,13 +402,13 @@ class AudioMetadata():
                 artist_content = os.listdir(tld_item_path)
                 # want to know if we have any empty artist directories so we can deal with them later
                 if os.path.isdir(tld_item_path) and not artist_content:
-                    # @todo log this
-                    print(f"{tld_item_path} is an empty artist directory")
+                    logger.info(f"{tld_item_path} is an empty artist directory")
                     tld_bar.update(1)
                     continue
 
                 # now we can look at what's in the current artist 1st level directory
                 for artist_item in artist_content:
+
                     # we don't care about existing album 2nd level dirs
                     artist_item_path = os.path.join(tld_item_path, artist_item)
                     if os.path.isdir(artist_item_path):
@@ -459,16 +449,14 @@ class AudioMetadata():
                         destination_dir = os.path.join(tld_item_path, album_dir)
                         dir_processing.move_audio_file(audio_file, destination_dir)
                     else:
-                        # @todo log this
-                        print(f"{audio_file} is missing album metadata")
+                        logger.warning(f"{audio_file} is missing album metadata")
                         continue
 
                 tld_bar.update(1)
 
             tld_bar.close()
             dir_processing.create_csv(csv_filename, data, GENERATED_FILES, header_row, 0)
-            # @todo log this
-            print(f"Created {len(album_dirs)} album dirs")
+            logger.info(f"Created {len(album_dirs)} album dirs")
 
         except ValueError:
             logger.exception(f"ValueError sanitizing album metadata {album}", stack_info=True)
@@ -533,6 +521,66 @@ class AudioMetadata():
         else:
             return tag_info
 
+    def mediainfo(file_path):
+        '''
+        @brief Return dictionary with media info.
+        @details Uses ffmpeg to get all media info from any valid audio file.
+
+        @param file_path {str} The full path to audio file.
+        @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        import re
+        import sys
+        from subprocess import Popen, PIPE
+
+        try:
+            prober = "ffprobe"
+            command_args = [
+                "-v", "quiet",
+                "-show_format",
+                "-show_streams",
+                file_path
+            ]
+
+            command = [prober, '-of', 'old'] + command_args
+
+            res = Popen(command, stdout=PIPE)
+            output = res.communicate()[0].decode("utf-8")
+
+            if res.returncode != 0:
+                command = [prober] + command_args
+                output = Popen(command, stdout=PIPE).communicate()[0].decode("utf-8")
+
+            rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
+            info = {}
+
+            if sys.platform == 'win32':
+                output = output.replace("\r", "")
+
+            for line in output.split("\n"):
+                # print(line)
+                mobj = rgx.match(line)
+
+                if mobj:
+                    inner_dict, key, value = mobj.groups()
+
+                    if inner_dict:
+                        try:
+                            info[inner_dict]
+                        except KeyError:
+                            info[inner_dict] = {}
+                        info[inner_dict][key] = value
+                    else:
+                        info[key] = value
+
+        except Exception:
+            logger.exception(f"Exception getting media info for file {file_path}")
+            raise
+        else:
+            return info
+
 
     def get_media_info(self, file_path):
         '''
@@ -547,8 +595,7 @@ class AudioMetadata():
 
         try:
             media_info = None
-            # @todo replace with my own version so can dump pydub
-            media_info = mediainfo(file_path)
+            media_info = self.mediainfo(file_path)
 
         except Exception:
             logger.exception(f"Exception getting media info for file {file_path}")
@@ -593,14 +640,11 @@ class AudioMetadata():
                                 # @todo write to txt file??
                                 print(f"key: {key}, value: {value}")
                     else:
-                        # @todo another custom error or use MusicProcessingError??
+                        logger.error("ValueError getting info for audio file: {input_file_path}", exc_info=True)
                         raise ValueError()
 
-                    #  @todo remove, use writing to file
-                    print("\r\n")
-
         except ValueError:
-            logger.error("ValueError getting info for audio file: {input_file_path}", exc_info=True)
+            raise
         except Exception:
             logger.exception(f"Exception getting media info for file {input_file_path}")
             raise
