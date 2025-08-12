@@ -84,7 +84,7 @@ UTF8 = "utf-8"
 __all__ = [
     "AUDIO_EXTS", "AUDIO_FILES", "AUDIO_TYPES",
     "EXPORT_TLD",
-    "ERROR_LOG_FORMAT", "LOG_DIR", "LOG_EXT",  "UTF8",
+    "ERROR_LOG_FORMAT", "LOG_DIR", "LOG_EXT", "UTF8",
     "FOLDER_ART",
     "PLAYLIST_EXTS", "PLAYLIST_TYPES",
     "JSONOutputError", "MusicProcessingError", "PathInfoError", "PlaylistError"
