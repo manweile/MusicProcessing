@@ -115,6 +115,12 @@ class AudioArt():
 
             return (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
 
+        except struct.error:
+            logger.error("Struct unpacking from error", exc_info=True)
+            raise
+        except UnicodeDecodeError:
+            logger.exception("UnicodeDecodeError decoding asf image from tag data", stack_info=True)
+            raise
         except Exception:
             logger.exception("Exception unpacking asf image from tag data", stack_info=True)
             raise
@@ -140,6 +146,12 @@ class AudioArt():
 
                 logger.info(f"Album art written from {input_path.name} and saved to {album_path}")
 
+        except BlockingIOError:
+            logger.error(f"BlockingIOError writing image data to {file_path}", exc_info=True)
+            raise
+        except OSError:
+            logger.error(f"OSError opening audio file {file_path}", exc_info=True)
+            raise
         except Exception:
             logger.exception(f"Exception writing image data from {file_path}", stack_info=True)
             raise
@@ -164,13 +176,13 @@ class AudioArt():
             # don't need to waste cycles if we have a Folder.jpg from a previous execution
             album_contents = os.listdir(album_path)
             if FOLDER_ART in album_contents:
-                logger.warning(f"{album_path} has a {FOLDER_ART}")
+                logger.info(f"{album_path} has a {FOLDER_ART}")
                 return
 
             # we don't touch non-audio files like m3u etc
             input_file_ext = input_path.suffix
             if input_file_ext.lower() not in AUDIO_EXTS:
-                logger.warning(f"{input_path.name} is not an audio file")
+                logger.info(f"{input_path.name} is not an audio file")
                 return
 
             # primary extraction method because it is is file type agnostic
@@ -194,6 +206,9 @@ class AudioArt():
                 logger.warning(f"No metadata tag album art present in {file_path}")
                 return
 
+        except OSError:
+            logger.error(f"OSError extracting album art to {file_path}", exc_info=True)
+            raise
         except Exception:
             logger.exception(f"Exception extracting album art from {file_path}", stack_info=True)
             raise
@@ -262,6 +277,9 @@ class AudioArt():
             _ = subprocess_utils.subprocess_run(command)
             logger.info(f"FFMPEG extracted album art from {input_path.name} and saved to {album_path}")
 
+        except OSError:
+            logger.error(f"OSError extracting ffmpeg art from {file_path}", exc_info=True)
+            raise
         except Exception:
             logger.exception(f"Exception using ffmpeg to extract art from {input_path}", stack_info=True)
             raise
@@ -360,6 +378,9 @@ class AudioArt():
                         input_file_path = os.path.join(dir_path, file)
                         self.extract_album_art(input_file_path)
 
+        except OSError:
+            logger.error(f"OSError walking {start_path}", exc_info=True)
+            raise
         except Exception:
             if file_pattern:
                 logger.exception(f"Exception walking {start_path} to extract art from {file_pattern} audio files", stack_info=True)
@@ -453,13 +474,16 @@ class AudioArt():
                 album_art_dir_content = os.listdir(album_art_dir)
 
                 if album_jpg in album_art_dir_content:
-                    album_art_jpg = os.path.join(album_art_dir, album_jpg)      # D:\MusicProcessing\src\generated_files\ALbumArt\Best Of The Blues, Vol. 1.jpg
+                    album_art_jpg = os.path.join(album_art_dir, album_jpg)     # D:\MusicProcessing\src\generated_files\ALbumArt\Best Of The Blues, Vol. 1.jpg
                     folder_jpg = os.path.join(album_path, FOLDER_ART)          # C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Folder.jpg
                     shutil.copy(album_art_jpg, folder_jpg)
                     logger.info(f"Set {album_art_jpg} as {FOLDER_ART} for {album_path}")
                 else:
                     logger.warning(f"No album art set for {album_path}")
 
+        except OSError:
+            logger.error(f"OSError walking {input_path}", exc_info=True)
+            raise
         except Exception:
             logger.exception(f"Exception setting album art for {album_path}", stack_info=True)
             raise
