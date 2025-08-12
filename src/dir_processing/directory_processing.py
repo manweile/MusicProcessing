@@ -19,9 +19,12 @@ from pathlib import Path
 
 # local modules
 from src import AUDIO_EXTS, AUDIO_TYPES
+from src import CSV_DIR, CSV_EXT
 from src import EXPORT_TLD
-from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8        # logging constants
+from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT        # logging constants
 from src import PLAYLIST_EXTS
+from src import RESULT_DIR, RESULT_EXT
+from src import UTF8
 from src.generated_files import GENERATED_FILES
 
 gc.enable()
@@ -85,8 +88,7 @@ class DirectoryProcessing():
         '''
 
         data = []
-        csv_filename = "found_" + file_ext + ".csv"
-        csv_dir = GENERATED_FILES
+        csv_filename = "found_" + file_ext
         header_row = [file_ext + " file path"]
         type_count = 0
 
@@ -101,7 +103,7 @@ class DirectoryProcessing():
                         data.append([audio_file_path])
                         type_count += 1
 
-            self.create_csv(csv_filename, data, csv_dir, header_row, None)
+            self.create_csv(csv_filename, data, None, header_row, None)
             logger.info(f"Found {type_count} {file_ext} files")
 
         except Exception:
@@ -148,23 +150,27 @@ class DirectoryProcessing():
             raise
 
 
-    def create_csv(self, csv_filename, data, csv_dir, header_row=None, sort_col=None):
+    def create_csv(self, csv_filename, data, csv_dir=None, header_row=None, sort_col=None):
         '''
         @brief Creates a csv file
 
         @details Creates a csv file in specified directory.
         @details Header row and sorting are optional.
 
-        @param csv_filename {str} Filename for csv.
+        @param csv_filename {str} Base filename (w/o extension) for csv file
         @param data [{str}] Data to write into csv. Expected to be 1 line per element.
-        @param csv_dir {str} Path for csv file.
+        @param csv_dir {str} Optional, path for csv file.
         @param header_row [{str}] Optional, the starting row naming fields.
         @param sort_col {int} Optional, the column to sort data on.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
-            csv_path = os.path.join(csv_dir, csv_filename)
+            if csv_dir is None:
+                csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
+
+            csv_path = os.path.join(csv_dir, csv_filename + CSV_EXT)
+            # csv_path = os.path.join(csv_dir, csv_filename)
 
             # I don't care about any previous file contents
             csv_outfile = open(csv_path, mode='w', encoding='windows-1252', newline='')
@@ -186,21 +192,24 @@ class DirectoryProcessing():
             raise
 
 
-    def create_txt(self, txt_filename, data, txt_dir):
+    def create_txt(self, txt_filename, data, txt_dir=None):
         '''
-        @brief Creates a txt file
+        @brief Creates a text file
 
-        @details Creates a txt file in specified directory.
+        @details Creates a text file in user specified directory, or default directory.
 
-        @param txt_filename {str} Filename for txt.
+        @param txt_filename {str} Base filename (w/o extension) for text file.
         @param data [{str}] Data to write into txt. Expected to be 1 line per element.
-        @param txt_dir {str} Path for txt file.
+        @param txt_dir {str} Optional path for txt file.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
-            txt_path = os.path.join(txt_dir, txt_filename)
+            if txt_dir is None:
+                txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+
+            txt_path = os.path.join(txt_dir, txt_filename + RESULT_EXT)
 
             # need to append cause expecting many runs
             txt_outfile = open(txt_path, mode='a', encoding='windows-1252', newline='')
@@ -233,8 +242,7 @@ class DirectoryProcessing():
         album_count = 0
         artist_count = 0
         csv_count = 0
-        csv_dir = GENERATED_FILES
-        csv_filename = "found_audio_files.csv"
+        csv_filename = "found_audio_files"
         dir_count = 0
         file_extension = None
         header_row = ["file path", "audio file type"]
@@ -288,7 +296,7 @@ class DirectoryProcessing():
 
                     tot_count += 1
 
-            self.create_csv(csv_filename, data, csv_dir, header_row, 1)
+            self.create_csv(csv_filename, data, None, header_row, 1)
 
             artist_count = directory_counts[0]
             album_count = directory_counts[1]

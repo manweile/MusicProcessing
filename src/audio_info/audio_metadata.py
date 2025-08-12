@@ -9,6 +9,7 @@
 # standard modules
 import fnmatch
 import gc
+import inspect
 import logging
 import os
 import re
@@ -215,7 +216,8 @@ class AudioMetadata():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
         data = []
-        txt_filename = "convert_file.txt"
+        # txt_filename = "convert_file"
+        txt_filename = inspect.currentframe().f_code.co_name
 
         try:
             export_path = directory.path_info(file_path)
@@ -310,7 +312,8 @@ class AudioMetadata():
                 )
             audio_tags.save(v2_version=3)
 
-            directory.create_txt(txt_filename, data, GENERATED_FILES)
+            # directory.create_txt(txt_filename, data, GENERATED_FILES)
+            directory.create_txt(txt_filename, data)
 
         except MusicProcessingError:
             raise
@@ -377,7 +380,8 @@ class AudioMetadata():
 
         album_dirs = set()
         data = []
-        csv_filename = "created_album_dirs.csv"
+        # csv_filename = "created_album_dirs.csv"
+        csv_filename = inspect.currentframe().f_code.co_name
         header_row = ["audio file path", "album metadata", "album directory"]
 
         try:
@@ -458,7 +462,7 @@ class AudioMetadata():
                 tld_bar.update(1)
 
             tld_bar.close()
-            directory.create_csv(csv_filename, data, GENERATED_FILES, header_row, 0)
+            directory.create_csv(csv_filename, data, None, header_row, 0)
             logger.info(f"Created {len(album_dirs)} album dirs")
 
         except ValueError:

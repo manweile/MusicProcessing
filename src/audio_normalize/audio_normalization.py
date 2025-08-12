@@ -8,6 +8,7 @@
 
 # standard modules
 import gc
+import inspect
 import json
 import logging
 import math
@@ -150,7 +151,8 @@ class AudioNormalization():
         '''
 
         data = []
-        txt_filename = "ebu_normalized.txt"
+        # txt_filename = "ebu_normalized.txt"
+        txt_filename = inspect.currentframe().f_code.co_name
 
         try:
             _, input_file_ext = os.path.splitext(file_path)
@@ -259,7 +261,7 @@ class AudioNormalization():
                 results_text = f"Successful linear normalization on {input_path_basename} in total time {total_time:.2f} secs\n"
 
             data.append(results_text)
-            directory.create_txt(txt_filename, data, GENERATED_FILES)
+            directory.create_txt(txt_filename, data)
 
         except PathInfoError:
             logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
@@ -455,7 +457,8 @@ class AudioNormalization():
         '''
 
         data = []
-        txt_filename = "peak_normalized.txt"
+        # txt_filename = "peak_normalized.txt"
+        txt_filename = inspect.currentframe().f_code.co_name
 
         try:
             export_path = directory.path_info(file_path)
@@ -527,7 +530,7 @@ class AudioNormalization():
 
             success_text = f"Successful peak normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
             data.append(success_text)
-            directory.create_txt(txt_filename, data, GENERATED_FILES)
+            directory.create_txt(txt_filename, data)
 
         except PathInfoError:
             logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
@@ -549,7 +552,8 @@ class AudioNormalization():
         '''
 
         data = []
-        txt_filename = "rms_normalized.txt"
+        # txt_filename = "rms_normalized.txt"
+        txt_filename = inspect.currentframe().f_code.co_name
 
         try:
             export_path = directory.path_info(file_path)
@@ -624,7 +628,7 @@ class AudioNormalization():
 
             success_text = f"Successful rms normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
             data.append(success_text)
-            directory.create_txt(txt_filename, data, GENERATED_FILES)
+            directory.create_txt(txt_filename, data)
 
         except PathInfoError:
             logger.exception(f"PathInfoError with file {file_path}", stack_info=True)

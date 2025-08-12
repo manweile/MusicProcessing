@@ -24,6 +24,16 @@ AUDIO_FILES = ["MP3", "MP4", "ASF"]
 # @details use this when you just need the type
 AUDIO_TYPES = ["mp3", "m4a", "wma"]
 
+## @var CSV_FILES
+# @brief final part of csv files directory path
+# @details use this to set csv files directory path
+CSV_DIR = "csv_files"
+
+## @var CSV_EXT
+# @brief csv file extension
+# @details use this to set extension for csv files
+CSV_EXT = ".csv"
+
 ## @var EXPORT_TLD
 # @brief the top level directory that holds music files
 # @details use this when exporting manipulated audio files
@@ -42,7 +52,7 @@ FOLDER_ART = "Folder.jpg"
 ## @var LOG_DIR
 # @brief final part of log files directory path
 # @details use this to set log files directory path
-LOG_DIR = "logs"
+LOG_DIR = "log_files"
 
 ## @var LOG_EXT
 # @brief log file extension
@@ -59,6 +69,16 @@ PLAYLIST_EXTS = [".m3u"]
 # @details use this when you just need the type
 PLAYLIST_TYPES = ["m3u"]
 
+## @var RESULTS_FILES
+# @brief final part of results files directory path
+# @details use this to set result files directory path
+RESULT_DIR = "result_files"
+
+## @var RESULT_EXT
+# @brief result text file extension
+# @details use this to set extension for result text files
+RESULT_EXT = ".txt"
+
 ## @var UTF8
 # @brief utf encoding for file writing
 # @details use this when configuring file access
@@ -69,6 +89,8 @@ UTF8 = "utf-8"
 # @details In modules needing the constant add `from src import AUDIO_EXTS`
 # @details In modules needing the constant add `from src import AUDIO_FILES`
 # @details In modules needing the constant add `from src import AUDIO_TYPES`
+# @details In modules needing the constant add 'from src import CSV_DIR
+# @details In modules needing the constant add 'from src import CSV_EXT
 # @details In modules needing the constant add 'from src import EXPORT_TLD`
 # @details In modules needing the constant add 'from src import ERROR_LOG_FORMAT
 # @details In modules needing the constant add 'from src import FOLDER_ART'
@@ -76,6 +98,8 @@ UTF8 = "utf-8"
 # @details In modules needing the constant add 'from src import LOG_EXT
 # @details In modules needing the constant add `from src import PLAYLIST_EXTS`
 # @details In modules needing the constant add `from src import PLAYLIST_TYPES`
+# @details In modules needing the constant add 'from src import RESULT_DIR
+# @details In modules needing the constant add 'from src import RESULT_EXT
 # @details In modules needing the constant add `from src import UTF8'
 # @details In modules needing the error class, add `from src.errors import JSONOutputError'
 # @details In modules needing the error class, add `from src.errors import MusicProcessingError'
@@ -83,9 +107,13 @@ UTF8 = "utf-8"
 # @details In modules needing the error class, add `from src.errors import PlaylistError'
 __all__ = [
     "AUDIO_EXTS", "AUDIO_FILES", "AUDIO_TYPES",
+    "CSV_DIR", "CSV_EXT",
     "EXPORT_TLD",
-    "ERROR_LOG_FORMAT", "LOG_DIR", "LOG_EXT", "UTF8",
+    "ERROR_LOG_FORMAT",
+    "LOG_DIR", "LOG_EXT",
     "FOLDER_ART",
     "PLAYLIST_EXTS", "PLAYLIST_TYPES",
+    "RESULT_DIR", "RESULT_EXT",
+    "UTF8",
     "JSONOutputError", "MusicProcessingError", "PathInfoError", "PlaylistError"
 ]
