@@ -1,4 +1,10 @@
-class JSONOutputError(Exception):
+class MusicProcessingException(Exception):
+    '''
+    @brief Base class for any MusicProcessing Exception
+    '''
+
+
+class JSONOutputError(MusicProcessingException):
     '''
     @brief Indicates error occurred finding json output.
     '''
@@ -8,7 +14,7 @@ class JSONOutputError(Exception):
         super().__init__(self.message)
 
 
-class MusicProcessingError(Exception):
+class MusicProcessingError(MusicProcessingException):
     '''
     @brief Indicates a generic music processing error occurred.
     '''
@@ -18,7 +24,7 @@ class MusicProcessingError(Exception):
         super().__init__(self.message)
 
 
-class PathInfoError(Exception):
+class PathInfoError(MusicProcessingException):
     '''
     @brief Indicates an error occurred in  path info function.
     '''
@@ -28,7 +34,7 @@ class PathInfoError(Exception):
         super().__init__(self.message)
 
 
-class PlaylistError(Exception):
+class PlaylistError(MusicProcessingException):
     '''
     @brief Indicates an error occurred in playlist class.
     '''
