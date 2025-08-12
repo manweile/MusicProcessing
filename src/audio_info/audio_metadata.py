@@ -524,7 +524,7 @@ class AudioMetadata():
         else:
             return tag_info
 
-    def get_media_media_info_dict(self, file_path):
+    def get_media_info_dict(self, file_path):
         '''
         @brief Returns dictionary with media info.
         @details Uses ffmpeg to get all media info from any valid audio file.
@@ -587,7 +587,7 @@ class AudioMetadata():
 
         try:
             media_info = None
-            media_info = self.get_media_media_info_dict(file_path)
+            media_info = self.get_media_info_dict(file_path)
 
         except Exception:
             logger.exception(f"Exception getting media info for file {file_path}")
@@ -654,7 +654,7 @@ class AudioMetadata():
 
         try:
             media_tags = None
-            media_info = self.get_media_media_info_dict(file_path)
+            media_info = self.get_media_info_dict(file_path)
 
             if media_info:
                 media_tags = media_info['TAG']
