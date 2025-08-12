@@ -5,9 +5,9 @@
 
 # using absolute import as don't expect to be re-organizing directories
 from src.errors import JSONOutputError
+from src.errors import MusicProcessingError
 from src.errors import PathInfoError
 from src.errors import PlaylistError
-from src.errors import MusicProcessingError
 
 ## @var AUDIO_EXTS
 # @brief audio file extensions in my collection
@@ -78,14 +78,14 @@ UTF8 = "utf-8"
 # @details In modules needing the constant add `from src import PLAYLIST_TYPES`
 # @details In modules needing the constant add `from src import UTF8'
 # @details In modules needing the error class, add `from src.errors import JSONOutputError'
+# @details In modules needing the error class, add `from src.errors import MusicProcessingError'
 # @details In modules needing the error class, add `from src.errors import PathInfoError'
 # @details In modules needing the error class, add `from src.errors import PlaylistError'
-# @details In modules needing the error class, add `from src.errors import MusicProcessingError'
 __all__ = [
     "AUDIO_EXTS", "AUDIO_FILES", "AUDIO_TYPES",
     "EXPORT_TLD",
     "ERROR_LOG_FORMAT", "LOG_DIR", "LOG_EXT",  "UTF8",
     "FOLDER_ART",
     "PLAYLIST_EXTS", "PLAYLIST_TYPES",
-    "JSONOutputError", "PathInfoError", "PlaylistError", "MusicProcessingError"
+    "JSONOutputError", "MusicProcessingError", "PathInfoError", "PlaylistError"
 ]
