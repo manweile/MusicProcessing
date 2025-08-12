@@ -1,6 +1,7 @@
 '''
 @brief Gets directory name for importing by other modules.
 '''
+
 import os
 
 ## @var GENERATED_FILES

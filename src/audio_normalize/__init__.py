@@ -1,6 +1,7 @@
 '''
 @brief Package with audio_normalize module
 '''
+
 # using absolute import as don't expect to be re-organizing directories
 from src.audio_normalize.audio_normalization import AudioNormalization
 
