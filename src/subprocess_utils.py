@@ -10,7 +10,9 @@
 import gc
 import logging
 import os
+import shlex
 import subprocess
+from subprocess import Popen, PIPE
 from subprocess import CalledProcessError
 
 # third party modules
@@ -59,11 +61,42 @@ class SubprocessUtilities():
         @brief Runs command in new process.
 
         @details Asynchronous execution of command with redirection to stdout.
-        @param command {str} Command for subprocess  to run.
+
+        @param command {str} Command for Popen subprocess  to run.
+        @return stdout {str} The decoded subprocess output.
+        @exception RuntimeError A runtime error from subprocess popen.
+        @exception UnicodeDecodeError A unicode decode error on subprocess stdout bytes.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        pass
+        try:
+            res = Popen(
+                command,
+                stdout=PIPE
+            )
+
+            # ffprobe returns via stdout (unlike ffmpeg, which uses stderr)
+            stdout_bytes = res.communicate()[0]
+
+            try:
+                stdout = stdout_bytes.decode("utf-8")
+            except UnicodeDecodeError as e:
+                logger.exception(f"UnicodeDecodeError decoding {shlex.join(command)}: {stdout_bytes}", stack_info=True)
+                raise e
+
+            if res.returncode != 0:
+                logger.error(f"RuntimeError running command {shlex.join(command)}", exc_info=True)
+                raise RuntimeError()
+
+        except RuntimeError:
+            raise
+        except UnicodeDecodeError:
+            raise
+        except Exception:
+            logger.exception(f"Exception running command {shlex.join(command)}", stack_info=True)
+            raise
+        else:
+            return stdout
 
 
     def spinner_subprocess_run(self, text, command):

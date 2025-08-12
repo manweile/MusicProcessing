@@ -11,7 +11,9 @@ import fnmatch
 import gc
 import logging
 import os
+import re
 import pprint
+import sys
 from pathlib import Path
 
 # third party modules
@@ -22,7 +24,6 @@ from mutagen.id3 import APIC, error, ID3, ID3TimeStamp
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4FreeForm
 from pydub import AudioSegment
-from pydub.utils import mediainfo
 from tqdm import tqdm
 
 # local modules
@@ -30,15 +31,17 @@ from src import AUDIO_EXTS, AUDIO_FILES, AUDIO_TYPES
 from src import FOLDER_ART
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
 from src.generated_files import GENERATED_FILES
-from src import PathInfoError
 from src import MusicProcessingError
+from src import PathInfoError
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
+from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
 
 directory = DirectoryProcessing()
 normalization = AudioNormalization()
+subprocess_utils = SubprocessUtilities()
 
 # Configure logging
 basename = os.path.basename(__file__)
@@ -521,9 +524,9 @@ class AudioMetadata():
         else:
             return tag_info
 
-    def mediainfo(file_path):
+    def get_media_media_info_dict(self, file_path):
         '''
-        @brief Return dictionary with media info.
+        @brief Returns dictionary with media info.
         @details Uses ffmpeg to get all media info from any valid audio file.
 
         @param file_path {str} The full path to audio file.
@@ -531,27 +534,17 @@ class AudioMetadata():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        import re
-        import sys
-        from subprocess import Popen, PIPE
-
         try:
-            prober = "ffprobe"
-            command_args = [
+            info = {}
+            command = [
+                "ffprobe",
                 "-v", "quiet",
                 "-show_format",
                 "-show_streams",
                 file_path
             ]
 
-            command = [prober, '-of', 'old'] + command_args
-
-            res = Popen(command, stdout=PIPE)
-            output = res.communicate()[0].decode("utf-8")
-
-            if res.returncode != 0:
-                command = [prober] + command_args
-                output = Popen(command, stdout=PIPE).communicate()[0].decode("utf-8")
+            output = subprocess_utils.popen_pipe(command)
 
             rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
             info = {}
@@ -560,7 +553,6 @@ class AudioMetadata():
                 output = output.replace("\r", "")
 
             for line in output.split("\n"):
-                # print(line)
                 mobj = rgx.match(line)
 
                 if mobj:
@@ -595,7 +587,7 @@ class AudioMetadata():
 
         try:
             media_info = None
-            media_info = self.mediainfo(file_path)
+            media_info = self.get_media_media_info_dict(file_path)
 
         except Exception:
             logger.exception(f"Exception getting media info for file {file_path}")
