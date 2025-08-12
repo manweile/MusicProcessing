@@ -60,3 +60,39 @@ Stack (most recent call last):
 2025-08-06 15:17:55,918 — src.dir_processing.directory_processing — WARNING — path_info:463 — File D:\MusicProcessing\tests\Music\expected.m3u is not in ['mp3', 'm4a', 'wma']
 
 2025-08-06 15:25:33,770 — src.dir_processing.directory_processing — WARNING — path_info:463 — File D:\MusicProcessing\tests\Music\expected.m3u is not in ['mp3', 'm4a', 'wma']
+
+2025-08-11 21:17:09,814 — __main__ — ERROR — <module>:784 — 'charmap' codec can't encode character '\u2117' in position 59: character maps to <undefined>
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/main.py", line 781, in <module>
+    main(args)
+  File "/home/gerald/MusicProcessing/main.py", line 527, in main
+    get_tags_walk(tld_path, file_pattern, ffprobe)
+  File "/home/gerald/MusicProcessing/main.py", line 186, in get_tags_walk
+    metadata.get_tags_walk(tld_path, file_pattern, ffprobe)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 802, in get_tags_walk
+    directory.create_txt(txt_filename, data, GENERATED_FILES)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 208, in create_txt
+    txt_outfile.write(f"{item}\n")
+  File "/usr/lib/python3.12/encodings/cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2117' in position 59: character maps to <undefined>
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/main.py", line 784, in <module>
+    logger.exception(e, stack_info=True)

@@ -371,7 +371,6 @@ class AudioMetadata():
         @details Also creates csv of all audio file paths, album metadata values and sanitized album directory names.
 
         @param start_path {str} The tld holding music files.
-        @param file_path {str} The full path to audio file.
         @exception ValueError An inappropriate argument value of correct type error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -382,7 +381,8 @@ class AudioMetadata():
         header_row = ["audio file path", "album metadata", "album directory"]
 
         try:
-            dir_processing = DirectoryProcessing(start_path)
+            # dir_processing = DirectoryProcessing(start_path)
+            directory.tld_path(start_path)
 
             # get the artist dirs under tld
             tld_content = os.listdir(start_path)
@@ -446,11 +446,11 @@ class AudioMetadata():
                         album_dirs.add(album_dir)
 
                         # make the album sub directory is REQUIRED before moving the audio file
-                        dir_processing.make_album_dir(tld_item_path, album_dir)
+                        directory.make_album_dir(tld_item_path, album_dir)
 
                         # now transfer the audio file to new album directory
                         destination_dir = os.path.join(tld_item_path, album_dir)
-                        dir_processing.move_audio_file(audio_file, destination_dir)
+                        directory.move_audio_file(audio_file, destination_dir)
                     else:
                         logger.warning(f"{audio_file} is missing album metadata")
                         continue
@@ -458,7 +458,7 @@ class AudioMetadata():
                 tld_bar.update(1)
 
             tld_bar.close()
-            dir_processing.create_csv(csv_filename, data, GENERATED_FILES, header_row, 0)
+            directory.create_csv(csv_filename, data, GENERATED_FILES, header_row, 0)
             logger.info(f"Created {len(album_dirs)} album dirs")
 
         except ValueError:
@@ -486,10 +486,10 @@ class AudioMetadata():
             if audio_file is not None and audio_file.tags:
                 tags = audio_file.tags
             else:
+                logger.error(f"ValueError loading audio file: {file_path}", exc_info=True)
                 raise ValueError()
 
         except ValueError:
-            logger.error(f"ValueError loading audio file: {file_path}", exc_info=True)
             raise
         except Exception:
             logger.exception(f"Exception getting metadata type for file: {file_path}", stack_info=True)
@@ -629,7 +629,6 @@ class AudioMetadata():
                             if isinstance(value, dict):
                                 continue
                             else:
-                                # @todo write to txt file??
                                 print(f"key: {key}, value: {value}")
                     else:
                         logger.error("ValueError getting info for audio file: {input_file_path}", exc_info=True)
@@ -655,11 +654,16 @@ class AudioMetadata():
 
         try:
             media_tags = None
-            # @use my mediainfo replacement
-            media_info = mediainfo(file_path)
+            media_info = self.get_media_media_info_dict(file_path)
+
             if media_info:
                 media_tags = media_info['TAG']
+            else:
+                logger.error(f"ValueError getting metadata tags {file_path}", exc_info=True)
+                raise ValueError()
 
+        except ValueError:
+            raise
         except Exception:
             logger.exception(f"Exception getting media tags for file {file_path}", stack_info=True)
             raise
@@ -684,9 +688,11 @@ class AudioMetadata():
                 # Eg mp3 = MP3, m4a = MP4, wma = ASF
                 metadata_type = audio_file.__class__.__name__
             else:
-                # @todo valueerror?
-                return None
+                logger.error(f"ValueError getting metadata type: {file_path}", exc_info=True)
+                raise ValueError()
 
+        except ValueError:
+            raise
         except Exception:
             logger.exception(f"Exception getting metadata type for file: {file_path}", stack_info=True)
             raise
@@ -709,10 +715,10 @@ class AudioMetadata():
             if audio_file is not None:
                 tag_info = audio_file.tags
             else:
-                raise ValueError(f"Returned None loading audio file: {file_path}")
+                logger.error(f"ValueError getting mp3 tags: {file_path}", exc_info=True)
+                raise ValueError()
 
         except ValueError:
-            logger.error(f"ValueError loading audio file: {file_path}", exc_info=True)
             raise
         except Exception:
             logger.exception(f"Exception getting tags for file {file_path}", stack_info=True)
@@ -763,14 +769,11 @@ class AudioMetadata():
 
                         if input_tags:
                             if ffprobe:
-                                # @todo log this
                                 print(f"{tag_file_path} has {len(input_tags)} ffprobe tags")
                                 # want one key/value pair per line
-                                # @todo log this
                                 pprint.pprint(input_tags)
                                 print()
                             else:
-                                # @todo log this
                                 print(f"{tag_file_path} has {len(input_tags)} {metadata_type} tags")
                                 # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
                                 # not as a simple dict of string key/value
@@ -778,7 +781,6 @@ class AudioMetadata():
                                 pprint.pprint(input_tags.pprint().splitlines())
                                 print()
                         else:
-                            # @todo log this
                             print(f"{tag_file_path} has no metadata")
 
         except Exception:
@@ -798,13 +800,14 @@ class AudioMetadata():
         try:
             tag_info = None
             audio_file = self.load_wma_file(file_path)
+
             if audio_file is not None:
                 tag_info = audio_file.tags
             else:
+                logger.error(f"ValueError getting wma tags: {file_path}", exc_info=True)
                 raise ValueError()
 
         except ValueError:
-            logger.error(f"ValueError loading audio file: {file_path}", exc_info=True)
             raise
         except Exception:
             logger.exception(f"Exception getting tags for file {file_path}", stack_info=True)
@@ -838,10 +841,11 @@ class AudioMetadata():
 
                     tag_file_path = os.path.join(dir_path, file)
                     input_tags = self.get_media_tags(tag_file_path)
+
                     file_keys = input_tags.keys()
                     if file_keys:
                         unique_keys.update(file_keys)
-            # @todo log this
+
             print(sorted(unique_keys))
 
         except Exception:
@@ -863,14 +867,13 @@ class AudioMetadata():
             file_name, file_ext = os.path.splitext(file_path)
 
             if file_ext.lower() not in AUDIO_EXTS:
-                logger.error(f"File: {file_name} has invalid extension: {file_ext}", exc_info=True)
+                logger.error(f"MusicProcessingError, file: {file_name} has invalid extension: {file_ext}", exc_info=True)
                 raise MusicProcessingError()
-                # raise Exception(f"File: {file_name} has invalid extension: {file_ext}")
 
             audio_tags = self.get_any_tags(file_path)
 
             if audio_tags is None:
-                logger.error(f"File: {file_name} has no metadata", exc_info=True)
+                logger.error(f"ValueError, file: {file_name} has no art tags", exc_info=True)
                 raise ValueError()
 
             if 'WM/Picture' in audio_tags:
