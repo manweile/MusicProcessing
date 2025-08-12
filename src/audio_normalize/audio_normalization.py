@@ -151,7 +151,6 @@ class AudioNormalization():
         '''
 
         data = []
-        # txt_filename = "ebu_normalized.txt"
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:
@@ -457,7 +456,6 @@ class AudioNormalization():
         '''
 
         data = []
-        # txt_filename = "peak_normalized.txt"
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:
@@ -552,7 +550,6 @@ class AudioNormalization():
         '''
 
         data = []
-        # txt_filename = "rms_normalized.txt"
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:

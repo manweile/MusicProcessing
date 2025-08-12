@@ -170,7 +170,6 @@ class DirectoryProcessing():
                 csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
 
             csv_path = os.path.join(csv_dir, csv_filename + CSV_EXT)
-            # csv_path = os.path.join(csv_dir, csv_filename)
 
             # I don't care about any previous file contents
             csv_outfile = open(csv_path, mode='w', encoding='windows-1252', newline='')
@@ -489,7 +488,6 @@ class DirectoryProcessing():
 
             input_ext = input_path.suffix
             if input_ext.lower() not in AUDIO_EXTS:
-                # logger.warning(f"File {input_path} is not in {AUDIO_TYPES}")
                 return None
 
             r'''
