@@ -14,9 +14,9 @@ import logging
 import os
 import shutil
 import struct
-from pathlib import Path
 from json import JSONDecodeError
 from os import strerror
+from pathlib import Path
 
 # third party modules
 from mutagen.asf import ASF
