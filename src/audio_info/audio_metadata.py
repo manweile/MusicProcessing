@@ -15,6 +15,7 @@ import os
 import re
 import pprint
 import sys
+from os import strerror
 from pathlib import Path
 
 # third party modules
@@ -320,8 +321,8 @@ class AudioMetadata():
         except PathInfoError:
             logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
             raise
-        except OSError:
-            logger.error(f"OSError converting {file_path}", exc_info=True)
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} converting {file_path}", exc_info=True)
             raise
         except Exception:
             logger.exception(f"Exception converting {file_path} to {export_path}", stack_info=True)
@@ -359,13 +360,20 @@ class AudioMetadata():
                     input_file_path = os.path.join(dir_path, file)
                     self.convert_file(input_file_path)
 
+        except OSError as error:
+            if file_pattern:
+                os_msg = f"OSError {(strerror(error.errno))} walking {start_path} to convert {file_pattern} audio files to mp3"
+            else:
+                os_msg = f"OSError {(strerror(error.errno))} walking {start_path}"
+            logger.error(os_msg, exc_info=True)
+            raise
         except Exception:
             if file_pattern:
-                logger.exception(f"Exception walking {start_path} to convert {file_pattern} audio files to mp3", stack_info=True)
-                raise
+                exc_msg = f"Exception walking {start_path} to convert {file_pattern} audio files to mp3"
             else:
-                logger.exception(f"Exception walking {start_path} to convert audio files to mp3", stack_info=True)
-                raise
+                exc_msg = f"Exception walking {start_path} to convert audio files to mp3"
+            logger.exception(exc_msg, stack_info=True)
+            raise
 
 
     def create_album_dir(self, start_path):
@@ -467,6 +475,9 @@ class AudioMetadata():
             directory.create_csv(csv_filename, data, None, header_row, 0)
             logger.info(f"Created {len(album_dirs)} album dirs")
 
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} creating album directories for {start_path}", exc_info=True)
+            raise
         except ValueError:
             logger.exception(f"ValueError sanitizing album metadata {album}", stack_info=True)
             raise
@@ -919,9 +930,9 @@ class AudioMetadata():
                 logger.error(f"File: {file_path} did not load", exc_info=True)
                 raise ValueError()
 
-        except MutagenError:
-            logger.error(f"MutagenError loading {file_path}", exc_info=True)
-            raise
+        except MutagenError as error:
+            logger.error(f"MutagenError {error} loading {file_path}", exc_info=True)
+            raise MutagenError(error)
         except ValueError:
             raise
         except Exception:

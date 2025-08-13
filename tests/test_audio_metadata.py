@@ -12,6 +12,7 @@ import gc
 import os
 import platform
 import unittest
+from unittest.mock import patch
 
 # local modules
 from src import EXPORT_TLD
@@ -148,11 +149,22 @@ class TestAudioMetadata(unittest.TestCase):
         audio_class_name = loaded_file.__class__.__name__
         self.assertEqual(audio_class_name, "MP3")
 
+    @patch('src.audio_info.audio_metadata.logger.error')
+    def test_load_any_file_non_extant(self, mock_warning):
+        '''
+        @brief attempt to load a non-extant audio file with mutagen
+        '''
+
+        src_file = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.mp3")
+        loaded_file = metadata.load_any_file(src_file)
+        mock_msg = "MutagenError {error} loading {file_path}"
+        mock_warning.assert_called_once_with(mock_msg)
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
     suite.addTest(TestAudioMetadata('test_get_media_info_dict'))
     suite.addTest(TestAudioMetadata('test_load_any_file'))
+    suite.addTest(TestAudioMetadata('test_load_any_file_non_extant'))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
