@@ -10,10 +10,8 @@
 # standard modules
 import gc
 import os
+import platform
 import unittest
-
-# third party modules
-from pydub.utils import mediainfo
 
 # local modules
 from src import EXPORT_TLD
@@ -25,6 +23,94 @@ gc.enable()
 TESTS_TLD = os.path.dirname(os.path.abspath(__file__))
 MP3_FILE = os.path.join("Crush", "Here", "Crush-Live.mp3")
 SRC_FILE = os.path.join(TESTS_TLD, EXPORT_TLD, MP3_FILE)
+
+'''
+ffprobe command line that is source for media info dictionary definition
+ffprobe -v quiet -show_format -show_streams <file_path>
+'''
+
+# linux ffprobe dict
+LINUX_RESULT = {
+    'index': '1',
+    'codec_name': 'mjpeg', 'codec_long_name': 'Motion JPEG', 'profile': 'Baseline', 'codec_type': 'video', 'codec_tag_string': '[0][0][0][0]', 'codec_tag': '0x0000',
+    'sample_fmt': 'fltp', 'sample_rate': '44100',
+    'channels': '2', 'channel_layout': 'stereo',
+    'bits_per_sample': '0', 'initial_padding': '0', 'id': 'N/A',
+    'r_frame_rate': '90000/1', 'avg_frame_rate': '0/0',
+    'time_base': '1/90000', 'start_pts': 'N/A', 'start_time': '0.000000', 'duration_ts': '22131951', 'duration': '245.910567',
+    'bit_rate': '129156', 'max_bit_rate': 'N/A', 'bits_per_raw_sample': '8',
+    'nb_frames': 'N/A', 'nb_read_frames': 'N/A', 'nb_read_packets': 'N/A',
+    'DISPOSITION': {
+        'default': '0', 'dub': '0', 'original': '0', 'comment': '0', 'lyrics': '0',
+        'karaoke': '0', 'forced': '0', 'hearing_impaired': '0', 'visual_impaired': '0',
+        'clean_effects': '0', 'attached_pic': '1', 'timed_thumbnails': '0', 'non_diegetic': '0',
+        'captions': '0', 'descriptions': '0', 'metadata': '0', 'dependent': '0',
+        'still_image': '0'},
+    'width': '500', 'height': '490', 'coded_width': '500', 'coded_height': '490',
+    'closed_captions': '0', 'film_grain': '0', 'has_b_frames': '0', 'sample_aspect_ratio': '1:1', 'display_aspect_ratio': '50:49',
+    'pix_fmt': 'yuvj420p', 'level': '-99',
+    'color_range': 'pc', 'color_space': 'bt470bg', 'color_transfer': 'unknown', 'color_primaries': 'unknown',
+    'chroma_location': 'center', 'field_order': 'unknown', 'refs': '1',
+    'TAG': {
+        'comment': 'Cover (front)', 'title': 'Live', 'artist': 'Crush', 'track': '1/12',
+        'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
+        'MusicBrainz Release Track Id': '2475137d-6745-3951-a361-d4c29798f5d1',
+        'album_artist': 'Crush', 'TSO2': 'Crush', 'artist-sort': 'Crush', 'composer': 'Paul Lamb',
+        'SCRIPT': 'Latn', 'publisher': 'Sonic Records', 'ARTISTS': 'Crush',
+        'ASIN': 'B000065PP6', 'originalyear': '2002', 'BARCODE': '627915092229',
+        'CATALOGNUMBER': '2 50922', 'MusicBrainz Album Type': 'album', 'MusicBrainz Album Status': 'official',
+        'MusicBrainz Album Release Country': 'CA', 'Acoustid Id': '4fdf7757-ba58-4a4b-a1df-1ad4d102a474',
+        'MusicBrainz Album Id': '18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6',
+        'MusicBrainz Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f',
+        'MusicBrainz Album Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f',
+        'MusicBrainz Release Group Id': 'a7927f70-2431-3a58-b7ae-48576808cec1',
+        'date': '2002'},
+    'filename': '/home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3',
+    'nb_streams': '2', 'nb_programs': '0',
+    'format_name': 'mp3', 'format_long_name': 'MP2/3 (MPEG audio layer 2/3)',
+    'size': '3970122',
+    'probe_score': '51'
+}
+
+# windows ffprobe dict
+WIN_RESULT = {
+    'index': '1',
+    'codec_name': 'mjpeg', 'codec_long_name': 'Motion JPEG', 'profile': 'Baseline', 'codec_type': 'video', 'codec_tag_string': '[0][0][0][0]', 'codec_tag': '0x0000',
+    'sample_fmt': 'fltp', 'sample_rate': '44100',
+    'channels': '2', 'channel_layout': 'stereo',
+    'bits_per_sample': '0', 'initial_padding': '0', 'id': 'N/A',
+    'r_frame_rate': '90000/1', 'avg_frame_rate': '0/0',
+    'time_base': '1/90000', 'start_pts': 'N/A', 'start_time': '0.000000', 'duration_ts': '22131951', 'duration': '245.910567',
+    'bit_rate': '129156', 'max_bit_rate': 'N/A', 'bits_per_raw_sample': '8',
+    'nb_frames': 'N/A', 'nb_read_frames': 'N/A', 'nb_read_packets': 'N/A',
+    'DISPOSITION': {
+        'default': '0', 'dub': '0', 'original': '0', 'comment': '0', 'lyrics': '0',
+        'karaoke': '0', 'forced': '0', 'hearing_impaired': '0', 'visual_impaired': '0',
+        'clean_effects': '0', 'attached_pic': '1', 'timed_thumbnails': '0', 'non_diegetic': '0',
+        'captions': '0', 'descriptions': '0', 'metadata': '0', 'dependent': '0',
+        'still_image': '0', 'multilayer': '0'},
+    'width': '500', 'height': '490', 'coded_width': '500', 'coded_height': '490', 'has_b_frames': '0', 'sample_aspect_ratio': '1:1',
+    'display_aspect_ratio': '50:49', 'pix_fmt': 'yuvj420p', 'level': '-99', 'color_range': 'pc', 'color_space': 'bt470bg',
+    'color_transfer': 'unknown', 'color_primaries': 'unknown', 'chroma_location': 'center', 'field_order': 'unknown', 'refs': '1',
+    'TAG': {
+        'comment': 'Cover (front)', 'title': 'Live', 'artist': 'Crush', 'track': '1/12',
+        'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
+        'MusicBrainz Release Track Id': '2475137d-6745-3951-a361-d4c29798f5d1',
+        'album_artist': 'Crush', 'TSO2': 'Crush', 'artist-sort': 'Crush', 'composer': 'Paul Lamb',
+        'SCRIPT': 'Latn', 'publisher': 'Sonic Records', 'ARTISTS': 'Crush',
+        'ASIN': 'B000065PP6', 'originalyear': '2002', 'BARCODE': '627915092229',
+        'CATALOGNUMBER': '2 50922', 'MusicBrainz Album Type': 'album', 'MusicBrainz Album Status': 'official',
+        'MusicBrainz Album Release Country': 'CA', 'Acoustid Id': '4fdf7757-ba58-4a4b-a1df-1ad4d102a474',
+        'MusicBrainz Album Id': '18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6', 'MusicBrainz Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f',
+        'MusicBrainz Album Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f',
+        'MusicBrainz Release Group Id': 'a7927f70-2431-3a58-b7ae-48576808cec1',
+        'date': '2002'},
+    'filename': 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3',
+    'nb_streams': '2', 'nb_programs': '0', 'nb_stream_groups': '0',
+    'format_name': 'mp3', 'format_long_name': 'MP2/3 (MPEG audio layer 2/3)',
+    'size': '3970122',
+    'probe_score': '51'
+}
 
 # instantiate classes here
 metadata = AudioMetadata()
@@ -42,23 +128,31 @@ class TestAudioMetadata(unittest.TestCase):
         @details Tests my replacement for pydub.utils mediainfo
         '''
 
+        os_name = platform.system()
+        if os_name == "Linux":
+            expected_info = LINUX_RESULT
+        elif os_name == "Windows":
+            expected_info = WIN_RESULT
+
         results_info = metadata.get_media_info_dict(SRC_FILE)
-        expected_info = mediainfo(SRC_FILE)
         self.assertDictEqual(results_info, expected_info)
 
-    def test_load_any_file_not_audio(self):
+
+    def test_load_any_file(self):
         '''
-        @brief attempt to load a non-audio file with mutagen
+        @brief attempt to load an audio file with mutagen
         '''
 
         src_file = os.path.join(TESTS_TLD, EXPORT_TLD, "Test_Crush-Live.mp3")
         loaded_file = metadata.load_any_file(src_file)
+        audio_class_name = loaded_file.__class__.__name__
+        self.assertEqual(audio_class_name, "MP3")
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
     suite.addTest(TestAudioMetadata('test_get_media_info_dict'))
-    suite.addTest(TestAudioMetadata('test_load_any_file_not_audio'))
+    suite.addTest(TestAudioMetadata('test_load_any_file'))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)

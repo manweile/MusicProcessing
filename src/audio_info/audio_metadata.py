@@ -383,7 +383,6 @@ class AudioMetadata():
 
         album_dirs = set()
         data = []
-        # csv_filename = "created_album_dirs.csv"
         csv_filename = inspect.currentframe().f_code.co_name
         header_row = ["audio file path", "album metadata", "album directory"]
 
@@ -952,6 +951,9 @@ class AudioMetadata():
                     logger.error(f"File: {file_path} did not load", exc_info=True)
                     raise ValueError()
 
+        except MutagenError:
+            logger.error(f"MutagenError loading {file_path}", exc_info=True)
+            raise
         except ValueError:
             raise
         except Exception:
@@ -981,6 +983,9 @@ class AudioMetadata():
                     logger.error(f"File: {file_path} did not load", exc_info=True)
                     raise ValueError()
 
+        except MutagenError:
+            logger.error(f"MutagenError loading {file_path}", exc_info=True)
+            raise
         except ValueError:
             raise
         except Exception:
@@ -1010,6 +1015,9 @@ class AudioMetadata():
                     logger.error(f"File: {file_path} did not load", exc_info=True)
                     raise ValueError()
 
+        except MutagenError:
+            logger.error(f"MutagenError loading {file_path}", exc_info=True)
+            raise
         except ValueError:
             raise
         except Exception:
