@@ -16,6 +16,7 @@ import shutil
 import struct
 from pathlib import Path
 from json import JSONDecodeError
+from os import strerror
 
 # third party modules
 from mutagen.asf import ASF
@@ -149,8 +150,8 @@ class AudioArt():
         except BlockingIOError:
             logger.error(f"BlockingIOError writing image data to {file_path}", exc_info=True)
             raise
-        except OSError:
-            logger.error(f"OSError opening audio file {file_path}", exc_info=True)
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} writing data with {file_path}", exc_info=True)
             raise
         except Exception:
             logger.exception(f"Exception writing image data from {file_path}", stack_info=True)
@@ -206,8 +207,8 @@ class AudioArt():
                 logger.warning(f"No metadata tag album art present in {file_path}")
                 return
 
-        except OSError:
-            logger.error(f"OSError extracting album art to {file_path}", exc_info=True)
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} extracting album art with {file_path}", exc_info=True)
             raise
         except Exception:
             logger.exception(f"Exception extracting album art from {file_path}", stack_info=True)
@@ -234,6 +235,9 @@ class AudioArt():
 
             self.__write_data(file_path, image_data)
 
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} extracting asf art with {file_path}", exc_info=True)
+            raise
         except Exception:
             logger.exception(f"Exception extracting asf art from {file_path}", stack_info=True)
             raise
@@ -277,8 +281,8 @@ class AudioArt():
             _ = subprocess_utils.subprocess_run(command)
             logger.info(f"FFMPEG extracted album art from {input_path.name} and saved to {album_path}")
 
-        except OSError:
-            logger.error(f"OSError extracting ffmpeg art from {file_path}", exc_info=True)
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} extracting ffmpeg art with {file_path}", exc_info=True)
             raise
         except Exception:
             logger.exception(f"Exception using ffmpeg to extract art from {input_path}", stack_info=True)
@@ -311,6 +315,9 @@ class AudioArt():
 
             self.__write_data(file_path, image_data)
 
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} extracting m4a art with {file_path}", exc_info=True)
+            raise
         except Exception:
             logger.exception(f"Exception extracting m4a art from {file_path}", stack_info=True)
             raise
@@ -335,6 +342,9 @@ class AudioArt():
 
             self.__write_data(file_path, image_data)
 
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} extracting mp3 art with {file_path}", exc_info=True)
+            raise
         except Exception:
             logger.exception(f"Exception extracting mp3 embedded art from {file_path}", stack_info=True)
             raise
@@ -378,8 +388,8 @@ class AudioArt():
                         input_file_path = os.path.join(dir_path, file)
                         self.extract_album_art(input_file_path)
 
-        except OSError:
-            logger.error(f"OSError walking {start_path}", exc_info=True)
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} walking {start_path}", exc_info=True)
             raise
         except Exception:
             if file_pattern:
@@ -429,6 +439,9 @@ class AudioArt():
 
         except JSONDecodeError:
             logger.error(f"JSONDecodeError on audio file: {file_path}", exc_info=True)
+            raise
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} with {file_path}", exc_info=True)
             raise
         except Exception:
             logger.exception(f"Exception extracting video stream from {file_path}", stack_info=True)
@@ -481,9 +494,9 @@ class AudioArt():
                 else:
                     logger.warning(f"No album art set for {album_path}")
 
-        except OSError:
-            logger.error(f"OSError walking {input_path}", exc_info=True)
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} setting album art with {input_path}", exc_info=True)
             raise
         except Exception:
-            logger.exception(f"Exception setting album art for {album_path}", stack_info=True)
+            logger.exception(f"Exception setting album art for {input_path}", stack_info=True)
             raise
