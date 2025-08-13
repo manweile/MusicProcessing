@@ -24,6 +24,7 @@ from mutagen.asf import ASF
 from mutagen.id3 import APIC, error, ID3, ID3TimeStamp
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4, MP4FreeForm
+from mutagen._util import MutagenError
 from pydub import AudioSegment
 from tqdm import tqdm
 
@@ -216,7 +217,6 @@ class AudioMetadata():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
         data = []
-        # txt_filename = "convert_file"
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:
@@ -319,6 +319,9 @@ class AudioMetadata():
             raise
         except PathInfoError:
             logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
+            raise
+        except OSError:
+            logger.error(f"OSError converting {file_path}", exc_info=True)
             raise
         except Exception:
             logger.exception(f"Exception converting {file_path} to {export_path}", stack_info=True)
@@ -917,6 +920,9 @@ class AudioMetadata():
                 logger.error(f"File: {file_path} did not load", exc_info=True)
                 raise ValueError()
 
+        except MutagenError:
+            logger.error(f"MutagenError loading {file_path}", exc_info=True)
+            raise
         except ValueError:
             raise
         except Exception:

@@ -46,10 +46,19 @@ class TestAudioMetadata(unittest.TestCase):
         expected_info = mediainfo(SRC_FILE)
         self.assertDictEqual(results_info, expected_info)
 
+    def test_load_any_file_not_audio(self):
+        '''
+        @brief attempt to load a non-audio file with mutagen
+        '''
+
+        src_file = os.path.join(TESTS_TLD, EXPORT_TLD, "Test_Crush-Live.mp3")
+        loaded_file = metadata.load_any_file(src_file)
+
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
     suite.addTest(TestAudioMetadata('test_get_media_info_dict'))
+    suite.addTest(TestAudioMetadata('test_load_any_file_not_audio'))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
