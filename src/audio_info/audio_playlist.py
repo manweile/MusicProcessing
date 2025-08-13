@@ -10,6 +10,7 @@
 import gc
 import logging
 import os
+from os import strerror
 from pathlib import Path
 
 # local modules
@@ -90,6 +91,9 @@ class AudioPlaylist():
             else:
                 raise PlaylistError()
 
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} getting audio name from {line}", exc_info=True)
+            raise
         except PlaylistError:
             logger.exception(f"No file delimiter in {line}", stack_info=True)
         except Exception:
@@ -162,6 +166,9 @@ class AudioPlaylist():
                                 logger.warning(f"{audio_file} from {input_basename} not found in {tld_path}")
                                 continue
 
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} updating playlist tld_path: {tld_path}, input_m3u: {input_m3u}", exc_info=True)
+            raise
         except Exception:
             logger.exception(f"Exception updating playlist tld_path: {tld_path}, input_m3u: {input_m3u}", stack_info=True)
         else:
@@ -187,6 +194,9 @@ class AudioPlaylist():
                     input_file_path = os.path.join(dir_path, file)
                     self.update_paths(dir_path, input_file_path)
 
+        except OSError as error:
+            logger.error(f"OSError {(strerror(error.errno))} updating m3u files in tld_path: {tld_path}", exc_info=True)
+            raise
         except Exception:
             logger.exception(f"Exception updating m3u files in tld_path: {tld_path}", stack_info=True)
         else:
