@@ -33,13 +33,13 @@ class TestAudioPlaylist(unittest.TestCase):
     @brief Tests AudioPlaylist class functions.
     '''
 
-    def tearDown(self):
-        '''
-        @brief Clean up the created playlist file.
-        '''
+    # def tearDown(self):
+    #     '''
+    #     @brief Clean up the created playlist file.
+    #     '''
 
-        if os.path.exists(GENERATED_M3U):
-            os.path.remove(GENERATED_M3U)
+    #     if os.path.exists(GENERATED_M3U):
+    #         os.path.remove(GENERATED_M3U)
 
 
     def test_get_audio_name_mp3(self):
@@ -83,7 +83,7 @@ class TestAudioPlaylist(unittest.TestCase):
 
         line = "#EXTINF:0The Eagles-Desperado.m4a"
         playlist.get_audio_name(line)
-        mock_warning.assert_called_once_with(f"No file delimiter in {line}")
+        mock_warning.assert_called_once_with(f"No file delimiter in {line}", stack_info=True)
 
 
     def test_update_m3u(self):

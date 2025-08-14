@@ -155,12 +155,14 @@ class TestAudioMetadata(unittest.TestCase):
         @brief attempt to load a non-extant audio file with mutagen
         '''
 
-        src_file = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.mp3")
-        loaded_file = metadata.load_any_file(src_file)
-        mock_msg = "MutagenError {error} loading {file_path}"
-        mock_warning.assert_called_once_with(mock_msg)
+        file_path = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.mp3")
+        loaded_file = metadata.load_any_file(file_path)
+        # mock_warning.assert_called_once_with(f"MutagenError loading {file_path}", exc_info=True)
+        mock_warning.assert_called_once_with(f"[Errno 2] No such file or directory: {file_path}")
+        # mock_warning.assert_called_once_with(f"MutagenError No such file or directory")
 
 if __name__ == "__main__":
+    suite = unittest.TestSuite()
     suite = unittest.TestSuite()
     suite.addTest(TestAudioMetadata('test_get_media_info_dict'))
     suite.addTest(TestAudioMetadata('test_load_any_file'))
