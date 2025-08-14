@@ -930,11 +930,11 @@ class AudioMetadata():
                 logger.error(f"File: {file_path} did not load", exc_info=True)
                 raise ValueError()
 
-        # except MutagenError as error:
-            # logger.error(f"MutagenError {error} loading {file_path}", exc_info=True)
-            # print(f"MutagenError {error.args[0].args[1]}")
-        except FileNotFoundError as error:
-            raise (f"{error.args[0].args[1]}")
+        except MutagenError as error:
+            logger.error(f"MutagenError {error} loading {file_path}", exc_info=True)
+            raise
+        except TypeError:
+            raise
         except ValueError:
             raise
         except Exception:

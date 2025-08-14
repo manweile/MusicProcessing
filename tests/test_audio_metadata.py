@@ -12,7 +12,9 @@ import gc
 import os
 import platform
 import unittest
-from unittest.mock import patch
+
+# third party modules
+from mutagen._util import MutagenError
 
 # local modules
 from src import EXPORT_TLD
@@ -144,25 +146,33 @@ class TestAudioMetadata(unittest.TestCase):
         @brief attempt to load an audio file with mutagen
         '''
 
-        src_file = os.path.join(TESTS_TLD, EXPORT_TLD, "Test_Crush-Live.mp3")
-        loaded_file = metadata.load_any_file(src_file)
+        loaded_file = metadata.load_any_file(SRC_FILE)
         audio_class_name = loaded_file.__class__.__name__
         self.assertEqual(audio_class_name, "MP3")
 
-    @patch('src.audio_info.audio_metadata.logger.error')
-    def test_load_any_file_non_extant(self, mock_warning):
+
+    def test_load_any_file_non_extant(self):
         '''
         @brief attempt to load a non-extant audio file with mutagen
         '''
 
+        audio_file = None
         file_path = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.mp3")
-        loaded_file = metadata.load_any_file(file_path)
-        # mock_warning.assert_called_once_with(f"MutagenError loading {file_path}", exc_info=True)
-        mock_warning.assert_called_once_with(f"[Errno 2] No such file or directory: {file_path}")
-        # mock_warning.assert_called_once_with(f"MutagenError No such file or directory")
+
+        '''
+        with a non-extant file,
+        the mutagen.File call in load_any_file will return a chained exception:
+        MutagenError encapsulating a FileNotFoundError,
+        so we check the exception context dunder
+        '''
+        with self.assertRaises(MutagenError) as cm:
+            audio_file = metadata.load_any_file(file_path)
+
+        self.assertIsNone(audio_file)
+        self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
+
 
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
     suite = unittest.TestSuite()
     suite.addTest(TestAudioMetadata('test_get_media_info_dict'))
     suite.addTest(TestAudioMetadata('test_load_any_file'))
