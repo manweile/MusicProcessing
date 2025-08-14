@@ -172,11 +172,33 @@ class TestAudioMetadata(unittest.TestCase):
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
+    def test_load_m4a_file_non_extant(self):
+        '''
+        @brief attempt to load a non-extant audio file with mutagen
+        '''
+
+        audio_file = None
+        file_path = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.m4a")
+
+        '''
+        with a non-extant file,
+        the mutagen.File call in load_any_file will return a chained exception:
+        MutagenError encapsulating a FileNotFoundError,
+        so we check the exception context dunder
+        '''
+        with self.assertRaises(MutagenError) as cm:
+            audio_file = metadata.load_m4a_file(file_path)
+
+        self.assertIsNone(audio_file)
+        self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
+
+
 if __name__ == "__main__":
     suite = unittest.TestSuite()
     suite.addTest(TestAudioMetadata('test_get_media_info_dict'))
     suite.addTest(TestAudioMetadata('test_load_any_file'))
     suite.addTest(TestAudioMetadata('test_load_any_file_non_extant'))
+    suite.addTest(TestAudioMetadata('test_load_m4a_file_non_extant'))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
