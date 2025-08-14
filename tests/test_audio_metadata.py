@@ -18,6 +18,7 @@ from mutagen._util import MutagenError
 
 # local modules
 from src import EXPORT_TLD
+from src import MusicProcessingError
 from src.audio_info import AudioMetadata
 
 gc.enable()
@@ -25,7 +26,7 @@ gc.enable()
 # instantiate module levels vars here
 TESTS_TLD = os.path.dirname(os.path.abspath(__file__))
 MP3_FILE = os.path.join("Crush", "Here", "Crush-Live.mp3")
-SRC_FILE = os.path.join(TESTS_TLD, EXPORT_TLD, MP3_FILE)
+MP3_PATH = os.path.join(TESTS_TLD, EXPORT_TLD, MP3_FILE)
 
 '''
 ffprobe command line that is source for media info dictionary definition
@@ -137,27 +138,27 @@ class TestAudioMetadata(unittest.TestCase):
         elif os_name == "Windows":
             expected_info = WIN_RESULT
 
-        results_info = metadata.get_media_info_dict(SRC_FILE)
+        results_info = metadata.get_media_info_dict(MP3_PATH)
         self.assertDictEqual(results_info, expected_info)
 
 
     def test_load_any_file(self):
         '''
-        @brief attempt to load an audio file with mutagen
+        @brief Tests attempt to load an audio file with mutagen
         '''
 
-        loaded_file = metadata.load_any_file(SRC_FILE)
+        loaded_file = metadata.load_any_file(MP3_PATH)
         audio_class_name = loaded_file.__class__.__name__
         self.assertEqual(audio_class_name, "MP3")
 
 
     def test_load_any_file_non_extant(self):
         '''
-        @brief attempt to load a non-extant audio file with mutagen
+        @brief Tests attempt to load a non-extant audio file with mutagen
         '''
 
         audio_file = None
-        file_path = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.mp3")
+        file_path = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.wav")
 
         '''
         with a non-extant file,
@@ -172,9 +173,31 @@ class TestAudioMetadata(unittest.TestCase):
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
+    def test_load_mp3_file_non_extant(self):
+        '''
+        @brief Tests attempt to load a non-extant audio file with mutagen
+        '''
+
+        audio_file = None
+        file_path = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.mp3")
+
+        '''
+        with a non-extant file,
+        the mutagen.File call in load_mp3_file will return a chained exception:
+        the mutagen.File call in load_mp3_file will return a chained exception:
+        MutagenError encapsulating a FileNotFoundError,
+        so we check the exception context dunder
+        '''
+        with self.assertRaises(MutagenError) as cm:
+            audio_file = metadata.load_mp3_file(file_path)
+
+        self.assertIsNone(audio_file)
+        self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
+
+
     def test_load_m4a_file_non_extant(self):
         '''
-        @brief attempt to load a non-extant audio file with mutagen
+        @brief Tests attempt to load a non-extant audio file with mutagen
         '''
 
         audio_file = None
@@ -182,7 +205,7 @@ class TestAudioMetadata(unittest.TestCase):
 
         '''
         with a non-extant file,
-        the mutagen.File call in load_any_file will return a chained exception:
+        the mutagen.File call in load_m4a_file will return a chained exception:
         MutagenError encapsulating a FileNotFoundError,
         so we check the exception context dunder
         '''
@@ -193,12 +216,56 @@ class TestAudioMetadata(unittest.TestCase):
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
+    def test_load_wma_file_non_extant(self):
+        '''
+        @brief Tests attempt to load a non-extant audio file with mutagen
+        '''
+
+        audio_file = None
+        file_path = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.wma")
+
+        '''
+        with a non-extant file,
+        the mutagen.File call in load_wma_file will return a chained exception:
+        MutagenError encapsulating a FileNotFoundError,
+        so we check the exception context dunder
+        '''
+        with self.assertRaises(MutagenError) as cm:
+            audio_file = metadata.load_wma_file(file_path)
+
+        self.assertIsNone(audio_file)
+        self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
+
+
+    def test_load_mp3_as_wma_file(self):
+        '''
+        @brief Attempt to load a mp3 as wma with mutagen.
+        '''
+
+        audio_file = None
+
+        '''
+        with a non-extant file,
+        the mutagen.File call in load_any_file will return a chained exception:
+        MutagenError encapsulating a FileNotFoundError,
+        so we check the exception context dunder
+        '''
+        with self.assertRaises(MusicProcessingError) as cm:
+            audio_file = metadata.load_wma_file(MP3_PATH)
+
+        self.assertIsNone(audio_file)
+        self.assertEqual(cm.exception.message, f"MusicProcessingError {MP3_PATH} not wma")
+
+
 if __name__ == "__main__":
     suite = unittest.TestSuite()
     suite.addTest(TestAudioMetadata('test_get_media_info_dict'))
     suite.addTest(TestAudioMetadata('test_load_any_file'))
     suite.addTest(TestAudioMetadata('test_load_any_file_non_extant'))
+    suite.addTest(TestAudioMetadata('test_load_mp3_file_non_extant'))
     suite.addTest(TestAudioMetadata('test_load_m4a_file_non_extant'))
+    suite.addTest(TestAudioMetadata('test_load_wma_file_non_extant'))
+    suite.addTest(TestAudioMetadata('test_load_mp3_as_wma_file'))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
