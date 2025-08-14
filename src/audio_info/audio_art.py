@@ -389,9 +389,11 @@ class AudioArt():
                         self.extract_album_art(input_file_path)
 
         except OSError as error:
+            # @todo handle file pattern. look in metadata convert_walk for example
             logger.error(f"OSError {(strerror(error.errno))} walking {start_path}", exc_info=True)
             raise
         except Exception:
+            # @todo rewrite. look in metadata convert_walk for example
             if file_pattern:
                 logger.exception(f"Exception walking {start_path} to extract art from {file_pattern} audio files", stack_info=True)
                 raise
