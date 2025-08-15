@@ -86,6 +86,17 @@ class TestAudioArt(unittest.TestCase):
         input_audio = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
         self.assertTrue(art.has_video_stream(input_audio))
 
+
+    def test_has_video_stream_non_extant(self):
+        '''
+        @brief Tests check for audio stream on non-extant file.
+        '''
+
+        input_audio = os.path.join(TESTS_TLD, "Non-extant.wav")
+        # subprocess_utils.subprocess_run -> CalledProcessError raised to has_video_stream -> Exception
+        self.assertTrue(art.has_video_stream(input_audio))
+
+
     def test_extract_asf_art(self):
         '''
 
@@ -103,6 +114,7 @@ if __name__ == "__main__":
     suite.addTest(TestAudioArt('test_has_video_stream_false'))
     suite.addTest(TestAudioArt('test_has_video_stream_true'))
     suite.addTest(TestAudioArt('test_extract_asf_art'))
+    suite.addTest(TestAudioArt('test_has_video_stream_non_extant'))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
