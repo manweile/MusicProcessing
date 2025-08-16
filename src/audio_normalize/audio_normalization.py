@@ -16,6 +16,7 @@ import os
 import re
 from json import JSONDecodeError
 from pathlib import Path
+from subprocess import CalledProcessError
 
 # local modules
 from src import AUDIO_EXTS, AUDIO_TYPES
@@ -262,6 +263,8 @@ class AudioNormalization():
             data.append(results_text)
             directory.create_txt(txt_filename, data)
 
+        except CalledProcessError:
+            raise
         except PathInfoError:
             logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
             raise
@@ -303,6 +306,8 @@ class AudioNormalization():
             if 'format' in data and 'bit_rate' in data['format']:
                 bit_rate = int(data['format']['bit_rate'])
 
+        except CalledProcessError:
+            raise
         except JSONDecodeError:
             logger.error("Error decoding JSON output from ffprobe", exc_info=True)
             raise
@@ -348,6 +353,8 @@ class AudioNormalization():
             if 'streams' in data and data['streams']:
                 sample_rate = int(data['streams'][0]['sample_rate'])
 
+        except CalledProcessError:
+            raise
         except IndexError as e:
             logger.error(f"Error: {e} no audio stream found or sample rate information missing for audio file: {file_path}", exc_info=True)
             raise
@@ -402,6 +409,8 @@ class AudioNormalization():
                 volumes['mean_volume'] = mean_volume
                 volumes['max_volume'] = max_volume
 
+        except CalledProcessError:
+            raise
         except Exception:
             logger.exception(f"Exception getting volume for file {file_path}", stack_info=True)
             raise
@@ -530,6 +539,8 @@ class AudioNormalization():
             data.append(success_text)
             directory.create_txt(txt_filename, data)
 
+        except CalledProcessError:
+            raise
         except PathInfoError:
             logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
             return
@@ -627,6 +638,8 @@ class AudioNormalization():
             data.append(success_text)
             directory.create_txt(txt_filename, data)
 
+        except CalledProcessError:
+            raise
         except PathInfoError:
             logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
             return

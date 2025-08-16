@@ -17,6 +17,7 @@ import struct
 from json import JSONDecodeError
 from os import strerror
 from pathlib import Path
+from subprocess import CalledProcessError
 
 # third party modules
 from mutagen.asf import ASF
@@ -281,6 +282,8 @@ class AudioArt():
             _ = subprocess_utils.subprocess_run(command)
             logger.info(f"FFMPEG extracted album art from {input_path.name} and saved to {album_path}")
 
+        except CalledProcessError:
+            raise
         except OSError as error:
             logger.error(f"OSError {(strerror(error.errno))} extracting ffmpeg art with {file_path}", exc_info=True)
             raise
@@ -439,6 +442,8 @@ class AudioArt():
                 if stream['codec_type'] == 'video':
                     has_stream = True
 
+        except CalledProcessError:
+            raise
         except JSONDecodeError:
             logger.error(f"JSONDecodeError on audio file: {file_path}", exc_info=True)
             raise
