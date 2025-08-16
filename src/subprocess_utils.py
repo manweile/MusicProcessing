@@ -93,9 +93,9 @@ class SubprocessUtilities():
         except UnicodeDecodeError as ud_error:
             logger.exception(f"UnicodeDecodeError decoding {shlex.join(command)}: {stdout_bytes}", stack_info=True)
             raise ud_error
-        except Exception as exc_error:
+        except Exception as e_error:
             logger.exception(f"Exception running command {shlex.join(command)}", stack_info=True)
-            raise exc_error
+            raise e_error
         else:
             return stdout
 
@@ -128,9 +128,9 @@ class SubprocessUtilities():
         except CalledProcessError as cp_error:
             logger.exception(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", stack_info=True)
             raise cp_error
-        except Exception as exc_error:
+        except Exception as e_error:
             logger.exception(f"Exception processing command: {command}", stack_info=True)
-            raise exc_error
+            raise e_error
         else:
             return process, spinner
 
@@ -162,8 +162,8 @@ class SubprocessUtilities():
         except CalledProcessError as cp_error:
             logger.exception(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", stack_info=True)
             raise cp_error
-        except Exception as exc_error:
+        except Exception as e_error:
             logger.exception(f"Exception processing command: {command}", stack_info=True)
-            raise exc_error
+            raise e_error
         else:
             return process
