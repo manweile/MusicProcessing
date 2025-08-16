@@ -8,6 +8,7 @@
 
 # standard modules
 import gc
+import inspect
 import os
 import unittest
 
@@ -93,7 +94,9 @@ class TestAudioArt(unittest.TestCase):
         '''
 
         input_audio = os.path.join(TESTS_TLD, "Non-extant.wav")
-        # subprocess_utils.subprocess_run -> CalledProcessError raised to has_video_stream -> Exception
+        # subprocess_utils.subprocess_run throws CalledProcessError
+        # raised to has_video_stream throws Exception
+
         self.assertTrue(art.has_video_stream(input_audio))
 
 
@@ -109,12 +112,29 @@ class TestAudioArt(unittest.TestCase):
         # add teardown to remove folder jpg in album dir
 
 
+def get_method_names(cls):
+    '''
+    @brief Returns a list of names of methods defined within a given class.
+
+    @param cls {Class} The name of the class to get methods list from.
+    @return method_names [{str}] The names of the methods defined in class.
+    '''
+
+    method_names = []
+    for name, obj in inspect.getmembers(cls):
+        if inspect.isfunction(obj) or inspect.ismethod(obj):
+            # Exclude built-in methods (those starting with '__')
+            if name.startswith('test_'):
+                method_names.append(name)
+    return method_names
+
+
 if __name__ == "__main__":
+    methods = get_method_names(TestAudioArt)
+
     suite = unittest.TestSuite()
-    suite.addTest(TestAudioArt('test_has_video_stream_false'))
-    suite.addTest(TestAudioArt('test_has_video_stream_true'))
-    suite.addTest(TestAudioArt('test_extract_asf_art'))
-    suite.addTest(TestAudioArt('test_has_video_stream_non_extant'))
+    for name in methods:
+        suite.addTest(TestAudioArt(name))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
