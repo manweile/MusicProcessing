@@ -123,7 +123,6 @@ def get_method_names(cls):
     method_names = []
     for name, obj in inspect.getmembers(cls):
         if inspect.isfunction(obj) or inspect.ismethod(obj):
-            # Exclude built-in methods (those starting with '__')
             if name.startswith('test_'):
                 method_names.append(name)
     return method_names
