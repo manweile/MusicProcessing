@@ -8,6 +8,7 @@ from src.errors import JSONOutputError
 from src.errors import MusicProcessingError
 from src.errors import PathInfoError
 from src.errors import PlaylistError
+from src.errors import VideoStreamError
 
 ## @var AUDIO_EXTS
 # @brief audio file extensions in my collection
@@ -105,6 +106,7 @@ UTF8 = "utf-8"
 # @details In modules needing the error class, add `from src.errors import MusicProcessingError'
 # @details In modules needing the error class, add `from src.errors import PathInfoError'
 # @details In modules needing the error class, add `from src.errors import PlaylistError'
+# @details In modules needing the error class, add `from src.errors import VideoStreamError'
 __all__ = [
     "AUDIO_EXTS", "AUDIO_FILES", "AUDIO_TYPES",
     "CSV_DIR", "CSV_EXT",
@@ -115,5 +117,6 @@ __all__ = [
     "PLAYLIST_EXTS", "PLAYLIST_TYPES",
     "RESULT_DIR", "RESULT_EXT",
     "UTF8",
-    "JSONOutputError", "MusicProcessingError", "PathInfoError", "PlaylistError"
+    "JSONOutputError", "MusicProcessingError", "PathInfoError", "PlaylistError",
+    "VideoStreamError"
 ]

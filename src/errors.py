@@ -26,7 +26,7 @@ class MusicProcessingError(MusicProcessingException):
 
 class PathInfoError(MusicProcessingException):
     '''
-    @brief Indicates an error occurred in  path info function.
+    @brief Indicates an error occurred in directory_processing.path_info function.
     '''
 
     def __init__(self, message="A PathInfoError occurred"):
@@ -40,5 +40,15 @@ class PlaylistError(MusicProcessingException):
     '''
 
     def __init__(self, message="A PlaylistError occurred"):
+        self.message = message
+        super().__init__(self.message)
+
+
+class VideoStreamError(MusicProcessingException):
+    '''
+    @brief Indicates an error occurred in  audio_art.had_video_stream function.
+    '''
+
+    def __init__(self, message="A VideoStreamError occurred"):
         self.message = message
         super().__init__(self.message)
