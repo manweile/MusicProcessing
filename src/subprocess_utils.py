@@ -77,24 +77,25 @@ class SubprocessUtilities():
 
             # ffprobe returns via stdout (unlike ffmpeg, which uses stderr)
             stdout_bytes = res.communicate()[0]
-
-            try:
-                stdout = stdout_bytes.decode("utf-8")
-            except UnicodeDecodeError as e:
-                logger.exception(f"UnicodeDecodeError decoding {shlex.join(command)}: {stdout_bytes}", stack_info=True)
-                raise e
+            stdout = stdout_bytes.decode("utf-8")
+            # try:
+            #     stdout = stdout_bytes.decode("utf-8")
+            # except UnicodeDecodeError as e:
+            #     logger.exception(f"UnicodeDecodeError decoding {shlex.join(command)}: {stdout_bytes}", stack_info=True)
+            #     raise e
 
             if res.returncode != 0:
                 logger.error(f"RuntimeError running command {shlex.join(command)}", exc_info=True)
-                raise RuntimeError()
+                raise RuntimeError(f"RuntimeError running command {shlex.join(command)}", exc_info=True)
 
-        except RuntimeError:
-            raise
-        except UnicodeDecodeError:
-            raise
-        except Exception:
+        except RuntimeError as r_error:
+            raise r_error
+        except UnicodeDecodeError as ud_error:
+            logger.exception(f"UnicodeDecodeError decoding {shlex.join(command)}: {stdout_bytes}", stack_info=True)
+            raise ud_error
+        except Exception as exc_error:
             logger.exception(f"Exception running command {shlex.join(command)}", stack_info=True)
-            raise
+            raise exc_error
         else:
             return stdout
 
@@ -124,12 +125,12 @@ class SubprocessUtilities():
                     text=True
                 )
 
-        except CalledProcessError as e:
-            logger.exception(f"CalledProcessError returncode:{e.returncode}, with stderr: {e.stderr} on command {e.cmd}", stack_info=True)
-            raise
-        except Exception:
+        except CalledProcessError as cp_error:
+            logger.exception(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", stack_info=True)
+            raise cp_error
+        except Exception as exc_error:
             logger.exception(f"Exception processing command: {command}", stack_info=True)
-            raise
+            raise exc_error
         else:
             return process, spinner
 
@@ -158,11 +159,11 @@ class SubprocessUtilities():
                 text=True
             )
 
-        except CalledProcessError as e:
-            logger.exception(f"CalledProcessError returncode:{e.returncode}, with stderr: {e.stderr} on command {e.cmd}", stack_info=True)
-            raise
-        except Exception:
+        except CalledProcessError as cp_error:
+            logger.exception(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", stack_info=True)
+            raise cp_error
+        except Exception as exc_error:
             logger.exception(f"Exception processing command: {command}", stack_info=True)
-            raise
+            raise exc_error
         else:
             return process
