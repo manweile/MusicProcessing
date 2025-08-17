@@ -585,9 +585,18 @@ class AudioMetadata():
                     else:
                         info[key] = value
 
-        except Exception:
+        except re.error as rgx_error:
+            logger.error(f"Regex error processing {output}", exc_info=True)
+            raise rgx_error
+        except RuntimeError as r_error:
+            # already logged in popen_pipe, keeping raising
+            raise r_error
+        except UnicodeDecodeError as ud_error:
+            # already logged in popen_pipe, keeping raising
+            raise ud_error
+        except Exception as e_error:
             logger.exception(f"Exception getting media info for file {file_path}")
-            raise
+            raise e_error
         else:
             return info
 
@@ -939,18 +948,16 @@ class AudioMetadata():
 
             if audio_file is None:
                 logger.error(f"File: {file_path} did not load", exc_info=True)
-                raise ValueError()
+                raise ValueError(f"File: {file_path} did not load")
 
-        except MutagenError as mutagen_error:
-            logger.error(f"MutagenError {mutagen_error} loading {file_path}", exc_info=True)
-            raise
-        except TypeError:
-            raise
-        except ValueError:
-            raise
-        except Exception:
+        except MutagenError as m_error:
+            logger.error(f"MutagenError {m_error} loading {file_path}", exc_info=True)
+            raise m_error
+        except ValueError as v_error:
+            raise v_error
+        except Exception as e_error:
             logger.exception(f"Exception loading audio file: {file_path}", stack_info=True)
-            raise
+            raise e_error
         else:
             return audio_file
 
