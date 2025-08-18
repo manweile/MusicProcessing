@@ -43,48 +43,9 @@ class TestAudioArt(unittest.TestCase):
     @brief Tests AudioArt class functions.
     '''
 
-    '''
-    # has embedded art
-    /home/gerald/Music/Crush/Here/Crush-Live.mp3"
-    /home/gerald/Music/Joshua Davis/The Voice Peformance/Joshau Davis-The Workingman's Hym.m4a
-    /home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma"
-
-    # has embedded, but not in a video stream, so will fail with ffmpeg
-    /home/gerald/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma"
-
-    # no embedded art
-    /home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3
-    /home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a
-    /home/gerald/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.wma"
-
-    test_has_folder_art
-        pass
-        fail
-    test_is_audio_file
-        pass
-        fail
-    test_has_video_stream
-        pass
-        fail
-    test_has_art_tag
-        pass
-        fail
-    test_extract_album_art
-        doesn't really need a test if test the support functions
-    test_extract_asf_art
-    test_extract_ffmpeg-art
-    test_extract_mp3_art
-    test_extract_m4a_art
-    test_extract_walk
-        test with valid pattern
-        test with invalid pattern
-    test_set_album_art
-        not sure how to test
-    '''
-
     def tearDown(self):
         '''
-        @brief Clean up the created Folder.jpg file.
+        @brief Clean up the created Folder.jpg files.
         '''
 
         for jpg in EXPECTED_JPGS:
@@ -117,7 +78,12 @@ class TestAudioArt(unittest.TestCase):
 
 
     # @todo
+    # def test_extract_mp3_art
+
+
+    # @todo
     # def test_extract_m4a_art
+
 
     def test_has_video_stream_false(self):
         '''
