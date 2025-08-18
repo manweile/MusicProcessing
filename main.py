@@ -502,106 +502,110 @@ def main(args):
     @exception Exception A common baseclass exception to handle unforeseen errors.
     '''
 
-    if args.subcommand == "convert-file":
-        file_path = getattr(args, "file")
-        convert_file(file_path)
+    try:
+        if args.subcommand == "convert-file":
+            file_path = getattr(args, "file")
+            convert_file(file_path)
 
-    if args.subcommand == "convert-walk":
-        tld_path = getattr(args, "tld")
-        file_pattern = getattr(args, "pattern")
-        convert_walk(tld_path, file_pattern)
+        if args.subcommand == "convert-walk":
+            tld_path = getattr(args, "tld")
+            file_pattern = getattr(args, "pattern")
+            convert_walk(tld_path, file_pattern)
 
-    if args.subcommand == "create-albums":
-        tld_path = getattr(args, "tld")
-        create_albums(tld_path)
+        if args.subcommand == "create-albums":
+            tld_path = getattr(args, "tld")
+            create_albums(tld_path)
 
-    if args.subcommand == "ebu-file":
-        file_path = getattr(args, "file")
-        ebu_file(file_path)
+        if args.subcommand == "ebu-file":
+            file_path = getattr(args, "file")
+            ebu_file(file_path)
 
-    if args.subcommand == "extract-file":
-        file_path = getattr(args, "file")
-        extract_file(file_path)
+        if args.subcommand == "extract-file":
+            file_path = getattr(args, "file")
+            extract_file(file_path)
 
-    if args.subcommand == "extract-walk":
-        tld_path = getattr(args, "tld")
-        file_pattern = getattr(args, "pattern")
-        extract_walk(tld_path, file_pattern)
+        if args.subcommand == "extract-walk":
+            tld_path = getattr(args, "tld")
+            file_pattern = getattr(args, "pattern")
+            extract_walk(tld_path, file_pattern)
 
-    if args.subcommand == "get-media-info":
-        file_path = getattr(args, "file")
-        get_media_info(file_path)
+        if args.subcommand == "get-media-info":
+            file_path = getattr(args, "file")
+            get_media_info(file_path)
 
-    if args.subcommand == "get-media-info-walk":
-        tld_path = getattr(args, "tld")
-        file_pattern = getattr(args, "pattern")
-        get_media_info_walk(tld_path, file_pattern)
+        if args.subcommand == "get-media-info-walk":
+            tld_path = getattr(args, "tld")
+            file_pattern = getattr(args, "pattern")
+            get_media_info_walk(tld_path, file_pattern)
 
-    if args.subcommand == "get-media-tags":
-        file_path = getattr(args, "file")
-        get_media_tags(file_path)
+        if args.subcommand == "get-media-tags":
+            file_path = getattr(args, "file")
+            get_media_tags(file_path)
 
-    if args.subcommand == "get-any-tags":
-        file_path = getattr(args, "file")
-        tags = get_any_tags(file_path)
-        # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
-        # not as a simple dict of string key/value
-        # so need mutagen pprint and splitlines to "format" into simple dict
-        pprint.pprint(tags.pprint().splitlines())
+        if args.subcommand == "get-any-tags":
+            file_path = getattr(args, "file")
+            tags = get_any_tags(file_path)
+            # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
+            # not as a simple dict of string key/value
+            # so need mutagen pprint and splitlines to "format" into simple dict
+            pprint.pprint(tags.pprint().splitlines())
 
-    if args.subcommand == "get-tags-walk":
-        tld_path = getattr(args, "tld")
-        file_pattern = getattr(args, "pattern")
-        ffprobe = getattr(args, "ffprobe")
-        get_tags_walk(tld_path, file_pattern, ffprobe)
+        if args.subcommand == "get-tags-walk":
+            tld_path = getattr(args, "tld")
+            file_pattern = getattr(args, "pattern")
+            ffprobe = getattr(args, "ffprobe")
+            get_tags_walk(tld_path, file_pattern, ffprobe)
 
-    if args.subcommand == "get-unique-media":
-        tld_path = getattr(args, "tld")
-        get_unique_media(tld_path)
+        if args.subcommand == "get-unique-media":
+            tld_path = getattr(args, "tld")
+            get_unique_media(tld_path)
 
-    if args.subcommand == "list-audio":
-        tld_path = getattr(args, "tld")
-        list_audio(tld_path)
+        if args.subcommand == "list-audio":
+            tld_path = getattr(args, "tld")
+            list_audio(tld_path)
 
-    if args.subcommand == "list-type":
-        tld_path = getattr(args, "tld")
-        file_ext = getattr(args, "ext")
-        list_type(tld_path, file_ext)
+        if args.subcommand == "list-type":
+            tld_path = getattr(args, "tld")
+            file_ext = getattr(args, "ext")
+            list_type(tld_path, file_ext)
 
-    if args.subcommand == "normalize-walk":
-        tld_path = getattr(args, "tld")
-        norm_type = getattr(args, "type")
-        normalize_walk(tld_path, norm_type)
+        if args.subcommand == "normalize-walk":
+            tld_path = getattr(args, "tld")
+            norm_type = getattr(args, "type")
+            normalize_walk(tld_path, norm_type)
 
-    if args.subcommand == "peak-file":
-        file_path = getattr(args, "file")
-        peak_file(file_path)
+        if args.subcommand == "peak-file":
+            file_path = getattr(args, "file")
+            peak_file(file_path)
 
-    if args.subcommand == "rms-file":
-        file_path = getattr(args, "file")
-        rms_file(file_path)
+        if args.subcommand == "rms-file":
+            file_path = getattr(args, "file")
+            rms_file(file_path)
 
-    if args.subcommand == "remove-albums":
-        tld_path = getattr(args, "tld")
-        remove_albums(tld_path)
+        if args.subcommand == "remove-albums":
+            tld_path = getattr(args, "tld")
+            remove_albums(tld_path)
 
-    if args.subcommand == "remove-pattern":
-        tld_path = getattr(args, "tld")
-        file_pattern = getattr(args, "pattern")
-        remove_pattern(tld_path, file_pattern)
+        if args.subcommand == "remove-pattern":
+            tld_path = getattr(args, "tld")
+            file_pattern = getattr(args, "pattern")
+            remove_pattern(tld_path, file_pattern)
 
-    if args.subcommand == "set-album-art":
-        tld_path = getattr(args, "tld")
-        set_album_art(tld_path)
+        if args.subcommand == "set-album-art":
+            tld_path = getattr(args, "tld")
+            set_album_art(tld_path)
 
-    if args.subcommand == "update-m3u":
-        tld_path = getattr(args, "tld")
-        input_m3u = getattr(args, "m3u")
-        update_paths(tld_path, input_m3u)
+        if args.subcommand == "update-m3u":
+            tld_path = getattr(args, "tld")
+            input_m3u = getattr(args, "m3u")
+            update_paths(tld_path, input_m3u)
 
-    if args.subcommand == "update-walk":
-        tld_path = getattr(args, "tld")
-        update_walk(tld_path)
+        if args.subcommand == "update-walk":
+            tld_path = getattr(args, "tld")
+            update_walk(tld_path)
+
+    except Exception as e:
+        logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
 
 
 if __name__ == "__main__":
@@ -810,4 +814,4 @@ if __name__ == "__main__":
         main(args)
 
     except Exception as e:
-        logger.exception(e, stack_info=True)
+        logger.exception(f"Exception propagated to entry point: {type(e).__name__}: {e}", stack_info=True)
