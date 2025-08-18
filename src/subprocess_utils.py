@@ -78,11 +78,6 @@ class SubprocessUtilities():
             # ffprobe returns via stdout (unlike ffmpeg, which uses stderr)
             stdout_bytes = res.communicate()[0]
             stdout = stdout_bytes.decode("utf-8")
-            # try:
-            #     stdout = stdout_bytes.decode("utf-8")
-            # except UnicodeDecodeError as e:
-            #     logger.exception(f"UnicodeDecodeError decoding {shlex.join(command)}: {stdout_bytes}", stack_info=True)
-            #     raise e
 
             if res.returncode != 0:
                 logger.error(f"RuntimeError running command {shlex.join(command)}", exc_info=True)
