@@ -17,7 +17,6 @@ import struct
 from json import JSONDecodeError
 from os import strerror
 from pathlib import Path
-from subprocess import CalledProcessError
 
 # third party modules
 from mutagen.asf import ASF
