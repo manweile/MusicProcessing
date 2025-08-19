@@ -37,6 +37,8 @@ SRC_WMA = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", "El
 NO_STREAM_WMA = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
 
 art = AudioArt()
+# get the effective level so we can disable logging when necessary
+original_log_level = logging.getLogger().getEffectiveLevel()
 
 
 class TestAudioArt(unittest.TestCase):
@@ -101,17 +103,19 @@ class TestAudioArt(unittest.TestCase):
         @brief Tests check for audio stream on non-extant file.
         '''
 
-        # @todo need logging in this def so console doesn't get cluttered
-        # google: python unittest stop logger output from tested function to console
-        original_log_level = logging.getLogger().getEffectiveLevel()
-        logging.disable(logging.CRITICAL)
+        '''
+        subprocess_utils.subprocess_run will throw CalledProcessError,
+        which is raised to it's calling functions, like has_video_stream.
+        Don't want the console output cluttered up,
+        so we disable the logging at & below ERROR,
+        which is what subprocess_run specifies for logging.
+        '''
+        logging.disable(logging.ERROR)
 
         has_video = None
         input_audio = os.path.join(TESTS_TLD, "Non-extant.wav")
 
         try:
-            # subprocess_utils.subprocess_run throws CalledProcessError
-            # raised to has_video_stream which re-raises it
             with self.assertRaises(CalledProcessError) as cm:
                 has_video = art.has_video_stream(input_audio)
 
