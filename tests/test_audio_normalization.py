@@ -8,6 +8,7 @@
 
 # standard modules
 import gc
+import inspect
 import os
 import shutil
 import unittest
@@ -19,7 +20,6 @@ from src.audio_normalize import AudioNormalization
 
 gc.enable()
 
-# D:\MusicProcessing\tests\
 TESTS_TLD = os.path.dirname(os.path.abspath(__file__))
 MP3_FILE = os.path.join("Crush", "Here", "Crush-Live.mp3")
 NORM_FILE = os.path.join(GENERATED_FILES, EXPORT_TLD, MP3_FILE)
@@ -58,9 +58,28 @@ class TestAudioNormalization(unittest.TestCase):
         self.assertTrue(os.path.exists(NORM_FILE))
 
 
+def get_method_names(cls):
+    '''
+    @brief Returns a list of names of methods defined within a given class.
+
+    @param cls {Class} The name of the class to get methods list from.
+    @return method_names [{str}] The names of the methods defined in class.
+    '''
+
+    method_names = []
+    for name, obj in inspect.getmembers(cls):
+        if inspect.isfunction(obj) or inspect.ismethod(obj):
+            if name.startswith('test_'):
+                method_names.append(name)
+    return method_names
+
+
 if __name__ == "__main__":
+    methods = get_method_names(TestAudioNormalization)
+
     suite = unittest.TestSuite()
-    suite.addTest(TestAudioNormalization('test_peak_normalize_file'))
+    for name in methods:
+        suite.addTest(TestAudioNormalization(name))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
