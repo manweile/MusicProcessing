@@ -37,6 +37,7 @@ SRC_WMA = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", "El
 NO_STREAM_WMA = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
 
 art = AudioArt()
+
 # get the effective level so we can disable logging when necessary
 original_log_level = logging.getLogger().getEffectiveLevel()
 
