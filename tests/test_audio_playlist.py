@@ -8,13 +8,15 @@
 
 # standard modules
 import gc
+import inspect
+import logging
 import os
 import unittest
-from unittest.mock import patch
 
 # local modules
 from src import EXPORT_TLD
 from src.generated_files import GENERATED_FILES
+from src import PlaylistError
 from src.audio_info import AudioPlaylist
 
 gc.enable()
@@ -26,6 +28,13 @@ INPUT_M3U = os.path.join(TESTS_TLD, "test.m3u")
 GENERATED_M3U = os.path.join(GENERATED_FILES, "test.m3u")
 
 playlist = AudioPlaylist()
+
+'''
+Get the effective level so we can disable logging when necessary.
+In tests that use assertRaises, disable the logger at or below the log level of the tested function,
+encapsulate the assertRaises in a try block, and use a finally to restore the original log level.
+'''
+original_log_level = logging.getLogger().getEffectiveLevel()
 
 
 class TestAudioPlaylist(unittest.TestCase):
@@ -40,6 +49,37 @@ class TestAudioPlaylist(unittest.TestCase):
 
     #     if os.path.exists(GENERATED_M3U):
     #         os.path.remove(GENERATED_M3U)
+
+
+    def test_get_audio_name_error(self):
+        '''
+        @brief Tests getting audio file name from a m3u #EXTINF line without delimiter
+        '''
+
+        logging.disable(logging.ERROR)
+
+        audio = None
+        line = "#EXTINF:0The Eagles-Desperado.m4a"
+
+        try:
+            with self.assertRaises(PlaylistError) as cm:
+                audio = playlist.get_audio_name(line)
+
+            self.assertIsNone(audio)
+            self.assertEqual(cm.exception.message, f"PlaylistError no file delimiter in {line}")
+        finally:
+            logging.disable(original_log_level)
+
+
+    def test_get_audio_name_m4a(self):
+        '''
+        @brief Tests getting m4a audio file name from a m3u #EXTINF line
+        '''
+
+        line = "#EXTINF:0,The Eagles-Desperado.m4a"
+        expected_audio = "The Eagles-Desperado.mp3"
+        result_audio = playlist.get_audio_name(line)
+        self.assertEqual(expected_audio, result_audio)
 
 
     def test_get_audio_name_mp3(self):
@@ -64,28 +104,6 @@ class TestAudioPlaylist(unittest.TestCase):
         self.assertEqual(expected_audio, result_audio)
 
 
-    def test_get_audio_name_m4a(self):
-        '''
-        @brief Tests getting m4a audio file name from a m3u #EXTINF line
-        '''
-
-        line = "#EXTINF:0,The Eagles-Desperado.m4a"
-        expected_audio = "The Eagles-Desperado.mp3"
-        result_audio = playlist.get_audio_name(line)
-        self.assertEqual(expected_audio, result_audio)
-
-
-    @patch('src.audio_info.audio_playlist.logger.exception')
-    def test_get_audio_name_error(self, mock_warning):
-        '''
-        @brief Tests getting audio file name from a m3u #EXTINF line without delimiter
-        '''
-
-        line = "#EXTINF:0The Eagles-Desperado.m4a"
-        playlist.get_audio_name(line)
-        mock_warning.assert_called_once_with(f"No file delimiter in {line}", stack_info=True)
-
-
     def test_update_m3u(self):
         '''
         @brief Tests if the updated m3u file is equal to expected results.
@@ -101,13 +119,28 @@ class TestAudioPlaylist(unittest.TestCase):
             self.assertEqual(generated_content, expected_content, "File contents should be equal")
 
 
+def get_method_names(cls):
+    '''
+    @brief Returns a list of names of methods defined within a given class.
+
+    @param cls {Class} The name of the class to get methods list from.
+    @return method_names [{str}] The names of the methods defined in class.
+    '''
+
+    method_names = []
+    for name, obj in inspect.getmembers(cls):
+        if inspect.isfunction(obj) or inspect.ismethod(obj):
+            if name.startswith('test_'):
+                method_names.append(name)
+    return method_names
+
+
 if __name__ == "__main__":
+    methods = get_method_names(TestAudioPlaylist)
+
     suite = unittest.TestSuite()
-    suite.addTest(TestAudioPlaylist('test_update_m3u'))
-    suite.addTest(TestAudioPlaylist('test_get_audio_name_mp3'))
-    suite.addTest(TestAudioPlaylist('test_get_audio_name_wma'))
-    suite.addTest(TestAudioPlaylist('test_get_audio_name_m4a'))
-    suite.addTest(TestAudioPlaylist('test_get_audio_name_error'))
+    for name in methods:
+        suite.addTest(TestAudioPlaylist(name))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
