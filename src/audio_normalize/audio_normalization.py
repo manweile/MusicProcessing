@@ -16,7 +16,6 @@ import os
 import re
 from json import JSONDecodeError
 from pathlib import Path
-from subprocess import CalledProcessError
 
 # local modules
 from src import AUDIO_EXTS, AUDIO_TYPES
@@ -122,17 +121,19 @@ class AudioNormalization():
             if json_start != -1 and json_end != -1:
                 json_string = json_input[json_start: json_end + 1]
             else:
-                logger.error(f"Could not find JSON output in subprocess stderr\n{json_string}", exc_info=True)
-                raise JSONOutputError
+                logger.error(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_string}", exc_info=True)
+                raise JSONOutputError(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_string}")
 
             input_data = json.loads(json_string)
 
-        except JSONDecodeError:
-            logger.error(f"JSON parsing error with\n{json_string}", exc_info=True)
-            raise
-        except Exception:
-            logger.exception("Exception parsing ffmpeg loudnorm subprocess stderr", stack_info=True)
-            raise
+        except JSONDecodeError as jd_error:
+            logger.error(f"JSONDecodeError parsing \n{json_string}", exc_info=True)
+            raise jd_error
+        except JSONOutputError as jo_error:
+            raise jo_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} parsing ffmpeg loudnorm subprocess stderr", stack_info=True)
+            raise e_error
         else:
             return input_data
 
@@ -162,8 +163,9 @@ class AudioNormalization():
 
             export_path = directory.path_info(file_path)
 
-            if not export_path:
-                raise PathInfoError()
+            if export_path is None:
+                logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
+                raise PathInfoError(f"PathInfoError with file {file_path} returned None")
             else:
                 directory.make_dir(os.path.dirname(export_path))
 
@@ -263,14 +265,11 @@ class AudioNormalization():
             data.append(results_text)
             directory.create_txt(txt_filename, data)
 
-        except CalledProcessError:
-            raise
-        except PathInfoError:
-            logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
-            raise
-        except Exception:
-            logger.exception(f"Exception while ebu normalizing audio file: {file_path}", stack_info=True)
-            raise
+        except PathInfoError as pi_error:
+            raise pi_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} while ebu normalizing audio file: {file_path}", stack_info=True)
+            raise e_error
 
 
     def get_bit_rate(self, file_path):
@@ -306,14 +305,12 @@ class AudioNormalization():
             if 'format' in data and 'bit_rate' in data['format']:
                 bit_rate = int(data['format']['bit_rate'])
 
-        except CalledProcessError:
-            raise
-        except JSONDecodeError:
-            logger.error("Error decoding JSON output from ffprobe", exc_info=True)
-            raise
-        except Exception:
-            logger.exception(f"Exception normalizing audio file: {file_path}", stack_info=True)
-            raise
+        except JSONDecodeError as jd_error:
+            logger.error("JSONDecodeError decoding JSON output from ffprobe", exc_info=True)
+            raise jd_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} normalizing audio file: {file_path}", stack_info=True)
+            raise e_error
         else:
             return bit_rate
 
@@ -353,17 +350,15 @@ class AudioNormalization():
             if 'streams' in data and data['streams']:
                 sample_rate = int(data['streams'][0]['sample_rate'])
 
-        except CalledProcessError:
-            raise
-        except IndexError as e:
-            logger.error(f"Error: {e} no audio stream found or sample rate information missing for audio file: {file_path}", exc_info=True)
-            raise
-        except JSONDecodeError as e:
-            logger.error(f"Error: {e} decoding JSON output from ffprobe on audio file: {file_path}", exc_info=True)
-            raise
-        except Exception:
-            logger.exception(f"Exception getting sample rate for audio file: {file_path}", stack_info=True)
-            raise
+        except IndexError as i_error:
+            logger.error(f"IndexError no audio stream found or sample rate information missing for audio file: {file_path}", exc_info=True)
+            raise i_error
+        except JSONDecodeError as jd_error:
+            logger.error(f"JSONDecodeError decoding JSON output from ffprobe on audio file: {file_path}", exc_info=True)
+            raise jd_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting sample rate for audio file: {file_path}", stack_info=True)
+            raise e_error
         else:
             return sample_rate
 
@@ -409,11 +404,12 @@ class AudioNormalization():
                 volumes['mean_volume'] = mean_volume
                 volumes['max_volume'] = max_volume
 
-        except CalledProcessError:
-            raise
-        except Exception:
-            logger.exception(f"Exception getting volume for file {file_path}", stack_info=True)
-            raise
+        except re.error as re_error:
+            logger.error(f"Regex error processing {output_str}", exc_info=True)
+            raise re_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting volume for file {file_path}", stack_info=True)
+            raise e_error
         else:
             return volumes
 
@@ -448,9 +444,9 @@ class AudioNormalization():
                     elif norm_type == "rms":
                         self.rms_normalize_file(input_file_path)
 
-        except Exception:
-            logger.exception(f"Exception on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files", stack_info=True)
-            raise
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files", stack_info=True)
+            raise e_error
 
 
     def peak_normalize_file(self, file_path):
@@ -470,8 +466,9 @@ class AudioNormalization():
         try:
             export_path = directory.path_info(file_path)
 
-            if not export_path:
-                raise PathInfoError(message=f"File {file_path} is not in {AUDIO_TYPES}")
+            if export_path is None:
+                logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
+                raise PathInfoError(f"PathInfoError with file {file_path} returned None")
             else:
                 directory.make_dir(os.path.dirname(export_path))
 
@@ -539,14 +536,11 @@ class AudioNormalization():
             data.append(success_text)
             directory.create_txt(txt_filename, data)
 
-        except CalledProcessError:
-            raise
-        except PathInfoError:
-            logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
-            return
-        except Exception:
-            logger.exception(f"Exception while peak normalizing audio file: {file_path}", stack_info=True)
-            raise
+        except PathInfoError as pi_error:
+            raise pi_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} while peak normalizing audio file: {file_path}", stack_info=True)
+            raise e_error
 
 
     def rms_normalize_file(self, file_path):
@@ -566,8 +560,9 @@ class AudioNormalization():
         try:
             export_path = directory.path_info(file_path)
 
-            if not export_path:
-                raise PathInfoError(message=f"File {file_path} is not in {AUDIO_TYPES}")
+            if export_path is None:
+                logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
+                raise PathInfoError(f"PathInfoError with file {file_path} returned None")
             else:
                 directory.make_dir(os.path.dirname(export_path))
 
@@ -638,11 +633,8 @@ class AudioNormalization():
             data.append(success_text)
             directory.create_txt(txt_filename, data)
 
-        except CalledProcessError:
-            raise
-        except PathInfoError:
-            logger.exception(f"PathInfoError with file {file_path}", stack_info=True)
-            return
-        except Exception:
-            logger.exception(f"Exception while rms normalizing audio file: {file_path}", stack_info=True)
-            raise
+        except PathInfoError as pi_error:
+            return pi_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} while rms normalizing audio file: {file_path}", stack_info=True)
+            raise e_error
