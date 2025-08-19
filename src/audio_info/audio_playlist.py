@@ -10,7 +10,6 @@
 import gc
 import logging
 import os
-from os import strerror
 from pathlib import Path
 
 # local modules
@@ -67,11 +66,9 @@ class AudioPlaylist():
         where N is length of song in seconds, or -1 or 0, and
         @details <ext> is one of mp3, m4a, or wma.
         @param line (str) Line of text read from m3u file containing a #EXTINF tag
-        @return audio_file {str} Audio file name with extension, otherwise None.
+        @return audio_file {str} Audio file name with extension.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
-
-        audio = None
 
         try:
             index = line.find(DELIMITER)
@@ -89,15 +86,14 @@ class AudioPlaylist():
                 else:
                     audio = input_audio
             else:
-                raise PlaylistError()
+                logger.exception(f"PlaylistError no file delimiter in {line}", stack_info=True)
+                raise PlaylistError(f"PlaylistError no file delimiter in {line}")
 
-        except OSError as error:
-            logger.error(f"OSError {(strerror(error.errno))} getting audio name from {line}", exc_info=True)
-            raise
-        except PlaylistError:
-            logger.exception(f"No file delimiter in {line}", stack_info=True)
-        except Exception:
-            logger.exception(f"Exception getting audio name from {line}", stack_info=True)
+        except PlaylistError as p_error:
+            raise p_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting audio name from {line}", stack_info=True)
+            raise e_error
         else:
             return audio
 
@@ -144,13 +140,7 @@ class AudioPlaylist():
                         elif extinf in line:
                             # get the audio file name, change ext to mp3 if needed
                             audio_file = self.get_audio_name(line.strip("\n"))
-                            old_path = infile.readline().strip("\n")
-
-                            if audio_file:
-                                audio_file_path = directory.get_file_directory(tld_path, audio_file)
-                            else:
-                                logger.warning(f"unable to get audio file name from line: {line.strip("\n")} for relative path: {old_path} in {input_basename}")
-                                continue
+                            audio_file_path = directory.get_file_directory(tld_path, audio_file)
 
                             if audio_file_path:
                                 found_file = Path(audio_file_path)
@@ -166,11 +156,9 @@ class AudioPlaylist():
                                 logger.warning(f"{audio_file} from {input_basename} not found in {tld_path}")
                                 continue
 
-        except OSError as error:
-            logger.error(f"OSError {(strerror(error.errno))} updating playlist tld_path: {tld_path}, input_m3u: {input_m3u}", exc_info=True)
-            raise
-        except Exception:
-            logger.exception(f"Exception updating playlist tld_path: {tld_path}, input_m3u: {input_m3u}", stack_info=True)
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} updating playlist tld_path: {tld_path}, input_m3u: {input_m3u}", stack_info=True)
+            raise e_error
         else:
             logger.info(f"Updated {input_basename}\n")
 
@@ -194,10 +182,8 @@ class AudioPlaylist():
                     input_file_path = os.path.join(dir_path, file)
                     self.update_paths(dir_path, input_file_path)
 
-        except OSError as error:
-            logger.error(f"OSError {(strerror(error.errno))} updating m3u files in tld_path: {tld_path}", exc_info=True)
-            raise
-        except Exception:
-            logger.exception(f"Exception updating m3u files in tld_path: {tld_path}", stack_info=True)
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} updating m3u files in tld_path: {tld_path}", stack_info=True)
+            raise e_error
         else:
             logger.info(f"Updated m3u files in {tld_path}\n")
