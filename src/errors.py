@@ -26,7 +26,7 @@ class MusicProcessingError(MusicProcessingException):
 
 class PathInfoError(MusicProcessingException):
     '''
-    @brief Indicates an error occurred in directory_processing.path_info function.
+    @brief Indicates directory_processing.path_info function returned None.
     '''
 
     def __init__(self, message="A PathInfoError occurred"):
