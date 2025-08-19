@@ -14,6 +14,16 @@ class JSONOutputError(MusicProcessingException):
         super().__init__(self.message)
 
 
+class MetadataTypeError(MusicProcessingException):
+    '''
+    @brief Indicates a non-standard metadata type was encountered.
+    '''
+
+    def __init__(self, message="A MetadataTypeError occurred"):
+        self.message = message
+        super().__init__(self.message)
+
+
 class MusicProcessingError(MusicProcessingException):
     '''
     @brief Indicates a generic music processing error occurred.
@@ -46,7 +56,7 @@ class PlaylistError(MusicProcessingException):
 
 class VideoStreamError(MusicProcessingException):
     '''
-    @brief Indicates an error occurred in  audio_art.had_video_stream function.
+    @brief Indicates an error occurred in audio_art.had_video_stream function.
     '''
 
     def __init__(self, message="A VideoStreamError occurred"):

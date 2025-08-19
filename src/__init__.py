@@ -5,6 +5,7 @@
 
 # using absolute import as don't expect to be re-organizing directories
 from src.errors import JSONOutputError
+from src.errors import MetadataTypeError
 from src.errors import MusicProcessingError
 from src.errors import PathInfoError
 from src.errors import PlaylistError
@@ -103,6 +104,7 @@ UTF8 = "utf-8"
 # @details In modules needing the constant add 'from src import RESULT_EXT
 # @details In modules needing the constant add `from src import UTF8'
 # @details In modules needing the error class, add `from src.errors import JSONOutputError'
+# @details In modules needing the error class, add `from src.errors import MetadataTypeError'
 # @details In modules needing the error class, add `from src.errors import MusicProcessingError'
 # @details In modules needing the error class, add `from src.errors import PathInfoError'
 # @details In modules needing the error class, add `from src.errors import PlaylistError'
@@ -117,6 +119,8 @@ __all__ = [
     "PLAYLIST_EXTS", "PLAYLIST_TYPES",
     "RESULT_DIR", "RESULT_EXT",
     "UTF8",
-    "JSONOutputError", "MusicProcessingError", "PathInfoError", "PlaylistError",
+    "JSONOutputError",
+    "MetadataTypeError", "MusicProcessingError",
+    "PathInfoError", "PlaylistError",
     "VideoStreamError"
 ]
