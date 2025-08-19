@@ -38,7 +38,11 @@ NO_STREAM_WMA = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", 
 
 art = AudioArt()
 
-# get the effective level so we can disable logging when necessary
+'''
+Get the effective level so we can disable logging when necessary.
+In tests that use assertRaises, disable the logger at or below the log level of the tested function,
+encapsulate the assertRaises in a try block, and use a finally to restore the original log level.
+'''
 original_log_level = logging.getLogger().getEffectiveLevel()
 
 
