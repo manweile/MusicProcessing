@@ -15,7 +15,6 @@ import os
 import re
 import pprint
 import sys
-from os import strerror
 from pathlib import Path
 
 # third party modules
