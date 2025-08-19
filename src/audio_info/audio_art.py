@@ -128,7 +128,7 @@ class AudioArt():
             logger.exception("UnicodeDecodeError decoding asf image from tag data", stack_info=True)
             raise ud_error
         except Exception as e_error:
-            logger.exception("Exception unpacking asf image from tag data", stack_info=True)
+            logger.exception(f"Exception {type(e_error).__name__} unpacking asf image from tag data", stack_info=True)
             raise e_error
 
 
@@ -197,7 +197,7 @@ class AudioArt():
                 self.extract_ffmpeg_art(input_path)
                 return
             else:
-                logger.warning(f"No video stream album art present in {file_path}")
+                logger.info(f"No video stream album art present in {file_path}")
 
             # secondary extraction method because it is dependent on file type
             # and file must have an art metadata tag
@@ -212,14 +212,8 @@ class AudioArt():
                 logger.warning(f"No metadata tag album art present in {file_path}")
                 return
 
-        except CalledProcessError as cp_error:
-            # already logged in subprocess_run, re-raise
-            raise cp_error
-        except OSError as os_error:
-            logger.error(f"OSError {(strerror(os_error.errno))} extracting album art with {file_path}", exc_info=True)
-            raise os_error
         except Exception as e_error:
-            logger.exception(f"Exception extracting album art from {file_path}", stack_info=True)
+            logger.exception(f"Exception {type(e_error).__name__} extracting album art from {file_path}", stack_info=True)
             raise e_error
 
 
@@ -244,23 +238,12 @@ class AudioArt():
 
             self.__write_data(file_path, image_data)
 
-        except struct.error as s_error:
-            # already logged in unpack_asf_image, re-raise
-            raise s_error
-        except BlockingIOError as bio_error:
-            # already logged in write_data, re-raise
-            raise bio_error
         except MutagenError as m_error:
+            # handle mutagen ASF error
             logger.error(f"MutagenError {m_error} loading {file_path}", exc_info=True)
             raise m_error
-        except OSError as os_error:
-            logger.error(f"OSError {(strerror(os_error.errno))} extracting asf art with {file_path}", exc_info=True)
-            raise os_error
-        except UnicodeDecodeError as ud_error:
-            # already logged in unpack_asf_image, re-raise
-            raise ud_error
         except Exception as e_error:
-            logger.exception(f"Exception extracting asf art from {file_path}", stack_info=True)
+            logger.exception(f"Exception {type(e_error).__name__} extracting asf art from {file_path}", stack_info=True)
             raise e_error
 
 
@@ -302,14 +285,8 @@ class AudioArt():
             _ = subprocess_utils.subprocess_run(command)
             logger.info(f"FFMPEG extracted album art from {input_path.name} and saved to {album_path}")
 
-        except CalledProcessError as cp_error:
-            # already logged in subprocess_run, re-raise
-            raise cp_error
-        except OSError as os_error:
-            logger.error(f"OSError {(strerror(os_error.errno))} extracting ffmpeg art with {file_path}", exc_info=True)
-            raise
         except Exception as e_error:
-            logger.exception(f"Exception using ffmpeg to extract art from {input_path}", stack_info=True)
+            logger.exception(f"Exception {type(e_error).__name__} using ffmpeg to extract art from {input_path}", stack_info=True)
             raise e_error
 
 
@@ -339,11 +316,12 @@ class AudioArt():
 
             self.__write_data(file_path, image_data)
 
-        except OSError as error:
-            logger.error(f"OSError {(strerror(error.errno))} extracting m4a art with {file_path}", exc_info=True)
-            raise
-        except Exception:
-            logger.exception(f"Exception extracting m4a art from {file_path}", stack_info=True)
+        except MutagenError as m_error:
+            # handle mutagen ASF error
+            logger.error(f"MutagenError {m_error} loading {file_path}", exc_info=True)
+            raise m_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} extracting m4a art from {file_path}", stack_info=True)
             raise
 
 
@@ -366,11 +344,12 @@ class AudioArt():
 
             self.__write_data(file_path, image_data)
 
-        except OSError as error:
-            logger.error(f"OSError {(strerror(error.errno))} extracting mp3 art with {file_path}", exc_info=True)
-            raise
-        except Exception:
-            logger.exception(f"Exception extracting mp3 embedded art from {file_path}", stack_info=True)
+        except MutagenError as m_error:
+            # handle mutagen ASF error
+            logger.error(f"MutagenError {m_error} loading {file_path}", exc_info=True)
+            raise m_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} extracting mp3 embedded art from {file_path}", stack_info=True)
             raise
 
 
@@ -412,17 +391,13 @@ class AudioArt():
                         input_file_path = os.path.join(dir_path, file)
                         self.extract_album_art(input_file_path)
 
-        except OSError as error:
-            # @todo handle file pattern. look in metadata convert_walk for example
-            logger.error(f"OSError {(strerror(error.errno))} walking {start_path}", exc_info=True)
-            raise
-        except Exception:
+        except Exception as e_error:
             # @todo rewrite. look in metadata convert_walk for example
             if file_pattern:
-                logger.exception(f"Exception walking {start_path} to extract art from {file_pattern} audio files", stack_info=True)
+                logger.exception(f"Exception {type(e_error).__name__} walking {start_path} to extract art from {file_pattern} audio files", stack_info=True)
                 raise
             else:
-                logger.exception(f"Exception walking {start_path} to extract art from audio files", stack_info=True)
+                logger.exception(f"Exception {type(e_error).__name__} walking {start_path} to extract art from audio files", stack_info=True)
                 raise
 
 
@@ -463,17 +438,11 @@ class AudioArt():
                 if stream['codec_type'] == 'video':
                     has_stream = True
 
-        except CalledProcessError as cp_error:
-            # already logged in subprocess_run, re-raise
-            raise cp_error
         except JSONDecodeError as jd_error:
             logger.error(f"JSONDecodeError on audio file: {file_path}", exc_info=True)
             raise jd_error
-        except OSError as os_error:
-            logger.error(f"OSError {(strerror(os_error.errno))} with {file_path}", exc_info=True)
-            raise os_error
         except Exception as e_error:
-            logger.exception(f"Exception extracting video stream from {file_path}", stack_info=True)
+            logger.exception(f"Exception {type(e_error).__name__} extracting video stream from {file_path}", stack_info=True)
             raise e_error
         else:
             return has_stream
@@ -523,9 +492,6 @@ class AudioArt():
                 else:
                     logger.warning(f"No album art set for {album_path}")
 
-        except OSError as error:
-            logger.error(f"OSError {(strerror(error.errno))} setting album art with {input_path}", exc_info=True)
-            raise
-        except Exception:
-            logger.exception(f"Exception setting album art for {input_path}", stack_info=True)
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} setting album art for {input_path}", stack_info=True)
             raise
