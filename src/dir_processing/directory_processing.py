@@ -106,7 +106,7 @@ class DirectoryProcessing():
             self.create_csv(csv_filename, data, None, header_row, None)
             logger.info(f"Found {type_count} {file_ext} files")
 
-        except Exception:
+        except Exception as e_error:
             logger.exception("Exception getting files for extension {file_ext} in {start_path}", stack_info=True)
             raise
 
@@ -145,7 +145,7 @@ class DirectoryProcessing():
             else:
                 logger.error(f"OSError setting path {tld_path}", exc_info=True)
                 raise OSError
-        except Exception:
+        except Exception as e_error:
             logger.exception(f"Exception setting path {tld_path}", stack_info=True)
             raise
 
@@ -186,7 +186,7 @@ class DirectoryProcessing():
             csv_file_writer.writerows(sorted_data)
             csv_outfile.close()
 
-        except Exception:
+        except Exception as e_error:
             logger.exception("Exception writing {csv_filename}", stack_info=True)
             raise
 
@@ -217,7 +217,7 @@ class DirectoryProcessing():
 
             txt_outfile.close()
 
-        except Exception:
+        except Exception as e_error:
             logger.exception("Exception writing {txt_path}", stack_info=True)
             raise
 
@@ -319,7 +319,7 @@ class DirectoryProcessing():
 
             print(f"Found {tot_count} total files")
 
-        except Exception:
+        except Exception as e_error:
             logger.exception("Exception getting files for {start_path}", stack_info=True)
             raise
 
@@ -344,7 +344,7 @@ class DirectoryProcessing():
             else:
                 for file_ext in AUDIO_TYPES:
                     self.__ext_file_list(file_ext, start_path)
-        except Exception:
+        except Exception as e_error:
             logger.exception(f"Exception getting file list for files with {file_ext} for {start_path}", stack_info=True)
             raise
 
@@ -365,9 +365,9 @@ class DirectoryProcessing():
                 if file_name in files:
                     dir_path = root
 
-        except Exception:
-            logger.exception("Exception getting directory path for {file_name} and starting path {start_path}", stack_info=True)
-            raise
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting directory path for {file_name} and starting path {start_path}", stack_info=True)
+            raise e_error
         else:
             return dir_path
 
@@ -392,7 +392,7 @@ class DirectoryProcessing():
                 # want the type, not the full extension with the period
                 file_ext = split_extension[1:]
 
-        except Exception:
+        except Exception as e_error:
             logger.exception("Exception getting file extension", stack_info=True)
             raise
         else:
@@ -416,7 +416,7 @@ class DirectoryProcessing():
             music_dir = os.path.join(artist_dirpath, album_dir)
             self.make_dir(music_dir)
 
-        except Exception:
+        except Exception as e_error:
             logger.exception(f"Exception creating music directory {music_dir}", stack_info=True)
             raise
 
@@ -463,7 +463,7 @@ class DirectoryProcessing():
         try:
             shutil.move(file_path, destination_path)
 
-        except Exception:
+        except Exception as e_error:
             logger.exception(f"Exception moving {audio_file} from {os.path.dirname(file_path)} to {destination_dir}", stack_info=True)
             raise
 
@@ -472,7 +472,7 @@ class DirectoryProcessing():
         '''
         @brief Creates export path for audio file conversions and normalizations.
 
-        @details Creates export directory if it doesn't exist.
+        @details Calling function needs to create export directory if it doesn't exist.
 
         @param file_path {str} The full file path for audio file.
         @return export_path {str} The export path, otherwise None.
@@ -543,9 +543,9 @@ class DirectoryProcessing():
             export_name = input_name + export_ext
             export_path = os.path.join(export_dir, export_name)
 
-        except Exception:
-            logger.exception(f"Exception getting export path {file_path}", stack_info=True)
-            raise
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting export path {file_path}", stack_info=True)
+            raise e_error
         else:
             return export_path
 
