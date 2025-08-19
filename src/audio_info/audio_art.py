@@ -391,13 +391,13 @@ class AudioArt():
                         self.extract_album_art(input_file_path)
 
         except Exception as e_error:
-            # @todo rewrite. look in metadata convert_walk for example
             if file_pattern:
-                logger.exception(f"Exception {type(e_error).__name__} walking {start_path} to extract art from {file_pattern} audio files", stack_info=True)
-                raise
+                exc_msg = f"Exception {type(e_error).__name__} walking {start_path} to extract art from {file_pattern} audio files"
             else:
-                logger.exception(f"Exception {type(e_error).__name__} walking {start_path} to extract art from audio files", stack_info=True)
-                raise
+                exc_msg = f"Exception {type(e_error).__name__} walking {start_path} to extract art from audio files"
+
+            logger.exception(exc_msg, stack_info=True)
+            raise
 
 
     def has_video_stream(self, file_path):
