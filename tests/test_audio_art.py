@@ -9,6 +9,7 @@
 # standard modules
 import gc
 import inspect
+import logging
 import os
 import unittest
 from subprocess import CalledProcessError
@@ -100,17 +101,26 @@ class TestAudioArt(unittest.TestCase):
         @brief Tests check for audio stream on non-extant file.
         '''
 
+        # @todo need logging in this def so console doesn't get cluttered
+        # google: python unittest stop logger output from tested function to console
+        original_log_level = logging.getLogger().getEffectiveLevel()
+        logging.disable(logging.CRITICAL)
+
         has_video = None
         input_audio = os.path.join(TESTS_TLD, "Non-extant.wav")
-        # subprocess_utils.subprocess_run throws CalledProcessError
-        # raised to has_video_stream which re-raises it
-        with self.assertRaises(CalledProcessError) as cm:
-            has_video = art.has_video_stream(input_audio)
 
-        self.assertIsNone(has_video)
-        stderr = cm.exception.stderr.strip()
-        expected_err = f"{input_audio}: No such file or directory"
-        self.assertEqual(stderr, expected_err)
+        try:
+            # subprocess_utils.subprocess_run throws CalledProcessError
+            # raised to has_video_stream which re-raises it
+            with self.assertRaises(CalledProcessError) as cm:
+                has_video = art.has_video_stream(input_audio)
+
+            self.assertIsNone(has_video)
+            stderr = cm.exception.stderr.strip()
+            expected_err = f"{input_audio}: No such file or directory"
+            self.assertEqual(stderr, expected_err)
+        finally:
+            logging.disable(original_log_level)
 
 
     def test_has_video_stream_true(self):
