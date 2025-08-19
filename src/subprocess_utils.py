@@ -155,7 +155,7 @@ class SubprocessUtilities():
             )
 
         except CalledProcessError as cp_error:
-            logger.exception(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", stack_info=True)
+            logger.error(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", exc_info=True)
             raise cp_error
         except Exception as e_error:
             logger.exception(f"Exception processing command: {command}", stack_info=True)
