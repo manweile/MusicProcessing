@@ -11,6 +11,8 @@ template_string = """
 
 # standard modules
 import gc
+import inspect
+import logging
 import os
 import unittest
 
@@ -18,28 +20,34 @@ import unittest
 # import ipsumlorem
 
 # local modules
-# from src import AUDIO_EXTS, AUDIO_TYPES
-# from src import EXPORT_TLD
-# from src import FOLDER_ART
-# from src import PLAYLIST_EXTS
-# from src.generated_files import GENERATED_FILES
-# from src.audio_info import AudioArt
-# from src.audio_info import AudioMetadata
-# from src.audio_info import AudioPlaylist
-# from src.audio_normalize import AudioNormalization
-# from src.dir_processing import DirectoryProcessing
+from src import AUDIO_EXTS, AUDIO_TYPES
+from src import EXPORT_TLD
+from src import FOLDER_ART
+from src import PLAYLIST_EXTS
+from src.generated_files import GENERATED_FILES
+from src.errors import JSONOutputError
+from src.errors import MusicProcessingError
+from src.errors import PathInfoError
+from src.errors import PlaylistError
+from src.errors import VideoStreamError
+from src.audio_info import AudioArt
+from src.audio_info import AudioMetadata
+from src.audio_info import AudioPlaylist
+from src.audio_normalize import AudioNormalization
+from src.dir_processing import DirectoryProcessing
 
 gc.enable()
 
 # instantiate module levels vars here
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
+TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 
 # instantiate classes here
-# art = AudioArt()
-# directory = DirectoryProcessing()
-# metadata = AudioMetadata()
-# normalization = AudioNormalization()
-# playlist = AudioPlaylist()
+art = AudioArt()
+directory = DirectoryProcessing()
+metadata = AudioMetadata()
+normalization = AudioNormalization()
+playlist = AudioPlaylist()
 
 
 class ${class_name}(unittest.TestCase):
@@ -55,15 +63,35 @@ class ${class_name}(unittest.TestCase):
         pass
 
 
+def get_method_names(cls):
+    '''
+    @brief Returns a list of names of methods defined within a given class.
+
+    @param cls {Class} The name of the class to get methods list from.
+    @return method_names [{str}] The names of the methods defined in class.
+    '''
+
+    method_names = []
+    for name, obj in inspect.getmembers(cls):
+        if inspect.isfunction(obj) or inspect.ismethod(obj):
+            if name.startswith('test_'):
+                method_names.append(name)
+    return method_names
+
+
+
 if __name__ == \"__main__\":
+    methods = get_method_names(${class_name})
+
     suite = unittest.TestSuite()
-    suite.addTest(${class_name}(\'${def_name}\'))
+    for name in methods:
+        suite.addTest(TestAudioArt(name))
 
     runner = unittest.TextTestRunner(verbosity=${verbosity})
     runner.run(suite)
 """
 
-# @todo argparse this
+# @todo argparse this??
 data = {
     "file_name": "test_my_module",
     "file_brief": "test my module",
