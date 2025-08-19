@@ -321,7 +321,7 @@ class AudioArt():
             raise m_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} extracting m4a art from {file_path}", stack_info=True)
-            raise
+            raise e_error
 
 
     def extract_mp3_art(self, file_path):
@@ -349,7 +349,7 @@ class AudioArt():
             raise m_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} extracting mp3 embedded art from {file_path}", stack_info=True)
-            raise
+            raise e_error
 
 
     def extract_walk(self, start_path, file_pattern):
@@ -397,7 +397,7 @@ class AudioArt():
                 exc_msg = f"Exception {type(e_error).__name__} walking {start_path} to extract art from audio files"
 
             logger.exception(exc_msg, stack_info=True)
-            raise
+            raise e_error
 
 
     def has_video_stream(self, file_path):
@@ -493,4 +493,4 @@ class AudioArt():
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} setting album art for {input_path}", stack_info=True)
-            raise
+            raise e_error
