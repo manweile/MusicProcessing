@@ -10,6 +10,7 @@
 import gc
 import logging
 import os
+from os import strerror
 from pathlib import Path
 
 # local modules
@@ -65,8 +66,10 @@ class AudioPlaylist():
         @details A  extinf tag containing line is in format: #EXTINF:N,<name>.<ext>,
         where N is length of song in seconds, or -1 or 0, and
         @details <ext> is one of mp3, m4a, or wma.
+
         @param line (str) Line of text read from m3u file containing a #EXTINF tag
         @return audio_file {str} Audio file name with extension.
+        @exception PlaylistError Indicates an error occurred in playlist class.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -108,6 +111,7 @@ class AudioPlaylist():
 
         @param tld_path {str} The top level directory where playlist and music files are located.
         @param input_m3u {str} The full file path to playlist needing conversion.
+        @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -156,6 +160,9 @@ class AudioPlaylist():
                                 logger.warning(f"{audio_file} from {input_basename} not found in {tld_path}")
                                 continue
 
+        except OSError as os_error:
+            logger.error(f"OSError {(strerror(os_error.errno))} writing data from {input_m3u} to {export_m3u}", exc_info=True)
+            raise os_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} updating playlist tld_path: {tld_path}, input_m3u: {input_m3u}", stack_info=True)
             raise e_error
@@ -165,7 +172,10 @@ class AudioPlaylist():
 
     def update_walk(self, tld_path):
         '''
-        @todo finish doc header
+        @brief Updates playlists relative pathing.
+
+        @param tld_path {str} The top level directory where playlist and music files are located.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:

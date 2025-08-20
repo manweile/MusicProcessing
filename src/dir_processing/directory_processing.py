@@ -15,7 +15,9 @@ import logging
 import shutil
 import os
 from operator import itemgetter
+from os import strerror
 from pathlib import Path
+from shutil import ExecError
 
 # local modules
 from src import AUDIO_EXTS, AUDIO_TYPES
@@ -54,7 +56,7 @@ class DirectoryProcessing():
 
         @param tld_path {str} Optional, the top level directory path that contains all the music files.
         @return DirectoryProcessing {instance} An instance of the class.
-        @exception OSError An os error.
+        @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -63,13 +65,16 @@ class DirectoryProcessing():
                 if os.path.isdir(tld_path):
                     self._tld_path = tld_path
 
-            except OSError as e:
-                if e.errno == errno.ENOENT:
-                    logger.error(f"Exception: Path {tld_path} not found", exc_info=True)
-                    raise OSError(f"Exception: Path {tld_path} not found")
+            except OSError as os_error:
+                if os_error.errno == errno.ENOENT:
+                    logger.error(f"OSError Path {tld_path} not found", exc_info=True)
+                    raise OSError(f"OSError Path {tld_path} not found")
                 else:
-                    logger.exception(f"Exception setting path {tld_path}", stack_info=True)
-                    raise
+                    logger.error(f"OSError {(strerror(os_error.errno))} setting {tld_path}", exc_info=True)
+                    raise os_error
+            except Exception as e_error:
+                logger.exception(f"Exception {type(e_error).__name__} setting path {tld_path}", stack_info=True)
+                raise e_error
         else:
             pass
 
@@ -130,7 +135,7 @@ class DirectoryProcessing():
         @details The top level directory is expected to exist already.
 
         @param tld_path {str} The top level directory path that contains all the music files.
-        @exception OSError An os path not found or other os error.
+        @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -162,6 +167,7 @@ class DirectoryProcessing():
         @param csv_dir {str} Optional, path for csv file.
         @param header_row [{str}] Optional, the starting row naming fields.
         @param sort_col {int} Optional, the column to sort data on.
+        @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -186,6 +192,9 @@ class DirectoryProcessing():
             csv_file_writer.writerows(sorted_data)
             csv_outfile.close()
 
+        except OSError as os_error:
+            logger.error(f"OSError {(strerror(os_error.errno))} writing data to {csv_path}", exc_info=True)
+            raise os_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__}writing {csv_filename}", stack_info=True)
             raise e_error
@@ -200,7 +209,7 @@ class DirectoryProcessing():
         @param txt_filename {str} Base filename (w/o extension) for text file.
         @param data [{str}] Data to write into txt. Expected to be 1 line per element.
         @param txt_dir {str} Optional path for txt file.
-
+        @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -217,6 +226,9 @@ class DirectoryProcessing():
 
             txt_outfile.close()
 
+        except OSError as os_error:
+            logger.error(f"OSError {(strerror(os_error.errno))} writing data to {txt_path}", exc_info=True)
+            raise os_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} writing {txt_path}", stack_info=True)
             raise e_error
@@ -344,6 +356,7 @@ class DirectoryProcessing():
             else:
                 for file_ext in AUDIO_TYPES:
                     self.__ext_file_list(file_ext, start_path)
+
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting file list for files with {file_ext} for {start_path}", stack_info=True)
             raise e_error
@@ -353,13 +366,14 @@ class DirectoryProcessing():
         '''
         @brief Finds the directory path of a file given its name and a starting search path.
 
-        @param filename (str) The name of the file to find.
         @param start_path (str) The root directory to start from.
+        @param file_name (str) The name of the file to find.
         @return dir_path {str} The directory path for file, None if not found.
         @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         dir_path = None
+
         try:
             for root, dirs, files in os.walk(start_path):
                 if file_name in files:
@@ -408,7 +422,6 @@ class DirectoryProcessing():
 
         @param artist_dirpath {str} The absolute path artist directory the new album directory will be created in.
         @param album_dir {str} The sanitized & validated name of the album for new album directory.
-        @exception OSError An os permission error.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -426,7 +439,7 @@ class DirectoryProcessing():
         @brief Creates a directory.
 
         @param dir_path {str} The path to create.
-        @exception OSError An os permission error.
+        @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -437,13 +450,16 @@ class DirectoryProcessing():
                 logger.info(f"{dir_path} already exists")
                 return
 
-        except Exception as e_error:
-            if e_error.errno == errno.EACCES:
-                logger.error(f"Exception: permission denied for creating {dir_path}", exc_info=True)
-                raise OSError(f"Exception: permission denied for creating {dir_path}")
+        except OSError as os_error:
+            if os_error.errno == errno.EACCES:
+                logger.error(f"OSError permission denied for creating {dir_path}", exc_info=True)
+                raise OSError(f"OSError permission denied for creating {dir_path}")
             else:
-                logger.exception(f"Exception {type(e_error).__name__} creating {dir_path}", stack_info=True)
-                raise e_error
+                logger.error(f"OSError {(strerror(os_error.errno))} making directory with {dir_path}", exc_info=True)
+                raise os_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} creating {dir_path}", stack_info=True)
+            raise e_error
 
 
     def move_audio_file(self, file_path, destination_dir):
@@ -463,6 +479,9 @@ class DirectoryProcessing():
         try:
             shutil.move(file_path, destination_path)
 
+        except ExecError as exc_error:
+            logger.exception(f"ExecError moving {file_path} to {destination_path}", exc_info=True)
+            raise exc_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} moving {audio_file} from {os.path.dirname(file_path)} to {destination_dir}", stack_info=True)
             raise e_error
@@ -559,7 +578,7 @@ class DirectoryProcessing():
         @details Without a start path input, the top level directory MUST have been set.
 
         @param start_path {str} The starting point of the directory walk.
-        @exception OSError An os permission error.
+        @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -596,13 +615,16 @@ class DirectoryProcessing():
 
             logger.info(f"removed {dir_count} empty album directories")
 
-        except Exception as e_error:
-            if e_error.errno == errno.EACCES:
-                logger.error(f"Exception: permission denied for deleting {artist_item_path}", exc_info=True)
-                raise OSError(f"Exception: permission denied for deleting {artist_item_path}")
+        except OSError as os_error:
+            if os_error.errno == errno.EACCES:
+                logger.error(f"OSError permission denied for  deleting {artist_item_path}", exc_info=True)
+                raise OSError(f"OSError permission denied for  deleting {artist_item_path}")
             else:
-                logger.exception(f"Exception {type(e_error).__name__} deleting {artist_item_path}", stack_info=True)
-                raise e_error
+                logger.error(f"OSError {(strerror(os_error.errno))} deleting {artist_item_path}", exc_info=True)
+                raise os_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} deleting {artist_item_path}", stack_info=True)
+            raise e_error
 
 
     def remove_pattern(self, start_path, file_pattern):
@@ -614,7 +636,7 @@ class DirectoryProcessing():
 
         @param start_path {str} Optional, the starting point of the directory walk.
         @param file_pattern {str} The file pattern we want to delete.
-        @exception OSError An os permission error.
+        @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -633,10 +655,13 @@ class DirectoryProcessing():
                         os.remove(file_path)
                         print(f"Deleted: {file_path}")
 
-        except Exception as e_error:
-            if e_error.errno == errno.EACCES:
-                logger.error(f"Exception: permission denied for deleting {file_path}", exc_info=True)
-                raise OSError(f"Exception: permission denied for deleting {file_path}")
+        except OSError as os_error:
+            if os_error.errno == errno.EACCES:
+                logger.error(f"OSError permission denied for  deleting {file_path}", exc_info=True)
+                raise OSError(f"OSError permission denied for  deleting {file_path}")
             else:
-                logger.exception(f"Exception {type(e_error).__name__} deleting file {file_path}", stack_info=True)
-                raise e_error
+                logger.error(f"OSError {(strerror(os_error.errno))} deleting {file_path}", exc_info=True)
+                raise os_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} deleting {file_path}", stack_info=True)
+            raise e_error
