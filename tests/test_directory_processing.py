@@ -9,6 +9,7 @@
 
 # standard modules
 import gc
+import inspect
 import os
 import unittest
 from unittest.mock import patch
@@ -83,12 +84,28 @@ class TestDirectoryProcessing(unittest.TestCase):
         self.assertEqual(path_info, expected_info)
 
 
+def get_method_names(cls):
+    '''
+    @brief Returns a list of names of methods defined within a given class.
+
+    @param cls {Class} The name of the class to get methods list from.
+    @return method_names [{str}] The names of the methods defined in class.
+    '''
+
+    method_names = []
+    for name, obj in inspect.getmembers(cls):
+        if inspect.isfunction(obj) or inspect.ismethod(obj):
+            if name.startswith('test_'):
+                method_names.append(name)
+    return method_names
+
+
 if __name__ == "__main__":
+    methods = get_method_names(TestDirectoryProcessing)
+
     suite = unittest.TestSuite()
-    suite.addTest(TestDirectoryProcessing('test_get_file_directory_none'))
-    suite.addTest(TestDirectoryProcessing('test_get_file_directory'))
-    suite.addTest(TestDirectoryProcessing('test_path_info_not_audio'))
-    suite.addTest(TestDirectoryProcessing('test_path_info'))
+    for name in methods:
+        suite.addTest(TestDirectoryProcessing(name))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
