@@ -84,6 +84,8 @@ class AudioArt():
         @param data {bytearray} The byte attribute data from asf audio WM/Picture tag.
         @return (mime, image_data, type, description) ({str}, {bytes}, {int}, {str}) Tuple containing the MIME type, the raw image data, a type indicator, and
         the image's description.
+        @exception struct.error A struct module error occurred.
+        @exception UnicodeDecodeError An illegal sequence of str characters occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -137,6 +139,8 @@ class AudioArt():
 
         @param file_path {str} The full path to audio file.
         @param image_data {bytearray} The image bytes extracted from audio file.
+        @exception BlockingIOError An input/output operation was blocked.
+        @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -223,7 +227,7 @@ class AudioArt():
         @details Input file is expected to have embedded cover art.
 
         @param file_path {str} The full path to audio file.
-        @exception OSError An os path not found or other os error.
+        @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -296,6 +300,7 @@ class AudioArt():
         @details Input file is expected to have cover art.
 
         @param file_path {str} The full path to audio file.
+        @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -331,6 +336,7 @@ class AudioArt():
         @details Input file is expected to have cover art.
 
         @param file_path {str} The full path to audio file.
+        @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -360,6 +366,7 @@ class AudioArt():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         input_file_ext = None
