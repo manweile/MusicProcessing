@@ -107,7 +107,8 @@ class AudioNormalization():
         output_thresh {str}         | output threshold {str} (numeric)
         normalization_type {str}    | scaling type to apply {str} (alphabetic)
         target_offset {str}         | offset gain applied before true peak limiter {str} (numeric)
-        @exception JSONDecodeError as json decoding error.
+        @exception JSONDecodeError A json decoding error occurred.
+        @exception JSONOutputError Indicates error occurred finding json output.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -148,7 +149,7 @@ class AudioNormalization():
         @details Audio file must be mp3 format, and already processed by convert_file function.
 
         @param file_path {str} The full file path for mp3 audio file.
-        @exception JSONDecodeError as json decoding error.
+        @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -277,9 +278,8 @@ class AudioNormalization():
         @brief Retrieves the bitrate of a media file using ffprobe.
 
         @param file_path (str): The path to the media file.
-
         @return bit_rate {int} The bitrate in bits per second, or None if not found.
-        @exception JSONDecodeError as json decoding error.
+        @exception JSONDecodeError A json decoding error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -322,7 +322,7 @@ class AudioNormalization():
         @param file_path {str} The full path to audio file.
         @return sample_rate {int} The sample rate in Hz, otherwise None.
         @exception IndexError An index error finding audio stream or sample rate information.
-        @exception JSONDecodeError A json decoding error.
+        @exception JSONDecodeError A json decoding error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -374,6 +374,7 @@ class AudioNormalization():
         --------------------|----------------------------------------
         mean_value {str}    |the root mean square volume {float}
         max_volume {str}    |the per-sample maximum volume {float}
+        @exception re.error An error occurred processing a regular expression with re module.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -420,6 +421,7 @@ class AudioNormalization():
 
         @param tld_path {str} The top level directory path that contains all the music files.
         @param norm_type {str} The type of normalization to perform.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -457,6 +459,7 @@ class AudioNormalization():
         @details Audio file must be mp3 format, and already processed by convert_file function.
 
         @param file_path {str} The full file path for mp3 audio file.
+        @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -551,6 +554,7 @@ class AudioNormalization():
         @details Audio file must be mp3 format, and already processed by convert_file function.
 
         @param file_path {str} The full file path for mp3 audio file.
+        @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 

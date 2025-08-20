@@ -180,6 +180,7 @@ class AudioMetadata():
         '''
         @brief Updates tags dictionary with newest year value and ands default disc value if needed.
 
+        @param date_values ({str}) Set of unique YYYY date strings.
         @param id3_tags {dict} Source ID3 tags.
         @return output_tags {dict} Updated ID3 tags.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -213,6 +214,8 @@ class AudioMetadata():
         @details Finally run set_album_art function to ensure a Folder.jpg exists in each album directory.
 
         @param file_path {str} The path for audio file to be converted.
+        @exception MetadataTypeError Indicates a non-standard metadata type was encountered.
+        @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
         data = []
@@ -376,7 +379,7 @@ class AudioMetadata():
         @details Also creates csv of all audio file paths, album metadata values and sanitized album directory names.
 
         @param start_path {str} The tld holding music files.
-        @exception ValueError An inappropriate argument value of correct type error.
+        @exception ValidationError A pathlib module validation error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -482,6 +485,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to audio file.
         @return tags {object} Tag object (one of ID3, MP4Tags, or ASFTags) holding audio file tags or None.
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -510,6 +514,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to m4a audio file.
         @return tag_info {MP4Tags} Tag object holding audio file tag info or None.
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -535,9 +540,11 @@ class AudioMetadata():
         '''
         @brief Returns dictionary with media info.
         @details Uses ffmpeg to get all media info from any valid audio file.
+        @details This def replaces the native pydub mediainfo function.
 
         @param file_path {str} The full path to audio file.
         @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
+        @exception re.error An error occurred processing a regular expression with re module.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -612,6 +619,7 @@ class AudioMetadata():
 
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -655,10 +663,11 @@ class AudioMetadata():
         '''
         @brief Gets media tags.
 
-        @details Uses ffmpeg to get tags from any valid audio file.
+        @details Uses ffprobe to get tags from any valid audio file.
 
         @param file_path {str} The full path to audio file.
         @return media_tags {dict} Media tags from filepath.
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -687,6 +696,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to audio file.
         @return metadata_type {str} The type of the audio file metadata tags or None.
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -718,6 +728,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to mp3 audio file.
         @return tag_info {ID3} Tag object holding audio file tag info or None.
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -806,6 +817,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to wma audio file.
         @return tag_info {ASFTags} Tag object holding audio file tag info or None.
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -833,6 +845,7 @@ class AudioMetadata():
         @brief Gets set of ffprobe keys.
 
         @details Walks from starting path and saves set of unique metadata keys found by ffprobe.
+        @param file_path {str} The starting point of the directory walk.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -872,6 +885,8 @@ class AudioMetadata():
 
         @param file_path {str} The full path to audio file.
         @return has_art {boolean} Returns true if art tag is present, false otherwise.
+        @exception MusicProcessingError A generic music processing error occurred.
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -915,6 +930,8 @@ class AudioMetadata():
 
         @param file_path {str} The full file path for audio file.
         @return audio_file {FileType} Instance for the input audio file type or None.
+        @exception MutagenError A custom exception in Mutagen occurred.
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -947,6 +964,9 @@ class AudioMetadata():
 
         @param file_path {str} The full file path for audio file.
         @return audio_file {FileType} Instance for the input audio file type or None.
+        @exception MusicProcessingError A generic music processing error occurred.
+        @exception MutagenError A custom exception in Mutagen occurred.
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -985,6 +1005,9 @@ class AudioMetadata():
 
         @param file_path {str} The full file path for audio file.
         @return audio_file {FileType} Instance for the input audio file type or None.
+        @exception MusicProcessingError A generic music processing error occurred.
+        @exception MutagenError A custom exception in Mutagen occurred.
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -1022,6 +1045,9 @@ class AudioMetadata():
 
         @param file_path {str} The full file path for audio file.
         @return audio_file {FileType} Instance for the input audio file type or None.
+        @exception MusicProcessingError A generic music processing error occurred.
+        @exception MutagenError A custom exception in Mutagen occurred.
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
