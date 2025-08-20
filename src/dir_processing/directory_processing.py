@@ -66,7 +66,7 @@ class DirectoryProcessing():
             except OSError as e:
                 if e.errno == errno.ENOENT:
                     logger.error(f"Exception: Path {tld_path} not found", exc_info=True)
-                    raise OSError
+                    raise OSError(f"Exception: Path {tld_path} not found")
                 else:
                     logger.exception(f"Exception setting path {tld_path}", stack_info=True)
                     raise
@@ -107,8 +107,8 @@ class DirectoryProcessing():
             logger.info(f"Found {type_count} {file_ext} files")
 
         except Exception as e_error:
-            logger.exception("Exception getting files for extension {file_ext} in {start_path}", stack_info=True)
-            raise
+            logger.exception(f"Exception {type(e_error).__name__} getting files for extension {file_ext} in {start_path}", stack_info=True)
+            raise e_error
 
 
     @property
@@ -141,13 +141,13 @@ class DirectoryProcessing():
         except OSError as e:
             if e.errno == errno.ENOENT:
                 logger.error(f"OSError path {tld_path} not found", exc_info=True)
-                raise OSError
+                raise OSError(f"OSError path {tld_path} not found")
             else:
                 logger.error(f"OSError setting path {tld_path}", exc_info=True)
-                raise OSError
+                raise OSError(f"OSError setting path {tld_path}")
         except Exception as e_error:
-            logger.exception(f"Exception setting path {tld_path}", stack_info=True)
-            raise
+            logger.exception(f"Exception {type(e_error).__name__} setting path {tld_path}", stack_info=True)
+            raise e_error
 
 
     def create_csv(self, csv_filename, data, csv_dir=None, header_row=None, sort_col=None):
@@ -187,8 +187,8 @@ class DirectoryProcessing():
             csv_outfile.close()
 
         except Exception as e_error:
-            logger.exception("Exception writing {csv_filename}", stack_info=True)
-            raise
+            logger.exception(f"Exception {type(e_error).__name__}writing {csv_filename}", stack_info=True)
+            raise e_error
 
 
     def create_txt(self, txt_filename, data, txt_dir=None):
@@ -218,8 +218,8 @@ class DirectoryProcessing():
             txt_outfile.close()
 
         except Exception as e_error:
-            logger.exception("Exception writing {txt_path}", stack_info=True)
-            raise
+            logger.exception(f"Exception {type(e_error).__name__} writing {txt_path}", stack_info=True)
+            raise e_error
 
 
     def get_audio_file_list(self, start_path):
@@ -320,8 +320,8 @@ class DirectoryProcessing():
             print(f"Found {tot_count} total files")
 
         except Exception as e_error:
-            logger.exception("Exception getting files for {start_path}", stack_info=True)
-            raise
+            logger.exception(f"Exception {type(e_error).__name__} getting files for {start_path}", stack_info=True)
+            raise e_error
 
 
     def get_ext_file_list(self, file_ext, start_path):
@@ -345,8 +345,8 @@ class DirectoryProcessing():
                 for file_ext in AUDIO_TYPES:
                     self.__ext_file_list(file_ext, start_path)
         except Exception as e_error:
-            logger.exception(f"Exception getting file list for files with {file_ext} for {start_path}", stack_info=True)
-            raise
+            logger.exception(f"Exception {type(e_error).__name__} getting file list for files with {file_ext} for {start_path}", stack_info=True)
+            raise e_error
 
 
     def get_file_directory(self, start_path, file_name):
@@ -393,8 +393,8 @@ class DirectoryProcessing():
                 file_ext = split_extension[1:]
 
         except Exception as e_error:
-            logger.exception("Exception getting file extension", stack_info=True)
-            raise
+            logger.exception(f"Exception {type(e_error).__name__} getting file extension", stack_info=True)
+            raise e_error
         else:
             return file_ext
 
@@ -417,8 +417,8 @@ class DirectoryProcessing():
             self.make_dir(music_dir)
 
         except Exception as e_error:
-            logger.exception(f"Exception creating music directory {music_dir}", stack_info=True)
-            raise
+            logger.exception(f"Exception {type(e_error).__name__} creating music directory {music_dir}", stack_info=True)
+            raise e_error
 
 
     def make_dir(self, dir_path):
@@ -437,13 +437,13 @@ class DirectoryProcessing():
                 logger.info(f"{dir_path} already exists")
                 return
 
-        except Exception as e:
-            if e.errno == errno.EACCES:
+        except Exception as e_error:
+            if e_error.errno == errno.EACCES:
                 logger.error(f"Exception: permission denied for creating {dir_path}", exc_info=True)
-                raise OSError
+                raise OSError(f"Exception: permission denied for creating {dir_path}")
             else:
-                logger.exception(f"Exception creating {dir_path}", stack_info=True)
-                raise
+                logger.exception(f"Exception {type(e_error).__name__} creating {dir_path}", stack_info=True)
+                raise e_error
 
 
     def move_audio_file(self, file_path, destination_dir):
@@ -464,8 +464,8 @@ class DirectoryProcessing():
             shutil.move(file_path, destination_path)
 
         except Exception as e_error:
-            logger.exception(f"Exception moving {audio_file} from {os.path.dirname(file_path)} to {destination_dir}", stack_info=True)
-            raise
+            logger.exception(f"Exception {type(e_error).__name__} moving {audio_file} from {os.path.dirname(file_path)} to {destination_dir}", stack_info=True)
+            raise e_error
 
 
     def path_info(self, file_path):
@@ -488,6 +488,7 @@ class DirectoryProcessing():
 
             input_ext = input_path.suffix
             if input_ext.lower() not in AUDIO_EXTS:
+                logger.warning(f"File {input_path} is not in {AUDIO_TYPES}")
                 return None
 
             r'''
@@ -595,13 +596,13 @@ class DirectoryProcessing():
 
             logger.info(f"removed {dir_count} empty album directories")
 
-        except Exception as e:
-            if e.errno == errno.EACCES:
+        except Exception as e_error:
+            if e_error.errno == errno.EACCES:
                 logger.error(f"Exception: permission denied for deleting {artist_item_path}", exc_info=True)
-                raise OSError
+                raise OSError(f"Exception: permission denied for deleting {artist_item_path}")
             else:
-                logger.exception(f"Exception deleting {artist_item_path}", stack_info=True)
-                raise
+                logger.exception(f"Exception {type(e_error).__name__} deleting {artist_item_path}", stack_info=True)
+                raise e_error
 
 
     def remove_pattern(self, start_path, file_pattern):
@@ -632,10 +633,10 @@ class DirectoryProcessing():
                         os.remove(file_path)
                         print(f"Deleted: {file_path}")
 
-        except Exception as e:
-            if e.errno == errno.EACCES:
+        except Exception as e_error:
+            if e_error.errno == errno.EACCES:
                 logger.error(f"Exception: permission denied for deleting {file_path}", exc_info=True)
-                raise OSError
+                raise OSError(f"Exception: permission denied for deleting {file_path}")
             else:
-                logger.exception(f"Exception deleting file {file_path}", stack_info=True)
-                raise
+                logger.exception(f"Exception {type(e_error).__name__} deleting file {file_path}", stack_info=True)
+                raise e_error
