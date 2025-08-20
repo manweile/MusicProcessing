@@ -153,6 +153,7 @@ class AudioArt():
                 with open(output_file, 'wb') as img_file:
                     img_file.write(image_data)
 
+
                 logger.info(f"Album art written from {input_path.name} and saved to {album_path}")
 
         except BlockingIOError as bio_error:
@@ -162,7 +163,7 @@ class AudioArt():
             logger.error(f"OSError {(strerror(os_error.errno))} writing data with {file_path}", exc_info=True)
             raise os_error
         except Exception as e_error:
-            logger.exception(f"Exception writing image data from {file_path}", stack_info=True)
+            logger.exception(f"Exception {type(e_error).__name__} writing image data from {file_path}", stack_info=True)
             raise e_error
 
 
@@ -416,7 +417,7 @@ class AudioArt():
 
         @param file_path {str} The full path to audio file.
         @return has_video {boolean} Returns true if video stream is present, false otherwise.
-        @exception JSONDecodeError A json decoding error.
+        @exception JSONDecodeError A json decoding error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
