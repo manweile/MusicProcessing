@@ -66,7 +66,31 @@ class TestAudioArt(unittest.TestCase):
                 os.remove(jpg)
 
 
-    def test_extract_album_art(self):
+    def test_extract_album_art_no_tag(self):
+        '''
+        @brief Test try to extract art from audio file with no metadata tags at all.
+        '''
+
+        input_audio = SRC_NO_TAG_MP3
+        art.extract_album_art(input_audio)
+        art_exists = os.path.exists(EXPECTED_NO_TAG_MP3_JPG)
+        self.assertFalse(art_exists)
+
+
+    def test_extract_album_art_with_stream(self):
+        '''
+        @brief Tests if album art is extracted from audio file.
+
+        @details Uses wma audio without a stream to ensure secondary (mutagen) extraction method is used.
+        '''
+
+        input_audio = SRC_WMA
+        art.extract_album_art(input_audio)
+        has_jpg = os.path.exists(EXPECTED_WMA_JPG)
+        self.assertTrue(has_jpg)
+
+
+    def test_extract_album_art_without_stream(self):
         '''
         @brief Tests if album art is extracted from audio file.
 
@@ -77,17 +101,6 @@ class TestAudioArt(unittest.TestCase):
         art.extract_album_art(input_audio)
         has_jpg = os.path.exists(EXPECTED_NO_STREAM_JPG)
         self.assertTrue(has_jpg)
-
-
-    def test_extract_album_art_no_tag(self):
-        '''
-        @brief Test try to extract art from audio file with no metadata tags at all.
-        '''
-
-        input_audio = SRC_NO_TAG_MP3
-        art.extract_album_art(input_audio)
-        art_exists = os.path.exists(EXPECTED_NO_TAG_MP3_JPG)
-        self.assertFalse(art_exists)
 
 
     def test_extract_asf_art(self):
