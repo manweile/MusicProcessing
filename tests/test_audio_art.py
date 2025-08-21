@@ -29,12 +29,17 @@ EXPECTED_MP3_JPG = os.path.join(TESTS_TLD, "Crush", "Here", FOLDER_ART)
 EXPECTED_M4A_JPG = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", FOLDER_ART)
 EXPECTED_NO_STREAM_JPG = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", FOLDER_ART)
 EXPECTED_WMA_JPG = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART)
+
 EXPECTED_JPGS = [EXPECTED_MP3_JPG, EXPECTED_M4A_JPG, EXPECTED_NO_STREAM_JPG, EXPECTED_WMA_JPG]
+
+SRC_NO_TAG_MP3 = os.path.join(TESTS_TLD, "Test_Crush-Live.mp3")
+EXPECTED_NO_TAG_MP3_JPG = os.path.join(TESTS_TLD, FOLDER_ART)
 
 SRC_MP3 = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
 SRC_M4A = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
+SRC_NO_STREAM_WMA = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
 SRC_WMA = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", "Elton John-Saturday Night's Alright for Fighting.wma")
-NO_STREAM_WMA = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
+
 
 art = AudioArt()
 
@@ -68,10 +73,21 @@ class TestAudioArt(unittest.TestCase):
         @details Uses wma audio without a stream to ensure secondary (mutagen) extraction method is used.
         '''
 
-        input_audio = NO_STREAM_WMA
+        input_audio = SRC_NO_STREAM_WMA
         art.extract_album_art(input_audio)
         has_jpg = os.path.exists(EXPECTED_NO_STREAM_JPG)
         self.assertTrue(has_jpg)
+
+
+    def test_extract_album_art_no_tag(self):
+        '''
+        @brief Test try to extract art from audio file with no metadata tags at all.
+        '''
+
+        input_audio = SRC_NO_TAG_MP3
+        art.extract_album_art(input_audio)
+        art_exists = os.path.exists(EXPECTED_NO_TAG_MP3_JPG)
+        self.assertFalse(art_exists)
 
 
     def test_extract_asf_art(self):
@@ -112,7 +128,7 @@ class TestAudioArt(unittest.TestCase):
         @brief Tests if audio file does not have video stream.
         '''
 
-        input_audio = NO_STREAM_WMA
+        input_audio = SRC_NO_STREAM_WMA
         has_video = art.has_video_stream(input_audio)
         self.assertFalse(has_video)
 
