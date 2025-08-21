@@ -213,7 +213,7 @@ class AudioArt():
                 elif input_file_ext.lower() == AUDIO_EXTS[2]:
                     self.extract_asf_art(file_path)
             else:
-                logger.warning(f"No metadata tag album art present in {file_path}")
+                logger.warning(f"No album art present in {file_path}")
                 return
 
         except Exception as e_error:
