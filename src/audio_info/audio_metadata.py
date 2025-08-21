@@ -886,7 +886,6 @@ class AudioMetadata():
         @param file_path {str} The full path to audio file.
         @return has_art {boolean} Returns true if art tag is present, false otherwise.
         @exception MusicProcessingError A generic music processing error occurred.
-        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -901,8 +900,8 @@ class AudioMetadata():
             audio_tags = self.get_any_tags(file_path)
 
             if audio_tags is None:
-                logger.error(f"ValueError getting tags: {file_name} returned None", exc_info=True)
-                raise ValueError(f"ValueError getting tags: {file_name} returned None")
+                logger.warning(f"No metadata tags present in {file_name}")
+                return False
 
             if 'WM/Picture' in audio_tags:
                 has_art = True          # ASF/wma
@@ -910,11 +909,12 @@ class AudioMetadata():
                 has_art = True          # MP4/m4a
             elif 'APIC:' in audio_tags:
                 has_art = True          # ID3/mp3
+            else:
+                logger.warning(f"No metadata art tag present in {file_name}")
+                return False
 
         except MusicProcessingError as mp_error:
             raise mp_error
-        except ValueError as v_error:
-            raise v_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} checking for album art tag in file {file_path}", stack_info=True)
             raise e_error
