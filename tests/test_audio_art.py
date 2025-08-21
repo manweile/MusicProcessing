@@ -61,17 +61,6 @@ class TestAudioArt(unittest.TestCase):
                 os.remove(jpg)
 
 
-    def test_extract_asf_art(self):
-        '''
-        @brief Tests if album art is extracted from wma/asf audio file.
-        '''
-
-        input_audio = SRC_WMA
-        art.extract_asf_art(input_audio)
-        art_exists = os.path.exists(EXPECTED_WMA_JPG)
-        self.assertTrue(art_exists)
-
-
     def test_extract_album_art(self):
         '''
         @brief Tests if album art is extracted from audio file.
@@ -85,12 +74,37 @@ class TestAudioArt(unittest.TestCase):
         self.assertTrue(has_jpg)
 
 
-    # @todo
-    # def test_extract_mp3_art
+    def test_extract_asf_art(self):
+        '''
+        @brief Tests if album art is extracted from wma/asf audio file.
+        '''
+
+        input_audio = SRC_WMA
+        art.extract_asf_art(input_audio)
+        art_exists = os.path.exists(EXPECTED_WMA_JPG)
+        self.assertTrue(art_exists)
 
 
-    # @todo
-    # def test_extract_m4a_art
+    def test_extract_m4a_art(self):
+        '''
+        @brief Tests if album art is extracted from m4a audio file.
+        '''
+
+        input_audio = SRC_M4A
+        art.extract_m4a_art(input_audio)
+        art_exists = os.path.exists(EXPECTED_M4A_JPG)
+        self.assertTrue(art_exists)
+
+
+    def test_extract_mp3_art(self):
+        '''
+        @brief Tests if album art is extracted from mp3 audio file.
+        '''
+
+        input_audio = SRC_MP3
+        art.extract_mp3_art(input_audio)
+        art_exists = os.path.exists(EXPECTED_MP3_JPG)
+        self.assertTrue(art_exists)
 
 
     def test_has_video_stream_false(self):
