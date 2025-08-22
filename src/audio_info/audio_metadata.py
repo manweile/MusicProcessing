@@ -899,18 +899,16 @@ class AudioMetadata():
 
             audio_tags = self.get_any_tags(file_path)
 
-            if audio_tags is None:
-                logger.warning(f"No metadata tags present in {file_name}")
-                return False
-
-            if 'WM/Picture' in audio_tags:
-                has_art = True          # ASF/wma
-            elif 'covr' in audio_tags:
-                has_art = True          # MP4/m4a
-            elif 'APIC:' in audio_tags:
-                has_art = True          # ID3/mp3
+            if audio_tags is not None:
+                if 'APIC:' in audio_tags:
+                    has_art = True          # ID3/mp3
+                elif 'covr' in audio_tags:
+                    has_art = True          # MP4/m4a
+                elif 'WM/Picture' in audio_tags:
+                    has_art = True          # ASF/wma
+                else:
+                    return False
             else:
-                logger.warning(f"No metadata art tag present in {file_name}")
                 return False
 
         except MusicProcessingError as mp_error:
