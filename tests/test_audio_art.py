@@ -13,6 +13,7 @@ import logging
 import os
 import unittest
 from pathlib import Path
+from subprocess import CalledProcessError
 from unittest.mock import patch
 
 # local modules
@@ -26,26 +27,23 @@ gc.enable()
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 
-EXPECTED_MP3_JPG = os.path.join(TESTS_TLD, "Crush", "Here", FOLDER_ART)
 EXPECTED_M4A_JPG = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", FOLDER_ART)
+EXPECTED_MP3_JPG = os.path.join(TESTS_TLD, "Crush", "Here", FOLDER_ART)
 EXPECTED_NO_STREAM_JPG = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", FOLDER_ART)
+EXPECTED_NO_TAG_MP3_JPG = os.path.join(TESTS_TLD, FOLDER_ART)
 EXPECTED_WMA_JPG = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART)
 
 EXPECTED_JPGS = [EXPECTED_MP3_JPG, EXPECTED_M4A_JPG, EXPECTED_NO_STREAM_JPG, EXPECTED_WMA_JPG]
 
 INPUT_M3U = os.path.join(TESTS_TLD, "test.m3u")
 
-SRC_NO_TAG_MP3 = os.path.join(TESTS_TLD, "Test_Crush-Live.mp3")
-EXPECTED_NO_TAG_MP3_JPG = os.path.join(TESTS_TLD, FOLDER_ART)
-
 SRC_HAS_JPG_AUDIO = os.path.join(TESTS_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 SRC_HAS_JPG_PATH = os.path.join(TESTS_TLD, "Abba", "Waterloo")
-
 SRC_MP3 = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
 SRC_M4A = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
 SRC_NO_STREAM_WMA = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
+SRC_NO_TAG_MP3 = os.path.join(TESTS_TLD, "Test_Crush-Live.mp3")
 SRC_WMA = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", "Elton John-Saturday Night's Alright for Fighting.wma")
-
 
 art = AudioArt()
 
@@ -94,7 +92,6 @@ class TestAudioArt(unittest.TestCase):
         input_path = Path(input_audio)
         art.extract_album_art(input_audio)
         mock_warning.assert_called_once_with(f"{input_path.name} is not an audio file")
-
 
     # per https://stackoverflow.com/questions/15763394/mocking-two-functions-with-patch-for-a-unit-test
     # the order of stacked patch decorators and calls to the matching assert_called_once_with matter,
@@ -167,6 +164,29 @@ class TestAudioArt(unittest.TestCase):
         art.extract_ffmpeg_art(input_audio)
         art_exists = os.path.exists(EXPECTED_MP3_JPG)
         self.assertTrue(art_exists)
+
+
+    def test_extract_ffmpeg_art_no_stream(self):
+        '''
+        @brief Tests if album art is extracted from audio file without video stream.
+
+        @details Expected to throw CalledProcessError.
+        '''
+
+        input_audio = SRC_NO_STREAM_WMA
+
+        logging.disable(logging.ERROR)
+
+        try:
+            with self.assertRaises(CalledProcessError) as cm:
+                art.extract_ffmpeg_art(input_audio)
+
+            art_exists = os.path.exists(EXPECTED_NO_STREAM_JPG)
+            self.assertFalse(art_exists)
+            # 234 is ffmpeg saying no video stream present
+            self.assertEqual(cm.exception.returncode, 234)
+        finally:
+            logging.disable(original_log_level)
 
 
     def test_extract_m4a_art(self):
