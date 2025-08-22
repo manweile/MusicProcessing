@@ -183,8 +183,8 @@ class TestAudioArt(unittest.TestCase):
 
             art_exists = os.path.exists(EXPECTED_NO_STREAM_JPG)
             self.assertFalse(art_exists)
-            # 234 is ffmpeg saying no video stream present
-            self.assertEqual(cm.exception.returncode, 234)
+            # Invalid argument is ffmpeg saying no video stream present
+            self.assertTrue("Invalid argument" in cm.exception.stderr.strip())
         finally:
             logging.disable(original_log_level)
 
@@ -220,35 +220,6 @@ class TestAudioArt(unittest.TestCase):
         has_video = art.has_video_stream(input_audio)
         self.assertFalse(has_video)
 
-    # @todo move this to subprocess_util test suite and modify for running from there.
-    # def test_has_video_stream_non_extant(self):
-    #     '''
-    #     @brief Tests check for audio stream on non-extant file.
-    #     '''
-
-    #     '''
-    #     subprocess_utils.subprocess_run will throw CalledProcessError,
-    #     which is raised to it's calling functions, like has_video_stream.
-    #     Don't want the console output cluttered up,
-    #     so we disable the logging at & below ERROR,
-    #     which is what subprocess_run specifies for logging.
-    #     '''
-    #     logging.disable(logging.ERROR)
-
-    #     has_video = None
-    #     input_audio = os.path.join(TESTS_TLD, "Non-extant.wav")
-
-    #     try:
-    #         with self.assertRaises(CalledProcessError) as cm:
-    #             has_video = art.has_video_stream(input_audio)
-
-    #         self.assertIsNone(has_video)
-    #         stderr = cm.exception.stderr.strip()
-    #         expected_err = f"{input_audio}: No such file or directory"
-    #         self.assertEqual(stderr, expected_err)
-    #     finally:
-    #         logging.disable(original_log_level)
-
 
     def test_has_video_stream_true(self):
         '''
@@ -258,6 +229,15 @@ class TestAudioArt(unittest.TestCase):
         input_audio = SRC_MP3
         has_video = art.has_video_stream(input_audio)
         self.assertTrue(has_video)
+
+
+    @unittest.skip("Skip until code written")
+    def test_has_video_stream_json_fail(self):
+        '''
+        @brief Tests if audio file with album art video stream fails json decoding.
+        '''
+
+        pass
 
 
 def get_method_names(cls):
