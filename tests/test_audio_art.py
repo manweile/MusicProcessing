@@ -12,7 +12,8 @@ import inspect
 import logging
 import os
 import unittest
-from subprocess import CalledProcessError
+from pathlib import Path
+from unittest.mock import patch
 
 # local modules
 from src import EXPORT_TLD
@@ -32,8 +33,13 @@ EXPECTED_WMA_JPG = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick R
 
 EXPECTED_JPGS = [EXPECTED_MP3_JPG, EXPECTED_M4A_JPG, EXPECTED_NO_STREAM_JPG, EXPECTED_WMA_JPG]
 
+INPUT_M3U = os.path.join(TESTS_TLD, "test.m3u")
+
 SRC_NO_TAG_MP3 = os.path.join(TESTS_TLD, "Test_Crush-Live.mp3")
 EXPECTED_NO_TAG_MP3_JPG = os.path.join(TESTS_TLD, FOLDER_ART)
+
+SRC_HAS_JPG_AUDIO = os.path.join(TESTS_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+SRC_HAS_JPG_PATH = os.path.join(TESTS_TLD, "Abba", "Waterloo")
 
 SRC_MP3 = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
 SRC_M4A = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
@@ -66,22 +72,55 @@ class TestAudioArt(unittest.TestCase):
                 os.remove(jpg)
 
 
-    def test_extract_album_art_no_tag(self):
+    @patch('src.audio_info.audio_art.logger.info')
+    def test_extract_album_art_folder_exists(self, mock_warning):
         '''
-        @brief Test try to extract art from audio file with no metadata tags at all.
+        brief Test Try to extract album art from file that already has co-located Folder.jpg file.
+        '''
+
+        input_audio = SRC_HAS_JPG_AUDIO
+        album_path = Path(input_audio).parent
+        art.extract_album_art(input_audio)
+        mock_warning.assert_called_once_with(f"{album_path} has a {FOLDER_ART}")
+
+
+    @patch('src.audio_info.audio_art.logger.info')
+    def test_extract_album_art_invalid_audio(self, mock_warning):
+        '''
+        @brief Tests Try to extract album art from non-valid file.
+        '''
+
+        input_audio = INPUT_M3U
+        input_path = Path(input_audio)
+        art.extract_album_art(input_audio)
+        mock_warning.assert_called_once_with(f"{input_path.name} is not an audio file")
+
+
+    # per https://stackoverflow.com/questions/15763394/mocking-two-functions-with-patch-for-a-unit-test
+    # the order of patch decorators and the assert_called_once_with calls matter
+    @patch('src.audio_info.audio_art.logger.warning')
+    @patch('src.audio_info.audio_art.logger.info')
+    def test_extract_album_art_no_tag_or_stream(self, mock_info, mock_warning):
+        '''
+        @brief Test try to extract art from audio file with no stream or metadata tags at all.
+
+        @details This a complete no result test, as the function has 2 possible extraction methods,
+        ffmpeg (first), mutagen (backup).
         '''
 
         input_audio = SRC_NO_TAG_MP3
         art.extract_album_art(input_audio)
         art_exists = os.path.exists(EXPECTED_NO_TAG_MP3_JPG)
         self.assertFalse(art_exists)
+        mock_info.assert_called_once_with(f"No video stream album art present in {input_audio}")
+        mock_warning.assert_called_once_with(f"No album art present in {input_audio}")
 
 
-    def test_extract_album_art_with_stream(self):
+    def test_extract_album_art_with_stream_and_tag(self):
         '''
         @brief Tests if album art is extracted from audio file.
 
-        @details Uses wma audio without a stream to ensure secondary (mutagen) extraction method is used.
+        @details Happy path test case.
         '''
 
         input_audio = SRC_WMA
@@ -90,7 +129,7 @@ class TestAudioArt(unittest.TestCase):
         self.assertTrue(has_jpg)
 
 
-    def test_extract_album_art_without_stream(self):
+    def test_extract_album_art_without_stream_with_tag(self):
         '''
         @brief Tests if album art is extracted from audio file.
 
@@ -111,6 +150,17 @@ class TestAudioArt(unittest.TestCase):
         input_audio = SRC_WMA
         art.extract_asf_art(input_audio)
         art_exists = os.path.exists(EXPECTED_WMA_JPG)
+        self.assertTrue(art_exists)
+
+
+    def test_extract_ffmpeg_art(self):
+        '''
+        @brief Tests if album art is extracted from m4a audio file.
+        '''
+
+        input_audio = SRC_MP3
+        art.extract_ffmpeg_art(input_audio)
+        art_exists = os.path.exists(EXPECTED_MP3_JPG)
         self.assertTrue(art_exists)
 
 
@@ -145,34 +195,34 @@ class TestAudioArt(unittest.TestCase):
         has_video = art.has_video_stream(input_audio)
         self.assertFalse(has_video)
 
+    # @todo move this to subprocess_util test suite and modify for running from there.
+    # def test_has_video_stream_non_extant(self):
+    #     '''
+    #     @brief Tests check for audio stream on non-extant file.
+    #     '''
 
-    def test_has_video_stream_non_extant(self):
-        '''
-        @brief Tests check for audio stream on non-extant file.
-        '''
+    #     '''
+    #     subprocess_utils.subprocess_run will throw CalledProcessError,
+    #     which is raised to it's calling functions, like has_video_stream.
+    #     Don't want the console output cluttered up,
+    #     so we disable the logging at & below ERROR,
+    #     which is what subprocess_run specifies for logging.
+    #     '''
+    #     logging.disable(logging.ERROR)
 
-        '''
-        subprocess_utils.subprocess_run will throw CalledProcessError,
-        which is raised to it's calling functions, like has_video_stream.
-        Don't want the console output cluttered up,
-        so we disable the logging at & below ERROR,
-        which is what subprocess_run specifies for logging.
-        '''
-        logging.disable(logging.ERROR)
+    #     has_video = None
+    #     input_audio = os.path.join(TESTS_TLD, "Non-extant.wav")
 
-        has_video = None
-        input_audio = os.path.join(TESTS_TLD, "Non-extant.wav")
+    #     try:
+    #         with self.assertRaises(CalledProcessError) as cm:
+    #             has_video = art.has_video_stream(input_audio)
 
-        try:
-            with self.assertRaises(CalledProcessError) as cm:
-                has_video = art.has_video_stream(input_audio)
-
-            self.assertIsNone(has_video)
-            stderr = cm.exception.stderr.strip()
-            expected_err = f"{input_audio}: No such file or directory"
-            self.assertEqual(stderr, expected_err)
-        finally:
-            logging.disable(original_log_level)
+    #         self.assertIsNone(has_video)
+    #         stderr = cm.exception.stderr.strip()
+    #         expected_err = f"{input_audio}: No such file or directory"
+    #         self.assertEqual(stderr, expected_err)
+    #     finally:
+    #         logging.disable(original_log_level)
 
 
     def test_has_video_stream_true(self):
