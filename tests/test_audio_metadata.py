@@ -111,7 +111,7 @@ WIN_RESULT = {
         'MusicBrainz Album Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f',
         'MusicBrainz Release Group Id': 'a7927f70-2431-3a58-b7ae-48576808cec1',
         'date': '2002'},
-    'filename': 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3',
+    'filename': 'd:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3',
     'nb_streams': '2', 'nb_programs': '0', 'nb_stream_groups': '0',
     'format_name': 'mp3', 'format_long_name': 'MP2/3 (MPEG audio layer 2/3)',
     'size': '3970122',
@@ -146,6 +146,7 @@ class TestAudioMetadata(unittest.TestCase):
             expected_info = WIN_RESULT
 
         results_info = metadata.get_media_info_dict(MP3_PATH)
+        self.maxDiff = None
         self.assertDictEqual(results_info, expected_info)
 
 
