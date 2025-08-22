@@ -86,7 +86,7 @@ if __name__ == \"__main__\":
 
     suite = unittest.TestSuite()
     for name in methods:
-        suite.addTest(${class_name}(\'${def_name}\'))
+        suite.addTest(${class_name}(name))
 
     runner = unittest.TextTestRunner(verbosity=${verbosity})
     runner.run(suite)

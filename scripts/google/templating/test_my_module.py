@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     suite = unittest.TestSuite()
     for name in methods:
-        suite.addTest(TestMyClass('test_my_function'))
+        suite.addTest(TestMyClass(name))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
