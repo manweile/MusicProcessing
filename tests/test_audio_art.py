@@ -163,7 +163,9 @@ class TestAudioArt(unittest.TestCase):
 
     def test_extract_ffmpeg_art_no_stream(self):
         '''
-        @brief Tests if album art is extracted from m4a audio file.
+        @brief Tests if album art is extracted from audio file without video stream.
+
+        @details Expected to throw CalledProcessError.
         '''
 
         input_audio = SRC_NO_STREAM_WMA
