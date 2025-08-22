@@ -97,7 +97,12 @@ class TestAudioArt(unittest.TestCase):
 
 
     # per https://stackoverflow.com/questions/15763394/mocking-two-functions-with-patch-for-a-unit-test
-    # the order of patch decorators and the assert_called_once_with calls matter
+    # the order of stacked patch decorators and calls to the matching assert_called_once_with matter,
+    # and its FILO (first in, last out)
+    # so if a warning is 1st patch, then the same warning has to be last assert
+    # the declaration order in signature doesn't matter though
+
+
     @patch('src.audio_info.audio_art.logger.warning')
     @patch('src.audio_info.audio_art.logger.info')
     def test_extract_album_art_no_tag_or_stream(self, mock_info, mock_warning):
