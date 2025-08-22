@@ -25,15 +25,25 @@ project command line defs:
     audio info module
             audio art module
                 set up:
-                    tld/artists/albums with mix of mp3, m4a, wma ???
-                extract_file(file_path)
-                    test cases:
-                        non-extant audio file                       - use something like C:\MusicProcessing\tests\Music\<artist>\<album>\doesnotexist.mp3
-                        a *.wav file                                - will need to create, pick a mp3 w stream & art tag and convert to wav
-                        audio file w/o art tag w/o video stream     - will need to create, save in approp C:\MusicProcessing\tests\Music\<artist>\<album>
-                        audio file w/o art tag w video stream       - will need to create, save in approp C:\MusicProcessing\tests\Music\<artist>\<album>
-                        audio file file w art tag w/o video stream  - Billie Holiday-Georgia On My Mind.wma, save in approp C:\MusicProcessing\tests\Music\<artist>\<album>
-                        audio file w art tag w video stream         - find one example of all 3 types, save in approp C:\MusicProcessing\tests\Music\<artist>\<album>
+                    tld/artists/albums with mix of mp3, m4a, wma
+                defs:
+                    __unpack_asf_image
+                    __write_data                                - gets called by extract_asf_art/m4a/mp3_art so no explicit test needed
+                    extract_album_art
+                    extract_asf_art
+                    extract_ffmpeg_art
+                    extract_m4a_art
+                    extract_mp3_art
+                    extract_walk
+                    has_video_stream
+                    set_album_art
+                test cases:
+                    non-extant audio file                       - use something like C:\MusicProcessing\tests\Music\<artist>\<album>\doesnotexist.mp3
+                    a *.wav file                                - will need to create, pick a mp3 w stream & art tag and convert to wav
+                    audio file w/o art tag w/o video stream     - will need to create, save in approp C:\MusicProcessing\tests\Music\<artist>\<album>
+                    audio file w/o art tag w video stream       - will need to create, save in approp C:\MusicProcessing\tests\Music\<artist>\<album>
+                    audio file file w art tag w/o video stream  - Billie Holiday-Georgia On My Mind.wma, save in approp C:\MusicProcessing\tests\Music\<artist>\<album>
+                    audio file w art tag w video stream         - find one example of all 3 types, save in approp C:\MusicProcessing\tests\Music\<artist>\<album>
                 extract_walk(tld_path, file_pattern)
                     test cases:
                         non-extant tld                              - something like "C:\DoesNotExist and /home/gerald/DoesNotExist
