@@ -1,102 +1,38 @@
-# this workflow is based on https://github.com/slhck/ffmpeg-normalize/blob/master/.github/workflows/python-package.yml
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Music Processing
+name: MusicProcessing
 
 on:
   push:
-    branches: [ development ]
-    # paths-ignore:
-    #   - '**/*.md'
+    branches: [ "development" ]
   pull_request:
-    branches: [ development ]
+    branches: [ "development" ]
 
-env:
-  FFMPEG_VERSION: "6.1.1"
+permissions:
+  contents: read
 
 jobs:
   build:
-    runs-on: ubuntu-24.04.3 LTS
-    strategy:
-      matrix:
-        python-version: ["3.12"]
+
+    runs-on: ubuntu-24.04.3
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v3
       with:
-        python-version: ${{ matrix.python-version }}
-    - name: Cache ffmpeg download
-      uses: actions/cache@v3
-      id: cache-ffmpeg
-      with:
-        path: /opt/ffmpeg/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz
-        key: ${{ runner.os }}-ffmpeg
-    - name: Download ffmpeg if not cached
-      if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
+        python-version: "3.12"
+    - name: Install ffmpeg
       run: |
-        echo "Downloading ffmpeg ${FFMPEG_VERSION}"
-        wget -q https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz -P /opt/ffmpeg
-    - name: Extract and install ffmpeg
-      run: |
-        echo "Extracting ffmpeg ${FFMPEG_VERSION}"
-        sudo mkdir -p /opt/ffmpeg/extracted
-        sudo tar --strip-components 1 -xf /opt/ffmpeg/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz -C /opt/ffmpeg/extracted
-        echo "Installing ffmpeg ${FFMPEG_VERSION}"
-        sudo cp /opt/ffmpeg/extracted/bin/ffmpeg /usr/bin/ffmpeg
-        sudo cp /opt/ffmpeg/extracted/bin/ffprobe /usr/bin/ffprobe
+        sudo apt update
+        sudo apt install ffmpeg
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Test with pytest
-      run: |
-        pytest
-
-# mine
-# # This workflow will install Python dependencies, run tests and lint with a single version of Python
-# # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-# name: MusicProcessing
-
-# on:
-#   push:
-#     branches: [ "development" ]
-#     paths-ignore:
-#       -
-#   pull_request:
-#     branches: [ "development" ]
-
-# permissions:
-#   contents: read
-
-# jobs:
-#   build:
-
-#     runs-on: ubuntu-latest
-
-#     steps:
-#     - uses: actions/checkout@v4
-#     - name: Set up Python 3.12
-#       uses: actions/setup-python@v3
-#       with:
-#         python-version: "3.12"
-#     - name: Install ffmpeg
-#       run: |
-#         sudo apt update
-#         sudo apt install ffmpeg
-#     - name: Install dependencies
-#       run: |
-#         python -m pip install --upgrade pip
-#         # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-#         pip install -r requirements.txt
-#         pip install pytest
-#     # - name: Lint with flake8
-#       # run: |
-#         # stop the build if there are Python syntax errors or undefined names
-#         # flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-#         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-#         # flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-#     - name: Test with pytest
-#       run: |
-#         pytest
+    # @todo use unittest
+    #     pip install pytest
+    # - name: Test with pytest
+    #   run: |
+    #     pytest
