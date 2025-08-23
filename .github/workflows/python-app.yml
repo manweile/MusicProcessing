@@ -23,8 +23,6 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.12"
-        # cache the pip dependencies for future workflow runs
-        cache: "pip"
     - name: Install ffmpeg
       run: |
         sudo apt update
