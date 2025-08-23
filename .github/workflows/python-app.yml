@@ -10,10 +10,10 @@ on:
     branches: [ "development" ]
 
 env:
-  FFMPEG_VERSION: "6.1.1"
+  FFMPEG_VERSION: "7.1"
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
 jobs:
   build:
@@ -32,10 +32,23 @@ jobs:
       with:
         path: /opt/ffmpeg/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz
         key: ${{ runner.os }}-ffmpeg
-    - name: Install ffmpeg
+    - name: Download ffmpeg if not cached
+      if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
       run: |
-        sudo apt update
-        sudo apt install ffmpeg
+        echo "Downloading ffmpeg ${FFMPEG_VERSION}"
+        wget -q https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz -P /opt/ffmpeg
+    - name: Extract and install ffmpeg
+      run: |
+        echo "Extracting ffmpeg ${FFMPEG_VERSION}"
+        sudo mkdir -p /opt/ffmpeg/extracted
+        sudo tar --strip-components 1 -xf /opt/ffmpeg/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz -C /opt/ffmpeg/extracted
+        echo "Installing ffmpeg ${FFMPEG_VERSION}"
+        sudo cp /opt/ffmpeg/extracted/bin/ffmpeg /usr/bin/ffmpeg
+        sudo cp /opt/ffmpeg/extracted/bin/ffprobe /usr/bin/ffprobe
+    # - name: Install ffmpeg
+    #   run: |
+    #     sudo apt update
+    #     sudo apt install ffmpeg
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
