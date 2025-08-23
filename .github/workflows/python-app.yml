@@ -23,6 +23,12 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: "3.12"
+    - name: Cache ffmpeg download
+      uses: actions/cache@v3
+      id: cache-ffmpeg
+      with:
+        path: /opt/ffmpeg/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz
+        key: ${{ runner.os }}-ffmpeg
     - name: Install ffmpeg
       run: |
         sudo apt update
