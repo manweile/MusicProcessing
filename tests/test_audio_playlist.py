@@ -116,6 +116,7 @@ class TestAudioPlaylist(unittest.TestCase):
         with open(GENERATED_M3U, "r") as generated_file, open(EXPECTED_M3U, "r") as expected_file:
             generated_content = generated_file.read()
             expected_content = expected_file.read()
+            self.maxDiff = None
             self.assertEqual(generated_content, expected_content, "File contents should be equal")
 
 
