@@ -5,15 +5,12 @@ name: MusicProcessing
 
 on:
   push:
-    branches: [ "development" ]
+    branches: [ "**" ]
   pull_request:
-    branches: [ "development" ]
+    branches: [ "**" ]
 
 env:
   FFMPEG_VERSION: "7.1"
-
-# permissions:
-#   contents: read
 
 jobs:
   build:
