@@ -45,15 +45,10 @@ jobs:
         echo "Installing ffmpeg ${FFMPEG_VERSION}"
         sudo cp /opt/ffmpeg/extracted/bin/ffmpeg /usr/bin/ffmpeg
         sudo cp /opt/ffmpeg/extracted/bin/ffprobe /usr/bin/ffprobe
-    # - name: Install ffmpeg
-    #   run: |
-    #     sudo apt update
-    #     sudo apt install ffmpeg
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        # pip install pytest
-    # - name: Test with pytest
-    #   run: |
-    #     pytest
+    - name: Test with unittest
+      run: |
+        python -m unittest discover
