@@ -156,7 +156,8 @@ class TestAudioMetadata(unittest.TestCase):
         with mock.patch.dict(expected_info, filename_mock, clear=False):
             results_info = metadata.get_media_info_dict(MP3_PATH)
             self.maxDiff = None
-            self.assertDictEqual(results_info, expected_info)
+            print(results_info)
+            self.assertDictEqual(expected_info, results_info)
 
 
     def test_load_any_file(self):
