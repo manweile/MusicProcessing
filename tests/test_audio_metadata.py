@@ -148,7 +148,10 @@ class TestAudioMetadata(unittest.TestCase):
             expected_info = WIN_RESULT
 
         # if we are running locally, filename value doesn't actually change
-        filename_mock = {'filename': MP3_PATH}
+        if os.environ.get('GITHUB_ACTIONS') == 'true':
+            filename_mock = {'filename': '/home/runner/work/MusicProcessing/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3'}
+        else:
+            filename_mock = {'filename': MP3_PATH}
 
         with mock.patch.dict(expected_info, filename_mock, clear=False):
             results_info = metadata.get_media_info_dict(MP3_PATH)
