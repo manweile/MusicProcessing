@@ -535,11 +535,11 @@ class AudioNormalization():
 
             if os.environ.get('GITHUB_ACTIONS') != 'true':
                 _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
+                success_text = f"Successful peak normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
             else:
                 _ = subprocess_utils.subprocess_run(command)
+                success_text = f"Successful peak normalization on {input_path_stem}"
 
-
-            success_text = f"Successful peak normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
             data.append(success_text)
             directory.create_txt(txt_filename, data)
 
