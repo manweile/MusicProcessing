@@ -14,6 +14,7 @@ import logging
 import os
 import platform
 import unittest
+from unittest import mock
 
 # third party modules
 from mutagen._util import MutagenError
@@ -134,7 +135,7 @@ class TestAudioMetadata(unittest.TestCase):
     @brief Tests AudioMetadata class functions.
     '''
 
-    @unittest.skip("Skip until figure out ci issue")
+    # @unittest.skip("Skip until figure out ci issue")
     def test_get_media_info_dict(self):
         '''
         @brief Tests returns dictionary with media info.
@@ -146,9 +147,13 @@ class TestAudioMetadata(unittest.TestCase):
         elif os_name == "Windows":
             expected_info = WIN_RESULT
 
-        results_info = metadata.get_media_info_dict(MP3_PATH)
-        self.maxDiff = None
-        self.assertDictEqual(results_info, expected_info)
+        # if we are running locally, filename value doesn't actually change
+        filename_mock = {'filename': MP3_PATH}
+
+        with mock.patch.dict(expected_info, filename_mock, clear=False):
+            results_info = metadata.get_media_info_dict(MP3_PATH)
+            self.maxDiff = None
+            self.assertDictEqual(results_info, expected_info)
 
 
     def test_load_any_file(self):
