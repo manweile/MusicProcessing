@@ -42,7 +42,7 @@ SRC_HAS_JPG_PATH = os.path.join(TESTS_TLD, "Abba", "Waterloo")
 SRC_MP3 = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
 SRC_M4A = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
 SRC_NO_STREAM_WMA = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
-SRC_NO_TAG_MP3 = os.path.join(TESTS_TLD, "Test_Crush-Live.mp3")
+SRC_NO_TAG_MP3 = os.path.join(TESTS_TLD, "No_tag_Crush-Live.mp3")
 SRC_WMA = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", "Elton John-Saturday Night's Alright for Fighting.wma")
 
 art = AudioArt()
@@ -231,13 +231,13 @@ class TestAudioArt(unittest.TestCase):
         self.assertTrue(has_video)
 
 
-    @unittest.skip("Skip until code written")
-    def test_has_video_stream_json_fail(self):
-        '''
-        @brief Tests if audio file with album art video stream fails json decoding.
-        '''
+    # @unittest.skip("Skip until code written")
+    # def test_has_video_stream_json_fail(self):
+    #     '''
+    #     @brief Tests if audio file with album art video stream fails json decoding.
+    #     '''
 
-        pass
+    #     pass
 
 
 def get_method_names(cls):
