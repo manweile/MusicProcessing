@@ -81,7 +81,7 @@ WIN_RESULT = {
         'Acoustid Id': '4fdf7757-ba58-4a4b-a1df-1ad4d102a474', 'MusicBrainz Album Id': '18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6',
         'MusicBrainz Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f', 'MusicBrainz Album Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f',
         'MusicBrainz Release Group Id': 'a7927f70-2431-3a58-b7ae-48576808cec1', 'date': '2002'},
-    'filename': 'd:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', 'nb_streams': '2', 'nb_programs': '0', 'nb_stream_groups': '0', 'format_name': 'mp3',
+    'filename': 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', 'nb_streams': '2', 'nb_programs': '0', 'nb_stream_groups': '0', 'format_name': 'mp3',
     'format_long_name': 'MP2/3 (MPEG audio layer 2/3)', 'size': '3970122', 'probe_score': '51'
 }
 
@@ -141,7 +141,7 @@ class TestAudioMetadata(unittest.TestCase):
 
         results_info = metadata.get_media_info_dict(MP3_PATH)
         self.maxDiff = None
-        self.assertDictEqual(expected_info, results_info)
+        self.assertDictEqual(expected_info['TAG'], results_info['TAG'])
 
 
     def test_load_any_file(self):

@@ -523,7 +523,7 @@ class AudioNormalization():
 
             if max_volume == 0.0:
                 unnecessary_text = f"{input_path_basename} has max volume: {max_volume:.2f} dB, peak normalization not needed"
-                logger.info(unnecessary_text)
+                logger.warning(unnecessary_text)
                 return
             else:
                 data.append(f"max volume: {max_volume:.2f} dB")
@@ -533,7 +533,7 @@ class AudioNormalization():
 
             if clip_amount > 0:
                 peak_text = f"peak normalizing by {TP} minus {max_volume:.2f} dB equaling {adjustment:.2f} dB will result in clipping level: {clip_amount:.2f} dB in {export_path}"
-                logger.info(peak_text)
+                logger.warning(peak_text)
                 return
             else:
                 data.append(f"adjustment: {adjustment:.2f} dB")
@@ -630,7 +630,7 @@ class AudioNormalization():
 
             if max_volume == 0.0:
                 unnecessary_text = f"{input_path_basename} has max volume: {max_volume:.2f}, rms normalization not needed"
-                logger.info(unnecessary_text)
+                logger.warning(unnecessary_text)
                 return
             else:
                 data.append(f"max volume: {max_volume:.2f} dB")
@@ -640,7 +640,7 @@ class AudioNormalization():
 
             if clip_amount > 0:
                 peak_text = f"rms normalizing by {TP} minus {mean_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB in {export_path}"
-                logger.info(peak_text)
+                logger.warning(peak_text)
                 return
             else:
                 data.append(f"adjustment: {adjustment:.2f} dB")

@@ -104,6 +104,7 @@ class TestAudioPlaylist(unittest.TestCase):
         result_audio = playlist.get_audio_name(line)
         self.assertEqual(expected_audio, result_audio)
 
+
     @patch('src.audio_info.audio_playlist.logger.warning')
     def test_update_m3u(self, mock_warning):
         '''

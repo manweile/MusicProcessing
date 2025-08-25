@@ -9,6 +9,7 @@
 # standard modules
 import gc
 import inspect
+import logging
 import os
 import shutil
 import unittest
@@ -32,7 +33,7 @@ EBU_DYNAMIC_RES = os.path.join(NORM_PATH, "Abba", "Waterloo", "ABBA-Waterloo.mp3
 # PEAK_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 
 EBU_LINEAR_SRC = PEAK_SRC = RMS_CLIPPING_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
-EBU_LINEAR_RES = PEAK_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
+EBU_LINEAR_RES = PEAK_RES = RMS_CLIPPING_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 
 SRC_FILE = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
 
@@ -106,13 +107,15 @@ class TestAudioNormalization(unittest.TestCase):
     def test_rms_normalize_file_clipping(self):
         '''
         @brief Tests rms normalize audio file level would clip.
+
+        @details This test will fail if ran with pytest.
         '''
 
-        with self.assertLogs('src.audio_normalize.audio_normalization', level='INFO') as cm:
-            instance = AudioNormalization()
-            instance.rms_normalize_file(RMS_CLIPPING_SRC, show_spinner=False)
+        logger = logging.getLogger("src.audio_normalize.audio_normalization")
+        with self.assertLogs(logger, level='WARNING') as cm:
+            normalization.rms_normalize_file(RMS_CLIPPING_SRC, show_spinner=False)
 
-            self.assertIn("will result in clipping amount", cm.output[0])
+        self.assertIn(RMS_CLIPPING_RES, cm.output[0])
 
 
 def get_method_names(cls):

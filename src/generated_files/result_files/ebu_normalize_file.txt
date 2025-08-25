@@ -688,3 +688,2451 @@ Post normalization stats:
 }
 Applied loudnorm stats
 Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: D:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: d:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'd:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'd:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'd:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: d:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'd:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'd:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'd:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
+Beginning ebu normalization on: ABBA-Waterloo.mp3
+Source directory path: d:\MusicProcessing\tests\Music\Abba\Waterloo
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'd:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.52",
+    "input_tp": "-3.42",
+    "input_lra": "2.20",
+    "input_thresh": "-26.93",
+    "output_i": "-15.83",
+    "output_tp": "-2.00",
+    "output_lra": "1.40",
+    "output_thresh": "-26.03",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.17"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'd:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', 'd:\\MusicProcessing\\src\\generated_files\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.49",
+    "input_tp": "-3.46",
+    "input_lra": "2.10",
+    "input_thresh": "-26.82",
+    "output_i": "-15.97",
+    "output_tp": "-2.94",
+    "output_lra": "2.10",
+    "output_thresh": "-26.30",
+    "normalization_type": "linear",
+    "target_offset": "-0.03"
+}
+Applied loudnorm stats
+Successful linear normalization on ABBA-Waterloo.mp3
+Beginning ebu normalization on: Crush-Live.mp3
+Source directory path: d:\MusicProcessing\tests\Music\Crush\Here
+Source sample rate: 44100 hz
+Getting loudnorm stats
+['ffmpeg', '-hide_banner', '-i', 'd:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+Pre-normalization stats:
+{
+    "input_i": "-16.77",
+    "input_tp": "-6.66",
+    "input_lra": "8.10",
+    "input_thresh": "-26.99",
+    "output_i": "-15.36",
+    "output_tp": "-2.00",
+    "output_lra": "5.60",
+    "output_thresh": "-25.47",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.64"
+}
+Analyzed loudnorm stats
+Normalizing audio
+['ffmpeg', '-hide_banner', '-i', 'd:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', 'd:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Post normalization stats:
+{
+    "input_i": "-16.73",
+    "input_tp": "-6.73",
+    "input_lra": "8.00",
+    "input_thresh": "-26.93",
+    "output_i": "-15.96",
+    "output_tp": "-5.96",
+    "output_lra": "8.10",
+    "output_thresh": "-26.16",
+    "normalization_type": "linear",
+    "target_offset": "-0.04"
+}
+Applied loudnorm stats
+Successful linear normalization on Crush-Live.mp3
