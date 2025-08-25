@@ -20,10 +20,21 @@ from src.audio_normalize import AudioNormalization
 
 gc.enable()
 
-TESTS_TLD = os.path.dirname(os.path.abspath(__file__))
-MP3_FILE = os.path.join("Crush", "Here", "Crush-Live.mp3")
-NORM_FILE = os.path.join(GENERATED_FILES, EXPORT_TLD, MP3_FILE)
-SRC_FILE = os.path.join(TESTS_TLD, EXPORT_TLD, MP3_FILE)
+NORM_PATH = os.path.join(GENERATED_FILES, EXPORT_TLD)
+TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
+
+EBU_DYNAMIC_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+EBU_DYNAMIC_RES = os.path.join(NORM_PATH, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+# EBU_LINEAR_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
+# EBU_LINEAR_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
+
+# PEAK_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
+# PEAK_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
+
+EBU_LINEAR_SRC = PEAK_SRC = RMS_CLIPPING_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
+EBU_LINEAR_RES = PEAK_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
+
+SRC_FILE = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
 
 normalization = AudioNormalization()
 
@@ -38,15 +49,45 @@ class TestAudioNormalization(unittest.TestCase):
         @brief Clean up the created audio file and directory.
         '''
 
-        expected_tld = os.path.join(GENERATED_FILES, EXPORT_TLD)
-        if os.path.exists(expected_tld):
-            shutil.rmtree(expected_tld)
+        if os.path.exists(NORM_PATH):
+            shutil.rmtree(NORM_PATH)
 
 
-    # @todo add ebu normalize
-    # @todo add rms normalize
-    # @todo add a PathInfoError from one of the normalize defs test
-    # @todo add a mp3 only error from one of the normalize defs test
+    # @todo add __loudnorn_json_parse tests
+    # can have JSONDecodeError
+    # can have JSONOutputError
+
+    # @todo add get_bit_rate tests
+    # can have JSONDecodeError
+
+    # @todo add get_sample_rate tests
+    # can have IndexError
+    # can have JSONDecodeError
+
+    # @todo add get_volume_info tests
+    # can hav re.error
+
+
+    def test_ebu_normalize_linear(self):
+        '''
+        @brief Tests linear ebu normalize audio file level.
+        '''
+
+        normalization.ebu_normalize_file(EBU_LINEAR_SRC, show_spinner=False)
+        self.assertTrue(os.path.exists(EBU_LINEAR_RES))
+
+
+    def test_ebu_normalize_dynamic(self):
+        '''
+        @brief Tests dynamic ebu normalize audio file level.
+        '''
+
+        normalization.ebu_normalize_file(EBU_DYNAMIC_SRC, show_spinner=False)
+        self.assertTrue(os.path.exists(EBU_DYNAMIC_RES))
+
+
+    # @todo need a peak clipping test
+    # @todo need a peak max volume test
 
 
     def test_peak_normalize_file(self):
@@ -54,8 +95,24 @@ class TestAudioNormalization(unittest.TestCase):
         @brief Tests peak normalize audio file level.
         '''
 
-        normalization.peak_normalize_file(SRC_FILE)
-        self.assertTrue(os.path.exists(NORM_FILE))
+        normalization.peak_normalize_file(PEAK_SRC, show_spinner=False)
+        self.assertTrue(os.path.exists(PEAK_RES))
+
+
+    # @todo need a passing rms test
+    # @todo need a rms max volume test
+
+
+    def test_rms_normalize_file_clipping(self):
+        '''
+        @brief Tests rms normalize audio file level would clip.
+        '''
+
+        with self.assertLogs('src.audio_normalize.audio_normalization', level='INFO') as cm:
+            instance = AudioNormalization()
+            instance.rms_normalize_file(RMS_CLIPPING_SRC, show_spinner=False)
+
+            self.assertIn("will result in clipping amount", cm.output[0])
 
 
 def get_method_names(cls):
