@@ -1,15 +1,8 @@
-F:\FinalizedMusic directory is the result of manual metadata checks and playlist updates on NormalizedMusic directory.
+F:\ConvertedMusic directory is the result of conversion on PreppedMusic directory.
 
-F:\NormalizedMusic is up to date as of Jul 11th.
-Created July 11th, audio metadata in this directory was updated on July 12th.
-Playlists were updated to have relative paths for this directory on July 17th.
+Populated Jul 9th, this directory is currently up to date.
 
-This directory can replace \\Office1\Music, and be used on micro sd card for truck.
-
-Only mp3 audio files and m3u playlist files are present.
-
-All playlist files are relative pathed m3u files.
-
+Only audio files are present.
 All audio files are in mp3 format.
 All audio files have minimum set of ID3v2.3 metadata:
     album
@@ -24,10 +17,13 @@ Any of the nice to have metadata that was found is also mapped to ID3v2.3:
     disc
     publisher
     track
-All audio files have embedded album art (as ID3v2.3 APIC tag).
-All audio files have been normalized to EBU R128 standard.
+All audio files have embedded album art (as ID3v2.3 APIC tag), and the Folder.jpg files have been deleted.
+All album directories contain only mp3 files.
+
+These audio files are now ready for normalization.
 
 Directory structure is:
+```text
 tld
 |_ playlist 1
 |_ playlist i
@@ -71,3 +67,4 @@ tld
           |_song 1
           |_song i
           |_song n
+```

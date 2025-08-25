@@ -22,7 +22,7 @@ The audio metadata has been manually reviewed for:
         genre
         title
         front cover album art
-        
+
 The top level directory (PreppedMusic) has been organized into:
     artist sub-directories have been created or edited as necessary:
         where artist names are drawn from metadata
@@ -30,7 +30,7 @@ The top level directory (PreppedMusic) has been organized into:
         where album names are drawn from metadata
 
 Audio file names have been edited as needed into artist-title (or artist - title) format.
-    
+
 Album art metadata has been manually reviewed to ensure reasonably accuracy.
 Album art metadata has been processed to ensure one of:
         already embedded in audio file
@@ -42,3 +42,50 @@ These audio files are now ready for conversion:
     original metadata format to ID3v2.3 metadata format mapping
     conversion to mp3 audio format
     album art embedding as ID3v2.3 art tag
+
+Directory structure is:
+```text
+tld
+|_ playlist 1
+|_ playlist i
+|_ playlist n
+|_ artist 1
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album i
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album n
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|_ artist i
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album i
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album n
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|_ artist n
+     |_album 1
+     |    |_song 1
+     |    |_song i
+     |    |_song n
+     |_album i
+     |    |_song 1
+     |    |_song i
+     |    |_song n
+     |_album n
+          |_song 1
+          |_song i
+          |_song n
+```
