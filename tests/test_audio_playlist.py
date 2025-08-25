@@ -105,8 +105,7 @@ class TestAudioPlaylist(unittest.TestCase):
         self.assertEqual(expected_audio, result_audio)
 
     @patch('src.audio_info.audio_playlist.logger.warning')
-    @patch('src.audio_info.audio_playlist.logger.warning')
-    def test_update_m3u(self, warning_1, warning_2):
+    def test_update_m3u(self, mock_warning):
         '''
         @brief Tests if the updated m3u file is equal to expected results.
         '''
@@ -115,8 +114,9 @@ class TestAudioPlaylist(unittest.TestCase):
         m3u_exists = os.path.exists(GENERATED_M3U)
         self.assertTrue(m3u_exists)
 
-        warning_2.assert_called(f".38 Special-Teacher, Teacher.mp3 from test.m3u not found in {TESTS_TLD}")
-        warning_1.assert_called(f"Daughtry-Home.mp3 from test.m3u not found in {TESTS_TLD}")
+        # warning order will be last in first out - so 38 special then Daughtry, which is invert of order in test m3u
+        mock_warning.assert_called_with(f".38 Special-Teacher, Teacher.mp3 from test.m3u not found in {TESTS_TLD}")
+        mock_warning.assert_any_call(f"Daughtry-Home.mp3 from test.m3u not found in {TESTS_TLD}")
 
         generated_inf = []
         expected_inf = []
