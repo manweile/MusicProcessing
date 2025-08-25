@@ -139,7 +139,7 @@ class AudioNormalization():
             return input_data
 
 
-    def ebu_normalize_file(self, file_path):
+    def ebu_normalize_file(self, file_path, show_spinner=True):
         '''
         @brief Normalizes audio file level to ebu r128 standard.
 
@@ -149,6 +149,7 @@ class AudioNormalization():
         @details Audio file must be mp3 format, and already processed by convert_file function.
 
         @param file_path {str} The full file path for mp3 audio file.
+        @param show_spinner {bool} Show yaspin spinner flag.
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -157,6 +158,7 @@ class AudioNormalization():
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:
+            # @todo consider if this check should be done from main
             _, input_file_ext = os.path.splitext(file_path)
             if input_file_ext.lower() != AUDIO_EXTS[0]:
                 logger.warning(f"{file_path} is not an mp3")
@@ -175,12 +177,15 @@ class AudioNormalization():
 
             beginning_text = f"Beginning ebu normalization on: {input_path_basename}"
             source_text = f"Source directory path: {input_path_dir}"
-            data.append[beginning_text]
+            data.append(beginning_text)
             data.append(source_text)
 
             # get original sample rate for down sampling
             sample_rate = self.get_sample_rate(file_path)
             data.append(f"Source sample rate: {sample_rate} hz")
+
+            stats_text = "Getting loudnorm stats"
+            data.append(stats_text)
 
             '''
             1st pass to get loudnorm statistics
@@ -198,18 +203,23 @@ class AudioNormalization():
                 "-af", (f"loudnorm=I={ILT}:TP={TP}:LRA={LRA}:print_format=json"),
                 "-f", "null", "-"
             ]
-
-            text = "Getting normalizing stats"
-            data.append(text)
             data.append(stats_command)
-            stats_process, stats_spinner = subprocess_utils.spinner_subprocess_run(text, stats_command)
 
-            pre_text = "Pre normalization stats:"
-            data.append(pre_text)
+            stats_pre_text = "Pre-normalization stats:"
+            data.append(stats_pre_text)
+
+            if show_spinner:
+                stats_process, stats_spinner = subprocess_utils.spinner_subprocess_run(stats_text, stats_command)
+                stats_time = stats_spinner.elapsed_time
+                stats_post_text = f"Analyzed loudnorm stats in {stats_time:.2f} secs"
+            else:
+                stats_process = subprocess_utils.subprocess_run(stats_command)
+                stats_post_text = "Analyzed loudnorm stats"
+
             stats_data = self.__loudnorm_json_parse(stats_process)
             data.append(json.dumps(stats_data, indent=4))
-            stats_time = stats_spinner.elapsed_time
-            data.append(f"Analyzed loudnorm stats in {stats_time:.2f} secs")
+
+            data.append(stats_post_text)
 
             # Access the loudnorm results needed for 2nd pass
             measured_i = stats_data.get("input_i")
@@ -217,6 +227,9 @@ class AudioNormalization():
             measured_tp = stats_data.get("input_tp")
             measured_thresh = stats_data.get("input_thresh")
             offset = stats_data.get("target_offset")
+
+            normalizing_text = "Normalizing audio"
+            data.append(normalizing_text)
 
             # 2nd pass to apply loudnorm statistics
             # -hide_banner to reduce output clutter
@@ -242,26 +255,34 @@ class AudioNormalization():
                 "-ar", str(sample_rate),
                 export_path, "-y"
             ]
-
-            text = "Normalizing audio"
-            data.append(text)
             data.append(normalize_command)
-            normalize_process, normalize_spinner = subprocess_utils.spinner_subprocess_run(text, normalize_command)
 
             post_text = "Post normalization stats:"
             data.append(post_text)
+
+            if show_spinner:
+                normalize_process, normalize_spinner = subprocess_utils.spinner_subprocess_run(normalizing_text, normalize_command)
+                normalization_time = normalize_spinner.elapsed_time
+                apply_post_text = f"Applied loudnorm stats in {normalization_time:.2f} secs"
+                total_time = normalization_time + stats_time
+                total_time_text = f" in total time {total_time:.2f} secs\n "
+            else:
+                normalize_process = subprocess_utils.subprocess_run(normalize_command)
+                apply_post_text = "Applied loudnorm stats"
+                total_time_text = ""
+
             normalize_data = self.__loudnorm_json_parse(normalize_process)
             data.append(json.dumps(normalize_data, indent=4))
-            normalization_time = normalize_spinner.elapsed_time
-            data.append(f"Applied normalization in {normalization_time:.2f} secs")
 
-            total_time = normalize_spinner.elapsed_time + stats_time
+            data.append(apply_post_text)
 
             normalization_type = normalize_data.get("normalization_type")
-            if normalization_type != "linear":
-                results_text = f"FFMPEG used {normalization_type} normalization on {input_path_basename} in total time {total_time:.2f} secs\n "
-            else:
-                results_text = f"Successful linear normalization on {input_path_basename} in total time {total_time:.2f} secs\n"
+            if normalization_type == "dynamic":
+                result_type_text = f"FFMPEG used {normalization_type} normalization on {input_path_basename}"
+            elif normalization_type == "linear":
+                result_type_text = f"Successful linear normalization on {input_path_basename}"
+
+            results_text = result_type_text + total_time_text
 
             data.append(results_text)
             directory.create_txt(txt_filename, data)
@@ -396,6 +417,7 @@ class AudioNormalization():
             # ffmpeg sends its output to stderr, not stdout
             output_str = process.stderr
 
+            # threw an error C:\Music\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3
             mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
             max_volume_match = re.search(r'max_volume: ([-]?\d+\.\d+) dB', output_str)
 
@@ -419,6 +441,7 @@ class AudioNormalization():
         '''
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
+        @details Will only normalize mp3 files.
         @param tld_path {str} The top level directory path that contains all the music files.
         @param norm_type {str} The type of normalization to perform.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -451,7 +474,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def peak_normalize_file(self, file_path):
+    def peak_normalize_file(self, file_path, show_spinner=True):
         '''
         @brief Peak normalizes audio file level.
 
@@ -459,6 +482,7 @@ class AudioNormalization():
         @details Audio file must be mp3 format, and already processed by convert_file function.
 
         @param file_path {str} The full file path for mp3 audio file.
+        @param show_spinner {bool} Show yaspin spinner flag.
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -467,6 +491,12 @@ class AudioNormalization():
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:
+            # @todo consider if this check should be done from main
+            _, input_file_ext = os.path.splitext(file_path)
+            if input_file_ext.lower() != AUDIO_EXTS[0]:
+                logger.warning(f"{file_path} is not an mp3")
+                return
+
             export_path = directory.path_info(file_path)
 
             if export_path is None:
@@ -475,12 +505,10 @@ class AudioNormalization():
             else:
                 directory.make_dir(os.path.dirname(export_path))
 
-            export_format = AUDIO_TYPES[0]
-            input_format = os.path.splitext(file_path)[1].lower()[1:]
-            input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
+            input_path_basename = os.path.basename(file_path)
             input_path_dir = os.path.dirname(file_path)
 
-            beginning_text = f"Beginning peak normalization on {input_path_stem} from {input_format} to {export_format}"
+            beginning_text = f"Beginning peak normalization on: {input_path_basename}"
             source_text = f"Source directory path: {input_path_dir}"
             data.append(beginning_text)
             data.append(source_text)
@@ -494,8 +522,8 @@ class AudioNormalization():
             max_volume = math.floor(volume_info['max_volume'])
 
             if max_volume == 0.0:
-                unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume:.2f} dB, peak normalization not needed")
-                data.append(unnecessary_text)
+                unnecessary_text = f"{input_path_basename} has max volume: {max_volume:.2f} dB, peak normalization not needed"
+                logger.info(unnecessary_text)
                 return
             else:
                 data.append(f"max volume: {max_volume:.2f} dB")
@@ -504,8 +532,8 @@ class AudioNormalization():
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
-                peak_text = print(f"peak normalizing by {TP} minus {max_volume:.2f} dB equaling {adjustment:.2f} dB will result in clipping level: {clip_amount:.2f} dB in {export_path}")
-                data.append(peak_text)
+                peak_text = f"peak normalizing by {TP} minus {max_volume:.2f} dB equaling {adjustment:.2f} dB will result in clipping level: {clip_amount:.2f} dB in {export_path}"
+                logger.info(peak_text)
                 return
             else:
                 data.append(f"adjustment: {adjustment:.2f} dB")
@@ -529,13 +557,17 @@ class AudioNormalization():
                 export_path, '-y'
             ]
 
-            text = f"Peak normalizing {input_path_stem}"
+            text = f"Peak normalizing {input_path_basename}"
             data.append(text)
             data.append(command)
 
-            _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
+            if show_spinner:
+                _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
+                success_text = f"Successful peak normalization on {input_path_basename} in {spinner.elapsed_time:.2f} secs\n"
+            else:
+                _ = subprocess_utils.subprocess_run(command)
+                success_text = f"Successful peak normalization on {input_path_basename}"
 
-            success_text = f"Successful peak normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
             data.append(success_text)
             directory.create_txt(txt_filename, data)
 
@@ -546,7 +578,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def rms_normalize_file(self, file_path):
+    def rms_normalize_file(self, file_path, show_spinner=True):
         '''
         @brief RMS normalizes audio file level.
 
@@ -554,6 +586,7 @@ class AudioNormalization():
         @details Audio file must be mp3 format, and already processed by convert_file function.
 
         @param file_path {str} The full file path for mp3 audio file.
+        @param show_spinner {bool} Show yaspin spinner flag.
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -562,6 +595,12 @@ class AudioNormalization():
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:
+            # @todo consider if this check should be done from main
+            _, input_file_ext = os.path.splitext(file_path)
+            if input_file_ext.lower() != AUDIO_EXTS[0]:
+                logger.warning(f"{file_path} is not an mp3")
+                return
+
             export_path = directory.path_info(file_path)
 
             if export_path is None:
@@ -570,14 +609,12 @@ class AudioNormalization():
             else:
                 directory.make_dir(os.path.dirname(export_path))
 
-            export_format = AUDIO_TYPES[0]
-            input_format = os.path.splitext(file_path)[1].lower()[1:]
-            input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
+            input_path_basename = os.path.basename(file_path)
             input_path_dir = os.path.dirname(file_path)
 
-            beginning_text = f"Beginning rms normalization on {input_path_stem} from {input_format} to {export_format}"
+            beginning_text = f"Beginning rms normalization on {input_path_basename}"
             source_text = f"Source directory path: {input_path_dir}"
-            data.append[beginning_text]
+            data.append(beginning_text)
             data.append(source_text)
 
             # want bitrate so can preserve the quality in exported file
@@ -592,8 +629,8 @@ class AudioNormalization():
             data.append(f"floor max volume: {max_volume:.2f}")
 
             if max_volume == 0.0:
-                unnecessary_text = print(f"{input_path_stem} has max volume: {max_volume:.2f}, rms normalization not needed")
-                data.append(unnecessary_text)
+                unnecessary_text = f"{input_path_basename} has max volume: {max_volume:.2f}, rms normalization not needed"
+                logger.info(unnecessary_text)
                 return
             else:
                 data.append(f"max volume: {max_volume:.2f} dB")
@@ -602,8 +639,8 @@ class AudioNormalization():
             clip_amount = max_volume + adjustment
 
             if clip_amount > 0:
-                peak_text = print(f"rms normalizing by {TP} minus {mean_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB in {export_path}")
-                data.append(peak_text)
+                peak_text = f"rms normalizing by {TP} minus {mean_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB in {export_path}"
+                logger.info(peak_text)
                 return
             else:
                 data.append(f"adjustment: {adjustment:.2f} dB")
@@ -627,13 +664,17 @@ class AudioNormalization():
                 export_path, '-y'
             ]
 
-            text = f"rms normalizing {input_path_stem}"
+            text = f"rms normalizing {input_path_basename}"
             data.append(text)
             data.append(command)
 
-            _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
+            if show_spinner:
+                _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
+                success_text = f"Successful rms normalization on {input_path_basename} in {spinner.elapsed_time:.2f} secs\n"
+            else:
+                _ = subprocess_utils.subprocess_run(command)
+                success_text = f"Successful rms normalization on {input_path_basename}"
 
-            success_text = f"Successful rms normalization on {input_path_stem} in {spinner.elapsed_time:.2f} secs\n"
             data.append(success_text)
             directory.create_txt(txt_filename, data)
 

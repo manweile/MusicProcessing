@@ -96,3 +96,143 @@ Stack (most recent call last):
     exec(code, run_globals)
   File "/home/gerald/MusicProcessing/main.py", line 784, in <module>
     logger.exception(e, stack_info=True)
+
+2025-08-24 17:03:17,786 — __main__ — ERROR — main:606 — Exception propagated to main: TypeError: expected string or bytes-like object, got 'NoneType'
+Traceback (most recent call last):
+  File "D:\MusicProcessing\main.py", line 573, in main
+    normalize_walk(tld_path, norm_type)
+  File "D:\MusicProcessing\main.py", line 255, in normalize_walk
+    normalization.normalize_walk(tld_path, norm_type)
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 473, in normalize_walk
+    raise e_error
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 467, in normalize_walk
+    self.peak_normalize_file(input_file_path)
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 577, in peak_normalize_file
+    raise e_error
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 519, in peak_normalize_file
+    volume_info = self.get_volume_info(file_path)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 434, in get_volume_info
+    raise e_error
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 420, in get_volume_info
+    mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\re\__init__.py", line 177, in search
+    return _compile(pattern, flags).search(string)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: expected string or bytes-like object, got 'NoneType'
+Stack (most recent call last):
+  File "D:\MusicProcessing\main.py", line 812, in <module>
+    main(args)
+  File "D:\MusicProcessing\main.py", line 606, in main
+    logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
+
+2025-08-24 17:34:03,669 — __main__ — ERROR — main:606 — Exception propagated to main: TypeError: expected string or bytes-like object, got 'NoneType'
+Traceback (most recent call last):
+  File "D:\MusicProcessing\main.py", line 577, in main
+    peak_file(file_path)
+  File "D:\MusicProcessing\main.py", line 265, in peak_file
+    normalization.peak_normalize_file(file_path)
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 577, in peak_normalize_file
+    raise e_error
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 519, in peak_normalize_file
+    volume_info = self.get_volume_info(file_path)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 434, in get_volume_info
+    raise e_error
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 420, in get_volume_info
+    mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\re\__init__.py", line 177, in search
+    return _compile(pattern, flags).search(string)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: expected string or bytes-like object, got 'NoneType'
+Stack (most recent call last):
+  File "D:\MusicProcessing\main.py", line 812, in <module>
+    main(args)
+  File "D:\MusicProcessing\main.py", line 606, in main
+    logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
+
+2025-08-24 17:34:12,094 — __main__ — ERROR — main:606 — Exception propagated to main: TypeError: expected string or bytes-like object, got 'NoneType'
+Traceback (most recent call last):
+  File "D:\MusicProcessing\main.py", line 577, in main
+    peak_file(file_path)
+  File "D:\MusicProcessing\main.py", line 265, in peak_file
+    normalization.peak_normalize_file(file_path)
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 577, in peak_normalize_file
+    raise e_error
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 519, in peak_normalize_file
+    volume_info = self.get_volume_info(file_path)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 434, in get_volume_info
+    raise e_error
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 420, in get_volume_info
+    mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\re\__init__.py", line 177, in search
+    return _compile(pattern, flags).search(string)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: expected string or bytes-like object, got 'NoneType'
+Stack (most recent call last):
+  File "D:\MusicProcessing\main.py", line 812, in <module>
+    main(args)
+  File "D:\MusicProcessing\main.py", line 606, in main
+    logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
+
+2025-08-24 17:34:38,670 — __main__ — ERROR — _print_message:66 — Argparse Error: usage: main.py peak-file [-h] file
+
+2025-08-24 17:34:38,670 — __main__ — ERROR — _print_message:66 — Argparse Error: main.py peak-file: error: argument file: File not found: C:\Music\Bear
+
+2025-08-24 17:35:23,136 — __main__ — ERROR — _print_message:66 — Argparse Error: usage: main.py peak-file [-h] file
+
+2025-08-24 17:35:23,137 — __main__ — ERROR — _print_message:66 — Argparse Error: main.py peak-file: error: argument file: File not found:  C:\Music\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3
+
+2025-08-24 17:36:20,378 — __main__ — ERROR — _print_message:66 — Argparse Error: usage: main.py peak-file [-h] file
+
+2025-08-24 17:36:20,379 — __main__ — ERROR — _print_message:66 — Argparse Error: main.py peak-file: error: argument file: File not found:  C:\Music\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3
+
+2025-08-24 17:43:46,674 — __main__ — ERROR — _print_message:66 — Argparse Error: usage: main.py peak-file [-h] file
+
+2025-08-24 17:43:46,678 — __main__ — ERROR — _print_message:66 — Argparse Error: main.py peak-file: error: argument file: File not found:  C:\Music\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3
+
+2025-08-24 17:52:27,610 — __main__ — ERROR — main:606 — Exception propagated to main: TypeError: expected string or bytes-like object, got 'NoneType'
+Traceback (most recent call last):
+  File "D:\MusicProcessing/main.py", line 577, in main
+    peak_file(file_path)
+  File "D:\MusicProcessing/main.py", line 265, in peak_file
+    normalization.peak_normalize_file(file_path)
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 577, in peak_normalize_file
+    raise e_error
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 519, in peak_normalize_file
+    volume_info = self.get_volume_info(file_path)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 434, in get_volume_info
+    raise e_error
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 420, in get_volume_info
+    mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\re\__init__.py", line 177, in search
+    return _compile(pattern, flags).search(string)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: expected string or bytes-like object, got 'NoneType'
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing/main.py", line 812, in <module>
+    main(args)
+  File "D:\MusicProcessing/main.py", line 606, in main
+    logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)

@@ -327,7 +327,6 @@ def update_walk(tld_path):
     playlist.update_walk(tld_path)
 
 
-"""
 # def create_parser():
 #     '''
 #     @brief Parses and validates input arguments.
@@ -488,7 +487,6 @@ def update_walk(tld_path):
 
 #     args = parser.parse_args()
 #     return args
-"""
 
 
 def main(args):

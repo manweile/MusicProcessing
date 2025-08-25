@@ -15,6 +15,7 @@ import inspect
 import logging
 import os
 import unittest
+from unittest.mock import patch
 
 # third party modules
 # import ipsumlorem
@@ -85,7 +86,7 @@ if __name__ == \"__main__\":
 
     suite = unittest.TestSuite()
     for name in methods:
-        suite.addTest(TestAudioArt(name))
+        suite.addTest(${class_name}(name))
 
     runner = unittest.TextTestRunner(verbosity=${verbosity})
     runner.run(suite)

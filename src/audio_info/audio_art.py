@@ -195,15 +195,16 @@ class AudioArt():
                 logger.info(f"{input_path.name} is not an audio file")
                 return
 
-            # primary extraction method because it is is file type agnostic
-            # file with video stream can use audio type agnostic extraction
+            # ffmpeg extraction is primary method because is file type agnostic,
+            # so long as file has a video stream
             if self.has_video_stream(input_path):
                 self.extract_ffmpeg_art(input_path)
                 return
             else:
+                # info because mutagen check/extract methods may yet work
                 logger.info(f"No video stream album art present in {file_path}")
 
-            # secondary extraction method because it is dependent on file type
+            # mutagen extraction is secondary method, because not file type agnostic,
             # and file must have an art metadata tag
             if metadata.has_art_tag(input_path):
                 if input_file_ext.lower() == AUDIO_EXTS[0]:
@@ -213,7 +214,10 @@ class AudioArt():
                 elif input_file_ext.lower() == AUDIO_EXTS[2]:
                     self.extract_asf_art(file_path)
             else:
-                logger.warning(f"No metadata tag album art present in {file_path}")
+                # warning because by this point,
+                # negative result from both art present checks,
+                # so simply can't extract any art
+                logger.warning(f"No album art present in {file_path}")
                 return
 
         except Exception as e_error:
@@ -256,7 +260,7 @@ class AudioArt():
         @brief Extracts and saves embedded album art.
 
         @details Uses ffmpeg and is audio file type agnostic.
-        @details Input file must have a video stream and an art tag.
+        @details Input file must have a video stream.
 
         @param file_path {str} The full path to audio file.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -332,7 +336,7 @@ class AudioArt():
 
     def extract_mp3_art(self, file_path):
         '''
-        @brief Extracts cover art from wma files.
+        @brief Extracts cover art from mp3 files.
 
         @details Input file is expected to have cover art.
 
