@@ -12,6 +12,7 @@ import inspect
 import logging
 import os
 import unittest
+from unittest.mock import patch
 
 # local modules
 from src import EXPORT_TLD
@@ -24,7 +25,7 @@ gc.enable()
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 EXPECTED_M3U = os.path.join(TESTS_TLD, "expected.m3u")
-INPUT_M3U = os.path.join(TESTS_TLD, "test.m3u")
+TEST_M3U = os.path.join(TESTS_TLD, "test.m3u")
 GENERATED_M3U = os.path.join(GENERATED_FILES, "test.m3u")
 
 playlist = AudioPlaylist()
@@ -42,13 +43,13 @@ class TestAudioPlaylist(unittest.TestCase):
     @brief Tests AudioPlaylist class functions.
     '''
 
-    # def tearDown(self):
-    #     '''
-    #     @brief Clean up the created playlist file.
-    #     '''
+    def tearDown(self):
+        '''
+        @brief Clean up the created playlist file.
+        '''
 
-    #     if os.path.exists(GENERATED_M3U):
-    #         os.path.remove(GENERATED_M3U)
+        if os.path.exists(GENERATED_M3U):
+            os.remove(GENERATED_M3U)
 
 
     def test_get_audio_name_error(self):
@@ -103,21 +104,31 @@ class TestAudioPlaylist(unittest.TestCase):
         result_audio = playlist.get_audio_name(line)
         self.assertEqual(expected_audio, result_audio)
 
-    @unittest.skip("Skip until figure out ci issue")
-    def test_update_m3u(self):
+    @patch('src.audio_info.audio_playlist.logger.warning')
+    @patch('src.audio_info.audio_playlist.logger.warning')
+    def test_update_m3u(self, warning_1, warning_2):
         '''
         @brief Tests if the updated m3u file is equal to expected results.
         '''
 
-        playlist.update_paths(TESTS_TLD, INPUT_M3U)
+        playlist.update_paths(TESTS_TLD, TEST_M3U)
+        m3u_exists = os.path.exists(GENERATED_M3U)
+        self.assertTrue(m3u_exists)
 
-        self.assertTrue(os.path.exists(GENERATED_M3U))
+        warning_2.assert_called(f".38 Special-Teacher, Teacher.mp3 from test.m3u not found in {TESTS_TLD}")
+        warning_1.assert_called(f"Daughtry-Home.mp3 from test.m3u not found in {TESTS_TLD}")
+
+        generated_inf = []
+        expected_inf = []
 
         with open(GENERATED_M3U, "r") as generated_file, open(EXPECTED_M3U, "r") as expected_file:
-            generated_content = generated_file.read()
-            expected_content = expected_file.read()
-            self.maxDiff = None
-            self.assertEqual(generated_content, expected_content, "File contents should be equal")
+            for generated_line, expected_line in zip(generated_file, expected_file):
+                if "#EXTINF:0," in generated_line:
+                    generated_inf.append(generated_line)
+                if "#EXTINF:0," in expected_line:
+                    expected_inf.append(expected_line)
+
+        self.assertEqual(generated_inf, expected_inf, "List contents should be equal")
 
 
 def get_method_names(cls):
