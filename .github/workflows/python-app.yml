@@ -42,6 +42,13 @@ jobs:
         echo "Installing ffmpeg ${FFMPEG_VERSION}"
         sudo cp /opt/ffmpeg/extracted/bin/ffmpeg /usr/bin/ffmpeg
         sudo cp /opt/ffmpeg/extracted/bin/ffprobe /usr/bin/ffprobe
+    - name: Cache pip modules
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-python-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-python-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
