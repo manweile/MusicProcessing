@@ -93,6 +93,7 @@ class TestAudioArt(unittest.TestCase):
         art.extract_album_art(input_audio)
         mock_warning.assert_called_once_with(f"{input_path.name} is not an audio file")
 
+
     # per https://stackoverflow.com/questions/15763394/mocking-two-functions-with-patch-for-a-unit-test
     # the order of stacked patch decorators and calls to the matching assert_called_once_with matter,
     # and its FILO (first in, last out)
@@ -229,15 +230,6 @@ class TestAudioArt(unittest.TestCase):
         input_audio = SRC_MP3
         has_video = art.has_video_stream(input_audio)
         self.assertTrue(has_video)
-
-
-    # @unittest.skip("Skip until code written")
-    # def test_has_video_stream_json_fail(self):
-    #     '''
-    #     @brief Tests if audio file with album art video stream fails json decoding.
-    #     '''
-
-    #     pass
 
 
 def get_method_names(cls):
