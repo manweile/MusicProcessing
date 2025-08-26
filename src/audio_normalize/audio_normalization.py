@@ -18,7 +18,7 @@ from json import JSONDecodeError
 from pathlib import Path
 
 # local modules
-from src import AUDIO_EXTS, AUDIO_TYPES
+from src import AUDIO_EXTS
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
 from src.generated_files import GENERATED_FILES
 from src.errors import JSONOutputError
@@ -27,9 +27,6 @@ from src.dir_processing import DirectoryProcessing
 from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
-
-directory = DirectoryProcessing()
-subprocess_utils = SubprocessUtilities()
 
 # Configure logging
 basename = os.path.basename(__file__)
@@ -43,6 +40,9 @@ logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG
 # use raise in exception handling if we need send something inter-module
 logger = logging.getLogger(__name__)
 logger.propagate = False
+
+directory = DirectoryProcessing()
+subprocess_utils = SubprocessUtilities()
 
 r'''
 AES https://www.aes.org/technical/documents/AESTD1004_1_15_10.pdf

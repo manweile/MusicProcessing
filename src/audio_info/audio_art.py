@@ -37,10 +37,6 @@ from .audio_metadata import AudioMetadata
 
 gc.enable()
 
-metadata = AudioMetadata()
-normalization = AudioNormalization()
-subprocess_utils = SubprocessUtilities()
-
 # Configure logging
 basename = os.path.basename(__file__)
 stem = os.path.splitext(basename)[0]
@@ -53,6 +49,10 @@ logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG
 # use raise in exception handling if we need send something inter-module
 logger = logging.getLogger(__name__)
 logger.propagate = False
+
+metadata = AudioMetadata()
+normalization = AudioNormalization()
+subprocess_utils = SubprocessUtilities()
 
 ALBUM_ART = "AlbumArt"
 
@@ -485,6 +485,7 @@ class AudioArt():
                 album_content = os.listdir(album_path)
 
                 if FOLDER_ART in album_content:
+                    logger.info(f"Found {FOLDER_ART} in {album_path}")
                     continue
 
                 # check in AlbumArt folder if a jpg for album name exists

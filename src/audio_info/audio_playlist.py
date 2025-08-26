@@ -23,8 +23,6 @@ from src.dir_processing import DirectoryProcessing
 
 gc.enable()
 
-directory = DirectoryProcessing()
-
 # Configure logging
 basename = os.path.basename(__file__)
 stem = os.path.splitext(basename)[0]
@@ -37,6 +35,8 @@ logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG
 # use raise in exception handling if we need send something inter-module
 logger = logging.getLogger(__name__)
 logger.propagate = False
+
+directory = DirectoryProcessing()
 
 DELIMITER = ","
 

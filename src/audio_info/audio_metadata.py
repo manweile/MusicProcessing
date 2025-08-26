@@ -44,10 +44,6 @@ from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
 
-directory = DirectoryProcessing()
-normalization = AudioNormalization()
-subprocess_utils = SubprocessUtilities()
-
 # Configure logging
 basename = os.path.basename(__file__)
 stem = os.path.splitext(basename)[0]
@@ -60,6 +56,10 @@ logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG
 # use raise in exception handling if we need send something inter-module
 logger = logging.getLogger(__name__)
 logger.propagate = False
+
+directory = DirectoryProcessing()
+normalization = AudioNormalization()
+subprocess_utils = SubprocessUtilities()
 
 TPOS = "TPOS"
 TYER = "TYER"

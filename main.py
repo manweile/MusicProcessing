@@ -42,6 +42,7 @@ log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
 # override the default logging level WARN to lowest level so we can log all levels
 logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
 logger = logging.getLogger(__name__)
+logger.propagate = False
 
 
 class CustomArgumentParser(argparse.ArgumentParser):
