@@ -73,7 +73,7 @@ class TestAudioArt(unittest.TestCase):
     @patch('src.audio_info.audio_art.logger.info')
     def test_extract_album_art_folder_exists(self, mock_warning):
         '''
-        brief Test Try to extract album art from file that already has co-located Folder.jpg file.
+        brief Tests try to extract album art from file that already has co-located Folder.jpg file.
         '''
 
         input_audio = SRC_HAS_JPG_AUDIO
@@ -85,7 +85,7 @@ class TestAudioArt(unittest.TestCase):
     @patch('src.audio_info.audio_art.logger.info')
     def test_extract_album_art_invalid_audio(self, mock_warning):
         '''
-        @brief Tests Try to extract album art from non-valid file.
+        @brief Tests try to extract album art from non-valid file.
         '''
 
         input_audio = INPUT_M3U

@@ -141,12 +141,17 @@ class TestAudioMetadata(unittest.TestCase):
 
         results_info = metadata.get_media_info_dict(MP3_PATH)
         self.maxDiff = None
+
+        '''
+        every os flavour has a slight diff in the return dict,
+        especially the filename, so we just compare the TAG inner dict instead.
+        '''
         self.assertDictEqual(expected_info['TAG'], results_info['TAG'])
 
 
     def test_load_any_file(self):
         '''
-        @brief Tests attempt to load an audio file with mutagen
+        @brief Tests attempt to load an audio file with mutagen.
         '''
 
         loaded_file = metadata.load_any_file(MP3_PATH)
@@ -156,13 +161,14 @@ class TestAudioMetadata(unittest.TestCase):
 
     '''
     With a non-extant file, a mutagen load call will return a chained exception:
-    MutagenError encapsulating a FileNotFoundError, so we check the exception context dunder.
+    MutagenError encapsulating a FileNotFoundError, so we check the exception context dunder,
+    disable logging to prevent console clutter.
 
 
     '''
     def test_load_any_file_non_extant(self):
         '''
-        @brief Tests attempt to load a non-extant audio file with mutagen
+        @brief Tests attempt to load a non-extant audio file with mutagen.
         '''
 
         audio_file = None
@@ -182,7 +188,7 @@ class TestAudioMetadata(unittest.TestCase):
 
     def test_load_m4a_file_non_extant(self):
         '''
-        @brief Tests attempt to load a non-extant audio file with mutagen
+        @brief Tests attempt to load a non-extant audio file with mutagen.
         '''
 
         audio_file = None
@@ -202,7 +208,7 @@ class TestAudioMetadata(unittest.TestCase):
 
     def test_load_mp3_file_non_extant(self):
         '''
-        @brief Tests attempt to load a non-extant audio file with mutagen
+        @brief Tests attempt to load a non-extant audio file with mutagen.
         '''
 
         audio_file = None
@@ -222,7 +228,7 @@ class TestAudioMetadata(unittest.TestCase):
 
     def test_load_wma_file_non_extant(self):
         '''
-        @brief Tests attempt to load a non-extant audio file with mutagen
+        @brief Tests attempt to load a non-extant audio file with mutagen.
         '''
 
         audio_file = None
@@ -243,6 +249,8 @@ class TestAudioMetadata(unittest.TestCase):
     def test_load_wma_file_with_mp3(self):
         '''
         @brief Attempt to load a mp3 as wma with mutagen.
+
+        @details Expected to throw custom exception, so we disable logging to keep console uncluttered.
         '''
 
         audio_file = None
