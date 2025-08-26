@@ -24,7 +24,7 @@ gc.enable()
 
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
-EXPECTED_M3U = os.path.join(TESTS_TLD, "expected.m3u")
+EXPECTED_M3U = os.path.join(TESTS_PATH, "expected.m3u")
 TEST_M3U = os.path.join(TESTS_TLD, "test.m3u")
 GENERATED_M3U = os.path.join(GENERATED_FILES, "test.m3u")
 
