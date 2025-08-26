@@ -41,6 +41,9 @@ class TestSubprocessUtilities(unittest.TestCase):
     @brief Tests SubprocessUtilities class functions.
     '''
 
+    # @todo add a subprocess_run(command) test that has a jsondecoderror
+
+
     def test_subprocess_run_non_extant(self):
         '''
         @brief Tests Tries to run ffprobe video stream check for non-extant file.
