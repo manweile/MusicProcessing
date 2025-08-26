@@ -31,9 +31,10 @@ EXPECTED_M4A_JPG = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance
 EXPECTED_MP3_JPG = os.path.join(TESTS_TLD, "Crush", "Here", FOLDER_ART)
 EXPECTED_NO_STREAM_JPG = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", FOLDER_ART)
 EXPECTED_NO_TAG_MP3_JPG = os.path.join(TESTS_TLD, FOLDER_ART)
+EXPECTED_SET_ALBUM_ART_JPG = os.path.join(TESTS_TLD, "Albert Collins", "Best Of The Blues, Vol. 1", FOLDER_ART)
 EXPECTED_WMA_JPG = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART)
 
-EXPECTED_JPGS = [EXPECTED_MP3_JPG, EXPECTED_M4A_JPG, EXPECTED_NO_STREAM_JPG, EXPECTED_WMA_JPG]
+EXPECTED_JPGS = [EXPECTED_MP3_JPG, EXPECTED_M4A_JPG, EXPECTED_NO_STREAM_JPG, EXPECTED_WMA_JPG, EXPECTED_SET_ALBUM_ART_JPG]
 
 INPUT_M3U = os.path.join(TESTS_TLD, "test.m3u")
 
@@ -230,6 +231,18 @@ class TestAudioArt(unittest.TestCase):
         input_audio = SRC_MP3
         has_video = art.has_video_stream(input_audio)
         self.assertTrue(has_video)
+
+
+    def test_set_album_art(self):
+        '''
+        @brief Tests setting album art file.
+        '''
+
+        # @todo turning off logging
+        art.set_album_art(TESTS_TLD)
+        # @todo assert exists abba/waterloo/folder.jpg
+        # @todo assert exists albert collins/best of the blues, vol. 1/folder.jpg
+        # @todo turning on logging
 
 
 def get_method_names(cls):
