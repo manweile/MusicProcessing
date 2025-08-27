@@ -3,7 +3,12 @@
 @brief Holds package level constants and imports used by other modules.
 '''
 
-# using absolute import as don't expect to be re-organizing directories
+# standard modules
+import logging
+import os
+
+# local modules
+from src.generated_files import GENERATED_FILES
 from src.errors import JSONOutputError
 from src.errors import MetadataTypeError
 from src.errors import MusicProcessingError
@@ -124,3 +129,50 @@ __all__ = [
     "PathInfoError", "PlaylistError",
     "VideoStreamError"
 ]
+
+levels = ("DEBUG", "INFO", "WARNING")
+log_path = os.path.join(GENERATED_FILES, LOG_DIR)
+
+# use name of package so logger is parent to loggers in other modules in same package
+logger = logging.getLogger(__name__)
+
+# override the default logging level WARN to lowest level so we can log all levels
+logger.setLevel(logging.DEBUG)
+
+# add a handler for each level and attach it to the single logger at top of hierarchy
+for level in levels:
+    level_log_file = f"{level.lower()}{LOG_EXT}"
+    level_log_path = os.path.join(log_path, level_log_file)
+
+    handler = logging.FileHandler(level_log_path, mode="a", encoding=UTF8)
+    formatter = logging.Formatter(ERROR_LOG_FORMAT)
+
+    handler.setFormatter(formatter)
+    handler.setLevel(getattr(logging, level))
+
+    logger.addHandler(handler)
+
+logger.propagate = True
+
+
+def add_module_handler(logger, basename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, propagate=False):
+    '''
+    @brief Adds FileHandler to logger.
+
+    @details Logger is expected to be defined with __name__ dunder by calling function.
+    @details basename is expected to be defined by __file__ dunder in calling function.
+    '''
+
+    stem = os.path.splitext(basename)[0]
+    log_file = stem + LOG_EXT
+    log_path = os.path.join(GENERATED_FILES, LOG_DIR, log_file)
+
+    formatter = logging.Formatter(format)
+
+    handler = logging.FileHandler(log_path, encoding=UTF8)
+    handler.setLevel(level)
+    handler.setFormatter(formatter)
+    handler.setLevel(level)
+
+    logger.addHandler(handler)
+    logger.propagate = propagate

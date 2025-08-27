@@ -1,0 +1,2 @@
+
+2025-08-27 17:30:02,106 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:649 — rms normalizing by -2.0 minus -20.00 equaling 18.00 will result in clipping amount: 11.0 dB in D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3

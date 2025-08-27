@@ -110,9 +110,9 @@ class TestAudioNormalization(unittest.TestCase):
 
         @details This test will fail if ran with pytest.
         '''
-
-        logger = logging.getLogger("src.audio_normalize.audio_normalization")
-        with self.assertLogs(logger, level='WARNING') as cm:
+        module = f"{normalization.__module__}"
+        logger = logging.getLogger(module)
+        with self.assertLogs(logger, level=logging.WARNING) as cm:
             normalization.rms_normalize_file(RMS_CLIPPING_SRC, show_spinner=False)
 
         self.assertIn(RMS_CLIPPING_RES, cm.output[0])

@@ -19,8 +19,7 @@ from pathlib import Path
 
 # local modules
 from src import AUDIO_EXTS
-from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
-from src.generated_files import GENERATED_FILES
+from src import add_module_handler
 from src.errors import JSONOutputError
 from src.errors import PathInfoError
 from src.dir_processing import DirectoryProcessing
@@ -28,18 +27,10 @@ from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
 
-# Configure logging
-basename = os.path.basename(__file__)
-stem = os.path.splitext(basename)[0]
-file = stem + LOG_EXT
-log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
-# override the default logging level WARN to lowest level so we can log all levels
-logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
-
-# create logger for module and restrict to module
-# use raise in exception handling if we need send something inter-module
 logger = logging.getLogger(__name__)
-logger.propagate = False
+basename = os.path.basename(__file__)
+logger.setLevel(logging.DEBUG)
+add_module_handler(logger, basename, propagate=True)
 
 directory = DirectoryProcessing()
 subprocess_utils = SubprocessUtilities()

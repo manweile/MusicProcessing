@@ -28,12 +28,6 @@ from src.dir_processing import DirectoryProcessing
 
 gc.enable()
 
-art = AudioArt()
-directory = DirectoryProcessing()
-metadata = AudioMetadata()
-normalization = AudioNormalization()
-playlist = AudioPlaylist()
-
 # Configure logging
 basename = os.path.basename(__file__)
 stem = os.path.splitext(basename)[0]
@@ -42,7 +36,12 @@ log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
 # override the default logging level WARN to lowest level so we can log all levels
 logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
 logger = logging.getLogger(__name__)
-logger.propagate = False
+
+art = AudioArt()
+directory = DirectoryProcessing()
+metadata = AudioMetadata()
+normalization = AudioNormalization()
+playlist = AudioPlaylist()
 
 
 class CustomArgumentParser(argparse.ArgumentParser):
