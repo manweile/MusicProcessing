@@ -130,14 +130,14 @@ __all__ = [
     "VideoStreamError"
 ]
 
-levels = ("DEBUG", "INFO", "WARNING")
+levels = (logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL)
 log_path = os.path.join(GENERATED_FILES, LOG_DIR)
 
 # use name of package so logger is parent to loggers in other modules in same package
-logger = logging.getLogger(__name__)
+src_logger = logging.getLogger(__name__)
 
 # override the default logging level WARN to lowest level so we can log all levels
-logger.setLevel(logging.DEBUG)
+src_logger.setLevel(logging.DEBUG)
 
 # add a handler for each level and attach it to the single logger at top of hierarchy
 for level in levels:
@@ -150,9 +150,10 @@ for level in levels:
     handler.setFormatter(formatter)
     handler.setLevel(getattr(logging, level))
 
-    logger.addHandler(handler)
+    src_logger.addHandler(handler)
 
-logger.propagate = True
+# want all level loggers to propagate to this logger
+src_logger.propagate = True
 
 
 def add_module_handler(logger, basename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, propagate=False):
