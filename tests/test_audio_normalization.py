@@ -13,6 +13,7 @@ import logging
 import os
 import shutil
 import unittest
+from unittest import TestCase
 
 # local modules
 from src import EXPORT_TLD
@@ -42,7 +43,7 @@ VOLUME_INFO_RES = {'mean_volume': -15.8, 'max_volume': -0.1}
 normalization = AudioNormalization()
 
 
-class TestAudioNormalization(unittest.TestCase):
+class TestAudioNormalization(TestCase):
     '''
     @brief Tests AudioNormalization class functions.
     '''

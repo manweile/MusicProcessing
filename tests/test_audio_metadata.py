@@ -14,6 +14,7 @@ import logging
 import os
 import platform
 import unittest
+from unittest import TestCase
 
 # third party modules
 from mutagen._util import MutagenError
@@ -120,7 +121,7 @@ encapsulate the assertRaises in a try block, and use a finally to restore the or
 original_log_level = logging.getLogger().getEffectiveLevel()
 
 
-class TestAudioMetadata(unittest.TestCase):
+class TestAudioMetadata(TestCase):
     '''
     @brief Tests AudioMetadata class functions.
     '''

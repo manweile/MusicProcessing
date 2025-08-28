@@ -13,6 +13,7 @@ import inspect
 import os
 import unittest
 from unittest.mock import patch
+from unittest import TestCase
 
 # local modules
 from src import AUDIO_TYPES
@@ -30,7 +31,7 @@ TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 directory = DirectoryProcessing()
 
 
-class TestDirectoryProcessing(unittest.TestCase):
+class TestDirectoryProcessing(TestCase):
     '''
     @brief Tests DirectoryProcessing class functions.
     '''

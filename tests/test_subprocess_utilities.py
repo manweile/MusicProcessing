@@ -14,6 +14,7 @@ import logging
 import os
 import unittest
 from subprocess import CalledProcessError
+from unittest import TestCase
 
 # local modules
 from src import EXPORT_TLD
@@ -36,7 +37,7 @@ encapsulate the assertRaises in a try block, and use a finally to restore the or
 original_log_level = logging.getLogger().getEffectiveLevel()
 
 
-class TestSubprocessUtilities(unittest.TestCase):
+class TestSubprocessUtilities(TestCase):
     '''
     @brief Tests SubprocessUtilities class functions.
     '''
