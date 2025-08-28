@@ -130,7 +130,7 @@ __all__ = [
     "VideoStreamError"
 ]
 
-levels = (logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL)
+levels = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 log_path = os.path.join(GENERATED_FILES, LOG_DIR)
 
 # use name of package so logger is parent to loggers in other modules in same package
