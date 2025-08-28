@@ -256,16 +256,11 @@ class TestAudioMetadata(TestCase):
 
         audio_file = None
 
-        logging.disable(logging.ERROR)
+        with self.assertRaises(MusicProcessingError) as cm:
+            audio_file = metadata.load_wma_file(MP3_PATH)
 
-        try:
-            with self.assertRaises(MusicProcessingError) as cm:
-                audio_file = metadata.load_wma_file(MP3_PATH)
-
-            self.assertIsNone(audio_file)
-            self.assertEqual(cm.exception.message, f"MusicProcessingError {MP3_PATH} not wma")
-        finally:
-            logging.disable(original_log_level)
+        self.assertIsNone(audio_file)
+        self.assertEqual(cm.exception.message, f"MusicProcessingError {MP3_PATH} not wma")
 
 
 def get_method_names(cls):
