@@ -236,3 +236,7 @@ Stack (most recent call last):
     main(args)
   File "D:\MusicProcessing/main.py", line 606, in main
     logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
+
+2025-08-27 21:30:43,142 — src.dir_processing.directory_processing — INFO — make_dir:441 — /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo already exists
+
+2025-08-27 21:52:48,584 — src.dir_processing.directory_processing — INFO — make_dir:441 — /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo already exists

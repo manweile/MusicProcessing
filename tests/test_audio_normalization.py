@@ -24,18 +24,20 @@ gc.enable()
 NORM_PATH = os.path.join(GENERATED_FILES, EXPORT_TLD)
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 
-EBU_DYNAMIC_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+EBU_DYNAMIC_SRC = SAMPLE_RATE_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 EBU_DYNAMIC_RES = os.path.join(NORM_PATH, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
-# EBU_LINEAR_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
-# EBU_LINEAR_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 
-# PEAK_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
-# PEAK_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
+SAMPLE_RATE_RES = 44100
 
-EBU_LINEAR_SRC = PEAK_SRC = RMS_CLIPPING_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
+EBU_LINEAR_SRC = LOUDNORM_SRC = PEAK_SRC = RMS_CLIPPING_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
 EBU_LINEAR_RES = PEAK_RES = RMS_CLIPPING_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 
 SRC_FILE = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
+
+BIT_SRC = VOL_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Bear McCreary", "Battlestar Galactica", "Bear McCreary - BSG Gayatri Mantra Theme Song.mp3")
+BIT_RES = 128959
+
+VOLUME_INFO_RES = {'mean_volume': -15.8, 'max_volume': -0.1}
 
 normalization = AudioNormalization()
 
@@ -58,15 +60,10 @@ class TestAudioNormalization(unittest.TestCase):
     # can have JSONDecodeError
     # can have JSONOutputError
 
-    # @todo add get_bit_rate tests
-    # can have JSONDecodeError
 
     # @todo add get_sample_rate tests
     # can have IndexError
     # can have JSONDecodeError
-
-    # @todo add get_volume_info tests
-    # can hav re.error
 
 
     def test_ebu_normalize_linear(self):
@@ -110,12 +107,41 @@ class TestAudioNormalization(unittest.TestCase):
 
         @details This test will fail if ran with pytest.
         '''
+
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
         with self.assertLogs(logger, level=logging.WARNING) as cm:
             normalization.rms_normalize_file(RMS_CLIPPING_SRC, show_spinner=False)
 
         self.assertIn(RMS_CLIPPING_RES, cm.output[0])
+
+
+    def test_get_bit_rate(self):
+        '''
+        @brief Tests getting bit rate.
+        '''
+
+        bit_rate = normalization.get_bit_rate(BIT_SRC)
+        self.assertEqual(BIT_RES, bit_rate)
+
+
+    def test_get_sample_rate(self):
+        '''
+        @brief Tests getting sample rate.
+        '''
+
+        sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
+        self.assertEqual(SAMPLE_RATE_RES, sample_rate)
+
+
+    def test_get_volume_info(self):
+        '''
+        @brief Tests getting volume info.
+        '''
+
+        volumes = normalization.get_volume_info(VOL_SRC)
+        self.maxDiff = None
+        self.assertDictEqual(volumes, VOLUME_INFO_RES)
 
 
 def get_method_names(cls):

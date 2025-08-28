@@ -10,3 +10,7 @@
 2025-08-27 17:10:13,862 — src.audio_info.audio_art — INFO — extract_ffmpeg_art:302 — FFMPEG extracted album art from Crush-Live.mp3 and saved to d:\MusicProcessing\tests\Music\Crush\Here
 
 2025-08-27 17:30:02,106 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:649 — rms normalizing by -2.0 minus -20.00 equaling 18.00 will result in clipping amount: 11.0 dB in D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
+
+2025-08-27 21:30:43,142 — src.dir_processing.directory_processing — INFO — make_dir:441 — /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo already exists
+
+2025-08-27 21:52:48,584 — src.dir_processing.directory_processing — INFO — make_dir:441 — /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo already exists
