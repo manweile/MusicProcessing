@@ -14,6 +14,7 @@ import logging
 import os
 import unittest
 from unittest.mock import patch
+from unittest import TestCase
 
 # third party modules
 # import ipsumlorem
@@ -49,7 +50,7 @@ normalization = AudioNormalization()
 playlist = AudioPlaylist()
 
 
-class TestMyClass(unittest.TestCase):
+class TestMyClass(TestCase):
     '''
     @brief Tests MyClass class functions.
     '''
