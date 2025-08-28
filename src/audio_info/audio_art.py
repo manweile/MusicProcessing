@@ -39,8 +39,7 @@ gc.enable()
 
 logger = logging.getLogger(__name__)
 basename = os.path.basename(__file__)
-logger.setLevel(logging.DEBUG)
-add_module_handler(logger, basename, propagate=True)
+add_module_handler(logger, basename, logging.DEBUG, propagate=True)
 
 metadata = AudioMetadata()
 normalization = AudioNormalization()
@@ -62,10 +61,10 @@ class AudioArt():
 
         @return AudioArt {instance} An instance of the class.
         '''
-        logger_name = logger.name
-        class_name = f"{self.__class__.__name__}"
-        self.logger = logging.getLogger(f"{logger_name}.{class_name}")
-        # pass
+        # logger_name = logger.name
+        # class_name = f"{self.__class__.__name__}"
+        # self.logger = logging.getLogger(f"{logger_name}.{class_name}")
+        pass
 
 
     def __unpack_asf_image(self, data):

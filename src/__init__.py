@@ -15,6 +15,7 @@ from src.errors import MusicProcessingError
 from src.errors import PathInfoError
 from src.errors import PlaylistError
 from src.errors import VideoStreamError
+from src.level_filter import LevelFilter
 
 ## @var AUDIO_EXTS
 # @brief audio file extensions in my collection
@@ -130,6 +131,17 @@ __all__ = [
     "VideoStreamError"
 ]
 
+r'''
+MusicProcessing has multi-level logging setup.
+from https://realpython.com/python-logging-source-code/#a-multi-handler-design tutorial.
+All loggers wil have file handlers.
+Every module will instantiate it's own logger.
+This will cause all logging initiated within a module to log to that modules log.
+Additionally, there will be level based loggers.
+The debug logger will not have a filter, making it the master log repository.
+The info through critical loggers will be filtered to only accept log records of their level.
+'''
+
 levels = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 log_path = os.path.join(GENERATED_FILES, LOG_DIR)
 
@@ -145,24 +157,27 @@ for level in levels:
     level_log_path = os.path.join(log_path, level_log_file)
 
     handler = logging.FileHandler(level_log_path, mode="a", encoding=UTF8)
-    formatter = logging.Formatter(ERROR_LOG_FORMAT)
 
-    handler.setFormatter(formatter)
-    handler.setLevel(getattr(logging, level))
+    handler_formatter = logging.Formatter(ERROR_LOG_FORMAT)
+    handler.setFormatter(handler_formatter)
+
+    handler_level = getattr(logging, level)
+
+    if level != "DEBUG":
+        handler.addFilter(LevelFilter(handler_level, handler_level))
 
     src_logger.addHandler(handler)
-
-# want all level loggers to propagate to this logger
-src_logger.propagate = True
 
 
 def add_module_handler(logger, basename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, propagate=False):
     '''
-    @brief Adds FileHandler to logger.
+    @brief Adds FileHandler to a logger.
 
-    @details Logger is expected to be defined with __name__ dunder by calling function.
-    @details basename is expected to be defined by __file__ dunder in calling function.
+    @details Logger is expected to be defined with __name__ dunder by calling module.
+    @details basename is expected to be defined by __file__ dunder in calling module.
     '''
+
+    logger.setLevel(level)
 
     stem = os.path.splitext(basename)[0]
     log_file = stem + LOG_EXT
@@ -171,7 +186,6 @@ def add_module_handler(logger, basename, level=logging.DEBUG, format=ERROR_LOG_F
     formatter = logging.Formatter(format)
 
     handler = logging.FileHandler(log_path, encoding=UTF8)
-    handler.setLevel(level)
     handler.setFormatter(formatter)
     handler.setLevel(level)
 

@@ -1,6 +1,6 @@
 '''
-@file subprocess_utils.py.py
-@brief Defines the subprocess_utilities class.
+@file subprocess_utils.py
+@brief Defines the subprocess utilities class.
 
 @author Gerald Manweiler
 @copyright @showdate "%Y" GWN Software. All rights reserved.
@@ -26,8 +26,7 @@ gc.enable()
 
 logger = logging.getLogger(__name__)
 basename = os.path.basename(__file__)
-logger.setLevel(logging.DEBUG)
-add_module_handler(logger, basename, propagate=True)
+add_module_handler(logger, basename, logging.DEBUG, propagate=True)
 
 
 class SubprocessUtilities():
