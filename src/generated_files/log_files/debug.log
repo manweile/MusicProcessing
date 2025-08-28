@@ -14,3 +14,6 @@
 2025-08-27 21:30:43,142 — src.dir_processing.directory_processing — INFO — make_dir:441 — /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo already exists
 
 2025-08-27 21:52:48,584 — src.dir_processing.directory_processing — INFO — make_dir:441 — /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo already exists
+
+2025-08-28 16:47:05,151 — src.audio_info.audio_metadata — ERROR — load_wma_file:1047 — MusicProcessingError D:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3 not wma
+NoneType: None
