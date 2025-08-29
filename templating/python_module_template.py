@@ -59,6 +59,10 @@ class ${class_name}():
         @return ${class_name} {instance} An instance of the class.
         \'\'\'
 
+        # example of a class logger
+        # logger_name = logger.name
+        # class_name = f"{self.__class__.__name__}"
+        # self.logger = logging.getLogger(f"{logger_name}.{class_name}")
         pass
 """
 
