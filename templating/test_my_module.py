@@ -25,7 +25,7 @@ from src import EXPORT_TLD
 # from src import FOLDER_ART
 # from src import PLAYLIST_EXTS
 # from src.generated_files import GENERATED_FILES
-from tests import TEST_FILES
+from tests import TEST_PATH
 # local module errors
 # from src.errors import JSONOutputError
 # from src.errors import MusicProcessingError
@@ -42,7 +42,7 @@ from tests import TEST_FILES
 gc.enable()
 
 # instantiate module levels vars here
-TESTS_TLD = os.path.join(TEST_FILES, EXPORT_TLD)
+TESTS_TLD = os.path.join(TEST_PATH, EXPORT_TLD)
 
 # instantiate classes here
 # art = AudioArt()
