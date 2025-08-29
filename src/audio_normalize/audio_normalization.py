@@ -148,7 +148,6 @@ class AudioNormalization():
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:
-            # @todo consider if this check should be done from main
             _, input_file_ext = os.path.splitext(file_path)
             if input_file_ext.lower() != AUDIO_EXTS[0]:
                 logger.warning(f"{file_path} is not an mp3")
@@ -447,7 +446,6 @@ class AudioNormalization():
 
                     # file is not mp3, carry on to next file
                     if input_file_ext.lower() != AUDIO_EXTS[0]:
-                        logger.info(f"{file} is not an mp3, continuing to next file")
                         continue
 
                     input_file_path = os.path.join(dir_path, file)
@@ -481,7 +479,6 @@ class AudioNormalization():
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:
-            # @todo consider if this check should be done from main
             _, input_file_ext = os.path.splitext(file_path)
             if input_file_ext.lower() != AUDIO_EXTS[0]:
                 logger.warning(f"{file_path} is not an mp3")
@@ -585,7 +582,6 @@ class AudioNormalization():
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:
-            # @todo consider if this check should be done from main
             _, input_file_ext = os.path.splitext(file_path)
             if input_file_ext.lower() != AUDIO_EXTS[0]:
                 logger.warning(f"{file_path} is not an mp3")

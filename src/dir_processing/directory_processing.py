@@ -99,7 +99,6 @@ class DirectoryProcessing():
                         type_count += 1
 
             self.create_csv(csv_filename, data, None, header_row, None)
-            logger.info(f"Found {type_count} {file_ext} files")
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting files for extension {file_ext} in {start_path}", stack_info=True)
@@ -437,7 +436,6 @@ class DirectoryProcessing():
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
             else:
-                logger.info(f"{dir_path} already exists")
                 return
 
         except OSError as os_error:
@@ -602,7 +600,7 @@ class DirectoryProcessing():
                     if os.path.isdir(artist_item_path) and not os.listdir(artist_item_path):
                         os.rmdir(artist_item_path)
                         dir_count += 1
-
+            # @todo file this
             logger.info(f"removed {dir_count} empty album directories")
 
         except OSError as os_error:
@@ -643,6 +641,7 @@ class DirectoryProcessing():
                     if fnmatch.fnmatch(file, file_pattern.lower()):
                         file_path = os.path.join(dir_path, file)
                         os.remove(file_path)
+                        # @todo file this
                         print(f"Deleted: {file_path}")
 
         except OSError as os_error:

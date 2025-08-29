@@ -186,5 +186,3 @@ class AudioPlaylist():
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} updating m3u files in tld_path: {tld_path}", stack_info=True)
             raise e_error
-        else:
-            logger.info(f"Updated m3u files in {tld_path}\n")

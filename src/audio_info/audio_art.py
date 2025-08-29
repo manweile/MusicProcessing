@@ -146,9 +146,6 @@ class AudioArt():
                 with open(output_file, 'wb') as img_file:
                     img_file.write(image_data)
 
-
-                logger.info(f"Album art written from {input_path.name} and saved to {album_path}")
-
         except BlockingIOError as bio_error:
             logger.error(f"BlockingIOError writing image data to {file_path}", exc_info=True)
             raise bio_error
@@ -185,7 +182,7 @@ class AudioArt():
             # we don't touch non-audio files like m3u etc
             input_file_ext = input_path.suffix
             if input_file_ext.lower() not in AUDIO_EXTS:
-                logger.info(f"{input_path.name} is not an audio file")
+                logger.warning(f"{input_path.name} is not an audio file")
                 return
 
             # ffmpeg extraction is primary method because is file type agnostic,
@@ -284,7 +281,6 @@ class AudioArt():
             ]
 
             _ = subprocess_utils.subprocess_run(command)
-            logger.info(f"FFMPEG extracted album art from {input_path.name} and saved to {album_path}")
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} using ffmpeg to extract art from {input_path}", stack_info=True)
@@ -493,7 +489,6 @@ class AudioArt():
                     album_art_jpg = os.path.join(album_art_dir, album_jpg)     # D:\MusicProcessing\src\generated_files\ALbumArt\Best Of The Blues, Vol. 1.jpg
                     folder_jpg = os.path.join(album_path, FOLDER_ART)          # C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Folder.jpg
                     shutil.copy(album_art_jpg, folder_jpg)
-                    logger.info(f"Set {album_art_jpg} as {FOLDER_ART} for {album_path}")
                 else:
                     logger.warning(f"No album art set for {album_path}")
 

@@ -208,6 +208,7 @@ class AudioMetadata():
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
+
         data = []
         txt_filename = inspect.currentframe().f_code.co_name
 
@@ -457,7 +458,6 @@ class AudioMetadata():
 
             tld_bar.close()
             directory.create_csv(csv_filename, data, None, header_row, 0)
-            logger.info(f"Created {len(album_dirs)} album dirs")
 
         except ValidationError as v_error:
             logger.exception(f"ValidationError sanitizing album metadata {album}", stack_info=True)
