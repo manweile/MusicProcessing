@@ -18,12 +18,11 @@ from unittest import TestCase
 
 # local modules
 from src import EXPORT_TLD
+from tests import TESTS_PATH
 from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
 
-# instantiate module levels vars here
-TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 
 # instantiate classes here

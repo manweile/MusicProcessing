@@ -19,12 +19,12 @@ from unittest import TestCase
 # local modules
 from src import EXPORT_TLD
 from src import FOLDER_ART
+from tests import TESTS_PATH
 from src.audio_info import AudioArt
 
 gc.enable()
 
-# get the dir path for test location need it to find audio files
-TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
+# get the dir path for test music location need it to find audio files
 TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 
 # don't add this one to delete list, need it for an error test

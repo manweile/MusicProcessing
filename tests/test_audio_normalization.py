@@ -17,13 +17,13 @@ from unittest import TestCase
 
 # local modules
 from src import EXPORT_TLD
+from tests import TESTS_PATH
 from src.generated_files import GENERATED_FILES
 from src.audio_normalize import AudioNormalization
 
 gc.enable()
 
 NORM_PATH = os.path.join(GENERATED_FILES, EXPORT_TLD)
-TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 
 EBU_DYNAMIC_SRC = SAMPLE_RATE_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 EBU_DYNAMIC_RES = os.path.join(NORM_PATH, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
@@ -111,6 +111,7 @@ class TestAudioNormalization(TestCase):
 
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
+
         with self.assertLogs(logger, level=logging.WARNING) as cm:
             normalization.rms_normalize_file(RMS_CLIPPING_SRC, show_spinner=False)
 

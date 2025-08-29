@@ -17,13 +17,13 @@ from unittest import TestCase
 
 # local modules
 from src import EXPORT_TLD
+from tests import TESTS_PATH
 from src.generated_files import GENERATED_FILES
 from src import PlaylistError
 from src.audio_info import AudioPlaylist
 
 gc.enable()
 
-TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 EXPECTED_M3U = os.path.join(TESTS_PATH, "expected.m3u")
 TEST_M3U = os.path.join(TESTS_TLD, "test.m3u")

@@ -21,15 +21,14 @@ from mutagen._util import MutagenError
 
 # local modules
 from src import EXPORT_TLD
+from tests import TESTS_PATH
 from src import MusicProcessingError
 from src.audio_info import AudioMetadata
 
 gc.enable()
 
-# instantiate module levels vars here
-TESTS_TLD = os.path.dirname(os.path.abspath(__file__))
 MP3_FILE = os.path.join("Crush", "Here", "Crush-Live.mp3")
-MP3_PATH = os.path.join(TESTS_TLD, EXPORT_TLD, MP3_FILE)
+MP3_PATH = os.path.join(TESTS_PATH, EXPORT_TLD, MP3_FILE)
 
 '''
 ffprobe command line that is source for media info dictionary definition
@@ -164,27 +163,42 @@ class TestAudioMetadata(TestCase):
     With a non-extant file, a mutagen load call will return a chained exception:
     MutagenError encapsulating a FileNotFoundError, so we check the exception context dunder,
     disable logging to prevent console clutter.
-
-
     '''
+
+
+    # def test_load_any_file_non_extant(self):
+    #     '''
+    #     @brief Tests attempt to load a non-extant audio file with mutagen.
+    #     '''
+
+    #     audio_file = None
+    #     file_path = os.path.join(TESTS_PATH, EXPORT_TLD, "Non-extant.wav")
+
+    #     logging.disable(logging.ERROR)
+
+    #     try:
+    #         with self.assertRaises(MutagenError) as cm:
+    #             audio_file = metadata.load_any_file(file_path)
+
+    #         self.assertIsNone(audio_file)
+    #         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
+    #     finally:
+    #         logging.disable(original_log_level)
+
+
     def test_load_any_file_non_extant(self):
         '''
         @brief Tests attempt to load a non-extant audio file with mutagen.
         '''
 
         audio_file = None
-        file_path = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.wav")
+        file_path = os.path.join(TESTS_PATH, EXPORT_TLD, "Non-extant.wav")
 
-        logging.disable(logging.ERROR)
+        with self.assertRaises(MutagenError) as cm:
+            audio_file = metadata.load_any_file(file_path)
 
-        try:
-            with self.assertRaises(MutagenError) as cm:
-                audio_file = metadata.load_any_file(file_path)
-
-            self.assertIsNone(audio_file)
-            self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
-        finally:
-            logging.disable(original_log_level)
+        self.assertIsNone(audio_file)
+        self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
     def test_load_m4a_file_non_extant(self):
@@ -193,7 +207,7 @@ class TestAudioMetadata(TestCase):
         '''
 
         audio_file = None
-        file_path = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.m4a")
+        file_path = os.path.join(TESTS_PATH, EXPORT_TLD, "Non-extant.m4a")
 
         logging.disable(logging.ERROR)
 
@@ -213,7 +227,7 @@ class TestAudioMetadata(TestCase):
         '''
 
         audio_file = None
-        file_path = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.mp3")
+        file_path = os.path.join(TESTS_PATH, EXPORT_TLD, "Non-extant.mp3")
 
         logging.disable(logging.ERROR)
 
@@ -233,7 +247,7 @@ class TestAudioMetadata(TestCase):
         '''
 
         audio_file = None
-        file_path = os.path.join(TESTS_TLD, EXPORT_TLD, "Non-extant.wma")
+        file_path = os.path.join(TESTS_PATH, EXPORT_TLD, "Non-extant.wma")
 
         logging.disable(logging.ERROR)
 
