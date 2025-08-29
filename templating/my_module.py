@@ -1,3 +1,4 @@
+
 '''
 @file my_module.py
 @brief Defines the my class class.
@@ -10,28 +11,35 @@
 import gc
 import logging
 import os
+# import ipsumlorem
+# from ipsum import lorem
 
 # third party modules
 # import ipsumlorem
+# from ipsum import lorem
 
-# local modules
-from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
-from src.generated_files import GENERATED_FILES
+# local module methods
+from src import add_module_handler
+# local module constants
+# from src import IPSUM_LOREM
+# from src.generated_files import GENERATED_FILES
+# local module errors
+# from src import IpsumLoremError
+# local module classes
+# from src.dolor import IpsumLorem
 
 gc.enable()
 
 # Configure logging
-basename = os.path.basename(__file__)
-stem = os.path.splitext(basename)[0]
-file = stem + LOG_EXT
-log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
-# override the default logging level WARN to lowest level so we can log all levels
-logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
-
-# create logger for module and restrict to module
-# use raise in exception handling if we need send something inter-module
 logger = logging.getLogger(__name__)
-logger.propagate = False
+basename = os.path.basename(__file__)
+add_module_handler(logger, basename, logging.DEBUG, propagate=True)
+
+# instantiate classes here
+# ipsum_lorem = IpsumLorem()
+
+# instantiate module levels vars here
+# IPSUM_LOREM = "ipsum lorem"
 
 
 class MyClass():
