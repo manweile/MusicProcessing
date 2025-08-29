@@ -17,11 +17,14 @@ import re
 from json import JSONDecodeError
 from pathlib import Path
 
-# local modules
-from src import AUDIO_EXTS
+# local module methods
 from src import add_module_handler
+# local module constants
+from src import AUDIO_EXTS
+# local module errors
 from src.errors import JSONOutputError
 from src.errors import PathInfoError
+# local module classes
 from src.dir_processing import DirectoryProcessing
 from src.subprocess_utils import SubprocessUtilities
 

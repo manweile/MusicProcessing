@@ -30,13 +30,16 @@ from pathvalidate.error import ValidationError
 from pydub import AudioSegment
 from tqdm import tqdm
 
-# local modules
+# local module methods
+from src import add_module_handler
+# local module constants
 from src import AUDIO_EXTS, AUDIO_FILES, AUDIO_TYPES
 from src import FOLDER_ART
-from src import add_module_handler
+# local module errors
 from src import MetadataTypeError
 from src import MusicProcessingError
 from src import PathInfoError
+# local module classes
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
 from src.subprocess_utils import SubprocessUtilities

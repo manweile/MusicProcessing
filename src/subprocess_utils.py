@@ -19,7 +19,7 @@ from subprocess import CalledProcessError
 from yaspin import yaspin
 from yaspin.spinners import Spinners
 
-# local modules
+# local module methods
 from src import add_module_handler
 
 gc.enable()

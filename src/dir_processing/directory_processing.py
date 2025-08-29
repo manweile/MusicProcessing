@@ -19,14 +19,15 @@ from os import strerror
 from pathlib import Path
 from shutil import ExecError
 
-# local modules
+# local module methods
+from src import add_module_handler
+# local module constants
 from src import AUDIO_EXTS, AUDIO_TYPES
 from src import CSV_DIR, CSV_EXT
 from src import EXPORT_TLD
 from src import PLAYLIST_EXTS
 from src import RESULT_DIR, RESULT_EXT
 from src.generated_files import GENERATED_FILES
-from src import add_module_handler
 
 gc.enable()
 

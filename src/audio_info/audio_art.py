@@ -25,11 +25,13 @@ from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 from mutagen._util import MutagenError
 
-# local modules
+# local module methods
+from src import add_module_handler
+# local module constants
 from src import AUDIO_EXTS
 from src import FOLDER_ART
 from src.generated_files import GENERATED_FILES
-from src import add_module_handler
+# local module classes
 from src.audio_normalize import AudioNormalization
 from src.subprocess_utils import SubprocessUtilities
 # relative import so don't get circular import error
@@ -61,9 +63,7 @@ class AudioArt():
 
         @return AudioArt {instance} An instance of the class.
         '''
-        # logger_name = logger.name
-        # class_name = f"{self.__class__.__name__}"
-        # self.logger = logging.getLogger(f"{logger_name}.{class_name}")
+
         pass
 
 

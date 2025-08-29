@@ -13,12 +13,15 @@ import os
 from os import strerror
 from pathlib import Path
 
-# local modules
+# local module methods
+from src import add_module_handler
+# local module constants
 from src import AUDIO_EXTS
 from src import PLAYLIST_EXTS
 from src.generated_files import GENERATED_FILES
-from src import add_module_handler
+# local module errors
 from src import PlaylistError
+# local module classes
 from src.dir_processing import DirectoryProcessing
 
 gc.enable()
