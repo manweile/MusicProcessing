@@ -51,7 +51,7 @@ TEST_MP3_CRUSH = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
 # @details This m4a has a MP4 covr album art tag.
 # @details Use this when needing a valid audio file for directory processing tests
 TEST_M4A_DAVIS = ""
-TEST_M4A_DAVIS = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
+TEST_M4A_DAVIS = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
 
 ## @var TEST_WAV_NONE
 # @brief Path to wav audio file for tests.
