@@ -7,14 +7,16 @@
 import logging
 import os
 
-# local modules
+# local module constants
 from src.generated_files import GENERATED_FILES
+# local module errors
 from src.errors import JSONOutputError
 from src.errors import MetadataTypeError
 from src.errors import MusicProcessingError
 from src.errors import PathInfoError
 from src.errors import PlaylistError
 from src.errors import VideoStreamError
+# local module classes
 from src.level_filter import LevelFilter
 
 ## @var AUDIO_EXTS
