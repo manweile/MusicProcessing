@@ -8,7 +8,7 @@ input_path = os.path.join(TESTS_PATH, EXPORT_TLD, "expected.m3u")
 audio_file = os.path.join(EXPORT_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
 expected_info = os.path.join(GENERATED_FILES, EXPORT_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
 
-test_audio_plylist
+test_audio_playlist
 TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 EXPECTED_M3U = os.path.join(TESTS_PATH, "expected.m3u")
 TEST_M3U = os.path.join(TESTS_TLD, "test.m3u")
