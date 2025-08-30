@@ -171,12 +171,18 @@ for level in levels:
     src_logger.addHandler(handler)
 
 
-def add_module_handler(logger, basename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, propagate=False):
+def add_module_handler(logger, basename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, propagate=True):
     '''
     @brief Adds FileHandler to a logger.
 
     @details Logger is expected to be defined with __name__ dunder by calling module.
     @details basename is expected to be defined by __file__ dunder in calling module.
+
+    @param logger (Logger) Logger instance for a module.
+    @param basename {str} Set file handler log file name for logger.
+    @param level {int} Optional, sets logger & file handler logging level.
+    @param format {str} Optional, sets file handler logging format.
+    @param propagate {bool} Optional, sets logger to propagation to root logger.
     '''
 
     logger.setLevel(level)
