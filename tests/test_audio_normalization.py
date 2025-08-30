@@ -37,10 +37,13 @@ EBU_LINEAR_RES = PEAK_RES = RMS_CLIPPING_RES = os.path.join(NORM_PATH, "Crush", 
 
 SRC_FILE = TEST_MP3_CRUSH
 
-BIT_SRC = VOL_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Bear McCreary", "Battlestar Galactica", "Bear McCreary - BSG Gayatri Mantra Theme Song.mp3")
-BIT_RES = 128959
+# BIT_SRC = VOL_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Bear McCreary", "Battlestar Galactica", "Bear McCreary - BSG Gayatri Mantra Theme Song.mp3")
+BIT_SRC = VOL_SRC = TEST_MP3_CRUSH
+# BIT_RES = 128969
+BIT_RES = 129156
 
-VOLUME_INFO_RES = {'mean_volume': -15.8, 'max_volume': -0.1}
+# VOLUME_INFO_RES = {'mean_volume': -15.8, 'max_volume': -0.1}
+VOLUME_INFO_RES = {'mean_volume': -19.9, 'max_volume': -6.7}
 
 normalization = AudioNormalization()
 
