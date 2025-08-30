@@ -17,15 +17,11 @@ from subprocess import CalledProcessError
 from unittest import TestCase
 
 # local modules
-from src import EXPORT_TLD
 from src import FOLDER_ART
-from tests import TESTS_PATH
+from tests import TESTS_TLD
 from src.audio_info import AudioArt
 
 gc.enable()
-
-# get the dir path for test music location need it to find audio files
-TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 
 # don't add this one to delete list, need it for an error test
 EXPECTED_FOUND_ALBUM_ART_JPG = os.path.join(TESTS_TLD, "Abba", "Waterloo", FOLDER_ART)
