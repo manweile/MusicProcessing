@@ -12,19 +12,19 @@ import gc
 import inspect
 import os
 import unittest
-from unittest.mock import patch
 from unittest import TestCase
+from unittest.mock import patch
 
-# local modules
+# local module constants
 from src import AUDIO_TYPES
 from src import EXPORT_TLD
-from tests import TESTS_PATH
 from src.generated_files import GENERATED_FILES
+from tests import TEST_M4A_DAVIS
+from tests import TESTS_TLD
+# local module classes
 from src.dir_processing import DirectoryProcessing
 
 gc.enable()
-
-TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 
 # instantiate classes here
 directory = DirectoryProcessing()
@@ -64,7 +64,7 @@ class TestDirectoryProcessing(TestCase):
         @brief Tests if trying to get path info for a non-audio file.
         '''
 
-        input_path = os.path.join(TESTS_PATH, EXPORT_TLD, "expected.m3u")
+        input_path = os.path.join(TESTS_TLD, "expected.m3u")
         path_info = directory.path_info(input_path)
         self.assertIsNone(path_info)
         mock_warning.assert_called_once_with(f"File {input_path} is not in {AUDIO_TYPES}")
@@ -75,9 +75,7 @@ class TestDirectoryProcessing(TestCase):
         @brief Tests getting a path info for audio file.
         '''
 
-        audio_file = os.path.join(EXPORT_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
-        file_path = os.path.join(TESTS_PATH, audio_file)
-        path_info = directory.path_info(file_path)
+        path_info = directory.path_info(TEST_M4A_DAVIS)
 
         # successful path_info returns a mp3 file name in generated_files/Music
         expected_info = os.path.join(GENERATED_FILES, EXPORT_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")

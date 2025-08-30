@@ -12,21 +12,21 @@ import inspect
 import logging
 import os
 import unittest
-from unittest.mock import patch
 from unittest import TestCase
+from unittest.mock import patch
 
-# local modules
-from src import EXPORT_TLD
-from tests import TESTS_PATH
+# local module constants
 from src.generated_files import GENERATED_FILES
+from tests import TEST_M3U
+from tests import TESTS_PATH, TESTS_TLD
+# local module errors
 from src import PlaylistError
+# local module classes
 from src.audio_info import AudioPlaylist
 
 gc.enable()
 
-TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 EXPECTED_M3U = os.path.join(TESTS_PATH, "expected.m3u")
-TEST_M3U = os.path.join(TESTS_TLD, "test.m3u")
 GENERATED_M3U = os.path.join(GENERATED_FILES, "test.m3u")
 
 playlist = AudioPlaylist()

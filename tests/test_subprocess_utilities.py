@@ -17,13 +17,10 @@ from subprocess import CalledProcessError
 from unittest import TestCase
 
 # local modules
-from src import EXPORT_TLD
-from tests import TESTS_PATH
+from tests import TEST_WAV_NONE
 from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
-
-TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 
 # instantiate classes here
 subprocess_utils = SubprocessUtilities()
@@ -44,6 +41,45 @@ class TestSubprocessUtilities(TestCase):
     # @todo add a subprocess_run(command) test that has a jsondecoderror
 
 
+    # def test_subprocess_run_non_extant(self):
+    #     '''
+    #     @brief Tests Tries to run ffprobe video stream check for non-extant file.
+
+    #     @details This test is a due diligence expected failure test.
+    #     SubprocessUtilities.subprocess_run is 4th level, called by AudioArt.has_video_stream function.
+    #     AudioArt.has_video_stream has its own tests, which are not an appropriate location for subprocess_run testing.
+    #     '''
+
+    #     # Don't want the console output cluttered up
+    #     logging.disable(logging.ERROR)
+
+    #     input_audio = TEST_WAV_NONE
+
+    #     # -hide_banner reduce output clutter
+    #     # -select_streams v:0 only want video stream
+    #     # -show_streams gets all information about each media stream in the input
+    #     # -of json output information in json format
+    #     probe_command = [
+    #         'ffprobe',
+    #         '-hide_banner',
+    #         '-select_streams', 'v:0',
+    #         '-show_streams',
+    #         '-of', 'json',
+    #         input_audio
+    #     ]
+    #     probe_process = None
+
+    #     try:
+    #         with self.assertRaises(CalledProcessError) as cm:
+    #             probe_process = subprocess_utils.subprocess_run(probe_command)
+
+    #         self.assertIsNone(probe_process)
+    #         stderr = cm.exception.stderr.strip()
+    #         expected_err = f"{input_audio}: No such file or directory"
+    #         self.assertEqual(stderr, expected_err)
+    #     finally:
+    #         logging.disable(original_log_level)
+
     def test_subprocess_run_non_extant(self):
         '''
         @brief Tests Tries to run ffprobe video stream check for non-extant file.
@@ -53,10 +89,7 @@ class TestSubprocessUtilities(TestCase):
         AudioArt.has_video_stream has its own tests, which are not an appropriate location for subprocess_run testing.
         '''
 
-        # Don't want the console output cluttered up
-        logging.disable(logging.ERROR)
-
-        input_audio = os.path.join(TESTS_TLD, "Non-extant.wav")
+        input_audio = TEST_WAV_NONE
 
         # -hide_banner reduce output clutter
         # -select_streams v:0 only want video stream
@@ -72,16 +105,13 @@ class TestSubprocessUtilities(TestCase):
         ]
         probe_process = None
 
-        try:
-            with self.assertRaises(CalledProcessError) as cm:
-                probe_process = subprocess_utils.subprocess_run(probe_command)
+        with self.assertRaises(CalledProcessError) as cm:
+            probe_process = subprocess_utils.subprocess_run(probe_command)
 
-            self.assertIsNone(probe_process)
-            stderr = cm.exception.stderr.strip()
-            expected_err = f"{input_audio}: No such file or directory"
-            self.assertEqual(stderr, expected_err)
-        finally:
-            logging.disable(original_log_level)
+        self.assertIsNone(probe_process)
+        stderr = cm.exception.stderr.strip()
+        expected_err = f"{input_audio}: No such file or directory"
+        self.assertEqual(stderr, expected_err)
 
 
 def get_method_names(cls):

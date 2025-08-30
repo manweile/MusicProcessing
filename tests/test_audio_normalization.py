@@ -15,25 +15,27 @@ import shutil
 import unittest
 from unittest import TestCase
 
-# local modules
+# local module constants
 from src import EXPORT_TLD
-from tests import TESTS_PATH
 from src.generated_files import GENERATED_FILES
+from tests import TEST_MP3_ABBA, TEST_MP3_CRUSH
+from tests import TESTS_PATH
+# local module classes
 from src.audio_normalize import AudioNormalization
 
 gc.enable()
 
 NORM_PATH = os.path.join(GENERATED_FILES, EXPORT_TLD)
 
-EBU_DYNAMIC_SRC = SAMPLE_RATE_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+EBU_DYNAMIC_SRC = SAMPLE_RATE_SRC = TEST_MP3_ABBA
 EBU_DYNAMIC_RES = os.path.join(NORM_PATH, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 
 SAMPLE_RATE_RES = 44100
 
-EBU_LINEAR_SRC = LOUDNORM_SRC = PEAK_SRC = RMS_CLIPPING_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
+EBU_LINEAR_SRC = LOUDNORM_SRC = PEAK_SRC = RMS_CLIPPING_SRC = TEST_MP3_CRUSH
 EBU_LINEAR_RES = PEAK_RES = RMS_CLIPPING_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 
-SRC_FILE = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
+SRC_FILE = TEST_MP3_CRUSH
 
 BIT_SRC = VOL_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Bear McCreary", "Battlestar Galactica", "Bear McCreary - BSG Gayatri Mantra Theme Song.mp3")
 BIT_RES = 128959

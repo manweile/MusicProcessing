@@ -16,9 +16,11 @@ from pathlib import Path
 from subprocess import CalledProcessError
 from unittest import TestCase
 
-# local modules
+# local module constants
 from src import FOLDER_ART
+from tests import TEST_M4A_DAVIS, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_M3U
 from tests import TESTS_TLD
+# local module classes
 from src.audio_info import AudioArt
 
 gc.enable()
@@ -34,12 +36,11 @@ EXPECTED_WMA_JPG = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick R
 
 DELETE_JPGS = [EXPECTED_M4A_JPG, EXPECTED_MP3_JPG, EXPECTED_NO_STREAM_JPG, EXPECTED_SET_ALBUM_ART_JPG, EXPECTED_WMA_JPG]
 
-INPUT_M3U = os.path.join(TESTS_TLD, "test.m3u")
-
-SRC_HAS_JPG_AUDIO = os.path.join(TESTS_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+SRC_HAS_JPG_AUDIO = TEST_MP3_ABBA
 SRC_HAS_JPG_PATH = os.path.join(TESTS_TLD, "Abba", "Waterloo")
-SRC_MP3 = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
-SRC_M4A = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
+SRC_MP3 = TEST_MP3_CRUSH
+# SRC_M4A = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
+SRC_M4A = TEST_M4A_DAVIS
 SRC_NO_STREAM_WMA = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
 SRC_NO_TAG_MP3 = os.path.join(TESTS_TLD, "Crush", "Here", "No_tag_Crush-Live.mp3")
 SRC_WMA = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", "Elton John-Saturday Night's Alright for Fighting.wma")
@@ -90,7 +91,7 @@ class TestAudioArt(TestCase):
         @brief Tests try to extract album art from non-valid file.
         '''
 
-        input_audio = INPUT_M3U
+        input_audio = TEST_M3U
         input_path = Path(input_audio)
         log_msg = f"{input_path.name} is not an audio file"
 
