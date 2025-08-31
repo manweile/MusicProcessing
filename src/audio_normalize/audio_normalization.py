@@ -404,12 +404,17 @@ class AudioNormalization():
                 '-f', 'null', '-'
             ]
 
+            # D:\MusicProcessing\tests\Music\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3
+            # python subprocess throws an error returns non zero exit code 4294967294
+            # but running ffmpeg with same cli succeeds ?!!
+            # may need to update ffmpeg version on Windows
+            # need to test if this happens on linux
             process = subprocess_utils.subprocess_run(command)
 
             # ffmpeg sends its output to stderr, not stdout
             output_str = process.stderr
 
-            # threw an error C:\Music\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3
+
             mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
             max_volume_match = re.search(r'max_volume: ([-]?\d+\.\d+) dB', output_str)
 
