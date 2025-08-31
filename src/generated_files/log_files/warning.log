@@ -2,3 +2,31 @@
 2025-08-27 17:06:36,029 — src.audio_info.audio_art — WARNING — extract_album_art:228 — No album art present in D:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
 
 2025-08-27 17:30:02,106 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:649 — rms normalizing by -2.0 minus -20.00 equaling 18.00 will result in clipping amount: 11.0 dB in D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
+
+2025-08-30 16:55:51,148 — src.audio_info.audio_art — WARNING — extract_album_art:185 — test.m3u is not an audio file
+
+2025-08-30 16:55:51,215 — src.audio_info.audio_art — WARNING — extract_album_art:210 — No album art present in d:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
+
+2025-08-30 16:55:51,634 — src.audio_info.audio_art — WARNING — set_album_art:493 — No album art set for d:\MusicProcessing\tests\Music\38 Special\Teachers
+
+2025-08-30 16:55:51,635 — src.audio_info.audio_art — WARNING — set_album_art:493 — No album art set for d:\MusicProcessing\tests\Music\Aerosmith\Devil's Got a New Disguise-The Very Best of Aerosmith
+
+2025-08-30 16:55:51,635 — src.audio_info.audio_art — WARNING — set_album_art:493 — No album art set for d:\MusicProcessing\tests\Music\Bear McCreary\Battlestar Galactica
+
+2025-08-30 16:55:51,635 — src.audio_info.audio_art — WARNING — set_album_art:493 — No album art set for d:\MusicProcessing\tests\Music\Billie Holiday\Georgia On My Mind
+
+2025-08-30 16:55:51,635 — src.audio_info.audio_art — WARNING — set_album_art:493 — No album art set for d:\MusicProcessing\tests\Music\Creedence Clearwater Revival\Chronicle, Vol. 1
+
+2025-08-30 16:55:51,635 — src.audio_info.audio_art — WARNING — set_album_art:493 — No album art set for d:\MusicProcessing\tests\Music\Crush\Here
+
+2025-08-30 16:55:51,635 — src.audio_info.audio_art — WARNING — set_album_art:493 — No album art set for d:\MusicProcessing\tests\Music\Daughtry\Leave This Town
+
+2025-08-30 16:55:51,635 — src.audio_info.audio_art — WARNING — set_album_art:493 — No album art set for d:\MusicProcessing\tests\Music\Elton John\Goodbye Yellow Brick Road
+
+2025-08-30 16:55:51,635 — src.audio_info.audio_art — WARNING — set_album_art:493 — No album art set for d:\MusicProcessing\tests\Music\Joshua Davis\The Voice Peformance
+
+2025-08-30 16:55:51,635 — src.audio_info.audio_art — WARNING — set_album_art:493 — No album art set for d:\MusicProcessing\tests\Music\Sawyer Fredericks\A Good Storm
+
+2025-08-30 16:55:51,635 — src.audio_info.audio_art — WARNING — set_album_art:493 — No album art set for d:\MusicProcessing\tests\Music\The Eagles\Desperado
+
+2025-08-30 16:55:51,635 — src.audio_info.audio_art — WARNING — set_album_art:493 — No album art set for d:\MusicProcessing\tests\Music\The Lord of the Rings\The Return of the King

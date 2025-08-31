@@ -14,3 +14,11 @@
 2025-08-27 21:30:43,142 — src.dir_processing.directory_processing — INFO — make_dir:441 — /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo already exists
 
 2025-08-27 21:52:48,584 — src.dir_processing.directory_processing — INFO — make_dir:441 — /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo already exists
+
+2025-08-30 16:55:51,148 — src.audio_info.audio_art — INFO — extract_album_art:179 — d:\MusicProcessing\tests\Music\Abba\Waterloo has a Folder.jpg
+
+2025-08-30 16:55:51,199 — src.audio_info.audio_art — INFO — extract_album_art:195 — No video stream album art present in d:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
+
+2025-08-30 16:55:51,402 — src.audio_info.audio_art — INFO — extract_album_art:195 — No video stream album art present in d:\MusicProcessing\tests\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma
+
+2025-08-30 16:55:51,634 — src.audio_info.audio_art — INFO — set_album_art:477 — Found Folder.jpg in d:\MusicProcessing\tests\Music\Abba\Waterloo

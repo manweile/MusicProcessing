@@ -1,3 +1,103 @@
 
 2025-08-28 16:47:05,151 — src.audio_info.audio_metadata — ERROR — load_wma_file:1047 — MusicProcessingError D:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3 not wma
 NoneType: None
+
+2025-08-30 16:55:51,215 — src.audio_info.audio_metadata — ERROR — load_any_file:939 — MutagenError [Errno 2] No such file or directory: 'd:\\MusicProcessing\\tests\\Music\\Non-extant.wav' loading d:\MusicProcessing\tests\Music\Non-extant.wav
+Traceback (most recent call last):
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'd:\\MusicProcessing\\tests\\Music\\Non-extant.wav'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "d:\MusicProcessing\src\audio_info\audio_metadata.py", line 931, in load_any_file
+    audio_file = mutagen.File(file_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 162, in wrapper_func
+    with _openfile(None, filething, filename, fileobj,
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: 'd:\\MusicProcessing\\tests\\Music\\Non-extant.wav'
+
+2025-08-30 16:55:51,232 — src.audio_info.audio_metadata — ERROR — load_m4a_file:980 — MutagenError [Errno 2] No such file or directory: 'd:\\MusicProcessing\\tests\\Music\\Non-extant.m4a' loading d:\MusicProcessing\tests\Music\Non-extant.m4a
+Traceback (most recent call last):
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'd:\\MusicProcessing\\tests\\Music\\Non-extant.m4a'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "d:\MusicProcessing\src\audio_info\audio_metadata.py", line 968, in load_m4a_file
+    audio_file = MP4(file_path)
+                 ^^^^^^^^^^^^^^
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_file.py", line 48, in __init__
+    self.load(*args, **kwargs)
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 154, in wrapper
+    with _openfile(self, filething, filename, fileobj,
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: 'd:\\MusicProcessing\\tests\\Music\\Non-extant.m4a'
+
+2025-08-30 16:55:51,232 — src.audio_info.audio_metadata — ERROR — load_mp3_file:1020 — MutagenError [Errno 2] No such file or directory: 'd:\\MusicProcessing\\tests\\Music\\Non-extant.mp3' loading d:\MusicProcessing\tests\Music\Non-extant.mp3
+Traceback (most recent call last):
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'd:\\MusicProcessing\\tests\\Music\\Non-extant.mp3'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "d:\MusicProcessing\src\audio_info\audio_metadata.py", line 1008, in load_mp3_file
+    audio_file = MP3(file_path)
+                 ^^^^^^^^^^^^^^
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_file.py", line 48, in __init__
+    self.load(*args, **kwargs)
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 154, in wrapper
+    with _openfile(self, filething, filename, fileobj,
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: 'd:\\MusicProcessing\\tests\\Music\\Non-extant.mp3'
+
+2025-08-30 16:55:51,232 — src.audio_info.audio_metadata — ERROR — load_wma_file:1060 — MutagenError [Errno 2] No such file or directory: 'd:\\MusicProcessing\\tests\\Music\\Non-extant.wma' loading d:\MusicProcessing\tests\Music\Non-extant.wma
+Traceback (most recent call last):
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'd:\\MusicProcessing\\tests\\Music\\Non-extant.wma'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "d:\MusicProcessing\src\audio_info\audio_metadata.py", line 1048, in load_wma_file
+    audio_file = ASF(file_path)
+                 ^^^^^^^^^^^^^^
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_file.py", line 48, in __init__
+    self.load(*args, **kwargs)
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 185, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 154, in wrapper
+    with _openfile(self, filething, filename, fileobj,
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: 'd:\\MusicProcessing\\tests\\Music\\Non-extant.wma'
+
+2025-08-30 16:55:51,232 — src.audio_info.audio_metadata — ERROR — load_wma_file:1050 — MusicProcessingError d:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3 not wma
+NoneType: None
