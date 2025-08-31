@@ -39,7 +39,6 @@ DELETE_JPGS = [EXPECTED_M4A_JPG, EXPECTED_MP3_JPG, EXPECTED_NO_STREAM_JPG, EXPEC
 SRC_HAS_JPG_AUDIO = TEST_MP3_ABBA
 SRC_HAS_JPG_PATH = os.path.join(TESTS_TLD, "Abba", "Waterloo")
 SRC_MP3 = TEST_MP3_CRUSH
-# SRC_M4A = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
 SRC_M4A = TEST_M4A_DAVIS
 SRC_NO_STREAM_WMA = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
 SRC_NO_TAG_MP3 = os.path.join(TESTS_TLD, "Crush", "Here", "No_tag_Crush-Live.mp3")
