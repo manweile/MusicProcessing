@@ -430,6 +430,8 @@ class AudioNormalization():
                 # ffmpeg sends its output to stderr, not stdout
                 output_str = process.stderr
             else:
+                # @todo this really should be error thrown from subprocess_utilities
+                # think need a timeout as well in subprocess
                 # subprocess had 0 returncode, but nothing in stderr is a false positive result
                 logger.critical(f"MusicProcessingException with subprocess getting volume information for {file_path}", exc_info=True)
                 raise MusicProcessingException
