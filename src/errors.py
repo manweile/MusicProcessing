@@ -3,6 +3,10 @@ class MusicProcessingException(Exception):
     @brief Base class for any MusicProcessing Exception
     '''
 
+    def __init__(self, message="A MusicProcessingException occurred"):
+        self.message = message
+        super().__init__(self.message)
+
 
 class JSONOutputError(MusicProcessingException):
     '''

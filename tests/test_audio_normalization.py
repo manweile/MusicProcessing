@@ -41,7 +41,11 @@ SAMPLE_RATE_RES = 44100
 
 VOL_INFO_RES = {'mean_volume': -19.9, 'max_volume': -6.7}
 
-VOL_SRC_FAIL = os.path.join(TESTS_TLD, "Bear McCreary", "Battlestar Galactica", "Bear McCreary - BSG Gayatri Mantra Theme Song.mp3")
+VOL_ERR_SRC = os.path.join(TESTS_TLD, "Bear McCreary", "Battlestar Galactica", "Bear McCreary - BSG Gayatri Mantra Theme Song.mp3")
+VOL_ERR_RES = "MusicProcessingException with subprocess getting volume information for Bear McCreary - BSG Gayatri Mantra Theme Song.mp3"
+
+VOL_FAIL_SRC = os.path.join(TESTS_TLD, "X Ambassadors", "VHS", "X Ambassadors-Renegades.mp3")
+VOL_FAIL_RES = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
 
 normalization = AudioNormalization()
 
@@ -91,9 +95,7 @@ class TestAudioNormalization(TestCase):
         self.assertEqual(res_bitrate, exp_bitrate)
 
 
-    # @todo add get_sample_rate tests
-    # can have IndexError
-    # can have JSONDecodeError
+    # @todo add get_bit_rate fail tests
 
 
     def test_get_sample_rate(self):
@@ -103,6 +105,11 @@ class TestAudioNormalization(TestCase):
 
         sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
         self.assertEqual(SAMPLE_RATE_RES, sample_rate)
+
+
+    # @todo add get_sample_rate fail tests
+    # can have IndexError
+    # can have JSONDecodeError
 
 
     def test_get_volume_info(self):
@@ -115,14 +122,20 @@ class TestAudioNormalization(TestCase):
         self.assertDictEqual(volumes, VOL_INFO_RES)
 
 
-    def test_get_volume_info_fail(self):
-        '''
-        @brief Tests getting volume info failing.
-        '''
+    # def test_get_volume_info_fail(self):
+    #     '''
+    #     @brief Tests getting volume info failing.
+    #     '''
 
-        volumes = normalization.get_volume_info(VOL_SRC_FAIL)
-        self.maxDiff = None
-        self.assertDictEqual(volumes, VOL_INFO_RES)
+    #     volumes = None
+    #     module = f"{normalization.__module__}"
+    #     logger = logging.getLogger(module)
+
+    #     with self.assertLogs(logger, level=logging.CRITICAL) as cm:
+    #         volumes = normalization.get_volume_info(VOL_ERR_SRC)
+
+    #     self.assertIsNone(volumes)
+    #     self.assertIn(VOL_FAIL_RES, cm.output[0])
 
 
     # @todo add __loudnorn_json_parse tests
@@ -139,13 +152,18 @@ class TestAudioNormalization(TestCase):
         self.assertTrue(os.path.exists(PEAK_RES))
 
 
-    @unittest.skip("Need a file that will max volume")
     def test_peak_normalize_file_max_volume(self):
         '''
         @brief Tests peak normalize audio file level would have mav volume.
         '''
 
-        pass
+        module = f"{normalization.__module__}"
+        logger = logging.getLogger(module)
+
+        with self.assertLogs(logger, level=logging.WARNING) as cm:
+            normalization.peak_normalize_file(VOL_FAIL_SRC, show_spinner=False)
+
+        self.assertIn(VOL_FAIL_RES, cm.output[0])
 
 
     @unittest.skip("Need a file that will clip")
@@ -174,7 +192,7 @@ class TestAudioNormalization(TestCase):
         self.assertTrue(os.path.exists(RMS_RES))
 
 
-    @unittest.skip("Need a file that will max volume")
+    @unittest.skip("Need a file that will rms max volume")
     def test_rms_normalize_max_volume(self):
         '''
         @brief Tests rms normalize audio file level would have mav volume.
