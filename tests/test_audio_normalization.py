@@ -115,6 +115,16 @@ class TestAudioNormalization(TestCase):
         self.assertDictEqual(volumes, VOL_INFO_RES)
 
 
+    def test_get_volume_info_fail(self):
+        '''
+        @brief Tests getting volume info failing.
+        '''
+
+        volumes = normalization.get_volume_info(VOL_SRC_FAIL)
+        self.maxDiff = None
+        self.assertDictEqual(volumes, VOL_INFO_RES)
+
+
     # @todo add __loudnorn_json_parse tests
     # can have JSONDecodeError
     # can have JSONOutputError
