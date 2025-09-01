@@ -21,6 +21,8 @@ from yaspin.spinners import Spinners
 
 # local module methods
 from src import add_module_handler
+# local module constants
+from src import UTF8
 
 gc.enable()
 
@@ -67,7 +69,7 @@ class SubprocessUtilities():
 
             # ffprobe returns via stdout (unlike ffmpeg, which uses stderr)
             stdout_bytes = res.communicate()[0]
-            stdout = stdout_bytes.decode("utf-8")
+            stdout = stdout_bytes.decode(UTF8)
 
             if res.returncode != 0:
                 logger.error(f"RuntimeError running command {shlex.join(command)}", exc_info=True)
@@ -102,17 +104,22 @@ class SubprocessUtilities():
             with yaspin(Spinners.dots, text=text, timer=True) as spinner:
                 # check enables CalledProcessError throwing,
                 # capture output to get stdout & stderr
+                # encoding for cross-platform compatibility & avoid decoding errors
                 # text decodes stdout/stderr as text
                 process = subprocess.run(
                     command,
                     check=True,
                     capture_output=True,
+                    encoding=UTF8,
                     text=True
                 )
 
         except CalledProcessError as cp_error:
             logger.exception(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", stack_info=True)
             raise cp_error
+        except UnicodeDecodeError as ud_error:
+            logger.exception(f"UnicodeDecodeError decoding stdout: {process.stdout} or stderr: {process.stderr} from command {shlex.join(command)}", stack_info=True)
+            raise ud_error
         except Exception as e_error:
             logger.exception(f"Exception processing command: {command}", stack_info=True)
             raise e_error
@@ -136,17 +143,22 @@ class SubprocessUtilities():
         try:
             # check enables CalledProcessError throwing,
             # capture output to get stdout & stderr
+            # encoding for cross-platform compatibility & avoid decoding errors
             # text decodes stdout/stderr as text
             process = subprocess.run(
                 command,
                 check=True,
                 capture_output=True,
+                encoding=UTF8,
                 text=True
             )
 
         except CalledProcessError as cp_error:
-            logger.error(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", exc_info=True)
+            logger.exception(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", stack_info=True)
             raise cp_error
+        except UnicodeDecodeError as ud_error:
+            logger.exception(f"UnicodeDecodeError decoding stdout: {process.stdout} or stderr: {process.stderr} from command {shlex.join(command)}", stack_info=True)
+            raise ud_error
         except Exception as e_error:
             logger.exception(f"Exception processing command: {command}", stack_info=True)
             raise e_error
