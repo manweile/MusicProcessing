@@ -23,7 +23,6 @@ from src import add_module_handler
 from src import AUDIO_EXTS
 # local module errors
 from src.errors import JSONOutputError
-from src.errors import MusicProcessingException
 from src.errors import PathInfoError
 # local module classes
 from src.dir_processing import DirectoryProcessing
@@ -405,36 +404,10 @@ class AudioNormalization():
                 '-f', 'null', '-'
             ]
 
-            r'''
-            F:\ConvertedMusic\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3
-            when put into \tests\Music and used,
-            has python subprocess error returns non zero exit code 4294967294 on Windows
-            but running ffmpeg with same cli succeeds
-            updated ffmpeg on win to 7.1.1
-            ubuntu ci is also running 7.1.1
-            need to update or confirm 7.1.1 on ubuntu laptop and test
-            need to test if this happens on linux
-
-            ffmpeg -hide_banner
-            -i 'F:\ConvertedMusic\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3'
-            -filter:a volumedetect -f null nul 2> analysis.txt
-            when open analysis.txt, find that Gayatri Mantra.mp3 had "NativeCommandError"
-            and bad unicode in publisher field: LaΓÇÉLa Land Records
-            when combined with "-f null -" in code command string causing ffmpeg to throw
-            an unhandled error which subprocess mistakenly allowed to pass with return code 0,
-            but stderr was None, which triggered NoneType error here
-            '''
             process = subprocess_utils.subprocess_run(command)
 
-            if process.stderr is not None:
-                # ffmpeg sends its output to stderr, not stdout
-                output_str = process.stderr
-            else:
-                # @todo this really should be error thrown from subprocess_utilities
-                # think need a timeout as well in subprocess
-                # subprocess had 0 returncode, but nothing in stderr is a false positive result
-                logger.critical(f"MusicProcessingException with subprocess getting volume information for {file_path}", exc_info=True)
-                raise MusicProcessingException
+            # ffmpeg sends its output to stderr, not stdout
+            output_str = process.stderr
 
             mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
             max_volume_match = re.search(r'max_volume: ([-]?\d+\.\d+) dB', output_str)
@@ -448,8 +421,6 @@ class AudioNormalization():
         except re.error as re_error:
             logger.error(f"Regex error processing {output_str}", exc_info=True)
             raise re_error
-        except MusicProcessingException as mp_error:
-            raise mp_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting volume for file {file_path}", stack_info=True)
             raise e_error

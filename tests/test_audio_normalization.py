@@ -40,10 +40,6 @@ EBU_LINEAR_RES = PEAK_RES = RMS_CLIPPING_RES = os.path.join(NORM_PATH, "Crush", 
 SAMPLE_RATE_RES = 44100
 
 VOL_INFO_RES = {'mean_volume': -19.9, 'max_volume': -6.7}
-
-VOL_ERR_SRC = os.path.join(TESTS_TLD, "Bear McCreary", "Battlestar Galactica", "Bear McCreary - BSG Gayatri Mantra Theme Song.mp3")
-VOL_ERR_RES = "MusicProcessingException with subprocess getting volume information for Bear McCreary - BSG Gayatri Mantra Theme Song.mp3"
-
 VOL_FAIL_SRC = os.path.join(TESTS_TLD, "X Ambassadors", "VHS", "X Ambassadors-Renegades.mp3")
 VOL_FAIL_RES = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
 
@@ -122,20 +118,24 @@ class TestAudioNormalization(TestCase):
         self.assertDictEqual(volumes, VOL_INFO_RES)
 
 
-    # def test_get_volume_info_fail(self):
-    #     '''
-    #     @brief Tests getting volume info failing.
-    #     '''
+    # @todo add get_volume_info fail tests:
+    # re.error
 
-    #     volumes = None
-    #     module = f"{normalization.__module__}"
-    #     logger = logging.getLogger(module)
 
-    #     with self.assertLogs(logger, level=logging.CRITICAL) as cm:
-    #         volumes = normalization.get_volume_info(VOL_ERR_SRC)
+    def test_get_volume_info_fail(self):
+        '''
+        @brief Tests getting volume info failing.
+        '''
 
-    #     self.assertIsNone(volumes)
-    #     self.assertIn(VOL_FAIL_RES, cm.output[0])
+        volumes = None
+        module = f"{normalization.__module__}"
+        logger = logging.getLogger(module)
+
+        with self.assertLogs(logger, level=logging.CRITICAL) as cm:
+            volumes = normalization.get_volume_info(VOL_ERR_SRC)
+
+        self.assertIsNone(volumes)
+        self.assertIn(VOL_FAIL_RES, cm.output[0])
 
 
     # @todo add __loudnorn_json_parse tests
