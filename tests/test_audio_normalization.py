@@ -39,6 +39,8 @@ EBU_LINEAR_RES = PEAK_RES = RMS_CLIPPING_RES = os.path.join(NORM_PATH, "Crush", 
 
 SAMPLE_RATE_RES = 44100
 
+VOL_ERR_SRC = "need file"
+
 VOL_INFO_RES = {'mean_volume': -19.9, 'max_volume': -6.7}
 VOL_FAIL_SRC = os.path.join(TESTS_TLD, "X Ambassadors", "VHS", "X Ambassadors-Renegades.mp3")
 VOL_FAIL_RES = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
@@ -122,6 +124,7 @@ class TestAudioNormalization(TestCase):
     # re.error
 
 
+    @unittest.skip("Need a file that will will volume info fail")
     def test_get_volume_info_fail(self):
         '''
         @brief Tests getting volume info failing.
