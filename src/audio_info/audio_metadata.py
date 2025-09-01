@@ -274,6 +274,7 @@ class AudioMetadata():
 
 
             # get the input file info - want bitrate so can preserve the quality in exported file
+            # @todo look at using get_bit_rate instead
             media_info = self.get_media_info(file_path)
             bitrate = media_info['bit_rate']
 
@@ -532,7 +533,7 @@ class AudioMetadata():
     def get_media_info_dict(self, file_path):
         '''
         @brief Returns dictionary with media info.
-        @details Uses ffmpeg to get all media info from any valid audio file.
+        @details Uses ffprobe to get all media info from any valid audio file.
         @details This def replaces the native pydub mediainfo function.
 
         @param file_path {str} The full path to audio file.
@@ -608,7 +609,7 @@ class AudioMetadata():
 
     def get_media_info_walk(self, start_path, file_pattern):
         '''
-        @brief Gets & prints tags for audio files.
+        @brief Gets & prints media info (codec, duration, size, bitrate...) for audio files.
 
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
