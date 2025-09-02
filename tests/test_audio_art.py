@@ -9,7 +9,6 @@
 # standard modules
 import gc
 import inspect
-import logging
 import os
 import unittest
 from pathlib import Path
@@ -26,16 +25,13 @@ from src.audio_info import AudioArt
 
 gc.enable()
 
-# don't add this one to delete list, need it for an error test
+# don't add this one to delete list in tearDown, need it for an error test
 EXPECTED_FOUND_ALBUM_ART_JPG = os.path.join(TESTS_TLD, "Abba", "Waterloo", FOLDER_ART)
-
 EXPECTED_M4A_JPG = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", FOLDER_ART)
 EXPECTED_MP3_JPG = os.path.join(TESTS_TLD, "Crush", "Here", FOLDER_ART)
 EXPECTED_NO_STREAM_JPG = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", FOLDER_ART)
 EXPECTED_SET_ALBUM_ART_JPG = os.path.join(TESTS_TLD, "Albert Collins", "Best Of The Blues, Vol. 1", FOLDER_ART)
 EXPECTED_WMA_JPG = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART)
-
-DELETE_JPGS = [EXPECTED_M4A_JPG, EXPECTED_MP3_JPG, EXPECTED_NO_STREAM_JPG, EXPECTED_SET_ALBUM_ART_JPG, EXPECTED_WMA_JPG]
 
 SRC_HAS_JPG_AUDIO = TEST_MP3_ABBA
 SRC_HAS_JPG_PATH = os.path.join(TESTS_TLD, "Abba", "Waterloo")
@@ -46,13 +42,6 @@ SRC_NO_TAG_MP3 = os.path.join(TESTS_TLD, "Crush", "Here", "No_tag_Crush-Live.mp3
 SRC_WMA = TEST_WMA_JOHN
 
 art = AudioArt()
-
-'''
-Get the effective level so we can disable logging when necessary.
-In tests that use assertRaises, disable the logger at or below the log level of the tested function,
-encapsulate the assertRaises in a try block, and use a finally to restore the original log level.
-'''
-original_log_level = logging.getLogger().getEffectiveLevel()
 
 
 class TestAudioArt(TestCase):
@@ -65,7 +54,9 @@ class TestAudioArt(TestCase):
         @brief Clean up the created Folder.jpg files.
         '''
 
-        for jpg in DELETE_JPGS:
+        delete_jpgs = [EXPECTED_M4A_JPG, EXPECTED_MP3_JPG, EXPECTED_NO_STREAM_JPG, EXPECTED_SET_ALBUM_ART_JPG, EXPECTED_WMA_JPG]
+
+        for jpg in delete_jpgs:
             if os.path.exists(jpg):
                 os.remove(jpg)
 
