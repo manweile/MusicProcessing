@@ -30,6 +30,14 @@ TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
 TEST_M3U = ""
 TEST_M3U = os.path.join(TESTS_TLD, "test.m3u")
 
+## @var TEST_M4A_DAVIS
+# @brief Path to m4a audio file for tests.
+# @details Use this when needing a m4a audio file for audio art tests
+# @details This m4a has a MP4 covr album art tag.
+# @details Use this when needing a valid audio file for directory processing tests
+TEST_M4A_DAVIS = ""
+TEST_M4A_DAVIS = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
+
 ## @var TEST_MP3_ABBA
 # @brief Path to mp3 audio file for tests.
 # @details Use this when needing a mp3 audio file for audio art tests.
@@ -45,14 +53,6 @@ TEST_MP3_ABBA = os.path.join(TESTS_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 TEST_MP3_CRUSH = ""
 TEST_MP3_CRUSH = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
 
-## @var TEST_M4A_DAVIS
-# @brief Path to m4a audio file for tests.
-# @details Use this when needing a m4a audio file for audio art tests
-# @details This m4a has a MP4 covr album art tag.
-# @details Use this when needing a valid audio file for directory processing tests
-TEST_M4A_DAVIS = ""
-TEST_M4A_DAVIS = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
-
 ## @var TEST_WAV_NONE
 # @brief Path to wav audio file for tests.
 # @details Use this when needing a non-extant wav audio file for audio metadata tests
@@ -60,13 +60,33 @@ TEST_M4A_DAVIS = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance",
 TEST_WAV_NONE = ""
 TEST_WAV_NONE = os.path.join(TESTS_TLD, "Non-extant.wav")
 
+## @var TEST_WMA_HOLIDAY
+# @brief Path wma audio file for tests.
+# @details Use this when needing a wma audio file for audio art tests
+# @details This does not have a video stream and and does have a WM/Picture album art tag.
+TEST_WMA_HOLIDAY = ""
+TEST_WMA_HOLIDAY = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
+
+## @var TEST_WMA_JOHN
+# @brief Path wma audio file for tests.
+# @details Use this when needing a wma audio file for audio metadata tests
+# @details This wma has a video stream and a WM/Picture album art tag.
+TEST_WMA_JOHN = ""
+TEST_WMA_JOHN = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", "Elton John-Saturday Night's Alright for Fighting.wma")
+
 ## @var __all__
 # @brief Exposes variable for importing by other modules.
 # @details In modules needing the directory, add `from src.tests.TESTS_PATH`
 # @details In modules needing the directory, add `from src.tests.TESTS_TLD`
 # @details In modules needing the directory, add `from src.tests.TEST_MRU`
+# @details In modules needing the directory, add `from src.tests.TEST_M4A_DAVIS`
 # @details In modules needing the directory, add `from src.tests.TEST_MP3_ABBA`
 # @details In modules needing the directory, add `from src.tests.TEST_MP3_CRUSH`
-# @details In modules needing the directory, add `from src.tests.TEST_M4A_DAVIS`
 # @details In modules needing the directory, add `from src.tests.TEST_WAV_NONE`
-__all__ = ["TESTS_PATH", "TESTS_TLD", "TEST_M3U", "TEST_MP3_ABBA", "TEST_MP3_CRUSH", "TEST_M4A_DAVIS", "TEST_WAV_NONE"]
+# @details In modules needing the directory, add `from src.tests.TEST_WMA_HOLIDAY`
+# @details In modules needing the directory, add `from src.tests.TEST_WMA_JOHN`
+__all__ = [
+    "TESTS_PATH", "TESTS_TLD",
+    "TEST_M3U", "TEST_WAV_NONE",
+    "TEST_M4A_DAVIS", "TEST_MP3_ABBA", "TEST_MP3_CRUSH", "TEST_WMA_HOLIDAY", "TEST_WMA_JOHN"
+]
