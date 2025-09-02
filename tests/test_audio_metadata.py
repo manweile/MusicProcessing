@@ -10,7 +10,6 @@
 # standard modules
 import gc
 import inspect
-import logging
 import os
 import unittest
 from unittest import TestCase
@@ -19,7 +18,9 @@ from unittest import TestCase
 from mutagen._util import MutagenError
 
 # local module constants
-from tests import TEST_MP3_CRUSH, TEST_WAV_NONE
+from src import EXPORT_TLD
+from src.generated_files import GENERATED_FILES
+from tests import TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_WAV_NONE
 from tests import TESTS_TLD
 # local module errors
 from src import MusicProcessingError
@@ -48,18 +49,23 @@ EXPECTED_INFO = {
 # instantiate classes here
 metadata = AudioMetadata()
 
-'''
-Get the effective level so we can disable logging when necessary.
-In tests that use assertRaises, disable the logger at or below the log level of the tested function,
-encapsulate the assertRaises in a try block, and use a finally to restore the original log level.
-'''
-original_log_level = logging.getLogger().getEffectiveLevel()
-
 
 class TestAudioMetadata(TestCase):
     '''
     @brief Tests AudioMetadata class functions.
     '''
+
+    def test_convert_file(self):
+        '''
+        @brief Test converting a valid audio file to mp3 format.
+        '''
+
+        metadata.convert_file(TEST_MP3_ABBA)
+        mp3_result = os.path.join(GENERATED_FILES, EXPORT_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+        mp3_exists = os.path.exists(mp3_result)
+        self.assertTrue(mp3_exists)
+        # @todo need m4a and wma,with folder.jpgs
+
 
     def test_get_media_info_dict(self):
         '''
@@ -80,6 +86,7 @@ class TestAudioMetadata(TestCase):
         loaded_file = metadata.load_any_file(TEST_MP3_CRUSH)
         audio_class_name = loaded_file.__class__.__name__
         self.assertEqual(audio_class_name, "MP3")
+        # @todo need m4a and mp3 too
 
 
     '''
@@ -104,6 +111,9 @@ class TestAudioMetadata(TestCase):
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
+    # @todo test_load_m4a
+
+
     def test_load_m4a_file_non_extant(self):
         '''
         @brief Tests attempt to load a non-extant audio file with mutagen MP4 class.
@@ -119,6 +129,9 @@ class TestAudioMetadata(TestCase):
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
+    # @todo test_load_mp3
+
+
     def test_load_mp3_file_non_extant(self):
         '''
         @brief Tests attempt to load a non-extant audio file with mutagen MP3 class.
@@ -132,6 +145,9 @@ class TestAudioMetadata(TestCase):
 
         self.assertIsNone(audio_file)
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
+
+
+    # @todo test_load_wma
 
 
     def test_load_wma_file_non_extant(self):

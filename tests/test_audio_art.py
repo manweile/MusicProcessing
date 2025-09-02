@@ -18,7 +18,8 @@ from unittest import TestCase
 
 # local module constants
 from src import FOLDER_ART
-from tests import TEST_M4A_DAVIS, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_M3U
+from tests import TEST_M3U
+from tests import TEST_M4A_DAVIS, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_WMA_HOLIDAY, TEST_WMA_JOHN
 from tests import TESTS_TLD
 # local module classes
 from src.audio_info import AudioArt
@@ -40,9 +41,9 @@ SRC_HAS_JPG_AUDIO = TEST_MP3_ABBA
 SRC_HAS_JPG_PATH = os.path.join(TESTS_TLD, "Abba", "Waterloo")
 SRC_MP3 = TEST_MP3_CRUSH
 SRC_M4A = TEST_M4A_DAVIS
-SRC_NO_STREAM_WMA = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
+SRC_NO_STREAM_WMA = TEST_WMA_HOLIDAY
 SRC_NO_TAG_MP3 = os.path.join(TESTS_TLD, "Crush", "Here", "No_tag_Crush-Live.mp3")
-SRC_WMA = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", "Elton John-Saturday Night's Alright for Fighting.wma")
+SRC_WMA = TEST_WMA_JOHN
 
 art = AudioArt()
 
@@ -164,7 +165,7 @@ class TestAudioArt(TestCase):
 
     def test_extract_ffmpeg_art(self):
         '''
-        @brief Tests if album art is extracted from m4a audio file.
+        @brief Tests if album art is extracted from an audio file.
         '''
 
         input_audio = SRC_MP3
