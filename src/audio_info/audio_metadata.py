@@ -293,17 +293,11 @@ class AudioMetadata():
             # and both documentations don't really mention it
             audio_segment.export(export_path, export_format, bitrate=bitrate, tags=tags, id3v2_version='3')
 
-            # Add or update album art
-            try:
-                audio_tags = MP3(export_path, ID3=ID3, v2_version=3)
-                audio_tags.add_tags()
-            except MP3Error:
-                # means tags already exist, no worries
-                pass
-
-            # encoding/type = 3 specifies UTF-8/front cover
+            # Add album art
+            mp3_file = MP3(export_path, ID3=ID3, v2_version=3)
+            # encoding & type = 3 specifies UTF-8 & front cover
             with open(cover, "rb") as album_art_file:
-                audio_tags.tags.add(
+                mp3_file.tags.add(
                     APIC(
                         encoding=3,
                         mime="image/jpeg",
@@ -312,7 +306,7 @@ class AudioMetadata():
                         data=album_art_file.read()
                     )
                 )
-            audio_tags.save(v2_version=3)
+            mp3_file.save(v2_version=3)
 
             directory.create_txt(txt_filename, data)
 
@@ -689,7 +683,7 @@ class AudioMetadata():
         @brief Returns the metadata type of any audio file.
 
         @param file_path {str} The full path to audio file.
-        @return metadata_type {str} The type of the audio file metadata tags or None.
+        @return metadata_type {str} The type of the audio file class or None.
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -742,6 +736,10 @@ class AudioMetadata():
             raise e_error
         else:
             return tag_info
+
+
+    # @todo split get_tags_walk into ffprobe and mutagen versions??
+    # and possibly go to text file output instead of console
 
 
     def get_tags_walk(self, file_path, file_pattern, ffprobe=False):

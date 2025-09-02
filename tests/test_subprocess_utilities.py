@@ -11,7 +11,6 @@
 import gc
 import inspect
 import logging
-import os
 import unittest
 from subprocess import CalledProcessError
 from unittest import TestCase
