@@ -18,7 +18,7 @@ from unittest import TestCase
 from mutagen._util import MutagenError
 
 # local module constants
-from src import EXPORT_TLD
+from src import MUSIC_TLD
 from src.generated_files import GENERATED_FILES
 from tests import TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_WAV_NONE
 from tests import TESTS_TLD
@@ -61,7 +61,7 @@ class TestAudioMetadata(TestCase):
         '''
 
         metadata.convert_file(TEST_MP3_ABBA)
-        mp3_result = os.path.join(GENERATED_FILES, EXPORT_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+        mp3_result = os.path.join(GENERATED_FILES, MUSIC_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
         mp3_exists = os.path.exists(mp3_result)
         self.assertTrue(mp3_exists)
         # @todo need m4a and wma,with folder.jpgs

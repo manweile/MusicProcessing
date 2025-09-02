@@ -44,11 +44,6 @@ CSV_DIR = "csv_files"
 # @details use this to set extension for csv files
 CSV_EXT = ".csv"
 
-## @var EXPORT_TLD
-# @brief the top level directory that holds music files
-# @details use this when exporting manipulated audio files
-EXPORT_TLD = "Music"
-
 ## @var ERROR_LOG_FORMAT
 # @brief error log file format
 # @details use this to set error logging file format
@@ -68,6 +63,11 @@ LOG_DIR = "log_files"
 # @brief log file extension
 # @details use this to set extension for log files
 LOG_EXT = ".log"
+
+## @var MUSIC_TLD
+# @brief the top level directory that holds music files
+# @details use this when exporting manipulated audio files
+MUSIC_TLD = "Music"
 
 ## @var PLAYLIST_EXTS
 # @brief playlist file extensions in my collection
@@ -101,11 +101,11 @@ UTF8 = "utf-8"
 # @details In modules needing the constant add `from src import AUDIO_TYPES`
 # @details In modules needing the constant add 'from src import CSV_DIR
 # @details In modules needing the constant add 'from src import CSV_EXT
-# @details In modules needing the constant add 'from src import EXPORT_TLD`
 # @details In modules needing the constant add 'from src import ERROR_LOG_FORMAT
 # @details In modules needing the constant add 'from src import FOLDER_ART'
 # @details In modules needing the constant add 'from src import LOG_DIR
 # @details In modules needing the constant add 'from src import LOG_EXT
+# @details In modules needing the constant add 'from src import MUSIC_TLD`
 # @details In modules needing the constant add `from src import PLAYLIST_EXTS`
 # @details In modules needing the constant add `from src import PLAYLIST_TYPES`
 # @details In modules needing the constant add 'from src import RESULT_DIR
@@ -120,10 +120,10 @@ UTF8 = "utf-8"
 __all__ = [
     "AUDIO_EXTS", "AUDIO_FILES", "AUDIO_TYPES",
     "CSV_DIR", "CSV_EXT",
-    "EXPORT_TLD",
     "ERROR_LOG_FORMAT",
     "LOG_DIR", "LOG_EXT",
     "FOLDER_ART",
+    "MUSIC_TLD",
     "PLAYLIST_EXTS", "PLAYLIST_TYPES",
     "RESULT_DIR", "RESULT_EXT",
     "UTF8",

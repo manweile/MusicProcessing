@@ -21,7 +21,7 @@ from unittest import TestCase
 
 # local module constants
 # from src import AUDIO_EXTS, AUDIO_TYPES
-from src import EXPORT_TLD
+from src import MUSIC_TLD
 # from src import FOLDER_ART
 # from src import PLAYLIST_EXTS
 # from src.generated_files import GENERATED_FILES
@@ -42,7 +42,7 @@ from tests import TESTS_PATH
 gc.enable()
 
 # instantiate module levels vars here
-TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
+TESTS_TLD = os.path.join(TESTS_PATH, MUSIC_TLD)
 
 # instantiate classes here
 # art = AudioArt()

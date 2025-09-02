@@ -24,7 +24,7 @@ from src import add_module_handler
 # local module constants
 from src import AUDIO_EXTS, AUDIO_TYPES
 from src import CSV_DIR, CSV_EXT
-from src import EXPORT_TLD
+from src import MUSIC_TLD
 from src import PLAYLIST_EXTS
 from src import RESULT_DIR, RESULT_EXT
 from src.generated_files import GENERATED_FILES
@@ -535,7 +535,7 @@ class DirectoryProcessing():
             input_path_parts = input_path_parent.parts[1:]
 
             # using fixed storage path because will always know project structure
-            export_dir = os.path.join(GENERATED_FILES, EXPORT_TLD)
+            export_dir = os.path.join(GENERATED_FILES, MUSIC_TLD)
 
             full_len = len(input_path_parts)
             artist_len = full_len - 2

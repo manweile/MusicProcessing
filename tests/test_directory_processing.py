@@ -17,7 +17,7 @@ from unittest.mock import patch
 
 # local module constants
 from src import AUDIO_TYPES
-from src import EXPORT_TLD
+from src import MUSIC_TLD
 from src.generated_files import GENERATED_FILES
 from tests import TEST_M4A_DAVIS
 from tests import TESTS_TLD
@@ -78,7 +78,7 @@ class TestDirectoryProcessing(TestCase):
         path_info = directory.path_info(TEST_M4A_DAVIS)
 
         # successful path_info returns a mp3 file name in generated_files/Music
-        expected_info = os.path.join(GENERATED_FILES, EXPORT_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
+        expected_info = os.path.join(GENERATED_FILES, MUSIC_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
         self.assertEqual(path_info, expected_info)
 
 

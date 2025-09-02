@@ -17,7 +17,7 @@ import unittest
 from unittest import TestCase
 
 # local module constants
-from src import EXPORT_TLD
+from src import MUSIC_TLD
 from src.generated_files import GENERATED_FILES
 from tests import TEST_MP3_ABBA, TEST_MP3_CRUSH
 from tests import TESTS_TLD
@@ -26,7 +26,7 @@ from src.audio_normalize import AudioNormalization
 
 gc.enable()
 
-NORM_PATH = os.path.join(GENERATED_FILES, EXPORT_TLD)
+NORM_PATH = os.path.join(GENERATED_FILES, MUSIC_TLD)
 
 BIT_SRC = VOL_SRC = TEST_MP3_CRUSH
 BIT_RES = 129156

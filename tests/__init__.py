@@ -7,7 +7,7 @@
 import os
 
 # local module constants
-from src import EXPORT_TLD
+from src import MUSIC_TLD
 
 ## @var TESTS_PATH
 # @brief Path to where test files and inputs used by the tests are stored.
@@ -21,7 +21,7 @@ TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 # @details Use this this when working with audio file tests.
 # @details Ie. need /tests/Music/
 TESTS_TLD = ""
-TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
+TESTS_TLD = os.path.join(TESTS_PATH, MUSIC_TLD)
 
 ## @var INPUT_MRU
 # @brief Path to where music playlist file for playlist tests is stored.

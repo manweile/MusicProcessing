@@ -1,32 +1,32 @@
 test_subprocess
-TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
+TESTS_TLD = os.path.join(TESTS_PATH, MUSIC_TLD)
 input_audio = os.path.join(TESTS_TLD, "Non-extant.wav")
 
 test_directory
-TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
-input_path = os.path.join(TESTS_PATH, EXPORT_TLD, "expected.m3u")
-audio_file = os.path.join(EXPORT_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
-expected_info = os.path.join(GENERATED_FILES, EXPORT_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
+TESTS_TLD = os.path.join(TESTS_PATH, MUSIC_TLD)
+input_path = os.path.join(TESTS_PATH, MUSIC_TLD, "expected.m3u")
+audio_file = os.path.join(MUSIC_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
+expected_info = os.path.join(GENERATED_FILES, MUSIC_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
 
 test_audio_playlist
-TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
+TESTS_TLD = os.path.join(TESTS_PATH, MUSIC_TLD)
 EXPECTED_M3U = os.path.join(TESTS_PATH, "expected.m3u")
 TEST_M3U = os.path.join(TESTS_TLD, "test.m3u")
 GENERATED_M3U = os.path.join(GENERATED_FILES, "test.m3u")
 
 test_audio_metadata
 MP3_FILE = os.path.join("Crush", "Here", "Crush-Live.mp3")
-MP3_PATH = os.path.join(TESTS_PATH, EXPORT_TLD, MP3_FILE)
-file_path = os.path.join(TESTS_PATH, EXPORT_TLD, "Non-extant.wav")
-file_path = os.path.join(TESTS_PATH, EXPORT_TLD, "Non-extant.m4a")
-file_path = os.path.join(TESTS_PATH, EXPORT_TLD, "Non-extant.mp3")
-file_path = os.path.join(TESTS_PATH, EXPORT_TLD, "Non-extant.wma")
+MP3_PATH = os.path.join(TESTS_PATH, MUSIC_TLD, MP3_FILE)
+file_path = os.path.join(TESTS_PATH, MUSIC_TLD, "Non-extant.wav")
+file_path = os.path.join(TESTS_PATH, MUSIC_TLD, "Non-extant.m4a")
+file_path = os.path.join(TESTS_PATH, MUSIC_TLD, "Non-extant.mp3")
+file_path = os.path.join(TESTS_PATH, MUSIC_TLD, "Non-extant.wma")
 
 test_audio_normalization
-NORM_PATH = os.path.join(GENERATED_FILES, EXPORT_TLD)
-EBU_DYNAMIC_SRC = SAMPLE_RATE_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+NORM_PATH = os.path.join(GENERATED_FILES, MUSIC_TLD)
+EBU_DYNAMIC_SRC = SAMPLE_RATE_SRC = os.path.join(TESTS_PATH, MUSIC_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 EBU_DYNAMIC_RES = os.path.join(NORM_PATH, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
-EBU_LINEAR_SRC = LOUDNORM_SRC = PEAK_SRC = RMS_CLIPPING_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
+EBU_LINEAR_SRC = LOUDNORM_SRC = PEAK_SRC = RMS_CLIPPING_SRC = os.path.join(TESTS_PATH, MUSIC_TLD, "Crush", "Here", "Crush-Live.mp3")
 EBU_LINEAR_RES = PEAK_RES = RMS_CLIPPING_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
-SRC_FILE = os.path.join(TESTS_PATH, EXPORT_TLD, "Crush", "Here", "Crush-Live.mp3")
-BIT_SRC = VOL_SRC = os.path.join(TESTS_PATH, EXPORT_TLD, "Bear McCreary", "Battlestar Galactica", "Bear McCreary - BSG Gayatri Mantra Theme Song.mp3")
+SRC_FILE = os.path.join(TESTS_PATH, MUSIC_TLD, "Crush", "Here", "Crush-Live.mp3")
+BIT_SRC = VOL_SRC = os.path.join(TESTS_PATH, MUSIC_TLD, "Bear McCreary", "Battlestar Galactica", "Bear McCreary - BSG Gayatri Mantra Theme Song.mp3")
