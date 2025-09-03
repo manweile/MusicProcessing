@@ -33,12 +33,13 @@ EXPECTED_NO_STREAM_JPG = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On M
 EXPECTED_SET_ALBUM_ART_JPG = os.path.join(TESTS_TLD, "Albert Collins", "Best Of The Blues, Vol. 1", FOLDER_ART)
 EXPECTED_WMA_JPG = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART)
 
-SRC_HAS_JPG_AUDIO = TEST_MP3_ABBA
 SRC_HAS_JPG_PATH = os.path.join(TESTS_TLD, "Abba", "Waterloo")
-SRC_MP3 = TEST_MP3_CRUSH
-SRC_M4A = TEST_M4A_DAVIS
-SRC_NO_STREAM_WMA = TEST_WMA_HOLIDAY
 SRC_NO_TAG_MP3 = os.path.join(TESTS_TLD, "Crush", "Here", "No_tag_Crush-Live.mp3")
+
+SRC_HAS_JPG_AUDIO = TEST_MP3_ABBA
+SRC_M4A = TEST_M4A_DAVIS
+SRC_MP3 = TEST_MP3_CRUSH
+SRC_NO_STREAM_WMA = TEST_WMA_HOLIDAY
 SRC_WMA = TEST_WMA_JOHN
 
 art = AudioArt()

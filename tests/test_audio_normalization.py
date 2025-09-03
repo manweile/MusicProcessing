@@ -19,8 +19,7 @@ from unittest import TestCase
 # local module constants
 from src import MUSIC_TLD
 from src.generated_files import GENERATED_FILES
-from tests import TEST_MP3_ABBA, TEST_MP3_CRUSH
-from tests import TESTS_TLD
+from tests import TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_X
 # local module classes
 from src.audio_normalize import AudioNormalization
 
@@ -42,7 +41,7 @@ SAMPLE_RATE_RES = 44100
 VOL_ERR_SRC = "need file"
 
 VOL_INFO_RES = {'mean_volume': -19.9, 'max_volume': -6.7}
-VOL_FAIL_SRC = os.path.join(TESTS_TLD, "X Ambassadors", "VHS", "X Ambassadors-Renegades.mp3")
+VOL_FAIL_SRC = TEST_MP3_X
 VOL_FAIL_RES = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
 
 normalization = AudioNormalization()
