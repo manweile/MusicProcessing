@@ -44,6 +44,15 @@ class TestAudioPlaylist(TestCase):
     @brief Tests AudioPlaylist class functions.
     '''
 
+    # @classmethod
+    # def setUpClass(cls):
+    #     '''
+    #     @brief Initialize data for test suite.
+
+    #     @details These datums are used throughout class and only need init once.
+    #     '''
+
+
     def tearDown(self):
         '''
         @brief Clean up the created playlist file.
