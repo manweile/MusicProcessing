@@ -11,40 +11,25 @@
 import gc
 import inspect
 import os
+import shutil
 import unittest
+from pathlib import Path
 from unittest import TestCase
 
 # third party modules
 from mutagen._util import MutagenError
 
 # local module constants
-from src import MUSIC_TLD
+from src import FOLDER_ART, MUSIC_TLD
 from src.generated_files import GENERATED_FILES
-from tests import TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_WAV_NONE
-from tests import TESTS_TLD
+from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_WAV_NONE, TEST_WMA_CCR
+from tests import TESTS_PATH, TESTS_TLD
 # local module errors
 from src import MusicProcessingError
 # local module classes
 from src.audio_info import AudioMetadata
 
 gc.enable()
-
-# r'''
-# ffprobe command line that is source for media info dictionary definition:
-# ffprobe -v quiet -show_format -show_streams <file_path>
-# where file_path points to "<linux_path>/Crush/Here/Crush-Live.mp3" or "<win_path>\Crush\Here\Crush-Live.mp3"
-# Every os flavour has slight differences in the full return dict, especially the filename,
-# so we actually compare on the TAG inner dict, as it is invariant across operating systems.
-# '''
-# EXPECTED_INFO = {
-#     'comment': 'Cover (front)', 'title': 'Live', 'artist': 'Crush', 'track': '1/12', 'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
-#     'MusicBrainz Release Track Id': '2475137d-6745-3951-a361-d4c29798f5d1', 'album_artist': 'Crush', 'TSO2': 'Crush', 'artist-sort': 'Crush', 'composer': 'Paul Lamb',
-#     'SCRIPT': 'Latn', 'publisher': 'Sonic Records', 'ARTISTS': 'Crush', 'ASIN': 'B000065PP6', 'originalyear': '2002', 'BARCODE': '627915092229',
-#     'CATALOGNUMBER': '2 50922', 'MusicBrainz Album Type': 'album', 'MusicBrainz Album Status': 'official', 'MusicBrainz Album Release Country': 'CA',
-#     'Acoustid Id': '4fdf7757-ba58-4a4b-a1df-1ad4d102a474', 'MusicBrainz Album Id': '18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6',
-#     'MusicBrainz Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f', 'MusicBrainz Album Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f',
-#     'MusicBrainz Release Group Id': 'a7927f70-2431-3a58-b7ae-48576808cec1', 'date': '2002'
-# }
 
 # instantiate classes here
 metadata = AudioMetadata()
@@ -55,10 +40,62 @@ class TestAudioMetadata(TestCase):
     @brief Tests AudioMetadata class functions.
     '''
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         '''
-        @brief Initialize data for tests.
+        @brief Initialize data for test suite.
+
+        @details These datums are used throughout class and only need init once.
         '''
+
+        # directory for "walk" type tests: D:\MusicProcessing\tests\convert_walk
+        cls.convert_walk = os.path.join(TESTS_PATH, "convert_walk")
+        # source files
+        cls.src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR]
+
+        for src_path in cls.src_file_paths:
+            # get the audio file name w/o path
+            # eg from D:\MusicProcessing\tests\Music\The Eagles\Desperado\The Eagles-Desperado.m4a -> The Eagles-Desperado.m4a
+            file_name = os.path.basename(src_path)
+
+            # get audio file parent path parts
+            # eg D:\MusicProcessing\tests\MusicThe Eagles\Desperado
+            # D:\, MusicProcessing, tests, Music, The Eagles, Desperado
+            file_path = Path(src_path)
+            file_parent = file_path.parent
+            path_parts = file_parent.parts
+
+            # build up the artist & album path, from last 2 elements of file parent path parts
+            # eg Abba, Desperado -> The Eagles\Desperado
+            full_len = len(path_parts)
+            artist_len = full_len - 2
+            artist_album = ""
+            for i in range(artist_len, full_len):
+                artist_album = os.path.join(artist_album, path_parts[i])
+
+            # create the destination directory
+            # D:\MusicProcessing\tests\convert_walk\The Eagles\Desperado\
+            dest_dir = os.path.join(cls.convert_walk, artist_album)
+            os.makedirs(dest_dir, exist_ok=True)
+
+            # create dest: D:\MusicProcessing\tests\convert_walk\The Eagles\Desperado\The Eagles-Desperado.m4a
+            dest_path = os.path.join(dest_dir, file_name)
+
+            # and copy
+            shutil.copy(src_path, dest_path)
+
+            # create source and destination Folder.jpg paths for audio file
+            # eg D:\MusicProcessing\tests\Music\The Eagles\Desperado\Folder.jpg
+            # eg D:\MusicProcessing\tests\convert_walk\The Eagles\Desperado\Folder.jpg
+            src_jpg = os.path.join(TESTS_TLD, artist_album, FOLDER_ART)
+            dest_jpg = os.path.join(dest_dir, FOLDER_ART)
+
+            # and copy
+            shutil.copy(src_jpg, dest_jpg)
+
+
+        # the path where converted file will be created
+        cls.norm_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
 
         r'''
         ffprobe command line that is source for media info dictionary definition:
@@ -67,8 +104,7 @@ class TestAudioMetadata(TestCase):
         Every os flavour has slight differences in the full return dict, especially the filename,
         so we actually compare on the TAG inner dict, as it is invariant across operating systems.
         '''
-
-        self.expected_info = {
+        cls.expected_tag = {
             'comment': 'Cover (front)', 'title': 'Live', 'artist': 'Crush', 'track': '1/12', 'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
             'MusicBrainz Release Track Id': '2475137d-6745-3951-a361-d4c29798f5d1', 'album_artist': 'Crush', 'TSO2': 'Crush', 'artist-sort': 'Crush', 'composer': 'Paul Lamb',
             'SCRIPT': 'Latn', 'publisher': 'Sonic Records', 'ARTISTS': 'Crush', 'ASIN': 'B000065PP6', 'originalyear': '2002', 'BARCODE': '627915092229',
@@ -79,16 +115,67 @@ class TestAudioMetadata(TestCase):
         }
 
 
+    @classmethod
+    def tearDownClass(cls):
+        '''
+        @brief Cleans up the walk type tests source audio files and directories.
+        '''
+
+        if os.path.exists(cls.convert_walk):
+            shutil.rmtree(cls.convert_walk)
+
+
+    def tearDown(self):
+        '''
+        @brief Cleans up the created audio files and directories.
+
+        @details These audio files are created by multiple tests and need deletion after every test.
+        '''
+
+        if os.path.exists(self.norm_path):
+            shutil.rmtree(self.norm_path)
+
+
     def test_convert_file(self):
         '''
         @brief Test converting a valid audio file to mp3 format.
+
+        @details The audio files must have a co-located Folder.jpg file.
         '''
 
-        metadata.convert_file(TEST_MP3_ABBA)
+        for src_file in self.src_file_paths:
+            metadata.convert_file(src_file)
+
+        m4a_result = os.path.join(self.norm_path, "The Eagles", "Desperado", "The Eagles-Desperado.mp3")
+        mp3_result = os.path.join(self.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+        wma_result = os.path.join(self.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3")
+
+        results = [m4a_result, mp3_result, wma_result]
+
+        for audio_file in results:
+            audio_exists = os.path.exists(audio_file)
+            self.assertTrue(audio_exists)
+
+
+    def test_convert_walk_all(self):
+        '''
+        #brief Test converting all valid audio files in a top level directory to mp3 format.
+
+        @details The audio files must have a co-located Folder.jpg file.
+        @details Happy path test without a file pattern.
+        '''
+
+        m4a_result = os.path.join(GENERATED_FILES, MUSIC_TLD, "The Eagles", "Desperado", "The Eagles-Desperado.mp3")
         mp3_result = os.path.join(GENERATED_FILES, MUSIC_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
-        mp3_exists = os.path.exists(mp3_result)
-        self.assertTrue(mp3_exists)
-        # @todo add CCR Fortunate Son.wma and Eagles Desperado.m4a
+        wma_result = os.path.join(GENERATED_FILES, MUSIC_TLD, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3")
+
+        results = [m4a_result, mp3_result, wma_result]
+
+        metadata.convert_walk(self.convert_walk, None)
+
+        for audio_file in results:
+            audio_exists = os.path.exists(audio_file)
+            self.assertTrue(audio_exists)
 
 
     def test_get_media_info_dict(self):
@@ -96,10 +183,10 @@ class TestAudioMetadata(TestCase):
         @brief Tests returns dictionary with media info.
         '''
 
-        results_info = metadata.get_media_info_dict(TEST_MP3_CRUSH)
+        results_dict = metadata.get_media_info_dict(TEST_MP3_CRUSH)
 
         self.maxDiff = None
-        self.assertDictEqual(self.expected_info, results_info['TAG'])
+        self.assertDictEqual(self.expected_tag, results_dict['TAG'])
 
 
     def test_load_any_file(self):
@@ -232,4 +319,3 @@ if __name__ == "__main__":
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
-
