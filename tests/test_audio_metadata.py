@@ -135,7 +135,10 @@ class TestAudioMetadata(TestCase):
         if os.path.exists(self.norm_path):
             shutil.rmtree(self.norm_path)
 
-    @unittest.skip("debug ci failure")
+
+    # @unittest.skip("debug ci failure")
+
+
     def test_convert_file(self):
         '''
         @brief Test converting a valid audio file to mp3 format.
@@ -156,7 +159,9 @@ class TestAudioMetadata(TestCase):
             audio_exists = os.path.exists(audio_file)
             self.assertTrue(audio_exists)
 
-    @unittest.skip("debug ci failure")
+    # @unittest.skip("debug ci failure")
+
+
     def test_convert_walk_all(self):
         '''
         #brief Test converting all valid audio files in a top level directory to mp3 format.
