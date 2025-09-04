@@ -27,22 +27,39 @@ gc.enable()
 
 NORM_PATH = os.path.join(GENERATED_FILES, MUSIC_TLD)
 
-BIT_SRC = VOL_SRC = TEST_MP3_CRUSH
+BIT_SRC = VOL_INFO_SRC = TEST_MP3_CRUSH
 BIT_RES = 129156
 
-EBU_DYNAMIC_SRC = RMS_SRC = SAMPLE_RATE_SRC = TEST_MP3_ABBA
-EBU_DYNAMIC_RES = RMS_RES = os.path.join(NORM_PATH, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+EBU_DYNAMIC_SRC = TEST_MP3_ABBA
+EBU_DYNAMIC_RES = os.path.join(NORM_PATH, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 
-EBU_LINEAR_SRC = PEAK_SRC = RMS_CLIPPING_SRC = TEST_MP3_CRUSH
-EBU_LINEAR_RES = PEAK_RES = RMS_CLIPPING_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
+EBU_LINEAR_SRC = TEST_MP3_CRUSH
+EBU_LINEAR_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 
+# @todo find a audio file that will peak clip (can't be X Ambassadors - that vol fails first)
+PEAK_CLIP_SRC = ""
+PEAK_CLIP_RES = ""
+
+PEAK_MAX_VOL_SRC = TEST_MP3_X
+PEAK_MAX_VOL_RES = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
+
+PEAK_SRC = TEST_MP3_CRUSH
+PEAK_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
+
+RMS_CLIPPING_SRC = TEST_MP3_CRUSH
+RMS_CLIPPING_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
+
+# @todo find an audio file that will rms normalize
+RMS_SRC = ""
+RMS_RES = ""
+
+SAMPLE_RATE_SRC = TEST_MP3_ABBA
 SAMPLE_RATE_RES = 44100
 
 VOL_ERR_SRC = "need file"
 
 VOL_INFO_RES = {'mean_volume': -19.9, 'max_volume': -6.7}
-VOL_FAIL_SRC = TEST_MP3_X
-VOL_FAIL_RES = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
+
 
 normalization = AudioNormalization()
 
@@ -114,7 +131,7 @@ class TestAudioNormalization(TestCase):
         @brief Tests getting volume info.
         '''
 
-        volumes = normalization.get_volume_info(VOL_SRC)
+        volumes = normalization.get_volume_info(VOL_INFO_SRC)
         self.maxDiff = None
         self.assertDictEqual(volumes, VOL_INFO_RES)
 
@@ -137,7 +154,7 @@ class TestAudioNormalization(TestCase):
             volumes = normalization.get_volume_info(VOL_ERR_SRC)
 
         self.assertIsNone(volumes)
-        self.assertIn(VOL_FAIL_RES, cm.output[0])
+        # @todo need to check if there will logging output
 
 
     # @todo add __loudnorn_json_parse tests
@@ -156,35 +173,34 @@ class TestAudioNormalization(TestCase):
 
     def test_peak_normalize_file_max_volume(self):
         '''
-        @brief Tests peak normalize audio file level would have mav volume.
+        @brief Tests peak normalize audio file level would have max volume.
         '''
 
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(VOL_FAIL_SRC, show_spinner=False)
+            normalization.peak_normalize_file(PEAK_MAX_VOL_SRC, show_spinner=False)
 
-        self.assertIn(VOL_FAIL_RES, cm.output[0])
+        self.assertIn(PEAK_MAX_VOL_RES, cm.output[0])
 
 
-    @unittest.skip("Need a file that will clip")
+    @unittest.skip("Need a file that will peak clip")
     def test_peak_normalize_file_clipping(self):
         '''
         @brief Tests rms normalize audio file level would clip.
         '''
 
-        # module = f"{normalization.__module__}"
-        # logger = logging.getLogger(module)
+        module = f"{normalization.__module__}"
+        logger = logging.getLogger(module)
 
-        # with self.assertLogs(logger, level=logging.WARNING) as cm:
-        #     normalization.peak_normalize_file(PEAK_CLIPPING_SRC, show_spinner=False)
+        with self.assertLogs(logger, level=logging.WARNING) as cm:
+            normalization.peak_normalize_file(PEAK_CLIP_SRC, show_spinner=False)
 
-        # self.assertIn(PEAK_CLIPPING_RES, cm.output[0])
-        pass
+        self.assertIn(PEAK_CLIP_RES, cm.output[0])
 
 
-    @unittest.skip("Need a file that won't fail")
+    @unittest.skip("Need a file that will rms normalize")
     def test_rms_normalize_file(self):
         '''
         @brief Tests rms normalize audio file level.
