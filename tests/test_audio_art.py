@@ -62,6 +62,19 @@ class TestAudioArt(TestCase):
                 os.remove(jpg)
 
 
+    def test_extract_album_art(self):
+        '''
+        @brief Tests if album art is extracted from audio file.
+
+        @details Happy path test case.
+        '''
+
+        input_audio = SRC_WMA
+        art.extract_album_art(input_audio)
+        has_jpg = os.path.exists(EXPECTED_WMA_JPG)
+        self.assertTrue(has_jpg)
+
+
     def test_extract_album_art_folder_exists(self):
         '''
         brief Tests try to extract album art from file that already has co-located Folder.jpg file.
@@ -116,19 +129,6 @@ class TestAudioArt(TestCase):
         self.assertEqual(len(captured.records), 2)
         self.assertEqual(captured.records[0].getMessage(), info_msg)
         self.assertEqual(captured.records[1].getMessage(), warning_msg)
-
-
-    def test_extract_album_art_with_stream_and_tag(self):
-        '''
-        @brief Tests if album art is extracted from audio file.
-
-        @details Happy path test case.
-        '''
-
-        input_audio = SRC_WMA
-        art.extract_album_art(input_audio)
-        has_jpg = os.path.exists(EXPECTED_WMA_JPG)
-        self.assertTrue(has_jpg)
 
 
     def test_extract_album_art_without_stream_with_tag(self):

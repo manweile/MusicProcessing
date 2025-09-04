@@ -132,6 +132,8 @@ class TestAudioPlaylist(TestCase):
         generated_inf = []
         expected_inf = []
 
+        # @todo think about checking the relative pathing too
+        # this will mean updating expected.m3u paths with os.path.join in a setUpClass
         with open(GENERATED_M3U, "r") as generated_file, open(EXPECTED_M3U, "r") as expected_file:
             for generated_line, expected_line in zip(generated_file, expected_file):
                 if "#EXTINF:0," in generated_line:

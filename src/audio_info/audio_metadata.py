@@ -335,6 +335,7 @@ class AudioMetadata():
 
         try:
             if file_pattern and file_pattern not in AUDIO_EXTS:
+                logger.warning(f"Pattern {file_pattern} is not for a valid audio file")
                 return
 
             input_path = Path(start_path)
@@ -1110,7 +1111,7 @@ class AudioMetadata():
                         date_values.add(date_value)
 
                         # @todo write to text file
-                        print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
+                        # print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
                     # m4a doesn't have a "native" original year field like "\xa9ory",
@@ -1123,7 +1124,7 @@ class AudioMetadata():
                         date_values.add(date_value)
 
                         # @todo write to text file
-                        print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
+                        # print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
                     # m4a supposedly has native publisher "\xa9pub", but not seen in my collection
@@ -1135,7 +1136,7 @@ class AudioMetadata():
                         tag_value = metadata_value
 
                     # @todo write to text file
-                    print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
+                    # print(f"metadata: {metadata_field:<20} - m4a key: {m4a_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
             # @todo write id3_tags to text file
@@ -1178,14 +1179,14 @@ class AudioMetadata():
                         date_values.add(date_value)
 
                         # @todo write to text file
-                        print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {date_value}")
+                        # print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
                     if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
                     # @todo write to text file
-                    print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {tag_value}")
+                    # print(f"metadata: {metadata_field:<20} - mp3 key: {mp3_value:<10} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
             # @todo write id3_tags to text file
@@ -1226,7 +1227,7 @@ class AudioMetadata():
                         date_values.add(date_value)
 
                         # @todo write to text file
-                        print(f"metadata: {metadata_field:<20} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {date_value}")
+                        # print(f"metadata: {metadata_field:<20} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {date_value}")
                         continue
 
                     if isinstance(metadata_value, str):
@@ -1237,7 +1238,7 @@ class AudioMetadata():
                         tag_value = metadata_value
 
                     # @todo write to text file
-                    print(f"metadata: {metadata_field:<20} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
+                    # print(f"metadata: {metadata_field:<20} - wma key: {wma_value:<35} - id3 key: {mp3_key} - value: {tag_value}")
                     id3_tags[mp3_key] = tag_value
 
             # @todo write id3_tags to text file

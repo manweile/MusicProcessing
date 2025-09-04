@@ -20,7 +20,7 @@ from unittest import TestCase
 from mutagen._util import MutagenError
 
 # local module constants
-from src import FOLDER_ART, MUSIC_TLD
+from src import AUDIO_EXTS, FOLDER_ART, MUSIC_TLD, PLAYLIST_EXTS
 from src.generated_files import GENERATED_FILES
 from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_WAV_NONE, TEST_WMA_CCR
 from tests import TESTS_PATH, TESTS_TLD
@@ -48,10 +48,25 @@ class TestAudioMetadata(TestCase):
         @details These datums are used throughout class and only need init once.
         '''
 
-        # directory for "walk" type tests: D:\MusicProcessing\tests\convert_walk
-        cls.convert_walk = os.path.join(TESTS_PATH, "convert_walk")
+        # directory for "walk" type tests: D:\MusicProcessing\tests\ConvertedMusic
+        cls.converted = os.path.join(TESTS_PATH, "ConvertedMusic")
+
+        # the path where converted file will be created
+        cls.norm_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
+
+        # test patterns
+        cls.m3u_pattern = PLAYLIST_EXTS[0]
+        cls.mp3_pattern = AUDIO_EXTS[0]
+
         # source files
         cls.src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR]
+
+        # conversion results
+        m4a_result = os.path.join(cls.norm_path, "The Eagles", "Desperado", "The Eagles-Desperado.mp3")
+        mp3_result = os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+        wma_result = os.path.join(cls.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3")
+        cls.mp3_result = os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+        cls.results = [m4a_result, mp3_result, wma_result]
 
         for src_path in cls.src_file_paths:
             # get the audio file name w/o path
@@ -75,7 +90,7 @@ class TestAudioMetadata(TestCase):
 
             # create the destination directory
             # D:\MusicProcessing\tests\convert_walk\The Eagles\Desperado\
-            dest_dir = os.path.join(cls.convert_walk, artist_album)
+            dest_dir = os.path.join(cls.converted, artist_album)
             os.makedirs(dest_dir, exist_ok=True)
 
             # create dest: D:\MusicProcessing\tests\convert_walk\The Eagles\Desperado\The Eagles-Desperado.m4a
@@ -94,17 +109,41 @@ class TestAudioMetadata(TestCase):
             shutil.copy(src_jpg, dest_jpg)
 
 
-        # the path where converted file will be created
-        cls.norm_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
-
         r'''
         ffprobe command line that is source for media info dictionary definition:
         ffprobe -v quiet -show_format -show_streams <file_path>
         where file_path points to "<linux_path>/Crush/Here/Crush-Live.mp3" or "<win_path>\Crush\Here\Crush-Live.mp3"
         Every os flavour has slight differences in the full return dict, especially the filename,
-        so we actually compare on the TAG inner dict, as it is invariant across operating systems.
+        and DISPOSITION inner dict may/may not have "multilayer" key,
+        so we use self.maxDiff = 2
         '''
-        cls.expected_tag = {
+
+        cls.media_dict = {
+            'index': '1', 'codec_name': 'mjpeg', 'codec_long_name': 'Motion JPEG', 'profile': 'Baseline', 'codec_type': 'video', 'codec_tag_string': '[0][0][0][0]',
+            'codec_tag': '0x0000', 'sample_fmt': 'fltp', 'sample_rate': '44100', 'channels': '2', 'channel_layout': 'stereo', 'bits_per_sample': '0', 'initial_padding': '0',
+            'id': 'N/A', 'r_frame_rate': '90000/1', 'avg_frame_rate': '0/0', 'time_base': '1/90000', 'start_pts': 'N/A', 'start_time': '0.000000', 'duration_ts': '22131951',
+            'duration': '245.910567', 'bit_rate': '129156', 'max_bit_rate': 'N/A', 'bits_per_raw_sample': '8', 'nb_frames': 'N/A', 'nb_read_frames': 'N/A', 'nb_read_packets': 'N/A',
+            'DISPOSITION': {
+                'default': '0', 'dub': '0', 'original': '0', 'comment': '0', 'lyrics': '0', 'karaoke': '0', 'forced': '0', 'hearing_impaired': '0', 'visual_impaired': '0',
+                'clean_effects': '0', 'attached_pic': '1', 'timed_thumbnails': '0', 'non_diegetic': '0', 'captions': '0', 'descriptions': '0', 'metadata': '0', 'dependent': '0',
+                'still_image': '0', 'multilayer': '0'},
+            'width': '500', 'height': '490', 'coded_width': '500', 'coded_height': '490', 'has_b_frames': '0', 'sample_aspect_ratio': '1:1', 'display_aspect_ratio': '50:49',
+            'pix_fmt': 'yuvj420p', 'level': '-99', 'color_range': 'pc', 'color_space': 'bt470bg', 'color_transfer': 'unknown', 'color_primaries': 'unknown',
+            'chroma_location': 'center', 'field_order': 'unknown', 'refs': '1',
+            'TAG': {
+                'comment': 'Cover (front)', 'title': 'Live', 'artist': 'Crush', 'track': '1/12', 'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
+                'MusicBrainz Release Track Id': '2475137d-6745-3951-a361-d4c29798f5d1', 'album_artist': 'Crush', 'TSO2': 'Crush', 'artist-sort': 'Crush', 'composer': 'Paul Lamb',
+                'SCRIPT': 'Latn', 'publisher': 'Sonic Records', 'ARTISTS': 'Crush', 'ASIN': 'B000065PP6', 'originalyear': '2002', 'BARCODE': '627915092229',
+                'CATALOGNUMBER': '2 50922', 'MusicBrainz Album Type': 'album', 'MusicBrainz Album Status': 'official','MusicBrainz Album Release Country': 'CA',
+                'Acoustid Id': '4fdf7757-ba58-4a4b-a1df-1ad4d102a474', 'MusicBrainz Album Id': '18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6',
+                'MusicBrainz Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f', 'MusicBrainz Album Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f',
+                'MusicBrainz Release Group Id': 'a7927f70-2431-3a58-b7ae-48576808cec1', 'date': '2002'},
+            'filename': 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', 'nb_streams': '2', 'nb_programs': '0', 'nb_stream_groups': '0', 'format_name': 'mp3',
+            'format_long_name': 'MP2/3 (MPEG audio layer 2/3)', 'size': '3970122', 'probe_score': '51'
+        }
+
+        # no matter the os, inner dict TAG is always same
+        cls.tag_dict = {
             'comment': 'Cover (front)', 'title': 'Live', 'artist': 'Crush', 'track': '1/12', 'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
             'MusicBrainz Release Track Id': '2475137d-6745-3951-a361-d4c29798f5d1', 'album_artist': 'Crush', 'TSO2': 'Crush', 'artist-sort': 'Crush', 'composer': 'Paul Lamb',
             'SCRIPT': 'Latn', 'publisher': 'Sonic Records', 'ARTISTS': 'Crush', 'ASIN': 'B000065PP6', 'originalyear': '2002', 'BARCODE': '627915092229',
@@ -121,8 +160,8 @@ class TestAudioMetadata(TestCase):
         @brief Cleans up the walk type tests source audio files and directories.
         '''
 
-        if os.path.exists(cls.convert_walk):
-            shutil.rmtree(cls.convert_walk)
+        if os.path.exists(cls.converted):
+            shutil.rmtree(cls.converted)
 
 
     def tearDown(self):
@@ -136,9 +175,6 @@ class TestAudioMetadata(TestCase):
             shutil.rmtree(self.norm_path)
 
 
-    # @unittest.skip("debug ci failure")
-
-
     def test_convert_file(self):
         '''
         @brief Test converting a valid audio file to mp3 format.
@@ -149,20 +185,15 @@ class TestAudioMetadata(TestCase):
         for src_file in self.src_file_paths:
             metadata.convert_file(src_file)
 
-        m4a_result = os.path.join(self.norm_path, "The Eagles", "Desperado", "The Eagles-Desperado.mp3")
-        mp3_result = os.path.join(self.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
-        wma_result = os.path.join(self.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3")
-
-        results = [m4a_result, mp3_result, wma_result]
-
-        for audio_file in results:
+        for audio_file in self.results:
             audio_exists = os.path.exists(audio_file)
             self.assertTrue(audio_exists)
 
-    # @unittest.skip("debug ci failure")
+
+    # @todo add test try to convert file w/o colocated Folder.jpg
 
 
-    def test_convert_walk_all(self):
+    def test_convert_walk(self):
         '''
         #brief Test converting all valid audio files in a top level directory to mp3 format.
 
@@ -170,17 +201,43 @@ class TestAudioMetadata(TestCase):
         @details Happy path test without a file pattern.
         '''
 
-        m4a_result = os.path.join(GENERATED_FILES, MUSIC_TLD, "The Eagles", "Desperado", "The Eagles-Desperado.mp3")
-        mp3_result = os.path.join(GENERATED_FILES, MUSIC_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
-        wma_result = os.path.join(GENERATED_FILES, MUSIC_TLD, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3")
+        metadata.convert_walk(self.converted, None)
 
-        results = [m4a_result, mp3_result, wma_result]
-
-        metadata.convert_walk(self.convert_walk, None)
-
-        for audio_file in results:
+        for audio_file in self.results:
             audio_exists = os.path.exists(audio_file)
             self.assertTrue(audio_exists)
+
+
+    def test_convert_walk_pattern(self):
+        '''
+        #brief Test converting valid audio file matching input pattern to mp3 format.
+
+        @details The audio files must have a co-located Folder.jpg file.
+        @details Happy path test with a file pattern.
+        '''
+
+        metadata.convert_walk(self.converted, self.mp3_pattern)
+
+        audio_exists = os.path.exists(self.mp3_result)
+        self.assertTrue(audio_exists)
+
+
+    def test_convert_walk_invalid_pattern(self):
+        '''
+        #brief Test try converting invalid file pattern to mp3 format.
+        '''
+
+        log_msg = f"Pattern {self.m3u_pattern} is not for a valid audio file"
+
+        with self.assertLogs() as captured:
+            metadata.convert_walk(self.converted, self.m3u_pattern)
+
+        self.assertEqual(len(captured.records), 1)
+        self.assertEqual(captured.records[0].getMessage(), log_msg)
+
+
+    # @todo copy/edit to get tags test
+    # @todo add full expected media dict, specify maxDiff = 1 (the file path)
 
 
     def test_get_media_info_dict(self):
@@ -190,8 +247,9 @@ class TestAudioMetadata(TestCase):
 
         results_dict = metadata.get_media_info_dict(TEST_MP3_CRUSH)
 
+        # self.maxDiff = 2
         self.maxDiff = None
-        self.assertDictEqual(self.expected_tag, results_dict['TAG'])
+        self.assertDictEqual(self.media_dict, results_dict)
 
 
     def test_load_any_file(self):
