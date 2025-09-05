@@ -10,6 +10,7 @@
 # standard modules
 import gc
 import inspect
+import platform
 import os
 import shutil
 import unittest
@@ -141,7 +142,19 @@ class TestAudioMetadata(TestCase):
             'format_long_name': 'MP2/3 (MPEG audio layer 2/3)', 'size': '3970122', 'probe_score': '51'
         }
 
-        # @todo change the filename value to match OS.
+        # change the filename value to match the linux OS.
+        # laptop ubuntu: 'filename': '/home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3'
+        # ci ubuntu: 'filename': '/home/runner/work/MusicProcessing/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3'
+        crush_mp3 = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
+        local_linux = os.path.join("home", "gerald", crush_mp3)
+        ci_linux = os.path.join("home", "runner", "work", crush_mp3)
+
+        os_name = platform.system()
+        if os_name == "Linux":
+            cls.media_dict["filename"] = local_linux
+
+        if os.environ.get('GITHUB_ACTIONS') == 'true':
+            cls.media_dict["filename"] = ci_linux
 
         # no matter the os, inner dict TAG is always same
         cls.tag_dict = {
