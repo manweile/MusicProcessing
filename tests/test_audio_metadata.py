@@ -52,23 +52,25 @@ class TestAudioMetadata(TestCase):
         # directory for "walk" type tests: D:\MusicProcessing\tests\ConvertedMusic
         cls.converted = os.path.join(TESTS_PATH, "ConvertedMusic")
 
-        # the path where converted file will be created
-        cls.norm_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
-
         # test patterns
         cls.m3u_pattern = PLAYLIST_EXTS[0]
         cls.mp3_pattern = AUDIO_EXTS[0]
 
-        # source files
+        # the path where converted files will be created
+        cls.norm_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
+
+        # audio source files for walk tests
         cls.src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR]
 
-        # conversion results
-        m4a_result = os.path.join(cls.norm_path, "The Eagles", "Desperado", "The Eagles-Desperado.mp3")
-        mp3_result = os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
-        wma_result = os.path.join(cls.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3")
+        # results files
         cls.mp3_result = os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
-        cls.results = [m4a_result, mp3_result, wma_result]
 
+        cls.results = []
+        cls.results.append(os.path.join(cls.norm_path, "The Eagles", "Desperado", "The Eagles-Desperado.mp3"))
+        cls.results.append(os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3"))
+        cls.results.append(os.path.join(cls.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3"))
+
+        # copy input files to "walk" directory
         for src_path in cls.src_file_paths:
             # get the audio file name w/o path
             # eg from D:\MusicProcessing\tests\Music\The Eagles\Desperado\The Eagles-Desperado.m4a -> The Eagles-Desperado.m4a

@@ -366,6 +366,10 @@ class AudioArt():
         input_file_ext = None
 
         try:
+            if file_pattern and file_pattern not in AUDIO_EXTS:
+                logger.warning(f"Pattern {file_pattern} is not for a valid audio file")
+                return
+
             input_path = Path(start_path)
 
             for dir_path, _, file_names in os.walk(input_path):

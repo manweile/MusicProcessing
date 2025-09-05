@@ -29,7 +29,7 @@ The audio files in tests\Music are input files for the test suites.<br>
 | --------------------- | ----------------------------- | -------------------------------------- | --------------------------- | ---------------------------------- |
 | Elton John            | Goodby Yellow Brick Road      | Elton John-Saturday Night's...wma      | test_audio_art              | happy paths                        |
 | --------------------- | ----------------------------- | -------------------------------------- | --------------------------- | ---------------------------------- |
-| Joshua Davis          | The Voice Peformance          | Joshua Davis-The Workingman's Hymn.m4a | test_audio_art              | happy path                         |
+| Joshua Davis          | The Voice Peformance          | Joshua Davis-The Workingman's Hymn.m4a | test_audio_art              | happy paths                        |
 | ""                    | ""                            | ""                                     | test_directory_processing   | ""                                 |
 | --------------------- | ----------------------------- | -------------------------------------- | --------------------------- | ---------------------------------- |
 | Sawyer Fredricks      | A Good Storm                  | Sawyer Fredricks - Shots Fired.mp3     | test_audio_playlist         | ""                                 |

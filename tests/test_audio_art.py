@@ -10,16 +10,17 @@
 import gc
 import inspect
 import os
+import shutil
 import unittest
 from pathlib import Path
 from subprocess import CalledProcessError
 from unittest import TestCase
 
 # local module constants
-from src import FOLDER_ART
+from src import AUDIO_EXTS, FOLDER_ART, PLAYLIST_EXTS
 from tests import TEST_M3U
 from tests import TEST_M4A_DAVIS, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_WMA_HOLIDAY, TEST_WMA_JOHN
-from tests import TESTS_TLD
+from tests import TESTS_PATH, TESTS_TLD
 # local module classes
 from src.audio_info import AudioArt
 
@@ -41,7 +42,45 @@ class TestAudioArt(TestCase):
         @details These datums are used throughout class and only need init once.
         '''
 
-        # don't add this one to delete list in tearDown, need it for an error test
+        # directory for "walk" type tests: D:\MusicProcessing\tests\PreppedMusic
+        cls.prepped = os.path.join(TESTS_PATH, "PreppedMusic")
+
+        # audio source files for walk tests
+        cls.src_file_paths = [TEST_M4A_DAVIS, TEST_MP3_CRUSH, TEST_WMA_JOHN]
+
+        # test patterns
+        cls.m3u_pattern = PLAYLIST_EXTS[0]
+        cls.mp3_pattern = AUDIO_EXTS[0]
+
+        cls.prepped_results = []
+        cls.prepped_results.append(os.path.join(cls.prepped, "Joshua Davis", "The Voice Peformance", FOLDER_ART))
+        cls.prepped_results.append(os.path.join(cls.prepped, "Crush", "Here", FOLDER_ART))
+        cls.prepped_results.append(os.path.join(cls.prepped, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART))
+
+        # copy input files to "walk" directory
+        for src_path in cls.src_file_paths:
+            # get the audio file name w/o path
+            file_name = os.path.basename(src_path)
+
+            # get audio file parent path parts
+            file_path = Path(src_path)
+            file_parent = file_path.parent
+            path_parts = file_parent.parts
+
+            # build up the artist & album path, from last 2 elements of file parent path parts
+            full_len = len(path_parts)
+            artist_len = full_len - 2
+            artist_album = ""
+            for i in range(artist_len, full_len):
+                artist_album = os.path.join(artist_album, path_parts[i])
+
+            # create the destination directory and copy file
+            dest_dir = os.path.join(cls.prepped, artist_album)
+            os.makedirs(dest_dir, exist_ok=True)
+            dest_path = os.path.join(dest_dir, file_name)
+            shutil.copy(src_path, dest_path)
+
+        # don't add this one to delete list used by tearDown, need it for an error test
         cls.found_album_art_jpg = os.path.join(TESTS_TLD, "Abba", "Waterloo", FOLDER_ART)
 
         cls.m4a_jpg = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", FOLDER_ART)
@@ -49,6 +88,7 @@ class TestAudioArt(TestCase):
         cls.no_stream_jpg = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", FOLDER_ART)
         cls.set_album_art_jpg = os.path.join(TESTS_TLD, "Albert Collins", "Best Of The Blues, Vol. 1", FOLDER_ART)
         cls.wma_jpg = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART)
+        cls.delete_jpgs = [cls.m4a_jpg, cls.mp3_jpg, cls.no_stream_jpg, cls.set_album_art_jpg, cls.wma_jpg]
 
         cls.src_has_jpg_path = os.path.join(TESTS_TLD, "Abba", "Waterloo")
         cls.src_no_tag_mp3 = os.path.join(TESTS_TLD, "Crush", "Here", "No_tag_Crush-Live.mp3")
@@ -60,20 +100,26 @@ class TestAudioArt(TestCase):
         cls.src_wma = TEST_WMA_JOHN
 
 
+    @classmethod
+    def tearDownClass(cls):
+        '''
+        @brief Cleans up the walk type tests source audio files and directories.
+        '''
+
+        if os.path.exists(cls.prepped):
+            shutil.rmtree(cls.prepped)
+
+
     def tearDown(self):
         '''
         @brief Clean up the created Folder.jpg files.
         '''
 
-        delete_jpgs = [
-            self.m4a_jpg,
-            self.mp3_jpg,
-            self.no_stream_jpg,
-            self.set_album_art_jpg,
-            self.wma_jpg
-        ]
+        for jpg in self.delete_jpgs:
+            if os.path.exists(jpg):
+                os.remove(jpg)
 
-        for jpg in delete_jpgs:
+        for jpg in self.prepped_results:
             if os.path.exists(jpg):
                 os.remove(jpg)
 
@@ -220,6 +266,44 @@ class TestAudioArt(TestCase):
         art.extract_mp3_art(input_audio)
         art_exists = os.path.exists(self.mp3_jpg)
         self.assertTrue(art_exists)
+
+
+    @unittest.skip("complete")
+    def test_extract_walk(self):
+        '''
+        #brief Test extracting album art from all valid audio files in a top level directory.
+
+        @details Audio files must not have a co-located Folder.jpg file.
+        @details Happy path test without a file pattern.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_extract_walk_pattern(self):
+        '''
+        #brief Test extracting album art from mp3 audio files in a top level directory.
+
+        @details Audio files must not have a co-located Folder.jpg file.
+        @details Happy path test with a file pattern.
+        '''
+
+        pass
+
+
+    def test_extract_walk_invalid_pattern(self):
+        '''
+        #brief Test try extracting album art with invalid file pattern.
+        '''
+
+        log_msg = f"Pattern {self.m3u_pattern} is not for a valid audio file"
+
+        with self.assertLogs() as captured:
+            art.extract_walk(self.prepped, self.m3u_pattern)
+
+        self.assertEqual(len(captured.records), 1)
+        self.assertEqual(captured.records[0].getMessage(), log_msg)
 
 
     def test_has_video_stream_false(self):
