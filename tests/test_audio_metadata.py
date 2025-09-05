@@ -127,7 +127,7 @@ class TestAudioMetadata(TestCase):
                 'default': '0', 'dub': '0', 'original': '0', 'comment': '0', 'lyrics': '0', 'karaoke': '0', 'forced': '0', 'hearing_impaired': '0', 'visual_impaired': '0',
                 'clean_effects': '0', 'attached_pic': '1', 'timed_thumbnails': '0', 'non_diegetic': '0', 'captions': '0', 'descriptions': '0', 'metadata': '0', 'dependent': '0',
                 'still_image': '0', 'multilayer': '0'},
-            'width': '500', 'height': '490', 'coded_width': '500', 'coded_height': '490', 'has_b_frames': '0', 'sample_aspect_ratio': '1:1', 'display_aspect_ratio': '50:49',
+            'width': '500', 'height': '490', 'coded_width': '500', 'coded_height': '490', 'closed_captions': '0', 'film_grain': '0', 'has_b_frames': '0', 'sample_aspect_ratio': '1:1', 'display_aspect_ratio': '50:49',
             'pix_fmt': 'yuvj420p', 'level': '-99', 'color_range': 'pc', 'color_space': 'bt470bg', 'color_transfer': 'unknown', 'color_primaries': 'unknown',
             'chroma_location': 'center', 'field_order': 'unknown', 'refs': '1',
             'TAG': {
@@ -247,7 +247,6 @@ class TestAudioMetadata(TestCase):
 
         results_dict = metadata.get_media_info_dict(TEST_MP3_CRUSH)
 
-        # self.maxDiff = 2
         self.maxDiff = None
         self.assertDictEqual(self.media_dict, results_dict)
 
