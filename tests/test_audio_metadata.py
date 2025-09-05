@@ -113,8 +113,7 @@ class TestAudioMetadata(TestCase):
         ffprobe command line that is source for media info dictionary definition:
         ffprobe -v quiet -show_format -show_streams <file_path>
         where file_path points to "<linux_path>/Crush/Here/Crush-Live.mp3" or "<win_path>\Crush\Here\Crush-Live.mp3"
-        Every os flavour has slight differences in the full return dict, especially the filename,
-        and DISPOSITION inner dict may/may not have "multilayer" key,
+        Every os flavour has slight differences in the full return dict, especially the filename
         so we use self.maxDiff = 2
         '''
 
@@ -141,6 +140,8 @@ class TestAudioMetadata(TestCase):
             'filename': 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', 'nb_streams': '2', 'nb_programs': '0', 'nb_stream_groups': '0', 'format_name': 'mp3',
             'format_long_name': 'MP2/3 (MPEG audio layer 2/3)', 'size': '3970122', 'probe_score': '51'
         }
+
+        # @todo change the filename value to match OS.
 
         # no matter the os, inner dict TAG is always same
         cls.tag_dict = {
