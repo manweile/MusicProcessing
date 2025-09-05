@@ -55,5 +55,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Test with unittest
+      env:
+        PYTHONTRACEMALLOC: 1 # Enable tracemalloc
       run: |
         python -m unittest discover tests
