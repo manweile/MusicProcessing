@@ -52,9 +52,12 @@ class TestAudioArt(TestCase):
         cls.m3u_pattern = PLAYLIST_EXTS[0]
         cls.mp3_pattern = AUDIO_EXTS[0]
 
+        # results files
+        cls.mp3_result = os.path.join(cls.prepped, "Crush", "Here", FOLDER_ART)
+
         cls.prepped_results = []
         cls.prepped_results.append(os.path.join(cls.prepped, "Joshua Davis", "The Voice Peformance", FOLDER_ART))
-        cls.prepped_results.append(os.path.join(cls.prepped, "Crush", "Here", FOLDER_ART))
+        cls.prepped_results.append(cls.mp3_result)
         cls.prepped_results.append(os.path.join(cls.prepped, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART))
 
         # copy input files to "walk" directory
@@ -268,7 +271,6 @@ class TestAudioArt(TestCase):
         self.assertTrue(art_exists)
 
 
-    @unittest.skip("complete")
     def test_extract_walk(self):
         '''
         #brief Test extracting album art from all valid audio files in a top level directory.
@@ -277,10 +279,13 @@ class TestAudioArt(TestCase):
         @details Happy path test without a file pattern.
         '''
 
-        pass
+        art.extract_walk(self.prepped, None)
+
+        for jpg_file in self.prepped_results:
+            jpg_exists = os.path.exists(jpg_file)
+            self.assertTrue(jpg_exists)
 
 
-    @unittest.skip("complete")
     def test_extract_walk_pattern(self):
         '''
         #brief Test extracting album art from mp3 audio files in a top level directory.
@@ -289,10 +294,13 @@ class TestAudioArt(TestCase):
         @details Happy path test with a file pattern.
         '''
 
-        pass
+        art.extract_walk(self.prepped, self.mp3_pattern)
+
+        jpg_exists = os.path.exists(self.mp3_result)
+        self.assertTrue(jpg_exists)
 
 
-    def test_extract_walk_invalid_pattern(self):
+    def test_extract_walk_pattern_invalid(self):
         '''
         #brief Test try extracting album art with invalid file pattern.
         '''

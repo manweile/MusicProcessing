@@ -385,15 +385,16 @@ class AudioArt():
 
                 for file in file_names:
                     _, input_file_ext = os.path.splitext(file)
+
                     # we don't touch non-audio files like m3u etc
                     if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
+                    elif file_pattern:
+                        if not fnmatch.fnmatch(input_file_ext.lower(), file_pattern.lower()):
+                            continue
 
-                    if file_pattern and not fnmatch.fnmatch(file, file_pattern.lower()):
-                        continue
-                    else:
-                        input_file_path = os.path.join(dir_path, file)
-                        self.extract_album_art(input_file_path)
+                    input_file_path = os.path.join(dir_path, file)
+                    self.extract_album_art(input_file_path)
 
         except Exception as e_error:
             if file_pattern:
