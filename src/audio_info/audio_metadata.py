@@ -471,7 +471,7 @@ class AudioMetadata():
 
     def get_any_tags(self, file_path):
         '''
-        @brief gets tags for any type of audio file.
+        @brief Gets tags for any type of audio file.
 
         @details Any type means m4a, mp3, or wma files.
 
@@ -502,7 +502,7 @@ class AudioMetadata():
 
     def get_m4a_tags(self, file_path):
         '''
-        @brief gets tag information for an m4a audio file.
+        @brief Gets tag information for an m4a audio file.
 
         @param file_path {str} The full path to m4a audio file.
         @return tag_info {MP4Tags} Tag object holding audio file tag info or None.
