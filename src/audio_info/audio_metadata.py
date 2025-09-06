@@ -23,7 +23,6 @@ import pathvalidate
 from mutagen.asf import ASF
 from mutagen.id3 import APIC, ID3, ID3TimeStamp
 from mutagen.mp3 import MP3
-from mutagen.mp3 import error as MP3Error
 from mutagen.mp4 import MP4, MP4FreeForm
 from mutagen._util import MutagenError
 from pathvalidate.error import ValidationError
@@ -359,6 +358,7 @@ class AudioMetadata():
                 exc_msg = f"Exception {type(e_error).__name__} walking {start_path} to convert {file_pattern} audio files to mp3"
             else:
                 exc_msg = f"Exception {type(e_error).__name__} walking {start_path} to convert audio files to mp3"
+
             logger.exception(exc_msg, stack_info=True)
             raise e_error
 

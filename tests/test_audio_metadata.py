@@ -238,7 +238,7 @@ class TestAudioMetadata(TestCase):
         self.assertTrue(audio_exists)
 
 
-    def test_convert_walk_invalid_pattern(self):
+    def test_convert_walk_pattern_invalid(self):
         '''
         #brief Test try converting invalid file pattern to mp3 format.
         '''
