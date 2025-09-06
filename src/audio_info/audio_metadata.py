@@ -528,7 +528,7 @@ class AudioMetadata():
             return tag_info
 
 
-    def get_media_info_dict(self, file_path):
+    def get_media_info(self, file_path):
         '''
         @brief Returns dictionary with media info.
         @details Uses ffprobe to get all media info from any valid audio file.
@@ -541,7 +541,7 @@ class AudioMetadata():
         '''
 
         try:
-            info = None
+            media_info = None
             command = [
                 "ffprobe",
                 "-v", "quiet",
@@ -553,7 +553,7 @@ class AudioMetadata():
             output = subprocess_utils.popen_pipe(command)
 
             rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
-            info = {}
+            media_info = {}
 
             if sys.platform == 'win32':
                 output = output.replace("\r", "")
@@ -566,40 +566,18 @@ class AudioMetadata():
 
                     if inner_dict:
                         try:
-                            info[inner_dict]
+                            media_info[inner_dict]
                         except KeyError:
-                            info[inner_dict] = {}
-                        info[inner_dict][key] = value
+                            media_info[inner_dict] = {}
+                        media_info[inner_dict][key] = value
                     else:
-                        info[key] = value
+                        media_info[key] = value
 
         except re.error as re_error:
             logger.error(f"Regex error processing {output}", exc_info=True)
             raise re_error
         except Exception as e_error:
             logger.exception(f"Exception getting media info for file {file_path}")
-            raise e_error
-        else:
-            return info
-
-
-    def get_media_info(self, file_path):
-        '''
-        @brief Gets media info.
-
-        @details Wrapper function for get_media_info_dict.
-
-        @param file_path {str} The full path to audio file.
-        @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            media_info = None
-            media_info = self.get_media_info_dict(file_path)
-
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} getting media info for file {file_path}")
             raise e_error
         else:
             return media_info
@@ -633,12 +611,14 @@ class AudioMetadata():
 
                     input_file_path = os.path.join(dir_path, file)
 
+                    # @ use get_media_info_dict
                     media_info = self.get_media_info(input_file_path)
                     if media_info:
                         for key, value in media_info.items():
                             if isinstance(value, dict):
                                 continue
                             else:
+                                # @todo write to text file
                                 print(f"key: {key}, value: {value}")
                     else:
                         logger.error(f"ValueError getting info for audio file: {input_file_path} returned None", exc_info=True)

@@ -279,16 +279,12 @@ class TestAudioMetadata(TestCase):
         pass
 
 
-    # @todo copy/edit to get tags test
-    # @todo add full expected media dict, specify maxDiff = 1 (the file path)
-
-
-    def test_get_media_info_dict(self):
+    def test_get_media_info(self):
         '''
         @brief Tests returns dictionary with media info.
         '''
 
-        results_dict = metadata.get_media_info_dict(TEST_MP3_CRUSH)
+        results_dict = metadata.get_media_info(TEST_MP3_CRUSH)
 
         self.maxDiff = None
         self.assertDictEqual(self.media_dict, results_dict)
