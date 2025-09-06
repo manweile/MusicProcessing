@@ -252,6 +252,33 @@ class TestAudioMetadata(TestCase):
         self.assertEqual(captured.records[0].getMessage(), log_msg)
 
 
+    @unittest.skip("complete")
+    def test_create_album_dir(self):
+        '''
+        @brief Test creates an album sub-directory in an artist directory.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_get_any_tags(self):
+        '''
+        @brief Test getting tags for any type of audio file.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_get_m4a_tags(self):
+        '''
+        @brief Tests getting tag information for an m4a audio file.
+        '''
+
+        pass
+
+
     # @todo copy/edit to get tags test
     # @todo add full expected media dict, specify maxDiff = 1 (the file path)
 
