@@ -43,8 +43,6 @@ from src import PathInfoError
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
 from src.subprocess_utils import SubprocessUtilities
-# relative import so don't get circular import error
-from .audio_art import AudioArt
 
 gc.enable()
 
@@ -52,7 +50,6 @@ logger = logging.getLogger(__name__)
 basename = os.path.basename(__file__)
 add_module_handler(logger, basename)
 
-art = AudioArt()
 directory = DirectoryProcessing()
 normalization = AudioNormalization()
 subprocess_utils = SubprocessUtilities()
@@ -417,6 +414,25 @@ class AudioMetadata():
             # # the id3v2 version = 3 is important, lack of is known ffmpeg(pydub)/mutagen bug
             # # and both documentations don't really mention it
             # audio_segment.export(export_path, export_format, bitrate=bitrate, tags=tags, id3v2_version='3')
+
+            # ffmpeg -hide_banner
+            # -i ~/PreppedMusic/Crush/Here/Crush-Live.mp3
+            # -vn -map_metadata -1
+            # -codec:a libmp3lame
+            # -b:a 128k
+            # Crush-Live.mp3
+            # -y
+
+            command = [
+                "ffmpeg", "-hide_banner",
+                "-i", file_path,
+                "-vn", "-map_metadata", str(-1),
+                "codec:a", "libmp3lame",
+                "-b:a", str(bitrate),
+                export_path, '-y'
+            ]
+
+            _ = subprocess_utils.popen_pipe(command)
 
             # Add album art
             mp3_file = MP3(export_path, ID3=ID3, v2_version=3)

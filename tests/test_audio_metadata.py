@@ -191,6 +191,17 @@ class TestAudioMetadata(TestCase):
             shutil.rmtree(self.norm_path)
 
 
+    def test_convert(self):
+        '''
+        @brief Test converting a valid audio file to mp3 format.
+
+        @details The audio files must have a co-located Folder.jpg file.
+        @details Happy path test.
+        '''
+
+        metadata.convert_file_ffmpeg(TEST_MP3_ABBA)
+
+
     def test_convert_file(self):
         '''
         @brief Test converting a valid audio file to mp3 format.

@@ -1,0 +1,9 @@
+ffmpeg -i ~/PreppedMusic/Crush/Here/Crush-Live.mp3 -vn -map_metadata -1 Crush-Live.mp3 -y
+
+also works:
+ffmpeg -hide_banner -i ~/PreppedMusic/Crush/Here/Crush-Live.mp3 -vn -map_metadata -1 -codec:a libmp3lame -b:a 128k Crush-Live.mp3 -y
+
+also works:
+ffmpeg -hide_banner -i ~/PreppedMusic/Crush/Here/Crush-Live.mp3 -vn -map_metadata -1  -id3v2_version 3 -ab 128k Crush-Live.mp3 -y
+ffmpeg -hide_banner -i ~/PreppedMusic/Elton\ John/Goodbye\ Yellow\ Brick\ Road/Elton\ John-Goodbye\ Yellow\ Brick\ Road.wma -vn -map_metadata -1 -codec:a libmp3lame -b:a 128k Elton\ John-Goodbye\ Yellow\ Brick\ Road.mp3 -y
+ffmpeg -hide_banner -i /home/gerald/PreppedMusic/The\ Eagles/Desperado/The\ Eagles-Desperado.m4a  -vn -map_metadata -1 -codec:a libmp3lame -b:a 128k The\ Eagles-Desperado.mp3 -y
