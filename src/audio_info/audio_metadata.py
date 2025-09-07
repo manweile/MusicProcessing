@@ -195,7 +195,7 @@ class AudioMetadata():
             return id3_tags
 
 
-    def convert_file(self, file_path):
+    def convert_file_old(self, file_path):
         '''
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file.
 
@@ -257,7 +257,7 @@ class AudioMetadata():
             metadata_type = self.get_metadata_type(file_path)
 
             if metadata_type is None:
-                logger.error(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None")
+                logger.error(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None", exc_info=True)
                 raise MetadataTypeError(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None")
 
             if metadata_type == AUDIO_FILES[0]:
@@ -320,7 +320,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def convert_file_ffmpeg(self, file_path):
+    def convert_file(self, file_path, show_spinner=True):
         '''
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file, using ffmpeg directly.
 
@@ -333,6 +333,7 @@ class AudioMetadata():
 
         @param file_path {str} The path for audio file to be converted.
         @exception MetadataTypeError Indicates a non-standard metadata type was encountered.
+        @exception MusicProcessingError A generic music processing error occurred.
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -378,7 +379,7 @@ class AudioMetadata():
             metadata_type = self.get_metadata_type(file_path)
 
             if metadata_type is None:
-                logger.error(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None")
+                logger.error(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None", exc_info=True)
                 raise MetadataTypeError(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None")
 
             if metadata_type == AUDIO_FILES[0]:
@@ -400,39 +401,37 @@ class AudioMetadata():
             media_info = self.get_media_info(file_path)
             bitrate = media_info['bit_rate']
 
-            # # @todo write my own ffmpeg converter, so dont need pydub
-            # if metadata_type == AUDIO_FILES[0]:
-            #     # pydub has an MP3 file loader
-            #     audio_segment = AudioSegment.from_mp3(file_path)
-            # elif metadata_type == AUDIO_FILES[1]:
-            #     # pydub does know about MP4 format, so pass it in
-            #     audio_segment = AudioSegment.from_file(file_path, format=format)
-            # elif metadata_type == AUDIO_FILES[2]:
-            #     # pydub doesn't know about wma/asf, so no format forces an autodetect
-            #     audio_segment = AudioSegment.from_file(file_path)
-
-            # # the id3v2 version = 3 is important, lack of is known ffmpeg(pydub)/mutagen bug
-            # # and both documentations don't really mention it
-            # audio_segment.export(export_path, export_format, bitrate=bitrate, tags=tags, id3v2_version='3')
-
-            # ffmpeg -hide_banner
-            # -i ~/PreppedMusic/Crush/Here/Crush-Live.mp3
+            # ffmpeg
+            # -hide_banner
+            # -i D:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3
             # -vn -map_metadata -1
             # -codec:a libmp3lame
-            # -b:a 128k
-            # Crush-Live.mp3
-            # -y
+            # -id3v2_version 3
+            # -b:a 128198
 
             command = [
                 "ffmpeg", "-hide_banner",
                 "-i", file_path,
-                "-vn", "-map_metadata", str(-1),
-                "codec:a", "libmp3lame",
-                "-b:a", str(bitrate),
-                export_path, '-y'
+                "-vn", "-map_metadata", "-1",
+                "-codec:a", "libmp3lame",
+                "-id3v2_version", "3",
+                "-b:a", str(bitrate)
             ]
 
-            _ = subprocess_utils.popen_pipe(command)
+            if tags is not None:
+                if not isinstance(tags, dict):
+                    logger.exception("Tags must be a dictionary.", stack_info=True)
+                    raise MusicProcessingError("Tags must be a dictionary.")
+                else:
+                    for key, value in tags.items():
+                        command.extend(['-metadata', '{0}={1}'.format(key, value)])
+
+            # D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
+            command.extend([export_path, '-y'])
+
+            success_msg = subprocess_utils.spinner_popen_pipe(export_path, command, show_spinner)
+            if success_msg:
+                data.append(success_msg)
 
             # Add album art
             mp3_file = MP3(export_path, ID3=ID3, v2_version=3)
@@ -453,6 +452,8 @@ class AudioMetadata():
 
         except MetadataTypeError as mt_error:
             raise mt_error
+        except MusicProcessingError as mp_error:
+            raise mp_error
         except PathInfoError as pi_error:
             raise pi_error
         except Exception as e_error:
@@ -460,7 +461,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def convert_walk(self, start_path, file_pattern):
+    def convert_walk(self, start_path, file_pattern, show_spinner=True):
         '''
         @brief Converts all audio files found in specified path to mp3 format.
 
@@ -493,7 +494,7 @@ class AudioMetadata():
                             continue
 
                     input_file_path = os.path.join(dir_path, file)
-                    self.convert_file(input_file_path)
+                    self.convert_file(input_file_path, show_spinner)
 
         except Exception as e_error:
             if file_pattern:

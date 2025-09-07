@@ -10,6 +10,7 @@ import os
 # local module constants
 from src.generated_files import GENERATED_FILES
 # local module errors
+from src.errors import FfmpegProcessError
 from src.errors import JSONOutputError
 from src.errors import MetadataTypeError
 from src.errors import MusicProcessingError
@@ -132,6 +133,7 @@ WMA_EXT = ".wma"
 # @details In modules needing the constant add 'from src import RESULT_EXT
 # @details In modules needing the constant add `from src import UTF8'
 # @details In modules needing the constant add 'from src import WMA_EXT`
+# @details In modules needing the error class, add `from src.errors import FfmpegProcessError'
 # @details In modules needing the error class, add `from src.errors import JSONOutputError'
 # @details In modules needing the error class, add `from src.errors import MetadataTypeError'
 # @details In modules needing the error class, add `from src.errors import MusicProcessingError'
@@ -149,6 +151,7 @@ __all__ = [
     "RESULT_DIR", "RESULT_EXT",
     "UTF8",
     "WMA_EXT",
+    "FfmpegProcessError",
     "JSONOutputError",
     "MetadataTypeError", "MusicProcessingError",
     "PathInfoError", "PlaylistError",

@@ -8,6 +8,16 @@ class MusicProcessingException(Exception):
         super().__init__(self.message)
 
 
+class FfmpegProcessError(MusicProcessingException):
+    '''
+    @brief Indicates error occurred processing a ffmpeg command.
+    '''
+
+    def __init__(self, message="A FfmpegError occurred"):
+        self.message = message
+        super().__init__(self.message)
+
+
 class JSONOutputError(MusicProcessingException):
     '''
     @brief Indicates error occurred finding json output.

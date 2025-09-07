@@ -23,6 +23,8 @@ from yaspin.spinners import Spinners
 from src import add_module_handler
 # local module constants
 from src import UTF8
+# local module errors
+from src import FfmpegProcessError
 
 gc.enable()
 
@@ -52,9 +54,9 @@ class SubprocessUtilities():
         '''
         @brief Runs command in new process.
 
-        @details Asynchronous execution of command with redirection to stdout.
+        @details Asynchronous execution of ffprobe command with redirection to stdout.
 
-        @param command {str} Command for Popen subprocess  to run.
+        @param command {str} Ffprobe command for Popen subprocess  to run.
         @return stdout {str} The decoded subprocess output.
         @exception RuntimeError A runtime error from subprocess popen.
         @exception UnicodeDecodeError A unicode decode error on subprocess stdout bytes.
@@ -87,7 +89,75 @@ class SubprocessUtilities():
             return stdout
 
 
-    def spinner_subprocess_run(self, text, command):
+    def spinner_popen_pipe(self, export_path, command, show_spinner=True):
+        '''
+        @brief Runs command in new process with option to display a spinner.
+
+        @details Asynchronous execution of ffmpeg command with redirection to stderr.
+
+        @param export_path {str} Path to destination audio file.
+        @param command {str} Ffmpeg command for Popen subprocess to run.
+        @return success_msg {str} Success message on completion.
+        @exception MusicProcessingError A generic music processing error occurred.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        from pathlib import Path
+        from yaspin import yaspin
+        from yaspin.spinners import Spinners
+
+        try:
+            input_path = Path(export_path)
+            input_file_name = input_path.stem
+            text = f"Converting {input_file_name}"
+            if show_spinner:
+                with yaspin(Spinners.dots, text=text, timer=True) as sp:
+                    with open(os.devnull, 'rb') as devnull:
+                        p = subprocess.Popen(
+                            command,
+                            stdin=devnull,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            universal_newlines=True
+                        )
+
+                    while True:
+                        line = p.stderr.readline()
+                        if not line:
+                            break
+
+                    p_out, p_err = p.communicate()
+            else:
+                with open(os.devnull, 'rb') as devnull:
+                    p = subprocess.Popen(
+                        command,
+                        stdin=devnull,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    )
+
+                p_out, p_err = p.communicate()
+
+            if p.returncode != 0:
+                fp_error_msg = f"Ffmpeg returned error code: {p.returncode}\n, with output: {p_err.decode(errors='ignore')}\n for command:{command}\n"
+                logger.exception(fp_error_msg, stack_info=True)
+                raise FfmpegProcessError(fp_error_msg)
+
+        except FfmpegProcessError as fp_error:
+            raise fp_error
+        except Exception as e_error:
+            logger.exception(f"Exception running command {shlex.join(command)}", stack_info=True)
+            raise e_error
+        else:
+            if show_spinner:
+                success_msg = f"Successful conversion on {input_path.stem} from {input_path.suffix} in {sp.elapsed_time:.2f} secs"
+            else:
+                success_msg = f"Successful conversion on {input_path.stem} from {input_path.suffix}"
+
+            return success_msg
+
+
+    def spinner_subprocess_run(self, command, text="", show_spinner=True):
         '''
         @brief Runs command in subprocess with a spinner.
 
@@ -101,11 +171,22 @@ class SubprocessUtilities():
         '''
 
         try:
-            with yaspin(Spinners.dots, text=text, timer=True) as spinner:
-                # check enables CalledProcessError throwing,
-                # capture output to get stdout & stderr
-                # encoding for cross-platform compatibility & avoid decoding errors
-                # text decodes stdout/stderr as text
+            '''
+            check enables CalledProcessError throwing,
+            capture output to get stdout & stderr
+            encoding for cross-platform compatibility & avoid decoding errors
+            text decodes stdout/stderr as text
+            '''
+            if show_spinner:
+                with yaspin(Spinners.dots, text=text, timer=True) as spinner:
+                    process = subprocess.run(
+                        command,
+                        check=True,
+                        capture_output=True,
+                        encoding=UTF8,
+                        text=True
+                    )
+            else:
                 process = subprocess.run(
                     command,
                     check=True,
@@ -124,7 +205,10 @@ class SubprocessUtilities():
             logger.exception(f"Exception processing command: {command}", stack_info=True)
             raise e_error
         else:
-            return process, spinner
+            if show_spinner:
+                return process, spinner
+            else:
+                return process, _
 
 
     def subprocess_run(self, command):

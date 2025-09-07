@@ -205,7 +205,7 @@ class AudioNormalization():
                 stats_time = stats_spinner.elapsed_time
                 stats_post_text = f"Analyzed loudnorm stats in {stats_time:.2f} secs"
             else:
-                stats_process = subprocess_utils.subprocess_run(stats_command)
+                stats_process, _ = subprocess_utils.spinner_subprocess_run(stats_command, show_spinner)
                 stats_post_text = "Analyzed loudnorm stats"
 
             stats_data = self.__loudnorm_json_parse(stats_process)
@@ -259,7 +259,7 @@ class AudioNormalization():
                 total_time = normalization_time + stats_time
                 total_time_text = f" in total time {total_time:.2f} secs\n "
             else:
-                normalize_process = subprocess_utils.subprocess_run(normalize_command)
+                normalize_process, _ = subprocess_utils.spinner_subprocess_run(normalize_command, show_spinner)
                 apply_post_text = "Applied loudnorm stats"
                 total_time_text = ""
 
@@ -310,7 +310,7 @@ class AudioNormalization():
                 file_path
             ]
 
-            result = subprocess_utils.subprocess_run(command)
+            result, _ = subprocess_utils.spinner_subprocess_run(command, show_spinner=False)
 
             # unlike ffmpeg, ffprobe does use stdout
             data = json.loads(result.stdout)
@@ -355,7 +355,7 @@ class AudioNormalization():
                 file_path
             ]
 
-            result = subprocess_utils.subprocess_run(command)
+            result, _ = subprocess_utils.spinner_subprocess_run(command, show_spinner=False)
 
             # unlike ffmpeg, ffprobe does use stdout
             data = json.loads(result.stdout)
@@ -404,7 +404,7 @@ class AudioNormalization():
                 '-f', 'null', '-'
             ]
 
-            process = subprocess_utils.subprocess_run(command)
+            process, _ = subprocess_utils.spinner_subprocess_run(command, show_spinner=False)
 
             # ffmpeg sends its output to stderr, not stdout
             output_str = process.stderr
@@ -554,7 +554,7 @@ class AudioNormalization():
                 _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
                 success_text = f"Successful peak normalization on {input_path_basename} in {spinner.elapsed_time:.2f} secs\n"
             else:
-                _ = subprocess_utils.subprocess_run(command)
+                _, _ = subprocess_utils.spinner_subprocess_run(command, show_spinner)
                 success_text = f"Successful peak normalization on {input_path_basename}"
 
             data.append(success_text)
@@ -660,7 +660,7 @@ class AudioNormalization():
                 _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
                 success_text = f"Successful rms normalization on {input_path_basename} in {spinner.elapsed_time:.2f} secs\n"
             else:
-                _ = subprocess_utils.subprocess_run(command)
+                _, _ = subprocess_utils.spinner_subprocess_run(command, show_spinner)
                 success_text = f"Successful rms normalization on {input_path_basename}"
 
             data.append(success_text)

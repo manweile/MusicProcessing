@@ -105,7 +105,7 @@ class TestSubprocessUtilities(TestCase):
         probe_process = None
 
         with self.assertRaises(CalledProcessError) as cm:
-            probe_process = subprocess_utils.subprocess_run(probe_command)
+            probe_process, _ = subprocess_utils.spinner_subprocess_run(probe_command, show_spinner=False)
 
         self.assertIsNone(probe_process)
         stderr = cm.exception.stderr.strip()
