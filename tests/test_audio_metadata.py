@@ -196,6 +196,7 @@ class TestAudioMetadata(TestCase):
         @brief Test converting a valid audio file to mp3 format.
 
         @details The audio files must have a co-located Folder.jpg file.
+        @details Happy path test.
         '''
 
         for src_file in self.src_file_paths:
@@ -206,7 +207,18 @@ class TestAudioMetadata(TestCase):
             self.assertTrue(audio_exists)
 
 
-    # @todo add test try to convert file w/o colocated Folder.jpg
+    def test_convert_file_no_jpg(self):
+        '''
+        @brief Test Attempt converting a an audio file that does not have a co-located Folder.jpg file.
+        '''
+
+        input_path_parent = os.path.dirname(TEST_MP3_CRUSH)
+        err_msg = f"album directory {input_path_parent} does not contain a {FOLDER_ART} file."
+
+        with self.assertRaises(MusicProcessingError) as cm:
+            metadata.convert_file(TEST_MP3_CRUSH)
+
+        self.assertEqual(cm.exception.message, err_msg)
 
 
     def test_convert_walk(self):

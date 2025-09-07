@@ -32,8 +32,9 @@ from tqdm import tqdm
 # local module methods
 from src import add_module_handler
 # local module constants
-from src import AUDIO_EXTS, AUDIO_FILES, AUDIO_TYPES
+from src import AUDIO_EXTS, AUDIO_FILES
 from src import FOLDER_ART
+from src import MP3_EXT
 # local module errors
 from src import MetadataTypeError
 from src import MusicProcessingError
@@ -42,6 +43,8 @@ from src import PathInfoError
 from src.audio_normalize import AudioNormalization
 from src.dir_processing import DirectoryProcessing
 from src.subprocess_utils import SubprocessUtilities
+# relative import so don't get circular import error
+from .audio_art import AudioArt
 
 gc.enable()
 
@@ -49,6 +52,7 @@ logger = logging.getLogger(__name__)
 basename = os.path.basename(__file__)
 add_module_handler(logger, basename)
 
+art = AudioArt()
 directory = DirectoryProcessing()
 normalization = AudioNormalization()
 subprocess_utils = SubprocessUtilities()
@@ -235,7 +239,8 @@ class AudioMetadata():
                 raise MusicProcessingError(f"album directory {input_path_parent} does not contain a {FOLDER_ART} file.")
 
             # export format is always mp3
-            export_format = AUDIO_TYPES[0]
+            export_format = MP3_EXT.removeprefix(".")
+
             input_format = os.path.splitext(file_path)[1].lower()[1:]
             input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
             data.append(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
@@ -291,6 +296,127 @@ class AudioMetadata():
             # the id3v2 version = 3 is important, lack of is known ffmpeg(pydub)/mutagen bug
             # and both documentations don't really mention it
             audio_segment.export(export_path, export_format, bitrate=bitrate, tags=tags, id3v2_version='3')
+
+            # Add album art
+            mp3_file = MP3(export_path, ID3=ID3, v2_version=3)
+            # encoding & type = 3 specifies UTF-8 & front cover
+            with open(cover, "rb") as album_art_file:
+                mp3_file.tags.add(
+                    APIC(
+                        encoding=3,
+                        mime="image/jpeg",
+                        type=3,
+                        desc="Cover",
+                        data=album_art_file.read()
+                    )
+                )
+            mp3_file.save(v2_version=3)
+
+            directory.create_txt(txt_filename, data)
+
+        except MetadataTypeError as mt_error:
+            raise mt_error
+        except PathInfoError as pi_error:
+            raise pi_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+            raise e_error
+
+
+    def convert_file_ffmpeg(self, file_path):
+        '''
+        @brief Converts a wma, m4a or mp3 audio file to mp3 audio file, using ffmpeg directly.
+
+        @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
+        @details Only the Windows displayable subset of metadata key/values is preserved.
+        @details Run create_album_dir function to ensure there are album directories for every audio file.
+        @details Then manually review extant album art and create and/or move Folder.jpg, if possible, to each album directory.
+        @details Next run extract_art_function to extract embedded art as Folder.jpg if needed, into each album directory.
+        @details Finally run set_album_art function to ensure a Folder.jpg exists in each album directory.
+
+        @param file_path {str} The path for audio file to be converted.
+        @exception MetadataTypeError Indicates a non-standard metadata type was encountered.
+        @exception PathInfoError Indicates directory_processing.path_info function returned None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        txt_filename = inspect.currentframe().f_code.co_name
+
+        try:
+            export_path = directory.path_info(file_path)
+
+            if export_path is None:
+                logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
+                raise PathInfoError(f"PathInfoError with file {file_path} returned None")
+            else:
+                directory.make_dir(os.path.dirname(export_path))
+
+            input_path_parent = os.path.dirname(file_path)
+            cover = os.path.join(input_path_parent, FOLDER_ART)
+
+            if not os.path.exists(cover):
+                logger.warning(f"album directory {input_path_parent} does not contain a {FOLDER_ART} file.")
+                raise MusicProcessingError(f"album directory {input_path_parent} does not contain a {FOLDER_ART} file.")
+
+            # export format is always mp3
+            export_format = MP3_EXT.removeprefix(".")
+
+            input_format = os.path.splitext(file_path)[1].lower()[1:]
+            input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
+            data.append(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
+            data.append(f"Source directory path: {input_path_parent}")
+
+            '''
+            metadata transfer
+            I dont want every possible tag, just the subset that Windows will display AND are ID3v2.3
+            Comments are ASF/ID3v2.3/MP4, but MusicBrainz/MP3Tag/puddletag have difficulty displaying,
+            so passing on transferring comment metadata
+            Compilation is not ID3v2.3, so passing on transferring compilation metadata
+            Date info is most problematic part of metadata, ASF/ID3v2.3/MP4 multiple date type tags,
+            the data types could be a full ISO date, or could just be a 4 digit year string,
+            so I am formatting any found date values to YYYY and mapping to ID3v2.3 TYER field
+            I have manually edited all audio files without date to have 1963 as default
+            '''
+            metadata_type = self.get_metadata_type(file_path)
+
+            if metadata_type is None:
+                logger.error(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None")
+                raise MetadataTypeError(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None")
+
+            if metadata_type == AUDIO_FILES[0]:
+                # format = AUDIO_FILES[0]
+                input_tags = self.get_mp3_tags(file_path)
+                tags = self.map_mp3_tags(input_tags)
+            elif metadata_type == AUDIO_FILES[1]:
+                # format = AUDIO_FILES[1]
+                input_tags = self.get_m4a_tags(file_path)
+                tags = self.map_m4a_tags(input_tags)
+            elif metadata_type == AUDIO_FILES[2]:
+                # format = AUDIO_FILES[2]
+                input_tags = self.get_wma_tags(file_path)
+                tags = self.map_wma_tags(input_tags)
+
+
+            # get the input file info - want bitrate so can preserve the quality in exported file
+            # @todo look at using get_bit_rate instead
+            media_info = self.get_media_info(file_path)
+            bitrate = media_info['bit_rate']
+
+            # # @todo write my own ffmpeg converter, so dont need pydub
+            # if metadata_type == AUDIO_FILES[0]:
+            #     # pydub has an MP3 file loader
+            #     audio_segment = AudioSegment.from_mp3(file_path)
+            # elif metadata_type == AUDIO_FILES[1]:
+            #     # pydub does know about MP4 format, so pass it in
+            #     audio_segment = AudioSegment.from_file(file_path, format=format)
+            # elif metadata_type == AUDIO_FILES[2]:
+            #     # pydub doesn't know about wma/asf, so no format forces an autodetect
+            #     audio_segment = AudioSegment.from_file(file_path)
+
+            # # the id3v2 version = 3 is important, lack of is known ffmpeg(pydub)/mutagen bug
+            # # and both documentations don't really mention it
+            # audio_segment.export(export_path, export_format, bitrate=bitrate, tags=tags, id3v2_version='3')
 
             # Add album art
             mp3_file = MP3(export_path, ID3=ID3, v2_version=3)

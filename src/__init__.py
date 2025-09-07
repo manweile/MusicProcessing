@@ -24,11 +24,14 @@ from src.level_filter import LevelFilter
 # @details use this when working with os library
 AUDIO_EXTS = [".mp3", ".m4a", ".wma"]
 
+# @todo no need for list, use single constants MP3_FILE, M4A_file, ASF_FILE instead
 ## @var AUDIO_FILES
 # @brief audio file type to mutagen class mapping
 # @details use this when working with mutagen library
 AUDIO_FILES = ["MP3", "MP4", "ASF"]
 
+# @todo for all usages of AUDIO_TYPES, can just call AUDIO_EXTS[i].removeprefix(".")
+# or better yet MP3_EXt.removeprefix("."), etc.
 ## @var AUDIO_TYPES
 # @brief audio file types in my collection
 # @details use this when you just need the type
@@ -64,6 +67,16 @@ LOG_DIR = "log_files"
 # @details use this to set extension for log files
 LOG_EXT = ".log"
 
+## @var M4A_EXT
+# @brief m4a file typer extension
+# @details use this when needing just this file type extension and not file list of valid extensions
+M4A_EXT = ".m4a"
+
+## @var MP3_EXT
+# @brief mp3 file typer extension
+# @details use this when needing just this file type extension and not file list of valid extensions
+MP3_EXT = ".mp3"
+
 ## @var MUSIC_TLD
 # @brief the top level directory that holds music files
 # @details use this when exporting manipulated audio files
@@ -94,6 +107,11 @@ RESULT_EXT = ".txt"
 # @details use this when configuring file access
 UTF8 = "utf-8"
 
+## @var WMA_EXT
+# @brief wma file typer extension
+# @details use this when needing just this file type extension and not file list of valid extensions
+WMA_EXT = ".wma"
+
 ## @var __all__
 # @brief Exposes variables for importing by other modules.
 # @details In modules needing the constant add `from src import AUDIO_EXTS`
@@ -105,12 +123,15 @@ UTF8 = "utf-8"
 # @details In modules needing the constant add 'from src import FOLDER_ART'
 # @details In modules needing the constant add 'from src import LOG_DIR
 # @details In modules needing the constant add 'from src import LOG_EXT
+# @details In modules needing the constant add 'from src import M4A_EXT`
+# @details In modules needing the constant add 'from src import MP3_EXT`
 # @details In modules needing the constant add 'from src import MUSIC_TLD`
 # @details In modules needing the constant add `from src import PLAYLIST_EXTS`
 # @details In modules needing the constant add `from src import PLAYLIST_TYPES`
 # @details In modules needing the constant add 'from src import RESULT_DIR
 # @details In modules needing the constant add 'from src import RESULT_EXT
 # @details In modules needing the constant add `from src import UTF8'
+# @details In modules needing the constant add 'from src import WMA_EXT`
 # @details In modules needing the error class, add `from src.errors import JSONOutputError'
 # @details In modules needing the error class, add `from src.errors import MetadataTypeError'
 # @details In modules needing the error class, add `from src.errors import MusicProcessingError'
@@ -123,10 +144,11 @@ __all__ = [
     "ERROR_LOG_FORMAT",
     "LOG_DIR", "LOG_EXT",
     "FOLDER_ART",
-    "MUSIC_TLD",
+    "M4A_EXT", "MP3_EXT", "MUSIC_TLD",
     "PLAYLIST_EXTS", "PLAYLIST_TYPES",
     "RESULT_DIR", "RESULT_EXT",
     "UTF8",
+    "WMA_EXT",
     "JSONOutputError",
     "MetadataTypeError", "MusicProcessingError",
     "PathInfoError", "PlaylistError",
