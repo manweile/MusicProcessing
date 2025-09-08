@@ -30,6 +30,7 @@ from src import add_module_handler
 # local module constants
 from src import AUDIO_EXTS
 from src import FOLDER_ART
+from src import M4A_EXT, MP3_EXT, WMA_EXT
 from src.generated_files import GENERATED_FILES
 # local module classes
 from src.audio_normalize import AudioNormalization
@@ -197,11 +198,11 @@ class AudioArt():
             # mutagen extraction is secondary method, because not file type agnostic,
             # and file must have an art metadata tag
             if metadata.has_art_tag(input_path):
-                if input_file_ext.lower() == AUDIO_EXTS[0]:
+                if input_file_ext.lower() == MP3_EXT:
                     self.extract_mp3_art(file_path)
-                elif input_file_ext.lower() == AUDIO_EXTS[1]:
+                elif input_file_ext.lower() == M4A_EXT:
                     self.extract_m4a_art(file_path)
-                elif input_file_ext.lower() == AUDIO_EXTS[2]:
+                elif input_file_ext.lower() == WMA_EXT:
                     self.extract_asf_art(file_path)
             else:
                 # warning because by this point,

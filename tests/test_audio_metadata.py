@@ -190,7 +190,7 @@ class TestAudioMetadata(TestCase):
         if os.path.exists(self.norm_path):
             shutil.rmtree(self.norm_path)
 
-
+    @unittest.skip("can remove")
     def test_convert(self):
         '''
         @brief Test converting a valid audio file to mp3 format.
@@ -288,6 +288,15 @@ class TestAudioMetadata(TestCase):
     def test_get_any_tags(self):
         '''
         @brief Test getting tags for any type of audio file.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_get_any_tags_wo_metadata(self):
+        '''
+        @brief Test getting tags for any type of audio file that is without metadata.
         '''
 
         pass

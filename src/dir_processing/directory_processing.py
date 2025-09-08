@@ -23,6 +23,7 @@ from shutil import ExecError
 from src import add_module_handler
 # local module constants
 from src import AUDIO_EXTS, AUDIO_TYPES
+from src import M4A_EXT, MP3_EXT, WMA_EXT
 from src import CSV_DIR, CSV_EXT
 from src import MUSIC_TLD
 from src import PLAYLIST_EXTS
@@ -282,11 +283,11 @@ class DirectoryProcessing():
                         data.append([audio_file_path, file_extension])
                         audio_count += 1
 
-                        if file_extension == AUDIO_EXTS[0]:
+                        if file_extension == MP3_EXT:
                             mp3_count += 1
-                        elif file_extension == AUDIO_EXTS[1]:
+                        elif file_extension == M4A_EXT:
                             m4a_count += 1
-                        elif file_extension == AUDIO_EXTS[2]:
+                        elif file_extension == WMA_EXT:
                             wma_count += 1
                     else:
                         if file_extension == ".csv":
@@ -336,7 +337,7 @@ class DirectoryProcessing():
         @details Without a start path input, the top level directory MUST have been set.
         @details If file extension is not supplied, uses the preset audio types list.
 
-        @param  file_ext {str} Optional, the file extension want file paths for.
+        @param  file_ext {str} Optional, the file extension (without period prefix) want file paths for.
         @param  start_path {str} Optional, the starting point of the directory walk.
         '''
 
@@ -548,7 +549,7 @@ class DirectoryProcessing():
                 export_dir = os.path.join(export_dir, input_path_parts[i])
 
             # get mp3 audio extension from package constants
-            export_ext = AUDIO_EXTS[0]
+            export_ext = MP3_EXT
 
             input_name = input_path.stem
 

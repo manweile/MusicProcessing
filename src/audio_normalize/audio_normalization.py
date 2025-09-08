@@ -20,7 +20,7 @@ from pathlib import Path
 # local module methods
 from src import add_module_handler
 # local module constants
-from src import AUDIO_EXTS
+from src import MP3_EXT
 # local module errors
 from src.errors import JSONOutputError
 from src.errors import PathInfoError
@@ -152,7 +152,7 @@ class AudioNormalization():
 
         try:
             _, input_file_ext = os.path.splitext(file_path)
-            if input_file_ext.lower() != AUDIO_EXTS[0]:
+            if input_file_ext.lower() != MP3_EXT:
                 logger.warning(f"{file_path} is not an mp3")
                 return
 
@@ -447,7 +447,7 @@ class AudioNormalization():
                     _, input_file_ext = os.path.splitext(file)
 
                     # file is not mp3, carry on to next file
-                    if input_file_ext.lower() != AUDIO_EXTS[0]:
+                    if input_file_ext.lower() != MP3_EXT:
                         continue
 
                     input_file_path = os.path.join(dir_path, file)
@@ -482,7 +482,7 @@ class AudioNormalization():
 
         try:
             _, input_file_ext = os.path.splitext(file_path)
-            if input_file_ext.lower() != AUDIO_EXTS[0]:
+            if input_file_ext.lower() != MP3_EXT:
                 logger.warning(f"{file_path} is not an mp3")
                 return
 
@@ -585,7 +585,7 @@ class AudioNormalization():
 
         try:
             _, input_file_ext = os.path.splitext(file_path)
-            if input_file_ext.lower() != AUDIO_EXTS[0]:
+            if input_file_ext.lower() != MP3_EXT:
                 logger.warning(f"{file_path} is not an mp3")
                 return
 

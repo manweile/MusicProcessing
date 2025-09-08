@@ -17,6 +17,7 @@ from pathlib import Path
 from src import add_module_handler
 # local module constants
 from src import AUDIO_EXTS
+from src import MP3_EXT
 from src import PLAYLIST_EXTS
 from src.generated_files import GENERATED_FILES
 # local module errors
@@ -79,7 +80,7 @@ class AudioPlaylist():
                 # wma and m4a files need mp3 extension
                 if input_ext != AUDIO_EXTS[0]:
                     input_stem = os.path.splitext(os.path.basename(input_audio))[0]
-                    audio = input_stem + AUDIO_EXTS[0]
+                    audio = input_stem + MP3_EXT
                 else:
                     audio = input_audio
             else:
