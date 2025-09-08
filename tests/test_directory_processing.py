@@ -16,7 +16,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 # local module constants
-from src import AUDIO_TYPES
+from src import AUDIO_EXTS
 from src import MUSIC_TLD
 from src.generated_files import GENERATED_FILES
 from tests import TEST_M4A_DAVIS
@@ -67,7 +67,7 @@ class TestDirectoryProcessing(TestCase):
         input_path = os.path.join(TESTS_TLD, "expected.m3u")
         path_info = directory.path_info(input_path)
         self.assertIsNone(path_info)
-        mock_warning.assert_called_once_with(f"File {input_path} is not in {AUDIO_TYPES}")
+        mock_warning.assert_called_once_with(f"File {input_path} is not in {AUDIO_EXTS}")
 
 
     def test_path_info(self):

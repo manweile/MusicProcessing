@@ -37,47 +37,15 @@ class TestSubprocessUtilities(TestCase):
     @brief Tests SubprocessUtilities class functions.
     '''
 
-    # @todo add a subprocess_run(command) test that has a jsondecoderror
 
+    @unittest.skip("complete")
+    def test_subprocess_run_jsondecode(self):
+        '''
+        @brief Tests sub:
+        '''
 
-    # def test_subprocess_run_non_extant(self):
-    #     '''
-    #     @brief Tests Tries to run ffprobe video stream check for non-extant file.
+        pass
 
-    #     @details This test is a due diligence expected failure test.
-    #     SubprocessUtilities.subprocess_run is 4th level, called by AudioArt.has_video_stream function.
-    #     AudioArt.has_video_stream has its own tests, which are not an appropriate location for subprocess_run testing.
-    #     '''
-
-    #     # Don't want the console output cluttered up
-    #     logging.disable(logging.ERROR)
-
-    #     input_audio = TEST_WAV_NONE
-
-    #     # -hide_banner reduce output clutter
-    #     # -select_streams v:0 only want video stream
-    #     # -show_streams gets all information about each media stream in the input
-    #     # -of json output information in json format
-    #     probe_command = [
-    #         'ffprobe',
-    #         '-hide_banner',
-    #         '-select_streams', 'v:0',
-    #         '-show_streams',
-    #         '-of', 'json',
-    #         input_audio
-    #     ]
-    #     probe_process = None
-
-    #     try:
-    #         with self.assertRaises(CalledProcessError) as cm:
-    #             probe_process = subprocess_utils.subprocess_run(probe_command)
-
-    #         self.assertIsNone(probe_process)
-    #         stderr = cm.exception.stderr.strip()
-    #         expected_err = f"{input_audio}: No such file or directory"
-    #         self.assertEqual(stderr, expected_err)
-    #     finally:
-    #         logging.disable(original_log_level)
 
     def test_subprocess_run_non_extant(self):
         '''
@@ -105,7 +73,7 @@ class TestSubprocessUtilities(TestCase):
         probe_process = None
 
         with self.assertRaises(CalledProcessError) as cm:
-            probe_process, _ = subprocess_utils.spinner_subprocess_run(probe_command, show_spinner=False)
+            probe_process = subprocess_utils.subprocess_run(probe_command)
 
         self.assertIsNone(probe_process)
         stderr = cm.exception.stderr.strip()

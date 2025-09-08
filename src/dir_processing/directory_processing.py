@@ -27,6 +27,7 @@ from src import CSV_DIR, CSV_EXT
 from src import MUSIC_TLD
 from src import PLAYLIST_EXTS
 from src import RESULT_DIR, RESULT_EXT
+from src import UTF8
 from src.generated_files import GENERATED_FILES
 
 gc.enable()
@@ -168,7 +169,8 @@ class DirectoryProcessing():
             csv_path = os.path.join(csv_dir, csv_filename + CSV_EXT)
 
             # I don't care about any previous file contents
-            csv_outfile = open(csv_path, mode='w', encoding='windows-1252', newline='')
+            # csv_outfile = open(csv_path, mode='w', encoding='windows-1252', newline='')
+            csv_outfile = open(csv_path, mode='w', encoding=UTF8, newline='')
             csv_file_writer = csv.writer(csv_outfile, dialect='excel', delimiter=';')
 
             if header_row is not None:
@@ -210,7 +212,8 @@ class DirectoryProcessing():
             txt_path = os.path.join(txt_dir, txt_filename + RESULT_EXT)
 
             # need to append cause expecting many runs
-            txt_outfile = open(txt_path, mode='a', encoding='windows-1252', newline='')
+            # txt_outfile = open(txt_path, mode='a', encoding='windows-1252', newline='')
+            txt_outfile = open(txt_path, mode='a', encoding=UTF8, newline='')
             for item in data:
                 txt_outfile.write(f"{item}\n")
 
@@ -496,9 +499,7 @@ class DirectoryProcessing():
 
             input_ext = input_path.suffix
             if input_ext.lower() not in AUDIO_EXTS:
-                # @todo this should be AUDIO_EXTS !!!
-                # @todo test_directory_processing will need to change too
-                logger.warning(f"File {input_path} is not in {AUDIO_TYPES}")
+                logger.warning(f"File {input_path} is not in {AUDIO_EXTS}")
                 return None
 
             r'''

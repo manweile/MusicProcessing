@@ -12,13 +12,13 @@ import logging
 import os
 import shlex
 import subprocess
+from pathlib import Path
 from subprocess import Popen, PIPE
 from subprocess import CalledProcessError
 
 # third party modules
 from yaspin import yaspin
 from yaspin.spinners import Spinners
-
 # local module methods
 from src import add_module_handler
 # local module constants
@@ -97,19 +97,17 @@ class SubprocessUtilities():
 
         @param export_path {str} Path to destination audio file.
         @param command {str} Ffmpeg command for Popen subprocess to run.
+        @param show_spinner {bool} Flag to use spinner or not. Default True.
         @return success_msg {str} Success message on completion.
-        @exception MusicProcessingError A generic music processing error occurred.
+        @exception FfmpegProcessError Exception occurred processing a ffmpeg command.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
-
-        from pathlib import Path
-        from yaspin import yaspin
-        from yaspin.spinners import Spinners
 
         try:
             input_path = Path(export_path)
             input_file_name = input_path.stem
             text = f"Converting {input_file_name}"
+
             if show_spinner:
                 with yaspin(Spinners.dots, text=text, timer=True) as sp:
                     with open(os.devnull, 'rb') as devnull:
@@ -149,6 +147,7 @@ class SubprocessUtilities():
             logger.exception(f"Exception running command {shlex.join(command)}", stack_info=True)
             raise e_error
         else:
+            success_msg = None
             if show_spinner:
                 success_msg = f"Successful conversion on {input_path.stem} from {input_path.suffix} in {sp.elapsed_time:.2f} secs"
             else:
@@ -157,16 +156,17 @@ class SubprocessUtilities():
             return success_msg
 
 
-    def spinner_subprocess_run(self, command, text="", show_spinner=True):
+    def spinner_subprocess_run(self, command, text):
         '''
         @brief Runs command in subprocess with a spinner.
 
         @details Runs subprocess for command, returns stdin & stderr.
 
-        @param text {str} Text for spinner to display.
         @param command {str} Command for subprocess  to run.
+        @param text {str} Text for spinner to display.
         @return results (process, spinner) ({CompletedProcess}, {Yaspin}) Tuple containing completed process and spinner objects.
         @exception CalledProcessError A subprocess error from ffmpeg command execution.
+        @exception UnicodeDecodeError A unicode decode error on subprocess stdout bytes.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -177,16 +177,7 @@ class SubprocessUtilities():
             encoding for cross-platform compatibility & avoid decoding errors
             text decodes stdout/stderr as text
             '''
-            if show_spinner:
-                with yaspin(Spinners.dots, text=text, timer=True) as spinner:
-                    process = subprocess.run(
-                        command,
-                        check=True,
-                        capture_output=True,
-                        encoding=UTF8,
-                        text=True
-                    )
-            else:
+            with yaspin(Spinners.dots, text=text, timer=True) as spinner:
                 process = subprocess.run(
                     command,
                     check=True,
@@ -194,6 +185,7 @@ class SubprocessUtilities():
                     encoding=UTF8,
                     text=True
                 )
+
 
         except CalledProcessError as cp_error:
             logger.exception(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", stack_info=True)
@@ -205,10 +197,7 @@ class SubprocessUtilities():
             logger.exception(f"Exception processing command: {command}", stack_info=True)
             raise e_error
         else:
-            if show_spinner:
-                return process, spinner
-            else:
-                return process, _
+            return process, spinner
 
 
     def subprocess_run(self, command):
@@ -217,18 +206,20 @@ class SubprocessUtilities():
 
         @details Runs subprocess for command, returns stdin & stderr.
 
-        @param text {str} Text for spinner to display.
         @param command {str} Command for subprocess  to run.
         @return process {CompletedProcess} Completed process object.
         @exception CalledProcessError A subprocess error from ffmpeg command execution.
+        @exception UnicodeDecodeError A unicode decode error on subprocess stdout bytes.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
-            # check enables CalledProcessError throwing,
-            # capture output to get stdout & stderr
-            # encoding for cross-platform compatibility & avoid decoding errors
-            # text decodes stdout/stderr as text
+            '''
+            check enables CalledProcessError throwing,
+            capture output to get stdout & stderr
+            encoding for cross-platform compatibility & avoid decoding errors
+            text decodes stdout/stderr as text
+            '''
             process = subprocess.run(
                 command,
                 check=True,

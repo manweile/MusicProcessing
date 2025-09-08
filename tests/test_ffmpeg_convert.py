@@ -17,16 +17,11 @@ import unittest
 from pathlib import Path
 from unittest import TestCase
 
-# third party modules
-from mutagen._util import MutagenError
-
 # local module constants
 from src import AUDIO_EXTS, FOLDER_ART, MUSIC_TLD, PLAYLIST_EXTS
 from src.generated_files import GENERATED_FILES
-from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_WAV_NONE, TEST_WMA_CCR
+from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR
 from tests import TESTS_PATH, TESTS_TLD
-# local module errors
-from src import MusicProcessingError
 # local module classes
 from src.audio_info import AudioMetadata
 

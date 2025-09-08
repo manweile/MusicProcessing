@@ -280,7 +280,7 @@ class AudioArt():
                 output_file, '-y'
             ]
 
-            _, _ = subprocess_utils.spinner_subprocess_run(command, show_spinner=False)
+            _ = subprocess_utils.subprocess_run(command)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} using ffmpeg to extract art from {input_path}", stack_info=True)
@@ -435,7 +435,7 @@ class AudioArt():
                 file_path
             ]
 
-            probe_process, _ = subprocess_utils.spinner_subprocess_run(command, show_spinner=False)
+            probe_process = subprocess_utils.subprocess_run(command)
             # ffprobe outputs to stdout, unlike ffmpeg
             probe = json.loads(probe_process.stdout)
 
