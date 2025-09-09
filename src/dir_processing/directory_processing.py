@@ -312,9 +312,9 @@ class DirectoryProcessing():
             print(f"Found {album_count} album directories")
             print(f"Found {dir_count} total directories")
 
-            print(f"Found {mp3_count} {AUDIO_TYPES[0]} files")
-            print(f"Found {m4a_count} {AUDIO_TYPES[1]} files")
-            print(f"Found {wma_count} {AUDIO_TYPES[2]} files")
+            print(f"Found {mp3_count} {MP3_EXT.removeprefix(".")} files")
+            print(f"Found {m4a_count} {M4A_EXT.removeprefix(".")} files")
+            print(f"Found {wma_count} {WMA_EXT.removeprefix(".")} files")
             print(f"Found {audio_count} total audio files")
 
             print(f"Found {csv_count} csv files")
