@@ -526,7 +526,7 @@ class TestAudioMetadata(TestCase):
 
 
     @unittest.skip("complete")
-    def test_map3_tags(self):
+    def test_map_mp3_tags(self):
         '''
         @brief
         '''
