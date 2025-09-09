@@ -144,18 +144,21 @@ class TestAudioMetadata(TestCase):
             'format_long_name': 'MP2/3 (MPEG audio layer 2/3)', 'size': '3970122', 'probe_score': '51'
         }
 
-        # change the filename value to match the linux OS.
+        # change the filename value to match the OS.
+        # desktop windows: 'filename': 'D:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3'
         # laptop ubuntu: 'filename': '/home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3'
         # ci ubuntu: 'filename': '/home/runner/work/MusicProcessing/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3'
         crush_mp3 = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
+        local_win = os.path.join("D:", crush_mp3)
         local_linux = os.path.join("home", "gerald", crush_mp3)
         ci_linux = os.path.join("home", "runner", "work", crush_mp3)
 
         os_name = platform.system()
         if os_name == "Linux":
             cls.media_dict["filename"] = local_linux
-
-        if os.environ.get('GITHUB_ACTIONS') == 'true':
+        elif os_name == "Windows":
+            cls.media_dict["filename"] = local_win
+        elif os.environ.get('GITHUB_ACTIONS') == 'true':
             cls.media_dict["filename"] = ci_linux
 
         # no matter the os, inner dict TAG is always same
@@ -189,17 +192,6 @@ class TestAudioMetadata(TestCase):
 
         if os.path.exists(self.norm_path):
             shutil.rmtree(self.norm_path)
-
-    @unittest.skip("can remove")
-    def test_convert(self):
-        '''
-        @brief Test converting a valid audio file to mp3 format.
-
-        @details The audio files must have a co-located Folder.jpg file.
-        @details Happy path test.
-        '''
-
-        metadata.convert_file(TEST_MP3_ABBA, show_spinner=False)
 
 
     def test_convert_file(self):
@@ -303,6 +295,15 @@ class TestAudioMetadata(TestCase):
 
 
     @unittest.skip("complete")
+    def test_get_any_tags_invalid_file(self):
+        '''
+        @brief Test Try getting tags for invalid file that is not audio.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
     def test_get_m4a_tags(self):
         '''
         @brief Tests getting tag information for an m4a audio file.
@@ -320,6 +321,78 @@ class TestAudioMetadata(TestCase):
 
         self.maxDiff = None
         self.assertDictEqual(self.media_dict, results_dict)
+
+
+    @unittest.skip("complete")
+    def test_get_media_info_walk(self):
+        '''
+        @brief Tests getting media info (codec, duration, size, bitrate...) for audio files.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_get_media_tags(self):
+        '''
+        @brief Tests getting media tags.add(
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_get_metadata_type(self):
+        '''
+        @brief Test getting metadata type of any audio file.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_get_mp3_tags(self):
+        '''
+        @brief Tests getting tag information for an mp3 audio file.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_get_tags_walk(self):
+        '''
+        @brief Tests pretty printing tags for audio files.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_get_wma_tags(self):
+        '''
+        @brief Tests getting tag information for an wma audio file.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_get_unique_media_keys(self):
+        '''
+        @brief Tests getting an unique set of metadata keys for audio files in specified path.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_has_art_tag(self):
+        '''
+        @brief Tests checking if an audio file has an embedded album art tag.
+        '''
+
+        pass
 
 
     def test_load_any_file(self):
@@ -355,7 +428,13 @@ class TestAudioMetadata(TestCase):
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
-    # @todo test_load_m4a
+    @unittest.skip("complete")
+    def test_load_m4a_file(self):
+        '''
+        @brief Tests loading an m4a audio file.
+        '''
+
+        pass
 
 
     def test_load_m4a_file_non_extant(self):
@@ -373,7 +452,13 @@ class TestAudioMetadata(TestCase):
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
-    # @todo test_load_mp3
+    @unittest.skip("complete")
+    def test_load_mp3_file(self):
+        '''
+        @brief Tests loading an mp3 file.
+        '''
+
+        pass
 
 
     def test_load_mp3_file_non_extant(self):
@@ -391,7 +476,13 @@ class TestAudioMetadata(TestCase):
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
-    # @todo test_load_wma
+    @unittest.skip("complete")
+    def test_load_wma_file(self):
+        '''
+        @brief Tests loading an wma audio file.
+        '''
+
+        pass
 
 
     def test_load_wma_file_non_extant(self):
@@ -423,6 +514,33 @@ class TestAudioMetadata(TestCase):
 
         self.assertIsNone(audio_file)
         self.assertEqual(cm.exception.message, f"MusicProcessingError {TEST_MP3_CRUSH} not wma")
+
+
+    @unittest.skip("complete")
+    def test_map_m4a_tags(self):
+        '''
+        @brief
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_map3_tags(self):
+        '''
+        @brief
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_map_wma_tags(self):
+        '''
+        @brief
+        '''
+
+        pass
 
 
 def get_method_names(cls):
