@@ -360,6 +360,15 @@ class TestAudioMetadata(TestCase):
 
 
     @unittest.skip("complete")
+    def test_get_mp3_tags_no_metadata(self):
+        '''
+        @brief Tests trying to get tag information for an mp3 audio file w/o metadata.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
     def test_get_tags_walk(self):
         '''
         @brief Tests pretty printing tags for audio files.
