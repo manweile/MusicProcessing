@@ -8,6 +8,7 @@
 '''
 
 # standard modules
+import copy
 import gc
 import inspect
 import platform
@@ -21,9 +22,10 @@ from unittest import TestCase
 from mutagen._util import MutagenError
 
 # local module constants
-from src import AUDIO_EXTS, FOLDER_ART, MUSIC_TLD, PLAYLIST_EXTS
+from src import AUDIO_EXTS, AUDIO_FILES, FOLDER_ART, MUSIC_TLD, PLAYLIST_EXTS
 from src.generated_files import GENERATED_FILES
 from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_WAV_NONE, TEST_WMA_CCR
+from tests import TEST_M3U
 from tests import TESTS_PATH, TESTS_TLD
 # local module errors
 from src import MusicProcessingError
@@ -65,7 +67,7 @@ class TestAudioMetadata(TestCase):
         # for conversion test that only needs a single file
         cls.mp3_result = os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 
-        # for conversion tests that need multiple files
+        # for conversion tests that need multiple files and co-located Folder.jpg
         cls.results = []
         cls.results.append(os.path.join(cls.norm_path, "The Eagles", "Desperado", "The Eagles-Desperado.mp3"))
         cls.results.append(os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3"))
@@ -111,6 +113,8 @@ class TestAudioMetadata(TestCase):
 
             # and copy
             shutil.copy(src_jpg, dest_jpg)
+
+        cls.src_no_tag_mp3 = os.path.join(TESTS_TLD, "Crush", "Here", "No_tag_Crush-Live.mp3")
 
 
         r'''
@@ -182,10 +186,9 @@ class TestAudioMetadata(TestCase):
             "TPUB": "Polydor",
             "TIT2": "Waterloo",
             "TRCK": "1",
-            "TPOS": "1/1"
+            "TYER": "1900"
         }
-        cls.mp3_date_values = set(["1962", "1963"])
-
+        cls.id3_date_values = set(["1962", "1963"])
 
         cls.mp3_ffprobe_tags = {
             "title": "Waterloo",
@@ -237,6 +240,7 @@ class TestAudioMetadata(TestCase):
             "comment": "Purchased from 7digital.com"
         }
 
+
         cls.wma_ffprobe_tags = {
             "title": "Fortunate Son",
             "artist": "Creedence Clearwater Revival",
@@ -283,17 +287,6 @@ class TestAudioMetadata(TestCase):
 
         if os.path.exists(self.norm_path):
             shutil.rmtree(self.norm_path)
-
-
-    def test_id3_update(self):
-        '''
-
-        '''
-
-        date_values = set()
-        dates_list = ["2025", "1963", "1985"]
-        for date in dates_list:
-            date_values.add(date)
 
 
     def test_convert_file(self):
@@ -378,31 +371,41 @@ class TestAudioMetadata(TestCase):
         pass
 
 
-    @unittest.skip("complete")
     def test_get_any_tags(self):
         '''
         @brief Test getting tags for any type of audio file.
         '''
 
-        pass
+        for src_file in self.src_file_paths:
+            tags = metadata.get_any_tags(src_file)
+            tags_list = tags.values()
+            if src_file == TEST_M4A_EAGLES:
+                self.assertTrue(len(tags_list) == 32)
+            elif src_file == TEST_MP3_ABBA:
+                self.assertTrue(len(tags_list) == 9)
+            elif src_file == TEST_WMA_CCR:
+                self.assertTrue(len(tags_list) == 30)
 
 
-    @unittest.skip("complete")
     def test_get_any_tags_wo_metadata(self):
         '''
         @brief Test getting tags for any type of audio file that is without metadata.
         '''
 
-        pass
+        tags = None
+        tags = metadata.get_mp3_tags(self.src_no_tag_mp3)
+        self.assertIsNone(tags)
 
 
-    @unittest.skip("complete")
     def test_get_any_tags_invalid_file(self):
         '''
         @brief Test Try getting tags for invalid file that is not audio.
         '''
 
-        pass
+        tags = None
+        # tags = metadata.get_any_tags(TEST_M3U)
+        # will raise ValueError(f"ValueError loading {TEST_MRU} returned None")
+        # will logger.error(f"ValueError loading {TEST_MRU} returned None", exc_info=True)
 
 
     @unittest.skip("complete")
@@ -461,13 +464,14 @@ class TestAudioMetadata(TestCase):
         pass
 
 
-    @unittest.skip("complete")
     def test_get_mp3_tags_no_metadata(self):
         '''
         @brief Tests trying to get tag information for an mp3 audio file w/o metadata.
         '''
 
-        pass
+        tags = None
+        tags = metadata.get_mp3_tags(self.src_no_tag_mp3)
+        self.assertIsNone(tags)
 
 
     @unittest.skip("complete")
@@ -511,10 +515,10 @@ class TestAudioMetadata(TestCase):
         @brief Tests attempt to load an audio file with mutagen.
         '''
 
-        loaded_file = metadata.load_any_file(TEST_MP3_CRUSH)
-        audio_class_name = loaded_file.__class__.__name__
-        self.assertEqual(audio_class_name, "MP3")
-        # @todo need m4a and mp3 too
+        for src_file in self.src_file_paths:
+            loaded_file = metadata.load_any_file(src_file)
+            audio_class_name = loaded_file.__class__.__name__
+            self.assertTrue(audio_class_name in AUDIO_FILES)
 
 
     '''
@@ -652,6 +656,27 @@ class TestAudioMetadata(TestCase):
         '''
 
         pass
+
+
+    def test_update_id3(self):
+        '''
+        @brief tests updating a tags dictionary with newest year and disc value.
+        '''
+
+        # need name mangling to access private method
+        id3_tags = metadata._AudioMetadata__update_id3(self.id3_date_values, self.id3_input_tags)
+
+        # add expected date and tpos to expected output
+        id3_output_tags = copy.deepcopy(self.id3_input_tags)
+        id3_output_tags["TYER"] = '1963'
+        id3_output_tags["TPOS"] = "1/1"
+        self.assertDictEqual(id3_tags, id3_output_tags)
+
+        # change tags i/o dicts tpos values to test function NOT adding default tpos value
+        self.id3_input_tags["TPOS"] = "2/3"
+        id3_output_tags["TPOS"] = "2/3"
+        id3_tags = metadata._AudioMetadata__update_id3(self.id3_date_values, self.id3_input_tags)
+        self.assertDictEqual(id3_tags, id3_output_tags)
 
 
 def get_method_names(cls):
