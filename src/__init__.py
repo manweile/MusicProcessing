@@ -20,6 +20,11 @@ from src.errors import VideoStreamError
 # local module classes
 from src.level_filter import LevelFilter
 
+## @var ASF_TYPE
+# @brief mutagen audio file type
+# @details use this when working with mutagen library
+ASF_TYPE = "ASF"
+
 ## @var AUDIO_EXTS
 # @brief audio file extensions in my collection
 # @details use this when working with os library
@@ -78,6 +83,16 @@ M4A_EXT = ".m4a"
 # @details use this when needing just this file type extension and not file list of valid extensions
 MP3_EXT = ".mp3"
 
+## @var MP3_TYPE
+# @brief mutagen audio file type
+# @details use this when working with mutagen library
+MP3_TYPE = "MP3"
+
+## @var MP4_TYPE
+# @brief mutagen audio file type
+# @details use this when working with mutagen library
+MP4_TYPE = "MP4"
+
 ## @var MUSIC_TLD
 # @brief the top level directory that holds music files
 # @details use this when exporting manipulated audio files
@@ -115,6 +130,7 @@ WMA_EXT = ".wma"
 
 ## @var __all__
 # @brief Exposes variables for importing by other modules.
+# @details In modules needing the constant add 'from src import ASF_TYPE`
 # @details In modules needing the constant add `from src import AUDIO_EXTS`
 # @details In modules needing the constant add `from src import AUDIO_FILES`
 # @details In modules needing the constant add `from src import AUDIO_TYPES`
@@ -126,6 +142,8 @@ WMA_EXT = ".wma"
 # @details In modules needing the constant add 'from src import LOG_EXT
 # @details In modules needing the constant add 'from src import M4A_EXT`
 # @details In modules needing the constant add 'from src import MP3_EXT`
+# @details In modules needing the constant add 'from src import MP3_TYPE`
+# @details In modules needing the constant add 'from src import MP4_TYPE`
 # @details In modules needing the constant add 'from src import MUSIC_TLD`
 # @details In modules needing the constant add `from src import PLAYLIST_EXTS`
 # @details In modules needing the constant add `from src import PLAYLIST_TYPES`
@@ -141,12 +159,13 @@ WMA_EXT = ".wma"
 # @details In modules needing the error class, add `from src.errors import PlaylistError'
 # @details In modules needing the error class, add `from src.errors import VideoStreamError'
 __all__ = [
+    "ASF_TYPE",
     "AUDIO_EXTS", "AUDIO_FILES", "AUDIO_TYPES",
     "CSV_DIR", "CSV_EXT",
     "ERROR_LOG_FORMAT",
     "LOG_DIR", "LOG_EXT",
     "FOLDER_ART",
-    "M4A_EXT", "MP3_EXT", "MUSIC_TLD",
+    "M4A_EXT", "MP3_EXT", "MP3_TYPE", "MP4_TYPE", "MUSIC_TLD",
     "PLAYLIST_EXTS", "PLAYLIST_TYPES",
     "RESULT_DIR", "RESULT_EXT",
     "UTF8",
