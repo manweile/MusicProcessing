@@ -31,9 +31,9 @@ from tqdm import tqdm
 # local module methods
 from src import add_module_handler
 # local module constants
-from src import AUDIO_EXTS, AUDIO_FILES
+from src import ASF_TYPE, AUDIO_EXTS
 from src import FOLDER_ART
-from src import MP3_EXT
+from src import MP4_TYPE, MP3_EXT, MP3_TYPE
 # local module errors
 from src import MetadataTypeError
 from src import MusicProcessingError
@@ -175,6 +175,7 @@ class AudioMetadata():
         @param date_values ({str}) Set of unique YYYY date strings.
         @param id3_tags {dict} Source ID3 tags.
         @return output_tags {dict} Updated ID3 tags.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -198,6 +199,7 @@ class AudioMetadata():
         '''
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file, using ffmpeg directly.
 
+        @details Calling function MUST supply an existing file path.
         @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
         @details Only the Windows displayable subset of metadata key/values is preserved.
         @details Run create_album_dir function to ensure there are album directories for every audio file.
@@ -206,7 +208,8 @@ class AudioMetadata():
         @details Finally run set_album_art function to ensure a Folder.jpg exists in each album directory.
 
         @param file_path {str} The path for audio file to be converted.
-        @param show_spinner {bool}
+        @param show_spinner {bool} Show spinner flag.
+
         @exception MetadataTypeError Indicates a non-standard metadata type was encountered.
         @exception MusicProcessingError A generic music processing error occurred.
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
@@ -217,6 +220,7 @@ class AudioMetadata():
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:
+            # get export path for converted files, will return None for an invalid audio extension
             export_path = directory.path_info(file_path)
 
             if export_path is None:
@@ -257,19 +261,14 @@ class AudioMetadata():
                 logger.error(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None", exc_info=True)
                 raise MetadataTypeError(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None")
 
-            if metadata_type == AUDIO_FILES[0]:
-                # format = AUDIO_FILES[0]
-                input_tags = self.get_mp3_tags(file_path)
-                tags = self.map_mp3_tags(input_tags)
-            elif metadata_type == AUDIO_FILES[1]:
-                # format = AUDIO_FILES[1]
-                input_tags = self.get_m4a_tags(file_path)
-                tags = self.map_m4a_tags(input_tags)
-            elif metadata_type == AUDIO_FILES[2]:
-                # format = AUDIO_FILES[2]
-                input_tags = self.get_wma_tags(file_path)
-                tags = self.map_wma_tags(input_tags)
+            input_tags = self.get_any_tags(file_path)
 
+            if metadata_type == MP3_TYPE:
+                tags = self.map_mp3_tags(input_tags)
+            elif metadata_type == MP4_TYPE:
+                tags = self.map_m4a_tags(input_tags)
+            elif metadata_type == ASF_TYPE:
+                tags = self.map_wma_tags(input_tags)
 
             # get the input file info - want bitrate so can preserve the quality in exported file
             # @todo look at using get_bit_rate instead
@@ -341,17 +340,18 @@ class AudioMetadata():
         '''
         @brief Converts all audio files found in specified path to mp3 format.
 
-        @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
-        @details Only the Windows displayable subset of metadata key/values is preserved.
+        @details Calling functions MUST verify valid start path.
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         input_file_ext = None
 
         try:
+            # calling function is NOT responsible for pattern validity
             if file_pattern and file_pattern not in AUDIO_EXTS:
                 logger.warning(f"Pattern {file_pattern} is not for a valid audio file")
                 return
@@ -386,11 +386,13 @@ class AudioMetadata():
         '''
         @brief Creates an album sub-directory in an artist directory.
 
+        @details Calling functions MUST verify valid start path.
         @details Creates the album sub directory for the artist if needed.
         @details The album name for the directory is drawn from the album metadata field.
         @details Also creates csv of all audio file paths, album metadata values and sanitized album directory names.
 
         @param start_path {str} The tld holding music files.
+
         @exception ValidationError A pathlib module validation error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -496,6 +498,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to audio file.
         @return tags {object} Tag object (one of ID3, MP4Tags, or ASFTags) holding audio file tags or None.
+
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -506,12 +509,7 @@ class AudioMetadata():
 
             if audio_file is not None:
                 tags = audio_file.tags
-            else:
-                logger.error(f"ValueError loading audio file: {file_path} returned None", exc_info=True)
-                raise ValueError(f"ValueError loading audio file: {file_path} returned None")
 
-        except ValueError as v_error:
-            raise v_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting metadata type for file: {file_path}", stack_info=True)
             raise e_error
@@ -525,6 +523,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to m4a audio file.
         @return tag_info {MP4Tags} Tag object holding audio file tag info or None.
+
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -532,14 +531,10 @@ class AudioMetadata():
         try:
             tag_info = None
             audio_file = self.load_m4a_file(file_path)
+
             if audio_file is not None:
                 tag_info = audio_file.tags
-            else:
-                logger.error(f"ValueError loading audio file: {file_path} returned None", exc_info=True)
-                raise ValueError(f"ValueError loading audio file: {file_path} returned None")
 
-        except ValueError as v_error:
-            raise v_error
         except Exception as e_error:
             logger.exception(f"Exception getting tags for file {file_path}", stack_info=True)
             raise e_error
@@ -555,6 +550,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to audio file.
         @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
+
         @exception re.error An error occurred processing a regular expression with re module.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -608,6 +604,7 @@ class AudioMetadata():
 
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
+
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -658,6 +655,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to audio file.
         @return media_tags {dict} Media tags from filepath.
+
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -687,6 +685,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to audio file.
         @return metadata_type {str} The type of the audio file class or None.
+
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -719,6 +718,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to mp3 audio file.
         @return tag_info {ID3} Tag object holding audio file tag info or None.
+
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -728,12 +728,7 @@ class AudioMetadata():
             audio_file = self.load_mp3_file(file_path)
             if audio_file is not None:
                 tag_info = audio_file.tags
-            else:
-                logger.error(f"ValueError getting mp3 tags: {file_path} returned None", exc_info=True)
-                raise ValueError(f"ValueError getting mp3 tags: {file_path} returned None")
 
-        except ValueError as v_error:
-            raise v_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
             raise e_error
@@ -752,6 +747,7 @@ class AudioMetadata():
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
         @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -778,11 +774,11 @@ class AudioMetadata():
                             input_tags = self.get_media_tags(tag_file_path)
                         else:
                             metadata_type = self.get_metadata_type(tag_file_path)
-                            if metadata_type == AUDIO_FILES[2]:
+                            if metadata_type == ASF_TYPE:
                                 input_tags = self.get_wma_tags(tag_file_path)
-                            elif metadata_type == AUDIO_FILES[0]:
+                            elif metadata_type == MP3_TYPE:
                                 input_tags = self.get_mp3_tags(tag_file_path)
-                            elif metadata_type == AUDIO_FILES[1]:
+                            elif metadata_type == MP4_TYPE:
                                 input_tags = self.get_m4a_tags(tag_file_path)
 
                         if input_tags:
@@ -812,6 +808,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to wma audio file.
         @return tag_info {ASFTags} Tag object holding audio file tag info or None.
+
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -822,12 +819,7 @@ class AudioMetadata():
 
             if audio_file is not None:
                 tag_info = audio_file.tags
-            else:
-                logger.error(f"ValueError getting wma tags: {file_path} returned None", exc_info=True)
-                raise ValueError(f"ValueError getting wma tags: {file_path} returned None")
 
-        except ValueError as v_error:
-            raise v_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
             raise e_error
@@ -840,7 +832,9 @@ class AudioMetadata():
         @brief Gets set of ffprobe keys.
 
         @details Walks from starting path and saves set of unique metadata keys found by ffprobe.
+
         @param file_path {str} The starting point of the directory walk.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -880,6 +874,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to audio file.
         @return has_art {boolean} Returns true if art tag is present, false otherwise.
+
         @exception MusicProcessingError A generic music processing error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -923,6 +918,7 @@ class AudioMetadata():
 
         @param file_path {str} The full file path for audio file.
         @return audio_file {FileType} Instance for the input audio file type or None.
+
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -957,6 +953,7 @@ class AudioMetadata():
 
         @param file_path {str} The full file path for audio file.
         @return audio_file {FileType} Instance for the input audio file type or None.
+
         @exception MusicProcessingError A generic music processing error occurred.
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
@@ -998,6 +995,7 @@ class AudioMetadata():
 
         @param file_path {str} The full file path for audio file.
         @return audio_file {FileType} Instance for the input audio file type or None.
+
         @exception MusicProcessingError A generic music processing error occurred.
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
@@ -1038,6 +1036,7 @@ class AudioMetadata():
 
         @param file_path {str} The full file path for audio file.
         @return audio_file {FileType} Instance for the input audio file type or None.
+
         @exception MusicProcessingError A generic music processing error occurred.
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
@@ -1078,6 +1077,7 @@ class AudioMetadata():
 
         @param input_tags {MP4Tags} The m4a tags source.
         @return id3_tags {dict} The tags converted from wma tags.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -1147,6 +1147,7 @@ class AudioMetadata():
 
         @param input_tags {ID3} The mp3 tags source.
         @return id3_tags {dict} The tags converted from mp3 tags.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -1191,6 +1192,7 @@ class AudioMetadata():
 
         @param input_tags {ASFTags} The wma tags source.
         @return tags {dict} The tags converted from wma tags.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 

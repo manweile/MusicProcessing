@@ -25,6 +25,7 @@ from mutagen._util import MutagenError
 from src import AUDIO_EXTS, AUDIO_FILES, FOLDER_ART, MUSIC_TLD, PLAYLIST_EXTS
 from src.generated_files import GENERATED_FILES
 from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_NO_TAG, TEST_WAV_NONE, TEST_WMA_CCR
+from tests import TEST_M3U
 from tests import TESTS_PATH, TESTS_TLD
 # local module errors
 from src import MusicProcessingError
@@ -384,6 +385,21 @@ class TestAudioMetadata(TestCase):
                 self.assertTrue(len(tags_list) == 30)
 
 
+    def test_get_any_tags_invalid_file(self):
+        '''
+        @brief Test Try getting tags for invalid file that is not audio.
+        '''
+
+        tags = None
+
+        with self.assertRaises(ValueError) as cm:
+            tags = metadata.get_any_tags(TEST_M3U)
+
+        self.assertIsNone(tags)
+
+        # will raise ValueError(f"ValueError loading {TEST_MRU} returned None")
+
+
     def test_get_any_tags_wo_metadata(self):
         '''
         @brief Test getting tags for any type of audio file that is without metadata.
@@ -392,17 +408,6 @@ class TestAudioMetadata(TestCase):
         tags = None
         tags = metadata.get_mp3_tags(self.src_no_tag_mp3)
         self.assertIsNone(tags)
-
-
-    def test_get_any_tags_invalid_file(self):
-        '''
-        @brief Test Try getting tags for invalid file that is not audio.
-        '''
-
-        tags = None
-        # tags = metadata.get_any_tags(TEST_M3U)
-        # will raise ValueError(f"ValueError loading {TEST_MRU} returned None")
-        # will logger.error(f"ValueError loading {TEST_MRU} returned None", exc_info=True)
 
 
     @unittest.skip("complete")
