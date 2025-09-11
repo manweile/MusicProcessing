@@ -396,8 +396,8 @@ class TestAudioMetadata(TestCase):
             tags = metadata.get_any_tags(TEST_M3U)
 
         self.assertIsNone(tags)
-
-        # will raise ValueError(f"ValueError loading {TEST_MRU} returned None")
+        err_msg = f"ValueError loading {TEST_M3U} returned None"
+        self.assertTrue(cm.exception.args[0], err_msg)
 
 
     def test_get_any_tags_wo_metadata(self):
@@ -476,13 +476,13 @@ class TestAudioMetadata(TestCase):
         self.assertIsNone(tags)
 
 
-    @unittest.skip("complete")
     def test_get_tags_walk(self):
         '''
         @brief Tests pretty printing tags for audio files.
         '''
 
-        pass
+        metadata.get_tags_walk(self.converted, None)
+        metadata.get_tags_walk(self.converted, None, ffprobe=True)
 
 
     @unittest.skip("complete")

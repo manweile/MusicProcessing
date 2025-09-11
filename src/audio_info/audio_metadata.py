@@ -31,7 +31,7 @@ from tqdm import tqdm
 # local module methods
 from src import add_module_handler
 # local module constants
-from src import ASF_TYPE, AUDIO_EXTS
+from src import ASF_TYPE, AUDIO_EXTS, AUDIO_FILES
 from src import FOLDER_ART
 from src import MP4_TYPE, MP3_EXT, MP3_TYPE
 # local module errors
@@ -598,6 +598,11 @@ class AudioMetadata():
             return media_info
 
 
+    # @todo consider changing this to directly info via ffprobe
+    # and ffprobe-get_tags-print_format_json cli
+    # or ffpbrob-get_tags_output_format_json cli
+
+
     def get_media_info_walk(self, start_path, file_pattern):
         '''
         @brief Gets & prints media info (codec, duration, size, bitrate...) for audio files.
@@ -774,12 +779,15 @@ class AudioMetadata():
                             input_tags = self.get_media_tags(tag_file_path)
                         else:
                             metadata_type = self.get_metadata_type(tag_file_path)
-                            if metadata_type == ASF_TYPE:
-                                input_tags = self.get_wma_tags(tag_file_path)
-                            elif metadata_type == MP3_TYPE:
-                                input_tags = self.get_mp3_tags(tag_file_path)
-                            elif metadata_type == MP4_TYPE:
-                                input_tags = self.get_m4a_tags(tag_file_path)
+                            if metadata_type in AUDIO_FILES:
+                                input_tags = self.get_any_tags(tag_file_path)
+
+                            # if metadata_type == ASF_TYPE:
+                            #     input_tags = self.get_wma_tags(tag_file_path)
+                            # elif metadata_type == MP3_TYPE:
+                            #     input_tags = self.get_mp3_tags(tag_file_path)
+                            # elif metadata_type == MP4_TYPE:
+                            #     input_tags = self.get_m4a_tags(tag_file_path)
 
                         if input_tags:
                             if ffprobe:
