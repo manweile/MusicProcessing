@@ -24,8 +24,7 @@ from mutagen._util import MutagenError
 # local module constants
 from src import AUDIO_EXTS, AUDIO_FILES, FOLDER_ART, MUSIC_TLD, PLAYLIST_EXTS
 from src.generated_files import GENERATED_FILES
-from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_WAV_NONE, TEST_WMA_CCR
-from tests import TEST_M3U
+from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_NO_TAG, TEST_WAV_NONE, TEST_WMA_CCR
 from tests import TESTS_PATH, TESTS_TLD
 # local module errors
 from src import MusicProcessingError
@@ -114,7 +113,7 @@ class TestAudioMetadata(TestCase):
             # and copy
             shutil.copy(src_jpg, dest_jpg)
 
-        cls.src_no_tag_mp3 = os.path.join(TESTS_TLD, "Crush", "Here", "No_tag_Crush-Live.mp3")
+        cls.src_no_tag_mp3 = TEST_MP3_NO_TAG
 
 
         r'''
@@ -122,9 +121,8 @@ class TestAudioMetadata(TestCase):
         ffprobe -v quiet -show_format -show_streams <file_path>
         where file_path points to "<linux_path>/Crush/Here/Crush-Live.mp3" or "<win_path>\Crush\Here\Crush-Live.mp3"
         Every os flavour has slight differences in the full return dict, especially the filename
-        so we use self.maxDiff = 2
+        so we check the platform/environment to correct the filename value
         '''
-
         cls.media_dict = {
             'index': '1', 'codec_name': 'mjpeg', 'codec_long_name': 'Motion JPEG', 'profile': 'Baseline', 'codec_type': 'video', 'codec_tag_string': '[0][0][0][0]',
             'codec_tag': '0x0000', 'sample_fmt': 'fltp', 'sample_rate': '44100', 'channels': '2', 'channel_layout': 'stereo', 'bits_per_sample': '0', 'initial_padding': '0',
@@ -149,7 +147,6 @@ class TestAudioMetadata(TestCase):
             'format_long_name': 'MP2/3 (MPEG audio layer 2/3)', 'size': '3970122', 'probe_score': '51'
         }
 
-        # change the filename value to match the OS.
         # desktop windows: 'filename': 'D:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3'
         # laptop ubuntu: 'filename': '/home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3'
         # ci ubuntu: 'filename': '/home/runner/work/MusicProcessing/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3'
@@ -166,7 +163,7 @@ class TestAudioMetadata(TestCase):
         elif os.environ.get('GITHUB_ACTIONS') == 'true':
             cls.media_dict["filename"] = ci_linux
 
-        # no matter the os, inner dict TAG is always same
+        # no matter the os/environment, inner dict TAG is always same
         cls.tag_dict = {
             'comment': 'Cover (front)', 'title': 'Live', 'artist': 'Crush', 'track': '1/12', 'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
             'MusicBrainz Release Track Id': '2475137d-6745-3951-a361-d4c29798f5d1', 'album_artist': 'Crush', 'TSO2': 'Crush', 'artist-sort': 'Crush', 'composer': 'Paul Lamb',

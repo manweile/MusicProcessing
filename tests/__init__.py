@@ -63,6 +63,13 @@ TEST_MP3_ABBA = os.path.join(TESTS_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 TEST_MP3_CRUSH = ""
 TEST_MP3_CRUSH = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
 
+## @VAR TEST_MP3_NO_TAG
+# @brief Path to mp3 audio file for tests.
+# @details Use this when needing a mp3 audio file with no metadata for audio art tests.
+# @details Use this when needing a mp3 audio file with no metadata for audio metadata tests.
+TEST_MP3_NO_TAG = ""
+TEST_MP3_NO_TAG =  os.path.join(TESTS_TLD, "Crush", "Here", "No_tag_Crush-Live.mp3")
+
 ## @var TEST_MP3_X
 # @brief Path to mp3 audio file for tests.
 # @details Use this when needing a mp3 audio file for audio normalization tests.
@@ -107,6 +114,7 @@ TEST_WMA_JOHN = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road
 # @details In modules needing the directory, add `from src.tests.TEST_MP3_ABBA`
 # @details In modules needing the directory, add `from src.tests.TEST_MP3_CRUSH`
 # @details In modules needing the directory, add `from src.tests.TEST_MP3_X`
+# @details In modules needing the directory, add `from src.tests.TEST_MP3_NO_TAG`
 # @details In modules needing the directory, add `from src.tests.TEST_WAV_NONE`
 # @details In modules needing the directory, add `from src.tests.TEST_WMA_CCR`
 # @details In modules needing the directory, add `from src.tests.TEST_WMA_HOLIDAY`
@@ -115,6 +123,6 @@ __all__ = [
     "TESTS_PATH", "TESTS_TLD",
     "TEST_M3U", "TEST_WAV_NONE",
     "TEST_M4A_DAVIS", "TEST_M4A_EAGLES"
-    "TEST_MP3_ABBA", "TEST_MP3_CRUSH", "TEST_MP3_X",
+    "TEST_MP3_ABBA", "TEST_MP3_CRUSH", "TEST_MP3_X", "TEST_MP3_NO_TAG",
     "TEST_WMA_CCR", "TEST_WMA_HOLIDAY", "TEST_WMA_JOHN"
 ]

@@ -19,7 +19,7 @@ from unittest import TestCase
 # local module constants
 from src import AUDIO_EXTS, FOLDER_ART, PLAYLIST_EXTS
 from tests import TEST_M3U
-from tests import TEST_M4A_DAVIS, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_WMA_HOLIDAY, TEST_WMA_JOHN
+from tests import TEST_M4A_DAVIS, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_NO_TAG, TEST_WMA_HOLIDAY, TEST_WMA_JOHN
 from tests import TESTS_PATH, TESTS_TLD
 # local module classes
 from src.audio_info import AudioArt
@@ -94,7 +94,7 @@ class TestAudioArt(TestCase):
         cls.delete_jpgs = [cls.m4a_jpg, cls.mp3_jpg, cls.no_stream_jpg, cls.set_album_art_jpg, cls.wma_jpg]
 
         cls.src_has_jpg_path = os.path.join(TESTS_TLD, "Abba", "Waterloo")
-        cls.src_no_tag_mp3 = os.path.join(TESTS_TLD, "Crush", "Here", "No_tag_Crush-Live.mp3")
+        cls.src_no_tag_mp3 = TEST_MP3_NO_TAG
 
         cls.src_has_jpg_audio = TEST_MP3_ABBA
         cls.src_m4a = TEST_M4A_DAVIS
