@@ -131,34 +131,8 @@ WMA_EXT = ".wma"
 
 ## @var __all__
 # @brief Exposes variables for importing by other modules.
-# @details In modules needing the constant add 'from src import ASF_TYPE`
-# @details In modules needing the constant add `from src import AUDIO_EXTS`
-# @details In modules needing the constant add `from src import AUDIO_FILES`
-# @details In modules needing the constant add `from src import AUDIO_TYPES`
-# @details In modules needing the constant add 'from src import CSV_DIR
-# @details In modules needing the constant add 'from src import CSV_EXT
-# @details In modules needing the constant add 'from src import ERROR_LOG_FORMAT
-# @details In modules needing the constant add 'from src import FOLDER_ART'
-# @details In modules needing the constant add 'from src import LOG_DIR
-# @details In modules needing the constant add 'from src import LOG_EXT
-# @details In modules needing the constant add 'from src import M4A_EXT`
-# @details In modules needing the constant add 'from src import MP3_EXT`
-# @details In modules needing the constant add 'from src import MP3_TYPE`
-# @details In modules needing the constant add 'from src import MP4_TYPE`
-# @details In modules needing the constant add 'from src import MUSIC_TLD`
-# @details In modules needing the constant add `from src import PLAYLIST_EXTS`
-# @details In modules needing the constant add `from src import PLAYLIST_TYPES`
-# @details In modules needing the constant add 'from src import RESULT_DIR
-# @details In modules needing the constant add 'from src import RESULT_EXT
-# @details In modules needing the constant add `from src import UTF8'
-# @details In modules needing the constant add 'from src import WMA_EXT`
-# @details In modules needing the error class, add `from src.errors import FfmpegProcessError'
-# @details In modules needing the error class, add `from src.errors import JSONOutputError'
-# @details In modules needing the error class, add `from src.errors import MetadataTypeError'
-# @details In modules needing the error class, add `from src.errors import MusicProcessingError'
-# @details In modules needing the error class, add `from src.errors import PathInfoError'
-# @details In modules needing the error class, add `from src.errors import PlaylistError'
-# @details In modules needing the error class, add `from src.errors import VideoStreamError'
+# @details In modules needing the constant add 'from src import <constant>'
+# @details In modules needing the error class, add 'from src.errors import <error>'
 __all__ = [
     "ASF_TYPE",
     "AUDIO_EXTS", "AUDIO_FILES", "AUDIO_TYPES",
