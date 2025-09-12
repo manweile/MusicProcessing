@@ -114,9 +114,6 @@ class TestAudioMetadata(TestCase):
             # and copy
             shutil.copy(src_jpg, dest_jpg)
 
-        cls.src_no_tag_mp3 = TEST_MP3_NO_TAG
-
-
         r'''
         ffprobe command line that is source for media info dictionary definition:
         ffprobe -v quiet -show_format -show_streams <file_path>
@@ -406,17 +403,8 @@ class TestAudioMetadata(TestCase):
         '''
 
         tags = None
-        tags = metadata.get_any_tags(self.src_no_tag_mp3)
+        tags = metadata.get_any_tags(TEST_MP3_NO_TAG)
         self.assertIsNone(tags)
-
-
-    @unittest.skip("complete")
-    def test_get_m4a_tags(self):
-        '''
-        @brief Tests getting tag information for an m4a audio file.
-        '''
-
-        pass
 
 
     def test_get_media_info(self):
@@ -457,42 +445,13 @@ class TestAudioMetadata(TestCase):
         pass
 
 
-    @unittest.skip("complete? may not need")
-    def test_get_mp3_tags(self):
-        '''
-        @brief Tests getting tag information for an mp3 audio file.
-        '''
-
-        pass
-
-
-    @unittest.skip("may not need")
-    def test_get_mp3_tags_no_metadata(self):
-        '''
-        @brief Tests trying to get tag information for an mp3 audio file w/o metadata.
-        '''
-
-        tags = None
-        tags = metadata.get_mp3_tags(self.src_no_tag_mp3)
-        self.assertIsNone(tags)
-
-
     def test_get_tags_walk(self):
         '''
         @brief Tests pretty printing tags for audio files.
         '''
 
-        metadata.get_tags_walk(self.converted, None)
         metadata.get_tags_walk(self.converted, None, ffprobe=True)
-
-
-    @unittest.skip("complete? may not need")
-    def test_get_wma_tags(self):
-        '''
-        @brief Tests getting tag information for an wma audio file.
-        '''
-
-        pass
+        metadata.get_tags_walk(self.converted, None)
 
 
     @unittest.skip("complete")
@@ -544,94 +503,6 @@ class TestAudioMetadata(TestCase):
 
         self.assertIsNone(audio_file)
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
-
-
-    @unittest.skip("complete")
-    def test_load_m4a_file(self):
-        '''
-        @brief Tests loading an m4a audio file.
-        '''
-
-        pass
-
-
-    def test_load_m4a_file_non_extant(self):
-        '''
-        @brief Tests attempt to load a non-extant audio file with mutagen MP4 class.
-        '''
-
-        audio_file = None
-        file_path = os.path.join(TESTS_TLD, "Non-extant.m4a")
-
-        with self.assertRaises(MutagenError) as cm:
-            audio_file = metadata.load_m4a_file(file_path)
-
-        self.assertIsNone(audio_file)
-        self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
-
-
-    @unittest.skip("complete? may not need")
-    def test_load_mp3_file(self):
-        '''
-        @brief Tests loading an mp3 file.
-        '''
-
-        pass
-
-
-    def test_load_mp3_file_non_extant(self):
-        '''
-        @brief Tests attempt to load a non-extant audio file with mutagen MP3 class.
-        '''
-
-        audio_file = None
-        file_path = os.path.join(TESTS_TLD, "Non-extant.mp3")
-
-        with self.assertRaises(MutagenError) as cm:
-            audio_file = metadata.load_mp3_file(file_path)
-
-        self.assertIsNone(audio_file)
-        self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
-
-
-    @unittest.skip("complete? may not need")
-    def test_load_wma_file(self):
-        '''
-        @brief Tests loading an wma audio file.
-        '''
-
-        pass
-
-
-    def test_load_wma_file_non_extant(self):
-        '''
-        @brief Tests attempt to load a non-extant audio file with mutagen ASF class.
-        '''
-
-        audio_file = None
-        file_path = os.path.join(TESTS_TLD, "Non-extant.wma")
-
-        with self.assertRaises(MutagenError) as cm:
-            audio_file = metadata.load_wma_file(file_path)
-
-        self.assertIsNone(audio_file)
-        self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
-
-
-    def test_load_wma_file_with_mp3(self):
-        '''
-        @brief Attempt to load a mp3 as wma with mutagen ASF class.
-
-        @details Expected to throw custom exception.
-        '''
-
-        audio_file = None
-
-        with self.assertRaises(MusicProcessingError) as cm:
-            audio_file = metadata.load_wma_file(TEST_MP3_CRUSH)
-
-        self.assertIsNone(audio_file)
-        self.assertEqual(cm.exception.message, f"MusicProcessingError {TEST_MP3_CRUSH} not wma")
 
 
     @unittest.skip("complete")

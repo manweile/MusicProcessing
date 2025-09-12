@@ -517,34 +517,10 @@ class AudioMetadata():
             return tags
 
 
-    def get_m4a_tags(self, file_path):
-        '''
-        @brief Gets tag information for an m4a audio file.
-
-        @param file_path {str} The full path to m4a audio file.
-        @return tag_info {MP4Tags} Tag object holding audio file tag info or None.
-
-        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            tag_info = None
-            audio_file = self.load_m4a_file(file_path)
-
-            if audio_file is not None:
-                tag_info = audio_file.tags
-
-        except Exception as e_error:
-            logger.exception(f"Exception getting tags for file {file_path}", stack_info=True)
-            raise e_error
-        else:
-            return tag_info
-
-
     def get_media_info(self, file_path):
         '''
         @brief Returns dictionary with media info.
+
         @details Uses ffprobe to get all media info from any valid audio file.
         @details This def replaces the native pydub mediainfo function.
 
@@ -716,30 +692,6 @@ class AudioMetadata():
             return metadata_type
 
 
-    def get_mp3_tags(self, file_path):
-        '''
-        @brief Gets tag information for an mp3 audio file.
-
-        @param file_path {str} The full path to mp3 audio file.
-        @return tag_info {ID3} Tag object holding audio file tag info or None.
-
-        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            tag_info = None
-            audio_file = self.load_mp3_file(file_path)
-            if audio_file is not None:
-                tag_info = audio_file.tags
-
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
-            raise e_error
-        else:
-            return tag_info
-
-
     # @todo split get_tags_walk into ffprobe and mutagen versions??
     # and possibly go to text file output instead of console
 
@@ -754,6 +706,9 @@ class AudioMetadata():
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
+
+        data = []
+        txt_filename = inspect.currentframe().f_code.co_name
 
         try:
             input_tags = None
@@ -783,10 +738,16 @@ class AudioMetadata():
 
                         if input_tags:
                             if ffprobe:
-                                print(f"{tag_file_path} has {len(input_tags)} ffprobe tags")
-                                # want one key/value pair per line
-                                pprint.pprint(input_tags)
-                                print()
+                                # print(f"{tag_file_path} has {len(input_tags)} ffprobe tags")
+                                # # want one key/value pair per line
+                                # pprint.pprint(input_tags)
+                                # print()
+                                data.append(f"{tag_file_path} has {len(input_tags)} ffprobe tags")
+                                tag_items = input_tags.items()
+                                for key, value in tag_items:
+                                    data.append(f"{key}: {value}")
+
+                                data.append("\n")
                             else:
                                 print(f"{tag_file_path} has {len(input_tags)} {metadata_type} tags")
                                 # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
@@ -794,37 +755,22 @@ class AudioMetadata():
                                 # so need mutagen pprint and splitlines to "format" into simple dict
                                 pprint.pprint(input_tags.pprint().splitlines())
                                 print()
+
+                                data.append(f"{tag_file_path} has {len(input_tags)} {metadata_type} tags")
+                                tag_items = input_tags.items()
+                                for key, value in tag_items:
+                                    data.append(f"{key}: {value}")
+
+                                data.append("\n")
                         else:
                             print(f"{tag_file_path} has no metadata")
+                            data.append(f"{tag_file_path} has no metadata")
+
+            directory.create_txt(txt_filename, data)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
             raise e_error
-
-
-    def get_wma_tags(self, file_path):
-        '''
-        @brief gets tag information for an wma audio file.
-
-        @param file_path {str} The full path to wma audio file.
-        @return tag_info {ASFTags} Tag object holding audio file tag info or None.
-
-        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            tag_info = None
-            audio_file = self.load_wma_file(file_path)
-
-            if audio_file is not None:
-                tag_info = audio_file.tags
-
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
-            raise e_error
-        else:
-            return tag_info
 
 
     def get_unique_media_keys(self, file_path):
@@ -933,130 +879,6 @@ class AudioMetadata():
                 logger.error(f"ValueError loading {file_path} returned None", exc_info=True)
                 raise ValueError(f"ValueError loading {file_path} returned None")
 
-        except MutagenError as m_error:
-            logger.error(f"MutagenError {m_error} loading {file_path}", exc_info=True)
-            raise m_error
-        except ValueError as v_error:
-            raise v_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} loading audio file: {file_path}", stack_info=True)
-            raise e_error
-        else:
-            return audio_file
-
-
-    def load_m4a_file(self, file_path):
-        '''
-        @brief Loads an m4a audio file.
-
-        @details Expects a valid filepath to a m4a type audio file.
-
-        @param file_path {str} The full file path for audio file.
-        @return audio_file {FileType} Instance for the input audio file type or None.
-
-        @exception MusicProcessingError A generic music processing error occurred.
-        @exception MutagenError A custom exception in Mutagen occurred.
-        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            audio_file = None
-
-            if file_path.lower().endswith('.m4a'):
-                audio_file = MP4(file_path)
-            else:
-                logger.error(f"MusicProcessingError {file_path} not m4a", exc_info=True)
-                raise MusicProcessingError(f"MusicProcessingError {file_path} not m4a")
-
-            if audio_file is None:
-                logger.error(f"ValueError loading {file_path} returned None", exc_info=True)
-                raise ValueError(f"ValueError loading {file_path} returned None")
-
-        except MusicProcessingError as mp_error:
-            raise mp_error
-        except MutagenError as m_error:
-            logger.error(f"MutagenError {m_error} loading {file_path}", exc_info=True)
-            raise m_error
-        except ValueError as v_error:
-            raise v_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} loading audio file: {file_path}", stack_info=True)
-            raise e_error
-        else:
-            return audio_file
-
-
-    def load_mp3_file(self, file_path):
-        '''
-        @brief Loads an mp3 audio file.
-
-        @details Expects a valid filepath to a mp3 type audio file.
-
-        @param file_path {str} The full file path for audio file.
-        @return audio_file {FileType} Instance for the input audio file type or None.
-
-        @exception MusicProcessingError A generic music processing error occurred.
-        @exception MutagenError A custom exception in Mutagen occurred.
-        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            audio_file = None
-            if file_path.lower().endswith('.mp3'):
-                audio_file = MP3(file_path)
-            else:
-                logger.error(f"MusicProcessingError {file_path} not mp3", exc_info=True)
-                raise MusicProcessingError()
-
-            if audio_file is None:
-                logger.error(f"ValueError loading {file_path} returned None", exc_info=True)
-                raise ValueError(f"ValueError loading {file_path} returned None")
-
-        except MusicProcessingError as mp_error:
-            raise mp_error
-        except MutagenError as m_error:
-            logger.error(f"MutagenError {m_error} loading {file_path}", exc_info=True)
-            raise m_error
-        except ValueError as v_error:
-            raise v_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} loading audio file: {file_path}", stack_info=True)
-            raise e_error
-        else:
-            return audio_file
-
-
-    def load_wma_file(self, file_path):
-        '''
-        @brief Loads an wma audio file.
-
-        @details Expects a valid filepath to a wma type audio file.
-
-        @param file_path {str} The full file path for audio file.
-        @return audio_file {FileType} Instance for the input audio file type or None.
-
-        @exception MusicProcessingError A generic music processing error occurred.
-        @exception MutagenError A custom exception in Mutagen occurred.
-        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            audio_file = None
-            if file_path.lower().endswith('.wma'):
-                audio_file = ASF(file_path)
-            else:
-                logger.error(f"MusicProcessingError {file_path} not wma", exc_info=True)
-                raise MusicProcessingError(f"MusicProcessingError {file_path} not wma")
-
-            if audio_file is None:
-                logger.error(f"ValueError loading {file_path} returned None", exc_info=True)
-                raise ValueError(f"ValueError loading {file_path} returned None")
-
-        except MusicProcessingError as mp_error:
-            raise mp_error
         except MutagenError as m_error:
             logger.error(f"MutagenError {m_error} loading {file_path}", exc_info=True)
             raise m_error

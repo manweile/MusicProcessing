@@ -1,0 +1,5 @@
+{'age': 30,
+ 'city': 'New York',
+ 'details': {'company': 'Tech Corp', 'occupation': 'Engineer'},
+ 'hobbies': ['reading', 'hiking', 'coding'],
+ 'name': 'Alice'}
