@@ -457,7 +457,7 @@ class TestAudioMetadata(TestCase):
         pass
 
 
-    @unittest.skip("complete")
+    @unittest.skip("complete? may not need")
     def test_get_mp3_tags(self):
         '''
         @brief Tests getting tag information for an mp3 audio file.
@@ -466,6 +466,7 @@ class TestAudioMetadata(TestCase):
         pass
 
 
+    @unittest.skip("may not need")
     def test_get_mp3_tags_no_metadata(self):
         '''
         @brief Tests trying to get tag information for an mp3 audio file w/o metadata.
@@ -485,7 +486,7 @@ class TestAudioMetadata(TestCase):
         metadata.get_tags_walk(self.converted, None, ffprobe=True)
 
 
-    @unittest.skip("complete")
+    @unittest.skip("complete? may not need")
     def test_get_wma_tags(self):
         '''
         @brief Tests getting tag information for an wma audio file.
@@ -569,7 +570,7 @@ class TestAudioMetadata(TestCase):
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
-    @unittest.skip("complete")
+    @unittest.skip("complete? may not need")
     def test_load_mp3_file(self):
         '''
         @brief Tests loading an mp3 file.
@@ -593,7 +594,7 @@ class TestAudioMetadata(TestCase):
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
-    @unittest.skip("complete")
+    @unittest.skip("complete? may not need")
     def test_load_wma_file(self):
         '''
         @brief Tests loading an wma audio file.
