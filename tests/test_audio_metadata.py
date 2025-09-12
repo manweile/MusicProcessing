@@ -406,7 +406,7 @@ class TestAudioMetadata(TestCase):
         '''
 
         tags = None
-        tags = metadata.get_mp3_tags(self.src_no_tag_mp3)
+        tags = metadata.get_any_tags(self.src_no_tag_mp3)
         self.assertIsNone(tags)
 
 
@@ -442,7 +442,7 @@ class TestAudioMetadata(TestCase):
     @unittest.skip("complete")
     def test_get_media_tags(self):
         '''
-        @brief Tests getting media tags.add(
+        @brief Tests getting media tags.
         '''
 
         pass
