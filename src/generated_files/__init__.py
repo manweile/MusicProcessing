@@ -8,7 +8,6 @@ import os
 ## @var GENERATED_FILES
 # @brief Path to where files created by the project are stored.
 # @details Getting the directory name for importing means will not need a hard coded "magic spell" else where in codebase.
-GENERATED_FILES = ""
 GENERATED_FILES = os.path.dirname(os.path.abspath(__file__))
 
 ## @var __all__
