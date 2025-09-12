@@ -32,7 +32,7 @@ gc.enable()
 
 logger = logging.getLogger(__name__)
 basename = os.path.basename(__file__)
-add_module_handler(logger, basename, logging.DEBUG, propagate=True)
+add_module_handler(logger, basename)
 
 directory = DirectoryProcessing()
 subprocess_utils = SubprocessUtilities()
