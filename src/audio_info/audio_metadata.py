@@ -598,11 +598,6 @@ class AudioMetadata():
             return media_info
 
 
-    # @todo consider changing this to directly info via ffprobe
-    # and ffprobe-get_tags-print_format_json cli
-    # or ffpbrob-get_tags_output_format_json cli
-
-
     def get_media_info_walk(self, start_path, file_pattern):
         '''
         @brief Gets & prints media info (codec, duration, size, bitrate...) for audio files.
@@ -632,7 +627,6 @@ class AudioMetadata():
 
                     input_file_path = os.path.join(dir_path, file)
 
-                    # @ use get_media_info_dict
                     media_info = self.get_media_info(input_file_path)
                     if media_info:
                         for key, value in media_info.items():
@@ -650,6 +644,11 @@ class AudioMetadata():
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting media info for file {input_file_path}")
             raise e_error
+
+
+    # @todo consider changing this to directly info via ffprobe
+    # and ffprobe-get_tags-print_format_json cli
+    # or ffpbrob-get_tags_output_format_json cli
 
 
     def get_media_tags(self, file_path):
@@ -781,13 +780,6 @@ class AudioMetadata():
                             metadata_type = self.get_metadata_type(tag_file_path)
                             if metadata_type in AUDIO_FILES:
                                 input_tags = self.get_any_tags(tag_file_path)
-
-                            # if metadata_type == ASF_TYPE:
-                            #     input_tags = self.get_wma_tags(tag_file_path)
-                            # elif metadata_type == MP3_TYPE:
-                            #     input_tags = self.get_mp3_tags(tag_file_path)
-                            # elif metadata_type == MP4_TYPE:
-                            #     input_tags = self.get_m4a_tags(tag_file_path)
 
                         if input_tags:
                             if ffprobe:
