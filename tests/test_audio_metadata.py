@@ -23,6 +23,7 @@ from mutagen._util import MutagenError
 
 # local module constants
 from src import AUDIO_EXTS, AUDIO_FILES, FOLDER_ART, MUSIC_TLD, PLAYLIST_EXTS
+from src import RESULT_DIR, RESULT_EXT
 from src.generated_files import GENERATED_FILES
 from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_NO_TAG, TEST_WAV_NONE, TEST_WMA_CCR
 from tests import TEST_M3U
@@ -445,13 +446,27 @@ class TestAudioMetadata(TestCase):
         pass
 
 
-    def test_get_tags_walk(self):
+    def test_get_tags_walk_ffprobe(self):
         '''
-        @brief Tests pretty printing tags for audio files.
+        @brief Tests getting ffprobe  tags for audio files.
         '''
 
+        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_filename = "get_tags_walk" + RESULT_EXT
+        txt_path = os.path.join(txt_dir, txt_filename)
+
         metadata.get_tags_walk(self.converted, None, ffprobe=True)
-        metadata.get_tags_walk(self.converted, None)
+
+        with open(txt_path, "r") as f:
+            lines = f.readlines()
+
+        # D:\MusicProcessing\tests\ConvertedMusic\Abba\Waterloo\ABBA-Waterloo.mp3 has 9 ffprobe tags
+        # D:\MusicProcessing\tests\ConvertedMusic\Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma has 24 ffprobe tags
+        # D:\MusicProcessing\tests\ConvertedMusic\The Eagles\Desperado\The Eagles-Desperado.m4a has 38 ffprobe tags
+        mp3_line = os.path.join(self.converted, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+        self.assertIn(f"{mp3_line} has 9 ffprobe tags\n", lines)
+
+        # metadata.get_tags_walk(self.converted, None)
 
 
     @unittest.skip("complete")
