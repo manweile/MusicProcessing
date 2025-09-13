@@ -692,10 +692,6 @@ class AudioMetadata():
             return metadata_type
 
 
-    # @todo split get_tags_walk into ffprobe and mutagen versions??
-    # and possibly go to text file output instead of console
-
-
     def get_tags_walk(self, file_path, file_pattern, ffprobe=False):
         '''
         @brief Pretty prints tags for audio files.
@@ -738,33 +734,18 @@ class AudioMetadata():
 
                         if input_tags:
                             if ffprobe:
-                                # print(f"{tag_file_path} has {len(input_tags)} ffprobe tags")
-                                # # want one key/value pair per line
-                                # pprint.pprint(input_tags)
-                                # print()
-                                data.append(f"{tag_file_path} has {len(input_tags)} ffprobe tags")
+                                data.append(f"\n{tag_file_path} has {len(input_tags)} ffprobe tags")
                                 tag_items = input_tags.items()
                                 for key, value in tag_items:
                                     data.append(f"{key}: {value}")
-
-                                data.append("\n")
                             else:
-                                print(f"{tag_file_path} has {len(input_tags)} {metadata_type} tags")
-                                # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
-                                # not as a simple dict of string key/value
-                                # so need mutagen pprint and splitlines to "format" into simple dict
-                                pprint.pprint(input_tags.pprint().splitlines())
-                                print()
-
-                                data.append(f"{tag_file_path} has {len(input_tags)} {metadata_type} tags")
+                                data.append(f"\n{tag_file_path} has {len(input_tags)} {metadata_type} tags")
                                 tag_items = input_tags.items()
                                 for key, value in tag_items:
                                     data.append(f"{key}: {value}")
-
-                                data.append("\n")
                         else:
-                            print(f"{tag_file_path} has no metadata")
-                            data.append(f"{tag_file_path} has no metadata")
+                            data.append(f"\n{tag_file_path} has no metadata")
+
 
             directory.create_txt(txt_filename, data)
 

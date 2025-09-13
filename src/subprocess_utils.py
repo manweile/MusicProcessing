@@ -149,9 +149,9 @@ class SubprocessUtilities():
         else:
             success_msg = None
             if show_spinner:
-                success_msg = f"Successful conversion on {input_path.stem} from {input_path.suffix} in {sp.elapsed_time:.2f} secs"
+                success_msg = f"Successful conversion on {input_path.stem} from {input_path.suffix.removeprefix(".")} in {sp.elapsed_time:.2f} secs"
             else:
-                success_msg = f"Successful conversion on {input_path.stem} from {input_path.suffix}"
+                success_msg = f"Successful conversion on {input_path.stem} from {input_path.suffix.removeprefix(".")}"
 
             return success_msg
 

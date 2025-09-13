@@ -65,6 +65,7 @@ class TestAudioMetadata(TestCase):
         # audio source files for walk tests
         cls.src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR]
 
+
         # for conversion test that only needs a single file
         cls.mp3_result = os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 
@@ -73,6 +74,11 @@ class TestAudioMetadata(TestCase):
         cls.results.append(os.path.join(cls.norm_path, "The Eagles", "Desperado", "The Eagles-Desperado.mp3"))
         cls.results.append(os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3"))
         cls.results.append(os.path.join(cls.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3"))
+
+        # filenames for tag walk tests
+        cls.mp3_line = os.path.join(cls.converted, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+        cls.wma_line = os.path.join(cls.converted, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.wma")
+        cls.m4a_line = os.path.join(cls.converted, "The Eagles", "Desperado", "The Eagles-Desperado.m4a")
 
         # copy input files to "walk" directory
         for src_path in cls.src_file_paths:
@@ -185,83 +191,6 @@ class TestAudioMetadata(TestCase):
             "TYER": "1900"
         }
         cls.id3_date_values = set(["1962", "1963"])
-
-        cls.mp3_ffprobe_tags = {
-            "title": "Waterloo",
-            "artist": "ABBA",
-            "track": "1",
-            "album": "Waterloo",
-            "genre": "Pop",
-            "album_artist": "ABBA",
-            "publisher": "Polydor",
-            "composer": "Benny Andersson/Bj├╢rn Ulvaeus/Stig Anderson",
-            "date": "1963"
-        }
-
-        cls.m4a_ffprobe_tags = {
-            "major_brand": "mp42",
-            "minor_version": "0",
-            "compatible_brands": "mp42dby1isom",
-            "creation_time": "2013-06-25T12:10:09.000000Z",
-            "title": "Desperado",
-            "artist": "Eagles",
-            "composer": "Don Henley/Glenn Frey",
-            "album": "Desperado",
-            "genre": "Rock",
-            "track": "5/11",
-            "disc": "1/1",
-            "date": "1973",
-            "MEDIA": "CD",
-            "MusicBrainz Album Release Country": "US",
-            "originalyear": "1973",
-            "SCRIPT": "Latn",
-            "MusicBrainz Album Type": "album",
-            "CATALOGNUMBER": "5068-2",
-            "ARTISTS": "Eagles",
-            "MusicBrainz Album Status": "official",
-            "originaldate": "1973-04-17",
-            "BARCODE": "075596062725",
-            "LABEL": "Asylum Records",
-            "ISRC": "USAS19900038",
-            "MusicBrainz Release Track Id": "04d5a99a-303b-42f5-8394-970dc7cf5b5e",
-            "MusicBrainz Album Id": "7c77f23a-7699-4aab-aecd-e4b3cc6ac4c3",
-            "MusicBrainz Track Id": "96308d6d-77c8-48d6-b866-bdc48675ef10",
-            "MusicBrainz Release Group Id": "9e7b49bb-b4bd-3583-87ba-f516f793eff2",
-            "MusicBrainz Album Artist Id": "f46bd570-5768-462e-b84c-c7c993bbf47e",
-            "MusicBrainz Artist Id": "f46bd570-5768-462e-b84c-c7c993bbf47e",
-            "album_artist": "Eagles",
-            "sort_album_artist": "Eagles",
-            "sort_artist": "Eagles",
-            "copyright": "1973 Asylum Records",
-            "comment": "Purchased from 7digital.com"
-        }
-
-
-        cls.wma_ffprobe_tags = {
-            "title": "Fortunate Son",
-            "artist": "Creedence Clearwater Revival",
-            "WM/Track": "8",
-            "WM/MediaPrimaryClassID": "{D1607DBC-E323-4BE2-86A1-48A42A28441E}",
-            "WMFSDKVersion": "11.0.5358.4827",
-            "WMFSDKNeeded": "0.0.0.0000",
-            "track": "9",
-            "WM/Year": "1976",
-            "WM/EncodingTime": "1206778496",
-            "WM/UniqueFileIdentifier": "AMGa_id=R     4764;AMGp_id=P     3985;AMGt_id=T  2714491",
-            "composer": "John Fogerty",
-            "publisher": "Fantasy",
-            "album": "Chronicle, Vol. 1",
-            "album_artist": "Creedence Clearwater Revival",
-            "WM/Provider": "AMG",
-            "WM/ProviderRating": "9",
-            "WM/ProviderStyle": "Rock",
-            "PeakValue": "22945",
-            "AverageLevel": "2171",
-            "genre": "Classic Rock",
-            "DeviceConformanceTemplate": "L1",
-            "MediaFoundationVersion": "2.112",
-            "IsVBR": "0"
-        }
 
 
     @classmethod
@@ -463,10 +392,31 @@ class TestAudioMetadata(TestCase):
         # D:\MusicProcessing\tests\ConvertedMusic\Abba\Waterloo\ABBA-Waterloo.mp3 has 9 ffprobe tags
         # D:\MusicProcessing\tests\ConvertedMusic\Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma has 24 ffprobe tags
         # D:\MusicProcessing\tests\ConvertedMusic\The Eagles\Desperado\The Eagles-Desperado.m4a has 38 ffprobe tags
-        mp3_line = os.path.join(self.converted, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
-        self.assertIn(f"{mp3_line} has 9 ffprobe tags\n", lines)
+        self.assertIn(f"{self.mp3_line} has 9 ffprobe tags\n", lines)
+        self.assertIn(f"{self.wma_line} has 24 ffprobe tags\n", lines)
+        self.assertIn(f"{self.m4a_line} has 38 ffprobe tags\n", lines)
 
-        # metadata.get_tags_walk(self.converted, None)
+
+    def test_get_tags_walk_mutagen(self):
+        '''
+        @brief Tests getting ffprobe  tags for audio files.
+        '''
+
+        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_filename = "get_tags_walk" + RESULT_EXT
+        txt_path = os.path.join(txt_dir, txt_filename)
+
+        metadata.get_tags_walk(self.converted, None)
+
+        with open(txt_path, "r") as f:
+            lines = f.readlines()
+
+        # D:\MusicProcessing\tests\ConvertedMusic\Abba\Waterloo\ABBA-Waterloo.mp3 has 9 MP3 tags
+        # D:\MusicProcessing\tests\ConvertedMusic\Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma has 31 ASF tags
+        # D:\MusicProcessing\tests\ConvertedMusic\The Eagles\Desperado\The Eagles-Desperado.m4a has 32 MP4 tags
+        self.assertIn(f"{self.mp3_line} has 9 MP3 tags\n", lines)
+        self.assertIn(f"{self.wma_line} has 31 ASF tags\n", lines)
+        self.assertIn(f"{self.m4a_line} has 32 MP4 tags\n", lines)
 
 
     @unittest.skip("complete")
