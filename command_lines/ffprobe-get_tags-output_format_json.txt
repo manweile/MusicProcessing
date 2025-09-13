@@ -1,4 +1,8 @@
-ffprobe -v quiet -of json -show_entries format_tags "D:\MusicProcessing\tests\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
+ffprobe
+-v quiet
+-of json
+-show_entries format_tags
+"D:\MusicProcessing\tests\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
 {
     "format": {
         "tags": {
