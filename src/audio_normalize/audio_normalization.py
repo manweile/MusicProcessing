@@ -86,6 +86,7 @@ class AudioNormalization():
             "normalization_type" : "dynamic",
             "target_offset" : "-0.64"
         }
+
         @param input_process {CompletedProcess} A completed subprocess object.
         @return input_data {dict} FFmpeg loudnorm statistics.
         Key                         |Value
@@ -100,6 +101,7 @@ class AudioNormalization():
         output_thresh {str}         | output threshold {str} (numeric)
         normalization_type {str}    | scaling type to apply {str} (alphabetic)
         target_offset {str}         | offset gain applied before true peak limiter {str} (numeric)
+
         @exception JSONDecodeError A json decoding error occurred.
         @exception JSONOutputError Indicates error occurred finding json output.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -143,6 +145,7 @@ class AudioNormalization():
 
         @param file_path {str} The full file path for mp3 audio file.
         @param show_spinner {bool} Show yaspin spinner flag.
+
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -292,6 +295,7 @@ class AudioNormalization():
 
         @param file_path (str): The path to the media file.
         @return bit_rate {int} The bitrate in bits per second, or None if not found.
+
         @exception JSONDecodeError A json decoding error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -334,6 +338,7 @@ class AudioNormalization():
 
         @param file_path {str} The full path to audio file.
         @return sample_rate {int} The sample rate in Hz, otherwise None.
+
         @exception IndexError An index error finding audio stream or sample rate information.
         @exception JSONDecodeError A json decoding error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -380,13 +385,13 @@ class AudioNormalization():
         '''
         @brief Gets mean and max volume from audio file using ffmpeg.
 
-        @details
         @param file_path {str} The full path to audio file.
         @return volumes {dict} The mean and max volumes of audio file in decibels relative to max PCM value.
         Key                 |Value
         --------------------|----------------------------------------
         mean_value {str}    |the root mean square volume {float}
         max_volume {str}    |the per-sample maximum volume {float}
+
         @exception re.error An error occurred processing a regular expression with re module.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -433,8 +438,10 @@ class AudioNormalization():
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
         @details Will only normalize mp3 files.
+
         @param tld_path {str} The top level directory path that contains all the music files.
         @param norm_type {str} The type of normalization to perform.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -473,6 +480,7 @@ class AudioNormalization():
 
         @param file_path {str} The full file path for mp3 audio file.
         @param show_spinner {bool} Show yaspin spinner flag.
+
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -576,6 +584,7 @@ class AudioNormalization():
 
         @param file_path {str} The full file path for mp3 audio file.
         @param show_spinner {bool} Show yaspin spinner flag.
+
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
