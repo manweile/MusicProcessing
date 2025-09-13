@@ -10,11 +10,12 @@
 import fnmatch
 import gc
 import inspect
+import json
 import logging
 import os
 import re
-import pprint
 import sys
+from json import JSONDecodeError
 from pathlib import Path
 
 # third party modules
@@ -533,6 +534,15 @@ class AudioMetadata():
 
         try:
             media_info = None
+
+            '''
+            this cli WILL include 'comment' = 'Cover (front)' if the file has embedded album art in the TAG inner dict,
+            whereas ASF/ID3/MP4, would place WM\Picture, APIC, or covr AND include the byte data for the art,
+            This is because show_streams means ffprobe sees the art data as the video stream metadata instead.
+            '''
+            # -v quiet reduce output clutter
+            # -show_format get high level details of media file
+            # -show_streams gets all information about each media stream in the input
             command = [
                 "ffprobe",
                 "-v", "quiet",
@@ -622,11 +632,6 @@ class AudioMetadata():
             raise e_error
 
 
-    # @todo consider changing this to directly info via ffprobe
-    # and ffprobe-get_tags-print_format_json cli
-    # or ffpbrob-get_tags_output_format_json cli
-
-
     def get_media_tags(self, file_path):
         '''
         @brief Gets media tags.
@@ -642,16 +647,32 @@ class AudioMetadata():
 
         try:
             media_tags = None
-            media_info = self.get_media_info(file_path)
 
-            if media_info:
-                media_tags = media_info['TAG']
-            else:
-                logger.error(f"ValueError getting metadata tags {file_path} returned None", exc_info=True)
-                raise ValueError(f"ValueError getting metadata tags {file_path} returned None")
+            '''
+            Note that this cli, unlike the general media info cli: ffprobe -v quiet -show_format -show_streams file_path,
+            will NOT insert 'comment' = 'Cover (front)' in the tags dictionary if the audio file has embedded art.
+            This cli will only return textual audio metadata.
+            '''
+            # -v quiet reduce console clutter
+            # -of json output in json format
+            # -show_entries format_tags we only care about tags
+            command = [
+                "ffprobe",
+                "-v", "quiet",
+                "-of", "json",
+                "-show_entries", "format_tags",
+                file_path
+            ]
+            result = subprocess_utils.subprocess_run(command)
+            data = json.loads(result.stdout)
 
-        except ValueError as v_error:
-            raise v_error
+            if "format" in data and "tags" in data["format"]:
+                media_tags = data["format"]["tags"]
+
+
+        except JSONDecodeError as jd_error:
+            logger.error("JSONDecodeError decoding JSON output from ffprobe", exc_info=True)
+            raise jd_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting media tags for file {file_path}", stack_info=True)
             raise e_error

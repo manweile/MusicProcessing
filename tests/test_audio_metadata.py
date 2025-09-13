@@ -170,7 +170,7 @@ class TestAudioMetadata(TestCase):
 
         # no matter the os/environment, inner dict TAG is always same
         cls.tag_dict = {
-            'comment': 'Cover (front)', 'title': 'Live', 'artist': 'Crush', 'track': '1/12', 'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
+            'title': 'Live', 'artist': 'Crush', 'track': '1/12', 'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
             'MusicBrainz Release Track Id': '2475137d-6745-3951-a361-d4c29798f5d1', 'album_artist': 'Crush', 'TSO2': 'Crush', 'artist-sort': 'Crush', 'composer': 'Paul Lamb',
             'SCRIPT': 'Latn', 'publisher': 'Sonic Records', 'ARTISTS': 'Crush', 'ASIN': 'B000065PP6', 'originalyear': '2002', 'BARCODE': '627915092229',
             'CATALOGNUMBER': '2 50922', 'MusicBrainz Album Type': 'album', 'MusicBrainz Album Status': 'official', 'MusicBrainz Album Release Country': 'CA',
@@ -344,7 +344,6 @@ class TestAudioMetadata(TestCase):
 
         results_dict = metadata.get_media_info(TEST_MP3_CRUSH)
 
-        self.maxDiff = None
         self.assertDictEqual(self.media_dict, results_dict)
 
 
@@ -357,13 +356,14 @@ class TestAudioMetadata(TestCase):
         pass
 
 
-    @unittest.skip("complete")
     def test_get_media_tags(self):
         '''
         @brief Tests getting media tags.
         '''
 
-        pass
+        media_tags = metadata.get_media_tags(TEST_MP3_CRUSH)
+
+        self.assertDictEqual(media_tags, self.tag_dict)
 
 
     @unittest.skip("complete")
@@ -389,12 +389,9 @@ class TestAudioMetadata(TestCase):
         with open(txt_path, "r") as f:
             lines = f.readlines()
 
-        # D:\MusicProcessing\tests\ConvertedMusic\Abba\Waterloo\ABBA-Waterloo.mp3 has 9 ffprobe tags
-        # D:\MusicProcessing\tests\ConvertedMusic\Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma has 24 ffprobe tags
-        # D:\MusicProcessing\tests\ConvertedMusic\The Eagles\Desperado\The Eagles-Desperado.m4a has 38 ffprobe tags
         self.assertIn(f"{self.mp3_line} has 9 ffprobe tags\n", lines)
-        self.assertIn(f"{self.wma_line} has 24 ffprobe tags\n", lines)
-        self.assertIn(f"{self.m4a_line} has 38 ffprobe tags\n", lines)
+        self.assertIn(f"{self.wma_line} has 23 ffprobe tags\n", lines)
+        self.assertIn(f"{self.m4a_line} has 35 ffprobe tags\n", lines)
 
 
     def test_get_tags_walk_mutagen(self):
@@ -411,9 +408,6 @@ class TestAudioMetadata(TestCase):
         with open(txt_path, "r") as f:
             lines = f.readlines()
 
-        # D:\MusicProcessing\tests\ConvertedMusic\Abba\Waterloo\ABBA-Waterloo.mp3 has 9 MP3 tags
-        # D:\MusicProcessing\tests\ConvertedMusic\Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma has 31 ASF tags
-        # D:\MusicProcessing\tests\ConvertedMusic\The Eagles\Desperado\The Eagles-Desperado.m4a has 32 MP4 tags
         self.assertIn(f"{self.mp3_line} has 9 MP3 tags\n", lines)
         self.assertIn(f"{self.wma_line} has 31 ASF tags\n", lines)
         self.assertIn(f"{self.m4a_line} has 32 MP4 tags\n", lines)
