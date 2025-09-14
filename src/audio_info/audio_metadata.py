@@ -21,10 +21,9 @@ from pathlib import Path
 # third party modules
 import mutagen
 import pathvalidate
-from mutagen.asf import ASF
 from mutagen.id3 import APIC, ID3, ID3TimeStamp
 from mutagen.mp3 import MP3
-from mutagen.mp4 import MP4, MP4FreeForm
+from mutagen.mp4 import MP4FreeForm
 from mutagen._util import MutagenError
 from pathvalidate.error import ValidationError
 from tqdm import tqdm
@@ -595,6 +594,9 @@ class AudioMetadata():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
+        data = []
+        txt_filename = inspect.currentframe().f_code.co_name
+
         try:
             for dir_path, _, file_names in os.walk(start_path):
                 # the tld Music does contain files, but not audio files
@@ -619,11 +621,12 @@ class AudioMetadata():
                             if isinstance(value, dict):
                                 continue
                             else:
-                                # @todo write to text file
-                                print(f"key: {key}, value: {value}")
+                                data.append(f"key: {key}, value: {value}")
                     else:
                         logger.error(f"ValueError getting info for audio file: {input_file_path} returned None", exc_info=True)
                         raise ValueError(f"ValueError getting info for audio file: {input_file_path} returned None")
+
+            directory.create_txt(txt_filename, data)
 
         except ValueError as v_error:
             raise v_error
@@ -668,7 +671,6 @@ class AudioMetadata():
 
             if "format" in data and "tags" in data["format"]:
                 media_tags = data["format"]["tags"]
-
 
         except JSONDecodeError as jd_error:
             logger.error("JSONDecodeError decoding JSON output from ffprobe", exc_info=True)
@@ -766,7 +768,6 @@ class AudioMetadata():
                                     data.append(f"{key}: {value}")
                         else:
                             data.append(f"\n{tag_file_path} has no metadata")
-
 
             directory.create_txt(txt_filename, data)
 

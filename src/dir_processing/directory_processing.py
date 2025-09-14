@@ -49,6 +49,7 @@ class DirectoryProcessing():
 
         @param tld_path {str} Optional, the top level directory path that contains all the music files.
         @return DirectoryProcessing {instance} An instance of the class.
+
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -82,6 +83,7 @@ class DirectoryProcessing():
 
         @param file_ext {str} The file type want file paths for.
         @param start_path {str} The starting point of the directory walk.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -127,6 +129,7 @@ class DirectoryProcessing():
         @details The top level directory is expected to exist already.
 
         @param tld_path {str} The top level directory path that contains all the music files.
+
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -159,6 +162,7 @@ class DirectoryProcessing():
         @param csv_dir {str} Optional, path for csv file.
         @param header_row [{str}] Optional, the starting row naming fields.
         @param sort_col {int} Optional, the column to sort data on.
+
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -202,6 +206,7 @@ class DirectoryProcessing():
         @param txt_filename {str} Base filename (w/o extension) for text file.
         @param data [{str}] Data to write into txt. Expected to be 1 line per element.
         @param txt_dir {str} Optional path for txt file.
+
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -213,7 +218,6 @@ class DirectoryProcessing():
             txt_path = os.path.join(txt_dir, txt_filename + RESULT_EXT)
 
             # need to append cause expecting many runs
-            # txt_outfile = open(txt_path, mode='a', encoding='windows-1252', newline='')
             txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
             for item in data:
                 txt_outfile.write(f"{item}\n")
@@ -237,6 +241,7 @@ class DirectoryProcessing():
         @details The csv has 2 columns, full file path for audio file and extension.
 
         @param start_path {str} Optional, the starting point of the directory walk.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -339,6 +344,8 @@ class DirectoryProcessing():
 
         @param  file_ext {str} Optional, the file extension (without period prefix) want file paths for.
         @param  start_path {str} Optional, the starting point of the directory walk.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -363,6 +370,7 @@ class DirectoryProcessing():
         @param start_path (str) The root directory to start from.
         @param file_name (str) The name of the file to find.
         @return dir_path {str} The directory path for file, None if not found.
+
         @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -388,6 +396,7 @@ class DirectoryProcessing():
 
         @param file_path {str} The full audio file path.
         @return file_ext {str} The file type of audio file or None.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -416,6 +425,7 @@ class DirectoryProcessing():
 
         @param artist_dirpath {str} The absolute path artist directory the new album directory will be created in.
         @param album_dir {str} The sanitized & validated name of the album for new album directory.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -433,6 +443,7 @@ class DirectoryProcessing():
         @brief Creates a directory.
 
         @param dir_path {str} The path to create.
+
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -463,6 +474,7 @@ class DirectoryProcessing():
 
         @param file_path {str} File path for audio file.
         @param destination_path {str} New directory for audio file.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -488,6 +500,7 @@ class DirectoryProcessing():
 
         @param file_path {str} The full file path for audio file.
         @return export_path {str} The export path, otherwise None.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -571,6 +584,7 @@ class DirectoryProcessing():
         @details Without a start path input, the top level directory MUST have been set.
 
         @param start_path {str} The starting point of the directory walk.
+
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -629,6 +643,7 @@ class DirectoryProcessing():
 
         @param start_path {str} Optional, the starting point of the directory walk.
         @param file_pattern {str} The file pattern we want to delete.
+
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
