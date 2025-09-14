@@ -293,6 +293,10 @@ class TestAudioMetadata(TestCase):
         @brief Test creates an album sub-directory in an artist directory.
         '''
 
+        # need a directory that has artist dirs with audio files,
+        # the audio files need to have valid album metadata,
+        # but the artist dirs have no album dirs
+
         pass
 
 
@@ -353,6 +357,9 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting media info (codec, duration, size, bitrate...) for audio files.
         '''
 
+        # use the ConvertedMusic dir
+        # but dont try to verify every key/value pair
+        # check for major values in the output text file
         pass
 
 
@@ -371,6 +378,11 @@ class TestAudioMetadata(TestCase):
         '''
         @brief Test getting metadata type of any audio file.
         '''
+
+        # walk through ConvertedMusic files
+        # audio_file = mutagen.File(file_path)
+        # metadata_type = audio_file.__class__.__name__
+        # assertTrue(metadata_type in AUDIO_FILES)
 
         pass
 
