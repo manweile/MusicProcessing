@@ -75,7 +75,7 @@ class SubprocessUtilities():
 
             if res.returncode != 0:
                 logger.error(f"RuntimeError running command {shlex.join(command)}", exc_info=True)
-                raise RuntimeError(f"RuntimeError running command {shlex.join(command)}", exc_info=True)
+                raise RuntimeError(f"RuntimeError running command {shlex.join(command)}")
 
         except RuntimeError as r_error:
             raise r_error
