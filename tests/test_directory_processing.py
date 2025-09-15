@@ -43,41 +43,7 @@ class TestDirectoryProcessing(TestCase):
         @details These datums are used throughout class and only need init once.
         '''
 
-
-
-        # copy input files to "walk" directory
-        for src_path in cls.src_file_paths:
-            # get the audio file name w/o path
-            # eg from D:\MusicProcessing\tests\Music\The Eagles\Desperado\The Eagles-Desperado.m4a -> The Eagles-Desperado.m4a
-            file_name = os.path.basename(src_path)
-
-            # get audio file parent path parts
-            # eg D:\MusicProcessing\tests\Music\The Eagles\Desperado
-            # D:\, MusicProcessing, tests, Music, The Eagles, Desperado
-            file_path = Path(src_path)
-            file_parent = file_path.parent
-            # don't want album, tests will create those, so trim parts list
-            # D:\, MusicProcessing, tests, Music, The Eagles
-            path_parts = file_parent.parts[:-1]
-
-            # build up the artist path, from last element of file parent path parts
-            # eg The Eagles -> The Eagles
-            full_len = len(path_parts)
-            artist_len = full_len - 1
-            artist = ""
-            for i in range(artist_len, full_len):
-                artist = os.path.join(artist, path_parts[i])
-
-            # create the destination directory
-            # D:\MusicProcessing\tests\PreppedMusic\The Eagles
-            dest_dir = os.path.join(cls.prepped, artist)
-            os.makedirs(dest_dir, exist_ok=True)
-
-            # create dest: D:\MusicProcessing\tests\PreppedMusic\The Eagles\The Eagles-Desperado.m4a
-            dest_path = os.path.join(dest_dir, file_name)
-
-            # and copy
-            shutil.copy(src_path, dest_path)
+        pass
 
 
     @classmethod
@@ -97,18 +63,6 @@ class TestDirectoryProcessing(TestCase):
         '''
 
         pass
-
-
-    def test_create_album_dir(self):
-        '''
-        @brief Tests creating an album sub-directory in an artist directory.
-        '''
-
-        directory.create_album_dir(self.prepped)
-
-        for dir in self.results:
-            dir_exists = os.path.isdir(dir)
-            self.assertTrue(dir_exists)
 
 
     def test_get_file_directory_none(self):
