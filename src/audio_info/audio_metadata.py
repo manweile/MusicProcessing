@@ -403,13 +403,10 @@ class AudioMetadata():
         header_row = ["audio file path", "album metadata", "album directory"]
 
         try:
-            directory.tld_path(start_path)
-
             # get the artist dirs under tld
             tld_content = os.listdir(start_path)
             len_tld_content = len(tld_content)
 
-            # @todo look at how ffmpeg_normalize handles tqdm
             tld_bar = tqdm(desc=f'Processing {start_path} content', total=len_tld_content, unit=' items')
 
             # top level directory consists of artist directories, playlist files and couple other sundry files
