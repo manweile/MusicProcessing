@@ -335,6 +335,10 @@ class DirectoryProcessing():
             raise e_error
 
 
+    # @todo condense get_ext_file_list and __ext_file_list into one function
+    # use a pattern
+
+
     def get_ext_file_list(self, file_ext, start_path):
         '''
         @brief Wrapper for function that generates a csv containing full file path for an extension.

@@ -54,6 +54,9 @@ class TestAudioMetadata(TestCase):
 
         # directory for "walk" type tests: D:\MusicProcessing\tests\ConvertedMusic
         cls.converted = os.path.join(TESTS_PATH, "ConvertedMusic")
+        # directory for "walk" type tests: D:\MusicProcessing\tests\PreppedMusic
+        cls.prepped = os.path.join(TESTS_PATH, "PreppedMusic")
+
 
         # test patterns
         cls.m3u_pattern = PLAYLIST_EXTS[0]
@@ -65,7 +68,6 @@ class TestAudioMetadata(TestCase):
         # audio source files for walk tests
         cls.src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR]
 
-
         # for conversion test that only needs a single file
         cls.mp3_result = os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 
@@ -74,6 +76,12 @@ class TestAudioMetadata(TestCase):
         cls.results.append(os.path.join(cls.norm_path, "The Eagles", "Desperado", "The Eagles-Desperado.mp3"))
         cls.results.append(os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3"))
         cls.results.append(os.path.join(cls.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3"))
+
+        # for create album test
+        cls.prepped_results = []
+        cls.prepped_results.append(os.path.join(cls.prepped, "The Eagles", "Desperado"))
+        cls.prepped_results.append(os.path.join(cls.prepped, "Abba", "Waterloo"))
+        cls.prepped_results.append(os.path.join(cls.prepped, "Creedence Clearwater Revival", "Chronicle, Vol. 1"))
 
         # filenames for tag walk tests
         cls.mp3_line = os.path.join(cls.converted, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
@@ -87,14 +95,14 @@ class TestAudioMetadata(TestCase):
             file_name = os.path.basename(src_path)
 
             # get audio file parent path parts
-            # eg D:\MusicProcessing\tests\MusicThe Eagles\Desperado
+            # eg D:\MusicProcessing\tests\Music\The Eagles\Desperado
             # D:\, MusicProcessing, tests, Music, The Eagles, Desperado
             file_path = Path(src_path)
             file_parent = file_path.parent
             path_parts = file_parent.parts
 
             # build up the artist & album path, from last 2 elements of file parent path parts
-            # eg Abba, Desperado -> The Eagles\Desperado
+            # eg The Eagles, Desperado -> The Eagles\Desperado
             full_len = len(path_parts)
             artist_len = full_len - 2
             artist_album = ""

@@ -585,7 +585,7 @@ class AudioMetadata():
 
     def get_media_info_walk(self, start_path, file_pattern):
         '''
-        @brief Gets & prints media info (codec, duration, size, bitrate...) for audio files.
+        @brief Gets media info (codec, duration, size, bitrate...) for audio files and saves to file.
 
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
@@ -717,7 +717,7 @@ class AudioMetadata():
 
     def get_tags_walk(self, file_path, file_pattern, ffprobe=False):
         '''
-        @brief Pretty prints tags for audio files.
+        @brief Gets tags for audio files and saves to file.
 
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
@@ -778,7 +778,7 @@ class AudioMetadata():
 
     def get_unique_media_keys(self, file_path):
         '''
-        @brief Gets set of ffprobe keys.
+        @brief Gets set of ffprobe keys and saves to file.
 
         @details Walks from starting path and saves set of unique metadata keys found by ffprobe.
 
@@ -786,6 +786,9 @@ class AudioMetadata():
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
+
+        data = []
+        txt_filename = inspect.currentframe().f_code.co_name
 
         try:
             input_tags = None
@@ -809,8 +812,8 @@ class AudioMetadata():
                     if file_keys:
                         unique_keys.update(file_keys)
 
-            # @todo write to txt file
-            print(sorted(unique_keys))
+            data.append(unique_keys)
+            directory.create_txt(txt_filename, data)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
@@ -861,12 +864,12 @@ class AudioMetadata():
 
     def load_any_file(self, file_path):
         '''
-        @brief loads any valid audio file type.
+        @brief Loads any valid audio file type.
 
         @details Expects a valid filepath to an acceptable audio file.
 
         @param file_path {str} The full file path for audio file.
-        @return audio_file {FileType} Instance for the input audio file type or None.
+        @return audio_file {FileType} Mutagen instance for the input audio file type or None.
 
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
@@ -905,8 +908,6 @@ class AudioMetadata():
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
-
-        # @todo set up for text file writing
 
         try:
             id3_tags = {}
@@ -975,8 +976,6 @@ class AudioMetadata():
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
-
-        # @todo set up for text file writing
 
         try:
             id3_tags = {}
