@@ -54,50 +54,48 @@ class TestAudioMetadata(TestCase):
 
         # directory for "walk" type tests: D:\MusicProcessing\tests\ConvertedMusic
         cls.converted = os.path.join(TESTS_PATH, "ConvertedMusic")
+        # the path where converted files will be created D:\MusicProcessing\src\generated_files\Music
+        cls.norm_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
         # directory for "walk" type tests: D:\MusicProcessing\tests\PreppedMusic
         cls.prepped = os.path.join(TESTS_PATH, "PreppedMusic")
-
 
         # test patterns
         cls.m3u_pattern = PLAYLIST_EXTS[0]
         cls.mp3_pattern = AUDIO_EXTS[0]
 
-        # the path where converted files will be created
-        cls.norm_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
-
         # audio source files for walk tests
         cls.src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR]
 
-        # for conversion test that only needs a single file
+        # for conversion test that only needs a single mp3 file
         cls.mp3_result = os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 
-        # for conversion tests that need multiple files and co-located Folder.jpg
-        cls.results = []
-        cls.results.append(os.path.join(cls.norm_path, "The Eagles", "Desperado", "The Eagles-Desperado.mp3"))
-        cls.results.append(os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3"))
-        cls.results.append(os.path.join(cls.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3"))
+        # for conversion tests creating multiple mp3 files
+        cls.converted_results = []
+        cls.converted_results.append(os.path.join(cls.norm_path, "The Eagles", "Desperado", "The Eagles-Desperado.mp3"))
+        cls.converted_results.append(os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3"))
+        cls.converted_results.append(os.path.join(cls.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3"))
 
-        # for create album test
+        # for create albums test
         cls.prepped_results = []
         cls.prepped_results.append(os.path.join(cls.prepped, "The Eagles", "Desperado"))
         cls.prepped_results.append(os.path.join(cls.prepped, "Abba", "Waterloo"))
         cls.prepped_results.append(os.path.join(cls.prepped, "Creedence Clearwater Revival", "Chronicle, Vol. 1"))
 
-        # filenames for tag walk tests
+        # audio filenames for tag walk tests
         cls.mp3_line = os.path.join(cls.converted, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
         cls.wma_line = os.path.join(cls.converted, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.wma")
         cls.m4a_line = os.path.join(cls.converted, "The Eagles", "Desperado", "The Eagles-Desperado.m4a")
 
-        # copy input files to "walk" directory
-        for src_path in cls.src_file_paths:
+        # copy input files to converted "walk" directory
+        for src_converted in cls.src_file_paths:
             # get the audio file name w/o path
             # eg from D:\MusicProcessing\tests\Music\The Eagles\Desperado\The Eagles-Desperado.m4a -> The Eagles-Desperado.m4a
-            file_name = os.path.basename(src_path)
+            file_name = os.path.basename(src_converted)
 
             # get audio file parent path parts
             # eg D:\MusicProcessing\tests\Music\The Eagles\Desperado
             # D:\, MusicProcessing, tests, Music, The Eagles, Desperado
-            file_path = Path(src_path)
+            file_path = Path(src_converted)
             file_parent = file_path.parent
             path_parts = file_parent.parts
 
@@ -118,7 +116,7 @@ class TestAudioMetadata(TestCase):
             dest_path = os.path.join(dest_dir, file_name)
 
             # and copy
-            shutil.copy(src_path, dest_path)
+            shutil.copy(src_converted, dest_path)
 
             # create source and destination Folder.jpg paths for audio file
             # eg D:\MusicProcessing\tests\Music\The Eagles\Desperado\Folder.jpg
@@ -128,6 +126,40 @@ class TestAudioMetadata(TestCase):
 
             # and copy
             shutil.copy(src_jpg, dest_jpg)
+
+        # copy input files to prepped "walk" directory
+        for src_prepped in cls.src_file_paths:
+            # get the audio file name w/o path
+            # eg from D:\MusicProcessing\tests\Music\The Eagles\Desperado\The Eagles-Desperado.m4a -> The Eagles-Desperado.m4a
+            file_name = os.path.basename(src_prepped)
+
+            # get audio file parent path parts
+            # eg D:\MusicProcessing\tests\Music\The Eagles\Desperado
+            # D:\, MusicProcessing, tests, Music, The Eagles, Desperado
+            file_path = Path(src_prepped)
+            file_parent = file_path.parent
+            # don't want album, tests will create those, so trim parts list
+            # D:\, MusicProcessing, tests, Music, The Eagles
+            path_parts = file_parent.parts[:-1]
+
+            # build up the artist path, from last element of file parent path parts
+            # eg The Eagles -> The Eagles
+            full_len = len(path_parts)
+            artist_len = full_len - 1
+            artist = ""
+            for i in range(artist_len, full_len):
+                artist = os.path.join(artist, path_parts[i])
+
+            # create the destination directory
+            # D:\MusicProcessing\tests\PreppedMusic\The Eagles
+            dest_dir = os.path.join(cls.prepped, artist)
+            os.makedirs(dest_dir, exist_ok=True)
+
+            # create dest: D:\MusicProcessing\tests\PreppedMusic\The Eagles\The Eagles-Desperado.m4a
+            dest_path = os.path.join(dest_dir, file_name)
+
+            # and copy
+            shutil.copy(src_prepped, dest_path)
 
         r'''
         ffprobe command line that is source for media info dictionary definition:
@@ -210,6 +242,9 @@ class TestAudioMetadata(TestCase):
         if os.path.exists(cls.converted):
             shutil.rmtree(cls.converted)
 
+        if os.path.exists(cls.prepped):
+            shutil.rmtree(cls.prepped)
+
 
     def tearDown(self):
         '''
@@ -233,7 +268,7 @@ class TestAudioMetadata(TestCase):
         for src_file in self.src_file_paths:
             metadata.convert_file(src_file, show_spinner=False)
 
-        for audio_file in self.results:
+        for audio_file in self.converted_results:
             audio_exists = os.path.exists(audio_file)
             self.assertTrue(audio_exists)
 
@@ -262,7 +297,7 @@ class TestAudioMetadata(TestCase):
 
         metadata.convert_walk(self.converted, None, show_spinner=False)
 
-        for audio_file in self.results:
+        for audio_file in self.converted_results:
             audio_exists = os.path.exists(audio_file)
             self.assertTrue(audio_exists)
 
@@ -295,17 +330,16 @@ class TestAudioMetadata(TestCase):
         self.assertEqual(captured.records[0].getMessage(), log_msg)
 
 
-    @unittest.skip("complete")
     def test_create_album_dir(self):
         '''
-        @brief Test creates an album sub-directory in an artist directory.
+        @brief Tests creating an album sub-directory in an artist directory.
         '''
 
-        # need a directory that has artist dirs with audio files,
-        # the audio files need to have valid album metadata,
-        # but the artist dirs have no album dirs
+        metadata.create_album_dir(self.prepped)
 
-        pass
+        for dir in self.prepped_results:
+            dir_exists = os.path.isdir(dir)
+            self.assertTrue(dir_exists)
 
 
     def test_get_any_tags(self):
@@ -345,7 +379,9 @@ class TestAudioMetadata(TestCase):
         '''
 
         tags = None
+
         tags = metadata.get_any_tags(TEST_MP3_NO_TAG)
+
         self.assertIsNone(tags)
 
 
@@ -357,6 +393,20 @@ class TestAudioMetadata(TestCase):
         results_dict = metadata.get_media_info(TEST_MP3_CRUSH)
 
         self.assertDictEqual(self.media_dict, results_dict)
+
+
+    def test_get_media_info_invalid_file(self):
+        '''
+        @brief Tests trying to returns media info dictionary rom invalid file type.
+        '''
+
+        results_dict = None
+        with self.assertRaises(RuntimeError) as cm:
+            results_dict = metadata.get_media_info(TEST_M3U)
+
+        self.assertIsNone(results_dict)
+        err_msg = f"RuntimeError running command ffprobe -v quiet -show_format -show_streams {TEST_M3U}"
+        self.assertTrue(cm.exception.args[0], err_msg)
 
 
     @unittest.skip("complete")
@@ -379,6 +429,18 @@ class TestAudioMetadata(TestCase):
         media_tags = metadata.get_media_tags(TEST_MP3_CRUSH)
 
         self.assertDictEqual(media_tags, self.tag_dict)
+
+
+    def test_get_media_tags_wo_metadata(self):
+        '''
+        @brief Tests getting media tags from audio without metadata.
+        '''
+
+        media_tags = None
+
+        media_tags = metadata.get_media_tags(TEST_MP3_NO_TAG)
+
+        self.assertIsNone(media_tags)
 
 
     @unittest.skip("complete")
