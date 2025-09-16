@@ -565,6 +565,7 @@ class AudioMetadata():
 
         @details Uses ffprobe to get all media info from any valid audio file.
         @details This def replaces the native pydub mediainfo function.
+        @details The file_path MUST be for a valid audio file.
 
         @param file_path {str} The full path to audio file.
         @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
@@ -659,6 +660,8 @@ class AudioMetadata():
 
                     media_info = self.get_media_info(input_file_path)
                     if media_info:
+                        file_msg = f"\n{input_file_path} has {len(media_info)} keys"
+                        data.append(file_msg)
                         for key, value in media_info.items():
                             if isinstance(value, dict):
                                 continue

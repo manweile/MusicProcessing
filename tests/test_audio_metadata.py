@@ -22,7 +22,9 @@ from unittest import TestCase
 from mutagen._util import MutagenError
 
 # local module constants
-from src import AUDIO_EXTS, AUDIO_FILES, FOLDER_ART, MUSIC_TLD, PLAYLIST_EXTS
+from src import AUDIO_EXTS, AUDIO_FILES, FOLDER_ART
+from src import MP3_EXT, MUSIC_TLD
+from src import PLAYLIST_EXTS
 from src import RESULT_DIR, RESULT_EXT
 from src.generated_files import GENERATED_FILES
 from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_NO_TAG, TEST_WAV_NONE, TEST_WMA_CCR
@@ -409,16 +411,72 @@ class TestAudioMetadata(TestCase):
         self.assertTrue(cm.exception.args[0], err_msg)
 
 
-    @unittest.skip("complete")
     def test_get_media_info_walk(self):
         '''
-        @brief Tests getting media info (codec, duration, size, bitrate...) for audio files.
+        @brief Tests getting media info (codec, duration, size, bitrate...) for audio files in top level directory.
         '''
 
+        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_filename = "get_media_info_walk" + RESULT_EXT
+        txt_path = os.path.join(txt_dir, txt_filename)
+
         # use the ConvertedMusic dir
-        # but dont try to verify every key/value pair
+        metadata.get_media_info_walk(self.converted, None)
+
+        output_exists = os.path.exists(txt_path)
+        self.assertTrue(output_exists)
+
         # check for major values in the output text file
-        pass
+        with open(txt_path, "r") as f:
+            lines = f.readlines()
+
+        self.assertIn(f"{self.mp3_line} has 37 keys\n", lines)
+        self.assertIn(f"{self.wma_line} has 38 keys\n", lines)
+        self.assertIn(f"{self.m4a_line} has 56 keys\n", lines)
+
+
+    def test_get_media_info_walk_invalid_pattern(self):
+        '''
+        @brief Tests getting media info with an invalid pattern.
+        '''
+
+        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_filename = "get_media_info_walk" + RESULT_EXT
+        txt_path = os.path.join(txt_dir, txt_filename)
+
+        # use the ConvertedMusic dir
+        metadata.get_media_info_walk(self.converted, PLAYLIST_EXTS[0])
+
+        output_exists = os.path.exists(txt_path)
+        self.assertTrue(output_exists)
+
+        # check for major values in the output text file
+        with open(txt_path, "r") as f:
+            lines = f.readlines()
+
+        self.assertTrue(len(lines), 0)
+
+
+    def test_get_media_info_walk_pattern(self):
+        '''
+        @brief Tests getting media info (codec, duration, size, bitrate...) for audio files pattern.
+        '''
+
+        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_filename = "get_media_info_walk" + RESULT_EXT
+        txt_path = os.path.join(txt_dir, txt_filename)
+
+        # use the ConvertedMusic dir
+        metadata.get_media_info_walk(self.converted, MP3_EXT)
+
+        output_exists = os.path.exists(txt_path)
+        self.assertTrue(output_exists)
+
+        # check for major values in the output text file
+        with open(txt_path, "r") as f:
+            lines = f.readlines()
+
+        self.assertIn(f"{self.mp3_line} has 37 keys\n", lines)
 
 
     def test_get_media_tags(self):
