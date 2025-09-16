@@ -48,28 +48,30 @@ from src.subprocess_utils import SubprocessUtilities
 gc.enable()
 
 ## @var logger
-# @brief
-# @details
+# @brief the logger instance for module
+# @details sets the logger name to module name
 logger = logging.getLogger(__name__)
+
 ## @var basename
-# @brief
-# @details
+# @brief name for logger file handler log file
+# @details gets the module file name
 basename = os.path.basename(__file__)
+
 add_module_handler(logger, basename)
 
 ## @var directory
-# @brief
-# @details
+# @brief instance of DirectoryProcessing class
+# @details used for accessing class functionality
 directory = DirectoryProcessing()
 
 ## @var normalization
-# @brief
-# @details
+# @brief instance of AudioNormalization class
+# @details used for accessing class functionality
 normalization = AudioNormalization()
 
 ## @var subprocess_utils
-# @brief
-# @details
+# @brief instance of SubprocessUtilities class
+# @details used for accessing class functionality
 subprocess_utils = SubprocessUtilities()
 
 ## @var TPOS
@@ -117,7 +119,7 @@ MP3_KEYS = {
     'artist': 'TPE1',
     'composer': 'TCOM',
     'copyright': 'TCOP',
-    'date': 'TYER',                                         # preferred key
+    'date': 'TYER',
     'disc': 'TPOS',
     'genre': 'TCON',
     'originalyear': 'TORY',                                 # convert to TYER
@@ -129,7 +131,7 @@ MP3_KEYS = {
     'custom_original_year': 'TXXX=originalyear'             # ID3 user defined original year field convert to ID3v2.3 TYER
 }
 
-## var MP3_TIME_KEYS
+## @var MP3_TIME_KEYS
 # @brief ID3 time keys
 # @details used to set TYER metadata
 MP3_TIME_KEYS = {
