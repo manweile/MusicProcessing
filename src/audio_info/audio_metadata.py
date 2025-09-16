@@ -653,7 +653,7 @@ class AudioMetadata():
                     if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
                     elif file_pattern:
-                        if not fnmatch.fnmatch(file, file_pattern.lower()):
+                        if not fnmatch.fnmatch(input_file_ext.lower(), file_pattern.lower()):
                             continue
 
                     input_file_path = os.path.join(dir_path, file)

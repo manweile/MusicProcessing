@@ -217,7 +217,7 @@ class DirectoryProcessing():
 
             txt_path = os.path.join(txt_dir, txt_filename + RESULT_EXT)
 
-            # need to append cause expecting many runs
+            # need to overwrite cause expecting many runs
             txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
             for item in data:
                 txt_outfile.write(f"{item}\n")
@@ -653,6 +653,8 @@ class DirectoryProcessing():
         '''
 
         try:
+            # @todo make start path mandatory across project
+            # @todo remove tld_path getter/setter - have NEVER used them.
             if start_path is None:
                 start_path = self._tld_path
 

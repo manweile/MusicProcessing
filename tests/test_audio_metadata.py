@@ -19,6 +19,7 @@ from pathlib import Path
 from unittest import TestCase
 
 # third party modules
+import mutagen
 from mutagen._util import MutagenError
 
 # local module constants
@@ -416,12 +417,12 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting media info (codec, duration, size, bitrate...) for audio files in top level directory.
         '''
 
+        # use the ConvertedMusic dir
+        metadata.get_media_info_walk(self.converted, None)
+
         txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
         txt_filename = "get_media_info_walk" + RESULT_EXT
         txt_path = os.path.join(txt_dir, txt_filename)
-
-        # use the ConvertedMusic dir
-        metadata.get_media_info_walk(self.converted, None)
 
         output_exists = os.path.exists(txt_path)
         self.assertTrue(output_exists)
@@ -440,21 +441,17 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting media info with an invalid pattern.
         '''
 
-        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
-        txt_filename = "get_media_info_walk" + RESULT_EXT
-        txt_path = os.path.join(txt_dir, txt_filename)
-
         # use the ConvertedMusic dir
         metadata.get_media_info_walk(self.converted, PLAYLIST_EXTS[0])
 
+        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_filename = "get_media_info_walk" + RESULT_EXT
+        txt_path = os.path.join(txt_dir, txt_filename)
         output_exists = os.path.exists(txt_path)
+        file_size = os.path.getsize(txt_path)
+
         self.assertTrue(output_exists)
-
-        # check for major values in the output text file
-        with open(txt_path, "r") as f:
-            lines = f.readlines()
-
-        self.assertTrue(len(lines), 0)
+        self.assertEqual(file_size, 0)
 
 
     def test_get_media_info_walk_pattern(self):
@@ -462,14 +459,14 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting media info (codec, duration, size, bitrate...) for audio files pattern.
         '''
 
-        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
-        txt_filename = "get_media_info_walk" + RESULT_EXT
-        txt_path = os.path.join(txt_dir, txt_filename)
-
         # use the ConvertedMusic dir
         metadata.get_media_info_walk(self.converted, MP3_EXT)
 
+        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_filename = "get_media_info_walk" + RESULT_EXT
+        txt_path = os.path.join(txt_dir, txt_filename)
         output_exists = os.path.exists(txt_path)
+
         self.assertTrue(output_exists)
 
         # check for major values in the output text file
@@ -501,18 +498,16 @@ class TestAudioMetadata(TestCase):
         self.assertIsNone(media_tags)
 
 
-    @unittest.skip("complete")
     def test_get_metadata_type(self):
         '''
         @brief Test getting metadata type of any audio file.
         '''
 
         # walk through ConvertedMusic files
-        # audio_file = mutagen.File(file_path)
-        # metadata_type = audio_file.__class__.__name__
-        # assertTrue(metadata_type in AUDIO_FILES)
-
-        pass
+        for file_path in self.src_file_paths:
+            audio_file = mutagen.File(file_path)
+            metadata_type = audio_file.__class__.__name__
+            self.assertTrue(metadata_type in AUDIO_FILES)
 
 
     def test_get_tags_walk_ffprobe(self):
