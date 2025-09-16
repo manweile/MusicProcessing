@@ -21,9 +21,11 @@ from pathlib import Path
 # third party modules
 import mutagen
 import pathvalidate
+from mutagen import FileType
+from mutagen.asf import ASFTags
 from mutagen.id3 import APIC, ID3, ID3TimeStamp
 from mutagen.mp3 import MP3
-from mutagen.mp4 import MP4FreeForm
+from mutagen.mp4 import MP4FreeForm, MP4Tags
 from mutagen._util import MutagenError
 from pathvalidate.error import ValidationError
 from tqdm import tqdm
@@ -45,19 +47,45 @@ from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
 
+## @var logger
+# @brief
+# @details
 logger = logging.getLogger(__name__)
+## @var basename
+# @brief
+# @details
 basename = os.path.basename(__file__)
 add_module_handler(logger, basename)
 
+## @var directory
+# @brief
+# @details
 directory = DirectoryProcessing()
+
+## @var normalization
+# @brief
+# @details
 normalization = AudioNormalization()
+
+## @var subprocess_utils
+# @brief
+# @details
 subprocess_utils = SubprocessUtilities()
 
+## @var TPOS
+# @brief ID3 disc of set tag
+# @details used to set TPOS metadata
 TPOS = "TPOS"
+
+## @var TYER
+# @brief ID3 release year tag
+# @details used to set TYER metadata
 TYER = "TYER"
 
-# the set of pydub generic metadata keys I want to copy to converted & normalized files
-# these keys also correspond to what Windows displays as file information in File Explorer
+## @var GEN_KEYS
+# @brief the set of ffmpeg generic metadata keys for copying to converted & normalized files
+# @details these keys correspond to what Windows displays as file information in File Explorer
+# @details included for reference but not actually used
 GEN_KEYS = {
     'album',                # must have                     ffmpeg mapping: TALB
     'album_artist',         # must have                     ffmpeg mapping: TPE2
@@ -80,14 +108,16 @@ GEN_KEYS = {
     'track'                 # nice to have                  ffmpeg mapping: TRCK
 }
 
-# dict of generic to ID3v2.3 (MP3)
+## @var MP3_KEYS
+# @brief the set of generic ID3v2.3 (mp3) metadata keys
+# @details the ID3 keys used for mapping to windows display compatible metadata
 MP3_KEYS = {
     'album': 'TALB',
     'album_artist': 'TPE2',
     'artist': 'TPE1',
     'composer': 'TCOM',
     'copyright': 'TCOP',
-    'date': 'TYER',
+    'date': 'TYER',                                         # preferred key
     'disc': 'TPOS',
     'genre': 'TCON',
     'originalyear': 'TORY',                                 # convert to TYER
@@ -99,6 +129,9 @@ MP3_KEYS = {
     'custom_original_year': 'TXXX=originalyear'             # ID3 user defined original year field convert to ID3v2.3 TYER
 }
 
+## var MP3_TIME_KEYS
+# @brief ID3 time keys
+# @details used to set TYER metadata
 MP3_TIME_KEYS = {
     'TYER',                                                 # preferred key
     'TORY',
@@ -107,7 +140,9 @@ MP3_TIME_KEYS = {
     'TXXX=originalyear'
 }
 
-# dict of possible m4a (MP4)
+## @var M4A_KEYS
+# @brief the set of generic MP4 (m4a) metadata keys
+# @details the MP4 keys used for mapping to windows display compatible metadata
 M4A_KEYS = {
     'album': '\xa9alb',
     'album_artist': 'aART',
@@ -117,18 +152,23 @@ M4A_KEYS = {
     'date': '\xa9day',
     'disc': 'disk',
     'genre': '\xa9gen',
-    'originalyear': '----:com.apple.iTunes:originalyear',   # using iTunes filed, mp4 does not have \xa9ory
+    'originalyear': '----:com.apple.iTunes:originalyear',   # using iTunes field, mp4 does not have \xa9ory
     'publisher': '----:com.apple.iTunes:LABEL',             # using iTunes field, mp4 does not have \xa9pub
     'title': '\xa9nam',
     'track': 'trkn'
 }
 
+## var M4A_TIME_KEYS
+# @brief MP4 time keys
+# @details used to set TYER metadata
 M4A_TIME_KEYS = {
     '\xa9day',                                              # preferred key
     '----:com.apple.iTunes:originalyear'
 }
 
-# dict of possible wma (ASF)
+## @var WMA_KEYS
+# @brief the set of generic ASF (wma) metadata keys
+# @details the ASF keys used for mapping to windows display compatible metadata
 WMA_KEYS = {
     'album': 'WM/AlbumTitle',
     'album_artist': 'WM/AlbumArtist',
@@ -144,6 +184,9 @@ WMA_KEYS = {
     'track': 'WM/TrackNumber'
 }
 
+## var WMA_TIME_KEYS
+# @brief ASF time keys
+# @details used to set TYER metadata
 WMA_TIME_KEYS = {
 
     'WM/Year',                                              # preferred key
@@ -156,7 +199,7 @@ class AudioMetadata():
     @brief Defines the base metadata processing used by project.
     '''
 
-    def __init__(self):
+    def __init__(self) -> None:
         '''
         @brief Initializes the AudioMetadata class.
 
@@ -168,7 +211,7 @@ class AudioMetadata():
         pass
 
 
-    def __update_id3(self, date_values, id3_tags):
+    def __update_id3(self, date_values: set[str], id3_tags: dict) -> dict:
         '''
         @brief Updates tags dictionary with newest year value and ands default disc value if needed.
 
@@ -195,7 +238,7 @@ class AudioMetadata():
             return id3_tags
 
 
-    def convert_file(self, file_path, show_spinner=True):
+    def convert_file(self, file_path: str, show_spinner=True) -> None:
         '''
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file, using ffmpeg directly.
 
@@ -336,7 +379,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def convert_walk(self, start_path, file_pattern, show_spinner=True):
+    def convert_walk(self, start_path: str, file_pattern: str, show_spinner=True) -> None:
         '''
         @brief Converts all audio files found in specified path to mp3 format.
 
@@ -382,7 +425,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def create_album_dir(self, start_path):
+    def create_album_dir(self, start_path: str) -> None:
         '''
         @brief Creates an album sub-directory in an artist directory.
 
@@ -487,7 +530,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def get_any_tags(self, file_path):
+    def get_any_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags:
         '''
         @brief Gets tags for any type of audio file.
 
@@ -514,7 +557,7 @@ class AudioMetadata():
             return tags
 
 
-    def get_media_info(self, file_path):
+    def get_media_info(self, file_path: str) -> dict:
         '''
         @brief Returns dictionary with media info.
 
@@ -580,7 +623,7 @@ class AudioMetadata():
             return media_info
 
 
-    def get_media_info_walk(self, start_path, file_pattern):
+    def get_media_info_walk(self, start_path: str, file_pattern: str) -> None:
         '''
         @brief Gets media info (codec, duration, size, bitrate...) for audio files and saves to file.
 
@@ -632,7 +675,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def get_media_tags(self, file_path):
+    def get_media_tags(self, file_path: str) -> dict:
         '''
         @brief Gets media tags.
 
@@ -679,7 +722,7 @@ class AudioMetadata():
             return media_tags
 
 
-    def get_metadata_type(self, file_path):
+    def get_metadata_type(self, file_path: str) -> str:
         '''
         @brief Returns the metadata type of any audio file.
 
@@ -712,7 +755,7 @@ class AudioMetadata():
             return metadata_type
 
 
-    def get_tags_walk(self, file_path, file_pattern, ffprobe=False):
+    def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe=False) -> None:
         '''
         @brief Gets tags for audio files and saves to file.
 
@@ -773,7 +816,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def get_unique_media_keys(self, file_path):
+    def get_unique_media_keys(self, file_path: str) -> None:
         '''
         @brief Gets set of ffprobe keys and saves to file.
 
@@ -817,7 +860,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def has_art_tag(self, file_path):
+    def has_art_tag(self, file_path: str) -> bool:
         '''
         @brief Checks if an audio file has the embedded album art tag.
 
@@ -859,7 +902,7 @@ class AudioMetadata():
             return has_art
 
 
-    def load_any_file(self, file_path):
+    def load_any_file(self, file_path: str) -> FileType:
         '''
         @brief Loads any valid audio file type.
 
@@ -894,7 +937,7 @@ class AudioMetadata():
             return audio_file
 
 
-    def map_m4a_tags(self, input_tags):
+    def map_m4a_tags(self, input_tags: MP4Tags) -> dict:
         '''
         @brief Converts m4a (MP4) metadata to generic metadata
 
@@ -962,7 +1005,7 @@ class AudioMetadata():
             return id3_tags
 
 
-    def map_mp3_tags(self, input_tags):
+    def map_mp3_tags(self, input_tags: ID3) -> dict:
         '''
         @brief Converts mp3 metadata to id3 metadata
 
@@ -1005,7 +1048,7 @@ class AudioMetadata():
             return id3_tags
 
 
-    def map_wma_tags(self, input_tags):
+    def map_wma_tags(self, input_tags: ASFTags) -> dict:
         '''
         @brief Converts wma (ASF) metadata to id3 metadata
 
