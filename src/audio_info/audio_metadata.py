@@ -882,7 +882,7 @@ class AudioMetadata():
             file_name, file_ext = os.path.splitext(file_path)
             if file_ext.lower() not in AUDIO_EXTS:
                 logger.error(f"MusicProcessingError with file: {file_name} has invalid extension: {file_ext}", exc_info=True)
-                raise MusicProcessingError()
+                raise MusicProcessingError(f"MusicProcessingError with file: {file_name} has invalid extension: {file_ext}")
 
             audio_tags = self.get_any_tags(file_path)
 

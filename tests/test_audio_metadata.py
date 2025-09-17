@@ -510,6 +510,16 @@ class TestAudioMetadata(TestCase):
             self.assertTrue(metadata_type in AUDIO_FILES)
 
 
+    def test_get_metadata_type_fail(self):
+        '''
+        @brief Test try getting metadata type of invalid file.
+        '''
+
+        audio_file = mutagen.File(TEST_M3U)
+        metadata_type = audio_file.__class__.__name__
+        self.assertEqual(metadata_type, "NoneType")
+
+
     def test_get_tags_walk_ffprobe(self):
         '''
         @brief Tests getting ffprobe  tags for audio files.
@@ -557,13 +567,39 @@ class TestAudioMetadata(TestCase):
         pass
 
 
-    @unittest.skip("complete")
-    def test_has_art_tag(self):
+    def test_has_art_tag_true(self):
         '''
         @brief Tests checking if an audio file has an embedded album art tag.
         '''
 
-        pass
+        has_art = metadata.has_art_tag(TEST_MP3_CRUSH)
+        self.assertTrue(has_art)
+
+
+    def test_has_art_tag_false(self):
+        '''
+        @brief Tests checking if an audio file has an embedded album art tag.
+        '''
+
+        has_art = metadata.has_art_tag(TEST_MP3_NO_TAG)
+        self.assertFalse(has_art)
+
+
+    def test_has_art_tag_invalid(self):
+        '''
+        @brief Tests checking if an audio file has an embedded album art tag.
+        '''
+
+        has_art = None
+
+        _, file_ext = os.path.splitext(TEST_M3U)
+        err_msg = f"MusicProcessingError with file: {TEST_M3U} has invalid extension: {file_ext}"
+
+        with self.assertRaises(MusicProcessingError) as cm:
+            has_art = metadata.has_art_tag(TEST_M3U)
+
+        self.assertIsNone(has_art)
+        self.assertTrue(cm.exception.args[0], err_msg)
 
 
     def test_load_any_file(self):
@@ -575,13 +611,6 @@ class TestAudioMetadata(TestCase):
             loaded_file = metadata.load_any_file(src_file)
             audio_class_name = loaded_file.__class__.__name__
             self.assertTrue(audio_class_name in AUDIO_FILES)
-
-
-    '''
-    With a non-extant file, a mutagen load call will return a chained exception:
-    MutagenError encapsulating a FileNotFoundError, so we check the exception context dunder,
-    disable logging to prevent console clutter.
-    '''
 
 
     def test_load_any_file_non_extant(self):
@@ -596,6 +625,12 @@ class TestAudioMetadata(TestCase):
             audio_file = metadata.load_any_file(file_path)
 
         self.assertIsNone(audio_file)
+
+        '''
+        With a non-extant file, a mutagen load call will return a chained exception:
+        MutagenError encapsulating a FileNotFoundError, so we check the exception context dunder,
+        disable logging to prevent console clutter.
+        '''
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
