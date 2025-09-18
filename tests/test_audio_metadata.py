@@ -16,6 +16,7 @@ import os
 import shutil
 import unittest
 from pathlib import Path
+from subprocess import CalledProcessError
 from unittest import TestCase
 
 # third party modules
@@ -486,6 +487,28 @@ class TestAudioMetadata(TestCase):
         self.assertDictEqual(media_tags, self.tag_dict)
 
 
+    def test_get_media_tags_invalid_file(self):
+        '''
+        @brief Tests getting media tags from invalid file.
+        '''
+
+        media_tags = None
+
+        with self.assertRaises(CalledProcessError) as logs:
+            media_tags = metadata.get_media_tags(TEST_M3U)
+
+        self.assertIsNone(media_tags)
+        # CalledProcessError returncode:1 on command ['ffprobe', '-v', 'quiet', '-of', 'json', '-show_entries', 'format_tags', '/home/gerald/MusicProcessing/tests/Music/test.m3u'
+        # CalledProcessError getting media tags for file /home/gerald/MusicProcessing/tests/Music/test.m3u
+        command = ['ffprobe', '-v', 'quiet', '-of', 'json', '-show_entries', 'format_tags', TEST_M3U]
+        return_code = 1
+        # cm.exception.__class__ = CalledProcessError
+        log_msg = f"CalledProcessError returncode: 1 on command {command}]"
+
+        self.assertEqual(len(logs.records), 1)
+        self.assertEqual(logs.records[0].getMessage(), log_msg)
+
+
     def test_get_media_tags_wo_metadata(self):
         '''
         @brief Tests getting media tags from audio without metadata.
@@ -518,6 +541,23 @@ class TestAudioMetadata(TestCase):
         audio_file = mutagen.File(TEST_M3U)
         metadata_type = audio_file.__class__.__name__
         self.assertEqual(metadata_type, "NoneType")
+
+
+    def test_get_tags_walk(self):
+        '''
+        @brief Tests getting tags for a input pattern
+        '''
+
+        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_filename = "get_tags_walk" + RESULT_EXT
+        txt_path = os.path.join(txt_dir, txt_filename)
+
+        metadata.get_tags_walk(self.converted, MP3_EXT, ffprobe=True)
+
+        with open(txt_path, "r") as f:
+            lines = f.readlines()
+
+        self.assertIn(f"{self.mp3_line} has 9 ffprobe tags\n", lines)
 
 
     def test_get_tags_walk_ffprobe(self):
@@ -611,6 +651,22 @@ class TestAudioMetadata(TestCase):
             loaded_file = metadata.load_any_file(src_file)
             audio_class_name = loaded_file.__class__.__name__
             self.assertTrue(audio_class_name in AUDIO_FILES)
+
+
+    def test_load_any_file_invalid(self):
+        '''
+        @brief Test loading a non-audio file with mutagen.
+        '''
+
+        audio_file = None
+        file_path = TEST_M3U
+
+        with self.assertRaises(ValueError) as cm:
+            audio_file = metadata.load_any_file(file_path)
+
+        self.assertIsNone(audio_file)
+        err_msg = f"ValueError loading {TEST_M3U} returned None"
+        self.assertTrue(cm.exception.args[0], err_msg)
 
 
     def test_load_any_file_non_extant(self):
