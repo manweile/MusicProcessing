@@ -229,7 +229,7 @@ class SubprocessUtilities():
             )
 
         except CalledProcessError as cp_error:
-            logger.exception(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", stack_info=True)
+            logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
             raise cp_error
         except UnicodeDecodeError as ud_error:
             logger.exception(f"UnicodeDecodeError decoding stdout: {process.stdout} or stderr: {process.stderr} from command {shlex.join(command)}", stack_info=True)
