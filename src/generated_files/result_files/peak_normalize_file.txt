@@ -1,0 +1,8 @@
+Beginning peak normalization on: Crush-Live.mp3
+Source directory path: d:\MusicProcessing\tests\Music\Crush\Here
+bit rate: 129156
+max volume: -7.00 dB
+adjustment: 5.00 dB
+Peak normalizing Crush-Live.mp3
+['ffmpeg', '-hide_banner', '-i', 'd:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-filter:a', 'volume=5.00dB', '-c:v', 'copy', '-c:a', 'libmp3lame', '-b:a', '129156', '-id3v2_version', '3', 'd:\\MusicProcessing\\src\\generated_files\\Music\\Crush\\Here\\Crush-Live.mp3', '-y']
+Successful peak normalization on Crush-Live.mp3
