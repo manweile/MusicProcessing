@@ -236,6 +236,45 @@ class TestAudioMetadata(TestCase):
         }
         cls.id3_date_values = set(["1962", "1963"])
 
+        cls.m4a_mapped = {
+            'TALB': 'Desperado',
+            'TPE2': 'Eagles',
+            'TPE1': 'Eagles',
+            'TCOM': 'Don Henley/Glenn Frey',
+            'TCOP': '1973 Asylum Records',
+            'TPOS': '1/1',
+            'TCON': 'Rock',
+            'TPUB': 'Asylum Records',
+            'TIT2': 'Desperado',
+            'TRCK': '5/11',
+            'TYER': '1973'
+        }
+
+        cls.mp3_mapped = {
+            "TALB": "Waterloo",
+            "TPE2": "ABBA",
+            "TPE1": "ABBA",
+            "TCOM": "Benny Andersson/Björn Ulvaeus/Stig Anderson",
+            "TCON": "Pop",
+            "TPUB": "Polydor",
+            "TIT2": "Waterloo",
+            "TRCK": "1",
+            "TYER": "1963",
+            "TPOS": "1/1"
+        }
+
+        cls.wma_mapped = {
+            'TALB': 'Chronicle, Vol. 1',
+            'TPE2': 'Creedence Clearwater Revival',
+            'TPE1': 'Creedence Clearwater Revival',
+            'TCOM': 'John Fogerty',
+            'TCON': 'Classic Rock',
+            'TPUB': 'Fantasy',
+            'TIT2': 'Fortunate Son',
+            'TRCK': 9,
+            'TYER': '1976',
+            'TPOS': '1/1'
+        }
 
     @classmethod
     def tearDownClass(cls):
@@ -289,6 +328,19 @@ class TestAudioMetadata(TestCase):
             metadata.convert_file(TEST_MP3_CRUSH)
 
         self.assertEqual(cm.exception.message, err_msg)
+
+
+    def test_convert_file_wo_metadata(self):
+        '''
+        @brief Test Attempt converting a an audio file that does not have metadata.
+        '''
+
+        no_metadata = os.path.join(TESTS_TLD, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
+        metadata.convert_file(no_metadata, show_spinner=False)
+
+        audio_file = os.path.join(GENERATED_FILES, MUSIC_TLD, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
+        audio_exists = os.path.exists(audio_file)
+        self.assertTrue(audio_exists)
 
 
     def test_convert_walk(self):
@@ -494,19 +546,12 @@ class TestAudioMetadata(TestCase):
 
         media_tags = None
 
-        with self.assertRaises(CalledProcessError) as logs:
+        with self.assertRaises(CalledProcessError) as cm:
             media_tags = metadata.get_media_tags(TEST_M3U)
 
         self.assertIsNone(media_tags)
-        # CalledProcessError returncode:1 on command ['ffprobe', '-v', 'quiet', '-of', 'json', '-show_entries', 'format_tags', '/home/gerald/MusicProcessing/tests/Music/test.m3u'
-        # CalledProcessError getting media tags for file /home/gerald/MusicProcessing/tests/Music/test.m3u
-        command = ['ffprobe', '-v', 'quiet', '-of', 'json', '-show_entries', 'format_tags', TEST_M3U]
-        return_code = 1
-        # cm.exception.__class__ = CalledProcessError
-        log_msg = f"CalledProcessError returncode: 1 on command {command}]"
-
-        self.assertEqual(len(logs.records), 1)
-        self.assertEqual(logs.records[0].getMessage(), log_msg)
+        self.assertEqual("CalledProcessError", cm.exception.__class__.__name__)
+        self.assertEqual(1, cm.exception.returncode)
 
 
     def test_get_media_tags_wo_metadata(self):
@@ -598,13 +643,22 @@ class TestAudioMetadata(TestCase):
         self.assertIn(f"{self.m4a_line} has 32 MP4 tags\n", lines)
 
 
-    @unittest.skip("complete")
     def test_get_unique_media_keys(self):
         '''
         @brief Tests getting an unique set of metadata keys for audio files in specified path.
         '''
 
-        pass
+        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_filename = "get_unique_media_keys" + RESULT_EXT
+        txt_path = os.path.join(txt_dir, txt_filename)
+
+        metadata.get_unique_media_keys(TESTS_TLD)
+
+        with open(txt_path, "r") as f:
+            lines = f.readlines()
+
+        self.assertGreater(len(lines), 1)
+        self.assertIn(f"Unique keys for audio files in {TESTS_TLD}\n", lines)
 
 
     def test_has_art_tag_true(self):
@@ -690,31 +744,37 @@ class TestAudioMetadata(TestCase):
         self.assertIsInstance(cm.exception.__context__, FileNotFoundError)
 
 
-    @unittest.skip("complete")
     def test_map_m4a_tags(self):
         '''
         @brief
         '''
 
-        pass
+        input_tags = metadata.get_any_tags(TEST_M4A_EAGLES)
+        id3_tags = metadata.map_m4a_tags(input_tags)
+
+        self.assertDictEqual(id3_tags, self.m4a_mapped)
 
 
-    @unittest.skip("complete")
     def test_map_mp3_tags(self):
         '''
         @brief
         '''
 
-        pass
+        input_tags = metadata.get_any_tags(TEST_MP3_ABBA)
+        id3_tags = metadata.map_mp3_tags(input_tags)
+
+        self.assertDictEqual(id3_tags, self.mp3_mapped)
 
 
-    @unittest.skip("complete")
     def test_map_wma_tags(self):
         '''
         @brief
         '''
 
-        pass
+        input_tags = metadata.get_any_tags(TEST_WMA_CCR)
+        id3_tags = metadata.map_wma_tags(input_tags)
+
+        self.assertDictEqual(id3_tags, self.wma_mapped)
 
 
     def test_update_id3(self):

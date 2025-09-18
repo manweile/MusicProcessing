@@ -244,13 +244,9 @@ class AudioMetadata():
         '''
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file, using ffmpeg directly.
 
-        @details Calling function MUST supply an existing file path.
         @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
-        @details Only the Windows displayable subset of metadata key/values is preserved.
-        @details Run create_album_dir function to ensure there are album directories for every audio file.
-        @details Then manually review extant album art and create and/or move Folder.jpg, if possible, to each album directory.
-        @details Next run extract_art_function to extract embedded art as Folder.jpg if needed, into each album directory.
-        @details Finally run set_album_art function to ensure a Folder.jpg exists in each album directory.
+        @details Calling function MUST supply path to an existing valid audio file with metadata.
+        @details The supplied audio file MUST have co-located Folder.jpg album art.
 
         @param file_path {str} The path for audio file to be converted.
         @param show_spinner {bool} Show spinner flag.
@@ -259,6 +255,13 @@ class AudioMetadata():
         @exception MusicProcessingError A generic music processing error occurred.
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        '''
+        Run create_album_dir function to ensure there are album directories for every audio file.
+        Then manually review extant album art and create and/or move Folder.jpg, if possible, to each album directory.
+        Next run extract_art_function to extract embedded art as Folder.jpg if needed, into each album directory.
+        Finally run set_album_art function to ensure a Folder.jpg exists in each album directory.
         '''
 
         data = []
@@ -291,14 +294,13 @@ class AudioMetadata():
 
             '''
             metadata transfer
-            I dont want every possible tag, just the subset that Windows will display AND are ID3v2.3
-            Comments are ASF/ID3v2.3/MP4, but MusicBrainz/MP3Tag/puddletag have difficulty displaying,
-            so passing on transferring comment metadata
-            Compilation is not ID3v2.3, so passing on transferring compilation metadata
-            Date info is most problematic part of metadata, ASF/ID3v2.3/MP4 multiple date type tags,
+            I dont want every possible tag, just the subset that Windows will display AND are ID3v2.3 format.
+            Comments are ASF/ID3v2.3/MP4, but MusicBrainz/MP3Tag/puddletag have difficulty displaying, so passing on transferring comment metadata.
+            Compilation is not ID3v2.3, so passing on transferring compilation metadata.
+            Date info is most problematic part of metadata, ASF/ID3v2.3/MP4 have multiple date type tags,
             the data types could be a full ISO date, or could just be a 4 digit year string,
-            so I am formatting any found date values to YYYY and mapping to ID3v2.3 TYER field
-            I have manually edited all audio files without date to have 1963 as default
+            so I am formatting any found date values to YYYY and mapping to ID3v2.3 TYER field.
+            I have manually edited all audio files without date to have 1963 as default.
             '''
             metadata_type = self.get_metadata_type(file_path)
 
@@ -308,12 +310,15 @@ class AudioMetadata():
 
             input_tags = self.get_any_tags(file_path)
 
-            if metadata_type == MP3_TYPE:
-                tags = self.map_mp3_tags(input_tags)
-            elif metadata_type == MP4_TYPE:
-                tags = self.map_m4a_tags(input_tags)
-            elif metadata_type == ASF_TYPE:
-                tags = self.map_wma_tags(input_tags)
+            if input_tags:
+                if metadata_type == MP3_TYPE:
+                    tags = self.map_mp3_tags(input_tags)
+                elif metadata_type == MP4_TYPE:
+                    tags = self.map_m4a_tags(input_tags)
+                elif metadata_type == ASF_TYPE:
+                    tags = self.map_wma_tags(input_tags)
+            else:
+                tags = None
 
             # get the input file info - want bitrate so can preserve the quality in exported file
             # @todo look at using get_bit_rate instead
@@ -856,11 +861,17 @@ class AudioMetadata():
                     tag_file_path = os.path.join(dir_path, file)
                     input_tags = self.get_media_tags(tag_file_path)
 
-                    file_keys = input_tags.keys()
-                    if file_keys:
+                    if input_tags:
+                        file_keys = input_tags.keys()
                         unique_keys.update(file_keys)
 
-            data.append(unique_keys)
+            data.append(f"Unique keys for audio files in {file_path}")
+
+            if len(unique_keys) > 0:
+                sorted_list = sorted(unique_keys)
+                for key in sorted_list:
+                    data.append(key)
+
             directory.create_txt(txt_filename, data)
 
         except Exception as e_error:
@@ -960,6 +971,7 @@ class AudioMetadata():
         try:
             id3_tags = {}
             date_values = set()
+
             for metadata_field, m4a_value in M4A_KEYS.items():
                 m4a_tag = input_tags.get(m4a_value)
 
@@ -1028,6 +1040,7 @@ class AudioMetadata():
         try:
             id3_tags = {}
             date_values = set()
+
             for metadata_field, mp3_value in MP3_KEYS.items():
 
                 mp3_tag = input_tags.get(mp3_value)
@@ -1071,6 +1084,7 @@ class AudioMetadata():
         try:
             id3_tags = {}
             date_values = set()
+
             for metadata_field, wma_value in WMA_KEYS.items():
                 wma_tag = input_tags.get(wma_value)
 
