@@ -764,6 +764,9 @@ class AudioMetadata():
         '''
         @brief Gets tags for audio files and saves to file.
 
+        @details File walk will skip any non-audio files like playlists, jpgs, etc.
+        @details Therefore a non-audio ext input will never have a pattern match.
+
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
         @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
@@ -788,7 +791,7 @@ class AudioMetadata():
                     if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
 
-                    if file_pattern and not fnmatch.fnmatch(file, file_pattern.lower()):
+                    if file_pattern and not fnmatch.fnmatch(input_file_ext, file_pattern.lower()):
                         continue
                     else:
                         tag_file_path = os.path.join(dir_path, file)
