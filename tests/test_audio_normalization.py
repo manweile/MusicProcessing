@@ -78,15 +78,6 @@ class TestAudioNormalization(TestCase):
             shutil.rmtree(NORM_PATH)
 
 
-    def test_ebu_normalize_linear(self):
-        '''
-        @brief Tests linear ebu normalize audio file level.
-        '''
-
-        normalization.ebu_normalize_file(EBU_LINEAR_SRC, show_spinner=False)
-        self.assertTrue(os.path.exists(EBU_LINEAR_RES))
-
-
     def test_ebu_normalize_dynamic(self):
         '''
         @brief Tests dynamic ebu normalize audio file level.
@@ -94,6 +85,15 @@ class TestAudioNormalization(TestCase):
 
         normalization.ebu_normalize_file(EBU_DYNAMIC_SRC, show_spinner=False)
         self.assertTrue(os.path.exists(EBU_DYNAMIC_RES))
+
+
+    def test_ebu_normalize_linear(self):
+        '''
+        @brief Tests linear ebu normalize audio file level.
+        '''
+
+        normalization.ebu_normalize_file(EBU_LINEAR_SRC, show_spinner=False)
+        self.assertTrue(os.path.exists(EBU_LINEAR_RES))
 
 
     def test_get_bit_rate(self):
@@ -171,20 +171,6 @@ class TestAudioNormalization(TestCase):
         self.assertTrue(os.path.exists(PEAK_RES))
 
 
-    def test_peak_normalize_file_max_volume(self):
-        '''
-        @brief Tests peak normalize audio file level would have max volume.
-        '''
-
-        module = f"{normalization.__module__}"
-        logger = logging.getLogger(module)
-
-        with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(PEAK_MAX_VOL_SRC, show_spinner=False)
-
-        self.assertIn(PEAK_MAX_VOL_RES, cm.output[0])
-
-
     @unittest.skip("Need a file that will peak clip")
     def test_peak_normalize_file_clipping(self):
         '''
@@ -200,6 +186,20 @@ class TestAudioNormalization(TestCase):
         self.assertIn(PEAK_CLIP_RES, cm.output[0])
 
 
+    def test_peak_normalize_file_max_volume(self):
+        '''
+        @brief Tests peak normalize audio file level would have max volume.
+        '''
+
+        module = f"{normalization.__module__}"
+        logger = logging.getLogger(module)
+
+        with self.assertLogs(logger, level=logging.WARNING) as cm:
+            normalization.peak_normalize_file(PEAK_MAX_VOL_SRC, show_spinner=False)
+
+        self.assertIn(PEAK_MAX_VOL_RES, cm.output[0])
+
+
     @unittest.skip("Need a file that will rms normalize")
     def test_rms_normalize_file(self):
         '''
@@ -208,15 +208,6 @@ class TestAudioNormalization(TestCase):
 
         normalization.rms_normalize_file(RMS_SRC, show_spinner=False)
         self.assertTrue(os.path.exists(RMS_RES))
-
-
-    @unittest.skip("Need a file that will rms max volume")
-    def test_rms_normalize_max_volume(self):
-        '''
-        @brief Tests rms normalize audio file level would have mav volume.
-        '''
-
-        pass
 
 
     def test_rms_normalize_file_clipping(self):
@@ -231,6 +222,15 @@ class TestAudioNormalization(TestCase):
             normalization.rms_normalize_file(RMS_CLIPPING_SRC, show_spinner=False)
 
         self.assertIn(RMS_CLIPPING_RES, cm.output[0])
+
+
+    @unittest.skip("Need a file that will rms max volume")
+    def test_rms_normalize_max_volume(self):
+        '''
+        @brief Tests rms normalize audio file level would have mav volume.
+        '''
+
+        pass
 
 
 def get_method_names(cls):
