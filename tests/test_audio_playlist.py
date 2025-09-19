@@ -9,7 +9,6 @@
 # standard modules
 import gc
 import inspect
-import logging
 import os
 import unittest
 from unittest import TestCase
@@ -17,7 +16,7 @@ from unittest.mock import patch
 
 # local module constants
 from src.generated_files import GENERATED_FILES
-from tests import TEST_M3U
+from tests import TEST_MP3_CRUSH, TEST_M3U
 from tests import TESTS_PATH, TESTS_TLD
 # local module errors
 from src import PlaylistError
@@ -31,27 +30,11 @@ GENERATED_M3U = os.path.join(GENERATED_FILES, "test.m3u")
 
 playlist = AudioPlaylist()
 
-'''
-Get the effective level so we can disable logging when necessary.
-In tests that use assertRaises, disable the logger at or below the log level of the tested function,
-encapsulate the assertRaises in a try block, and use a finally to restore the original log level.
-'''
-original_log_level = logging.getLogger().getEffectiveLevel()
-
 
 class TestAudioPlaylist(TestCase):
     '''
     @brief Tests AudioPlaylist class functions.
     '''
-
-    # @classmethod
-    # def setUpClass(cls):
-    #     '''
-    #     @brief Initialize data for test suite.
-
-    #     @details These datums are used throughout class and only need init once.
-    #     '''
-
 
     def tearDown(self):
         '''
@@ -67,19 +50,15 @@ class TestAudioPlaylist(TestCase):
         @brief Tests getting audio file name from a m3u #EXTINF line without delimiter
         '''
 
-        logging.disable(logging.ERROR)
-
         audio = None
         line = "#EXTINF:0The Eagles-Desperado.m4a"
 
-        try:
-            with self.assertRaises(PlaylistError) as cm:
-                audio = playlist.get_audio_name(line)
+        with self.assertRaises(PlaylistError) as cm:
+            audio = playlist.get_audio_name(line)
 
-            self.assertIsNone(audio)
-            self.assertEqual(cm.exception.message, f"PlaylistError no file delimiter in {line}")
-        finally:
-            logging.disable(original_log_level)
+        self.assertIsNone(audio)
+        self.assertEqual(cm.exception.message, f"PlaylistError no file delimiter in {line}")
+
 
 
     def test_get_audio_name_m4a(self):
@@ -116,7 +95,7 @@ class TestAudioPlaylist(TestCase):
 
 
     @patch('src.audio_info.audio_playlist.logger.warning')
-    def test_update_m3u(self, mock_warning):
+    def test_update_paths(self, mock_warning):
         '''
         @brief Tests if the updated m3u file is equal to expected results.
         '''
@@ -132,8 +111,6 @@ class TestAudioPlaylist(TestCase):
         generated_inf = []
         expected_inf = []
 
-        # @todo think about checking the relative pathing too
-        # this will mean updating expected.m3u paths with os.path.join in a setUpClass
         with open(GENERATED_M3U, "r") as generated_file, open(EXPECTED_M3U, "r") as expected_file:
             for generated_line, expected_line in zip(generated_file, expected_file):
                 if "#EXTINF:0," in generated_line:
@@ -144,11 +121,23 @@ class TestAudioPlaylist(TestCase):
         self.assertEqual(generated_inf, expected_inf, "List contents should be equal")
 
 
+    def test_update_paths_fail(self):
+        '''
+        @brief Tests trying to update non-m3u file.
+        '''
+
+        with self.assertRaises(PlaylistError) as cm:
+            playlist.update_paths(TESTS_TLD, TEST_MP3_CRUSH)
+
+        self.assertEqual(cm.exception.message, f"PlaylistError input file {TEST_MP3_CRUSH} is not a playlist")
+
+
 def get_method_names(cls):
     '''
     @brief Returns a list of names of methods defined within a given class.
 
     @param cls {Class} The name of the class to get methods list from.
+
     @return method_names [{str}] The names of the methods defined in class.
     '''
 
