@@ -64,6 +64,7 @@ class AudioPlaylist():
 
         @param line (str) Line of text read from m3u file containing a #EXTINF tag
         @return audio_file {str} Audio file name with extension.
+
         @exception PlaylistError Indicates an error occurred in playlist class.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -106,6 +107,7 @@ class AudioPlaylist():
 
         @param tld_path {str} The top level directory where playlist and music files are located.
         @param input_m3u {str} The full file path to playlist needing conversion.
+
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -122,6 +124,12 @@ class AudioPlaylist():
         comment = "#:"
 
         try:
+            # verify m3u input
+            _, input_file_ext = os.path.splitext(input_m3u)
+            if input_file_ext.lower() not in PLAYLIST_EXTS:
+                logger.exception(f"PlaylistError input file {input_m3u} is not a playlist", stack_info=True)
+                raise PlaylistError(f"PlaylistError input file {input_m3u} is not a playlist")
+
             # new m3u file gets created in generated files directory so can later be move to correct tld
             export_path = GENERATED_FILES
             input_basename = os.path.basename(input_m3u)
@@ -158,6 +166,8 @@ class AudioPlaylist():
         except OSError as os_error:
             logger.error(f"OSError {(strerror(os_error.errno))} writing data from {input_m3u} to {export_m3u}", exc_info=True)
             raise os_error
+        except PlaylistError as p_error:
+            raise p_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} updating playlist tld_path: {tld_path}, input_m3u: {input_m3u}", stack_info=True)
             raise e_error
@@ -170,6 +180,7 @@ class AudioPlaylist():
         @brief Updates playlists relative pathing.
 
         @param tld_path {str} The top level directory where playlist and music files are located.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
