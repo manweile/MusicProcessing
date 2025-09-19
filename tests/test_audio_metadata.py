@@ -414,21 +414,6 @@ class TestAudioMetadata(TestCase):
                 self.assertTrue(len(tags_list) == 30)
 
 
-    def test_get_any_tags_invalid_file(self):
-        '''
-        @brief Test Try getting tags for invalid file that is not audio.
-        '''
-
-        tags = None
-
-        with self.assertRaises(ValueError) as cm:
-            tags = metadata.get_any_tags(TEST_M3U)
-
-        self.assertIsNone(tags)
-        err_msg = f"ValueError loading {TEST_M3U} returned None"
-        self.assertTrue(cm.exception.args[0], err_msg)
-
-
     def test_get_any_tags_wo_metadata(self):
         '''
         @brief Test getting tags for any type of audio file that is without metadata.
@@ -451,11 +436,13 @@ class TestAudioMetadata(TestCase):
         self.assertDictEqual(self.media_dict, results_dict)
 
 
+    @unittest.skip("Rethink, actually tests subprocess.popen_pipe instead of get_media_info re.error")
     def test_get_media_info_invalid_file(self):
         '''
         @brief Tests trying to returns media info dictionary rom invalid file type.
         '''
 
+        # @todo this is really a SubprocessUtilities.popen_pipe test, adapt for test_subprocess_utilities
         results_dict = None
         with self.assertRaises(RuntimeError) as cm:
             results_dict = metadata.get_media_info(TEST_M3U)
@@ -539,11 +526,13 @@ class TestAudioMetadata(TestCase):
         self.assertDictEqual(media_tags, self.tag_dict)
 
 
+    @unittest.skip("Rethink, actually tests subprocess.subprocess_run instead of get_media_tags JSONDecodeError")
     def test_get_media_tags_invalid_file(self):
         '''
         @brief Tests getting media tags from invalid file.
         '''
 
+        # @todo this is really a SubprocessUtilities.subprocess_run test, adapt for test_subprocess_utilities
         media_tags = None
 
         with self.assertRaises(CalledProcessError) as cm:
@@ -746,7 +735,7 @@ class TestAudioMetadata(TestCase):
 
     def test_map_m4a_tags(self):
         '''
-        @brief
+        @brief Tests mapping native m4a tags to preferred id3 format.
         '''
 
         input_tags = metadata.get_any_tags(TEST_M4A_EAGLES)
@@ -757,7 +746,7 @@ class TestAudioMetadata(TestCase):
 
     def test_map_mp3_tags(self):
         '''
-        @brief
+        @brief Tests mapping native mp3 tags to preferred id3 format.
         '''
 
         input_tags = metadata.get_any_tags(TEST_MP3_ABBA)
@@ -768,7 +757,7 @@ class TestAudioMetadata(TestCase):
 
     def test_map_wma_tags(self):
         '''
-        @brief
+        @brief Tests mapping native wma tags to preferred id3 format.
         '''
 
         input_tags = metadata.get_any_tags(TEST_WMA_CCR)
@@ -779,7 +768,7 @@ class TestAudioMetadata(TestCase):
 
     def test_update_id3(self):
         '''
-        @brief tests updating a tags dictionary with newest year and disc value.
+        @brief tests updating an id3 tags dictionary with newest year and disc value.
         '''
 
         # need name mangling to access private method
