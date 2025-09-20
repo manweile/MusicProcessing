@@ -597,9 +597,47 @@ class AudioMetadata():
                 "-show_streams",
                 file_path
             ]
-
+            r'''
+            output format (Windows, Linux has just \n):
+            [STREAM]\r\nkey=value\r\n...\r\nDISPOSITION:key=value\r\n...\r\nDISPOSITION:key=value\r\n[/STREAM]\r\n
+            [FORMAT]\r\nkey=value\r\n...\r\nTAG:key=value\r\n...\r\nTAG:key=value\r\n[/FORMAT]
+            DISPOSITION and TAG are inner dicts
+            '''
             output = subprocess_utils.popen_pipe(command)
 
+            '''
+            regex string:
+            r
+            so don't have to use escaping (\\)
+
+            1st Regular Expression (RE) - get an inner dict
+            (?:(?P<inner_dict>.*?):)
+            Question mark colon is a non-capturing version of regular parentheses.
+            Matches whatever regular expression is inside the parentheses - the (?P<inner_dict>.*?),
+            but the substring matched by the group cannot be retrieved after performing a match or referenced later in the pattern.
+            [STREAM], [/STREAM], [FORMAT], and [/FORMAT] never match, so they get ignored.
+
+            (?P<inner_dict>.*?):
+            inner_dict is symbolic group name, must be valid python identifier.
+            Period asterisk question mark means match any char except newline, as few as possible characters will be matched.
+            The colon matches the token after a inner_dict name (as in DISPOSITION:)
+            DISPOSITION: and TAG: are inner dicts, they get returned.
+
+            2nd RE - get the key
+            ?(?P<key>.*?)
+            question mark causes the resulting RE to match 0 or 1 repetitions of the preceding RE
+            (?P<key>.*?)
+            Question mark P <key> where key is the symbolic group name.
+            Period asterisk question mark means match any char except newline, as few as possible characters will be matched
+
+            3rd RE - get the value
+            \=(?P<value>.*?)
+            slash equal escapes the equal sign, which is the token used in key/value pairs
+            period asterisk question mark means match any char except newline, as few as possible characters will be matched
+
+            $
+            Dollar anchors a match to end of search string.
+            '''
             rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
             media_info = {}
 

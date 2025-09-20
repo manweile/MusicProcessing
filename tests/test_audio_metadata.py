@@ -436,7 +436,7 @@ class TestAudioMetadata(TestCase):
         self.assertDictEqual(self.media_dict, results_dict)
 
 
-    @unittest.skip("Rethink, actually tests subprocess.popen_pipe instead of get_media_info re.error")
+    # @unittest.skip("Rethink, actually tests subprocess.popen_pipe instead of get_media_info re.error")
     def test_get_media_info_invalid_file(self):
         '''
         @brief Tests trying to returns media info dictionary rom invalid file type.
