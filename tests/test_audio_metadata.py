@@ -15,9 +15,11 @@ import platform
 import os
 import shutil
 import unittest
+from json import JSONDecodeError
 from pathlib import Path
-from subprocess import CalledProcessError
+from subprocess import CalledProcessError, CompletedProcess
 from unittest import TestCase
+from unittest.mock import patch
 
 # third party modules
 import mutagen
@@ -276,6 +278,7 @@ class TestAudioMetadata(TestCase):
             'TPOS': '1/1'
         }
 
+
     @classmethod
     def tearDownClass(cls):
         '''
@@ -436,20 +439,20 @@ class TestAudioMetadata(TestCase):
         self.assertDictEqual(self.media_dict, results_dict)
 
 
-    # @unittest.skip("Rethink, actually tests subprocess.popen_pipe instead of get_media_info re.error")
-    def test_get_media_info_invalid_file(self):
+    @patch('src.audio_info.audio_metadata.SubprocessUtilities.popen_pipe')
+    def test_get_media_info_regex_no_dict(self, mock_popen_pipe):
         '''
-        @brief Tests trying to returns media info dictionary rom invalid file type.
+        @brief Tests trying to returns media info dictionary from Popen return that is missing inner dictionaries.
+
+        @Details The SubprocessUtilities.popen_pipe return is mocked to return string that will not have any inner dictionaries for regex to match.
         '''
 
-        # @todo this is really a SubprocessUtilities.popen_pipe test, adapt for test_subprocess_utilities
         results_dict = None
-        with self.assertRaises(RuntimeError) as cm:
-            results_dict = metadata.get_media_info(TEST_M3U)
+        mock_popen_pipe.return_value = f"[STREAM]\r\nindex=0\r\n[/STREAM]\r\n[FORMAT]\r\nfilename={TEST_MP3_ABBA}\r\n[/FORMAT]\r\n"
 
-        self.assertIsNone(results_dict)
-        err_msg = f"RuntimeError running command ffprobe -v quiet -show_format -show_streams {TEST_M3U}"
-        self.assertTrue(cm.exception.args[0], err_msg)
+        results_dict = metadata.get_media_info(TEST_MP3_ABBA)
+        expected_dict = {"index": "0", "filename": f"{TEST_MP3_ABBA}"}
+        self.assertDictEqual(results_dict, expected_dict)
 
 
     def test_get_media_info_walk(self):
@@ -526,21 +529,42 @@ class TestAudioMetadata(TestCase):
         self.assertDictEqual(media_tags, self.tag_dict)
 
 
-    @unittest.skip("Rethink, actually tests subprocess.subprocess_run instead of get_media_tags JSONDecodeError")
-    def test_get_media_tags_invalid_file(self):
+    @patch('src.audio_info.audio_metadata.SubprocessUtilities.subprocess_run')
+    def test_get_media_tags_json_error(self, mock_subprocess_run):
         '''
-        @brief Tests getting media tags from invalid file.
+        @brief Tests getting media tags from file that results in JSONDecodeError.
         '''
 
-        # @todo this is really a SubprocessUtilities.subprocess_run test, adapt for test_subprocess_utilities
+        mock_subprocess_run.return_value = CompletedProcess(args=['ffprobe', '-v', 'quiet', '-of', 'json', '-show_entries', 'format_tags', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3'],
+                                                            returncode=0,
+                                                            stdout=('{\n'
+                                                                    '"format": {\n'
+                                                                    '"tags": {\n'
+                                                                    '"title": "Live",\n'
+                                                                    '"artist": "Crush",\n'
+                                                                    '"track": "1/12",\n'
+                                                                    '"album": "Here",\n'
+                                                                    '"disc": "1/1",\n'
+                                                                    '"genre": "Pop",\n'
+                                                                    '"album_artist": "Crush",\n'
+                                                                    '"composer": "Paul Lamb",\n'
+                                                                    '"publisher": "Sonic Records",\n'
+                                                                    '"originalyear": "2002",\n'
+                                                                    '"date": "2002"\n'
+                                                                    '}\n'
+                                                                    '}\n'
+                                                                    '\n'    # should be '}\n', missing close brace causes JSONDecodeError with lineno=18
+                                                                    ),
+                                                            stderr='')
+
         media_tags = None
 
-        with self.assertRaises(CalledProcessError) as cm:
-            media_tags = metadata.get_media_tags(TEST_M3U)
+        with self.assertRaises(JSONDecodeError) as cm:
+            media_tags = metadata.get_media_tags(TEST_MP3_CRUSH)
 
         self.assertIsNone(media_tags)
-        self.assertEqual("CalledProcessError", cm.exception.__class__.__name__)
-        self.assertEqual(1, cm.exception.returncode)
+        self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
+        self.assertEqual(18, cm.exception.lineno)
 
 
     def test_get_media_tags_wo_metadata(self):

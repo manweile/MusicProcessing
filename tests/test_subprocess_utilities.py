@@ -16,7 +16,7 @@ from subprocess import CalledProcessError
 from unittest import TestCase
 
 # local modules
-from tests import TEST_WAV_NONE
+from tests import TEST_M3U, TEST_WAV_NONE
 from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
@@ -37,13 +37,20 @@ class TestSubprocessUtilities(TestCase):
     @brief Tests SubprocessUtilities class functions.
     '''
 
+    @unittest.skip("adapt from metadata tests")
+    def test_get_media_tags_invalid_file(self):
+        # '''
+        # @brief Tests getting media tags from invalid file.
+        # '''
 
-    @unittest.skip("complete")
-    def test_subprocess_run_jsondecode(self):
-        '''
-        @brief Tests sub:
-        '''
+        # media_tags = None
 
+        # with self.assertRaises(CalledProcessError) as cm:
+        #     media_tags = metadata.get_media_tags(TEST_M3U)
+
+        # self.assertIsNone(media_tags)
+        # self.assertEqual("CalledProcessError", cm.exception.__class__.__name__)
+        # self.assertEqual(1, cm.exception.returncode)
         pass
 
 
@@ -79,6 +86,33 @@ class TestSubprocessUtilities(TestCase):
         stderr = cm.exception.stderr.strip()
         expected_err = f"{input_audio}: No such file or directory"
         self.assertEqual(stderr, expected_err)
+
+
+    def test_subprocess_popen_pipe_invalid_file(self):
+        '''
+        @brief Tests trying to get ffprobe media info from invalid file type.
+        '''
+
+        file_path = TEST_M3U
+
+        # -v quiet reduce output clutter
+        # -show_format get high level details of media file
+        # -show_streams gets all information about each media stream in the input
+        command = [
+            "ffprobe",
+            "-v", "quiet",
+            "-show_format",
+            "-show_streams",
+            file_path
+        ]
+
+        std_out = None
+        with self.assertRaises(RuntimeError) as cm:
+            std_out = subprocess_utils.popen_pipe(command)
+
+        self.assertIsNone(std_out)
+        err_msg = f"RuntimeError running command ffprobe -v quiet -show_format -show_streams {TEST_M3U}"
+        self.assertTrue(cm.exception.args[0], err_msg)
 
 
 def get_method_names(cls):

@@ -582,7 +582,7 @@ class AudioMetadata():
         try:
             media_info = None
 
-            '''
+            r'''
             this cli WILL include 'comment' = 'Cover (front)' if the file has embedded album art in the TAG inner dict,
             whereas ASF/ID3/MP4, would place WM\Picture, APIC, or covr AND include the byte data for the art,
             This is because show_streams means ffprobe sees the art data as the video stream metadata instead.
@@ -605,7 +605,7 @@ class AudioMetadata():
             '''
             output = subprocess_utils.popen_pipe(command)
 
-            '''
+            r'''
             regex string:
             r
             so don't have to use escaping (\\)

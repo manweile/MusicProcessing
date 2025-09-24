@@ -208,6 +208,7 @@ class SubprocessUtilities():
 
         @param command {str} Command for subprocess  to run.
         @return process {CompletedProcess} Completed process object.
+
         @exception CalledProcessError A subprocess error from ffmpeg command execution.
         @exception UnicodeDecodeError A unicode decode error on subprocess stdout bytes.
         @exception Exception A common baseclass exception to handle unforeseen errors.
