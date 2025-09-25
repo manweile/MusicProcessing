@@ -157,9 +157,31 @@ class TestAudioNormalization(TestCase):
         # @todo need to check if there will logging output
 
 
-    # @todo add __loudnorn_json_parse tests
-    # can have JSONDecodeError
-    # can have JSONOutputError
+    @unittest.skip("complete")
+    def test_loudnorm_json_parse(self):
+        '''
+        @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_loudnorm_json_parse_decode_error(self):
+        '''
+        @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_loudnorm_json_parse_output_error(self):
+        '''
+        @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output.
+        '''
+
+        pass
 
 
     def test_peak_normalize_file(self):
