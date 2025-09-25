@@ -19,7 +19,7 @@ from unittest import TestCase
 # local module constants
 from src import MUSIC_TLD
 from src.generated_files import GENERATED_FILES
-from tests import TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_X
+from tests import TEST_M3U, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_X
 # local module classes
 from src.audio_normalize import AudioNormalization
 
@@ -56,7 +56,7 @@ RMS_RES = ""
 SAMPLE_RATE_SRC = TEST_MP3_ABBA
 SAMPLE_RATE_RES = 44100
 
-VOL_ERR_SRC = "need file"
+VOL_ERR_SRC = TEST_M3U
 
 VOL_INFO_SRC = TEST_MP3_CRUSH
 VOL_INFO_RES = {'mean_volume': -19.9, 'max_volume': -6.7}
@@ -167,8 +167,8 @@ class TestAudioNormalization(TestCase):
         self.assertDictEqual(volumes, VOL_INFO_RES)
 
 
-    @unittest.skip("Need a file that will will volume info fail")
-    def test_get_volume_info_fail(self):
+    @unittest.skip("complete, look for CalledProcessError in other tests")
+    def test_get_volume_info_invalid_file(self):
         '''
         @brief Tests getting volume info failing.
         '''
@@ -212,9 +212,27 @@ class TestAudioNormalization(TestCase):
 
 
     @unittest.skip('complete')
-    def test_normalize_walk(self):
+    def test_normalize_walk_ebu(self):
         '''
-        @brief tests normalizes all audio files in specified top level directory per input normalization type.
+        @brief Tests ebu normalizes all audio files in specified top level directory.
+        '''
+
+        pass
+
+
+    @unittest.skip('complete')
+    def test_normalize_walk_peak(self):
+        '''
+        @brief Tests peak normalizes all audio files in specified top level directory.
+        '''
+
+        pass
+
+
+    @unittest.skip('complete')
+    def test_normalize_walk_rms(self):
+        '''
+        @brief Tests rms normalizes all audio files in specified top level directory.
         '''
 
         pass
