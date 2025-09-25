@@ -27,7 +27,7 @@ gc.enable()
 
 NORM_PATH = os.path.join(GENERATED_FILES, MUSIC_TLD)
 
-BIT_SRC = VOL_INFO_SRC = TEST_MP3_CRUSH
+BIT_SRC = TEST_MP3_CRUSH
 BIT_RES = 129156
 
 EBU_DYNAMIC_SRC = TEST_MP3_ABBA
@@ -58,6 +58,7 @@ SAMPLE_RATE_RES = 44100
 
 VOL_ERR_SRC = "need file"
 
+VOL_INFO_SRC = TEST_MP3_CRUSH
 VOL_INFO_RES = {'mean_volume': -19.9, 'max_volume': -6.7}
 
 
@@ -164,10 +165,6 @@ class TestAudioNormalization(TestCase):
         volumes = normalization.get_volume_info(VOL_INFO_SRC)
         self.maxDiff = None
         self.assertDictEqual(volumes, VOL_INFO_RES)
-
-
-    # @todo add get_volume_info fail tests:
-    # re.error
 
 
     @unittest.skip("Need a file that will will volume info fail")
