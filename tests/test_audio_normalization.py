@@ -109,7 +109,20 @@ class TestAudioNormalization(TestCase):
         self.assertEqual(res_bitrate, exp_bitrate)
 
 
-    # @todo add get_bit_rate fail tests
+    @unittest.skip("complete, needs mocking")
+    def test_get_bit_rate_decode_error(self):
+        '''
+        @brief Tests getting bit rate throws JSONDecodeError.
+        '''
+
+        # @todo mock the subprocess_run ret val
+
+        bit_rate = normalization.get_bit_rate(BIT_SRC)
+
+        res_bitrate = math.floor(bit_rate / 1000)
+        exp_bitrate = math.floor(BIT_RES / 1000)
+
+        self.assertEqual(res_bitrate, exp_bitrate)
 
 
     def test_get_sample_rate(self):
@@ -121,9 +134,26 @@ class TestAudioNormalization(TestCase):
         self.assertEqual(SAMPLE_RATE_RES, sample_rate)
 
 
-    # @todo add get_sample_rate fail tests
-    # can have IndexError
-    # can have JSONDecodeError
+    @unittest.skip("complete, needs mocking")
+    def test_get_sample_rate_decode_error(self):
+        '''
+        @brief Tests getting sample rate throws IndexError.
+        '''
+
+        # @todo mock the subprocess_run ret val
+        sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
+        self.assertEqual(SAMPLE_RATE_RES, sample_rate)
+
+
+    @unittest.skip("complete, needs mocking")
+    def test_get_sample_rate_index_error(self):
+        '''
+        @brief Tests getting sample rate throws IndexError.
+        '''
+
+        # @todo mock the subprocess_run ret val
+        sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
+        self.assertEqual(SAMPLE_RATE_RES, sample_rate)
 
 
     def test_get_volume_info(self):
@@ -179,6 +209,15 @@ class TestAudioNormalization(TestCase):
     def test_loudnorm_json_parse_output_error(self):
         '''
         @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output.
+        '''
+
+        pass
+
+
+    @unittest.skip('complete')
+    def test_normalize_walk(self):
+        '''
+        @brief tests normalizes all audio files in specified top level directory per input normalization type.
         '''
 
         pass
