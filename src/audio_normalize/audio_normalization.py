@@ -518,15 +518,15 @@ class AudioNormalization():
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
             max_volume = math.floor(volume_info['max_volume'])
 
-            if max_volume == 0.0:
+            if max_volume >= 0.0:
                 unnecessary_text = f"{input_path_basename} has max volume: {max_volume:.2f} dB, peak normalization not needed"
                 logger.warning(unnecessary_text)
                 return
             else:
                 data.append(f"max volume: {max_volume:.2f} dB")
 
-            adjustment = 0 + float(TP) - float(max_volume)
-            clip_amount = max_volume + adjustment
+            adjustment = 0.0 + float(TP) - float(max_volume)
+            clip_amount = float(max_volume) + adjustment
 
             if clip_amount > 0:
                 peak_text = f"peak normalizing by {TP} minus {max_volume:.2f} dB equaling {adjustment:.2f} dB will result in clipping level: {clip_amount:.2f} dB in {export_path}"
@@ -572,6 +572,138 @@ class AudioNormalization():
             raise pi_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} while peak normalizing audio file: {file_path}", stack_info=True)
+            raise e_error
+
+
+    def peak_clip_check_walk(self, tld_path):
+        '''
+        @brief walk tld and gets peak clip check amount for audio files.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        txt_filename = inspect.currentframe().f_code.co_name
+
+        try:
+            input_file_ext = None
+            input_path = Path(tld_path)
+
+            for root, dirs, file_names in os.walk(input_path):
+                for file in file_names:
+                    _, input_file_ext = os.path.splitext(file)
+
+                    if input_file_ext.lower() != MP3_EXT:
+                        continue
+                    else:
+                        file_path = os.path.join(root, file)
+
+                    volume_info = self.get_volume_info(file_path)
+                    # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
+                    max_volume = math.floor(volume_info['max_volume'])
+                    data.append(f"floor max volume: {max_volume:.2f}")
+
+                    adjustment = 0.0 + float(TP) - float(max_volume)
+                    clip_amount = float(max_volume) + adjustment
+
+                    if clip_amount > 0:
+                        peak_text = f"peak normalizing by {TP} minus {max_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB on {file_path}"
+                    else:
+                        peak_text = f"peak normalizing adjustment: {adjustment:.2f} dB on {file_path}"
+
+                    data.append(peak_text)
+
+            directory.create_txt(txt_filename, data)
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} while rms clip checking audio file: {file}", stack_info=True)
+            raise e_error
+
+
+    def rms_clip_check_walk(self, tld_path):
+        '''
+        @brief walk tld and gets clip amount for audio files.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        txt_filename = inspect.currentframe().f_code.co_name
+
+        try:
+            input_file_ext = None
+            input_path = Path(tld_path)
+
+            for root, dirs, file_names in os.walk(input_path):
+                for file in file_names:
+                    _, input_file_ext = os.path.splitext(file)
+
+                    if input_file_ext.lower() != MP3_EXT:
+                        continue
+                    else:
+                        file_path = os.path.join(root, file)
+
+                    volume_info = self.get_volume_info(file_path)
+                    # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
+                    mean_volume = math.floor(volume_info['mean_volume'])
+                    data.append(f"floor mean volume: {mean_volume:.2f}")
+
+                    adjustment = float(TP) - float(mean_volume)
+                    clip_amount = float(mean_volume) + adjustment
+
+                    if clip_amount > 0:
+                        peak_text = f"rms normalizing by {TP} minus {mean_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB on {file_path}"
+                    else:
+                        peak_text = f"rms normalizing adjustment: {adjustment:.2f} dB on {file_path}"
+
+                    data.append(peak_text)
+
+            directory.create_txt(txt_filename, data)
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} while rms clip checking audio file: {file}", stack_info=True)
+            raise e_error
+
+
+    def normalize_max_vol_check_walk(self, tld_path):
+        '''
+        @brief walk tld and gets max vol amount for audio files.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        txt_filename = inspect.currentframe().f_code.co_name
+
+        try:
+            input_file_ext = None
+            input_path = Path(tld_path)
+
+            for root, dirs, file_names in os.walk(input_path):
+                for file in file_names:
+                    _, input_file_ext = os.path.splitext(file)
+
+                    if input_file_ext.lower() != MP3_EXT:
+                        continue
+                    else:
+                        file_path = os.path.join(root, file)
+
+                    volume_info = self.get_volume_info(file_path)
+                    # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
+                    max_volume = math.floor(volume_info['max_volume'])
+                    data.append(f"floor max volume: {max_volume:.2f}")
+
+                    if max_volume >= 0.0:
+                        vol_text = f"normalizing impossible on {file_path} has max volume: {max_volume:.2f} db\n"
+                    else:
+                        vol_text = f"normalizing possible on {file_path} has max volume: {max_volume:.2f} dB\n"
+
+                    data.append(vol_text)
+
+            directory.create_txt(txt_filename, data)
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} while rms clip checking audio file: {file}", stack_info=True)
             raise e_error
 
 
@@ -621,19 +753,17 @@ class AudioNormalization():
             volume_info = self.get_volume_info(file_path)
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
             mean_volume = math.floor(volume_info['mean_volume'])
-            max_volume = math.floor(volume_info['max_volume'])
             data.append(f"floor mean volume: {mean_volume:.2f}")
-            data.append(f"floor max volume: {max_volume:.2f}")
 
-            if max_volume == 0.0:
-                unnecessary_text = f"{input_path_basename} has max volume: {max_volume:.2f}, rms normalization not needed"
+            if mean_volume >= 0.0:
+                unnecessary_text = f"{input_path_basename} has mean volume: {mean_volume:.2f}, rms normalization not needed"
                 logger.warning(unnecessary_text)
                 return
             else:
-                data.append(f"max volume: {max_volume:.2f} dB")
+                data.append(f"mean volume: {mean_volume:.2f} dB")
 
             adjustment = float(TP) - float(mean_volume)
-            clip_amount = max_volume + adjustment
+            clip_amount = float(mean_volume) + adjustment
 
             if clip_amount > 0:
                 peak_text = f"rms normalizing by {TP} minus {mean_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB in {export_path}"

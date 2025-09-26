@@ -19,7 +19,7 @@ from unittest import TestCase
 # local module constants
 from src import MUSIC_TLD
 from src.generated_files import GENERATED_FILES
-from tests import TEST_M3U, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_X
+from tests import TEST_M3U, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_SMEAGOL_MP3, TEST_MP3_X
 # local module classes
 from src.audio_normalize import AudioNormalization
 
@@ -40,8 +40,8 @@ EBU_LINEAR_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 PEAK_CLIP_SRC = ""
 PEAK_CLIP_RES = ""
 
-PEAK_MAX_VOL_SRC = TEST_MP3_X
-PEAK_MAX_VOL_RES = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
+MAX_VOL_SRC = TEST_MP3_X
+MAX_VOL_RES = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
 
 PEAK_SRC = TEST_MP3_CRUSH
 PEAK_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
@@ -49,9 +49,8 @@ PEAK_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 RMS_CLIPPING_SRC = TEST_MP3_CRUSH
 RMS_CLIPPING_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 
-# @todo find an audio file that will rms normalize
-RMS_SRC = ""
-RMS_RES = ""
+RMS_SRC = TEST_SMEAGOL_MP3
+RMS_RES = os.path.join(NORM_PATH, "The Lord of the Rings", "The Two Towers", "Howard Shore-The Taming Of Smeagol.mp3")
 
 SAMPLE_RATE_SRC = TEST_MP3_ABBA
 SAMPLE_RATE_RES = 44100
@@ -138,7 +137,7 @@ class TestAudioNormalization(TestCase):
     @unittest.skip("complete, needs mocking")
     def test_get_sample_rate_decode_error(self):
         '''
-        @brief Tests getting sample rate throws IndexError.
+        @brief Tests getting sample rate throws JSONDecodeError.
         '''
 
         # @todo mock the subprocess_run ret val
@@ -253,6 +252,10 @@ class TestAudioNormalization(TestCase):
         @brief Tests rms normalize audio file level would clip.
         '''
 
+        # PEAK_CLIP_SRC = os.path.join("F:", "ConvertedMusic", "3 Doors Down", "3 Doors Down", "3 Doors Down-It's Not My Time.mp3")
+        PEAK_CLIP_SRC = RMS_SRC
+        PEAK_CLIP_RES = os.path.join(NORM_PATH, "3 Doors Down", "3 Doors Down", "3 Doors Down-It's Not My Time.mp3")
+
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
 
@@ -271,12 +274,41 @@ class TestAudioNormalization(TestCase):
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(PEAK_MAX_VOL_SRC, show_spinner=False)
+            normalization.peak_normalize_file(MAX_VOL_SRC, show_spinner=False)
 
-        self.assertIn(PEAK_MAX_VOL_RES, cm.output[0])
+        self.assertIn(MAX_VOL_RES, cm.output[0])
 
 
-    @unittest.skip("Need a file that will rms normalize")
+    # @unittest.skip("one off. delete.")
+    def test_peak_clip_check_walk(self):
+        '''
+        @brief Tests walking tld to get peak adjustment amount.
+        '''
+
+        converted_tld = r"F:\ConvertedMusic"
+        normalization.peak_clip_check_walk(converted_tld)
+
+
+    # @unittest.skip("one off. delete.")
+    def test_rms_clip_check_walk(self):
+        '''
+        @brief Tests walking tld to get rms adjustment amount.
+        '''
+
+        converted_tld = r"F:\ConvertedMusic"
+        normalization.rms_clip_check_walk(converted_tld)
+
+
+    # @unittest.skip("one off. delete.")
+    def test_normalize_max_vol_check_walk(self):
+        '''
+        @brief Tests walking tld to get rms adjustment amount.
+        '''
+
+        converted_tld = r"F:\ConvertedMusic"
+        normalization.normalize_max_vol_check_walk(converted_tld)
+
+
     def test_rms_normalize_file(self):
         '''
         @brief Tests rms normalize audio file level.
@@ -300,13 +332,18 @@ class TestAudioNormalization(TestCase):
         self.assertIn(RMS_CLIPPING_RES, cm.output[0])
 
 
-    @unittest.skip("Need a file that will rms max volume")
     def test_rms_normalize_max_volume(self):
         '''
         @brief Tests rms normalize audio file level would have mav volume.
         '''
 
-        pass
+        module = f"{normalization.__module__}"
+        logger = logging.getLogger(module)
+
+        with self.assertLogs(logger, level=logging.WARNING) as cm:
+            normalization.peak_normalize_file(MAX_VOL_SRC, show_spinner=False)
+
+        self.assertIn(MAX_VOL_RES, cm.output[0])
 
 
 def get_method_names(cls):
