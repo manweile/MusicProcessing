@@ -189,6 +189,8 @@ class TestAudioNormalization(TestCase):
         @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output.
         '''
 
+        # need name mangling to access private method
+        input_data = normalization._AudioNormalization__loudnorm_json_parse(self.input_process)
         pass
 
 
@@ -279,7 +281,7 @@ class TestAudioNormalization(TestCase):
         self.assertIn(MAX_VOL_RES, cm.output[0])
 
 
-    # @unittest.skip("one off. delete.")
+    # @unittest.skip("one off")
     def test_peak_clip_check_walk(self):
         '''
         @brief Tests walking tld to get peak adjustment amount.
@@ -289,7 +291,7 @@ class TestAudioNormalization(TestCase):
         normalization.peak_clip_check_walk(converted_tld)
 
 
-    # @unittest.skip("one off. delete.")
+    # @unittest.skip("one off")
     def test_rms_clip_check_walk(self):
         '''
         @brief Tests walking tld to get rms adjustment amount.
@@ -299,10 +301,10 @@ class TestAudioNormalization(TestCase):
         normalization.rms_clip_check_walk(converted_tld)
 
 
-    # @unittest.skip("one off. delete.")
+    @unittest.skip("one off")
     def test_normalize_max_vol_check_walk(self):
         '''
-        @brief Tests walking tld to get rms adjustment amount.
+        @brief Tests walking tld to get normalization max volume amount.
         '''
 
         converted_tld = r"F:\ConvertedMusic"

@@ -517,10 +517,11 @@ class AudioNormalization():
             volume_info = self.get_volume_info(file_path)
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
             max_volume = math.floor(volume_info['max_volume'])
+            data.append(f"floor max volume: {max_volume:.2f}")
 
             if max_volume >= 0.0:
-                unnecessary_text = f"{input_path_basename} has max volume: {max_volume:.2f} dB, peak normalization not needed"
-                logger.warning(unnecessary_text)
+                max_text = f"{input_path_basename} has max volume: {max_volume:.2f} dB, peak normalization not needed"
+                logger.warning(max_text)
                 return
             else:
                 data.append(f"max volume: {max_volume:.2f} dB")
@@ -529,8 +530,8 @@ class AudioNormalization():
             clip_amount = float(max_volume) + adjustment
 
             if clip_amount > 0:
-                peak_text = f"peak normalizing by {TP} minus {max_volume:.2f} dB equaling {adjustment:.2f} dB will result in clipping level: {clip_amount:.2f} dB in {export_path}"
-                logger.warning(peak_text)
+                clip_text = f"peak normalizing by {TP} minus {max_volume:.2f} equaling {adjustment:.2f} with max volume {max_volume} plus {adjustment} will result in clipping amount: {clip_amount} dB in {export_path}"
+                logger.warning(clip_text)
                 return
             else:
                 data.append(f"adjustment: {adjustment:.2f} dB")
@@ -607,11 +608,11 @@ class AudioNormalization():
                     clip_amount = float(max_volume) + adjustment
 
                     if clip_amount > 0:
-                        peak_text = f"peak normalizing by {TP} minus {max_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB on {file_path}"
+                        clip_text = f"peak normalizing by {TP} minus {max_volume:.2f} equaling {adjustment:.2f} with max volume {max_volume} plus {adjustment} will result in clipping amount: {clip_amount} dB in {file_path}\n"
                     else:
-                        peak_text = f"peak normalizing adjustment: {adjustment:.2f} dB on {file_path}"
+                        clip_text = f"peak normalizing adjustment: {adjustment:.2f} dB on {file_path}\n"
 
-                    data.append(peak_text)
+                    data.append(clip_text)
 
             directory.create_txt(txt_filename, data)
 
@@ -646,17 +647,19 @@ class AudioNormalization():
                     volume_info = self.get_volume_info(file_path)
                     # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
                     mean_volume = math.floor(volume_info['mean_volume'])
+                    max_volume = math.floor(volume_info['max_volume'])
                     data.append(f"floor mean volume: {mean_volume:.2f}")
+                    data.append(f"floor max volume: {max_volume:.2f}")
 
                     adjustment = float(TP) - float(mean_volume)
-                    clip_amount = float(mean_volume) + adjustment
+                    clip_amount = float(max_volume) + adjustment
 
                     if clip_amount > 0:
-                        peak_text = f"rms normalizing by {TP} minus {mean_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB on {file_path}"
+                        clip_text = f"rms normalizing by {TP} minus {mean_volume:.2f} equaling {adjustment:.2f} with max volume {max_volume} plus {adjustment} will result in clipping amount: {clip_amount} dB in {file_path}\n"
                     else:
-                        peak_text = f"rms normalizing adjustment: {adjustment:.2f} dB on {file_path}"
+                        clip_text = f"rms normalizing adjustment: {adjustment:.2f} dB on {file_path}\n"
 
-                    data.append(peak_text)
+                    data.append(clip_text)
 
             directory.create_txt(txt_filename, data)
 
@@ -753,21 +756,23 @@ class AudioNormalization():
             volume_info = self.get_volume_info(file_path)
             # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
             mean_volume = math.floor(volume_info['mean_volume'])
+            max_volume = math.floor(volume_info['max_volume'])
             data.append(f"floor mean volume: {mean_volume:.2f}")
+            data.append(f"floor max volume: {max_volume:.2f}")
 
             if mean_volume >= 0.0:
-                unnecessary_text = f"{input_path_basename} has mean volume: {mean_volume:.2f}, rms normalization not needed"
-                logger.warning(unnecessary_text)
+                max_text = f"{input_path_basename} has mean volume: {mean_volume:.2f}, rms normalization not needed"
+                logger.warning(max_text)
                 return
             else:
                 data.append(f"mean volume: {mean_volume:.2f} dB")
 
             adjustment = float(TP) - float(mean_volume)
-            clip_amount = float(mean_volume) + adjustment
+            clip_amount = float(max_volume) + adjustment
 
             if clip_amount > 0:
-                peak_text = f"rms normalizing by {TP} minus {mean_volume:.2f} equaling {adjustment:.2f} will result in clipping amount: {clip_amount} dB in {export_path}"
-                logger.warning(peak_text)
+                clip_text = f"rms normalizing by {TP} minus {mean_volume:.2f} equaling {adjustment:.2f} with max volume {max_volume} plus {adjustment} will result in clipping amount: {clip_amount} dB in {export_path}"
+                logger.warning(clip_text)
                 return
             else:
                 data.append(f"adjustment: {adjustment:.2f} dB")
