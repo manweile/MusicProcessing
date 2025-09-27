@@ -1,4 +1,4 @@
-Unique keys for audio files in d:\MusicProcessing\tests\Music
+Unique keys for audio files in D:\MusicProcessing\tests\Music
 ARTISTS
 ASIN
 Acoustid Id

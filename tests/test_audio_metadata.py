@@ -448,7 +448,7 @@ class TestAudioMetadata(TestCase):
         '''
 
         results_dict = None
-        mock_popen_pipe.return_value = f"[STREAM]\r\nindex=0\r\n[/STREAM]\r\n[FORMAT]\r\nfilename={TEST_MP3_ABBA}\r\n[/FORMAT]\r\n"
+        mock_popen_pipe.return_value = f"[STREAM]\nindex=0\n[/STREAM]\n[FORMAT]\nfilename={TEST_MP3_ABBA}\n[/FORMAT]\n"
 
         results_dict = metadata.get_media_info(TEST_MP3_ABBA)
         expected_dict = {"index": "0", "filename": f"{TEST_MP3_ABBA}"}

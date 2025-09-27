@@ -4322,3 +4322,91 @@ Stack (most recent call last):
     probe_process = subprocess_utils.subprocess_run(probe_command)
   File "d:\MusicProcessing\src\subprocess_utils.py", line 233, in subprocess_run
     logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-09-27 16:30:33,968 — src.audio_info.audio_metadata — ERROR — get_media_tags:764 — JSONDecodeError decoding JSON output from ffprobe
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_info\audio_metadata.py", line 758, in get_media_tags
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 18 column 1 (char 249)
+
+2025-09-27 16:30:34,945 — src.audio_info.audio_metadata — ERROR — has_art_tag:936 — MusicProcessingError with file: D:\MusicProcessing\tests\Music\test has invalid extension: .m3u
+NoneType: None
+
+2025-09-27 16:30:34,980 — src.audio_info.audio_metadata — ERROR — load_any_file:982 — ValueError loading D:\MusicProcessing\tests\Music\test.m3u returned None
+NoneType: None
+
+2025-09-27 16:30:34,981 — src.audio_info.audio_metadata — ERROR — load_any_file:986 — MutagenError [Errno 2] No such file or directory: 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav' loading D:\MusicProcessing\tests\Music\Non-extant.wav
+Traceback (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_info\audio_metadata.py", line 978, in load_any_file
+    audio_file = mutagen.File(file_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 162, in wrapper_func
+    with _openfile(None, filething, filename, fileobj,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav'
+
+2025-09-27 16:34:43,394 — src.audio_info.audio_metadata — ERROR — get_media_tags:764 — JSONDecodeError decoding JSON output from ffprobe
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_info\audio_metadata.py", line 758, in get_media_tags
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 18 column 1 (char 249)
+
+2025-09-27 16:34:44,426 — src.audio_info.audio_metadata — ERROR — has_art_tag:936 — MusicProcessingError with file: D:\MusicProcessing\tests\Music\test has invalid extension: .m3u
+NoneType: None
+
+2025-09-27 16:34:44,457 — src.audio_info.audio_metadata — ERROR — load_any_file:982 — ValueError loading D:\MusicProcessing\tests\Music\test.m3u returned None
+NoneType: None
+
+2025-09-27 16:34:44,458 — src.audio_info.audio_metadata — ERROR — load_any_file:986 — MutagenError [Errno 2] No such file or directory: 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav' loading D:\MusicProcessing\tests\Music\Non-extant.wav
+Traceback (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_info\audio_metadata.py", line 978, in load_any_file
+    audio_file = mutagen.File(file_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 162, in wrapper_func
+    with _openfile(None, filething, filename, fileobj,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav'
