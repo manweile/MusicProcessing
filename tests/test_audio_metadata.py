@@ -535,27 +535,30 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting media tags from file that results in JSONDecodeError.
         '''
 
-        mock_subprocess_run.return_value = CompletedProcess(args=['ffprobe', '-v', 'quiet', '-of', 'json', '-show_entries', 'format_tags', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3'],
-                                                            returncode=0,
-                                                            stdout=('{\n'
-                                                                    '"format": {\n'
-                                                                    '"tags": {\n'
-                                                                    '"title": "Live",\n'
-                                                                    '"artist": "Crush",\n'
-                                                                    '"track": "1/12",\n'
-                                                                    '"album": "Here",\n'
-                                                                    '"disc": "1/1",\n'
-                                                                    '"genre": "Pop",\n'
-                                                                    '"album_artist": "Crush",\n'
-                                                                    '"composer": "Paul Lamb",\n'
-                                                                    '"publisher": "Sonic Records",\n'
-                                                                    '"originalyear": "2002",\n'
-                                                                    '"date": "2002"\n'
-                                                                    '}\n'
-                                                                    '}\n'
-                                                                    '\n'    # should be '}\n', missing close brace causes JSONDecodeError with lineno=18
-                                                                    ),
-                                                            stderr='')
+        mock_subprocess_run.return_value = CompletedProcess(
+            args=['ffprobe', '-v', 'quiet', '-of', 'json', '-show_entries', 'format_tags', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3'],
+            returncode=0,
+            stdout=(
+                '{\n'
+                '"format": {\n'
+                '"tags": {\n'
+                '"title": "Live",\n'
+                '"artist": "Crush",\n'
+                '"track": "1/12",\n'
+                '"album": "Here",\n'
+                '"disc": "1/1",\n'
+                '"genre": "Pop",\n'
+                '"album_artist": "Crush",\n'
+                '"composer": "Paul Lamb",\n'
+                '"publisher": "Sonic Records",\n'
+                '"originalyear": "2002",\n'
+                '"date": "2002"\n'
+                '}\n'
+                '}\n'
+                '\n'    # should be '}\n', missing close brace causes JSONDecodeError with lineno=18
+            ),
+            stderr=''
+        )
 
         media_tags = None
 
