@@ -353,7 +353,7 @@ class AudioNormalization():
             # -of json to output in json format
             command = [
                 'ffprobe',
-                '-v', 'error',
+                '-v', 'quiet',
                 '-select_streams', 'a:0',
                 '-show_entries', 'stream=sample_rate',
                 '-of', 'json',

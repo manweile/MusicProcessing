@@ -150,12 +150,42 @@ class TestAudioNormalization(TestCase):
 
 
     @unittest.skip("complete, needs mocking")
-    def test_get_sample_rate_decode_error(self):
+    @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
+    def test_get_sample_rate_decode_error(self, mock_subprocess_run):
         '''
         @brief Tests getting sample rate throws JSONDecodeError.
         '''
 
         # @todo mock the subprocess_run ret val
+        mock_subprocess_run.return_value = CompletedProcess(
+            args=[
+                'ffprobe',
+                '-v', 'quiet',
+                '-select_streams', 'a:0',
+                '-show_entries', 'stream=sample_rate',
+                '-of', 'json',
+                f'{SAMPLE_RATE_SRC}'
+            ],
+            returncode=0,
+            stdout=(
+                '{\n'
+                '"programs": [\n'
+                '\n'
+                '],\n'
+                '"stream_groups": [\n'
+                '\n'
+                '],\n'
+                '"streams": [\n'
+                '{\n'
+                '"sample_rate": "44100"\n'
+                '}\n'
+                ']\n'
+                '\n'       # should be '}\n', missing close brace causes JSONDecodeError with lineno=14
+            ),
+            stderr=''
+        )
+
+
         sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
         self.assertEqual(SAMPLE_RATE_RES, sample_rate)
 

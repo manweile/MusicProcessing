@@ -1,0 +1,21 @@
+get bit rate command:
+['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_entries', 'format=bit_rate', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3']
+
+subprocess run ret val:
+CompletedProcess(
+    args=['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_entries', 'format=bit_rate', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3'], 
+    returncode=0, 
+    stdout='{\n    "format": {\n        "bit_rate": "129156"\n    }\n}\n', 
+    stderr=''
+)
+
+get sample rate command:
+=['ffprobe', '-v', 'quiet', '-select_streams', 'a:0', '-show_entries', 'stream=sample_rate', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3']
+
+subprocess run ret val:
+CompletedProcess(
+    args=['ffprobe', '-v', 'quiet', '-select_streams', 'a:0', '-show_entries', 'stream=sample_rate', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Abba\\Waterloo\\ABBA-Waterloo.mp3'],
+    returncode=0, 
+    stdout='{\n    "programs": [\n\n    ],\n    "stream_groups": [\n\n    ],\n    "streams": [\n        {\n            "sample_rate": "44100"\n        }\n    ]\n}\n', 
+    stderr=''
+)
