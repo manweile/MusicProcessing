@@ -1,5 +1,5 @@
 
-D:\MusicProcessing\tests\ConvertedMusic\Abba\Waterloo\ABBA-Waterloo.mp3 has 9 MP3 tags
+d:\MusicProcessing\tests\ConvertedMusic\Abba\Waterloo\ABBA-Waterloo.mp3 has 9 MP3 tags
 TIT2: Waterloo
 TPE1: ABBA
 TRCK: 1
@@ -10,39 +10,39 @@ TPUB: Polydor
 TCOM: Benny Andersson/Björn Ulvaeus/Stig Anderson
 TDRC: 1963
 
-D:\MusicProcessing\tests\ConvertedMusic\Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma has 31 ASF tags
-Title: [ASFUnicodeAttribute('Fortunate Son')]
+d:\MusicProcessing\tests\ConvertedMusic\Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma has 31 ASF tags
 WM/WMCollectionGroupID: [ASFGUIDAttribute(b'\x0c\xe2Q\x1c\x96R\xabD\x90\xcb\x8d\xbbo\xdb\xabD')]
-WM/Year: [ASFUnicodeAttribute('1976')]
-WMFSDKVersion: [ASFUnicodeAttribute('11.0.5358.4827')]
-DeviceConformanceTemplate: [ASFUnicodeAttribute('L1', stream=1)]
-Author: [ASFUnicodeAttribute('Creedence Clearwater Revival')]
-WM/UniqueFileIdentifier: [ASFUnicodeAttribute('AMGa_id=R     4764;AMGp_id=P     3985;AMGt_id=T  2714491')]
-WM/TrackNumber: [ASFDWordAttribute(9)]
-IsVBR: [ASFBoolAttribute(False), ASFBoolAttribute(False, stream=1)]
-WM/MediaClassSecondaryID: [ASFGUIDAttribute(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')]
-WM/AlbumTitle: [ASFUnicodeAttribute('Chronicle, Vol. 1')]
 WM/EncodingTime: [ASFQWordAttribute(128313433370000000)]
-AverageLevel: [ASFDWordAttribute(2171)]
-WM/Genre: [ASFUnicodeAttribute('Classic Rock')]
-PeakValue: [ASFDWordAttribute(22945)]
-WM/Track: [ASFDWordAttribute(8)]
-WM/Publisher: [ASFUnicodeAttribute('Fantasy')]
-WM/WMContentID: [ASFGUIDAttribute(b'G\xf2^\xa4\xd5;\xa9K\xb29\x19\xc4\n\xd5m#')]
 WM/MCDI: [ASFByteArrayAttribute(b'1\x004\x00+\x009\x006\x00+\x005\x001\x004\x007\x00+\x00A\x000\x00F\x00C\x00+\x00D\x008\x005\x006\x00+\x001\x000\x001\x006\x004\x00+\x001\x003\x009\x007\x000\x00+\x001\x006\x006\x00A\x002\x00+\x001\x009\x006\x005\x001\x00+\x001\x00C\x006\x009\x009\x00+\x001\x00E\x00F\x00A\x00F\x00+\x002\x001\x005\x008\x00B\x00+\x002\x004\x001\x004\x00B\x00+\x002\x007\x000\x00D\x008\x00+\x002\x00A\x007\x005\x001\x00+\x002\x00D\x004\x001\x00C\x00+\x003\x001\x002\x00E\x007\x00+\x003\x00D\x006\x002\x008\x00+\x004\x000\x005\x000\x006\x00+\x004\x003\x004\x00B\x005\x00+\x004\x006\x008\x000\x00E\x00+\x004\x00A\x00E\x007\x000\x00\x00\x00')]
-WM/ProviderStyle: [ASFUnicodeAttribute('Rock')]
-WM/AlbumArtist: [ASFUnicodeAttribute('Creedence Clearwater Revival')]
-WM/MediaClassPrimaryID: [ASFGUIDAttribute(b'\xbc}`\xd1#\xe3\xe2K\x86\xa1H\xa4*(D\x1e')]
 WMFSDKNeeded: [ASFUnicodeAttribute('0.0.0.0000')]
-WM/Provider: [ASFUnicodeAttribute('AMG')]
+WM/Track: [ASFDWordAttribute(8)]
+WM/Year: [ASFUnicodeAttribute('1976')]
+Author: [ASFUnicodeAttribute('Creedence Clearwater Revival')]
+WM/MediaPrimaryClassID: [ASFUnicodeAttribute('{D1607DBC-E323-4BE2-86A1-48A42A28441E}')]
+Title: [ASFUnicodeAttribute('Fortunate Son')]
+WM/Genre: [ASFUnicodeAttribute('Classic Rock')]
 WM/WMCollectionID: [ASFGUIDAttribute(b'\x0c\xe2Q\x1c\x96R\xabD\x90\xcb\x8d\xbbo\xdb\xabD')]
+DeviceConformanceTemplate: [ASFUnicodeAttribute('L1', stream=1)]
+WM/AlbumTitle: [ASFUnicodeAttribute('Chronicle, Vol. 1')]
+WM/TrackNumber: [ASFDWordAttribute(9)]
 WM/Lyrics: [ASFUnicodeAttribute('')]
+WM/UniqueFileIdentifier: [ASFUnicodeAttribute('AMGa_id=R     4764;AMGp_id=P     3985;AMGt_id=T  2714491')]
+WM/MediaClassPrimaryID: [ASFGUIDAttribute(b'\xbc}`\xd1#\xe3\xe2K\x86\xa1H\xa4*(D\x1e')]
+AverageLevel: [ASFDWordAttribute(2171)]
 WM/ProviderRating: [ASFUnicodeAttribute('9')]
+PeakValue: [ASFDWordAttribute(22945)]
 WM/Composer: [ASFUnicodeAttribute('John Fogerty')]
 MediaFoundationVersion: [ASFUnicodeAttribute('2.112')]
-WM/MediaPrimaryClassID: [ASFUnicodeAttribute('{D1607DBC-E323-4BE2-86A1-48A42A28441E}')]
+WM/MediaClassSecondaryID: [ASFGUIDAttribute(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')]
+WM/WMContentID: [ASFGUIDAttribute(b'G\xf2^\xa4\xd5;\xa9K\xb29\x19\xc4\n\xd5m#')]
+IsVBR: [ASFBoolAttribute(False), ASFBoolAttribute(False, stream=1)]
+WM/AlbumArtist: [ASFUnicodeAttribute('Creedence Clearwater Revival')]
+WM/ProviderStyle: [ASFUnicodeAttribute('Rock')]
+WM/Provider: [ASFUnicodeAttribute('AMG')]
+WMFSDKVersion: [ASFUnicodeAttribute('11.0.5358.4827')]
+WM/Publisher: [ASFUnicodeAttribute('Fantasy')]
 
-D:\MusicProcessing\tests\ConvertedMusic\The Eagles\Desperado\The Eagles-Desperado.m4a has 32 MP4 tags
+d:\MusicProcessing\tests\ConvertedMusic\The Eagles\Desperado\The Eagles-Desperado.m4a has 32 MP4 tags
 ©nam: ['Desperado']
 ©ART: ['Eagles']
 ©wrt: ['Don Henley/Glenn Frey']

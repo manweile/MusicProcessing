@@ -281,7 +281,7 @@ class TestAudioNormalization(TestCase):
         self.assertIn(MAX_VOL_RES, cm.output[0])
 
 
-    # @unittest.skip("one off")
+    @unittest.skip("one off")
     def test_peak_clip_check_walk(self):
         '''
         @brief Tests walking tld to get peak adjustment amount.
@@ -291,7 +291,7 @@ class TestAudioNormalization(TestCase):
         normalization.peak_clip_check_walk(converted_tld)
 
 
-    # @unittest.skip("one off")
+    @unittest.skip("one off")
     def test_rms_clip_check_walk(self):
         '''
         @brief Tests walking tld to get rms adjustment amount.
