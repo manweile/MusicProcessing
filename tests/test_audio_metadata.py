@@ -17,7 +17,7 @@ import shutil
 import unittest
 from json import JSONDecodeError
 from pathlib import Path
-from subprocess import CalledProcessError, CompletedProcess
+from subprocess import CompletedProcess
 from unittest import TestCase
 from unittest.mock import patch
 
