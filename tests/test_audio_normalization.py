@@ -14,7 +14,10 @@ import math
 import os
 import shutil
 import unittest
+from json import JSONDecodeError
+from subprocess import CompletedProcess
 from unittest import TestCase
+from unittest.mock import patch
 
 # local module constants
 from src import MUSIC_TLD
@@ -109,20 +112,32 @@ class TestAudioNormalization(TestCase):
         self.assertEqual(res_bitrate, exp_bitrate)
 
 
-    @unittest.skip("complete, needs mocking")
-    def test_get_bit_rate_decode_error(self):
+    @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
+    def test_get_bit_rate_decode_error(self, mock_subprocess_run):
         '''
         @brief Tests getting bit rate throws JSONDecodeError.
         '''
 
-        # @todo mock the subprocess_run ret val
+        bit_rate = None
+        mock_subprocess_run.return_value = CompletedProcess(
+            args=['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_entries', 'format=bit_rate', f'{BIT_SRC}'],
+            returncode=0,
+            stdout=(
+                '{\n'
+                '"format": {\n'
+                '"bit_rate": "129156"\n'
+                '}\n'
+                '\n'    # should be '}\n', missing close brace causes JSONDecodeError with lineno=6
+            ),
+            stderr=''
+        )
 
-        bit_rate = normalization.get_bit_rate(BIT_SRC)
+        with self.assertRaises(JSONDecodeError) as cm:
+            bit_rate = normalization.get_bit_rate(BIT_SRC)
 
-        res_bitrate = math.floor(bit_rate / 1000)
-        exp_bitrate = math.floor(BIT_RES / 1000)
-
-        self.assertEqual(res_bitrate, exp_bitrate)
+        self.assertIsNone(bit_rate)
+        self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
+        self.assertEqual(6, cm.exception.lineno)
 
 
     def test_get_sample_rate(self):
