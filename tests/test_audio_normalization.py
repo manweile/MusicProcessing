@@ -175,17 +175,18 @@ class TestAudioNormalization(TestCase):
         self.assertEqual("Expecting ',' delimiter", cm.exception.msg)
 
 
-    @unittest.skip("complete, need audio file w/o audio stream that will trigger IndexError")
-    def test_get_sample_rate_index_error(self):
+    @unittest.skip("complete, need to mock IndexError raised by get_sample_rate")
+    @patch('src.audio_normalize.audio_normalization.get_sample_rate')
+    def test_get_sample_rate_index_error(self, mock_normalization):
         '''
         @brief Tests getting sample rate throws IndexError.
         '''
 
         sample_rate = None
+        mock_normalization.side_effect = Exception("IndexError")
 
         with self.assertRaises(IndexError) as cm:
-            sample_rate_source = os.path.join(TESTS_TLD, "Crush", "Here", "No_audio_Crush-Live.mp3")
-            sample_rate = normalization.get_sample_rate(sample_rate_source)
+            sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
 
         self.assertIsNone(sample_rate)
         self.assertEqual("IndexError", cm.exception.__class__.__name__)
