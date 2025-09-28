@@ -23,6 +23,7 @@ from unittest.mock import patch
 from src import MUSIC_TLD
 from src.generated_files import GENERATED_FILES
 from tests import TEST_M3U, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_SMEAGOL_MP3, TEST_MP3_X
+from tests import TESTS_TLD
 # local module classes
 from src.audio_normalize import AudioNormalization
 
@@ -119,16 +120,11 @@ class TestAudioNormalization(TestCase):
         '''
 
         bit_rate = None
+        # missing close brace in stdout causes JSONDecodeError
         mock_subprocess_run.return_value = CompletedProcess(
             args=['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_entries', 'format=bit_rate', f'{BIT_SRC}'],
             returncode=0,
-            stdout=(
-                '{\n'
-                '"format": {\n'
-                '"bit_rate": "129156"\n'
-                '}\n'
-                '\n'    # should be '}\n', missing close brace causes JSONDecodeError with lineno=6
-            ),
+            stdout='{"format": {"bit_rate": "129156"}',
             stderr=''
         )
 
@@ -137,7 +133,8 @@ class TestAudioNormalization(TestCase):
 
         self.assertIsNone(bit_rate)
         self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
-        self.assertEqual(6, cm.exception.lineno)
+        # self.assertEqual(6, cm.exception.lineno)
+        self.assertEqual("Expecting ',' delimiter", cm.exception.msg)
 
 
     def test_get_sample_rate(self):
@@ -149,14 +146,12 @@ class TestAudioNormalization(TestCase):
         self.assertEqual(SAMPLE_RATE_RES, sample_rate)
 
 
-    @unittest.skip("complete, needs mocking")
     @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
     def test_get_sample_rate_decode_error(self, mock_subprocess_run):
         '''
         @brief Tests getting sample rate throws JSONDecodeError.
         '''
-
-        # @todo mock the subprocess_run ret val
+        # missing close brace in stdout causes JSONDecodeError
         mock_subprocess_run.return_value = CompletedProcess(
             args=[
                 'ffprobe',
@@ -167,38 +162,33 @@ class TestAudioNormalization(TestCase):
                 f'{SAMPLE_RATE_SRC}'
             ],
             returncode=0,
-            stdout=(
-                '{\n'
-                '"programs": [\n'
-                '\n'
-                '],\n'
-                '"stream_groups": [\n'
-                '\n'
-                '],\n'
-                '"streams": [\n'
-                '{\n'
-                '"sample_rate": "44100"\n'
-                '}\n'
-                ']\n'
-                '\n'       # should be '}\n', missing close brace causes JSONDecodeError with lineno=14
-            ),
+            stdout='{"programs": [], "stream_groups": [], "streams": [{"sample_rate": "44100"}]',
             stderr=''
         )
+        sample_rate = None
+
+        with self.assertRaises(JSONDecodeError) as cm:
+            sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
+
+        self.assertIsNone(sample_rate)
+        self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
+        self.assertEqual("Expecting ',' delimiter", cm.exception.msg)
 
 
-        sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
-        self.assertEqual(SAMPLE_RATE_RES, sample_rate)
-
-
-    @unittest.skip("complete, needs mocking")
+    @unittest.skip("complete, need audio file w/o audio stream that will trigger IndexError")
     def test_get_sample_rate_index_error(self):
         '''
         @brief Tests getting sample rate throws IndexError.
         '''
 
-        # @todo mock the subprocess_run ret val
-        sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
-        self.assertEqual(SAMPLE_RATE_RES, sample_rate)
+        sample_rate = None
+
+        with self.assertRaises(IndexError) as cm:
+            sample_rate_source = os.path.join(TESTS_TLD, "Crush", "Here", "No_audio_Crush-Live.mp3")
+            sample_rate = normalization.get_sample_rate(sample_rate_source)
+
+        self.assertIsNone(sample_rate)
+        self.assertEqual("IndexError", cm.exception.__class__.__name__)
 
 
     def test_get_volume_info(self):
