@@ -15,7 +15,7 @@ import os
 import shutil
 import unittest
 from json import JSONDecodeError
-from subprocess import CompletedProcess
+from subprocess import CalledProcessError, CompletedProcess
 from unittest import TestCase
 from unittest.mock import Mock
 from unittest.mock import patch
@@ -236,21 +236,20 @@ class TestAudioNormalization(TestCase):
         self.assertDictEqual(volumes, VOL_INFO_RES)
 
 
-    @unittest.skip("complete, look at CalledProcessError in other tests")
     def test_get_volume_info_invalid_file(self):
         '''
-        @brief Tests getting volume info failing.
+        @brief Tests getting volume info failing due to invalid file type.
         '''
 
         volumes = None
-        module = f"{normalization.__module__}"
-        logger = logging.getLogger(module)
 
-        with self.assertLogs(logger, logging.WARNING) as cm:
+        with self.assertRaises(CalledProcessError) as cm:
             volumes = normalization.get_volume_info(VOL_ERR_SRC)
 
         self.assertIsNone(volumes)
-        self.assertIn(VOL_ERR_SRC, cm.output[0])
+        self.assertEqual("CalledProcessError", cm.exception.__class__.__name__)
+        err_msg = f"Error opening input file {VOL_ERR_SRC}"
+        self.assertTrue(err_msg in cm.exception.stderr.strip())
 
 
     @unittest.skip("complete")
