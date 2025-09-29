@@ -24,7 +24,6 @@ from unittest.mock import patch
 from src import MUSIC_TLD
 from src.generated_files import GENERATED_FILES
 from tests import TEST_M3U, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_SMEAGOL_MP3, TEST_MP3_X
-from tests import TESTS_TLD
 # local module classes
 from src.audio_normalize import AudioNormalization
 
@@ -148,13 +147,15 @@ class TestAudioNormalization(TestCase):
         '''
 
         bit_rate = None
-        mock_get_bit_rate = Mock(spec=normalization)
+        bit_rate_normalization = AudioNormalization()
 
+        mock_get_bit_rate = Mock(spec=bit_rate_normalization)
         mock_get_bit_rate.side_effect = IndexError()
-        normalization.get_bit_rate = mock_get_bit_rate
+
+        bit_rate_normalization.get_bit_rate = mock_get_bit_rate
 
         with self.assertRaises(IndexError) as cm:
-            bit_rate = normalization.get_bit_rate(BIT_SRC)
+            bit_rate = bit_rate_normalization.get_bit_rate(BIT_SRC)
 
         self.assertIsNone(bit_rate)
         self.assertEqual("IndexError", cm.exception.__class__.__name__)
@@ -209,13 +210,15 @@ class TestAudioNormalization(TestCase):
         '''
 
         sample_rate = None
-        mock_get_sample_rate = Mock(spec=normalization)
+        sample_rate_normalization = AudioNormalization()
 
+        mock_get_sample_rate = Mock(spec=sample_rate_normalization)
         mock_get_sample_rate.side_effect = IndexError()
-        normalization.get_sample_rate = mock_get_sample_rate
+
+        sample_rate_normalization.get_sample_rate = mock_get_sample_rate
 
         with self.assertRaises(IndexError) as cm:
-            sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
+            sample_rate = sample_rate_normalization.get_sample_rate(SAMPLE_RATE_SRC)
 
         self.assertIsNone(sample_rate)
         self.assertEqual("IndexError", cm.exception.__class__.__name__)
@@ -233,7 +236,7 @@ class TestAudioNormalization(TestCase):
         self.assertDictEqual(volumes, VOL_INFO_RES)
 
 
-    @unittest.skip("complete, look for CalledProcessError in other tests")
+    @unittest.skip("complete, look at CalledProcessError in other tests")
     def test_get_volume_info_invalid_file(self):
         '''
         @brief Tests getting volume info failing.
@@ -243,11 +246,11 @@ class TestAudioNormalization(TestCase):
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
 
-        with self.assertLogs(logger, level=logging.CRITICAL) as cm:
+        with self.assertLogs(logger, logging.WARNING) as cm:
             volumes = normalization.get_volume_info(VOL_ERR_SRC)
 
         self.assertIsNone(volumes)
-        # @todo need to check if there will logging output
+        self.assertIn(VOL_ERR_SRC, cm.output[0])
 
 
     @unittest.skip("complete")
@@ -315,7 +318,7 @@ class TestAudioNormalization(TestCase):
         self.assertTrue(os.path.exists(PEAK_RES))
 
 
-    @unittest.skip("Need a file that will peak clip")
+    @unittest.skip("don't have a file that will clip")
     def test_peak_normalize_file_clipping(self):
         '''
         @brief Tests rms normalize audio file level would clip.
