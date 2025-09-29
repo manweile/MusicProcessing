@@ -322,8 +322,11 @@ class AudioNormalization():
             if 'format' in data and 'bit_rate' in data['format']:
                 bit_rate = int(data['format']['bit_rate'])
 
+        except IndexError as i_error:
+            logger.error(f"IndexError no format found or bit rate information missing for audio file: {file_path}", exc_info=True)
+            raise i_error
         except JSONDecodeError as jd_error:
-            logger.error("JSONDecodeError decoding JSON output from ffprobe", exc_info=True)
+            logger.error(f"JSONDecodeError decoding JSON output from ffprobe on audio file: {file_path}", exc_info=True)
             raise jd_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} normalizing audio file: {file_path}", stack_info=True)

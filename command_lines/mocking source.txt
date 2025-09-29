@@ -19,3 +19,101 @@ CompletedProcess(
     stdout='{\n    "programs": [\n\n    ],\n    "stream_groups": [\n\n    ],\n    "streams": [\n        {\n            "sample_rate": "44100"\n        }\n    ]\n}\n', 
     stderr=''
 )
+
+get volume info:
+CompletedProcess(
+    args=['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3', '-filter:a', 'volumedetect', '-f', 'null', '-'], 
+    returncode=0, 
+    stdout='', 
+    stderr="
+        [mp3 @ 000002246052d480] Estimating duration from bitrate, this may be inaccurate\n
+        Input #0, mp3, from 'D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3':\n  
+        Metadata:\n    
+        title           : Live\n
+        artist          : Crush\n
+        track           : 1/12\n
+        album           : Here\n
+        disc            : 1/1\n
+        genre           : Pop\n
+        TMED            : CD\n
+        TORY            : 2002\n
+        MusicBrainz Release Track Id: 2475137d-6745-3951-a361-d4c29798f5d1\n
+        album_artist    : Crush\n
+        TSO2            : Crush\n
+        artist-sort     : Crush\n
+        composer        : Paul Lamb\n
+        SCRIPT          : Latn\n
+        publisher       : Sonic Records\n
+        ARTISTS         : Crush\n
+        ASIN            : B000065PP6\n
+        originalyear    : 2002\n
+        BARCODE         : 627915092229\n
+        CATALOGNUMBER   : 2 50922\n
+        MusicBrainz Album Type: album\n
+        MusicBrainz Album Status: official\n
+        MusicBrainz Album Release Country: CA\n
+        Acoustid Id     : 4fdf7757-ba58-4a4b-a1df-1ad4d102a474\n
+        MusicBrainz Album Id: 18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6\n
+        MusicBrainz Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f\n
+        MusicBrainz Album Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f\n
+        MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1\n
+        date            : 2002\n
+        Duration: 00:04:05.91, start: 0.000000, bitrate: 129 kb/s\n
+        Stream #0:0: Audio: mp3 (mp3float), 44100 Hz, stereo, fltp, 128 kb/s\n
+        Stream #0:1: Video: mjpeg (Baseline), yuvj420p(pc, bt470bg/unknown/unknown), 500x490 [SAR 1:1 DAR 50:49], 90k tbr, 90k tbn (attached pic)\n
+        Metadata:\n
+        comment         : Cover (front)\n
+        [Parsed_volumedetect_0 @ 00000224605b2880] n_samples: 0\n
+        Stream mapping:\n  
+        Stream #0:1 -> #0:0 (mjpeg (native) -> wrapped_avframe (native))\n
+        Stream #0:0 -> #0:1 (mp3 (mp3float) -> pcm_s16le (native))\n
+        Press [q] to stop, [?] for help\n
+        Output #0, null, to 'pipe:':\n
+        Metadata:\n
+        title           : Live\n
+        artist          : Crush\n
+        track           : 1/12\n
+        album           : Here\n
+        disc            : 1/1\n
+        genre           : Pop\n
+        TMED            : CD\n
+        TORY            : 2002\n
+        MusicBrainz Release Track Id: 2475137d-6745-3951-a361-d4c29798f5d1\n
+        album_artist    : Crush\n
+        TSO2            : Crush\n
+        artist-sort     : Crush\n
+        composer        : Paul Lamb\n
+        SCRIPT          : Latn\n
+        publisher       : Sonic Records\n
+        ARTISTS         : Crush\n
+        ASIN            : B000065PP6\n
+        originalyear    : 2002\n
+        BARCODE         : 627915092229\n
+        CATALOGNUMBER   : 2 50922\n
+        MusicBrainz Album Type: album\n
+        MusicBrainz Album Status: official\n
+        MusicBrainz Album Release Country: CA\n
+        Acoustid Id     : 4fdf7757-ba58-4a4b-a1df-1ad4d102a474\n
+        MusicBrainz Album Id: 18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6\n
+        MusicBrainz Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f\n
+        MusicBrainz Album Artist Id: 6d5088d8-e756-47c4-84ae-bc675dee004f\n
+        MusicBrainz Release Group Id: a7927f70-2431-3a58-b7ae-48576808cec1\n
+        date            : 2002\n
+        encoder         : Lavf61.7.100\n
+        Stream #0:0: Video: wrapped_avframe, yuvj420p(pc, bt470bg/unknown/unknown, progressive), 500x490 [SAR 1:1 DAR 50:49], q=2-31, 200 kb/s, 90k fps, 90k tbn (attached pic)\n
+        Metadata:\n
+        comment         : Cover (front)\n
+        encoder         : Lavc61.19.101 wrapped_avframe\n
+        Stream #0:1: Audio: pcm_s16le, 44100 Hz, stereo, s16, 1411 kb/s\n
+        Metadata:\n
+        encoder         : Lavc61.19.101 pcm_s16le\n
+        [Parsed_volumedetect_0 @ 0000022460594740] n_samples: 21689856\n
+        [Parsed_volumedetect_0 @ 0000022460594740] mean_volume: -19.9 dB\n
+        [Parsed_volumedetect_0 @ 0000022460594740] max_volume: -6.7 dB\n
+        [Parsed_volumedetect_0 @ 0000022460594740] histogram_6db: 12\n
+        [Parsed_volumedetect_0 @ 0000022460594740] histogram_7db: 1132\n
+        [Parsed_volumedetect_0 @ 0000022460594740] histogram_8db: 31563\n
+        [out#0/null @ 0000022460588e80] video:0KiB audio:42363KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown\n
+        frame=    1 fps=0.0 q=-0.0 Lsize=N/A time=00:00:00.00 bitrate=N/A speed=4.54e-05x    \n
+    "
+)

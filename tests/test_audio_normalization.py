@@ -17,6 +17,7 @@ import unittest
 from json import JSONDecodeError
 from subprocess import CompletedProcess
 from unittest import TestCase
+from unittest.mock import Mock
 from unittest.mock import patch
 
 # local module constants
@@ -43,6 +44,8 @@ EBU_LINEAR_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 # @todo find a audio file that will peak clip (can't be X Ambassadors - that vol fails first)
 PEAK_CLIP_SRC = ""
 PEAK_CLIP_RES = ""
+
+JSON_DECODE_MSG = "Expecting ',' delimiter"
 
 MAX_VOL_SRC = TEST_MP3_X
 MAX_VOL_RES = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
@@ -72,6 +75,7 @@ class TestAudioNormalization(TestCase):
     '''
     @brief Tests AudioNormalization class functions.
     '''
+
 
     def tearDown(self):
         '''
@@ -133,8 +137,29 @@ class TestAudioNormalization(TestCase):
 
         self.assertIsNone(bit_rate)
         self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
-        # self.assertEqual(6, cm.exception.lineno)
-        self.assertEqual("Expecting ',' delimiter", cm.exception.msg)
+        self.assertEqual(JSON_DECODE_MSG, cm.exception.msg)
+
+        mock_subprocess_run.reset_mock(return_value=True, side_effect=True)
+
+
+    def test_get_bit_rate_index_error(self):
+        '''
+        @brief Tests getting sample rate throws IndexError.
+        '''
+
+        bit_rate = None
+        mock_get_bit_rate = Mock(spec=normalization)
+
+        mock_get_bit_rate.side_effect = IndexError()
+        normalization.get_bit_rate = mock_get_bit_rate
+
+        with self.assertRaises(IndexError) as cm:
+            bit_rate = normalization.get_bit_rate(BIT_SRC)
+
+        self.assertIsNone(bit_rate)
+        self.assertEqual("IndexError", cm.exception.__class__.__name__)
+
+        mock_get_bit_rate.reset_mock(return_value=True, side_effect=True)
 
 
     def test_get_sample_rate(self):
@@ -151,6 +176,8 @@ class TestAudioNormalization(TestCase):
         '''
         @brief Tests getting sample rate throws JSONDecodeError.
         '''
+
+        sample_rate = None
         # missing close brace in stdout causes JSONDecodeError
         mock_subprocess_run.return_value = CompletedProcess(
             args=[
@@ -165,31 +192,35 @@ class TestAudioNormalization(TestCase):
             stdout='{"programs": [], "stream_groups": [], "streams": [{"sample_rate": "44100"}]',
             stderr=''
         )
-        sample_rate = None
 
         with self.assertRaises(JSONDecodeError) as cm:
             sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
 
         self.assertIsNone(sample_rate)
         self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
-        self.assertEqual("Expecting ',' delimiter", cm.exception.msg)
+        self.assertEqual(JSON_DECODE_MSG, cm.exception.msg)
+
+        mock_subprocess_run.reset_mock(return_value=True, side_effect=True)
 
 
-    @unittest.skip("complete, need to mock IndexError raised by get_sample_rate")
-    @patch('src.audio_normalize.audio_normalization.get_sample_rate')
-    def test_get_sample_rate_index_error(self, mock_normalization):
+    def test_get_sample_rate_index_error(self):
         '''
         @brief Tests getting sample rate throws IndexError.
         '''
 
         sample_rate = None
-        mock_normalization.side_effect = Exception("IndexError")
+        mock_get_sample_rate = Mock(spec=normalization)
+
+        mock_get_sample_rate.side_effect = IndexError()
+        normalization.get_sample_rate = mock_get_sample_rate
 
         with self.assertRaises(IndexError) as cm:
             sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
 
         self.assertIsNone(sample_rate)
         self.assertEqual("IndexError", cm.exception.__class__.__name__)
+
+        mock_get_sample_rate.reset_mock(return_value=True, side_effect=True)
 
 
     def test_get_volume_info(self):
@@ -372,7 +403,7 @@ class TestAudioNormalization(TestCase):
 
     def test_rms_normalize_max_volume(self):
         '''
-        @brief Tests rms normalize audio file level would have mav volume.
+        @brief Tests rms normalize audio file level would have max volume.
         '''
 
         module = f"{normalization.__module__}"
