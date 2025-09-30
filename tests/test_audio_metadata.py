@@ -114,11 +114,11 @@ class TestAudioMetadata(TestCase):
                 artist_album = os.path.join(artist_album, path_parts[i])
 
             # create the destination directory
-            # D:\MusicProcessing\tests\convert_walk\The Eagles\Desperado\
+            # D:\MusicProcessing\tests\ConvertedMusic\The Eagles\Desperado\
             dest_dir = os.path.join(cls.converted, artist_album)
             os.makedirs(dest_dir, exist_ok=True)
 
-            # create dest: D:\MusicProcessing\tests\convert_walk\The Eagles\Desperado\The Eagles-Desperado.m4a
+            # create dest: D:\MusicProcessing\tests\ConvertedMusic\The Eagles\Desperado\The Eagles-Desperado.m4a
             dest_path = os.path.join(dest_dir, file_name)
 
             # and copy
@@ -126,7 +126,7 @@ class TestAudioMetadata(TestCase):
 
             # create source and destination Folder.jpg paths for audio file
             # eg D:\MusicProcessing\tests\Music\The Eagles\Desperado\Folder.jpg
-            # eg D:\MusicProcessing\tests\convert_walk\The Eagles\Desperado\Folder.jpg
+            # eg D:\MusicProcessing\tests\ConvertedMusic\The Eagles\Desperado\Folder.jpg
             src_jpg = os.path.join(TESTS_TLD, artist_album, FOLDER_ART)
             dest_jpg = os.path.join(dest_dir, FOLDER_ART)
 

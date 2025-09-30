@@ -33,54 +33,6 @@ from src.audio_normalize import AudioNormalization
 
 gc.enable()
 
-NORM_PATH = os.path.join(GENERATED_FILES, MUSIC_TLD)
-
-BIT_SRC = TEST_MP3_CRUSH
-BIT_RES = 129156
-
-EBU_DYNAMIC_SRC = TEST_MP3_ABBA
-EBU_DYNAMIC_RES = os.path.join(NORM_PATH, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
-
-EBU_LINEAR_SRC = TEST_MP3_CRUSH
-EBU_LINEAR_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
-
-JSON_DECODE_MSG = "Expecting ',' delimiter"
-
-MAX_VOL_SRC = TEST_MP3_X
-MAX_VOL_RES = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
-
-PEAK_SRC = TEST_MP3_CRUSH
-PEAK_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
-
-RMS_CLIPPING_SRC = TEST_MP3_CRUSH
-RMS_CLIPPING_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
-
-RMS_SRC = TEST_MP3_SMEAGOL
-RMS_RES = os.path.join(NORM_PATH, "The Lord of the Rings", "The Two Towers", "Howard Shore-The Taming Of Smeagol.mp3")
-
-SAMPLE_RATE_SRC = TEST_MP3_ABBA
-SAMPLE_RATE_RES = 44100
-
-VOL_ERR_SRC = TEST_M3U
-
-VOL_INFO_SRC = TEST_MP3_CRUSH
-VOL_INFO_RES = {'mean_volume': -19.9, 'max_volume': -6.7}
-
-INPUT_PROCESS = CompletedProcess(
-    args=[
-        'ffmpeg',
-        '-hide_banner',
-        '-i', f'{TEST_MP3_ABBA}',
-        '-vn',
-        '-af', (f"loudnorm=I={ILT}:TP={TP}:LRA={LRA}:print_format=json"),
-        '-f', 'null', '-'
-    ],
-    returncode=0,
-    stdout='',
-    # tests using stderr are expected to fill in needed values
-    stderr=""
-)
-
 normalization = AudioNormalization()
 
 
@@ -97,29 +49,34 @@ class TestAudioNormalization(TestCase):
         @details These datums are used throughout class and only need init once.
         '''
 
-        # directory for "walk" type tests: D:\MusicProcessing\tests\ConvertedMusic
-        cls.converted = os.path.join(TESTS_PATH, "ConvertedMusic")
+        # directory for "walk" type tests: D:\MusicProcessing\tests\NormalizedMusic
+        cls.normalized = os.path.join(TESTS_PATH, "NormalizedMusic")
         # the path where converted files will be created D:\MusicProcessing\src\generated_files\Music
         cls.norm_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
 
         # audio source files for walk tests
-        cls.src_file_paths = [TEST_MP3_CRUSH, TEST_MP3_SMEAGOL]
+        cls.src_file_paths = [TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_SMEAGOL]
+
+        cls.normalized_results = []
+        cls.normalized_results.append(os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3"))
+        cls.normalized_results.append(os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3"))
+        cls.normalized_results.append(os.path.join(cls.norm_path, "The Lord of the Rings", "The Two Towers", "Howard Shore-The Taming Of Smeagol.mp3"))
 
         # copy input files to converted "walk" directory
-        for src_converted in cls.src_file_paths:
+        for src_normalized in cls.src_file_paths:
             # get the audio file name w/o path
-            # eg from D:\MusicProcessing\tests\Music\The Eagles\Desperado\The Eagles-Desperado.m4a -> The Eagles-Desperado.m4a
-            file_name = os.path.basename(src_converted)
+            # eg from D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -> ABBA-Waterloo.mp3
+            file_name = os.path.basename(src_normalized)
 
             # get audio file parent path parts
-            # eg D:\MusicProcessing\tests\Music\The Eagles\Desperado
-            # D:\, MusicProcessing, tests, Music, The Eagles, Desperado
-            file_path = Path(src_converted)
+            # eg D:\MusicProcessing\tests\Music\Abba\Waterloo
+            # D:\, MusicProcessing, tests, Music, Abba, Waterloo
+            file_path = Path(src_normalized)
             file_parent = file_path.parent
             path_parts = file_parent.parts
 
             # build up the artist & album path, from last 2 elements of file parent path parts
-            # eg The Eagles, Desperado -> The Eagles\Desperado
+            # eg Abba, Waterloo -> Abba\Waterloo
             full_len = len(path_parts)
             artist_len = full_len - 2
             artist_album = ""
@@ -127,15 +84,62 @@ class TestAudioNormalization(TestCase):
                 artist_album = os.path.join(artist_album, path_parts[i])
 
             # create the destination directory
-            # D:\MusicProcessing\tests\convert_walk\The Eagles\Desperado\
-            dest_dir = os.path.join(cls.converted, artist_album)
+            # D:\MusicProcessing\tests\NormalizedMusic\Abba\Waterloo\
+            dest_dir = os.path.join(cls.normalized, artist_album)
             os.makedirs(dest_dir, exist_ok=True)
 
-            # create dest: D:\MusicProcessing\tests\convert_walk\The Eagles\Desperado\The Eagles-Desperado.m4a
+            # create dest: D:\MusicProcessing\tests\NormalizedMusic\Abba\Waterloo\ABBA-Waterloo.mp3
             dest_path = os.path.join(dest_dir, file_name)
 
             # and copy
-            shutil.copy(src_converted, dest_path)
+            shutil.copy(src_normalized, dest_path)
+
+        cls.bit_src = TEST_MP3_CRUSH
+        cls.bit_res = 129156
+
+        cls.ebu_dynamic_src = TEST_MP3_ABBA
+        cls.ebu_dynamic_res = os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+
+        cls.ebu_linear_src = TEST_MP3_CRUSH
+        cls.ebu_linear_res = os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3")
+
+        cls.json_decode_msg = "Expecting ',' delimiter"
+
+        cls.max_vol_src = TEST_MP3_X
+        cls.max_vol_res = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
+
+        cls.peak_src = TEST_MP3_CRUSH
+        cls.peak_res = os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3")
+
+        cls.rms_clipping_src = TEST_MP3_CRUSH
+        cls.rms_clipping_res = os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3")
+
+        cls.rms_src = TEST_MP3_SMEAGOL
+        cls.rms_res = os.path.join(cls.norm_path, "The Lord of the Rings", "The Two Towers", "Howard Shore-The Taming Of Smeagol.mp3")
+
+        cls.sample_rate_src = TEST_MP3_ABBA
+        cls.sample_rate_res = 44100
+
+        cls.vol_err_src = TEST_M3U
+
+        cls.vol_info_src = TEST_MP3_CRUSH
+        cls.vol_info_res = {'mean_volume': -19.9, 'max_volume': -6.7}
+
+        cls.input_process = CompletedProcess(
+            args=[
+                'ffmpeg',
+                '-hide_banner',
+                '-i', f'{TEST_MP3_ABBA}',
+                '-vn',
+                '-af', (f"loudnorm=I={ILT}:TP={TP}:LRA={LRA}:print_format=json"),
+                '-f', 'null', '-'
+            ],
+            returncode=0,
+            stdout='',
+            # tests using stderr are expected to fill in needed values
+            stderr=""
+        )
+
 
     @classmethod
     def tearDownClass(cls):
@@ -143,8 +147,8 @@ class TestAudioNormalization(TestCase):
         @brief Cleans up the walk type tests source audio files and directories.
         '''
 
-        if os.path.exists(cls.converted):
-            shutil.rmtree(cls.converted)
+        if os.path.exists(cls.normalized):
+            shutil.rmtree(cls.normalized)
 
 
     def tearDown(self):
@@ -152,8 +156,8 @@ class TestAudioNormalization(TestCase):
         @brief Clean up the created audio file and directory.
         '''
 
-        if os.path.exists(NORM_PATH):
-            shutil.rmtree(NORM_PATH)
+        if os.path.exists(self.norm_path):
+            shutil.rmtree(self.norm_path)
 
 
     def test_ebu_normalize_dynamic(self):
@@ -161,8 +165,8 @@ class TestAudioNormalization(TestCase):
         @brief Tests dynamic ebu normalize audio file level.
         '''
 
-        normalization.ebu_normalize_file(EBU_DYNAMIC_SRC, show_spinner=False)
-        self.assertTrue(os.path.exists(EBU_DYNAMIC_RES))
+        normalization.ebu_normalize_file(self.ebu_dynamic_src, show_spinner=False)
+        self.assertTrue(os.path.exists(self.ebu_dynamic_res))
 
 
     def test_ebu_normalize_linear(self):
@@ -170,8 +174,8 @@ class TestAudioNormalization(TestCase):
         @brief Tests linear ebu normalize audio file level.
         '''
 
-        normalization.ebu_normalize_file(EBU_LINEAR_SRC, show_spinner=False)
-        self.assertTrue(os.path.exists(EBU_LINEAR_RES))
+        normalization.ebu_normalize_file(self.ebu_linear_src, show_spinner=False)
+        self.assertTrue(os.path.exists(self.ebu_linear_res))
 
 
     def test_get_bit_rate(self):
@@ -179,10 +183,10 @@ class TestAudioNormalization(TestCase):
         @brief Tests getting bit rate.
         '''
 
-        bit_rate = normalization.get_bit_rate(BIT_SRC)
+        bit_rate = normalization.get_bit_rate(self.bit_src)
 
         res_bitrate = math.floor(bit_rate / 1000)
-        exp_bitrate = math.floor(BIT_RES / 1000)
+        exp_bitrate = math.floor(self.bit_res / 1000)
 
         self.assertEqual(res_bitrate, exp_bitrate)
 
@@ -196,18 +200,18 @@ class TestAudioNormalization(TestCase):
         bit_rate = None
         # missing close brace in stdout causes JSONDecodeError
         mock_subprocess_run.return_value = CompletedProcess(
-            args=['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_entries', 'format=bit_rate', f'{BIT_SRC}'],
+            args=['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_entries', 'format=bit_rate', f'{self.bit_src}'],
             returncode=0,
             stdout='{"format": {"bit_rate": "129156"}',
             stderr=''
         )
 
         with self.assertRaises(JSONDecodeError) as cm:
-            bit_rate = normalization.get_bit_rate(BIT_SRC)
+            bit_rate = normalization.get_bit_rate(self.bit_src)
 
         self.assertIsNone(bit_rate)
         self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
-        self.assertEqual(JSON_DECODE_MSG, cm.exception.msg)
+        self.assertEqual(self.json_decode_msg, cm.exception.msg)
 
         mock_subprocess_run.reset_mock(return_value=True, side_effect=True)
 
@@ -226,7 +230,7 @@ class TestAudioNormalization(TestCase):
         bit_rate_normalization.get_bit_rate = mock_get_bit_rate
 
         with self.assertRaises(IndexError) as cm:
-            bit_rate = bit_rate_normalization.get_bit_rate(BIT_SRC)
+            bit_rate = bit_rate_normalization.get_bit_rate(self.bit_src)
 
         self.assertIsNone(bit_rate)
         self.assertEqual("IndexError", cm.exception.__class__.__name__)
@@ -239,8 +243,8 @@ class TestAudioNormalization(TestCase):
         @brief Tests getting sample rate.
         '''
 
-        sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
-        self.assertEqual(SAMPLE_RATE_RES, sample_rate)
+        sample_rate = normalization.get_sample_rate(self.sample_rate_src)
+        self.assertEqual(self.sample_rate_res, sample_rate)
 
 
     @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
@@ -258,7 +262,7 @@ class TestAudioNormalization(TestCase):
                 '-select_streams', 'a:0',
                 '-show_entries', 'stream=sample_rate',
                 '-of', 'json',
-                f'{SAMPLE_RATE_SRC}'
+                f'{self.sample_rate_src}'
             ],
             returncode=0,
             stdout='{"programs": [], "stream_groups": [], "streams": [{"sample_rate": "44100"}]',
@@ -266,11 +270,11 @@ class TestAudioNormalization(TestCase):
         )
 
         with self.assertRaises(JSONDecodeError) as cm:
-            sample_rate = normalization.get_sample_rate(SAMPLE_RATE_SRC)
+            sample_rate = normalization.get_sample_rate(self.sample_rate_src)
 
         self.assertIsNone(sample_rate)
         self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
-        self.assertEqual(JSON_DECODE_MSG, cm.exception.msg)
+        self.assertEqual(self.json_decode_msg, cm.exception.msg)
 
         mock_subprocess_run.reset_mock(return_value=True, side_effect=True)
 
@@ -289,7 +293,7 @@ class TestAudioNormalization(TestCase):
         sample_rate_normalization.get_sample_rate = mock_get_sample_rate
 
         with self.assertRaises(IndexError) as cm:
-            sample_rate = sample_rate_normalization.get_sample_rate(SAMPLE_RATE_SRC)
+            sample_rate = sample_rate_normalization.get_sample_rate(self.sample_rate_src)
 
         self.assertIsNone(sample_rate)
         self.assertEqual("IndexError", cm.exception.__class__.__name__)
@@ -302,9 +306,9 @@ class TestAudioNormalization(TestCase):
         @brief Tests getting volume info.
         '''
 
-        volumes = normalization.get_volume_info(VOL_INFO_SRC)
+        volumes = normalization.get_volume_info(self.vol_info_src)
         self.maxDiff = None
-        self.assertDictEqual(volumes, VOL_INFO_RES)
+        self.assertDictEqual(volumes, self.vol_info_res)
 
 
     def test_get_volume_info_invalid_file(self):
@@ -315,11 +319,11 @@ class TestAudioNormalization(TestCase):
         volumes = None
 
         with self.assertRaises(CalledProcessError) as cm:
-            volumes = normalization.get_volume_info(VOL_ERR_SRC)
+            volumes = normalization.get_volume_info(self.vol_err_src)
 
         self.assertIsNone(volumes)
         self.assertEqual("CalledProcessError", cm.exception.__class__.__name__)
-        err_msg = f"Error opening input file {VOL_ERR_SRC}"
+        err_msg = f"Error opening input file {self.vol_err_src}"
         self.assertTrue(err_msg in cm.exception.stderr.strip())
 
 
@@ -328,8 +332,8 @@ class TestAudioNormalization(TestCase):
         @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output.
         '''
 
-        input_process = INPUT_PROCESS
-        input_process.stderr = (
+        test_process = self.input_process
+        test_process.stderr = (
             '{\n'
             '\t"input_i" : "-16.52",\n'
             '\t"input_tp" : "-3.42",\n'
@@ -345,7 +349,7 @@ class TestAudioNormalization(TestCase):
         )
 
         # need name mangling to access private method
-        output_data = normalization._AudioNormalization__loudnorm_json_parse(input_process)
+        output_data = normalization._AudioNormalization__loudnorm_json_parse(test_process)
         expected_data = {
             "input_i": "-16.52",
             "input_tp": "-3.42",
@@ -367,8 +371,8 @@ class TestAudioNormalization(TestCase):
         '''
 
         # the input_process.stderr json string has extra closing curly to trigger a JSONDecodeError
-        input_process = INPUT_PROCESS
-        input_process.stderr = (
+        test_process = self.input_process
+        test_process.stderr = (
             '{\n'
             '\t"input_i" : "-16.52",\n'
             '\t"input_tp" : "-3.42",\n'
@@ -386,7 +390,7 @@ class TestAudioNormalization(TestCase):
         output_data = None
         with self.assertRaises(JSONDecodeError) as cm:
             # need name mangling to access private method
-            output_data = normalization._AudioNormalization__loudnorm_json_parse(input_process)
+            output_data = normalization._AudioNormalization__loudnorm_json_parse(test_process)
 
         self.assertIsNone(output_data)
         self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
@@ -400,8 +404,9 @@ class TestAudioNormalization(TestCase):
 
         # the input_process.stderr json string must be missing 1 of the curly braces {},
         # to trigger a JSONOutputError, doesn't matter which one.
-        input_process = INPUT_PROCESS
-        input_process.stderr = (
+        # to trigger a JSONOutputError, doesn't matter which one.
+        test_process = self.input_process
+        test_process.stderr = (
             '{\n'
             '\t"input_i" : "-16.52",\n'
             '\t"input_tp" : "-3.42",\n'
@@ -419,39 +424,49 @@ class TestAudioNormalization(TestCase):
         output_data = None
         with self.assertRaises(JSONOutputError) as cm:
             # need name mangling to access private method
-            output_data = normalization._AudioNormalization__loudnorm_json_parse(input_process)
+            output_data = normalization._AudioNormalization__loudnorm_json_parse(test_process)
 
         self.assertIsNone(output_data)
         self.assertEqual("JSONOutputError", cm.exception.__class__.__name__)
-        err_msg = f"JSONOutputError could not find JSON output in subprocess stderr\n{input_process.stderr}"
+        err_msg = f"JSONOutputError could not find JSON output in subprocess stderr\n{test_process.stderr}"
         self.assertEqual(err_msg, cm.exception.message)
 
 
-    @unittest.skip('complete')
     def test_normalize_walk_ebu(self):
         '''
         @brief Tests ebu normalizes all audio files in specified top level directory.
         '''
 
-        pass
+        normalization.normalize_walk(self.normalized, "ebu", show_spinner=False)
+
+        for audio_file in self.normalized_results:
+            audio_exists = os.path.exists(audio_file)
+            self.assertTrue(audio_exists)
 
 
-    @unittest.skip('complete')
     def test_normalize_walk_peak(self):
         '''
         @brief Tests peak normalizes all audio files in specified top level directory.
         '''
 
-        pass
+        normalization.normalize_walk(self.normalized, "peak", show_spinner=False)
+
+        for audio_file in self.normalized_results:
+            audio_exists = os.path.exists(audio_file)
+            self.assertTrue(audio_exists)
 
 
-    @unittest.skip('complete')
+
     def test_normalize_walk_rms(self):
         '''
         @brief Tests rms normalizes all audio files in specified top level directory.
         '''
 
-        pass
+        normalization.normalize_walk(self.normalized, "rms", show_spinner=False)
+
+        for audio_file in self.normalized_results:
+            audio_exists = os.path.exists(audio_file)
+            self.assertTrue(audio_exists)
 
 
     def test_peak_normalize_file(self):
@@ -459,8 +474,8 @@ class TestAudioNormalization(TestCase):
         @brief Tests peak normalize audio file level.
         '''
 
-        normalization.peak_normalize_file(PEAK_SRC, show_spinner=False)
-        self.assertTrue(os.path.exists(PEAK_RES))
+        normalization.peak_normalize_file(self.peak_src, show_spinner=False)
+        self.assertTrue(os.path.exists(self.peak_res))
 
 
     def test_peak_normalize_file_max_volume(self):
@@ -472,9 +487,9 @@ class TestAudioNormalization(TestCase):
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(MAX_VOL_SRC, show_spinner=False)
+            normalization.peak_normalize_file(self.max_vol_src, show_spinner=False)
 
-        self.assertIn(MAX_VOL_RES, cm.output[0])
+        self.assertIn(self.max_vol_res, cm.output[0])
 
 
     @unittest.skip("one off")
@@ -512,8 +527,8 @@ class TestAudioNormalization(TestCase):
         @brief Tests rms normalize audio file level.
         '''
 
-        normalization.rms_normalize_file(RMS_SRC, show_spinner=False)
-        self.assertTrue(os.path.exists(RMS_RES))
+        normalization.rms_normalize_file(self.rms_src, show_spinner=False)
+        self.assertTrue(os.path.exists(self.rms_res))
 
 
     def test_rms_normalize_file_clipping(self):
@@ -525,9 +540,9 @@ class TestAudioNormalization(TestCase):
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.rms_normalize_file(RMS_CLIPPING_SRC, show_spinner=False)
+            normalization.rms_normalize_file(self.rms_clipping_src, show_spinner=False)
 
-        self.assertIn(RMS_CLIPPING_RES, cm.output[0])
+        self.assertIn(self.rms_clipping_res, cm.output[0])
 
 
     def test_rms_normalize_max_volume(self):
@@ -539,9 +554,9 @@ class TestAudioNormalization(TestCase):
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(MAX_VOL_SRC, show_spinner=False)
+            normalization.peak_normalize_file(self.max_vol_src, show_spinner=False)
 
-        self.assertIn(MAX_VOL_RES, cm.output[0])
+        self.assertIn(self.max_vol_res, cm.output[0])
 
 
 def get_method_names(cls):
