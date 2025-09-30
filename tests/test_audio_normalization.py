@@ -15,6 +15,7 @@ import os
 import shutil
 import unittest
 from json import JSONDecodeError
+from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess
 from unittest import TestCase
 from unittest.mock import Mock
@@ -23,7 +24,8 @@ from unittest.mock import patch
 # local module constants
 from src import ILT, LRA, MUSIC_TLD, TP
 from src.generated_files import GENERATED_FILES
-from tests import TEST_M3U, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_SMEAGOL_MP3, TEST_MP3_X
+from tests import TEST_M3U, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_SMEAGOL, TEST_MP3_X
+from tests import TESTS_PATH
 # local module errors
 from src.errors import JSONOutputError
 # local module classes
@@ -42,10 +44,6 @@ EBU_DYNAMIC_RES = os.path.join(NORM_PATH, "Abba", "Waterloo", "ABBA-Waterloo.mp3
 EBU_LINEAR_SRC = TEST_MP3_CRUSH
 EBU_LINEAR_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 
-# @todo find a audio file that will peak clip (can't be X Ambassadors - that vol fails first)
-PEAK_CLIP_SRC = ""
-PEAK_CLIP_RES = ""
-
 JSON_DECODE_MSG = "Expecting ',' delimiter"
 
 MAX_VOL_SRC = TEST_MP3_X
@@ -57,7 +55,7 @@ PEAK_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 RMS_CLIPPING_SRC = TEST_MP3_CRUSH
 RMS_CLIPPING_RES = os.path.join(NORM_PATH, "Crush", "Here", "Crush-Live.mp3")
 
-RMS_SRC = TEST_SMEAGOL_MP3
+RMS_SRC = TEST_MP3_SMEAGOL
 RMS_RES = os.path.join(NORM_PATH, "The Lord of the Rings", "The Two Towers", "Howard Shore-The Taming Of Smeagol.mp3")
 
 SAMPLE_RATE_SRC = TEST_MP3_ABBA
@@ -82,6 +80,7 @@ INPUT_PROCESS = CompletedProcess(
     # tests using stderr are expected to fill in needed values
     stderr=""
 )
+
 normalization = AudioNormalization()
 
 
@@ -89,6 +88,63 @@ class TestAudioNormalization(TestCase):
     '''
     @brief Tests AudioNormalization class functions.
     '''
+
+    @classmethod
+    def setUpClass(cls):
+        '''
+        @brief Initialize data for test suite.
+
+        @details These datums are used throughout class and only need init once.
+        '''
+
+        # directory for "walk" type tests: D:\MusicProcessing\tests\ConvertedMusic
+        cls.converted = os.path.join(TESTS_PATH, "ConvertedMusic")
+        # the path where converted files will be created D:\MusicProcessing\src\generated_files\Music
+        cls.norm_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
+
+        # audio source files for walk tests
+        cls.src_file_paths = [TEST_MP3_CRUSH, TEST_MP3_SMEAGOL]
+
+        # copy input files to converted "walk" directory
+        for src_converted in cls.src_file_paths:
+            # get the audio file name w/o path
+            # eg from D:\MusicProcessing\tests\Music\The Eagles\Desperado\The Eagles-Desperado.m4a -> The Eagles-Desperado.m4a
+            file_name = os.path.basename(src_converted)
+
+            # get audio file parent path parts
+            # eg D:\MusicProcessing\tests\Music\The Eagles\Desperado
+            # D:\, MusicProcessing, tests, Music, The Eagles, Desperado
+            file_path = Path(src_converted)
+            file_parent = file_path.parent
+            path_parts = file_parent.parts
+
+            # build up the artist & album path, from last 2 elements of file parent path parts
+            # eg The Eagles, Desperado -> The Eagles\Desperado
+            full_len = len(path_parts)
+            artist_len = full_len - 2
+            artist_album = ""
+            for i in range(artist_len, full_len):
+                artist_album = os.path.join(artist_album, path_parts[i])
+
+            # create the destination directory
+            # D:\MusicProcessing\tests\convert_walk\The Eagles\Desperado\
+            dest_dir = os.path.join(cls.converted, artist_album)
+            os.makedirs(dest_dir, exist_ok=True)
+
+            # create dest: D:\MusicProcessing\tests\convert_walk\The Eagles\Desperado\The Eagles-Desperado.m4a
+            dest_path = os.path.join(dest_dir, file_name)
+
+            # and copy
+            shutil.copy(src_converted, dest_path)
+
+    @classmethod
+    def tearDownClass(cls):
+        '''
+        @brief Cleans up the walk type tests source audio files and directories.
+        '''
+
+        if os.path.exists(cls.converted):
+            shutil.rmtree(cls.converted)
 
 
     def tearDown(self):
@@ -405,24 +461,6 @@ class TestAudioNormalization(TestCase):
 
         normalization.peak_normalize_file(PEAK_SRC, show_spinner=False)
         self.assertTrue(os.path.exists(PEAK_RES))
-
-
-    @unittest.skip("don't have a file that will clip, will have to mock")
-    def test_peak_normalize_file_clipping(self):
-        '''
-        @brief Tests rms normalize audio file level would clip.
-        '''
-
-        PEAK_CLIP_SRC = TEST_SMEAGOL_MP3
-        PEAK_CLIP_RES = os.path.join(NORM_PATH, "3 Doors Down", "3 Doors Down", "3 Doors Down-It's Not My Time.mp3")
-
-        module = f"{normalization.__module__}"
-        logger = logging.getLogger(module)
-
-        with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(PEAK_CLIP_SRC, show_spinner=False)
-
-        self.assertIn(PEAK_CLIP_RES, cm.output[0])
 
 
     def test_peak_normalize_file_max_volume(self):

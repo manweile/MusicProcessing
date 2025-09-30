@@ -62,10 +62,10 @@ TEST_MP3_CRUSH = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
 # @details Use this when needing a mp3 audio file with no metadata for audio metadata tests.
 TEST_MP3_NO_TAG = os.path.join(TESTS_TLD, "Crush", "Here", "No_tag_Crush-Live.mp3")
 
-## @var TEST_SMEAGOL_MP3
+## @var TEST_MP3_SMEAGOL
 # @brief Path to mp3 audio file for tests.
 # @details Use this when needing a mp3 audio file for audio normalization tests.
-TEST_SMEAGOL_MP3 = os.path.join(TESTS_TLD, "The Lord of the Rings", "The Two Towers", "Howard Shore-The Taming Of Smeagol.mp3")
+TEST_MP3_SMEAGOL = os.path.join(TESTS_TLD, "The Lord of the Rings", "The Two Towers", "Howard Shore-The Taming Of Smeagol.mp3")
 
 ## @var TEST_MP3_X
 # @brief Path to mp3 audio file for tests.
@@ -107,6 +107,6 @@ __all__ = [
     "TESTS_PATH", "TESTS_TLD",
     "TEST_M3U", "TEST_WAV_NONE",
     "TEST_M4A_DAVIS", "TEST_M4A_EAGLES"
-    "TEST_MP3_ABBA", "TEST_MP3_CRUSH", "TEST_MP3_NO_TAG", "TEST_SMEAGOL_MP3", "TEST_MP3_X",
+    "TEST_MP3_ABBA", "TEST_MP3_CRUSH", "TEST_MP3_NO_TAG", "TEST_MP3_SMEAGOL", "TEST_MP3_X",
     "TEST_WMA_CCR", "TEST_WMA_HOLIDAY", "TEST_WMA_JOHN"
 ]
