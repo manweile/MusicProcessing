@@ -20,7 +20,7 @@ from pathlib import Path
 # local module methods
 from src import add_module_handler
 # local module constants
-from src import MP3_EXT
+from src import ILT, LRA, MP3_EXT, TP
 # local module errors
 from src.errors import JSONOutputError
 from src.errors import PathInfoError
@@ -36,19 +36,6 @@ add_module_handler(logger, basename)
 
 directory = DirectoryProcessing()
 subprocess_utils = SubprocessUtilities()
-
-r'''
-AES https://www.aes.org/technical/documents/AESTD1004_1_15_10.pdf
-ffmpeg loudnorm integrated loudness target EBU R128 default: -24.0,
-I want -16, which is the AES recommendation for streamed files
-ffmpeg loudnorm loudness range target EBU R128 default: 7,
-I want wider range because most of my collection has a wider range
-ffmpeg loudnorm maximum true peak EBU R128 default: -2.0,
-I will keep that cause I want the extra headroom space vs -1.0 or 0.0
-'''
-ILT = "-16.0"
-LRA = "11.0"
-TP = "-2.0"
 
 
 class AudioNormalization():
@@ -88,7 +75,7 @@ class AudioNormalization():
         }
 
         @param input_process {CompletedProcess} A completed subprocess object.
-        @return input_data {dict} FFmpeg loudnorm statistics.
+        @return output_data {dict} FFmpeg loudnorm statistics.
         Key                         |Value
         ----------------------------|----------------------------------------------------------------
         input_i {str}               | input integrated loudness {str} (numeric)
@@ -108,7 +95,7 @@ class AudioNormalization():
         '''
 
         try:
-            input_data = None
+            output_data = None
             json_input = input_process.stderr
 
             json_start = json_input.find('{')
@@ -117,13 +104,13 @@ class AudioNormalization():
             if json_start != -1 and json_end != -1:
                 json_string = json_input[json_start: json_end + 1]
             else:
-                logger.error(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_string}", exc_info=True)
-                raise JSONOutputError(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_string}")
+                logger.error(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_input}", exc_info=True)
+                raise JSONOutputError(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_input}")
 
-            input_data = json.loads(json_string)
+            output_data = json.loads(json_string)
 
         except JSONDecodeError as jd_error:
-            logger.error(f"JSONDecodeError parsing \n{json_string}", exc_info=True)
+            logger.error(f"JSONDecodeError parsing \n{json_input}", exc_info=True)
             raise jd_error
         except JSONOutputError as jo_error:
             raise jo_error
@@ -131,7 +118,7 @@ class AudioNormalization():
             logger.exception(f"Exception {type(e_error).__name__} parsing ffmpeg loudnorm subprocess stderr", stack_info=True)
             raise e_error
         else:
-            return input_data
+            return output_data
 
 
     def ebu_normalize_file(self, file_path, show_spinner=True):
@@ -182,6 +169,16 @@ class AudioNormalization():
             stats_text = "Getting loudnorm stats"
             data.append(stats_text)
 
+            r'''
+            AES https://www.aes.org/technical/documents/AESTD1004_1_15_10.pdf
+            ffmpeg loudnorm integrated loudness target EBU R128 default: -24.0,
+            I want -16.0, which is the AES recommendation for streamed files
+            ffmpeg loudnorm loudness range target EBU R128 default: 7,
+            I want 11.0 for  wider range because most of my collection has a wider range
+            ffmpeg loudnorm maximum true peak EBU R128 default: -2.0,
+            I will keep that cause I want the extra headroom space vs -1.0 or 0.0
+            '''
+
             '''
             1st pass to get loudnorm statistics
             -hide_banner to reduce output clutter
@@ -189,7 +186,6 @@ class AudioNormalization():
             -af loudnorm audio filter with my desired I integrated loudness target, LRA loudness range target, TP max true peak, output in json format
             -f Output to null to avoid creating an actual output file
             '''
-
             stats_command = [
                 "ffmpeg",
                 "-hide_banner",
@@ -211,6 +207,9 @@ class AudioNormalization():
                 stats_process = subprocess_utils.subprocess_run(stats_command)
                 stats_post_text = "Analyzed loudnorm stats"
 
+            # Even though hide banner & json is specified in ffmpeg cli,
+            # output will still have far more garbage than actual json,
+            # and needs parsing out
             stats_data = self.__loudnorm_json_parse(stats_process)
             data.append(json.dumps(stats_data, indent=4))
 

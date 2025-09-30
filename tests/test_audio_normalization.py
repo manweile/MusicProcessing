@@ -21,9 +21,11 @@ from unittest.mock import Mock
 from unittest.mock import patch
 
 # local module constants
-from src import MUSIC_TLD
+from src import ILT, LRA, MUSIC_TLD, TP
 from src.generated_files import GENERATED_FILES
 from tests import TEST_M3U, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_SMEAGOL_MP3, TEST_MP3_X
+# local module errors
+from src.errors import JSONOutputError
 # local module classes
 from src.audio_normalize import AudioNormalization
 
@@ -66,7 +68,20 @@ VOL_ERR_SRC = TEST_M3U
 VOL_INFO_SRC = TEST_MP3_CRUSH
 VOL_INFO_RES = {'mean_volume': -19.9, 'max_volume': -6.7}
 
-
+INPUT_PROCESS = CompletedProcess(
+    args=[
+        'ffmpeg',
+        '-hide_banner',
+        '-i', f'{TEST_MP3_ABBA}',
+        '-vn',
+        '-af', (f"loudnorm=I={ILT}:TP={TP}:LRA={LRA}:print_format=json"),
+        '-f', 'null', '-'
+    ],
+    returncode=0,
+    stdout='',
+    # tests using stderr are expected to fill in needed values
+    stderr=""
+)
 normalization = AudioNormalization()
 
 
@@ -252,33 +267,108 @@ class TestAudioNormalization(TestCase):
         self.assertTrue(err_msg in cm.exception.stderr.strip())
 
 
-    @unittest.skip("complete")
     def test_loudnorm_json_parse(self):
         '''
         @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output.
         '''
 
+        input_process = INPUT_PROCESS
+        input_process.stderr = (
+            '{\n'
+            '\t"input_i" : "-16.52",\n'
+            '\t"input_tp" : "-3.42",\n'
+            '\t"input_lra" : "2.20",\n'
+            '\t"input_thresh" : "-26.93",\n'
+            '\t"output_i" : "-15.83",\n'
+            '\t"output_tp" : "-2.00",\n'
+            '\t"output_lra" : "1.40",\n'
+            '\t"output_thresh" : "-26.03",\n'
+            '\t"normalization_type" : "dynamic",\n'
+            '\t"target_offset" : "-0.17"\n'
+            '}\n'
+        )
+
         # need name mangling to access private method
-        input_data = normalization._AudioNormalization__loudnorm_json_parse(self.input_process)
-        pass
+        output_data = normalization._AudioNormalization__loudnorm_json_parse(input_process)
+        expected_data = {
+            "input_i": "-16.52",
+            "input_tp": "-3.42",
+            "input_lra": "2.20",
+            "input_thresh": "-26.93",
+            "output_i": "-15.83",
+            "output_tp": "-2.00",
+            "output_lra": "1.40",
+            "output_thresh": "-26.03",
+            "normalization_type": "dynamic",
+            "target_offset": "-0.17"
+        }
+        self.assertDictEqual(output_data, expected_data)
 
 
-    @unittest.skip("complete")
     def test_loudnorm_json_parse_decode_error(self):
         '''
-        @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output.
+        @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output with JSONDecodeError.
         '''
 
-        pass
+        # the input_process.stderr json string has extra closing curly to trigger a JSONDecodeError
+        input_process = INPUT_PROCESS
+        input_process.stderr = (
+            '{\n'
+            '\t"input_i" : "-16.52",\n'
+            '\t"input_tp" : "-3.42",\n'
+            '\t"input_lra" : "2.20",\n'
+            '\t"input_thresh" : "-26.93",\n'
+            '\t"output_i" : "-15.83",\n'
+            '\t"output_tp" : "-2.00",\n'
+            '\t"output_lra" : "1.40",\n'
+            '\t"output_thresh" : "-26.03",\n'
+            '\t"normalization_type" : "dynamic",\n'
+            '\t"target_offset" : "-0.17"\n'
+            '}\n}'
+        )
+
+        output_data = None
+        with self.assertRaises(JSONDecodeError) as cm:
+            # need name mangling to access private method
+            output_data = normalization._AudioNormalization__loudnorm_json_parse(input_process)
+
+        self.assertIsNone(output_data)
+        self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
+        self.assertEqual("Extra data", cm.exception.msg)
 
 
-    @unittest.skip("complete")
-    def test_loudnorm_json_parse_output_error(self):
+    def test_loudnorm_json_parse_find_error(self):
         '''
-        @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output.
+        @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output with JSONOutputError.
         '''
 
-        pass
+        # the input_process.stderr json string must be missing 1 of the curly braces {},
+        # to trigger a JSONOutputError, doesn't matter which one.
+        input_process = INPUT_PROCESS
+        input_process.stderr = (
+            '{\n'
+            '\t"input_i" : "-16.52",\n'
+            '\t"input_tp" : "-3.42",\n'
+            '\t"input_lra" : "2.20",\n'
+            '\t"input_thresh" : "-26.93",\n'
+            '\t"output_i" : "-15.83",\n'
+            '\t"output_tp" : "-2.00",\n'
+            '\t"output_lra" : "1.40",\n'
+            '\t"output_thresh" : "-26.03",\n'
+            '\t"normalization_type" : "dynamic",\n'
+            '\t"target_offset" : "-0.17"\n'
+            '\n'
+        )
+
+        output_data = None
+        with self.assertRaises(JSONOutputError) as cm:
+            # need name mangling to access private method
+            output_data = normalization._AudioNormalization__loudnorm_json_parse(input_process)
+
+        self.assertIsNone(output_data)
+        self.assertEqual("JSONOutputError", cm.exception.__class__.__name__)
+        err_msg = f"JSONOutputError could not find JSON output in subprocess stderr\n{input_process.stderr}"
+        self.assertEqual(err_msg, cm.exception.message)
 
 
     @unittest.skip('complete')
@@ -317,14 +407,13 @@ class TestAudioNormalization(TestCase):
         self.assertTrue(os.path.exists(PEAK_RES))
 
 
-    @unittest.skip("don't have a file that will clip")
+    @unittest.skip("don't have a file that will clip, will have to mock")
     def test_peak_normalize_file_clipping(self):
         '''
         @brief Tests rms normalize audio file level would clip.
         '''
 
-        # PEAK_CLIP_SRC = os.path.join("F:", "ConvertedMusic", "3 Doors Down", "3 Doors Down", "3 Doors Down-It's Not My Time.mp3")
-        PEAK_CLIP_SRC = RMS_SRC
+        PEAK_CLIP_SRC = TEST_SMEAGOL_MP3
         PEAK_CLIP_RES = os.path.join(NORM_PATH, "3 Doors Down", "3 Doors Down", "3 Doors Down-It's Not My Time.mp3")
 
         module = f"{normalization.__module__}"

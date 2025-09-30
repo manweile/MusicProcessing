@@ -64,6 +64,11 @@ ERROR_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)
 # @details use this when need to set album art file name
 FOLDER_ART = "Folder.jpg"
 
+## @var ILT
+# @brief integrated loudness target
+# @details use this for ebu r128 normalization AES recommended value for streaming
+ILT = "-16.0"
+
 ## @var LOG_DIR
 # @brief final part of log files directory path
 # @details use this to set log files directory path
@@ -73,6 +78,11 @@ LOG_DIR = "log_files"
 # @brief log file extension
 # @details use this to set extension for log files
 LOG_EXT = ".log"
+
+## @var LRA
+# @brief loudness range target
+# @details use this for ebu 128 normalization wider range than AES default of 7
+LRA = "11.0"
 
 ## @var M4A_EXT
 # @brief m4a file typer extension
@@ -119,6 +129,11 @@ RESULT_DIR = "result_files"
 # @details use this to set extension for result text files
 RESULT_EXT = ".txt"
 
+## @var TP
+# @brief loudnorm maximum true peak
+# @details use this for ebu 128 normalization extra headroom
+TP = "-2.0"
+
 ## @var UTF8
 # @brief utf encoding for file writing
 # @details use this when configuring file access
@@ -140,9 +155,12 @@ __all__ = [
     "ERROR_LOG_FORMAT",
     "LOG_DIR", "LOG_EXT",
     "FOLDER_ART",
+    "ILT",
+    "LRA",
     "M4A_EXT", "MP3_EXT", "MP3_TYPE", "MP4_TYPE", "MUSIC_TLD",
     "PLAYLIST_EXTS", "PLAYLIST_TYPES",
     "RESULT_DIR", "RESULT_EXT",
+    "TP",
     "UTF8",
     "WMA_EXT",
     "FfmpegProcessError",
