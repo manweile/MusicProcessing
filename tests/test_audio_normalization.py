@@ -443,7 +443,7 @@ class TestAudioNormalization(TestCase):
             audio_exists = os.path.exists(audio_file)
             self.assertTrue(audio_exists)
 
-
+    @unittest.skip("debug, needs files")
     def test_normalize_walk_peak(self):
         '''
         @brief Tests peak normalizes all audio files in specified top level directory.
@@ -456,7 +456,7 @@ class TestAudioNormalization(TestCase):
             self.assertTrue(audio_exists)
 
 
-
+    @unittest.skip("debug, needs files")
     def test_normalize_walk_rms(self):
         '''
         @brief Tests rms normalizes all audio files in specified top level directory.
@@ -490,36 +490,6 @@ class TestAudioNormalization(TestCase):
             normalization.peak_normalize_file(self.max_vol_src, show_spinner=False)
 
         self.assertIn(self.max_vol_res, cm.output[0])
-
-
-    @unittest.skip("one off")
-    def test_peak_clip_check_walk(self):
-        '''
-        @brief Tests walking tld to get peak adjustment amount.
-        '''
-
-        converted_tld = r"F:\ConvertedMusic"
-        normalization.peak_clip_check_walk(converted_tld)
-
-
-    @unittest.skip("one off")
-    def test_rms_clip_check_walk(self):
-        '''
-        @brief Tests walking tld to get rms adjustment amount.
-        '''
-
-        converted_tld = r"F:\ConvertedMusic"
-        normalization.rms_clip_check_walk(converted_tld)
-
-
-    @unittest.skip("one off")
-    def test_normalize_max_vol_check_walk(self):
-        '''
-        @brief Tests walking tld to get normalization max volume amount.
-        '''
-
-        converted_tld = r"F:\ConvertedMusic"
-        normalization.normalize_max_vol_check_walk(converted_tld)
 
 
     def test_rms_normalize_file(self):
