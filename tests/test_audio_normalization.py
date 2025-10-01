@@ -57,6 +57,7 @@ class TestAudioNormalization(TestCase):
         # audio source files for walk tests
         cls.src_file_paths = [TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_SMEAGOL]
 
+        #  for ebu normalization walk top level directory test
         cls.normalized_results = []
         cls.normalized_results.append(os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3"))
         cls.normalized_results.append(os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3"))
@@ -404,7 +405,6 @@ class TestAudioNormalization(TestCase):
 
         # the input_process.stderr json string must be missing 1 of the curly braces {},
         # to trigger a JSONOutputError, doesn't matter which one.
-        # to trigger a JSONOutputError, doesn't matter which one.
         test_process = self.input_process
         test_process.stderr = (
             '{\n'
@@ -443,7 +443,7 @@ class TestAudioNormalization(TestCase):
             audio_exists = os.path.exists(audio_file)
             self.assertTrue(audio_exists)
 
-    @unittest.skip("debug, needs files")
+
     def test_normalize_walk_peak(self):
         '''
         @brief Tests peak normalizes all audio files in specified top level directory.
@@ -451,12 +451,10 @@ class TestAudioNormalization(TestCase):
 
         normalization.normalize_walk(self.normalized, "peak", show_spinner=False)
 
-        for audio_file in self.normalized_results:
-            audio_exists = os.path.exists(audio_file)
-            self.assertTrue(audio_exists)
+        audio_exists = os.path.exists(self.peak_res)
+        self.assertTrue(audio_exists)
 
 
-    @unittest.skip("debug, needs files")
     def test_normalize_walk_rms(self):
         '''
         @brief Tests rms normalizes all audio files in specified top level directory.
@@ -464,9 +462,8 @@ class TestAudioNormalization(TestCase):
 
         normalization.normalize_walk(self.normalized, "rms", show_spinner=False)
 
-        for audio_file in self.normalized_results:
-            audio_exists = os.path.exists(audio_file)
-            self.assertTrue(audio_exists)
+        audio_exists = os.path.exists(self.rms_res)
+        self.assertTrue(audio_exists)
 
 
     def test_peak_normalize_file(self):
