@@ -1,5 +1,6 @@
 '''
-@file test_audio_normalization.py one off functions.
+@file test_audio_utilities.py one off functions.
+
 @brief Defines the test audio normalization class.
 
 @author Gerald Manweiler
@@ -23,7 +24,7 @@ utilities = AudioUtilities()
 
 class TestAudioNormalization(TestCase):
     '''
-    @brief Tests AudioNormalization class functions.
+    @brief Tests AudioUtilities class functions.
     '''
 
     def test_clip_vol_check_walk(self):
