@@ -280,15 +280,14 @@ class DirectoryProcessing():
     # use a pattern
 
 
-    def get_ext_file_list(self, file_ext, start_path):
+    def get_ext_file_list(self, start_path, file_ext):
         '''
         @brief Wrapper for function that generates a csv containing full file path for an extension.
 
-        @details Without a start path input, the top level directory MUST have been set.
         @details If file extension is not supplied, uses the preset audio types list.
 
         @param  file_ext {str} Optional, the file extension (without period prefix) want file paths for.
-        @param  start_path {str} Optional, the starting point of the directory walk.
+        @param  start_path {str} The starting point of the directory walk.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -299,11 +298,29 @@ class DirectoryProcessing():
         type_count = 0
 
         try:
-            if (file_ext):
-                self.__ext_file_list(file_ext, start_path)
-            else:
-                for file_ext in AUDIO_TYPES:
-                    self.__ext_file_list(file_ext, start_path)
+            # top down walk for files of the specified extension type
+            # want the directory path & file names so we can get full file path
+            # don't care about the sub-directory names at all
+            for dir_path, dir_names, filenames in os.walk(start_path):
+                for file in filenames:
+                    input_file, input_file_ext = os.path.splitext(file)
+
+                    if file_ext and not fnmatch.fnmatch(input_file_ext.lower(), file_ext.lower()):
+                        continue
+                    else:
+
+                    if (file.endswith('.' + file_ext)):
+                        audio_file_path = os.path.join(dir_path, file)
+                        data.append([audio_file_path])
+                        type_count += 1
+
+            self.create_csv(csv_filename, data, None, header_row, None)
+
+            # if (file_ext):
+            #     self.__ext_file_list(file_ext, start_path)
+            # else:
+            #     for file_ext in AUDIO_TYPES:
+            #         self.__ext_file_list(file_ext, start_path)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting file list for files with {file_ext} for {start_path}", stack_info=True)
