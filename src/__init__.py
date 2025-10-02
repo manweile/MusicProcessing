@@ -37,8 +37,7 @@ AUDIO_EXTS = [".mp3", ".m4a", ".wma"]
 # @details use this when working with mutagen library
 AUDIO_FILES = ["MP3", "MP4", "ASF"]
 
-# @todo for all usages of AUDIO_TYPES, can just call AUDIO_EXTS[i].removeprefix(".")
-# or better yet MP3_EXt.removeprefix("."), etc.
+# @todo remove. not needed.
 ## @var AUDIO_TYPES
 # @brief audio file types in my collection
 # @details use this when you just need the type

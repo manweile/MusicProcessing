@@ -11,6 +11,7 @@
 import gc
 import inspect
 import os
+import shutil
 import unittest
 from unittest import TestCase
 from unittest.mock import patch
@@ -18,9 +19,11 @@ from unittest.mock import patch
 # local module constants
 from src import AUDIO_EXTS
 from src import MUSIC_TLD
+from src import CSV_DIR, CSV_EXT
+# from src import RESULT_DIR, RESULT_EXT
 from src.generated_files import GENERATED_FILES
 from tests import TEST_M4A_DAVIS
-from tests import TESTS_TLD
+from tests import TESTS_PATH, TESTS_TLD
 # local module classes
 from src.dir_processing import DirectoryProcessing
 
@@ -43,7 +46,8 @@ class TestDirectoryProcessing(TestCase):
         @details These datums are used throughout class and only need init once.
         '''
 
-        pass
+        cls.csv_files = os.path.join(TESTS_PATH, CSV_DIR)
+        os.makedirs(cls.csv_files, exist_ok=True)
 
 
     @classmethod
@@ -52,7 +56,8 @@ class TestDirectoryProcessing(TestCase):
         @brief Cleans up class level datums after test suite execution.
         '''
 
-        pass
+        if os.path.exists(cls.csv_files):
+            shutil.rmtree(cls.csv_files)
 
 
     def tearDown(self):
@@ -64,13 +69,35 @@ class TestDirectoryProcessing(TestCase):
 
         pass
 
-    @unittest.skip("complete")
-    def test_create_csv(self):
+
+    def test_create_csv_alt_dir_sorted(self):
         '''
-        @brief testing creating a csv file.
+        @brief testing creating a csv file in alternate directory.
         '''
 
-        pass
+        csv_dir = self.csv_files
+        csv_filename = "alt_dir_test"
+        data = []
+        data.append(["Row3 Col1", "Row3 Col2"])
+        data.append(["Row2 Col1", "Row2 Col2"])
+        data.append(["Row1 Col1", "Row1 Col2"])
+        header_row = ["Col1", "Col2"]
+
+        directory.create_csv(csv_filename, data, csv_dir, header_row, 1)
+
+        csv_path = os.path.join(self.csv_files, csv_filename + CSV_EXT)
+        csv_exists = os.path.exists(csv_path)
+        self.assertTrue(csv_exists)
+
+        with open(csv_path, "r") as f:
+            lines = f.readlines()
+            # @todo read from file row 2 and data elem 2
+            # file row 3 and data elem 1
+            # file row 4 and data elem 0
+            # all 3 reads should be equal
+
+        self.assertEqual(len(lines), 4)
+        self.assertIn("Col1;Col2\n", lines)
 
 
     @unittest.skip("complete")
@@ -91,13 +118,88 @@ class TestDirectoryProcessing(TestCase):
         pass
 
 
-    @unittest.skip("complete")
-    def test_get_ext_file_list(self):
+    def test_get_ext_file_list_all(self):
         '''
         @brief tests generates a csv containing full file path for an extension.
         '''
 
-        pass
+        csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
+        csv_filename = "get_ext_file_list_all" + CSV_EXT
+        csv_path = os.path.join(csv_dir, csv_filename)
+
+        directory.get_ext_file_list(TESTS_TLD, None)
+
+        csv_exists = os.path.exists(csv_path)
+        self.assertTrue(csv_exists)
+
+        with open(csv_path, "r") as f:
+            lines = f.readlines()
+
+        self.assertGreater(len(lines), 2)
+        self.assertIn("File Path;File Ext\n", lines)
+
+
+    def test_get_ext_file_list_m4a(self):
+        '''
+        @brief tests generates a csv containing full file path for an extension.
+        '''
+
+        csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
+        csv_filename = "get_ext_file_list_m4a" + CSV_EXT
+        csv_path = os.path.join(csv_dir, csv_filename)
+
+        directory.get_ext_file_list(TESTS_TLD, ".m4a")
+
+        csv_exists = os.path.exists(csv_path)
+        self.assertTrue(csv_exists)
+
+        with open(csv_path, "r") as f:
+            lines = f.readlines()
+
+        self.assertGreater(len(lines), 2)
+        self.assertIn("File Path;File Ext\n", lines)
+
+
+    def test_get_ext_file_list_mp3(self):
+        '''
+        @brief tests generates a csv containing full file path for an extension.
+        '''
+
+        csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
+        csv_filename = "get_ext_file_list_mp3" + CSV_EXT
+        csv_path = os.path.join(csv_dir, csv_filename)
+
+        directory.get_ext_file_list(TESTS_TLD, ".mp3")
+
+        csv_exists = os.path.exists(csv_path)
+        self.assertTrue(csv_exists)
+
+        with open(csv_path, "r") as f:
+            lines = f.readlines()
+
+        self.assertGreater(len(lines), 2)
+        self.assertIn("File Path;File Ext\n", lines)
+
+
+    def test_get_ext_file_list_wma(self):
+        '''
+        @brief tests generates a csv containing full file path for an extension.
+        '''
+
+        csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
+        csv_filename = "get_ext_file_list_wma" + CSV_EXT
+        csv_path = os.path.join(csv_dir, csv_filename)
+
+        directory.get_ext_file_list(TESTS_TLD, ".wma")
+
+        csv_exists = os.path.exists(csv_path)
+        self.assertTrue(csv_exists)
+
+        with open(csv_path, "r") as f:
+            lines = f.readlines()
+
+        self.assertGreater(len(lines), 2)
+        self.assertIn("File Path;File Ext\n", lines)
 
 
     def test_get_file_directory_none(self):
@@ -142,7 +244,7 @@ class TestDirectoryProcessing(TestCase):
 
 
     @unittest.skip("complete")
-    def test_audio_file(self):
+    def test_move_audio_file(self):
         '''
         @brief Test moves audio file to a new directory.
 
