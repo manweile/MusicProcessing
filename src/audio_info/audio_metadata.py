@@ -834,7 +834,7 @@ class AudioMetadata():
                     if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
 
-                    if file_pattern and not fnmatch.fnmatch(input_file_ext, file_pattern.lower()):
+                    if file_pattern and not fnmatch.fnmatch(input_file_ext.lower(), file_pattern.lower()):
                         continue
                     else:
                         tag_file_path = os.path.join(dir_path, file)
@@ -849,14 +849,12 @@ class AudioMetadata():
                         if input_tags:
                             if ffprobe:
                                 data.append(f"\n{tag_file_path} has {len(input_tags)} ffprobe tags")
-                                tag_items = input_tags.items()
-                                for key, value in tag_items:
-                                    data.append(f"{key}: {value}")
                             else:
                                 data.append(f"\n{tag_file_path} has {len(input_tags)} {metadata_type} tags")
-                                tag_items = input_tags.items()
-                                for key, value in tag_items:
-                                    data.append(f"{key}: {value}")
+
+                            tag_items = input_tags.items()
+                            for key, value in tag_items:
+                                data.append(f"{key}: {value}")
                         else:
                             data.append(f"\n{tag_file_path} has no metadata")
 
