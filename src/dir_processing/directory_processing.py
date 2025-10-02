@@ -54,23 +54,7 @@ class DirectoryProcessing():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        if tld_path is not None:
-            try:
-                if os.path.isdir(tld_path):
-                    self._tld_path = tld_path
-
-            except OSError as os_error:
-                if os_error.errno == errno.ENOENT:
-                    logger.error(f"OSError Path {tld_path} not found", exc_info=True)
-                    raise OSError(f"OSError Path {tld_path} not found")
-                else:
-                    logger.error(f"OSError {(strerror(os_error.errno))} setting {tld_path}", exc_info=True)
-                    raise os_error
-            except Exception as e_error:
-                logger.exception(f"Exception {type(e_error).__name__} setting path {tld_path}", stack_info=True)
-                raise e_error
-        else:
-            pass
+        pass
 
 
     def __ext_file_list(self, file_ext, start_path):
@@ -107,46 +91,6 @@ class DirectoryProcessing():
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting files for extension {file_ext} in {start_path}", stack_info=True)
-            raise e_error
-
-
-    @property
-    def tld_path(self):
-        '''
-        @brief Returns the full top level directory path.
-
-        @return tld_path {str} The top level directory path.
-        '''
-
-        return self._tld_path
-
-
-    @tld_path.setter
-    def tld_path(self, tld_path):
-        '''
-        @brief Sets the top level directory.
-
-        @details The top level directory is expected to exist already.
-
-        @param tld_path {str} The top level directory path that contains all the music files.
-
-        @exception OSError A system related error occurred.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            if os.path.isdir(tld_path):
-                self._tld_path = tld_path
-
-        except OSError as e:
-            if e.errno == errno.ENOENT:
-                logger.error(f"OSError path {tld_path} not found", exc_info=True)
-                raise OSError(f"OSError path {tld_path} not found")
-            else:
-                logger.error(f"OSError setting path {tld_path}", exc_info=True)
-                raise OSError(f"OSError setting path {tld_path}")
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} setting path {tld_path}", stack_info=True)
             raise e_error
 
 
@@ -265,9 +209,6 @@ class DirectoryProcessing():
         txt_count = 0
         wma_count = 0
 
-        if start_path is None:
-            start_path = self._tld_path
-
         try:
             initial_depth = len(start_path.split(os.sep))
 
@@ -352,10 +293,12 @@ class DirectoryProcessing():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        try:
-            if start_path is None:
-                start_path = self._tld_path
+        data = []
+        csv_filename = "found_" + file_ext
+        header_row = [file_ext + " file path"]
+        type_count = 0
 
+        try:
             if (file_ext):
                 self.__ext_file_list(file_ext, start_path)
             else:
@@ -596,9 +539,6 @@ class DirectoryProcessing():
         dir_count = 0
 
         try:
-            if start_path is None:
-                start_path = self._tld_path
-
             # get the artist dirs under tld
             tld_content = os.listdir(start_path)
 
@@ -623,6 +563,7 @@ class DirectoryProcessing():
                     if os.path.isdir(artist_item_path) and not os.listdir(artist_item_path):
                         os.rmdir(artist_item_path)
                         dir_count += 1
+
             # @todo file this
             logger.info(f"removed {dir_count} empty album directories")
 
@@ -653,11 +594,6 @@ class DirectoryProcessing():
         '''
 
         try:
-            # @todo make start path mandatory across project
-            # @todo remove tld_path getter/setter - have NEVER used them.
-            if start_path is None:
-                start_path = self._tld_path
-
             # top down walk for files of the specified pattern
             # want the directory path & file names so we can get full file path
             # don't care about the sub-directory names at all
