@@ -13,6 +13,8 @@ import inspect
 import unittest
 from unittest import TestCase
 
+# local module constants
+from tests import TESTS_TLD
 # local module classes
 from src.audio_info import AudioUtilities
 
@@ -27,12 +29,13 @@ class TestAudioUtilities(TestCase):
     @brief Tests AudioUtilities class functions.
     '''
 
+
     def test_clip_vol_check_walk(self):
         '''
         @brief Tests walking tld to get clipping and max volume amounts.
         '''
 
-        converted_tld = r"F:\ConvertedMusic"
+        converted_tld = TESTS_TLD
         utilities.clip_vol_check_walk(converted_tld)
 
 
