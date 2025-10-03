@@ -8,6 +8,7 @@
 '''
 
 # standard modules
+import filecmp
 import gc
 import inspect
 import os
@@ -76,24 +77,27 @@ class TestDirectoryProcessing(TestCase):
         '''
 
         csv_dir = self.csv_files
-        csv_filename = "alt_dir_test"
+        csv_filename = "alt_dir_sorted"
+
+        # add datums in descending row order so we can test sort functionality
         data = []
         data.append(["Row3 Col1", "Row3 Col2"])
         data.append(["Row2 Col1", "Row2 Col2"])
         data.append(["Row1 Col1", "Row1 Col2"])
+
         header_row = ["Col1", "Col2"]
 
         directory.create_csv(csv_filename, data, csv_dir, header_row, 1)
 
-        csv_path = os.path.join(self.csv_files, csv_filename + CSV_EXT)
-        csv_exists = os.path.exists(csv_path)
-        self.assertTrue(csv_exists)
+        created_csv = os.path.join(self.csv_files, csv_filename + CSV_EXT)
+        created_exists = os.path.exists(created_csv)
+        self.assertTrue(created_exists)
 
-        with open(csv_path, "r") as f:
-            lines = f.readlines()
+        expected_csv = os.path.join(TESTS_PATH, "expected.csv")
 
-        self.assertEqual(len(lines), 4)
-        self.assertIn("Col1;Col2\n", lines)
+        # expected csv is sorted in ascending row order
+        compare = filecmp.cmp(created_csv, expected_csv)
+        self.assertTrue(compare)
 
 
     @unittest.skip("complete")
