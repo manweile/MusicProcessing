@@ -101,9 +101,10 @@ class TestDirectoryProcessing(TestCase):
 
         expected_csv = os.path.join(TESTS_PATH, "expected.csv")
 
-        # expected csv is sorted in ascending row order
-        compare = filecmp.cmp(created_csv, expected_csv)
-        self.assertTrue(compare)
+        with open(created_csv, "r") as f1, open(expected_csv, "r") as f2:
+            content1 = f1.read()
+            content2 = f2.read()
+            self.assertEqual(content1, content2)
 
 
     def test_create_txt_alt_dir(self):
@@ -127,8 +128,13 @@ class TestDirectoryProcessing(TestCase):
 
         expected_txt = os.path.join(TESTS_PATH, "expected.txt")
 
-        compare = filecmp.cmp(created_txt, expected_txt)
-        self.assertTrue(compare)
+        # compare = filecmp.cmp(created_txt, expected_txt)
+        # self.assertTrue(compare)
+
+        with open(created_txt, "r") as f1, open(expected_txt, "r") as f2:
+            content1 = f1.read()
+            content2 = f2.read()
+            self.assertEqual(content1, content2)
 
 
     @unittest.skip("complete")

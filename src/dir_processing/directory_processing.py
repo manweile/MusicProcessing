@@ -82,7 +82,7 @@ class DirectoryProcessing():
             csv_path = os.path.join(csv_dir, csv_filename + CSV_EXT)
 
             # I don't care about any previous file contents
-            csv_outfile = open(csv_path, mode='w', encoding='utf-8-sig', newline='')
+            csv_outfile = open(csv_path, mode='w', encoding=UTF8, newline='')
             # using semicolon as delimiter cause have audio files with comma in dir path and/or file name
             csv_file_writer = csv.writer(csv_outfile, dialect='excel', delimiter=';')
 
