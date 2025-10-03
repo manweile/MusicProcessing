@@ -128,22 +128,31 @@ class TestDirectoryProcessing(TestCase):
 
         expected_txt = os.path.join(TESTS_PATH, "expected.txt")
 
-        # compare = filecmp.cmp(created_txt, expected_txt)
-        # self.assertTrue(compare)
-
         with open(created_txt, "r") as f1, open(expected_txt, "r") as f2:
             content1 = f1.read()
             content2 = f2.read()
             self.assertEqual(content1, content2)
 
 
-    @unittest.skip("complete")
     def test_get_audio_file(self):
         '''
         @brief Test generates a csv containing full path for all audio files.
         '''
 
-        pass
+        directory.get_audio_file_list(TESTS_TLD)
+
+        csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
+        csv_filename = "get_audio_file_list" + CSV_EXT
+        csv_path = os.path.join(csv_dir, csv_filename)
+        csv_exists = os.path.exists(csv_path)
+
+        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_filename = "get_audio_file_list" + RESULT_EXT
+        txt_path = os.path.join(txt_dir, txt_filename)
+        txt_exists = os.path.exists(txt_path)
+
+        self.assertTrue(csv_exists)
+        self.assertTrue(txt_exists)
 
 
     def test_get_ext_file_list_all(self):

@@ -144,8 +144,8 @@ class DirectoryProcessing():
         '''
         @brief Generates a csv containing full path for all audio files.
 
-        @details Without a start path input, the top level directory MUST have been set.
-        @details The csv file is created in the designated generated files directory.
+        @details Start path input required.
+        @details The csv & txt files are created in the designated generated files directory.
         @details The csv has 2 columns, full file path for audio file and extension.
 
         @param start_path {str} Optional, the starting point of the directory walk.
@@ -153,17 +153,23 @@ class DirectoryProcessing():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        data = []
+        csv_data = []
+        csv_filename = inspect.currentframe().f_code.co_name
+
+        txt_data = []
+        txt_filename = inspect.currentframe().f_code.co_name
+
         directory_counts = {}
 
         audio_count = 0
         album_count = 0
         artist_count = 0
         csv_count = 0
-        csv_filename = "found_audio_files"
+
         dir_count = 0
         file_extension = None
         header_row = ["file path", "audio file type"]
+        jpg_count = 0
         m4a_count = 0
         mp3_count = 0
         m3u_count = 0
@@ -176,7 +182,7 @@ class DirectoryProcessing():
         try:
             initial_depth = len(start_path.split(os.sep))
 
-            # top down walk for files of the specified extension type
+            # top down walk for files in specified top level directory
             # want the directory path & file names so we can get full file path
             # we don't care about the sub-directory names
             for dir_path, dir_names, filenames in os.walk(start_path):
@@ -190,7 +196,7 @@ class DirectoryProcessing():
 
                     if (file_extension.lower() in AUDIO_EXTS):
                         audio_file_path = os.path.join(dir_path, file)
-                        data.append([audio_file_path, file_extension])
+                        csv_data.append([audio_file_path, file_extension])
                         audio_count += 1
 
                         if file_extension == MP3_EXT:
@@ -200,40 +206,44 @@ class DirectoryProcessing():
                         elif file_extension == WMA_EXT:
                             wma_count += 1
                     else:
-                        if file_extension == ".csv":
+                        if file_extension == CSV_EXT:
                             csv_count += 1
                         elif file_extension == PLAYLIST_EXTS[0]:
                             m3u_count += 1
-                        elif file_extension == ".txt":
+                        elif file_extension == RESULT_EXT:
                             txt_count += 1
+                        elif file_extension == ".jpg":
+                            jpg_count += 1
                         else:
                             not_count += 1
 
                     tot_count += 1
 
-            self.create_csv(csv_filename, data, None, header_row, 1)
+            self.create_csv(csv_filename, csv_data, None, header_row, 1)
 
             artist_count = directory_counts[0]
             album_count = directory_counts[1]
             dir_count = artist_count + album_count
-            other_count = csv_count + txt_count + m3u_count + not_count
+            other_count = csv_count + jpg_count + txt_count + m3u_count + not_count
 
-            print(f"Found {artist_count} artist directories")
-            print(f"Found {album_count} album directories")
-            print(f"Found {dir_count} total directories")
+            txt_data.append(f"Found {artist_count} artist directories")
+            txt_data.append(f"Found {album_count} album directories")
+            txt_data.append(f"Found {dir_count} total directories")
 
-            print(f"Found {mp3_count} {MP3_EXT.removeprefix(".")} files")
-            print(f"Found {m4a_count} {M4A_EXT.removeprefix(".")} files")
-            print(f"Found {wma_count} {WMA_EXT.removeprefix(".")} files")
-            print(f"Found {audio_count} total audio files")
+            txt_data.append(f"Found {mp3_count} {MP3_EXT.removeprefix(".")} files")
+            txt_data.append(f"Found {m4a_count} {M4A_EXT.removeprefix(".")} files")
+            txt_data.append(f"Found {wma_count} {WMA_EXT.removeprefix(".")} files")
+            txt_data.append(f"Found {audio_count} total audio files")
 
-            print(f"Found {csv_count} csv files")
-            print(f"Found {txt_count} text files")
-            print(f"Found {m3u_count} m3u files")
-            print(f"Found {not_count} unknown type files")
-            print(f"Found {other_count} non-audio files")
+            txt_data.append(f"Found {csv_count} csv files")
+            txt_data.append(f"Found {jpg_count} jpg files")
+            txt_data.append(f"Found {txt_count} text files")
+            txt_data.append(f"Found {m3u_count} m3u files")
+            txt_data.append(f"Found {not_count} unknown type files")
+            txt_data.append(f"Found {other_count} non-audio files")
 
-            print(f"Found {tot_count} total files")
+            txt_data.append(f"Found {tot_count} total files")
+            self.create_txt(txt_filename, txt_data, None)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting files for {start_path}", stack_info=True)
