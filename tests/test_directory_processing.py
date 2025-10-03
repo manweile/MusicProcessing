@@ -86,6 +86,7 @@ class TestDirectoryProcessing(TestCase):
 
         # add datums in descending row order so we can test sort functionality
         data = []
+        data.append(["Row4 Col1", "Row3 Col2"])
         data.append(["Row3 Col1", "Row3 Col2"])
         data.append(["Row2 Col1", "Row2 Col2"])
         data.append(["Row1 Col1", "Row1 Col2"])
