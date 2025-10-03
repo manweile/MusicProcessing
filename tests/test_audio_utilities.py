@@ -1,7 +1,7 @@
 '''
 @file test_audio_utilities.py one off functions.
 
-@brief Defines the test audio normalization class.
+@brief Defines the test audio utilities class.
 
 @author Gerald Manweiler
 @copyright @showdate "%Y" GWN Software. All rights reserved.
@@ -22,7 +22,7 @@ gc.enable()
 utilities = AudioUtilities()
 
 
-class TestAudioNormalization(TestCase):
+class TestAudioUtilities(TestCase):
     '''
     @brief Tests AudioUtilities class functions.
     '''
@@ -53,11 +53,11 @@ def get_method_names(cls):
 
 
 if __name__ == "__main__":
-    methods = get_method_names(TestAudioNormalization)
+    methods = get_method_names(TestAudioUtilities)
 
     suite = unittest.TestSuite()
     for name in methods:
-        suite.addTest(TestAudioNormalization(name))
+        suite.addTest(TestAudioUtilities(name))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)

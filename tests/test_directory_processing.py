@@ -72,7 +72,7 @@ class TestDirectoryProcessing(TestCase):
 
     def test_create_csv_alt_dir_sorted(self):
         '''
-        @brief testing creating a csv file in alternate directory.
+        @brief testing creating a sorted csv file in alternate directory.
         '''
 
         csv_dir = self.csv_files
@@ -91,10 +91,6 @@ class TestDirectoryProcessing(TestCase):
 
         with open(csv_path, "r") as f:
             lines = f.readlines()
-            # @todo read from file row 2 and data elem 2
-            # file row 3 and data elem 1
-            # file row 4 and data elem 0
-            # all 3 reads should be equal
 
         self.assertEqual(len(lines), 4)
         self.assertIn("Col1;Col2\n", lines)
