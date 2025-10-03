@@ -21,7 +21,7 @@ from unittest.mock import patch
 from src import AUDIO_EXTS
 from src import MUSIC_TLD
 from src import CSV_DIR, CSV_EXT
-# from src import RESULT_DIR, RESULT_EXT
+from src import RESULT_DIR, RESULT_EXT
 from src.generated_files import GENERATED_FILES
 from tests import TEST_M4A_DAVIS
 from tests import TESTS_PATH, TESTS_TLD
@@ -50,6 +50,9 @@ class TestDirectoryProcessing(TestCase):
         cls.csv_files = os.path.join(TESTS_PATH, CSV_DIR)
         os.makedirs(cls.csv_files, exist_ok=True)
 
+        cls.result_files = os.path.join(TESTS_PATH, RESULT_DIR)
+        os.makedirs(cls.result_files, exist_ok=True)
+
 
     @classmethod
     def tearDownClass(cls):
@@ -60,6 +63,8 @@ class TestDirectoryProcessing(TestCase):
         if os.path.exists(cls.csv_files):
             shutil.rmtree(cls.csv_files)
 
+        if os.path.exists(cls.result_files):
+            shutil.rmtree(cls.result_files)
 
     def tearDown(self):
         '''
@@ -100,13 +105,29 @@ class TestDirectoryProcessing(TestCase):
         self.assertTrue(compare)
 
 
-    @unittest.skip("complete")
-    def test_create_txt(self):
+    def test_create_txt_alt_dir(self):
         '''
-        @brief testing creating a text file.
+        @brief testing creating a text file in alternate directory.
         '''
 
-        pass
+        result_dir = self.result_files
+        result_filename = "alt_dir"
+
+        data = []
+        data.append("first text line")
+        data.append("second text line")
+        data.append("third text line")
+
+        directory.create_txt(result_filename, data, result_dir)
+
+        created_txt = os.path.join(self.result_files, result_filename + RESULT_EXT)
+        created_exists = os.path.exists(created_txt)
+        self.assertTrue(created_exists)
+
+        expected_txt = os.path.join(TESTS_PATH, "expected.txt")
+
+        compare = filecmp.cmp(created_txt, expected_txt)
+        self.assertTrue(compare)
 
 
     @unittest.skip("complete")
