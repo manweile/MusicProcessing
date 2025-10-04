@@ -1,4 +1,5 @@
-audio file path;album metadata;album directory
+audio file path;album metadata;sanitized album directory
 D:\MusicProcessing\tests\PreppedMusic\Abba\ABBA-Waterloo.mp3;Waterloo;Waterloo
 D:\MusicProcessing\tests\PreppedMusic\Creedence Clearwater Revival\Creedence Clearwater Revival-Fortunate Son.wma;Chronicle, Vol. 1;Chronicle, Vol. 1
+D:\MusicProcessing\tests\PreppedMusic\Genesis\Genesis-In Too Deep.mp3;In Too Deep / I'd Rather Be You;In Too Deep - I'd Rather Be You
 D:\MusicProcessing\tests\PreppedMusic\The Eagles\The Eagles-Desperado.m4a;Desperado;Desperado

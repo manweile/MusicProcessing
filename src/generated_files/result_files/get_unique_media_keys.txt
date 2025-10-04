@@ -31,6 +31,7 @@ MusicBrainz/Release Track Id
 MusicBrainz/Track Id
 PeakValue
 SCRIPT
+TLEN
 TMED
 TORY
 TSO2
@@ -67,6 +68,15 @@ date
 disc
 encoder
 genre
+id3v2_priv.AverageLevel
+id3v2_priv.PeakValue
+id3v2_priv.WM/MediaClassPrimaryID
+id3v2_priv.WM/MediaClassSecondaryID
+id3v2_priv.WM/Provider
+id3v2_priv.WM/UniqueFileIdentifier
+id3v2_priv.WM/WMCollectionGroupID
+id3v2_priv.WM/WMCollectionID
+id3v2_priv.WM/WMContentID
 major_brand
 minor_version
 originaldate

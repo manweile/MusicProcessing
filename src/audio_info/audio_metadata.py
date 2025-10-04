@@ -499,7 +499,7 @@ class AudioMetadata():
                         # we found a non audio file
                         continue
 
-                    if 'album' in file_media_tags.keys():
+                    if file_media_tags and 'album' in file_media_tags.keys():
                         # the album metadata should have had all / removed manually,
                         # but do replace anyways, it would wreak havoc by creating nested dirs
                         album = file_media_tags['album'].replace("/", "-")

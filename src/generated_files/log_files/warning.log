@@ -354,3 +354,17 @@
 2025-09-27 16:33:14,686 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
 
 2025-09-27 16:33:28,710 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 16:54:18,719 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
+
+2025-10-04 16:56:34,784 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
+
+2025-10-04 16:57:32,666 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
+
+2025-10-04 16:57:46,559 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 17:00:53,406 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
+
+2025-10-04 17:01:07,306 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 17:01:15,912 — src.audio_info.audio_metadata — WARNING — create_album_dir:522 — D:\MusicProcessing\tests\PreppedMusic\NoMetadata\No_tag_Crush-Live.mp3 is missing album metadata

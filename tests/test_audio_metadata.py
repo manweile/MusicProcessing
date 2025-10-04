@@ -26,7 +26,7 @@ import mutagen
 from mutagen._util import MutagenError
 
 # local module constants
-from src import AUDIO_EXTS, AUDIO_FILES, FOLDER_ART
+from src import AUDIO_FILES, FOLDER_ART
 from src import MP3_EXT, MUSIC_TLD
 from src import PLAYLIST_EXTS
 from src import RESULT_DIR, RESULT_EXT
@@ -84,7 +84,7 @@ class TestAudioMetadata(TestCase):
         # for create albums test
         cls.prepped_src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR]
         # @todo move to init
-        genesis_path = os.path.join(TESTS_TLD, "Genesis", "In Too Deep-I'd Rather Be You", "Genesis-In Too Deep.mp3")
+        genesis_path = os.path.join(TESTS_TLD, "Genesis", "In Too Deep-I’d Rather Be You", "Genesis-In Too Deep.mp3")
         no_metadata_path = os.path.join(TESTS_TLD, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
         cls.prepped_src_file_paths.append(genesis_path)
         cls.prepped_src_file_paths.append(no_metadata_path)
@@ -94,7 +94,7 @@ class TestAudioMetadata(TestCase):
         cls.prepped_results.append(os.path.join(cls.prepped, "Abba", "Waterloo"))
         cls.prepped_results.append(os.path.join(cls.prepped, "Creedence Clearwater Revival", "Chronicle, Vol. 1"))
         cls.prepped_results.append(os.path.join(cls.prepped, "Genesis", "In Too Deep - I'd Rather Be You"))
-        cls.prepped_results.append(os.path.join(cls.prepped, "NoMetadata", "Here"))
+        # cls.prepped_results.append(os.path.join(cls.prepped, "NoMetadata", "Here"))
 
         # audio filenames for tag walk tests
         cls.mp3_line = os.path.join(cls.converted, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
@@ -408,6 +408,10 @@ class TestAudioMetadata(TestCase):
         for dir in self.prepped_results:
             dir_exists = os.path.isdir(dir)
             self.assertTrue(dir_exists)
+
+        no_metadata = (os.path.join(self.prepped, "NoMetadata", "Here"))
+        dir_not_exists = os.path.exists(no_metadata)
+        self.assertFalse(dir_not_exists)
 
 
     def test_get_any_tags(self):
