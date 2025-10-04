@@ -67,7 +67,7 @@ class TestAudioMetadata(TestCase):
 
         # test patterns
         cls.m3u_pattern = PLAYLIST_EXTS[0]
-        cls.mp3_pattern = AUDIO_EXTS[0]
+        cls.mp3_pattern = MP3_EXT
 
         # audio source files for walk tests
         cls.src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR]
@@ -82,6 +82,12 @@ class TestAudioMetadata(TestCase):
         cls.converted_results.append(os.path.join(cls.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3"))
 
         # for create albums test
+        # cls.prepped_results = []
+        # cls.prepped_results.append(os.path.join(cls.prepped, "The Eagles", "Desperado"))
+        # cls.prepped_results.append(os.path.join(cls.prepped, "Abba", "Waterloo"))
+        # cls.prepped_results.append(os.path.join(cls.prepped, "Creedence Clearwater Revival", "Chronicle, Vol. 1"))
+        cls.prepped_src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR]
+
         cls.prepped_results = []
         cls.prepped_results.append(os.path.join(cls.prepped, "The Eagles", "Desperado"))
         cls.prepped_results.append(os.path.join(cls.prepped, "Abba", "Waterloo"))
@@ -335,7 +341,7 @@ class TestAudioMetadata(TestCase):
 
     def test_convert_file_wo_metadata(self):
         '''
-        @brief Test Attempt converting a an audio file that does not have metadata.
+        @brief Test Attempt converting an audio file that does not have metadata.
         '''
 
         no_metadata = os.path.join(TESTS_TLD, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
