@@ -447,10 +447,9 @@ class AudioMetadata():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        album_dirs = set()
         data = []
         csv_filename = inspect.currentframe().f_code.co_name
-        header_row = ["audio file path", "album metadata", "album directory"]
+        header_row = ["audio file path", "album metadata", "sanitized album directory"]
 
         try:
             # get the artist dirs under tld
@@ -509,17 +508,16 @@ class AudioMetadata():
                         # platform is "Windows" because it is more restrictive (therefore os universal),
                         # the characters \, :, *, ?, ", <, >, | will be replaced by "-"
                         # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
-                        album_dir = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
+                        sanitized_album_name = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
 
-                        data.append([audio_file, album, album_dir])
-                        album_dirs.add(album_dir)
+                        data.append([audio_file, file_media_tags['album'], sanitized_album_name])
 
                         # make the album sub directory is REQUIRED before moving the audio file
-                        directory.make_album_dir(tld_item_path, album_dir)
+                        album_path = os.path.join(tld_item_path, sanitized_album_name)
+                        directory.make_dir(album_path)
 
                         # now transfer the audio file to new album directory
-                        destination_dir = os.path.join(tld_item_path, album_dir)
-                        directory.move_audio_file(audio_file, destination_dir)
+                        directory.move_audio_file(audio_file, album_path)
                     else:
                         logger.warning(f"{audio_file} is missing album metadata")
                         continue

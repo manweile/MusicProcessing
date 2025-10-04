@@ -82,16 +82,19 @@ class TestAudioMetadata(TestCase):
         cls.converted_results.append(os.path.join(cls.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3"))
 
         # for create albums test
-        # cls.prepped_results = []
-        # cls.prepped_results.append(os.path.join(cls.prepped, "The Eagles", "Desperado"))
-        # cls.prepped_results.append(os.path.join(cls.prepped, "Abba", "Waterloo"))
-        # cls.prepped_results.append(os.path.join(cls.prepped, "Creedence Clearwater Revival", "Chronicle, Vol. 1"))
         cls.prepped_src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR]
+        # @todo move to init
+        genesis_path = os.path.join(TESTS_TLD, "Genesis", "In Too Deep-I'd Rather Be You", "Genesis-In Too Deep.mp3")
+        no_metadata_path = os.path.join(TESTS_TLD, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
+        cls.prepped_src_file_paths.append(genesis_path)
+        cls.prepped_src_file_paths.append(no_metadata_path)
 
         cls.prepped_results = []
         cls.prepped_results.append(os.path.join(cls.prepped, "The Eagles", "Desperado"))
         cls.prepped_results.append(os.path.join(cls.prepped, "Abba", "Waterloo"))
         cls.prepped_results.append(os.path.join(cls.prepped, "Creedence Clearwater Revival", "Chronicle, Vol. 1"))
+        cls.prepped_results.append(os.path.join(cls.prepped, "Genesis", "In Too Deep - I'd Rather Be You"))
+        cls.prepped_results.append(os.path.join(cls.prepped, "NoMetadata", "Here"))
 
         # audio filenames for tag walk tests
         cls.mp3_line = os.path.join(cls.converted, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
@@ -140,7 +143,7 @@ class TestAudioMetadata(TestCase):
             shutil.copy(src_jpg, dest_jpg)
 
         # copy input files to prepped "walk" directory
-        for src_prepped in cls.src_file_paths:
+        for src_prepped in cls.prepped_src_file_paths:
             # get the audio file name w/o path
             # eg from D:\MusicProcessing\tests\Music\The Eagles\Desperado\The Eagles-Desperado.m4a -> The Eagles-Desperado.m4a
             file_name = os.path.basename(src_prepped)
