@@ -132,3 +132,13 @@
 2025-10-04 19:34:54,792 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -21.00 equaling 19.00 with max volume -4 plus 19.0 will result in clipping amount: 15.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
 
 2025-10-04 19:34:56,874 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -20.00 equaling 18.00 with max volume -7 plus 18.0 will result in clipping amount: 11.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
+
+2025-10-04 19:40:54,553 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory /home/gerald/MusicProcessing/tests/Music/Crush/Here does not contain a Folder.jpg file.
+
+2025-10-04 19:41:16,732 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:41:17,475 — src.audio_info.audio_metadata — WARNING — create_album_dir:522 — /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-04 19:42:45,115 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -21.00 equaling 19.00 with max volume -4 plus 19.0 will result in clipping amount: 15.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+
+2025-10-04 19:42:47,032 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -20.00 equaling 18.00 with max volume -7 plus 18.0 will result in clipping amount: 11.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3

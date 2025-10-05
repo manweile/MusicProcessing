@@ -350,3 +350,64 @@ Stack (most recent call last):
     probe_process = subprocess_utils.subprocess_run(probe_command)
   File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 233, in subprocess_run
     logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-04 19:41:59,070 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 183 on command ['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 183.
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 323, in test_get_volume_info_invalid_file
+    volumes = normalization.get_volume_info(self.vol_err_src)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 414, in get_volume_info
+    process = subprocess_utils.subprocess_run(command)
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-04 19:43:18,280 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffprobe -v quiet -show_format -show_streams /home/gerald/MusicProcessing/tests/Music/test.m3u
+NoneType: None
+
+2025-10-04 19:43:18,424 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav']
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 83, in test_subprocess_run_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)

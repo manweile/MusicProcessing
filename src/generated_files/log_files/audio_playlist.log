@@ -124,3 +124,50 @@ Stack (most recent call last):
     playlist.update_paths(TESTS_TLD, TEST_MP3_CRUSH)
   File "/home/gerald/MusicProcessing/src/audio_info/audio_playlist.py", line 130, in update_paths
     logger.exception(f"PlaylistError input file {input_m3u} is not a playlist", stack_info=True)
+
+2025-10-04 19:43:03,604 — src.audio_info.audio_playlist — ERROR — get_audio_name:88 — PlaylistError no file delimiter in #EXTINF:0The Eagles-Desperado.m4a
+NoneType: None
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_playlist.py", line 57, in test_get_audio_name_error
+    audio = playlist.get_audio_name(line)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_playlist.py", line 88, in get_audio_name
+    logger.exception(f"PlaylistError no file delimiter in {line}", stack_info=True)
+
+2025-10-04 19:43:03,612 — src.audio_info.audio_playlist — INFO — update_paths:175 — Updated test.m3u
+
+
+2025-10-04 19:43:03,612 — src.audio_info.audio_playlist — ERROR — update_paths:130 — PlaylistError input file /home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3 is not a playlist
+NoneType: None
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_playlist.py", line 130, in test_update_paths_fail
+    playlist.update_paths(TESTS_TLD, TEST_MP3_CRUSH)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_playlist.py", line 130, in update_paths
+    logger.exception(f"PlaylistError input file {input_m3u} is not a playlist", stack_info=True)

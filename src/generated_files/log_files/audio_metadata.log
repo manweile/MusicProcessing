@@ -1427,3 +1427,53 @@ Traceback (most recent call last):
   File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 272, in _openfile
     raise MutagenError(e)
 mutagen.MutagenError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav'
+
+2025-10-04 19:40:54,553 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory /home/gerald/MusicProcessing/tests/Music/Crush/Here does not contain a Folder.jpg file.
+
+2025-10-04 19:41:16,732 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:41:17,475 — src.audio_info.audio_metadata — WARNING — create_album_dir:522 — /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-04 19:41:18,339 — src.audio_info.audio_metadata — ERROR — get_media_tags:762 — JSONDecodeError decoding JSON output from ffprobe
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 756, in get_media_tags
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 18 column 1 (char 249)
+
+2025-10-04 19:41:22,060 — src.audio_info.audio_metadata — ERROR — has_art_tag:932 — MusicProcessingError with file: /home/gerald/MusicProcessing/tests/Music/test has invalid extension: .m3u
+NoneType: None
+
+2025-10-04 19:41:22,065 — src.audio_info.audio_metadata — ERROR — load_any_file:978 — ValueError loading /home/gerald/MusicProcessing/tests/Music/test.m3u returned None
+NoneType: None
+
+2025-10-04 19:41:22,065 — src.audio_info.audio_metadata — ERROR — load_any_file:982 — MutagenError [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav' loading /home/gerald/MusicProcessing/tests/Music/Non-extant.wav
+Traceback (most recent call last):
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 974, in load_any_file
+    audio_file = mutagen.File(file_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 162, in wrapper_func
+    with _openfile(None, filething, filename, fileobj,
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav'
