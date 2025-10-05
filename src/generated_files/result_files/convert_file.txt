@@ -1,0 +1,3 @@
+Beginning conversion on ABBA-Waterloo from mp3 to mp3
+Source directory path: /home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo
+Successful conversion on ABBA-Waterloo from mp3

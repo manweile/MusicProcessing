@@ -1,0 +1,1429 @@
+
+2025-10-04 19:26:14,175 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception FileNotFoundError converting /home/gerald/MusicProcessing/tests/Music/The Eagles/Desperado/The Eagles-Desperado.m4a to /home/gerald/MusicProcessing/src/generated_files/Music/The Eagles/Desperado/The Eagles-Desperado.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 318, in test_convert_file
+    metadata.convert_file(src_file, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:26:14,179 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory /home/gerald/MusicProcessing/tests/Music/Crush/Here does not contain a Folder.jpg file.
+
+2025-10-04 19:26:20,811 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception MutagenError converting /home/gerald/MusicProcessing/tests/Music/NoMetadata/Here/No_tag_Crush-Live.mp3 to /home/gerald/MusicProcessing/src/generated_files/Music/NoMetadata/Here/No_tag_Crush-Live.mp3
+Traceback (most recent call last):
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/Music/NoMetadata/Here/No_tag_Crush-Live.mp3'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 362, in convert_file
+    mp3_file = MP3(export_path, ID3=ID3, v2_version=3)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_file.py", line 48, in __init__
+    self.load(*args, **kwargs)
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 154, in wrapper
+    with _openfile(self, filething, filename, fileobj,
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/Music/NoMetadata/Here/No_tag_Crush-Live.mp3'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 345, in test_convert_file_wo_metadata
+    metadata.convert_file(no_metadata, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:26:25,238 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception FileNotFoundError converting /home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3 to /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 360, in test_convert_walk
+    metadata.convert_walk(self.converted, None, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 423, in convert_walk
+    self.convert_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:26:25,239 — src.audio_info.audio_metadata — ERROR — convert_walk:431 — Exception FileNotFoundError walking /home/gerald/MusicProcessing/tests/ConvertedMusic to convert audio files to mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 423, in convert_walk
+    self.convert_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 386, in convert_file
+    raise e_error
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 360, in test_convert_walk
+    metadata.convert_walk(self.converted, None, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 431, in convert_walk
+    logger.exception(exc_msg, stack_info=True)
+
+2025-10-04 19:26:29,725 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception FileNotFoundError converting /home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3 to /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 375, in test_convert_walk_pattern
+    metadata.convert_walk(self.converted, self.mp3_pattern, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 423, in convert_walk
+    self.convert_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:26:29,726 — src.audio_info.audio_metadata — ERROR — convert_walk:431 — Exception FileNotFoundError walking /home/gerald/MusicProcessing/tests/ConvertedMusic to convert .mp3 audio files to mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 423, in convert_walk
+    self.convert_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 386, in convert_file
+    raise e_error
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 375, in test_convert_walk_pattern
+    metadata.convert_walk(self.converted, self.mp3_pattern, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 431, in convert_walk
+    logger.exception(exc_msg, stack_info=True)
+
+2025-10-04 19:26:29,731 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:26:29,732 — src.audio_info.audio_metadata — ERROR — create_album_dir:534 — Exception FileNotFoundError creating sub-dirs for /home/gerald/MusicProcessing/tests/PreppedMusic
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 456, in create_album_dir
+    tld_content = os.listdir(start_path)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/PreppedMusic'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 400, in test_create_album_dir
+    metadata.create_album_dir(self.prepped)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 534, in create_album_dir
+    logger.exception(f"Exception {type(e_error).__name__} creating sub-dirs for {start_path}", stack_info=True)
+
+2025-10-04 19:26:30,456 — src.audio_info.audio_metadata — ERROR — get_media_info_walk:720 — Exception FileNotFoundError getting media info for file /home/gerald/MusicProcessing/tests/ConvertedMusic/Creedence Clearwater Revival/Chronicle, Vol. 1/Creedence Clearwater Revival-Fortunate Son.wma
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 715, in get_media_info_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:26:30,625 — src.audio_info.audio_metadata — ERROR — get_media_info_walk:720 — Exception FileNotFoundError getting media info for file /home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 715, in get_media_info_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:26:30,814 — src.audio_info.audio_metadata — ERROR — get_media_tags:762 — JSONDecodeError decoding JSON output from ffprobe
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 756, in get_media_tags
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 18 column 1 (char 249)
+
+2025-10-04 19:26:31,185 — src.audio_info.audio_metadata — ERROR — get_tags_walk:862 — Exception FileNotFoundError getting tags for file /home/gerald/MusicProcessing/tests/ConvertedMusic
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 859, in get_tags_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 623, in test_get_tags_walk
+    metadata.get_tags_walk(self.converted, MP3_EXT, ffprobe=True)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 862, in get_tags_walk
+    logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+
+2025-10-04 19:26:31,704 — src.audio_info.audio_metadata — ERROR — get_tags_walk:862 — Exception FileNotFoundError getting tags for file /home/gerald/MusicProcessing/tests/ConvertedMusic
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 859, in get_tags_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 640, in test_get_tags_walk_ffprobe
+    metadata.get_tags_walk(self.converted, None, ffprobe=True)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 862, in get_tags_walk
+    logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+
+2025-10-04 19:26:31,713 — src.audio_info.audio_metadata — ERROR — get_tags_walk:862 — Exception FileNotFoundError getting tags for file /home/gerald/MusicProcessing/tests/ConvertedMusic
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 859, in get_tags_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 659, in test_get_tags_walk_mutagen
+    metadata.get_tags_walk(self.converted, None)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 862, in get_tags_walk
+    logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+
+2025-10-04 19:26:35,245 — src.audio_info.audio_metadata — ERROR — get_unique_media_keys:912 — Exception FileNotFoundError getting tags for file /home/gerald/MusicProcessing/tests/Music
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 909, in get_unique_media_keys
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 678, in test_get_unique_media_keys
+    metadata.get_unique_media_keys(TESTS_TLD)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 912, in get_unique_media_keys
+    logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+
+2025-10-04 19:26:35,249 — src.audio_info.audio_metadata — ERROR — has_art_tag:932 — MusicProcessingError with file: /home/gerald/MusicProcessing/tests/Music/test has invalid extension: .m3u
+NoneType: None
+
+2025-10-04 19:26:35,260 — src.audio_info.audio_metadata — ERROR — load_any_file:978 — ValueError loading /home/gerald/MusicProcessing/tests/Music/test.m3u returned None
+NoneType: None
+
+2025-10-04 19:26:35,260 — src.audio_info.audio_metadata — ERROR — load_any_file:982 — MutagenError [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav' loading /home/gerald/MusicProcessing/tests/Music/Non-extant.wav
+Traceback (most recent call last):
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 974, in load_any_file
+    audio_file = mutagen.File(file_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 162, in wrapper_func
+    with _openfile(None, filething, filename, fileobj,
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav'
+
+2025-10-04 19:27:44,648 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception FileNotFoundError converting /home/gerald/MusicProcessing/tests/Music/The Eagles/Desperado/The Eagles-Desperado.m4a to /home/gerald/MusicProcessing/src/generated_files/Music/The Eagles/Desperado/The Eagles-Desperado.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 318, in test_convert_file
+    metadata.convert_file(src_file, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:27:44,651 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory /home/gerald/MusicProcessing/tests/Music/Crush/Here does not contain a Folder.jpg file.
+
+2025-10-04 19:27:50,129 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception FileNotFoundError converting /home/gerald/MusicProcessing/tests/Music/NoMetadata/Here/No_tag_Crush-Live.mp3 to /home/gerald/MusicProcessing/src/generated_files/Music/NoMetadata/Here/No_tag_Crush-Live.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 345, in test_convert_file_wo_metadata
+    metadata.convert_file(no_metadata, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:27:54,240 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception FileNotFoundError converting /home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3 to /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 360, in test_convert_walk
+    metadata.convert_walk(self.converted, None, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 423, in convert_walk
+    self.convert_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:27:54,241 — src.audio_info.audio_metadata — ERROR — convert_walk:431 — Exception FileNotFoundError walking /home/gerald/MusicProcessing/tests/ConvertedMusic to convert audio files to mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 423, in convert_walk
+    self.convert_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 386, in convert_file
+    raise e_error
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 360, in test_convert_walk
+    metadata.convert_walk(self.converted, None, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 431, in convert_walk
+    logger.exception(exc_msg, stack_info=True)
+
+2025-10-04 19:27:58,350 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception FileNotFoundError converting /home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3 to /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 375, in test_convert_walk_pattern
+    metadata.convert_walk(self.converted, self.mp3_pattern, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 423, in convert_walk
+    self.convert_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:27:58,350 — src.audio_info.audio_metadata — ERROR — convert_walk:431 — Exception FileNotFoundError walking /home/gerald/MusicProcessing/tests/ConvertedMusic to convert .mp3 audio files to mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 423, in convert_walk
+    self.convert_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 386, in convert_file
+    raise e_error
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 375, in test_convert_walk_pattern
+    metadata.convert_walk(self.converted, self.mp3_pattern, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 431, in convert_walk
+    logger.exception(exc_msg, stack_info=True)
+
+2025-10-04 19:27:58,354 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:27:59,123 — src.audio_info.audio_metadata — WARNING — create_album_dir:522 — /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-04 19:27:59,710 — src.audio_info.audio_metadata — ERROR — get_media_info_walk:720 — Exception FileNotFoundError getting media info for file /home/gerald/MusicProcessing/tests/ConvertedMusic/Creedence Clearwater Revival/Chronicle, Vol. 1/Creedence Clearwater Revival-Fortunate Son.wma
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 715, in get_media_info_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:27:59,861 — src.audio_info.audio_metadata — ERROR — get_media_info_walk:720 — Exception FileNotFoundError getting media info for file /home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 715, in get_media_info_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:28:00,010 — src.audio_info.audio_metadata — ERROR — get_media_tags:762 — JSONDecodeError decoding JSON output from ffprobe
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 756, in get_media_tags
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 18 column 1 (char 249)
+
+2025-10-04 19:28:00,334 — src.audio_info.audio_metadata — ERROR — get_tags_walk:862 — Exception FileNotFoundError getting tags for file /home/gerald/MusicProcessing/tests/ConvertedMusic
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 859, in get_tags_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 623, in test_get_tags_walk
+    metadata.get_tags_walk(self.converted, MP3_EXT, ffprobe=True)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 862, in get_tags_walk
+    logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+
+2025-10-04 19:28:00,772 — src.audio_info.audio_metadata — ERROR — get_tags_walk:862 — Exception FileNotFoundError getting tags for file /home/gerald/MusicProcessing/tests/ConvertedMusic
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 859, in get_tags_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 640, in test_get_tags_walk_ffprobe
+    metadata.get_tags_walk(self.converted, None, ffprobe=True)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 862, in get_tags_walk
+    logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+
+2025-10-04 19:28:00,779 — src.audio_info.audio_metadata — ERROR — get_tags_walk:862 — Exception FileNotFoundError getting tags for file /home/gerald/MusicProcessing/tests/ConvertedMusic
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 859, in get_tags_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 659, in test_get_tags_walk_mutagen
+    metadata.get_tags_walk(self.converted, None)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 862, in get_tags_walk
+    logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+
+2025-10-04 19:28:03,791 — src.audio_info.audio_metadata — ERROR — get_unique_media_keys:912 — Exception FileNotFoundError getting tags for file /home/gerald/MusicProcessing/tests/Music
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 909, in get_unique_media_keys
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 678, in test_get_unique_media_keys
+    metadata.get_unique_media_keys(TESTS_TLD)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 912, in get_unique_media_keys
+    logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+
+2025-10-04 19:28:03,792 — src.audio_info.audio_metadata — ERROR — has_art_tag:932 — MusicProcessingError with file: /home/gerald/MusicProcessing/tests/Music/test has invalid extension: .m3u
+NoneType: None
+
+2025-10-04 19:28:03,797 — src.audio_info.audio_metadata — ERROR — load_any_file:978 — ValueError loading /home/gerald/MusicProcessing/tests/Music/test.m3u returned None
+NoneType: None
+
+2025-10-04 19:28:03,798 — src.audio_info.audio_metadata — ERROR — load_any_file:982 — MutagenError [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav' loading /home/gerald/MusicProcessing/tests/Music/Non-extant.wav
+Traceback (most recent call last):
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 974, in load_any_file
+    audio_file = mutagen.File(file_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 162, in wrapper_func
+    with _openfile(None, filething, filename, fileobj,
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav'
+
+2025-10-04 19:28:22,201 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception FileNotFoundError converting /home/gerald/MusicProcessing/tests/Music/The Eagles/Desperado/The Eagles-Desperado.m4a to /home/gerald/MusicProcessing/src/generated_files/Music/The Eagles/Desperado/The Eagles-Desperado.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 318, in test_convert_file
+    metadata.convert_file(src_file, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:30:43,163 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception FileNotFoundError converting /home/gerald/MusicProcessing/tests/Music/The Eagles/Desperado/The Eagles-Desperado.m4a to /home/gerald/MusicProcessing/src/generated_files/Music/The Eagles/Desperado/The Eagles-Desperado.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 850, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 318, in test_convert_file
+    metadata.convert_file(src_file, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:30:43,166 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory /home/gerald/MusicProcessing/tests/Music/Crush/Here does not contain a Folder.jpg file.
+
+2025-10-04 19:30:48,350 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception FileNotFoundError converting /home/gerald/MusicProcessing/tests/Music/NoMetadata/Here/No_tag_Crush-Live.mp3 to /home/gerald/MusicProcessing/src/generated_files/Music/NoMetadata/Here/No_tag_Crush-Live.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 850, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 345, in test_convert_file_wo_metadata
+    metadata.convert_file(no_metadata, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:30:52,351 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception FileNotFoundError converting /home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3 to /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 850, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 360, in test_convert_walk
+    metadata.convert_walk(self.converted, None, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 423, in convert_walk
+    self.convert_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:30:52,352 — src.audio_info.audio_metadata — ERROR — convert_walk:431 — Exception FileNotFoundError walking /home/gerald/MusicProcessing/tests/ConvertedMusic to convert audio files to mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 423, in convert_walk
+    self.convert_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 386, in convert_file
+    raise e_error
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 850, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 360, in test_convert_walk
+    metadata.convert_walk(self.converted, None, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 431, in convert_walk
+    logger.exception(exc_msg, stack_info=True)
+
+2025-10-04 19:30:56,303 — src.audio_info.audio_metadata — ERROR — convert_file:385 — Exception FileNotFoundError converting /home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3 to /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 850, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 375, in test_convert_walk_pattern
+    metadata.convert_walk(self.converted, self.mp3_pattern, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 423, in convert_walk
+    self.convert_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 385, in convert_file
+    logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+
+2025-10-04 19:30:56,304 — src.audio_info.audio_metadata — ERROR — convert_walk:431 — Exception FileNotFoundError walking /home/gerald/MusicProcessing/tests/ConvertedMusic to convert .mp3 audio files to mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 423, in convert_walk
+    self.convert_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 386, in convert_file
+    raise e_error
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 376, in convert_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 850, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 375, in test_convert_walk_pattern
+    metadata.convert_walk(self.converted, self.mp3_pattern, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 431, in convert_walk
+    logger.exception(exc_msg, stack_info=True)
+
+2025-10-04 19:30:56,307 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:30:57,023 — src.audio_info.audio_metadata — WARNING — create_album_dir:522 — /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-04 19:30:57,582 — src.audio_info.audio_metadata — ERROR — get_media_info_walk:720 — Exception FileNotFoundError getting media info for file /home/gerald/MusicProcessing/tests/ConvertedMusic/Creedence Clearwater Revival/Chronicle, Vol. 1/Creedence Clearwater Revival-Fortunate Son.wma
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 715, in get_media_info_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:30:57,732 — src.audio_info.audio_metadata — ERROR — get_media_info_walk:720 — Exception FileNotFoundError getting media info for file /home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 715, in get_media_info_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:30:57,878 — src.audio_info.audio_metadata — ERROR — get_media_tags:762 — JSONDecodeError decoding JSON output from ffprobe
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 756, in get_media_tags
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 18 column 1 (char 249)
+
+2025-10-04 19:30:58,181 — src.audio_info.audio_metadata — ERROR — get_tags_walk:862 — Exception FileNotFoundError getting tags for file /home/gerald/MusicProcessing/tests/ConvertedMusic
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 859, in get_tags_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 850, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 623, in test_get_tags_walk
+    metadata.get_tags_walk(self.converted, MP3_EXT, ffprobe=True)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 862, in get_tags_walk
+    logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+
+2025-10-04 19:30:58,592 — src.audio_info.audio_metadata — ERROR — get_tags_walk:862 — Exception FileNotFoundError getting tags for file /home/gerald/MusicProcessing/tests/ConvertedMusic
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 859, in get_tags_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 850, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 640, in test_get_tags_walk_ffprobe
+    metadata.get_tags_walk(self.converted, None, ffprobe=True)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 862, in get_tags_walk
+    logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+
+2025-10-04 19:30:58,605 — src.audio_info.audio_metadata — ERROR — get_tags_walk:862 — Exception FileNotFoundError getting tags for file /home/gerald/MusicProcessing/tests/ConvertedMusic
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 859, in get_tags_walk
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 850, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 659, in test_get_tags_walk_mutagen
+    metadata.get_tags_walk(self.converted, None)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 862, in get_tags_walk
+    logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+
+2025-10-04 19:31:01,419 — src.audio_info.audio_metadata — ERROR — get_unique_media_keys:912 — Exception FileNotFoundError getting tags for file /home/gerald/MusicProcessing/tests/Music
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 909, in get_unique_media_keys
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt'
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 850, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_metadata.py", line 678, in test_get_unique_media_keys
+    metadata.get_unique_media_keys(TESTS_TLD)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 912, in get_unique_media_keys
+    logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+
+2025-10-04 19:31:01,421 — src.audio_info.audio_metadata — ERROR — has_art_tag:932 — MusicProcessingError with file: /home/gerald/MusicProcessing/tests/Music/test has invalid extension: .m3u
+NoneType: None
+
+2025-10-04 19:31:01,432 — src.audio_info.audio_metadata — ERROR — load_any_file:978 — ValueError loading /home/gerald/MusicProcessing/tests/Music/test.m3u returned None
+NoneType: None
+
+2025-10-04 19:31:01,433 — src.audio_info.audio_metadata — ERROR — load_any_file:982 — MutagenError [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav' loading /home/gerald/MusicProcessing/tests/Music/Non-extant.wav
+Traceback (most recent call last):
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 974, in load_any_file
+    audio_file = mutagen.File(file_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 162, in wrapper_func
+    with _openfile(None, filething, filename, fileobj,
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav'
+
+2025-10-04 19:32:50,426 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory /home/gerald/MusicProcessing/tests/Music/Crush/Here does not contain a Folder.jpg file.
+
+2025-10-04 19:33:11,849 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:33:12,581 — src.audio_info.audio_metadata — WARNING — create_album_dir:522 — /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-04 19:33:13,458 — src.audio_info.audio_metadata — ERROR — get_media_tags:762 — JSONDecodeError decoding JSON output from ffprobe
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 756, in get_media_tags
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 18 column 1 (char 249)
+
+2025-10-04 19:33:16,980 — src.audio_info.audio_metadata — ERROR — has_art_tag:932 — MusicProcessingError with file: /home/gerald/MusicProcessing/tests/Music/test has invalid extension: .m3u
+NoneType: None
+
+2025-10-04 19:33:16,993 — src.audio_info.audio_metadata — ERROR — load_any_file:978 — ValueError loading /home/gerald/MusicProcessing/tests/Music/test.m3u returned None
+NoneType: None
+
+2025-10-04 19:33:16,994 — src.audio_info.audio_metadata — ERROR — load_any_file:982 — MutagenError [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav' loading /home/gerald/MusicProcessing/tests/Music/Non-extant.wav
+Traceback (most recent call last):
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 974, in load_any_file
+    audio_file = mutagen.File(file_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 162, in wrapper_func
+    with _openfile(None, filething, filename, fileobj,
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/gerald/.local/lib/python3.12/site-packages/mutagen/_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav'

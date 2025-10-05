@@ -1,0 +1,64 @@
+
+2025-10-04 19:26:02,639 — src.audio_info.audio_playlist — INFO — update_paths:175 — Updated test.m3u
+
+
+2025-10-04 19:26:07,958 — src.audio_info.audio_art — INFO — extract_album_art:180 — /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo has a Folder.jpg
+
+2025-10-04 19:26:08,187 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/Music/Crush/Here/No_tag_Crush-Live.mp3
+
+2025-10-04 19:26:08,418 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma
+
+2025-10-04 19:26:09,480 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/Abba/ABBA-Waterloo.mp3
+
+2025-10-04 19:26:11,531 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/Creedence Clearwater Revival/Creedence Clearwater Revival-Fortunate Son.wma
+
+2025-10-04 19:26:11,763 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3
+
+2025-10-04 19:26:11,967 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/Abba/ABBA-Waterloo.mp3
+
+2025-10-04 19:26:12,574 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3
+
+2025-10-04 19:26:12,961 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Genesis/In Too Deep-I’d Rather Be You
+
+2025-10-04 19:26:12,961 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo
+
+2025-10-04 19:26:12,964 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/The Eagles/Desperado
+
+2025-10-04 19:26:12,985 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Creedence Clearwater Revival/Chronicle, Vol. 1
+
+2025-10-04 19:26:12,985 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/NoMetadata/Here
+
+2025-10-04 19:27:28,771 — src.audio_info.audio_art — INFO — extract_album_art:180 — /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo has a Folder.jpg
+
+2025-10-04 19:27:28,935 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/Music/Crush/Here/No_tag_Crush-Live.mp3
+
+2025-10-04 19:27:29,120 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma
+
+2025-10-04 19:27:31,101 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Genesis/In Too Deep-I’d Rather Be You
+
+2025-10-04 19:27:31,102 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo
+
+2025-10-04 19:27:31,104 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/The Eagles/Desperado
+
+2025-10-04 19:27:31,105 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Creedence Clearwater Revival/Chronicle, Vol. 1
+
+2025-10-04 19:27:31,105 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/NoMetadata/Here
+
+2025-10-04 19:30:19,945 — src.audio_info.audio_art — INFO — extract_album_art:180 — /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo has a Folder.jpg
+
+2025-10-04 19:30:20,110 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/Music/Crush/Here/No_tag_Crush-Live.mp3
+
+2025-10-04 19:30:20,297 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma
+
+2025-10-04 19:30:22,250 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Genesis/In Too Deep-I’d Rather Be You
+
+2025-10-04 19:30:22,250 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo
+
+2025-10-04 19:30:22,252 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/The Eagles/Desperado
+
+2025-10-04 19:30:22,253 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Creedence Clearwater Revival/Chronicle, Vol. 1
+
+2025-10-04 19:30:22,254 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/NoMetadata/Here
+
+2025-10-04 19:35:15,059 — src.audio_info.audio_playlist — INFO — update_paths:175 — Updated test.m3u
+

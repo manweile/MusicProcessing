@@ -1,0 +1,134 @@
+
+2025-10-04 19:26:07,959 — src.audio_info.audio_art — WARNING — extract_album_art:186 — test.m3u is not an audio file
+
+2025-10-04 19:26:08,208 — src.audio_info.audio_art — WARNING — extract_album_art:211 — No album art present in /home/gerald/MusicProcessing/tests/Music/Crush/Here/No_tag_Crush-Live.mp3
+
+2025-10-04 19:26:09,481 — src.audio_info.audio_art — WARNING — extract_album_art:211 — No album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/Abba/ABBA-Waterloo.mp3
+
+2025-10-04 19:26:11,532 — src.audio_info.audio_art — WARNING — extract_album_art:211 — No album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/Creedence Clearwater Revival/Creedence Clearwater Revival-Fortunate Son.wma
+
+2025-10-04 19:26:11,764 — src.audio_info.audio_art — WARNING — extract_album_art:211 — No album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3
+
+2025-10-04 19:26:11,968 — src.audio_info.audio_art — WARNING — extract_album_art:211 — No album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/Abba/ABBA-Waterloo.mp3
+
+2025-10-04 19:26:12,575 — src.audio_info.audio_art — WARNING — extract_album_art:211 — No album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3
+
+2025-10-04 19:26:12,576 — src.audio_info.audio_art — WARNING — extract_walk:371 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:26:12,962 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Aerosmith/Devil's Got a New Disguise-The Very Best of Aerosmith
+
+2025-10-04 19:26:12,962 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Diamond Rio
+
+2025-10-04 19:26:12,962 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Elton John/Goodbye Yellow Brick Road
+
+2025-10-04 19:26:12,962 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/The Lord of the Rings/The Return of the King
+
+2025-10-04 19:26:12,962 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/The Lord of the Rings/The Two Towers
+
+2025-10-04 19:26:12,963 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Daughtry/Leave This Town
+
+2025-10-04 19:26:12,963 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Billie Holiday/Georgia On My Mind
+
+2025-10-04 19:26:12,963 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Sawyer Fredericks/A Good Storm
+
+2025-10-04 19:26:12,963 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/38 Special/Teachers
+
+2025-10-04 19:26:12,963 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Crush/Here
+
+2025-10-04 19:26:12,964 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Joshua Davis/The Voice Peformance
+
+2025-10-04 19:26:12,984 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/X Ambassadors/VHS
+
+2025-10-04 19:26:12,985 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Bear McCreary/Battlestar Galactica
+
+2025-10-04 19:26:14,179 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory /home/gerald/MusicProcessing/tests/Music/Crush/Here does not contain a Folder.jpg file.
+
+2025-10-04 19:26:29,731 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:26:47,351 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -21.00 equaling 19.00 with max volume -4 plus 19.0 will result in clipping amount: 15.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+
+2025-10-04 19:27:28,772 — src.audio_info.audio_art — WARNING — extract_album_art:186 — test.m3u is not an audio file
+
+2025-10-04 19:27:28,951 — src.audio_info.audio_art — WARNING — extract_album_art:211 — No album art present in /home/gerald/MusicProcessing/tests/Music/Crush/Here/No_tag_Crush-Live.mp3
+
+2025-10-04 19:27:30,810 — src.audio_info.audio_art — WARNING — extract_walk:371 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:27:31,102 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Aerosmith/Devil's Got a New Disguise-The Very Best of Aerosmith
+
+2025-10-04 19:27:31,102 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Diamond Rio
+
+2025-10-04 19:27:31,102 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Elton John/Goodbye Yellow Brick Road
+
+2025-10-04 19:27:31,103 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/The Lord of the Rings/The Return of the King
+
+2025-10-04 19:27:31,103 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/The Lord of the Rings/The Two Towers
+
+2025-10-04 19:27:31,103 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Daughtry/Leave This Town
+
+2025-10-04 19:27:31,103 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Billie Holiday/Georgia On My Mind
+
+2025-10-04 19:27:31,103 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Sawyer Fredericks/A Good Storm
+
+2025-10-04 19:27:31,103 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/38 Special/Teachers
+
+2025-10-04 19:27:31,104 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Crush/Here
+
+2025-10-04 19:27:31,104 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Joshua Davis/The Voice Peformance
+
+2025-10-04 19:27:31,105 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/X Ambassadors/VHS
+
+2025-10-04 19:27:31,105 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Bear McCreary/Battlestar Galactica
+
+2025-10-04 19:27:44,651 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory /home/gerald/MusicProcessing/tests/Music/Crush/Here does not contain a Folder.jpg file.
+
+2025-10-04 19:27:58,354 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:27:59,123 — src.audio_info.audio_metadata — WARNING — create_album_dir:522 — /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-04 19:30:19,945 — src.audio_info.audio_art — WARNING — extract_album_art:186 — test.m3u is not an audio file
+
+2025-10-04 19:30:20,122 — src.audio_info.audio_art — WARNING — extract_album_art:211 — No album art present in /home/gerald/MusicProcessing/tests/Music/Crush/Here/No_tag_Crush-Live.mp3
+
+2025-10-04 19:30:21,978 — src.audio_info.audio_art — WARNING — extract_walk:371 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:30:22,251 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Aerosmith/Devil's Got a New Disguise-The Very Best of Aerosmith
+
+2025-10-04 19:30:22,251 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Diamond Rio
+
+2025-10-04 19:30:22,251 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Elton John/Goodbye Yellow Brick Road
+
+2025-10-04 19:30:22,251 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/The Lord of the Rings/The Return of the King
+
+2025-10-04 19:30:22,251 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/The Lord of the Rings/The Two Towers
+
+2025-10-04 19:30:22,252 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Daughtry/Leave This Town
+
+2025-10-04 19:30:22,252 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Billie Holiday/Georgia On My Mind
+
+2025-10-04 19:30:22,252 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Sawyer Fredericks/A Good Storm
+
+2025-10-04 19:30:22,252 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/38 Special/Teachers
+
+2025-10-04 19:30:22,252 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Crush/Here
+
+2025-10-04 19:30:22,253 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Joshua Davis/The Voice Peformance
+
+2025-10-04 19:30:22,253 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/X Ambassadors/VHS
+
+2025-10-04 19:30:22,254 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Bear McCreary/Battlestar Galactica
+
+2025-10-04 19:30:43,166 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory /home/gerald/MusicProcessing/tests/Music/Crush/Here does not contain a Folder.jpg file.
+
+2025-10-04 19:30:56,307 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:30:57,023 — src.audio_info.audio_metadata — WARNING — create_album_dir:522 — /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-04 19:32:50,426 — src.audio_info.audio_metadata — WARNING — convert_file:284 — album directory /home/gerald/MusicProcessing/tests/Music/Crush/Here does not contain a Folder.jpg file.
+
+2025-10-04 19:33:11,849 — src.audio_info.audio_metadata — WARNING — convert_walk:406 — Pattern .m3u is not for a valid audio file
+
+2025-10-04 19:33:12,581 — src.audio_info.audio_metadata — WARNING — create_album_dir:522 — /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-04 19:34:54,792 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -21.00 equaling 19.00 with max volume -4 plus 19.0 will result in clipping amount: 15.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+
+2025-10-04 19:34:56,874 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -20.00 equaling 18.00 with max volume -7 plus 18.0 will result in clipping amount: 11.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3

@@ -1,0 +1,10 @@
+Beginning rms normalization on Howard Shore-The Taming Of Smeagol.mp3
+Source directory path: /home/gerald/MusicProcessing/tests/Music/The Lord of the Rings/The Two Towers
+bit rate: 100879
+floor mean volume: -1.00
+floor max volume: -1.00
+mean volume: -1.00 dB
+adjustment: -1.00 dB
+rms normalizing Howard Shore-The Taming Of Smeagol.mp3
+['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/The Lord of the Rings/The Two Towers/Howard Shore-The Taming Of Smeagol.mp3', '-filter:a', 'volume=-1.00dB', '-c:v', 'copy', '-c:a', 'libmp3lame', '-b:a', '100879', '-id3v2_version', '3', '/home/gerald/MusicProcessing/src/generated_files/Music/The Lord of the Rings/The Two Towers/Howard Shore-The Taming Of Smeagol.mp3', '-y']
+Successful rms normalization on Howard Shore-The Taming Of Smeagol.mp3

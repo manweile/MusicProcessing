@@ -1,0 +1,75 @@
+
+/home/gerald/MusicProcessing/tests/Music/Genesis/In Too Deep-I’d Rather Be You/Genesis-In Too Deep.mp3
+normalizing possible, max volume: -7.00 dB
+peak normalizing adjustment: 5.00 dB
+rms clipping amount: 11.00 dB with mean volume: -20.00 db, max volume: -7.00 db and rms adjustment: 18.00 db
+
+/home/gerald/MusicProcessing/tests/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+normalizing possible, max volume: -4.00 dB
+peak normalizing adjustment: 2.00 dB
+rms clipping amount: 15.00 dB with mean volume: -21.00 db, max volume: -4.00 db and rms adjustment: 19.00 db
+
+/home/gerald/MusicProcessing/tests/Music/Aerosmith/Devil's Got a New Disguise-The Very Best of Aerosmith/Aerosmith-Dream On.mp3
+normalizing possible, max volume: -4.00 dB
+peak normalizing adjustment: 2.00 dB
+rms clipping amount: 14.00 dB with mean volume: -20.00 db, max volume: -4.00 db and rms adjustment: 18.00 db
+
+/home/gerald/MusicProcessing/tests/Music/Diamond Rio/Diamond Rio-Lyin' Eyes.mp3
+normalizing impossible, max volume: 0.00 db
+peak normalizing adjustment: -2.00 dB
+rms clipping amount: 13.00 dB with mean volume: -15.00 db, max volume: 0.00 db and rms adjustment: 13.00 db
+
+/home/gerald/MusicProcessing/tests/Music/The Lord of the Rings/The Return of the King/Annie Lennox - Into the West.mp3
+normalizing possible, max volume: -3.00 dB
+peak normalizing adjustment: 1.00 dB
+rms clipping amount: 16.00 dB with mean volume: -21.00 db, max volume: -3.00 db and rms adjustment: 19.00 db
+
+/home/gerald/MusicProcessing/tests/Music/The Lord of the Rings/The Two Towers/Howard Shore-The Taming Of Smeagol.mp3
+normalizing possible, max volume: -1.00 dB
+peak normalizing adjustment: -1.00 dB
+rms normalizing adjustment: -1.00 dB
+
+/home/gerald/MusicProcessing/tests/Music/Daughtry/Leave This Town/Daughtry-No Surprise.mp3
+normalizing possible, max volume: -7.00 dB
+peak normalizing adjustment: 5.00 dB
+rms clipping amount: 12.00 dB with mean volume: -21.00 db, max volume: -7.00 db and rms adjustment: 19.00 db
+
+/home/gerald/MusicProcessing/tests/Music/Sawyer Fredericks/A Good Storm/Sawyer Fredricks - Shots Fired.mp3
+normalizing possible, max volume: -2.00 dB
+peak normalizing adjustment: 0.00 dB
+rms clipping amount: 15.00 dB with mean volume: -19.00 db, max volume: -2.00 db and rms adjustment: 17.00 db
+
+/home/gerald/MusicProcessing/tests/Music/38 Special/Teachers/38 Special-Teacher Teacher.mp3
+normalizing possible, max volume: -4.00 dB
+peak normalizing adjustment: 2.00 dB
+rms clipping amount: 15.00 dB with mean volume: -21.00 db, max volume: -4.00 db and rms adjustment: 19.00 db
+
+/home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3
+normalizing possible, max volume: -7.00 dB
+peak normalizing adjustment: 5.00 dB
+rms clipping amount: 11.00 dB with mean volume: -20.00 db, max volume: -7.00 db and rms adjustment: 18.00 db
+
+/home/gerald/MusicProcessing/tests/Music/Crush/Here/No_tag_Crush-Live.mp3
+normalizing possible, max volume: -7.00 dB
+peak normalizing adjustment: 5.00 dB
+rms clipping amount: 11.00 dB with mean volume: -20.00 db, max volume: -7.00 db and rms adjustment: 18.00 db
+
+/home/gerald/MusicProcessing/tests/Music/Albert Collins/Best Of The Blues, Vol. 1/Albert Collins - Trash Talkin'.mp3
+normalizing possible, max volume: -4.00 dB
+peak normalizing adjustment: 2.00 dB
+rms clipping amount: 17.00 dB with mean volume: -23.00 db, max volume: -4.00 db and rms adjustment: 21.00 db
+
+/home/gerald/MusicProcessing/tests/Music/X Ambassadors/VHS/X Ambassadors-Renegades.mp3
+normalizing impossible, max volume: 0.00 db
+peak normalizing adjustment: -2.00 dB
+rms clipping amount: 7.00 dB with mean volume: -9.00 db, max volume: 0.00 db and rms adjustment: 7.00 db
+
+/home/gerald/MusicProcessing/tests/Music/NoMetadata/Here/No_tag_Crush-Live.mp3
+normalizing possible, max volume: -7.00 dB
+peak normalizing adjustment: 5.00 dB
+rms clipping amount: 11.00 dB with mean volume: -20.00 db, max volume: -7.00 db and rms adjustment: 18.00 db
+
+/home/gerald/MusicProcessing/tests/Music/Bear McCreary/Battlestar Galactica/Bear McCreary - BSG Gayatri Mantra Theme Song.mp3
+normalizing possible, max volume: -1.00 dB
+peak normalizing adjustment: -1.00 dB
+rms clipping amount: 13.00 dB with mean volume: -16.00 db, max volume: -1.00 db and rms adjustment: 14.00 db

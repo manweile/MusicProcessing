@@ -1,0 +1,562 @@
+
+2025-10-04 19:26:18,351 — src.audio_normalize.audio_normalization — ERROR — ebu_normalize_file:287 — Exception CalledProcessError while ebu normalizing audio file: /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 264, in ebu_normalize_file
+    normalize_process = subprocess_utils.subprocess_run(normalize_command)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 234, in subprocess_run
+    raise cp_error
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/Abba/Waterloo/ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', '/home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3', '-y']' returned non-zero exit status 254.
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 169, in test_ebu_normalize_dynamic
+    normalization.ebu_normalize_file(self.ebu_dynamic_src, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 287, in ebu_normalize_file
+    logger.exception(f"Exception {type(e_error).__name__} while ebu normalizing audio file: {file_path}", stack_info=True)
+
+2025-10-04 19:26:32,432 — src.audio_normalize.audio_normalization — ERROR — ebu_normalize_file:287 — Exception CalledProcessError while ebu normalizing audio file: /home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 264, in ebu_normalize_file
+    normalize_process = subprocess_utils.subprocess_run(normalize_command)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 234, in subprocess_run
+    raise cp_error
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.77:measured_TP=-6.66:measured_LRA=8.10:measured_thresh=-26.99:offset=-0.64:linear=true:print_format=json', '-ar', '44100', '/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3', '-y']' returned non-zero exit status 254.
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 178, in test_ebu_normalize_linear
+    normalization.ebu_normalize_file(self.ebu_linear_src, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 287, in ebu_normalize_file
+    logger.exception(f"Exception {type(e_error).__name__} while ebu normalizing audio file: {file_path}", stack_info=True)
+
+2025-10-04 19:26:32,590 — src.audio_normalize.audio_normalization — ERROR — get_bit_rate:328 — JSONDecodeError decoding JSON output from ffprobe on audio file: /home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 319, in get_bit_rate
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 1 column 34 (char 33)
+
+2025-10-04 19:26:32,738 — src.audio_normalize.audio_normalization — ERROR — get_sample_rate:377 — JSONDecodeError decoding JSON output from ffprobe on audio file: /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 368, in get_sample_rate
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 1 column 76 (char 75)
+
+2025-10-04 19:26:33,416 — src.audio_normalize.audio_normalization — ERROR — get_volume_info:432 — Exception CalledProcessError getting volume for file /home/gerald/MusicProcessing/tests/Music/test.m3u
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 414, in get_volume_info
+    process = subprocess_utils.subprocess_run(command)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 234, in subprocess_run
+    raise cp_error
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 183.
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 323, in test_get_volume_info_invalid_file
+    volumes = normalization.get_volume_info(self.vol_err_src)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 432, in get_volume_info
+    logger.exception(f"Exception {type(e_error).__name__} getting volume for file {file_path}", stack_info=True)
+
+2025-10-04 19:26:33,417 — src.audio_normalize.audio_normalization — ERROR — __loudnorm_json_parse:113 — JSONDecodeError parsing 
+{
+	"input_i" : "-16.52",
+	"input_tp" : "-3.42",
+	"input_lra" : "2.20",
+	"input_thresh" : "-26.93",
+	"output_i" : "-15.83",
+	"output_tp" : "-2.00",
+	"output_lra" : "1.40",
+	"output_thresh" : "-26.03",
+	"normalization_type" : "dynamic",
+	"target_offset" : "-0.17"
+}
+}
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 110, in __loudnorm_json_parse
+    output_data = json.loads(json_string)
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 340, in decode
+    raise JSONDecodeError("Extra data", s, end)
+json.decoder.JSONDecodeError: Extra data: line 13 column 1 (char 264)
+
+2025-10-04 19:26:33,418 — src.audio_normalize.audio_normalization — ERROR — __loudnorm_json_parse:107 — JSONOutputError could not find JSON output in subprocess stderr
+{
+	"input_i" : "-16.52",
+	"input_tp" : "-3.42",
+	"input_lra" : "2.20",
+	"input_thresh" : "-26.93",
+	"output_i" : "-15.83",
+	"output_tp" : "-2.00",
+	"output_lra" : "1.40",
+	"output_thresh" : "-26.03",
+	"normalization_type" : "dynamic",
+	"target_offset" : "-0.17"
+
+NoneType: None
+
+2025-10-04 19:26:42,327 — src.audio_normalize.audio_normalization — ERROR — ebu_normalize_file:287 — Exception CalledProcessError while ebu normalizing audio file: /home/gerald/MusicProcessing/tests/NormalizedMusic/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 264, in ebu_normalize_file
+    normalize_process = subprocess_utils.subprocess_run(normalize_command)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 234, in subprocess_run
+    raise cp_error
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/NormalizedMusic/Abba/Waterloo/ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', '/home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3', '-y']' returned non-zero exit status 254.
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 440, in test_normalize_walk_ebu
+    normalization.normalize_walk(self.normalized, "ebu", show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 465, in normalize_walk
+    self.ebu_normalize_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 287, in ebu_normalize_file
+    logger.exception(f"Exception {type(e_error).__name__} while ebu normalizing audio file: {file_path}", stack_info=True)
+
+2025-10-04 19:26:42,327 — src.audio_normalize.audio_normalization — ERROR — normalize_walk:472 — Exception CalledProcessError on /home/gerald/MusicProcessing/tests/NormalizedMusic/Abba/Waterloo/ABBA-Waterloo.mp3 while walking /home/gerald/MusicProcessing/tests/NormalizedMusic to ebu normalize audio files
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 465, in normalize_walk
+    self.ebu_normalize_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 288, in ebu_normalize_file
+    raise e_error
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 264, in ebu_normalize_file
+    normalize_process = subprocess_utils.subprocess_run(normalize_command)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 234, in subprocess_run
+    raise cp_error
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/NormalizedMusic/Abba/Waterloo/ABBA-Waterloo.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-16.52:measured_TP=-3.42:measured_LRA=2.20:measured_thresh=-26.93:offset=-0.17:linear=true:print_format=json', '-ar', '44100', '/home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3', '-y']' returned non-zero exit status 254.
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 440, in test_normalize_walk_ebu
+    normalization.normalize_walk(self.normalized, "ebu", show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 472, in normalize_walk
+    logger.exception(f"Exception {type(e_error).__name__} on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files", stack_info=True)
+
+2025-10-04 19:26:46,795 — src.audio_normalize.audio_normalization — ERROR — peak_normalize_file:577 — Exception FileNotFoundError while peak normalizing audio file: /home/gerald/MusicProcessing/tests/NormalizedMusic/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 572, in peak_normalize_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 452, in test_normalize_walk_peak
+    normalization.normalize_walk(self.normalized, "peak", show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 467, in normalize_walk
+    self.peak_normalize_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 577, in peak_normalize_file
+    logger.exception(f"Exception {type(e_error).__name__} while peak normalizing audio file: {file_path}", stack_info=True)
+
+2025-10-04 19:26:46,796 — src.audio_normalize.audio_normalization — ERROR — normalize_walk:472 — Exception FileNotFoundError on /home/gerald/MusicProcessing/tests/NormalizedMusic/Abba/Waterloo/ABBA-Waterloo.mp3 while walking /home/gerald/MusicProcessing/tests/NormalizedMusic to peak normalize audio files
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 467, in normalize_walk
+    self.peak_normalize_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 578, in peak_normalize_file
+    raise e_error
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 572, in peak_normalize_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 452, in test_normalize_walk_peak
+    normalization.normalize_walk(self.normalized, "peak", show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 472, in normalize_walk
+    logger.exception(f"Exception {type(e_error).__name__} on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files", stack_info=True)
+
+2025-10-04 19:26:47,351 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -21.00 equaling 19.00 with max volume -4 plus 19.0 will result in clipping amount: 15.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+
+2025-10-04 19:26:48,517 — src.audio_normalize.audio_normalization — ERROR — rms_normalize_file:684 — Exception FileNotFoundError while rms normalizing audio file: /home/gerald/MusicProcessing/tests/NormalizedMusic/The Lord of the Rings/The Two Towers/Howard Shore-The Taming Of Smeagol.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 679, in rms_normalize_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 463, in test_normalize_walk_rms
+    normalization.normalize_walk(self.normalized, "rms", show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 469, in normalize_walk
+    self.rms_normalize_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 684, in rms_normalize_file
+    logger.exception(f"Exception {type(e_error).__name__} while rms normalizing audio file: {file_path}", stack_info=True)
+
+2025-10-04 19:26:48,518 — src.audio_normalize.audio_normalization — ERROR — normalize_walk:472 — Exception FileNotFoundError on /home/gerald/MusicProcessing/tests/NormalizedMusic/The Lord of the Rings/The Two Towers/Howard Shore-The Taming Of Smeagol.mp3 while walking /home/gerald/MusicProcessing/tests/NormalizedMusic to rms normalize audio files
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 469, in normalize_walk
+    self.rms_normalize_file(input_file_path, show_spinner)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 685, in rms_normalize_file
+    raise e_error
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 679, in rms_normalize_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 463, in test_normalize_walk_rms
+    normalization.normalize_walk(self.normalized, "rms", show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 472, in normalize_walk
+    logger.exception(f"Exception {type(e_error).__name__} on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files", stack_info=True)
+
+2025-10-04 19:26:54,778 — src.audio_normalize.audio_normalization — ERROR — peak_normalize_file:577 — Exception FileNotFoundError while peak normalizing audio file: /home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 572, in peak_normalize_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 474, in test_peak_normalize_file
+    normalization.peak_normalize_file(self.peak_src, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 577, in peak_normalize_file
+    logger.exception(f"Exception {type(e_error).__name__} while peak normalizing audio file: {file_path}", stack_info=True)
+
+2025-10-04 19:26:56,768 — src.audio_normalize.audio_normalization — ERROR — rms_normalize_file:684 — Exception FileNotFoundError while rms normalizing audio file: /home/gerald/MusicProcessing/tests/Music/The Lord of the Rings/The Two Towers/Howard Shore-The Taming Of Smeagol.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 679, in rms_normalize_file
+    directory.create_txt(txt_filename, data)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 497, in test_rms_normalize_file
+    normalization.rms_normalize_file(self.rms_src, show_spinner=False)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 684, in rms_normalize_file
+    logger.exception(f"Exception {type(e_error).__name__} while rms normalizing audio file: {file_path}", stack_info=True)
+
+2025-10-04 19:34:12,739 — src.audio_normalize.audio_normalization — ERROR — get_bit_rate:328 — JSONDecodeError decoding JSON output from ffprobe on audio file: /home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 319, in get_bit_rate
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 1 column 34 (char 33)
+
+2025-10-04 19:34:12,877 — src.audio_normalize.audio_normalization — ERROR — get_sample_rate:377 — JSONDecodeError decoding JSON output from ffprobe on audio file: /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 368, in get_sample_rate
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 1 column 76 (char 75)
+
+2025-10-04 19:34:13,521 — src.audio_normalize.audio_normalization — ERROR — get_volume_info:432 — Exception CalledProcessError getting volume for file /home/gerald/MusicProcessing/tests/Music/test.m3u
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 414, in get_volume_info
+    process = subprocess_utils.subprocess_run(command)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 234, in subprocess_run
+    raise cp_error
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 183.
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 553, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_normalization.py", line 323, in test_get_volume_info_invalid_file
+    volumes = normalization.get_volume_info(self.vol_err_src)
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 432, in get_volume_info
+    logger.exception(f"Exception {type(e_error).__name__} getting volume for file {file_path}", stack_info=True)
+
+2025-10-04 19:34:13,522 — src.audio_normalize.audio_normalization — ERROR — __loudnorm_json_parse:113 — JSONDecodeError parsing 
+{
+	"input_i" : "-16.52",
+	"input_tp" : "-3.42",
+	"input_lra" : "2.20",
+	"input_thresh" : "-26.93",
+	"output_i" : "-15.83",
+	"output_tp" : "-2.00",
+	"output_lra" : "1.40",
+	"output_thresh" : "-26.03",
+	"normalization_type" : "dynamic",
+	"target_offset" : "-0.17"
+}
+}
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/audio_normalize/audio_normalization.py", line 110, in __loudnorm_json_parse
+    output_data = json.loads(json_string)
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 340, in decode
+    raise JSONDecodeError("Extra data", s, end)
+json.decoder.JSONDecodeError: Extra data: line 13 column 1 (char 264)
+
+2025-10-04 19:34:13,523 — src.audio_normalize.audio_normalization — ERROR — __loudnorm_json_parse:107 — JSONOutputError could not find JSON output in subprocess stderr
+{
+	"input_i" : "-16.52",
+	"input_tp" : "-3.42",
+	"input_lra" : "2.20",
+	"input_thresh" : "-26.93",
+	"output_i" : "-15.83",
+	"output_tp" : "-2.00",
+	"output_lra" : "1.40",
+	"output_thresh" : "-26.03",
+	"normalization_type" : "dynamic",
+	"target_offset" : "-0.17"
+
+NoneType: None
+
+2025-10-04 19:34:54,792 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -21.00 equaling 19.00 with max volume -4 plus 19.0 will result in clipping amount: 15.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
+
+2025-10-04 19:34:56,874 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -20.00 equaling 18.00 with max volume -7 plus 18.0 will result in clipping amount: 11.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3

@@ -1,0 +1,303 @@
+
+2025-10-04 19:26:02,357 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_audio_file_list.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_audio_file_list.txt'
+
+2025-10-04 19:26:02,566 — src.dir_processing.directory_processing — ERROR — get_audio_file_list:249 — Exception FileNotFoundError getting files for /home/gerald/MusicProcessing/tests/Music
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 246, in get_audio_file_list
+    self.create_txt(txt_filename, txt_data, None)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_audio_file_list.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_directory_processing.py", line 142, in test_get_audio_file
+    directory.get_audio_file_list(TESTS_TLD)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 249, in get_audio_file_list
+    logger.exception(f"Exception {type(e_error).__name__} getting files for {start_path}", stack_info=True)
+
+2025-10-04 19:26:14,172 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:26:17,967 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/clip_vol_check_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/clip_vol_check_walk.txt'
+
+2025-10-04 19:26:25,238 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:26:29,724 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:26:30,456 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:26:30,458 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:26:30,624 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:26:31,184 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:26:31,703 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:26:31,712 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:26:35,245 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt'
+
+2025-10-04 19:26:46,795 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt'
+
+2025-10-04 19:26:48,517 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt'
+
+2025-10-04 19:26:54,777 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt'
+
+2025-10-04 19:26:56,767 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt'
+
+2025-10-04 19:27:44,645 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:27:50,129 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:27:54,240 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:27:58,348 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:27:59,710 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:27:59,712 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:27:59,860 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:28:00,333 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:28:00,771 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:28:00,779 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:28:03,790 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt'
+
+2025-10-04 19:28:22,199 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:43,161 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:48,349 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:52,351 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:56,302 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:57,582 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:30:57,584 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:30:57,731 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:30:58,181 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:30:58,591 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:30:58,604 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:31:01,418 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt'

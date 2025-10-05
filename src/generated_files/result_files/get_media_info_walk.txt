@@ -1,0 +1,37 @@
+
+/home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3 has 37 keys
+key: index, value: 0
+key: codec_name, value: mp3
+key: codec_long_name, value: MP3 (MPEG audio layer 3)
+key: profile, value: unknown
+key: codec_type, value: audio
+key: codec_tag_string, value: [0][0][0][0]
+key: codec_tag, value: 0x0000
+key: sample_fmt, value: fltp
+key: sample_rate, value: 44100
+key: channels, value: 2
+key: channel_layout, value: stereo
+key: bits_per_sample, value: 0
+key: initial_padding, value: 0
+key: id, value: N/A
+key: r_frame_rate, value: 0/0
+key: avg_frame_rate, value: 0/0
+key: time_base, value: 1/14112000
+key: start_pts, value: 0
+key: start_time, value: 0.000000
+key: duration_ts, value: 2332384614
+key: duration, value: 165.276688
+key: bit_rate, value: 128198
+key: max_bit_rate, value: N/A
+key: bits_per_raw_sample, value: N/A
+key: nb_frames, value: N/A
+key: nb_read_frames, value: N/A
+key: nb_read_packets, value: N/A
+key: filename, value: /home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3
+key: nb_streams, value: 1
+key: nb_programs, value: 0
+key: nb_stream_groups, value: 0
+key: format_name, value: mp3
+key: format_long_name, value: MP2/3 (MPEG audio layer 2/3)
+key: size, value: 2648523
+key: probe_score, value: 51
