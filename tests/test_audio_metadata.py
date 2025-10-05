@@ -31,7 +31,7 @@ from src import MP3_EXT, MUSIC_TLD
 from src import PLAYLIST_EXTS
 from src import RESULT_DIR, RESULT_EXT
 from src.generated_files import GENERATED_FILES
-from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_NO_TAG, TEST_WAV_NONE, TEST_WMA_CCR
+from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_GENESIS, TEST_MP3_NO_TAG, TEST_MP3_NO_METADATA, TEST_WAV_NONE, TEST_WMA_CCR
 from tests import TEST_M3U
 from tests import TESTS_PATH, TESTS_TLD
 # local module errors
@@ -82,19 +82,13 @@ class TestAudioMetadata(TestCase):
         cls.converted_results.append(os.path.join(cls.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3"))
 
         # for create albums test
-        cls.prepped_src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR]
-        # @todo move to init
-        genesis_path = os.path.join(TESTS_TLD, "Genesis", "In Too Deep-I’d Rather Be You", "Genesis-In Too Deep.mp3")
-        no_metadata_path = os.path.join(TESTS_TLD, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
-        cls.prepped_src_file_paths.append(genesis_path)
-        cls.prepped_src_file_paths.append(no_metadata_path)
+        cls.prepped_src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_GENESIS, TEST_MP3_NO_METADATA, TEST_WMA_CCR]
 
         cls.prepped_results = []
         cls.prepped_results.append(os.path.join(cls.prepped, "The Eagles", "Desperado"))
         cls.prepped_results.append(os.path.join(cls.prepped, "Abba", "Waterloo"))
         cls.prepped_results.append(os.path.join(cls.prepped, "Creedence Clearwater Revival", "Chronicle, Vol. 1"))
         cls.prepped_results.append(os.path.join(cls.prepped, "Genesis", "In Too Deep - I'd Rather Be You"))
-        # cls.prepped_results.append(os.path.join(cls.prepped, "NoMetadata", "Here"))
 
         # audio filenames for tag walk tests
         cls.mp3_line = os.path.join(cls.converted, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
@@ -347,7 +341,7 @@ class TestAudioMetadata(TestCase):
         @brief Test Attempt converting an audio file that does not have metadata.
         '''
 
-        no_metadata = os.path.join(TESTS_TLD, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
+        no_metadata = TEST_MP3_NO_METADATA
         metadata.convert_file(no_metadata, show_spinner=False)
 
         audio_file = os.path.join(GENERATED_FILES, MUSIC_TLD, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
@@ -406,7 +400,7 @@ class TestAudioMetadata(TestCase):
         metadata.create_album_dir(self.prepped)
 
         for dir in self.prepped_results:
-            dir_exists = os.path.isdir(dir)
+            dir_exists = os.path.exists(dir)
             self.assertTrue(dir_exists)
 
         no_metadata = (os.path.join(self.prepped, "NoMetadata", "Here"))

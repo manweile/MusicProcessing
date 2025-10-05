@@ -51,10 +51,20 @@ TEST_MP3_ABBA = os.path.join(TESTS_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 ## @var TEST_MP3_CRUSH
 # @brief Path to mp3 audio file for tests.
 # @details Use this when needing a mp3 audio file for audio art tests.
-# @details Use this when needing a mp3 audio file for audio metadata tests
+# @details Use this when needing a mp3 audio file for audio metadata tests.
 # @details Use this when needing a mp3 audio file for audio normalization tests.
 # @details This mp3 has a video stream and an ID3 APIC album art tag.
 TEST_MP3_CRUSH = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
+
+## @var TEST_MP3_GENESIS
+# @brief Path to mp3 audio file for tests.
+# @details Use this when needing a mp3 audio file for audio metadata tests.
+TEST_MP3_GENESIS = os.path.join(TESTS_TLD, "Genesis", "In Too Deep-I’d Rather Be You", "Genesis-In Too Deep.mp3")
+
+## @VAR TEST_MP3_NO_METADATA
+# @brief Path to mp3 audio file for tests.
+# @details Use this when needing a mp3 audio file with no metadata for audio metadata tests.
+TEST_MP3_NO_METADATA = os.path.join(TESTS_TLD, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
 
 ## @VAR TEST_MP3_NO_TAG
 # @brief Path to mp3 audio file for tests.
@@ -107,6 +117,6 @@ __all__ = [
     "TESTS_PATH", "TESTS_TLD",
     "TEST_M3U", "TEST_WAV_NONE",
     "TEST_M4A_DAVIS", "TEST_M4A_EAGLES"
-    "TEST_MP3_ABBA", "TEST_MP3_CRUSH", "TEST_MP3_NO_TAG", "TEST_MP3_SMEAGOL", "TEST_MP3_X",
+    "TEST_MP3_ABBA", "TEST_MP3_CRUSH", "TEST_MP3_GENESIS", "TEST_MP3_NO_METADATA", "TEST_MP3_NO_TAG", "TEST_MP3_SMEAGOL", "TEST_MP3_X",
     "TEST_WMA_CCR", "TEST_WMA_HOLIDAY", "TEST_WMA_JOHN"
 ]
