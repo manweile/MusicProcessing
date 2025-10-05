@@ -322,58 +322,6 @@ class DirectoryProcessing():
             return dir_path
 
 
-    # @todo remove, not used
-    # def get_file_ext(self, file_path):
-    #     '''
-    #     @brief Returns the file type of audio file without leading period.
-
-    #     @details Returns the file type using os library as opposed to getting it from audio metadata.
-
-    #     @param file_path {str} The full audio file path.
-    #     @return file_ext {str} The file type of audio file or None.
-
-    #     @exception Exception A common baseclass exception to handle unforeseen errors.
-    #     '''
-
-    #     file_ext = None
-
-    #     try:
-    #         if file_path:
-    #             # get the file extension, don't care about the file name
-    #             _, split_extension = os.path.splitext(file_path)
-    #             # want the type, not the full extension with the period
-    #             file_ext = split_extension[1:]
-
-    #     except Exception as e_error:
-    #         logger.exception(f"Exception {type(e_error).__name__} getting file extension", stack_info=True)
-    #         raise e_error
-    #     else:
-    #         return file_ext
-
-
-    # @todo remove, not needed
-    # def make_album_dir(self, artist_dirpath, album_dir):
-    #     '''
-    #     @brief Creates an album sub-directory in an artist directory.
-
-    #     @details The album name for the directory is drawn from the metadata.
-    #     @details The audio file(s) for the created album directory will moved into the created directory by another function.
-
-    #     @param artist_dirpath {str} The absolute path artist directory the new album directory will be created in.
-    #     @param album_dir {str} The sanitized & validated name of the album for new album directory.
-
-    #     @exception Exception A common baseclass exception to handle unforeseen errors.
-    #     '''
-
-    #     try:
-    #         music_dir = os.path.join(artist_dirpath, album_dir)
-    #         self.make_dir(music_dir)
-
-    #     except Exception as e_error:
-    #         logger.exception(f"Exception {type(e_error).__name__} creating music directory {music_dir}", stack_info=True)
-    #         raise e_error
-
-
     def make_dir(self, dir_path):
         '''
         @brief Creates a directory.

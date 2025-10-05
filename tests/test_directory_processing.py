@@ -8,7 +8,6 @@
 '''
 
 # standard modules
-import filecmp
 import gc
 import inspect
 import os
@@ -263,21 +262,16 @@ class TestDirectoryProcessing(TestCase):
 
 
     @unittest.skip("complete")
-    def test_make_album_dir(self):
-        '''
-        @brief tests creates an album sub-directory in an artist directory.
-        '''
-
-        pass
-
-
-    @unittest.skip("complete")
     def test_make_dir(self):
         '''
         @brief Tests creates a directory.
         '''
 
-        pass
+        dir_path = os.path.join(GENERATED_FILES, MUSIC_TLD, "DirOne", "DirTwo")
+        directory.make_dir(dir_path)
+
+        dir_exists = os.path.exists(dir_path)
+        self.assertTrue(dir_exists)
 
 
     @unittest.skip("complete")
