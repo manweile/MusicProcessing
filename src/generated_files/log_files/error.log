@@ -3135,3 +3135,131 @@ Stack (most recent call last):
     probe_process = subprocess_utils.subprocess_run(probe_command)
   File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 233, in subprocess_run
     logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-06 16:26:13,701 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:29:35,800 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:30:39,639 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:30:44,512 — src.dir_processing.directory_processing — ERROR — make_dir:343 — OSError permission denied for creating D:\MusicProcessing\src\generated_files\Music\DirOne\DirTwo
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1193, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] Permission denied
+
+2025-10-06 16:32:04,804 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:32:08,016 — src.dir_processing.directory_processing — ERROR — make_dir:343 — OSError permission denied for creating D:\MusicProcessing\src\generated_files\Music\DirOne\DirTwo
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1193, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] Permission denied
+
+2025-10-06 16:35:42,479 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:35:50,159 — src.dir_processing.directory_processing — ERROR — make_dir:343 — OSError permission denied for creating D:\MusicProcessing\src\generated_files\Music\DirOne\DirTwo
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1193, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] Permission denied
+
+2025-10-06 16:38:16,628 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:41:25,350 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?bad_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?bad_path'
+
+2025-10-06 16:41:56,125 — src.dir_processing.directory_processing — ERROR — make_dir:343 — OSError permission denied for creating D:\MusicProcessing\src\generated_files\Music\DirOne\DirTwo
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1193, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] Permission denied
+
+2025-10-06 16:52:21,067 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?bad_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?bad_path'
+
+2025-10-06 16:57:29,016 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?bad_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?bad_path'

@@ -8,12 +8,14 @@
 '''
 
 # standard modules
+import errno
 import gc
 import inspect
 import os
 import shutil
 import unittest
 from unittest import TestCase
+from unittest.mock import Mock
 from unittest.mock import patch
 
 # local module constants
@@ -46,6 +48,11 @@ class TestDirectoryProcessing(TestCase):
         @details These datums are used throughout class and only need init once.
         '''
 
+        # dest dir for make dir and move file tests
+        cls.dir_path = os.path.join(GENERATED_FILES, MUSIC_TLD, "DirOne", "DirTwo")
+        cls.generated_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
+
+        # temp dirs
         cls.csv_files = os.path.join(TESTS_PATH, CSV_DIR)
         os.makedirs(cls.csv_files, exist_ok=True)
 
@@ -72,7 +79,8 @@ class TestDirectoryProcessing(TestCase):
         @details Runs after every test definition.
         '''
 
-        pass
+        if os.path.exists(self.generated_path):
+            shutil.rmtree(self.generated_path)
 
 
     def test_create_csv_alt_dir_sorted(self):
@@ -261,17 +269,52 @@ class TestDirectoryProcessing(TestCase):
         self.assertTrue(os.path.isdir(dir_path))
 
 
-    @unittest.skip("complete")
     def test_make_dir(self):
         '''
         @brief Tests creates a directory.
         '''
 
-        dir_path = os.path.join(GENERATED_FILES, MUSIC_TLD, "DirOne", "DirTwo")
-        directory.make_dir(dir_path)
+        directory.make_dir(self.dir_path)
 
-        dir_exists = os.path.exists(dir_path)
+        dir_exists = os.path.exists(self.dir_path)
         self.assertTrue(dir_exists)
+
+
+    def test_make_dir_fail(self):
+        '''
+        @brief Tests creates a directory throws general OSError.
+        '''
+
+        bad_path = "?bad_path"
+        with self.assertRaises(OSError) as cm:
+            directory.make_dir(bad_path)
+
+        self.assertEqual("OSError", cm.exception.__class__.__name__)
+        self.assertEqual(cm.exception.errno, 22)
+        self.assertEqual(cm.exception.filename, bad_path)
+
+
+    def test_make_dir_permission(self):
+        '''
+        @brief Tests creates a directory throws OSError permission error.
+        '''
+
+        make_dir_directory = DirectoryProcessing()
+
+        mock_make_dir = Mock(spec=make_dir_directory)
+        mock_make_dir.side_effect = OSError(errno.EACCES, "Permission denied")
+
+        make_dir_directory.make_dir = mock_make_dir
+
+        with self.assertRaises(OSError) as cm:
+            make_dir_directory.make_dir(self.dir_path)
+
+        dir_exists = os.path.exists(self.dir_path)
+
+        self.assertFalse(dir_exists)
+        self.assertEqual(cm.exception.errno, errno.EACCES)
+
+        mock_make_dir.reset_mock(return_value=True, side_effect=True)
 
 
     @unittest.skip("complete")
@@ -290,16 +333,20 @@ class TestDirectoryProcessing(TestCase):
         pass
 
 
-    @patch('src.dir_processing.directory_processing.logger.warning')
-    def test_path_info_not_audio(self, mock_warning):
+    @unittest.skip("complete")
+    def test_move_audio_file_fail(self):
         '''
-        @brief Tests if trying to get path info for a non-audio file.
+        @brief Test moves audio file to a new directory throws ExecError.
+
+        @details The destination path must exist already.
+
+        @param file_path {str} File path for audio file.
+        @param destination_path {str} New directory for audio file.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        input_path = os.path.join(TESTS_TLD, "expected.m3u")
-        path_info = directory.path_info(input_path)
-        self.assertIsNone(path_info)
-        mock_warning.assert_called_once_with(f"File {input_path} is not in {AUDIO_EXTS}")
+        pass
 
 
     def test_path_info(self):
@@ -314,10 +361,31 @@ class TestDirectoryProcessing(TestCase):
         self.assertEqual(path_info, expected_info)
 
 
+    @patch('src.dir_processing.directory_processing.logger.warning')
+    def test_path_info_not_audio(self, mock_warning):
+        '''
+        @brief Tests if trying to get path info for a non-audio file.
+        '''
+
+        input_path = os.path.join(TESTS_TLD, "expected.m3u")
+        path_info = directory.path_info(input_path)
+        self.assertIsNone(path_info)
+        mock_warning.assert_called_once_with(f"File {input_path} is not in {AUDIO_EXTS}")
+
+
     @unittest.skip("complete")
     def test_remove_album_dir(self):
         '''
         @brief Tests removes empty album directories.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_remove_album_dir_fail(self):
+        '''
+        @brief Tests removes empty album directories cause general OSError.
         '''
 
         pass
@@ -336,6 +404,15 @@ class TestDirectoryProcessing(TestCase):
     def test_remove_pattern(self):
         '''
         @brief Test removes file matching specified pattern.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_remove_pattern_fail(self):
+        '''
+        @brief Test removes file matching specified pattern causes general OSError.
         '''
 
         pass
