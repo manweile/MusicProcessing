@@ -14,9 +14,11 @@ import json
 import logging
 import os
 import re
+import shutil
 import sys
 from json import JSONDecodeError
 from pathlib import Path
+from shutil import ExecError
 
 # third party modules
 import mutagen
@@ -258,7 +260,7 @@ class AudioMetadata():
         '''
 
         '''
-        Run create_album_dir function to ensure there are album directories for every audio file.
+        Run create_album_dirs function to ensure there are album directories for every audio file.
         Then manually review extant album art and create and/or move Folder.jpg, if possible, to each album directory.
         Next run extract_art_function to extract embedded art as Folder.jpg if needed, into each album directory.
         Finally run set_album_art function to ensure a Folder.jpg exists in each album directory.
@@ -432,9 +434,9 @@ class AudioMetadata():
             raise e_error
 
 
-    def create_album_dir(self, start_path: str) -> None:
+    def create_album_dirs(self, start_path: str) -> None:
         '''
-        @brief Creates an album sub-directory in an artist directory.
+        @brief Creates a album sub-directories in artist directories.
 
         @details Calling functions MUST verify valid start path.
         @details Creates the album sub directory for the artist if needed.
@@ -517,7 +519,10 @@ class AudioMetadata():
                         directory.make_dir(album_path)
 
                         # now transfer the audio file to new album directory
-                        directory.move_audio_file(audio_file, album_path)
+                        file_path = os.path.basename(audio_file)
+                        destination_path = os.path.join(album_path, file_path)
+                        shutil.move(audio_file, destination_path)
+
                     else:
                         logger.warning(f"{audio_file} is missing album metadata")
                         continue
@@ -527,6 +532,9 @@ class AudioMetadata():
             tld_bar.close()
             directory.create_csv(csv_filename, data, None, header_row, 0)
 
+        except ExecError as exc_error:
+            logger.exception(f"ExecError moving {file_path} to {destination_path}", exc_info=True)
+            raise exc_error
         except ValidationError as v_error:
             logger.exception(f"ValidationError sanitizing album metadata {album}", stack_info=True)
             raise v_error

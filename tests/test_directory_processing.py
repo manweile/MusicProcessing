@@ -333,7 +333,6 @@ class TestDirectoryProcessing(TestCase):
         pass
 
 
-    @unittest.skip("complete")
     def test_move_audio_file_fail(self):
         '''
         @brief Test moves audio file to a new directory throws ExecError.

@@ -13,8 +13,8 @@ import fnmatch
 import gc
 import inspect
 import logging
-import shutil
 import os
+import shutil
 from operator import itemgetter
 from os import strerror
 from pathlib import Path
@@ -347,32 +347,6 @@ class DirectoryProcessing():
                 raise os_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} creating {dir_path}", stack_info=True)
-            raise e_error
-
-
-    def move_audio_file(self, file_path, destination_dir):
-        '''
-        @brief Moves an audio file to a new directory.
-
-        @details The destination path must exist already.
-
-        @param file_path {str} File path for audio file.
-        @param destination_path {str} New directory for audio file.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        audio_file = os.path.basename(file_path)
-        destination_path = os.path.join(destination_dir, audio_file)
-
-        try:
-            shutil.move(file_path, destination_path)
-
-        except ExecError as exc_error:
-            logger.exception(f"ExecError moving {file_path} to {destination_path}", exc_info=True)
-            raise exc_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} moving {audio_file} from {os.path.dirname(file_path)} to {destination_dir}", stack_info=True)
             raise e_error
 
 

@@ -142,3 +142,21 @@
 2025-10-04 19:42:45,115 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -21.00 equaling 19.00 with max volume -4 plus 19.0 will result in clipping amount: 15.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
 
 2025-10-04 19:42:47,032 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -20.00 equaling 18.00 with max volume -7 plus 18.0 will result in clipping amount: 11.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
+
+2025-10-06 17:25:10,870 — src.audio_info.audio_metadata — WARNING — convert_file:286 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
+
+2025-10-06 17:25:26,988 — src.audio_info.audio_metadata — WARNING — convert_walk:408 — Pattern .m3u is not for a valid audio file
+
+2025-10-06 17:29:03,492 — src.audio_info.audio_metadata — WARNING — convert_file:286 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
+
+2025-10-06 17:29:17,399 — src.audio_info.audio_metadata — WARNING — convert_walk:408 — Pattern .m3u is not for a valid audio file
+
+2025-10-06 17:33:29,128 — src.audio_info.audio_metadata — WARNING — convert_file:286 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
+
+2025-10-06 17:33:42,997 — src.audio_info.audio_metadata — WARNING — convert_walk:408 — Pattern .m3u is not for a valid audio file
+
+2025-10-06 17:37:10,153 — src.audio_info.audio_metadata — WARNING — convert_file:286 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
+
+2025-10-06 17:37:24,071 — src.audio_info.audio_metadata — WARNING — convert_walk:408 — Pattern .m3u is not for a valid audio file
+
+2025-10-06 17:37:24,546 — src.audio_info.audio_metadata — WARNING — create_album_dirs:529 — D:\MusicProcessing\tests\PreppedMusic\NoMetadata\No_tag_Crush-Live.mp3 is missing album metadata

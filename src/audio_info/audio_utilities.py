@@ -203,7 +203,7 @@ class AudioUtilities():
         pass
 
 
-    def create_album_dir(self, start_path: str) -> None:
+    def create_album_dirs(self, start_path: str) -> None:
         '''
         @brief Creates an album sub-directory in an artist directory.
 

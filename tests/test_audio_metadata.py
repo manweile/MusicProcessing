@@ -397,7 +397,7 @@ class TestAudioMetadata(TestCase):
         @brief Tests creating an album sub-directory in an artist directory.
         '''
 
-        metadata.create_album_dir(self.prepped)
+        metadata.create_album_dirs(self.prepped)
 
         for dir in self.prepped_results:
             dir_exists = os.path.exists(dir)

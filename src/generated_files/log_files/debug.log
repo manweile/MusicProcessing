@@ -3474,3 +3474,161 @@ Traceback (most recent call last):
   File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
     mkdir(name, mode)
 OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?bad_path'
+
+2025-10-06 17:25:10,870 — src.audio_info.audio_metadata — WARNING — convert_file:286 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
+
+2025-10-06 17:25:26,988 — src.audio_info.audio_metadata — WARNING — convert_walk:408 — Pattern .m3u is not for a valid audio file
+
+2025-10-06 17:25:27,410 — src.audio_info.audio_metadata — ERROR — create_album_dirs:544 — Exception FileNotFoundError creating sub-dirs for D:\MusicProcessing\tests\PreppedMusic
+Traceback (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\shutil.py", line 862, in move
+    os.rename(src, real_dst)
+FileNotFoundError: [WinError 2] The system cannot find the file specified: 'ABBA-Waterloo.mp3' -> 'D:\\MusicProcessing\\tests\\PreppedMusic\\Abba\\Waterloo\\ABBA-Waterloo.mp3'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_info\audio_metadata.py", line 526, in create_album_dirs
+    shutil.move(file_path, destination_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\shutil.py", line 882, in move
+    copy_function(src, real_dst)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\shutil.py", line 448, in copy2
+    _winapi.CopyFile2(src_, dst_, flags)
+FileNotFoundError: [WinError 2] The system cannot find the file specified
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_audio_metadata.py", line 850, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_audio_metadata.py", line 400, in test_create_album_dir
+    metadata.create_album_dirs(self.prepped)
+  File "D:\MusicProcessing\src\audio_info\audio_metadata.py", line 544, in create_album_dirs
+    logger.exception(f"Exception {type(e_error).__name__} creating sub-dirs for {start_path}", stack_info=True)
+
+2025-10-06 17:25:28,284 — src.audio_info.audio_metadata — ERROR — get_media_tags:772 — JSONDecodeError decoding JSON output from ffprobe
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_info\audio_metadata.py", line 766, in get_media_tags
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 18 column 1 (char 249)
+
+2025-10-06 17:25:35,916 — src.audio_info.audio_metadata — ERROR — has_art_tag:942 — MusicProcessingError with file: D:\MusicProcessing\tests\Music\test has invalid extension: .m3u
+NoneType: None
+
+2025-10-06 17:25:35,958 — src.audio_info.audio_metadata — ERROR — load_any_file:988 — ValueError loading D:\MusicProcessing\tests\Music\test.m3u returned None
+NoneType: None
+
+2025-10-06 17:25:35,958 — src.audio_info.audio_metadata — ERROR — load_any_file:992 — MutagenError [Errno 2] No such file or directory: 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav' loading D:\MusicProcessing\tests\Music\Non-extant.wav
+Traceback (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_info\audio_metadata.py", line 984, in load_any_file
+    audio_file = mutagen.File(file_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 162, in wrapper_func
+    with _openfile(None, filething, filename, fileobj,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav'
+
+2025-10-06 17:29:03,492 — src.audio_info.audio_metadata — WARNING — convert_file:286 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
+
+2025-10-06 17:29:17,399 — src.audio_info.audio_metadata — WARNING — convert_walk:408 — Pattern .m3u is not for a valid audio file
+
+2025-10-06 17:33:29,128 — src.audio_info.audio_metadata — WARNING — convert_file:286 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
+
+2025-10-06 17:33:42,997 — src.audio_info.audio_metadata — WARNING — convert_walk:408 — Pattern .m3u is not for a valid audio file
+
+2025-10-06 17:37:10,153 — src.audio_info.audio_metadata — WARNING — convert_file:286 — album directory D:\MusicProcessing\tests\Music\Crush\Here does not contain a Folder.jpg file.
+
+2025-10-06 17:37:24,071 — src.audio_info.audio_metadata — WARNING — convert_walk:408 — Pattern .m3u is not for a valid audio file
+
+2025-10-06 17:37:24,546 — src.audio_info.audio_metadata — WARNING — create_album_dirs:529 — D:\MusicProcessing\tests\PreppedMusic\NoMetadata\No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-06 17:37:30,833 — src.audio_info.audio_metadata — ERROR — get_media_tags:772 — JSONDecodeError decoding JSON output from ffprobe
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_info\audio_metadata.py", line 766, in get_media_tags
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 18 column 1 (char 249)
+
+2025-10-06 17:37:31,927 — src.audio_info.audio_metadata — ERROR — has_art_tag:942 — MusicProcessingError with file: D:\MusicProcessing\tests\Music\test has invalid extension: .m3u
+NoneType: None
+
+2025-10-06 17:37:31,960 — src.audio_info.audio_metadata — ERROR — load_any_file:988 — ValueError loading D:\MusicProcessing\tests\Music\test.m3u returned None
+NoneType: None
+
+2025-10-06 17:37:31,962 — src.audio_info.audio_metadata — ERROR — load_any_file:992 — MutagenError [Errno 2] No such file or directory: 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav' loading D:\MusicProcessing\tests\Music\Non-extant.wav
+Traceback (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 251, in _openfile
+    fileobj = open(filename, "rb+" if writable else "rb")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_info\audio_metadata.py", line 984, in load_any_file
+    audio_file = mutagen.File(file_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 162, in wrapper_func
+    with _openfile(None, filething, filename, fileobj,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\mutagen\_util.py", line 272, in _openfile
+    raise MutagenError(e)
+mutagen.MutagenError: [Errno 2] No such file or directory: 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav'
