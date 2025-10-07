@@ -19,7 +19,7 @@ from src import add_module_handler
 from src import AUDIO_EXTS
 from src import MP3_EXT
 from src import PLAYLIST_EXTS
-from src.generated_files import GENERATED_FILES
+from src.generated_files import GENERATED_PATH
 # local module errors
 from src import PlaylistError
 # local module classes
@@ -131,7 +131,7 @@ class AudioPlaylist():
                 raise PlaylistError(f"PlaylistError input file {input_m3u} is not a playlist")
 
             # new m3u file gets created in generated files directory so can later be move to correct tld
-            export_path = GENERATED_FILES
+            export_path = GENERATED_PATH
             input_basename = os.path.basename(input_m3u)
             export_m3u = os.path.join(export_path, input_basename)
 

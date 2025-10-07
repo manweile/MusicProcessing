@@ -23,7 +23,7 @@ from unittest.mock import patch
 
 # local module constants
 from src import ILT, LRA, MUSIC_TLD, TP
-from src.generated_files import GENERATED_FILES
+from src.generated_files import GENERATED_PATH
 from tests import TEST_M3U, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_SMEAGOL, TEST_MP3_X
 from tests import TESTS_PATH
 # local module errors
@@ -52,7 +52,7 @@ class TestAudioNormalization(TestCase):
         # directory for "walk" type tests: D:\MusicProcessing\tests\NormalizedMusic
         cls.normalized = os.path.join(TESTS_PATH, "NormalizedMusic")
         # the path where converted files will be created D:\MusicProcessing\src\generated_files\Music
-        cls.norm_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
+        cls.norm_path = os.path.join(GENERATED_PATH, MUSIC_TLD)
 
         # audio source files for walk tests
         cls.src_file_paths = [TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_SMEAGOL]

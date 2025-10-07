@@ -31,7 +31,7 @@ from src import add_module_handler
 from src import AUDIO_EXTS
 from src import FOLDER_ART
 from src import M4A_EXT, MP3_EXT, WMA_EXT
-from src.generated_files import GENERATED_FILES
+from src.generated_files import GENERATED_PATH
 # local module classes
 from src.audio_normalize import AudioNormalization
 from src.subprocess_utils import SubprocessUtilities
@@ -488,7 +488,7 @@ class AudioArt():
                 album_jpg = album_dir_name + ".jpg"                             # should be "Best Of The Blues, Vol. 1.jpg"
 
                 # get the album art directory, per the project hierarchy
-                album_art_dir = os.path.join(GENERATED_FILES, ALBUM_ART)       # D:\MusicProcessing\src\generated_files\ALbumArt
+                album_art_dir = os.path.join(GENERATED_PATH, ALBUM_ART)       # D:\MusicProcessing\src\generated_files\ALbumArt
                 album_art_dir_content = os.listdir(album_art_dir)
 
                 if album_jpg in album_art_dir_content:

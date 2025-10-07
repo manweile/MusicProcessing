@@ -669,3 +669,128 @@ NoneType: None
 2025-10-04 19:42:45,115 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -21.00 equaling 19.00 with max volume -4 plus 19.0 will result in clipping amount: 15.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Abba/Waterloo/ABBA-Waterloo.mp3
 
 2025-10-04 19:42:47,032 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -20.00 equaling 18.00 with max volume -7 plus 18.0 will result in clipping amount: 11.0 dB in /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
+
+2025-10-07 10:29:39,322 — src.audio_normalize.audio_normalization — ERROR — get_bit_rate:328 — JSONDecodeError decoding JSON output from ffprobe on audio file: D:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 319, in get_bit_rate
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 1 column 34 (char 33)
+
+2025-10-07 10:29:39,374 — src.audio_normalize.audio_normalization — ERROR — get_sample_rate:377 — JSONDecodeError decoding JSON output from ffprobe on audio file: D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 368, in get_sample_rate
+    data = json.loads(result.stdout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 1 column 76 (char 75)
+
+2025-10-07 10:29:40,254 — src.audio_normalize.audio_normalization — ERROR — get_volume_info:432 — Exception CalledProcessError getting volume for file D:\MusicProcessing\tests\Music\test.m3u
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 414, in get_volume_info
+    process = subprocess_utils.subprocess_run(command)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 234, in subprocess_run
+    raise cp_error
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 3199971767.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_audio_normalization.py", line 553, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_audio_normalization.py", line 323, in test_get_volume_info_invalid_file
+    volumes = normalization.get_volume_info(self.vol_err_src)
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 432, in get_volume_info
+    logger.exception(f"Exception {type(e_error).__name__} getting volume for file {file_path}", stack_info=True)
+
+2025-10-07 10:29:40,254 — src.audio_normalize.audio_normalization — ERROR — __loudnorm_json_parse:113 — JSONDecodeError parsing 
+{
+	"input_i" : "-16.52",
+	"input_tp" : "-3.42",
+	"input_lra" : "2.20",
+	"input_thresh" : "-26.93",
+	"output_i" : "-15.83",
+	"output_tp" : "-2.00",
+	"output_lra" : "1.40",
+	"output_thresh" : "-26.03",
+	"normalization_type" : "dynamic",
+	"target_offset" : "-0.17"
+}
+}
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 110, in __loudnorm_json_parse
+    output_data = json.loads(json_string)
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 340, in decode
+    raise JSONDecodeError("Extra data", s, end)
+json.decoder.JSONDecodeError: Extra data: line 13 column 1 (char 264)
+
+2025-10-07 10:29:40,254 — src.audio_normalize.audio_normalization — ERROR — __loudnorm_json_parse:107 — JSONOutputError could not find JSON output in subprocess stderr
+{
+	"input_i" : "-16.52",
+	"input_tp" : "-3.42",
+	"input_lra" : "2.20",
+	"input_thresh" : "-26.93",
+	"output_i" : "-15.83",
+	"output_tp" : "-2.00",
+	"output_lra" : "1.40",
+	"output_thresh" : "-26.03",
+	"normalization_type" : "dynamic",
+	"target_offset" : "-0.17"
+
+NoneType: None
+
+2025-10-07 10:30:14,231 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -21.00 equaling 19.00 with max volume -4 plus 19.0 will result in clipping amount: 15.0 dB in D:\MusicProcessing\src\generated_files\Music\Abba\Waterloo\ABBA-Waterloo.mp3
+
+2025-10-07 10:30:14,567 — src.audio_normalize.audio_normalization — WARNING — rms_normalize_file:643 — rms normalizing by -2.0 minus -20.00 equaling 18.00 with max volume -7 plus 18.0 will result in clipping amount: 11.0 dB in D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3

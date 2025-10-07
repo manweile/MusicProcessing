@@ -15,7 +15,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 # local module constants
-from src.generated_files import GENERATED_FILES
+from src.generated_files import GENERATED_PATH
 from tests import TEST_MP3_CRUSH, TEST_M3U
 from tests import TESTS_PATH, TESTS_TLD
 # local module errors
@@ -26,7 +26,7 @@ from src.audio_info import AudioPlaylist
 gc.enable()
 
 EXPECTED_M3U = os.path.join(TESTS_PATH, "expected.m3u")
-GENERATED_M3U = os.path.join(GENERATED_FILES, "test.m3u")
+GENERATED_M3U = os.path.join(GENERATED_PATH, "test.m3u")
 
 playlist = AudioPlaylist()
 

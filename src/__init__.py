@@ -9,7 +9,7 @@ import os
 from logging import DEBUG, FileHandler, Formatter
 
 # local module constants
-from src.generated_files import GENERATED_FILES
+from src.generated_files import GENERATED_PATH
 # local module errors
 from src.errors import FfmpegProcessError
 from src.errors import JSONOutputError
@@ -212,7 +212,7 @@ level_log_path = str()
 ## @var log_path
 # @brief path to log files
 # @details specifies fixed log path for project
-log_path = os.path.join(GENERATED_FILES, LOG_DIR)
+log_path = os.path.join(GENERATED_PATH, LOG_DIR)
 
 ## @var src_logger
 # @brief logger for package
@@ -259,7 +259,7 @@ def add_module_handler(logger, basename, level=DEBUG, format=ERROR_LOG_FORMAT, p
     # log files always go to fixed location
     stem = os.path.splitext(basename)[0]
     log_file = stem + LOG_EXT
-    log_path = os.path.join(GENERATED_FILES, LOG_DIR, log_file)
+    log_path = os.path.join(GENERATED_PATH, LOG_DIR, log_file)
 
     formatter = Formatter(format)
 

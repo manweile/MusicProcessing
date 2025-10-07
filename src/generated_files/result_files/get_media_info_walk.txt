@@ -1,5 +1,5 @@
 
-/home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3 has 37 keys
+D:\MusicProcessing\tests\ConvertedMusic\Abba\Waterloo\ABBA-Waterloo.mp3 has 37 keys
 key: index, value: 0
 key: codec_name, value: mp3
 key: codec_long_name, value: MP3 (MPEG audio layer 3)
@@ -27,7 +27,7 @@ key: bits_per_raw_sample, value: N/A
 key: nb_frames, value: N/A
 key: nb_read_frames, value: N/A
 key: nb_read_packets, value: N/A
-key: filename, value: /home/gerald/MusicProcessing/tests/ConvertedMusic/Abba/Waterloo/ABBA-Waterloo.mp3
+key: filename, value: D:\MusicProcessing\tests\ConvertedMusic\Abba\Waterloo\ABBA-Waterloo.mp3
 key: nb_streams, value: 1
 key: nb_programs, value: 0
 key: nb_stream_groups, value: 0

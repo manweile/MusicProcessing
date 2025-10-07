@@ -30,7 +30,7 @@ from src import MUSIC_TLD
 from src import PLAYLIST_EXTS
 from src import RESULT_DIR, RESULT_EXT
 from src import UTF8
-from src.generated_files import GENERATED_FILES
+from src.generated_files import GENERATED_PATH
 
 gc.enable()
 
@@ -77,7 +77,7 @@ class DirectoryProcessing():
 
         try:
             if csv_dir is None:
-                csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
+                csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
 
             csv_path = os.path.join(csv_dir, csv_filename + CSV_EXT)
 
@@ -121,7 +121,7 @@ class DirectoryProcessing():
 
         try:
             if txt_dir is None:
-                txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+                txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
 
             txt_path = os.path.join(txt_dir, txt_filename + RESULT_EXT)
 
@@ -410,7 +410,7 @@ class DirectoryProcessing():
             input_path_parts = input_path_parent.parts[1:]
 
             # using fixed storage path because will always know project structure
-            export_dir = os.path.join(GENERATED_FILES, MUSIC_TLD)
+            export_dir = os.path.join(GENERATED_PATH, MUSIC_TLD)
 
             full_len = len(input_path_parts)
             artist_len = full_len - 2
@@ -439,7 +439,6 @@ class DirectoryProcessing():
         @brief Removes empty album directories.
 
         @details Walks through top level directory to remove empty second level album directories contained in artist first level directories.
-        @details Without a start path input, the top level directory MUST have been set.
 
         @param start_path {str} The starting point of the directory walk.
 

@@ -23,7 +23,7 @@ from src import AUDIO_EXTS
 from src import MUSIC_TLD
 from src import CSV_DIR, CSV_EXT
 from src import RESULT_DIR, RESULT_EXT
-from src.generated_files import GENERATED_FILES
+from src.generated_files import GENERATED_PATH
 from tests import TEST_M4A_DAVIS
 from tests import TESTS_PATH, TESTS_TLD
 # local module classes
@@ -49,8 +49,8 @@ class TestDirectoryProcessing(TestCase):
         '''
 
         # dest dir for make dir and move file tests
-        cls.dir_path = os.path.join(GENERATED_FILES, MUSIC_TLD, "DirOne", "DirTwo")
-        cls.generated_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
+        cls.dir_path = os.path.join(GENERATED_PATH, MUSIC_TLD, "DirOne", "DirTwo")
+        cls.generated_path = os.path.join(GENERATED_PATH, MUSIC_TLD)
 
         # temp dirs
         cls.csv_files = os.path.join(TESTS_PATH, CSV_DIR)
@@ -71,6 +71,7 @@ class TestDirectoryProcessing(TestCase):
 
         if os.path.exists(cls.result_files):
             shutil.rmtree(cls.result_files)
+
 
     def tearDown(self):
         '''
@@ -148,12 +149,12 @@ class TestDirectoryProcessing(TestCase):
 
         directory.get_audio_file_list(TESTS_TLD)
 
-        csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
+        csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
         csv_filename = "get_audio_file_list" + CSV_EXT
         csv_path = os.path.join(csv_dir, csv_filename)
         csv_exists = os.path.exists(csv_path)
 
-        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_audio_file_list" + RESULT_EXT
         txt_path = os.path.join(txt_dir, txt_filename)
         txt_exists = os.path.exists(txt_path)
@@ -167,7 +168,7 @@ class TestDirectoryProcessing(TestCase):
         @brief tests generates a csv containing full file path for an extension.
         '''
 
-        csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
+        csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
         csv_filename = "get_ext_file_list_all" + CSV_EXT
         csv_path = os.path.join(csv_dir, csv_filename)
 
@@ -188,7 +189,7 @@ class TestDirectoryProcessing(TestCase):
         @brief tests generates a csv containing full file path for an extension.
         '''
 
-        csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
+        csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
         csv_filename = "get_ext_file_list_m4a" + CSV_EXT
         csv_path = os.path.join(csv_dir, csv_filename)
 
@@ -209,7 +210,7 @@ class TestDirectoryProcessing(TestCase):
         @brief tests generates a csv containing full file path for an extension.
         '''
 
-        csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
+        csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
         csv_filename = "get_ext_file_list_mp3" + CSV_EXT
         csv_path = os.path.join(csv_dir, csv_filename)
 
@@ -230,7 +231,7 @@ class TestDirectoryProcessing(TestCase):
         @brief tests generates a csv containing full file path for an extension.
         '''
 
-        csv_dir = os.path.join(GENERATED_FILES, CSV_DIR)
+        csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
         csv_filename = "get_ext_file_list_wma" + CSV_EXT
         csv_path = os.path.join(csv_dir, csv_filename)
 
@@ -246,17 +247,6 @@ class TestDirectoryProcessing(TestCase):
         self.assertIn("File Path;File Ext\n", lines)
 
 
-    def test_get_file_directory_none(self):
-        '''
-        @brief Tests could not find the directory path of a file given its name and a starting search path.
-        '''
-
-        file_name = "Daughtry-Home.mp3"
-        start_path = TESTS_TLD
-        dir_path = directory.get_file_directory(start_path, file_name)
-        self.assertIsNone(dir_path)
-
-
     def test_get_file_directory(self):
         '''
         @brief Tests could find the directory path of a file given its name and a starting search path.
@@ -264,9 +254,24 @@ class TestDirectoryProcessing(TestCase):
 
         file_name = "Sawyer Fredricks - Shots Fired.mp3"
         start_path = TESTS_TLD
+
         dir_path = directory.get_file_directory(start_path, file_name)
+
         self.assertIsNotNone(dir_path)
         self.assertTrue(os.path.isdir(dir_path))
+
+
+    def test_get_file_directory_none(self):
+        '''
+        @brief Tests could not find the directory path of a file given its name and a starting search path.
+        '''
+
+        file_name = "Daughtry-Home.mp3"
+        start_path = TESTS_TLD
+
+        dir_path = directory.get_file_directory(start_path, file_name)
+
+        self.assertIsNone(dir_path)
 
 
     def test_make_dir(self):
@@ -285,7 +290,7 @@ class TestDirectoryProcessing(TestCase):
         @brief Tests creates a directory throws general OSError.
         '''
 
-        bad_path = os.path.join(GENERATED_FILES, MUSIC_TLD, "?bad_path")
+        bad_path = os.path.join(GENERATED_PATH, MUSIC_TLD, "?bad_path")
 
         make_dir_directory = DirectoryProcessing()
 
@@ -337,7 +342,7 @@ class TestDirectoryProcessing(TestCase):
         path_info = directory.path_info(TEST_M4A_DAVIS)
 
         # successful path_info returns a mp3 file name in generated_files/Music
-        expected_info = os.path.join(GENERATED_FILES, MUSIC_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
+        expected_info = os.path.join(GENERATED_PATH, MUSIC_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
         self.assertEqual(path_info, expected_info)
 
 
@@ -348,7 +353,9 @@ class TestDirectoryProcessing(TestCase):
         '''
 
         input_path = os.path.join(TESTS_TLD, "expected.m3u")
+
         path_info = directory.path_info(input_path)
+
         self.assertIsNone(path_info)
         mock_warning.assert_called_once_with(f"File {input_path} is not in {AUDIO_EXTS}")
 
@@ -359,7 +366,8 @@ class TestDirectoryProcessing(TestCase):
         @brief Tests removes empty album directories.
         '''
 
-        pass
+        generated_tld = os.path.join(GENERATED_PATH, MUSIC_TLD)
+        os.makedirs(generated_tld)
 
 
     @unittest.skip("complete")

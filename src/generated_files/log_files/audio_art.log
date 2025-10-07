@@ -277,3 +277,100 @@ Stack (most recent call last):
 2025-10-04 19:30:22,254 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/NoMetadata/Here
 
 2025-10-04 19:30:22,254 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for /home/gerald/MusicProcessing/tests/Music/Bear McCreary/Battlestar Galactica
+
+2025-10-07 10:26:42,358 — src.audio_info.audio_art — INFO — extract_album_art:180 — D:\MusicProcessing\tests\Music\Abba\Waterloo has a Folder.jpg
+
+2025-10-07 10:26:42,358 — src.audio_info.audio_art — WARNING — extract_album_art:186 — test.m3u is not an audio file
+
+2025-10-07 10:26:42,742 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in D:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
+
+2025-10-07 10:26:42,877 — src.audio_info.audio_art — WARNING — extract_album_art:211 — No album art present in D:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
+
+2025-10-07 10:26:43,265 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in D:\MusicProcessing\tests\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma
+
+2025-10-07 10:26:44,051 — src.audio_info.audio_art — ERROR — extract_ffmpeg_art:287 — Exception CalledProcessError using ffmpeg to extract art from D:\MusicProcessing\tests\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\audio_info\audio_art.py", line 284, in extract_ffmpeg_art
+    _ = subprocess_utils.subprocess_run(command)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 234, in subprocess_run
+    raise cp_error
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\Billie Holiday\\Georgia On My Mind\\Billie Holiday-Georgia On My Mind.wma', '-an', '-map', '0:v', '-map_metadata', '-1', '-update', '1', 'D:\\MusicProcessing\\tests\\Music\\Billie Holiday\\Georgia On My Mind\\Folder.jpg', '-y']' returned non-zero exit status 4294967274.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_audio_art.py", line 375, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_audio_art.py", line 244, in test_extract_ffmpeg_art_no_stream
+    art.extract_ffmpeg_art(input_audio)
+  File "D:\MusicProcessing\src\audio_info\audio_art.py", line 287, in extract_ffmpeg_art
+    logger.exception(f"Exception {type(e_error).__name__} using ffmpeg to extract art from {input_path}", stack_info=True)
+
+2025-10-07 10:26:46,145 — src.audio_info.audio_art — WARNING — extract_walk:371 — Pattern .m3u is not for a valid audio file
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\38 Special\Teachers
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in D:\MusicProcessing\tests\Music\Abba\Waterloo
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\Aerosmith\Devil's Got a New Disguise-The Very Best of Aerosmith
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\Bear McCreary\Battlestar Galactica
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\Billie Holiday\Georgia On My Mind
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in D:\MusicProcessing\tests\Music\Creedence Clearwater Revival\Chronicle, Vol. 1
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\Crush\Here
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\Daughtry\Leave This Town
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\Diamond Rio
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\Elton John\Goodbye Yellow Brick Road
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in D:\MusicProcessing\tests\Music\Genesis\In Too Deep-I’d Rather Be You
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\Joshua Davis\The Voice Peformance
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in D:\MusicProcessing\tests\Music\NoMetadata\Here
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\Sawyer Fredericks\A Good Storm
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in D:\MusicProcessing\tests\Music\The Eagles\Desperado
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\The Lord of the Rings\The Return of the King
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\The Lord of the Rings\The Two Towers
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\X Ambassadors\VHS

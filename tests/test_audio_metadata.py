@@ -32,8 +32,11 @@ from src import AUDIO_FILES, FOLDER_ART
 from src import MP3_EXT, MUSIC_TLD
 from src import PLAYLIST_EXTS
 from src import RESULT_DIR, RESULT_EXT
-from src.generated_files import GENERATED_FILES
-from tests import TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_GENESIS, TEST_MP3_NO_TAG, TEST_MP3_NO_METADATA, TEST_WAV_NONE, TEST_WMA_CCR
+from src.generated_files import GENERATED_PATH
+from tests import TEST_M4A_EAGLES
+from tests import TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_GENESIS, TEST_MP3_NO_TAG, TEST_MP3_NO_METADATA
+from tests import TEST_WAV_NONE
+from tests import TEST_WMA_CCR
 from tests import TEST_M3U
 from tests import TESTS_PATH, TESTS_TLD
 # local module errors
@@ -63,7 +66,7 @@ class TestAudioMetadata(TestCase):
         # directory for "walk" type tests: D:\MusicProcessing\tests\ConvertedMusic
         cls.converted = os.path.join(TESTS_PATH, "ConvertedMusic")
         # the path where converted files will be created D:\MusicProcessing\src\generated_files\Music
-        cls.norm_path = os.path.join(GENERATED_FILES, MUSIC_TLD)
+        cls.norm_path = os.path.join(GENERATED_PATH, MUSIC_TLD)
         # directory for "walk" type tests: D:\MusicProcessing\tests\PreppedMusic
         cls.prepped = os.path.join(TESTS_PATH, "PreppedMusic")
 
@@ -346,7 +349,7 @@ class TestAudioMetadata(TestCase):
         no_metadata = TEST_MP3_NO_METADATA
         metadata.convert_file(no_metadata, show_spinner=False)
 
-        audio_file = os.path.join(GENERATED_FILES, MUSIC_TLD, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
+        audio_file = os.path.join(GENERATED_PATH, MUSIC_TLD, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
         audio_exists = os.path.exists(audio_file)
         self.assertTrue(audio_exists)
 
@@ -514,7 +517,7 @@ class TestAudioMetadata(TestCase):
         # use the ConvertedMusic dir
         metadata.get_media_info_walk(self.converted, None)
 
-        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_media_info_walk" + RESULT_EXT
         txt_path = os.path.join(txt_dir, txt_filename)
 
@@ -538,7 +541,7 @@ class TestAudioMetadata(TestCase):
         # use the ConvertedMusic dir
         metadata.get_media_info_walk(self.converted, PLAYLIST_EXTS[0])
 
-        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_media_info_walk" + RESULT_EXT
         txt_path = os.path.join(txt_dir, txt_filename)
         output_exists = os.path.exists(txt_path)
@@ -556,7 +559,7 @@ class TestAudioMetadata(TestCase):
         # use the ConvertedMusic dir
         metadata.get_media_info_walk(self.converted, MP3_EXT)
 
-        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_media_info_walk" + RESULT_EXT
         txt_path = os.path.join(txt_dir, txt_filename)
         output_exists = os.path.exists(txt_path)
@@ -660,7 +663,7 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting tags for a input pattern
         '''
 
-        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_tags_walk" + RESULT_EXT
         txt_path = os.path.join(txt_dir, txt_filename)
 
@@ -677,7 +680,7 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting ffprobe  tags for audio files.
         '''
 
-        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_tags_walk" + RESULT_EXT
         txt_path = os.path.join(txt_dir, txt_filename)
 
@@ -696,7 +699,7 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting ffprobe  tags for audio files.
         '''
 
-        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_tags_walk" + RESULT_EXT
         txt_path = os.path.join(txt_dir, txt_filename)
 
@@ -715,7 +718,7 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting an unique set of metadata keys for audio files in specified path.
         '''
 
-        txt_dir = os.path.join(GENERATED_FILES, RESULT_DIR)
+        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_unique_media_keys" + RESULT_EXT
         txt_path = os.path.join(txt_dir, txt_filename)
 

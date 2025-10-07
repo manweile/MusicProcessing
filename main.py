@@ -19,7 +19,7 @@ import sys
 
 # local modules
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
-from src.generated_files import GENERATED_FILES
+from src.generated_files import GENERATED_PATH
 from src.audio_info import AudioArt
 from src.audio_info import AudioMetadata
 from src.audio_info import AudioPlaylist
@@ -32,7 +32,7 @@ gc.enable()
 basename = os.path.basename(__file__)
 stem = os.path.splitext(basename)[0]
 file = stem + LOG_EXT
-log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
+log_filename = os.path.join(GENERATED_PATH, LOG_DIR, file)
 # override the default logging level WARN to lowest level so we can log all levels
 logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
 logger = logging.getLogger(__name__)
