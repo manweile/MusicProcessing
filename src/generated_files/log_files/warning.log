@@ -160,3 +160,19 @@
 2025-10-06 17:37:24,071 — src.audio_info.audio_metadata — WARNING — convert_walk:408 — Pattern .m3u is not for a valid audio file
 
 2025-10-06 17:37:24,546 — src.audio_info.audio_metadata — WARNING — create_album_dirs:529 — D:\MusicProcessing\tests\PreppedMusic\NoMetadata\No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-06 20:47:04,583 — src.audio_info.audio_metadata — WARNING — convert_file:286 — album directory /home/gerald/MusicProcessing/tests/Music/Crush/Here does not contain a Folder.jpg file.
+
+2025-10-06 20:47:26,428 — src.audio_info.audio_metadata — WARNING — convert_walk:408 — Pattern .m3u is not for a valid audio file
+
+2025-10-06 20:47:27,189 — src.audio_info.audio_metadata — WARNING — create_album_dirs:527 — /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-06 20:47:27,332 — src.audio_info.audio_metadata — WARNING — create_album_dirs:527 — /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-06 20:47:27,470 — src.audio_info.audio_metadata — WARNING — create_album_dirs:527 — /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3 is missing album metadata
+
+2025-10-06 20:58:15,586 — src.audio_info.audio_metadata — WARNING — convert_file:286 — album directory /home/gerald/MusicProcessing/tests/Music/Crush/Here does not contain a Folder.jpg file.
+
+2025-10-06 20:58:37,408 — src.audio_info.audio_metadata — WARNING — convert_walk:408 — Pattern .m3u is not for a valid audio file
+
+2025-10-06 20:58:38,146 — src.audio_info.audio_metadata — WARNING — create_album_dirs:527 — /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3 is missing album metadata
