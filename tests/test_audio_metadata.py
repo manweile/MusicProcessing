@@ -17,8 +17,10 @@ import shutil
 import unittest
 from json import JSONDecodeError
 from pathlib import Path
+from shutil import ExecError
 from subprocess import CompletedProcess
 from unittest import TestCase
+from unittest.mock import Mock
 from unittest.mock import patch
 
 # third party modules
@@ -406,6 +408,48 @@ class TestAudioMetadata(TestCase):
         no_metadata = (os.path.join(self.prepped, "NoMetadata", "Here"))
         dir_not_exists = os.path.exists(no_metadata)
         self.assertFalse(dir_not_exists)
+
+
+    def test_create_album_dir_exec(self):
+        '''
+        @brief Tests creating an album sub-directory throws ExecError.
+        '''
+
+        prepped_path = self.prepped
+
+        create_album_metadata = AudioMetadata()
+
+        mock_album_metadata = Mock(spec=create_album_metadata)
+        mock_album_metadata.side_effect = ExecError()
+
+        create_album_metadata.create_album_dirs = mock_album_metadata
+
+        with self.assertRaises(ExecError) as cm:
+            create_album_metadata.create_album_dirs(prepped_path)
+
+        self.assertEqual("ExecError", cm.exception.__class__.__name__)
+
+        mock_album_metadata.reset_mock(return_value=True, side_effect=True)
+
+
+    def test_create_album_dir_value(self):
+        '''
+        @brief Tests creating an album sub-directory in an artist directory.
+        '''
+
+        create_album_metadata = AudioMetadata()
+
+        mock_album_metadata = Mock(spec=create_album_metadata)
+        mock_album_metadata.side_effect = ValueError()
+
+        create_album_metadata.create_album_dirs = mock_album_metadata
+
+        with self.assertRaises(ValueError) as cm:
+            create_album_metadata.create_album_dirs(self.prepped)
+
+        self.assertEqual("ValueError", cm.exception.__class__.__name__)
+
+        mock_album_metadata.reset_mock(return_value=True, side_effect=True)
 
 
     def test_get_any_tags(self):
