@@ -329,37 +329,6 @@ class TestDirectoryProcessing(TestCase):
         mock_make_dir.reset_mock(return_value=True, side_effect=True)
 
 
-    @unittest.skip("complete")
-    def test_move_audio_file(self):
-        '''
-        @brief Test moves audio file to a new directory.
-
-        @details The destination path must exist already.
-
-        @param file_path {str} File path for audio file.
-        @param destination_path {str} New directory for audio file.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        pass
-
-
-    def test_move_audio_file_fail(self):
-        '''
-        @brief Test moves audio file to a new directory throws ExecError.
-
-        @details The destination path must exist already.
-
-        @param file_path {str} File path for audio file.
-        @param destination_path {str} New directory for audio file.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        pass
-
-
     def test_path_info(self):
         '''
         @brief Tests getting a path info for audio file.
