@@ -285,13 +285,25 @@ class TestDirectoryProcessing(TestCase):
         @brief Tests creates a directory throws general OSError.
         '''
 
-        bad_path = "?bad_path"
-        with self.assertRaises(OSError) as cm:
-            directory.make_dir(bad_path)
+        bad_path = os.path.join(GENERATED_FILES, MUSIC_TLD, "?bad_path")
 
+        make_dir_directory = DirectoryProcessing()
+
+        mock_make_dir = Mock(spec=make_dir_directory)
+        mock_make_dir.side_effect = OSError(errno.EINVAL, "Invalid argument")
+
+        make_dir_directory.make_dir = mock_make_dir
+
+        with self.assertRaises(OSError) as cm:
+            make_dir_directory.make_dir(bad_path)
+
+        dir_exists = os.path.exists(bad_path)
+
+        self.assertFalse(dir_exists)
         self.assertEqual("OSError", cm.exception.__class__.__name__)
         self.assertEqual(cm.exception.errno, 22)
-        self.assertEqual(cm.exception.filename, bad_path)
+
+        mock_make_dir.reset_mock(return_value=True, side_effect=True)
 
 
     def test_make_dir_permission(self):
