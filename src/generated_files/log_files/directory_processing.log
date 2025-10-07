@@ -429,3 +429,15 @@ Traceback (most recent call last):
   File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
     mkdir(name, mode)
 OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?bad_path'
+
+2025-10-07 12:43:19,476 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:47:41,076 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:48:02,648 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:53:27,650 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 16:00:24,449 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 16:02:55,649 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories

@@ -14,11 +14,9 @@ import gc
 import inspect
 import logging
 import os
-import shutil
 from operator import itemgetter
 from os import strerror
 from pathlib import Path
-from shutil import ExecError
 
 # local module methods
 from src import add_module_handler
@@ -31,6 +29,8 @@ from src import PLAYLIST_EXTS
 from src import RESULT_DIR, RESULT_EXT
 from src import UTF8
 from src.generated_files import GENERATED_PATH
+# local module errors
+from src import MusicProcessingError
 
 gc.enable()
 
@@ -434,7 +434,7 @@ class DirectoryProcessing():
             return export_path
 
 
-    def remove_album_dir(self, start_path):
+    def remove_empty_album_dir(self, start_path):
         '''
         @brief Removes empty album directories.
 
@@ -474,7 +474,6 @@ class DirectoryProcessing():
                         os.rmdir(artist_item_path)
                         dir_count += 1
 
-            # @todo file this
             logger.info(f"removed {dir_count} empty album directories")
 
         except OSError as os_error:
@@ -494,9 +493,10 @@ class DirectoryProcessing():
         @brief Removes file matching specified pattern.
 
         @details Walks through top level directory and removes files matching specified file pattern.
-        @details Without a start path input, the top level directory MUST have been set.
+        @details Will not delete from file system root or a mount point.
+        @details Will not delete *.* wildcard pattern.
 
-        @param start_path {str} Optional, the starting point of the directory walk.
+        @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} The file pattern we want to delete.
 
         @exception OSError A system related error occurred.
@@ -504,6 +504,25 @@ class DirectoryProcessing():
         '''
 
         try:
+            # guard against attempting root directory deletions
+            resolved_path = Path(start_path).resolve()
+            if resolved_path == resolved_path.parent:
+                logger.warning(f"{start_path} is file system root")
+                # @todo change return to raise MusicProcessingError
+                return
+
+            # guard against mount point deletion
+            if os.path.ismount(start_path):
+                logger.warning(f"{start_path} is a mount point")
+                # @todo change return to raise MusicProcessingError
+                return
+
+            # guard against full wildcard pattern
+            if file_pattern == "*.*":
+                logger.warning(f"{file_pattern} is too broad")
+                # @todo change return to raise MusicProcessingError
+                return
+
             # top down walk for files of the specified pattern
             # want the directory path & file names so we can get full file path
             # don't care about the sub-directory names at all
@@ -513,8 +532,7 @@ class DirectoryProcessing():
                     if fnmatch.fnmatch(file, file_pattern.lower()):
                         file_path = os.path.join(dir_path, file)
                         os.remove(file_path)
-                        # @todo file this
-                        print(f"Deleted: {file_path}")
+                        logger.info(f"Deleted: {file_path}")
 
         except OSError as os_error:
             if os_error.errno == errno.EACCES:

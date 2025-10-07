@@ -84,3 +84,15 @@
 
 2025-10-07 10:30:37,077 — src.audio_info.audio_playlist — INFO — update_paths:175 — Updated test.m3u
 
+
+2025-10-07 12:43:19,476 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:47:41,076 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:48:02,648 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:53:27,650 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 16:00:24,449 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 16:02:55,649 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories

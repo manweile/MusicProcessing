@@ -14,6 +14,8 @@ import inspect
 import os
 import shutil
 import unittest
+from pathlib import Path
+from shutil import ExecError
 from unittest import TestCase
 from unittest.mock import Mock
 from unittest.mock import patch
@@ -24,8 +26,11 @@ from src import MUSIC_TLD
 from src import CSV_DIR, CSV_EXT
 from src import RESULT_DIR, RESULT_EXT
 from src.generated_files import GENERATED_PATH
-from tests import TEST_M4A_DAVIS
+from tests import TEST_M3U
+from tests import TEST_M4A_DAVIS, TEST_MP3_ABBA, TEST_WMA_JOHN
 from tests import TESTS_PATH, TESTS_TLD
+# local module errors
+from src import MusicProcessingError
 # local module classes
 from src.dir_processing import DirectoryProcessing
 
@@ -49,8 +54,8 @@ class TestDirectoryProcessing(TestCase):
         '''
 
         # dest dir for make dir and move file tests
-        cls.dir_path = os.path.join(GENERATED_PATH, MUSIC_TLD, "DirOne", "DirTwo")
-        cls.generated_path = os.path.join(GENERATED_PATH, MUSIC_TLD)
+        cls.dir_path = os.path.join(GENERATED_PATH, MUSIC_TLD, "ArtistDir", "AlbumDir")
+        cls.generated_tld = os.path.join(GENERATED_PATH, MUSIC_TLD)
 
         # temp dirs
         cls.csv_files = os.path.join(TESTS_PATH, CSV_DIR)
@@ -80,8 +85,8 @@ class TestDirectoryProcessing(TestCase):
         @details Runs after every test definition.
         '''
 
-        if os.path.exists(self.generated_path):
-            shutil.rmtree(self.generated_path)
+        if os.path.exists(self.generated_tld):
+            shutil.rmtree(self.generated_tld)
 
 
     def test_create_csv_alt_dir_sorted(self):
@@ -360,32 +365,121 @@ class TestDirectoryProcessing(TestCase):
         mock_warning.assert_called_once_with(f"File {input_path} is not in {AUDIO_EXTS}")
 
 
-    @unittest.skip("complete")
     def test_remove_album_dir(self):
         '''
         @brief Tests removes empty album directories.
         '''
 
-        generated_tld = os.path.join(GENERATED_PATH, MUSIC_TLD)
-        os.makedirs(generated_tld)
+        # need a non-audio file in tld
+        m3u_base = os.path.basename(TEST_M3U)
+        m3u_file = os.path.join(self.generated_tld, m3u_base)
+        os.makedirs(self.generated_tld)
+        shutil.copy(TEST_M3U, m3u_file)
+
+        # need an empty album dir
+        davis_file_path = Path(TEST_M4A_DAVIS)
+        davis_file_parent = davis_file_path.parent
+        davis_path_parts = davis_file_parent.parts
+        davis_full_len = len(davis_path_parts)
+        davis_artist_len = davis_full_len - 2
+        davis_artist_album = ""
+        for i in range(davis_artist_len, davis_full_len):
+            davis_artist_album = os.path.join(davis_artist_album, davis_path_parts[i])
+
+        empty_album_dir = os.path.join(self.generated_tld, davis_artist_album)
+        os.makedirs(empty_album_dir)
+
+        # need and empty artist dir
+        abba_file_path = Path(TEST_MP3_ABBA)
+        abba_file_parent = abba_file_path.parent
+        abba_path_parts = abba_file_parent.parts[:-1]
+        abba_full_len = len(abba_path_parts)
+        abba_artist_len = abba_full_len - 1
+        abba_artist = ""
+        for i in range(abba_artist_len, abba_full_len):
+            abba_artist = os.path.join(abba_artist, abba_path_parts[i])
+
+        empty_artist_dir = os.path.join(self.generated_tld, abba_artist)
+        os.makedirs(empty_artist_dir)
+
+        # need a full album dir
+        john_file_path = Path(TEST_WMA_JOHN)
+        john_file_parent = john_file_path.parent
+        john_path_parts = john_file_parent.parts
+        john_full_len = len(john_path_parts)
+        john_artist_len = john_full_len - 2
+        john_artist_album = ""
+        for i in range(john_artist_len, john_full_len):
+            john_artist_album = os.path.join(john_artist_album, john_path_parts[i])
+
+        full_album_dir = os.path.join(self.generated_tld, john_artist_album)
+        john_file_name = os.path.basename(TEST_WMA_JOHN)
+        full_album_path = os.path.join(full_album_dir, john_file_name)
+        os.makedirs(full_album_dir)
+        shutil.copy(TEST_WMA_JOHN, full_album_path)
+
+        r'''
+        expected dir contents
+        /generated_files/Music
+            test.m3u
+            /Abba
+            /Elton John
+                /Goodbye Yellow Brick Road
+                    Elton John-Saturday Night's Alright for Fighting.wma
+        '''
+        directory.remove_empty_album_dir(self.generated_tld)
+
+        m3u_exists = os.path.exists(m3u_file)
+        empty_album_exists = os.path.exists(empty_album_dir)
+        # check is empty
+        empty_artist_exists = os.path.isdir(empty_artist_dir) and not os.listdir(empty_artist_dir)
+        full_album_exists = os.path.exists(full_album_path)
+
+        self.assertTrue(m3u_exists)
+        self.assertFalse(empty_album_exists)
+        self.assertTrue(empty_artist_exists)
+        self.assertTrue(full_album_exists)
 
 
-    @unittest.skip("complete")
     def test_remove_album_dir_fail(self):
         '''
         @brief Tests removes empty album directories cause general OSError.
         '''
 
-        pass
+        remove_album_dir_directory = DirectoryProcessing()
+
+        mock_remove_album_dir = Mock(spec=remove_album_dir_directory)
+        mock_remove_album_dir.side_effect = OSError(errno.EINVAL, "Invalid argument")
+
+        remove_album_dir_directory.remove_empty_album_dir = mock_remove_album_dir
+
+        with self.assertRaises(OSError) as cm:
+            remove_album_dir_directory.remove_empty_album_dir(self.generated_tld)
+
+        self.assertEqual("OSError", cm.exception.__class__.__name__)
+        self.assertEqual(cm.exception.errno, 22)
+
+        mock_remove_album_dir.reset_mock(return_value=True, side_effect=True)
 
 
-    @unittest.skip("complete")
     def test_remove_album_dir_permission(self):
         '''
         @brief Tests removes empty album directories cause permission denied OSError.
         '''
 
-        pass
+        remove_album_dir_directory = DirectoryProcessing()
+
+        mock_remove_album_dir = Mock(spec=remove_album_dir_directory)
+        mock_remove_album_dir.side_effect = OSError(errno.EACCES, "Permission denied")
+
+        remove_album_dir_directory.remove_empty_album_dir = mock_remove_album_dir
+
+        with self.assertRaises(OSError) as cm:
+            remove_album_dir_directory.remove_empty_album_dir(self.generated_tld)
+
+        self.assertEqual(cm.exception.errno, errno.EACCES)
+
+        mock_remove_album_dir.reset_mock(return_value=True, side_effect=True)
 
 
     @unittest.skip("complete")
@@ -410,6 +504,33 @@ class TestDirectoryProcessing(TestCase):
     def test_remove_pattern_permission(self):
         '''
         @brief Test removes file matching specified pattern causes permission denied OSError.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_remove_pattern_mount(self):
+        '''
+        @brief Test removes file matching specified pattern in file system root causes MusicProcessingError.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_remove_pattern_root(self):
+        '''
+        @brief Test removes file matching specified patter in a mount point causes MusicProcessingError.
+        '''
+
+        pass
+
+
+    @unittest.skip("complete")
+    def test_remove_pattern_wildcard(self):
+        '''
+        @brief Test removes file matching full wildcard pattern causes MusicProcessingError.
         '''
 
         pass

@@ -282,7 +282,7 @@ def remove_albums(tld_path):
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
-    directory.remove_album_dir(tld_path)
+    directory.remove_empty_album_dir(tld_path)
 
 
 def remove_pattern(tld_path, file_pattern):

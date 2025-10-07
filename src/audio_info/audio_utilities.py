@@ -323,7 +323,7 @@ class AudioUtilities():
         pass
 
 
-    def remove_album_dir(self, start_path):
+    def remove_empty_album_dir(self, start_path):
         '''
         @brief Removes empty album directories.
 
