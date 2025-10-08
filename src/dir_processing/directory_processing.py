@@ -355,8 +355,9 @@ class DirectoryProcessing():
         @brief Creates export path for audio file conversions and normalizations.
 
         @details Calling function needs to create export directory if it doesn't exist.
+        @details The input file must be an acceptable audio file.
 
-        @param file_path {str} The full file path for audio file.
+        @param file_path {str} The full file path for exported mp3 audio file.
         @return export_path {str} The export path, otherwise None.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -507,21 +508,18 @@ class DirectoryProcessing():
             # guard against attempting root directory deletions
             resolved_path = Path(start_path).resolve()
             if resolved_path == resolved_path.parent:
-                logger.warning(f"{start_path} is file system root")
-                # @todo change return to raise MusicProcessingError
-                return
+                logger.error(f"{start_path} is file system root")
+                raise MusicProcessingError(f"{start_path} is file system root")
 
             # guard against mount point deletion
             if os.path.ismount(start_path):
-                logger.warning(f"{start_path} is a mount point")
-                # @todo change return to raise MusicProcessingError
-                return
+                logger.error(f"{start_path} is a mount point")
+                raise MusicProcessingError(f"{start_path} is a mount point")
 
             # guard against full wildcard pattern
             if file_pattern == "*.*":
-                logger.warning(f"{file_pattern} is too broad")
-                # @todo change return to raise MusicProcessingError
-                return
+                logger.error(f"{file_pattern} is too broad")
+                raise MusicProcessingError(f"{file_pattern} is too broad")
 
             # top down walk for files of the specified pattern
             # want the directory path & file names so we can get full file path
@@ -534,6 +532,8 @@ class DirectoryProcessing():
                         os.remove(file_path)
                         logger.info(f"Deleted: {file_path}")
 
+        except MusicProcessingError as mp_error:
+            raise mp_error
         except OSError as os_error:
             if os_error.errno == errno.EACCES:
                 logger.error(f"OSError permission denied for  deleting {file_path}", exc_info=True)

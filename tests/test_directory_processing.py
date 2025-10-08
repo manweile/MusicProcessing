@@ -11,11 +11,12 @@
 import errno
 import gc
 import inspect
+import psutil
 import os
 import shutil
+import sys
 import unittest
 from pathlib import Path
-from shutil import ExecError
 from unittest import TestCase
 from unittest.mock import Mock
 from unittest.mock import patch
@@ -532,31 +533,58 @@ class TestDirectoryProcessing(TestCase):
         mock_remove_pattern.reset_mock(return_value=True, side_effect=True)
 
 
-    @unittest.skip("complete")
+    @unittest.skip("debug")
     def test_remove_pattern_mount(self):
         '''
-        @brief Test removes file matching specified pattern in file system root causes MusicProcessingError.
+        @brief Test removes file matching specified pattern in mount point causes MusicProcessingError.
         '''
 
-        pass
+        current_path = os.getcwd()
+        file_path = os.path.realpath(current_path)
+
+        for partition in psutil.disk_partitions(all=True):
+            if file_path.startswith(partition.mountpoint):
+                mount_point = partition.mountpoint
+
+        # mount_point = r"F:\\"
+        pattern = "blah.blah"
+
+        with self.assertRaises(MusicProcessingError) as cm:
+            directory.remove_pattern(mount_point, pattern)
+
+        self.assertEqual("MusicProcessingError", cm.exception.__class__.__name__)
+        self.assertEqual(cm.exception.message, f"{mount_point} is a mount point")
 
 
-    @unittest.skip("complete")
     def test_remove_pattern_root(self):
         '''
-        @brief Test removes file matching specified patter in a mount point causes MusicProcessingError.
+        @brief Test removes file matching specified pattern in a file system root causes MusicProcessingError.
         '''
 
-        pass
+        sys_executable = Path(sys.executable)
+        root_path = sys_executable.anchor
+
+        pattern = "blah.blah"
+
+        with self.assertRaises(MusicProcessingError) as cm:
+            directory.remove_pattern(root_path, pattern)
+
+        self.assertEqual("MusicProcessingError", cm.exception.__class__.__name__)
+        self.assertEqual(cm.exception.message, f"{root_path} is file system root")
 
 
-    @unittest.skip("complete")
     def test_remove_pattern_wildcard(self):
         '''
         @brief Test removes file matching full wildcard pattern causes MusicProcessingError.
         '''
 
-        pass
+        pattern = "*.*"
+
+        with self.assertRaises(MusicProcessingError) as cm:
+            directory.remove_pattern(self.generated_tld, pattern)
+
+        self.assertEqual("MusicProcessingError", cm.exception.__class__.__name__)
+        self.assertEqual(cm.exception.message, f"{pattern} is too broad")
 
 
 def get_method_names(cls):

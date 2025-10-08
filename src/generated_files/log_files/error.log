@@ -3920,3 +3920,31 @@ Stack (most recent call last):
     probe_process = subprocess_utils.subprocess_run(probe_command)
   File "D:\MusicProcessing\src\subprocess_utils.py", line 233, in subprocess_run
     logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-08 15:39:20,790 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:39:48,361 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:41:31,957 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:47:08,764 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — H:\\ is file system root
+
+2025-10-08 15:47:35,243 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:49:20,707 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — Z:\ is file system root
+
+2025-10-08 15:49:26,307 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:50:02,573 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — C:\ is file system root
+
+2025-10-08 15:50:26,205 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 16:08:35,016 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — D:\ is file system root
+
+2025-10-08 16:09:29,489 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — c:\ is file system root
+
+2025-10-08 16:09:50,924 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 16:56:26,692 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — C:\ is file system root
+
+2025-10-08 16:56:26,692 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
