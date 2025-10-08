@@ -491,22 +491,45 @@ class TestDirectoryProcessing(TestCase):
         pass
 
 
-    @unittest.skip("complete")
     def test_remove_pattern_fail(self):
         '''
         @brief Test removes file matching specified pattern causes general OSError.
         '''
 
-        pass
+        remove_pattern_directory = DirectoryProcessing()
+
+        mock_remove_pattern = Mock(spec=remove_pattern_directory)
+        mock_remove_pattern.side_effect = OSError(errno.EINVAL, "Invalid argument")
+
+        remove_pattern_directory.remove_pattern = mock_remove_pattern
+
+        with self.assertRaises(OSError) as cm:
+            remove_pattern_directory.remove_pattern(self.generated_tld, "blah.blah")
+
+        self.assertEqual("OSError", cm.exception.__class__.__name__)
+        self.assertEqual(cm.exception.errno, 22)
+
+        mock_remove_pattern.reset_mock(return_value=True, side_effect=True)
 
 
-    @unittest.skip("complete")
     def test_remove_pattern_permission(self):
         '''
         @brief Test removes file matching specified pattern causes permission denied OSError.
         '''
 
-        pass
+        remove_pattern_directory = DirectoryProcessing()
+
+        mock_remove_pattern = Mock(spec=remove_pattern_directory)
+        mock_remove_pattern.side_effect = OSError(errno.EACCES, "Permission denied")
+
+        remove_pattern_directory.remove_pattern = mock_remove_pattern
+
+        with self.assertRaises(OSError) as cm:
+            remove_pattern_directory.remove_pattern(self.generated_tld, "blah.blah")
+
+        self.assertEqual(cm.exception.errno, errno.EACCES)
+
+        mock_remove_pattern.reset_mock(return_value=True, side_effect=True)
 
 
     @unittest.skip("complete")
