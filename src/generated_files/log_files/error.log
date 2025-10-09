@@ -3988,3 +3988,326 @@ Stack (most recent call last):
 2025-10-09 11:41:42,053 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
 
 2025-10-09 11:41:42,054 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 12:26:32,705 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffprobe -v quiet -show_format -show_streams /home/gerald/MusicProcessing/tests/Music/test.m3u
+NoneType: None
+
+2025-10-09 12:26:32,893 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 183 on command ['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 183.
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 151, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 58, in test_subprocess_run_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-09 12:27:28,872 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav']
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 151, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 92, in test_subprocess_run_ffprobe_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-09 12:28:18,689 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffprobe -v quiet -show_format -show_streams /home/gerald/MusicProcessing/tests/Music/test.m3u
+NoneType: None
+
+2025-10-09 12:28:18,827 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 183 on command ['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 183.
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 152, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 59, in test_subprocess_run_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-09 12:28:18,960 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav']
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 152, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 93, in test_subprocess_run_ffprobe_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-09 12:59:25,890 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 183 on command ['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav', '-y']
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav', '-y']' returned non-zero exit status 183.
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 188, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 129, in test_subprocess_popen_pipe_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-09 13:00:21,377 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffprobe -v quiet -show_format -show_streams /home/gerald/MusicProcessing/tests/Music/test.m3u
+NoneType: None
+
+2025-10-09 13:00:21,536 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 183 on command ['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 183.
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 188, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 59, in test_subprocess_run_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-09 13:00:21,671 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav']
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', '/home/gerald/MusicProcessing/tests/Music/Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 188, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_subprocess_utilities.py", line 93, in test_subprocess_run_ffprobe_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "/home/gerald/MusicProcessing/src/subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-09 13:10:18,861 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffmpeg -hide_banner -i /home/gerald/MusicProcessing/tests/Music/test.m3u -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 /home/gerald/MusicProcessing/tests/Music/Non-extant.wav -y
+NoneType: None
+
+2025-10-09 13:12:19,313 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffmpeg -hide_banner -i /home/gerald/MusicProcessing/tests/Music/test.m3u -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 /home/gerald/MusicProcessing/tests/Music/Non-extant.wav -y
+NoneType: None

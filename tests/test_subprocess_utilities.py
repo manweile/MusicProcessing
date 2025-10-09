@@ -37,24 +37,34 @@ class TestSubprocessUtilities(TestCase):
     @brief Tests SubprocessUtilities class functions.
     '''
 
-    @unittest.skip("adapt from metadata tests")
-    def test_get_media_tags_invalid_file(self):
-        # '''
-        # @brief Tests getting media tags from invalid file.
-        # '''
 
-        # media_tags = None
+    def test_subprocess_run_ffmpeg_invalid_file(self):
+        '''
+        @brief Tests getting ffmpeg volume info failing due to invalid file type.
+        '''
 
-        # with self.assertRaises(CalledProcessError) as cm:
-        #     media_tags = metadata.get_media_tags(TEST_M3U)
+        file_path = TEST_M3U
+        # -hide_banner to reduce output clutter
+        # -filter:a volumedetect so get volume stats on audio stream
+        # -f null - send output to stdout
+        mpeg_command = [
+            'ffmpeg', '-hide_banner',
+            '-i', file_path,
+            '-filter:a', 'volumedetect',
+            '-f', 'null', '-'
+        ]
+        mpeg_process = None
 
-        # self.assertIsNone(media_tags)
-        # self.assertEqual("CalledProcessError", cm.exception.__class__.__name__)
-        # self.assertEqual(1, cm.exception.returncode)
-        pass
+        with self.assertRaises(CalledProcessError) as cm:
+            mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+
+        self.assertIsNone(mpeg_process)
+        self.assertEqual("CalledProcessError", cm.exception.__class__.__name__)
+        err_msg = f"Error opening input file {TEST_M3U}"
+        self.assertTrue(err_msg in cm.exception.stderr.strip())
 
 
-    def test_subprocess_run_non_extant(self):
+    def test_subprocess_run_ffprobe_non_extant(self):
         '''
         @brief Tests Tries to run ffprobe video stream check for non-extant file.
 
@@ -88,7 +98,43 @@ class TestSubprocessUtilities(TestCase):
         self.assertEqual(stderr, expected_err)
 
 
-    def test_subprocess_popen_pipe_invalid_file(self):
+    def test_subprocess_popen_pipe_ffmpeg_invalid_file(self):
+        '''
+        @brief Tests trying to get ffprobe media info from invalid file type.
+        '''
+
+        export_path = TEST_WAV_NONE
+        file_path = TEST_M3U
+        bitrate = 128198
+        # ffmpeg
+        # -hide_banner            # reduce output clutter
+        # -i file_path            # specify input file D:\MusicProcessing\tests\Music\test.m3u
+        # -vn -map_metadata -1    # -vn drops video stream and -map_metadata -1 drops all text metadata
+        # -codec:a libmp3lame     # -codec:a libmp3lame sets audio codec for mp3
+        # -id3v2_version 3        # known bug have to specify id3v2 version
+        # -b:a 128198             # ffmpeg will downgrade bitrate if you don't set it
+        mpeg_command = [
+            "ffmpeg", "-hide_banner",
+            "-i", file_path,
+            "-vn", "-map_metadata", "-1",
+            "-codec:a", "libmp3lame",
+            "-id3v2_version", "3",
+            "-b:a", str(bitrate),
+            export_path, '-y'
+        ]
+
+        mpeg_process = None
+
+        with self.assertRaises(RuntimeError) as cm:
+            mpeg_process = subprocess_utils.popen_pipe(mpeg_command)
+
+        self.assertIsNone(mpeg_process)
+        self.assertEqual("RuntimeError", cm.exception.__class__.__name__)
+        err_msg = f"RuntimeError running command ffmpeg -hide_banner -i {TEST_M3U} -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 {TEST_WAV_NONE} -y"
+        self.assertTrue(cm.exception.args[0], err_msg)
+
+
+    def test_subprocess_popen_pipe_ffprobe_invalid_file(self):
         '''
         @brief Tests trying to get ffprobe media info from invalid file type.
         '''
