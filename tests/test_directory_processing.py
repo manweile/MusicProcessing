@@ -539,6 +539,7 @@ class TestDirectoryProcessing(TestCase):
         @brief Test removes file matching specified pattern in mount point causes MusicProcessingError.
         '''
 
+        # look at test_get_sample_rate_index for mocking example
         # current_path = os.getcwd()
         # file_path = os.path.realpath(current_path)
 

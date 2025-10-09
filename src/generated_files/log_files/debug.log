@@ -4292,3 +4292,9 @@ Stack (most recent call last):
 2025-10-08 16:56:26,692 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — C:\ is file system root
 
 2025-10-08 16:56:26,692 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 20:29:16,584 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 20:30:04,681 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-08 20:30:34,978 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
