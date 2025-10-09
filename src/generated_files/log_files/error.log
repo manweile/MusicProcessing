@@ -3952,3 +3952,39 @@ Stack (most recent call last):
 2025-10-08 20:30:04,681 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
 
 2025-10-08 20:30:34,978 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 10:54:06,511 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 10:54:06,512 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 10:54:31,432 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 10:54:31,435 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:01:01,768 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:01:01,770 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:02:23,399 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:02:23,402 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:10:21,962 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:10:21,964 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:13:52,374 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:14:44,474 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:14:44,476 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:26:29,849 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:26:29,856 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:26:29,857 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:41:42,053 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:41:42,054 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad

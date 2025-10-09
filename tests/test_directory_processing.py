@@ -11,7 +11,6 @@
 import errno
 import gc
 import inspect
-# import psutil
 import os
 import shutil
 import sys
@@ -23,6 +22,7 @@ from unittest.mock import patch
 
 # local module constants
 from src import AUDIO_EXTS
+from src import M4A_EXT, MP3_EXT, WMA_EXT
 from src import MUSIC_TLD
 from src import CSV_DIR, CSV_EXT
 from src import RESULT_DIR, RESULT_EXT
@@ -199,7 +199,7 @@ class TestDirectoryProcessing(TestCase):
         csv_filename = "get_ext_file_list_m4a" + CSV_EXT
         csv_path = os.path.join(csv_dir, csv_filename)
 
-        directory.get_ext_file_list(TESTS_TLD, ".m4a")
+        directory.get_ext_file_list(TESTS_TLD, M4A_EXT)
 
         csv_exists = os.path.exists(csv_path)
         self.assertTrue(csv_exists)
@@ -220,7 +220,7 @@ class TestDirectoryProcessing(TestCase):
         csv_filename = "get_ext_file_list_mp3" + CSV_EXT
         csv_path = os.path.join(csv_dir, csv_filename)
 
-        directory.get_ext_file_list(TESTS_TLD, ".mp3")
+        directory.get_ext_file_list(TESTS_TLD, MP3_EXT)
 
         csv_exists = os.path.exists(csv_path)
         self.assertTrue(csv_exists)
@@ -241,7 +241,7 @@ class TestDirectoryProcessing(TestCase):
         csv_filename = "get_ext_file_list_wma" + CSV_EXT
         csv_path = os.path.join(csv_dir, csv_filename)
 
-        directory.get_ext_file_list(TESTS_TLD, ".wma")
+        directory.get_ext_file_list(TESTS_TLD, WMA_EXT)
 
         csv_exists = os.path.exists(csv_path)
         self.assertTrue(csv_exists)
@@ -483,13 +483,21 @@ class TestDirectoryProcessing(TestCase):
         mock_remove_album_dir.reset_mock(return_value=True, side_effect=True)
 
 
-    @unittest.skip("complete")
     def test_remove_pattern(self):
         '''
         @brief Test removes file matching specified pattern.
         '''
 
-        pass
+        os.makedirs(self.generated_tld)
+
+        m3u_base = os.path.basename(TEST_M3U)
+        m3u_file = os.path.join(self.generated_tld, m3u_base)
+        shutil.copy(TEST_M3U, m3u_file)
+
+        directory.remove_pattern(self.generated_tld, m3u_base)
+
+        m3u_exists = os.path.exists(m3u_file)
+        self.assertFalse(m3u_exists)
 
 
     def test_remove_pattern_fail(self):
@@ -533,33 +541,32 @@ class TestDirectoryProcessing(TestCase):
         mock_remove_pattern.reset_mock(return_value=True, side_effect=True)
 
 
-    @unittest.skip("debug")
     def test_remove_pattern_mount(self):
         '''
-        @brief Test removes file matching specified pattern in mount point causes MusicProcessingError.
+        @brief Test removes pattern from mount point causes MusicProcessingError.
         '''
 
-        # look at test_get_sample_rate_index for mocking example
-        # current_path = os.getcwd()
-        # file_path = os.path.realpath(current_path)
+        err_msg = f"{self.generated_tld} is a mount point"
 
-        # for partition in psutil.disk_partitions(all=True):
-        #     if file_path.startswith(partition.mountpoint):
-        #         mount_point = partition.mountpoint
+        remove_pattern_directory = DirectoryProcessing()
 
-        # # mount_point = r"F:\\"
-        # pattern = "blah.blah"
+        mock_remove_pattern = Mock(spec=remove_pattern_directory)
+        mock_remove_pattern.side_effect = MusicProcessingError(err_msg)
 
-        # with self.assertRaises(MusicProcessingError) as cm:
-        #     directory.remove_pattern(mount_point, pattern)
+        remove_pattern_directory.remove_pattern = mock_remove_pattern
 
-        # self.assertEqual("MusicProcessingError", cm.exception.__class__.__name__)
-        # self.assertEqual(cm.exception.message, f"{mount_point} is a mount point")
+        with self.assertRaises(MusicProcessingError) as cm:
+            remove_pattern_directory.remove_pattern(self.generated_tld, "blah.blah")
+
+        self.assertEqual("MusicProcessingError", cm.exception.__class__.__name__)
+        self.assertEqual(cm.exception.message, err_msg)
+
+        mock_remove_pattern.reset_mock(return_value=True, side_effect=True)
 
 
     def test_remove_pattern_root(self):
         '''
-        @brief Test removes file matching specified pattern in a file system root causes MusicProcessingError.
+        @brief Test remove pattern from file system root causes MusicProcessingError.
         '''
 
         sys_executable = Path(sys.executable)

@@ -501,3 +501,65 @@ OSError: [WinError 123] The filename, directory name, or volume label syntax is 
 2025-10-08 20:30:04,681 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
 
 2025-10-08 20:30:34,978 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 10:54:06,506 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 10:54:06,511 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 10:54:06,512 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 10:54:24,157 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 10:54:31,432 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 10:54:31,435 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:00:55,470 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:01:01,768 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:01:01,770 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:01:34,617 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:02:23,399 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:02:23,402 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:03:58,121 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:09:42,399 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:10:21,962 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:10:21,964 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:13:33,526 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:13:52,374 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:14:44,474 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:14:44,476 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:15:52,412 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:26:29,849 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:26:29,856 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:26:29,857 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:33:47,530 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:34:58,176 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:38:29,481 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:40:51,894 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:41:25,352 — src.dir_processing.directory_processing — INFO — remove_pattern:533 — Deleted: /home/gerald/MusicProcessing/src/generated_files/Music/test.m3u
+
+2025-10-09 11:41:42,053 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:41:42,054 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
