@@ -13,7 +13,7 @@ import os
 import shlex
 import subprocess
 from pathlib import Path
-from subprocess import Popen, PIPE
+from subprocess import PIPE
 from subprocess import CalledProcessError
 
 # third party modules
@@ -64,14 +64,17 @@ class SubprocessUtilities():
         '''
 
         try:
-            res = Popen(
+            res = subprocess.Popen(
                 command,
-                stdout=PIPE
+                stdout=PIPE,
+                stderr=PIPE
             )
 
             # ffprobe returns via stdout (unlike ffmpeg, which uses stderr)
-            stdout_bytes = res.communicate()[0]
+            # stdout_bytes = res.communicate()[0]
+            stdout_bytes, stderr_bytes = res.communicate()
             stdout = stdout_bytes.decode(UTF8)
+            stderr = stderr_bytes.decode(UTF8)
 
             if res.returncode != 0:
                 logger.error(f"RuntimeError running command {shlex.join(command)}", exc_info=True)
@@ -80,7 +83,7 @@ class SubprocessUtilities():
         except RuntimeError as r_error:
             raise r_error
         except UnicodeDecodeError as ud_error:
-            logger.exception(f"UnicodeDecodeError decoding {shlex.join(command)}: {stdout_bytes}", stack_info=True)
+            logger.exception(f"UnicodeDecodeError decoding {shlex.join(command)}: stdout_bytes: {stdout_bytes} stderr_bytes: {stderr_bytes}", stack_info=True)
             raise ud_error
         except Exception as e_error:
             logger.exception(f"Exception running command {shlex.join(command)}", stack_info=True)

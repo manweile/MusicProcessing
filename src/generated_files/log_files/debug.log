@@ -4683,3 +4683,1520 @@ NoneType: None
 
 2025-10-09 13:12:19,313 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffmpeg -hide_banner -i /home/gerald/MusicProcessing/tests/Music/test.m3u -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 /home/gerald/MusicProcessing/tests/Music/Non-extant.wav -y
 NoneType: None
+
+2025-10-10 16:11:54,106 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 16:11:54,156 — src.subprocess_utils — ERROR — spinner_popen_pipe:141 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 00000223fc60de80] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 315, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 114, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 141, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 16:11:54,195 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 16:14:48,586 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 3199971767 on command ['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 3199971767.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 315, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 231, in test_subprocess_run_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 16:14:48,619 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 315, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 265, in test_subprocess_run_ffprobe_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 16:20:20,998 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 16:20:21,043 — src.subprocess_utils — ERROR — spinner_popen_pipe:141 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 0000022f42f1bf40] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 315, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 114, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 141, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 16:20:21,090 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 16:21:23,161 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 3199971767 on command ['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 3199971767.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 315, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 231, in test_subprocess_run_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 16:21:23,192 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 315, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 265, in test_subprocess_run_ffprobe_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 16:26:05,584 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 16:26:05,634 — src.subprocess_utils — ERROR — spinner_popen_pipe:141 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 000001fa75c3d700] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 318, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 114, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 141, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 16:26:05,673 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 16:26:31,042 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 3199971767 on command ['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 3199971767.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 318, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 234, in test_subprocess_run_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 16:26:31,080 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 318, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 268, in test_subprocess_run_ffprobe_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 16:28:55,466 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 16:28:55,513 — src.subprocess_utils — ERROR — spinner_popen_pipe:141 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 000002936beffc40] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 318, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 114, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 141, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 16:28:55,556 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 16:35:43,120 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 16:35:43,168 — src.subprocess_utils — ERROR — spinner_popen_pipe:141 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 00000171a660cf80] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 322, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 114, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 141, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 16:35:43,210 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 16:36:18,455 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 16:36:18,505 — src.subprocess_utils — ERROR — spinner_popen_pipe:141 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 00000224164e2e80] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 322, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 114, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 141, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 16:36:18,542 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 16:39:32,831 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 16:39:32,880 — src.subprocess_utils — ERROR — spinner_popen_pipe:141 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 000001d024fe2840] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 322, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 114, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 141, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 16:39:32,919 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 16:39:54,730 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 3199971767 on command ['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 3199971767.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 322, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 238, in test_subprocess_run_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 16:39:54,773 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 322, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 272, in test_subprocess_run_ffprobe_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 16:43:36,908 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 16:43:36,952 — src.subprocess_utils — ERROR — spinner_popen_pipe:141 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 00000168b554e080] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 323, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 114, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 141, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 16:43:36,998 — src.subprocess_utils — ERROR — popen_pipe:77 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 16:45:21,681 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 3199971767 on command ['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 3199971767.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 323, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 229, in test_subprocess_run_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 16:45:21,726 — src.subprocess_utils — ERROR — subprocess_run:233 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 224, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 323, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 263, in test_subprocess_run_ffprobe_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 233, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 17:04:22,583 — src.subprocess_utils — ERROR — popen_pipe:80 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 17:04:22,643 — src.subprocess_utils — ERROR — spinner_popen_pipe:144 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 00000261f046da40] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 330, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 124, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 144, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 17:04:22,683 — src.subprocess_utils — ERROR — popen_pipe:80 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 17:04:22,888 — src.subprocess_utils — ERROR — subprocess_run:236 — CalledProcessError returncode: 3199971767 on command ['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 227, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 3199971767.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 330, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 246, in test_subprocess_run_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 236, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 17:04:22,928 — src.subprocess_utils — ERROR — subprocess_run:236 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 227, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 330, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 280, in test_subprocess_run_ffprobe_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 236, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 17:04:50,984 — src.subprocess_utils — ERROR — popen_pipe:80 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 17:04:51,037 — src.subprocess_utils — ERROR — spinner_popen_pipe:144 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 00000161f718d1c0] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 330, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 124, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 144, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 17:04:51,072 — src.subprocess_utils — ERROR — popen_pipe:80 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 17:05:23,357 — src.subprocess_utils — ERROR — subprocess_run:236 — CalledProcessError returncode: 3199971767 on command ['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 227, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 3199971767.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 330, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 246, in test_subprocess_run_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 236, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 17:05:23,397 — src.subprocess_utils — ERROR — subprocess_run:236 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 227, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 330, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 280, in test_subprocess_run_ffprobe_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 236, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 17:14:34,454 — src.subprocess_utils — ERROR — popen_pipe:80 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 17:14:46,933 — src.subprocess_utils — ERROR — spinner_popen_pipe:144 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 000002adc4b8d180] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 345, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 124, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 144, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 17:14:46,980 — src.subprocess_utils — ERROR — popen_pipe:80 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 17:19:36,471 — src.subprocess_utils — ERROR — popen_pipe:80 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 17:19:36,511 — src.subprocess_utils — ERROR — spinner_popen_pipe:144 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 000001c2838fd400] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 344, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 124, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 144, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 17:19:36,553 — src.subprocess_utils — ERROR — popen_pipe:80 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 17:20:01,445 — src.subprocess_utils — ERROR — popen_pipe:86 — UnicodeDecodeError decoding ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3': stdout_bytes: b'hello \x99\xae world' stderr_bytes: b''
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 76, in popen_pipe
+    stdout = stdout_bytes.decode(UTF8)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0x99 in position 6: invalid start byte
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 344, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1387, in patched
+    return func(*newargs, **newkeywargs)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 184, in test_popen_pipe_unicode_other
+    std_out = subprocess_utils.popen_pipe(command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 86, in popen_pipe
+    logger.exception(f"UnicodeDecodeError decoding {shlex.join(command)}: stdout_bytes: {stdout_bytes} stderr_bytes: {stderr_bytes}", stack_info=True)
+
+2025-10-10 17:20:13,266 — src.subprocess_utils — ERROR — subprocess_run:236 — CalledProcessError returncode: 3199971767 on command ['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 227, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 3199971767.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 344, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 260, in test_subprocess_run_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 236, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 17:20:13,306 — src.subprocess_utils — ERROR — subprocess_run:236 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 227, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 344, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 294, in test_subprocess_run_ffprobe_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 236, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 17:23:24,397 — src.subprocess_utils — ERROR — popen_pipe:80 — RuntimeError running command ffmpeg -hide_banner -i 'D:\MusicProcessing\tests\Music\test.m3u' -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 'D:\MusicProcessing\tests\Music\Non-extant.wav' -y
+NoneType: None
+
+2025-10-10 17:23:24,446 — src.subprocess_utils — ERROR — spinner_popen_pipe:144 — Ffmpeg returned error code: 3199971767
+, with output: [in#0 @ 0000025dd0da96c0] Error opening input: Invalid data found when processing input
+Error opening input file D:\MusicProcessing\tests\Music\test.m3u.
+Error opening input files: Invalid data found when processing input
+
+ for command:['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-vn', '-map_metadata', '-1', '-codec:a', 'libmp3lame', '-id3v2_version', '3', '-b:a', '128198', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav', '-y']
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 344, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 124, in test_popen_pipe_ffmpegprocess_error
+    mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 144, in spinner_popen_pipe
+    logger.exception(fp_error_msg, stack_info=True)
+
+2025-10-10 17:23:24,485 — src.subprocess_utils — ERROR — popen_pipe:80 — RuntimeError running command ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\test.m3u'
+NoneType: None
+
+2025-10-10 17:24:00,238 — src.subprocess_utils — ERROR — popen_pipe:86 — UnicodeDecodeError decoding ffprobe -v quiet -show_format -show_streams 'D:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3': stdout_bytes: b'hello \x99\xae world' stderr_bytes: b''
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 76, in popen_pipe
+    stdout = stdout_bytes.decode(UTF8)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0x99 in position 6: invalid start byte
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 344, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1387, in patched
+    return func(*newargs, **newkeywargs)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 184, in test_popen_pipe_unicode_other
+    std_out = subprocess_utils.popen_pipe(command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 86, in popen_pipe
+    logger.exception(f"UnicodeDecodeError decoding {shlex.join(command)}: stdout_bytes: {stdout_bytes} stderr_bytes: {stderr_bytes}", stack_info=True)
+
+2025-10-10 17:24:01,169 — src.subprocess_utils — ERROR — subprocess_run:236 — CalledProcessError returncode: 3199971767 on command ['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 227, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\Music\\test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']' returned non-zero exit status 3199971767.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 344, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 260, in test_subprocess_run_ffmpeg_invalid_file
+    mpeg_process = subprocess_utils.subprocess_run(mpeg_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 236, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2025-10-10 17:24:01,216 — src.subprocess_utils — ERROR — subprocess_run:236 — CalledProcessError returncode: 1 on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 227, in subprocess_run
+    process = subprocess.run(
+              ^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Non-extant.wav']' returned non-zero exit status 1.
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 508, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 358, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.14.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 344, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_subprocess_utilities.py", line 294, in test_subprocess_run_ffprobe_non_extant
+    probe_process = subprocess_utils.subprocess_run(probe_command)
+  File "D:\MusicProcessing\src\subprocess_utils.py", line 236, in subprocess_run
+    logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)

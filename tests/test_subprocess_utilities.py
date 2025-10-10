@@ -14,9 +14,14 @@ import logging
 import unittest
 from subprocess import CalledProcessError
 from unittest import TestCase
+from unittest.mock import Mock, patch
 
-# local modules
-from tests import TEST_M3U, TEST_WAV_NONE
+# local module constants
+from tests import TEST_M3U, TEST_MP3_CRUSH, TEST_WAV_NONE
+from src import UTF8
+# local module errors
+from src import FfmpegProcessError
+# local module classes
 from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
@@ -32,15 +37,211 @@ encapsulate the assertRaises in a try block, and use a finally to restore the or
 original_log_level = logging.getLogger().getEffectiveLevel()
 
 
+def mock_communicate_with_error():
+    """Simulates a communicate() call that fails during decoding."""
+    # A byte string that is invalid UTF-8
+    invalid_utf8_bytes = b'hello \x99\xae world'
+
+    # communicate() returns (stdout, stderr) tuples.
+    # To cause a decode error later, return undecoded bytes.
+    return (invalid_utf8_bytes, b'')
+
+
 class TestSubprocessUtilities(TestCase):
     '''
     @brief Tests SubprocessUtilities class functions.
     '''
 
 
+    def test_popen_pipe_ffmpeg_invalid_file(self):
+        '''
+        @brief Tests trying to get ffprobe media info from invalid file type throws RuntimeError.
+        '''
+
+        export_path = TEST_WAV_NONE
+        file_path = TEST_M3U
+        bitrate = 128198
+        # from metadata.convert_file, command for an audio file conversion to mp3
+        # ffmpeg
+        # -hide_banner            # reduce output clutter
+        # -i file_path            # specify input file D:\MusicProcessing\tests\Music\test.m3u
+        # -vn -map_metadata -1    # -vn drops video stream and -map_metadata -1 drops all text metadata
+        # -codec:a libmp3lame     # -codec:a libmp3lame sets audio codec for mp3
+        # -id3v2_version 3        # known bug have to specify id3v2 version
+        # -b:a 128198             # ffmpeg will downgrade bitrate if you don't set it
+        mpeg_command = [
+            "ffmpeg", "-hide_banner",
+            "-i", file_path,
+            "-vn", "-map_metadata", "-1",
+            "-codec:a", "libmp3lame",
+            "-id3v2_version", "3",
+            "-b:a", str(bitrate),
+            export_path, '-y'
+        ]
+
+        mpeg_process = None
+
+        with self.assertRaises(RuntimeError) as cm:
+            mpeg_process = subprocess_utils.popen_pipe(mpeg_command)
+
+        self.assertIsNone(mpeg_process)
+        self.assertEqual("RuntimeError", cm.exception.__class__.__name__)
+        err_msg = f"RuntimeError running command ffmpeg -hide_banner -i {TEST_M3U} -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 {TEST_WAV_NONE} -y"
+        self.assertTrue(cm.exception.args[0], err_msg)
+
+
+    def test_popen_pipe_ffmpegprocess_error(self):
+        '''
+        @brief Tests asynchronous execution of command with redirection to stderr throws FfmpegProcessError.
+        '''
+
+        # @todo will need mocking of some type
+        # metadata.convert_file calls spinner_popen_pipe with ffmpeg command
+        export_path = TEST_WAV_NONE
+        file_path = TEST_M3U
+        bitrate = 128198
+        # from metadata.convert_file, command for an audio file conversion to mp3
+        # ffmpeg
+        # -hide_banner            # reduce output clutter
+        # -i file_path            # specify input file D:\MusicProcessing\tests\Music\test.m3u
+        # -vn -map_metadata -1    # -vn drops video stream and -map_metadata -1 drops all text metadata
+        # -codec:a libmp3lame     # -codec:a libmp3lame sets audio codec for mp3
+        # -id3v2_version 3        # known bug have to specify id3v2 version
+        # -b:a 128198             # ffmpeg will downgrade bitrate if you don't set it
+        mpeg_command = [
+            "ffmpeg", "-hide_banner",
+            "-i", file_path,
+            "-vn", "-map_metadata", "-1",
+            "-codec:a", "libmp3lame",
+            "-id3v2_version", "3",
+            "-b:a", str(bitrate),
+            export_path, '-y'
+        ]
+
+        mpeg_process = None
+
+        with self.assertRaises(FfmpegProcessError) as cm:
+            mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+
+        self.assertIsNone(mpeg_process)
+        self.assertEqual("FfmpegProcessError", cm.exception.__class__.__name__)
+        err_msg = f"FfmpegProcessError running command ffmpeg -hide_banner -i {TEST_M3U} -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 {TEST_WAV_NONE} -y"
+        self.assertTrue(cm.exception.args[0], err_msg)
+
+
+    def test_popen_pipe_ffprobe_invalid_file(self):
+        '''
+        @brief Tests trying to get ffprobe media info from invalid file type throws RuntimeError.
+        '''
+
+        file_path = TEST_M3U
+
+        # from metadata.get_media_info, command for getting all media file info
+        # -v quiet reduce output clutter
+        # -show_format get high level details of media file
+        # -show_streams gets all information about each media stream in the input
+        command = [
+            "ffprobe",
+            "-v", "quiet",
+            "-show_format",
+            "-show_streams",
+            file_path
+        ]
+
+        std_out = None
+        with self.assertRaises(RuntimeError) as cm:
+            std_out = subprocess_utils.popen_pipe(command)
+
+        self.assertIsNone(std_out)
+        err_msg = f"RuntimeError running command ffprobe -v quiet -show_format -show_streams {TEST_M3U}"
+        self.assertTrue(cm.exception.args[0], err_msg)
+
+
+    @patch('src.subprocess_utils.subprocess.Popen')
+    def test_popen_pipe_unicode_other(self, mock_popen):
+        '''
+        @brief Tests asynchronous execution of ffprobe command throws UnicodeDecodeError.
+        '''
+
+        # metadata.get_media_info calls popen_pipe with an ffprobe command
+        # -v quiet reduce output clutter
+        # -show_format get high level details of media file
+        # -show_streams gets all information about each media stream in the input
+        command = [
+            "ffprobe",
+            "-v", "quiet",
+            "-show_format",
+            "-show_streams",
+            TEST_MP3_CRUSH
+        ]
+
+        mock_process_instance = Mock()
+        mock_process_instance.communicate.side_effect = \
+            lambda: mock_communicate_with_error()
+
+        mock_popen.return_value = mock_process_instance
+
+        std_out = subprocess_utils.popen_pipe(command)
+
+        self.assertIsNone(std_out)
+        self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
+        self.assertIn("Decoding error", std_out)
+        self.assertIn("codec can't decode byte 0x99", std_out)
+
+        # popen_pipe_subprocess_utils = SubprocessUtilities()
+
+        # mock_popen_pipe = Mock(spec=popen_pipe_subprocess_utils)
+        # mock_popen_pipe.side_effect = UnicodeDecodeError(UTF8, b'\xbe', 0, 1, 'invalid start byte')
+
+        # popen_pipe_subprocess_utils.popen_pipe = mock_popen_pipe
+
+        # std_out = None
+        # with self.assertRaises(UnicodeDecodeError) as cm:
+        #     std_out = popen_pipe_subprocess_utils.popen_pipe(command)
+
+        # self.assertIsNone(std_out)
+        # self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
+
+        # mock_popen_pipe.reset_mock(return_value=True, side_effect=True)
+
+
+    def test_popen_pipe_unicode_error(self):
+        '''
+        @brief Tests asynchronous execution of ffprobe command throws UnicodeDecodeError.
+        '''
+
+        # metadata.get_media_info calls popen_pipe with an ffprobe command
+        # -v quiet reduce output clutter
+        # -show_format get high level details of media file
+        # -show_streams gets all information about each media stream in the input
+        command = [
+            "ffprobe",
+            "-v", "quiet",
+            "-show_format",
+            "-show_streams",
+            TEST_MP3_CRUSH
+        ]
+
+        popen_pipe_subprocess_utils = SubprocessUtilities()
+
+        mock_popen_pipe = Mock(spec=popen_pipe_subprocess_utils)
+        mock_popen_pipe.side_effect = UnicodeDecodeError(UTF8, b'\xbe', 0, 1, 'invalid start byte')
+
+        popen_pipe_subprocess_utils.popen_pipe = mock_popen_pipe
+
+        std_out = None
+        with self.assertRaises(UnicodeDecodeError) as cm:
+            std_out = popen_pipe_subprocess_utils.popen_pipe(command)
+
+        self.assertIsNone(std_out)
+        self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
+
+        mock_popen_pipe.reset_mock(return_value=True, side_effect=True)
+
+
     def test_subprocess_run_ffmpeg_invalid_file(self):
         '''
-        @brief Tests getting ffmpeg volume info failing due to invalid file type.
+        @brief Tests getting ffmpeg volume info failing due to invalid file type throws CalledProcessError.
         '''
 
         file_path = TEST_M3U
@@ -66,7 +267,7 @@ class TestSubprocessUtilities(TestCase):
 
     def test_subprocess_run_ffprobe_non_extant(self):
         '''
-        @brief Tests Tries to run ffprobe video stream check for non-extant file.
+        @brief Tests Tries to run ffprobe video stream check for non-extant file throws CalledProcessError.
 
         @details This test is a due diligence expected failure test.
         SubprocessUtilities.subprocess_run is 4th level, called by AudioArt.has_video_stream function.
@@ -98,67 +299,22 @@ class TestSubprocessUtilities(TestCase):
         self.assertEqual(stderr, expected_err)
 
 
-    def test_subprocess_popen_pipe_ffmpeg_invalid_file(self):
+    @unittest.skip("complete")
+    def test_subprocess_run_unicode_error(self):
         '''
-        @brief Tests trying to get ffprobe media info from invalid file type.
-        '''
-
-        export_path = TEST_WAV_NONE
-        file_path = TEST_M3U
-        bitrate = 128198
-        # ffmpeg
-        # -hide_banner            # reduce output clutter
-        # -i file_path            # specify input file D:\MusicProcessing\tests\Music\test.m3u
-        # -vn -map_metadata -1    # -vn drops video stream and -map_metadata -1 drops all text metadata
-        # -codec:a libmp3lame     # -codec:a libmp3lame sets audio codec for mp3
-        # -id3v2_version 3        # known bug have to specify id3v2 version
-        # -b:a 128198             # ffmpeg will downgrade bitrate if you don't set it
-        mpeg_command = [
-            "ffmpeg", "-hide_banner",
-            "-i", file_path,
-            "-vn", "-map_metadata", "-1",
-            "-codec:a", "libmp3lame",
-            "-id3v2_version", "3",
-            "-b:a", str(bitrate),
-            export_path, '-y'
-        ]
-
-        mpeg_process = None
-
-        with self.assertRaises(RuntimeError) as cm:
-            mpeg_process = subprocess_utils.popen_pipe(mpeg_command)
-
-        self.assertIsNone(mpeg_process)
-        self.assertEqual("RuntimeError", cm.exception.__class__.__name__)
-        err_msg = f"RuntimeError running command ffmpeg -hide_banner -i {TEST_M3U} -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 {TEST_WAV_NONE} -y"
-        self.assertTrue(cm.exception.args[0], err_msg)
-
-
-    def test_subprocess_popen_pipe_ffprobe_invalid_file(self):
-        '''
-        @brief Tests trying to get ffprobe media info from invalid file type.
+        @brief Tests running subprocess for command throws UnicodeDecodeError.
         '''
 
-        file_path = TEST_M3U
-
-        # -v quiet reduce output clutter
-        # -show_format get high level details of media file
-        # -show_streams gets all information about each media stream in the input
-        command = [
-            "ffprobe",
-            "-v", "quiet",
-            "-show_format",
-            "-show_streams",
-            file_path
-        ]
-
-        std_out = None
-        with self.assertRaises(RuntimeError) as cm:
-            std_out = subprocess_utils.popen_pipe(command)
-
-        self.assertIsNone(std_out)
-        err_msg = f"RuntimeError running command ffprobe -v quiet -show_format -show_streams {TEST_M3U}"
-        self.assertTrue(cm.exception.args[0], err_msg)
+        # @todo will need mocking of some type
+        # art.has_video_stream calls subprocess_run with ffprobe command
+        # metadata.get_media_tags calls subprocess_run with ffprobe command
+        # normalization.ebu_normalize_files calls subprocess_run with ffmpeg command
+        # normalization.get_bit_rate calls subprocess_run with ffprobe command
+        # normalization.get_sample_rate calls subprocess_run with ffprobe command
+        # normalization.ebu_get_volume_info calls subprocess_run with ffmpeg command
+        # normalization.peak_normalize_files calls subprocess_run with ffmpeg command
+        # normalization.rms_normalize_files calls subprocess_run with ffmpeg command
+        pass
 
 
 def get_method_names(cls):
