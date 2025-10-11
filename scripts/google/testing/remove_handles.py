@@ -1,8 +1,8 @@
 import logging
-import unittest
+from unittest import TestCase
 
 
-class MyTest(unittest.TestCase):
+class MyTest(TestCase):
     def setUp(self):
         self.logger = logging.getLogger('my_logger')
         # Assuming a StreamHandler is attached to this logger

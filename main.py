@@ -19,7 +19,7 @@ import sys
 
 # local modules
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
-from src.generated_files import GENERATED_FILES
+from src.generated_files import GENERATED_PATH
 from src.audio_info import AudioArt
 from src.audio_info import AudioMetadata
 from src.audio_info import AudioPlaylist
@@ -28,20 +28,20 @@ from src.dir_processing import DirectoryProcessing
 
 gc.enable()
 
+# Configure logging
+basename = os.path.basename(__file__)
+stem = os.path.splitext(basename)[0]
+file = stem + LOG_EXT
+log_filename = os.path.join(GENERATED_PATH, LOG_DIR, file)
+# override the default logging level WARN to lowest level so we can log all levels
+logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
+logger = logging.getLogger(__name__)
+
 art = AudioArt()
 directory = DirectoryProcessing()
 metadata = AudioMetadata()
 normalization = AudioNormalization()
 playlist = AudioPlaylist()
-
-# Configure logging
-basename = os.path.basename(__file__)
-stem = os.path.splitext(basename)[0]
-file = stem + LOG_EXT
-log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
-# override the default logging level WARN to lowest level so we can log all levels
-logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
-logger = logging.getLogger(__name__)
 
 
 class CustomArgumentParser(argparse.ArgumentParser):
@@ -96,7 +96,7 @@ def create_albums(tld_path):
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
-    metadata.create_album_dir(tld_path)
+    metadata.create_album_dirs(tld_path)
 
 
 def ebu_file(file_path):
@@ -282,7 +282,7 @@ def remove_albums(tld_path):
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
-    directory.remove_album_dir(tld_path)
+    directory.remove_empty_album_dir(tld_path)
 
 
 def remove_pattern(tld_path, file_pattern):

@@ -1,0 +1,15 @@
+Successful conversion of audio files w/ embedded art:
+wma:
+ffmpeg -i 'F:\PreppedMusic\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma' -map 0 -c:v copy -id3v2_version 3 -ab 128k 'Elton John-Saturday Night's Alright for Fighting.mp3' -y
+mp3:
+ffmpeg -i 'F:\PreppedMusic\Elton John\Greatest Hits\Elton John - Rocket Man.mp3' -map 0 -c:v copy -id3v2_version 3 -ab 128k 'Elton John - Rocket Man.mp3' -y
+m4a:
+ ffmpeg -i 'F:\PreppedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman''s Hymn.m4a' -map 0 -c:v copy -id3v2_version 3 -ab 128k 'Joshua Davis-The Workingman''s Hymn.mp3' -y
+
+successful conversion of audio files w/o embedded art:
+wma:
+ffmpeg -i 'F:\PreppedMusic\Elton John\Goodbye Yellow Brick Road\Elton John-Goodbye Yellow Brick Road.wma' -map 0 -c:v copy -id3v2_version 3 -ab 128k 'Elton John-Goodbye Yellow Brick Road.mp3' -y
+mp3:
+ ffmpeg -i 'F:\PreppedMusic\Elton John\Songs From The West Coast\Elton John-I Want Love.mp3' -map 0 -c:v copy -id3v2_version 3 -ab 128k 'Elton John-I Want Love.mp3' -y
+m4a:
+ ffmpeg -i 'F:\PreppedMusic\The Eagles\Desperado\The Eagles-Desperado.m4a' -map 0 -c:v copy -id3v2_version 3 -ab 128k 'The Eagles-Desperado.mp3' -y

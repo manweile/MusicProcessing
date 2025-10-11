@@ -25,11 +25,14 @@ from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 from mutagen._util import MutagenError
 
-# local modules
+# local module methods
+from src import add_module_handler
+# local module constants
 from src import AUDIO_EXTS
 from src import FOLDER_ART
-from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
-from src.generated_files import GENERATED_FILES
+from src import M4A_EXT, MP3_EXT, WMA_EXT
+from src.generated_files import GENERATED_PATH
+# local module classes
 from src.audio_normalize import AudioNormalization
 from src.subprocess_utils import SubprocessUtilities
 # relative import so don't get circular import error
@@ -37,22 +40,13 @@ from .audio_metadata import AudioMetadata
 
 gc.enable()
 
+logger = logging.getLogger(__name__)
+basename = os.path.basename(__file__)
+add_module_handler(logger, basename)
+
 metadata = AudioMetadata()
 normalization = AudioNormalization()
 subprocess_utils = SubprocessUtilities()
-
-# Configure logging
-basename = os.path.basename(__file__)
-stem = os.path.splitext(basename)[0]
-file = stem + LOG_EXT
-log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
-# override the default logging level WARN to lowest level so we can log all levels
-logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
-
-# create logger for module and restrict to module
-# use raise in exception handling if we need send something inter-module
-logger = logging.getLogger(__name__)
-logger.propagate = False
 
 ALBUM_ART = "AlbumArt"
 
@@ -153,9 +147,6 @@ class AudioArt():
                 with open(output_file, 'wb') as img_file:
                     img_file.write(image_data)
 
-
-                logger.info(f"Album art written from {input_path.name} and saved to {album_path}")
-
         except BlockingIOError as bio_error:
             logger.error(f"BlockingIOError writing image data to {file_path}", exc_info=True)
             raise bio_error
@@ -192,7 +183,7 @@ class AudioArt():
             # we don't touch non-audio files like m3u etc
             input_file_ext = input_path.suffix
             if input_file_ext.lower() not in AUDIO_EXTS:
-                logger.info(f"{input_path.name} is not an audio file")
+                logger.warning(f"{input_path.name} is not an audio file")
                 return
 
             # ffmpeg extraction is primary method because is file type agnostic,
@@ -207,11 +198,11 @@ class AudioArt():
             # mutagen extraction is secondary method, because not file type agnostic,
             # and file must have an art metadata tag
             if metadata.has_art_tag(input_path):
-                if input_file_ext.lower() == AUDIO_EXTS[0]:
+                if input_file_ext.lower() == MP3_EXT:
                     self.extract_mp3_art(file_path)
-                elif input_file_ext.lower() == AUDIO_EXTS[1]:
+                elif input_file_ext.lower() == M4A_EXT:
                     self.extract_m4a_art(file_path)
-                elif input_file_ext.lower() == AUDIO_EXTS[2]:
+                elif input_file_ext.lower() == WMA_EXT:
                     self.extract_asf_art(file_path)
             else:
                 # warning because by this point,
@@ -291,7 +282,6 @@ class AudioArt():
             ]
 
             _ = subprocess_utils.subprocess_run(command)
-            logger.info(f"FFMPEG extracted album art from {input_path.name} and saved to {album_path}")
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} using ffmpeg to extract art from {input_path}", stack_info=True)
@@ -377,6 +367,10 @@ class AudioArt():
         input_file_ext = None
 
         try:
+            if file_pattern and file_pattern not in AUDIO_EXTS:
+                logger.warning(f"Pattern {file_pattern} is not for a valid audio file")
+                return
+
             input_path = Path(start_path)
 
             for dir_path, _, file_names in os.walk(input_path):
@@ -392,15 +386,16 @@ class AudioArt():
 
                 for file in file_names:
                     _, input_file_ext = os.path.splitext(file)
+
                     # we don't touch non-audio files like m3u etc
                     if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
+                    elif file_pattern:
+                        if not fnmatch.fnmatch(input_file_ext.lower(), file_pattern.lower()):
+                            continue
 
-                    if file_pattern and not fnmatch.fnmatch(file, file_pattern.lower()):
-                        continue
-                    else:
-                        input_file_path = os.path.join(dir_path, file)
-                        self.extract_album_art(input_file_path)
+                    input_file_path = os.path.join(dir_path, file)
+                    self.extract_album_art(input_file_path)
 
         except Exception as e_error:
             if file_pattern:
@@ -485,6 +480,7 @@ class AudioArt():
                 album_content = os.listdir(album_path)
 
                 if FOLDER_ART in album_content:
+                    logger.info(f"Found {FOLDER_ART} in {album_path}")
                     continue
 
                 # check in AlbumArt folder if a jpg for album name exists
@@ -492,14 +488,13 @@ class AudioArt():
                 album_jpg = album_dir_name + ".jpg"                             # should be "Best Of The Blues, Vol. 1.jpg"
 
                 # get the album art directory, per the project hierarchy
-                album_art_dir = os.path.join(GENERATED_FILES, ALBUM_ART)       # D:\MusicProcessing\src\generated_files\ALbumArt
+                album_art_dir = os.path.join(GENERATED_PATH, ALBUM_ART)       # D:\MusicProcessing\src\generated_files\ALbumArt
                 album_art_dir_content = os.listdir(album_art_dir)
 
                 if album_jpg in album_art_dir_content:
                     album_art_jpg = os.path.join(album_art_dir, album_jpg)     # D:\MusicProcessing\src\generated_files\ALbumArt\Best Of The Blues, Vol. 1.jpg
                     folder_jpg = os.path.join(album_path, FOLDER_ART)          # C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Folder.jpg
                     shutil.copy(album_art_jpg, folder_jpg)
-                    logger.info(f"Set {album_art_jpg} as {FOLDER_ART} for {album_path}")
                 else:
                     logger.warning(f"No album art set for {album_path}")
 

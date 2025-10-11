@@ -1,238 +1,565 @@
 
-2025-07-30 13:21:24,156 — __main__ — ERROR — test_has_video_stream_false:95 — Exception
+2025-10-04 19:26:02,357 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_audio_file_list.txt
 Traceback (most recent call last):
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 636, in subprocess_run
-    process = subprocess.run(
-              ^^^^^^^^^^^^^^^
-  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 571, in run
-    raise CalledProcessError(retcode, process.args,
-subprocess.CalledProcessError: Command '['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Billie Holiday\\Billie Holiday-Georgia On My Mind.wma']' returned non-zero exit status 1.
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_audio_file_list.txt'
 
-During handling of the above exception, another exception occurred:
-
+2025-10-04 19:26:02,566 — src.dir_processing.directory_processing — ERROR — get_audio_file_list:249 — Exception FileNotFoundError getting files for /home/gerald/MusicProcessing/tests/Music
 Traceback (most recent call last):
-  File "D:\MusicProcessing\tests\test_audio_art.py", line 93, in test_has_video_stream_false
-    self.assertFalse(art.has_video_stream(input_audio))
-                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\MusicProcessing\src\audio_info\audio_art.py", line 398, in has_video_stream
-    probe_process = normalization.subprocess_run(command)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 647, in subprocess_run
-    raise Exception(f"CalledProcessError returncode:{e.returncode}, with stderr: {e.stderr} on command {e.cmd}")
-Exception: CalledProcessError returncode:1, with stderr: D:\MusicProcessing\tests\Music\Billie Holiday\Billie Holiday-Georgia On My Mind.wma: No such file or directory
- on command ['ffprobe', '-hide_banner', '-select_streams', 'v:0', '-show_streams', '-of', 'json', 'D:\\MusicProcessing\\tests\\Music\\Billie Holiday\\Billie Holiday-Georgia On My Mind.wma']
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 246, in get_audio_file_list
+    self.create_txt(txt_filename, txt_data, None)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_audio_file_list.txt'
 Stack (most recent call last):
-  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
-    return _run_code(code, main_globals, None,
-  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
-    exec(code, run_globals)
-  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
-    cli.main()
-  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
-    run()
-  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
-    runpy.run_path(target, run_name="__main__")
-  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
-    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
-  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
-    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
-  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
-    exec(code, run_globals)
-  File "D:\MusicProcessing\tests\test_audio_art.py", line 113, in <module>
-    runner.run(suite)
-  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
     test(result)
-  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
     return self.run(*args, **kwds)
-  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
     test(result)
-  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
     return self.run(*args, **kwds)
-  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
     self._callTestMethod(testMethod)
-  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
     if method() is not None:
-  File "D:\MusicProcessing\tests\test_audio_art.py", line 95, in test_has_video_stream_false
-    logger.exception("Exception", stack_info=True)
+  File "/home/gerald/MusicProcessing/tests/test_directory_processing.py", line 142, in test_get_audio_file
+    directory.get_audio_file_list(TESTS_TLD)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 249, in get_audio_file_list
+    logger.exception(f"Exception {type(e_error).__name__} getting files for {start_path}", stack_info=True)
 
-2025-08-06 15:16:38,315 — src.dir_processing.directory_processing — WARNING — path_info:463 — File D:\MusicProcessing\tests\Music\expected.m3u is not in ['mp3', 'm4a', 'wma']
-
-2025-08-06 15:17:55,918 — src.dir_processing.directory_processing — WARNING — path_info:463 — File D:\MusicProcessing\tests\Music\expected.m3u is not in ['mp3', 'm4a', 'wma']
-
-2025-08-06 15:25:33,770 — src.dir_processing.directory_processing — WARNING — path_info:463 — File D:\MusicProcessing\tests\Music\expected.m3u is not in ['mp3', 'm4a', 'wma']
-
-2025-08-11 21:17:09,814 — __main__ — ERROR — <module>:784 — 'charmap' codec can't encode character '\u2117' in position 59: character maps to <undefined>
+2025-10-04 19:26:14,172 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
 Traceback (most recent call last):
-  File "/home/gerald/MusicProcessing/main.py", line 781, in <module>
-    main(args)
-  File "/home/gerald/MusicProcessing/main.py", line 527, in main
-    get_tags_walk(tld_path, file_pattern, ffprobe)
-  File "/home/gerald/MusicProcessing/main.py", line 186, in get_tags_walk
-    metadata.get_tags_walk(tld_path, file_pattern, ffprobe)
-  File "/home/gerald/MusicProcessing/src/audio_info/audio_metadata.py", line 802, in get_tags_walk
-    directory.create_txt(txt_filename, data, GENERATED_FILES)
-  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 208, in create_txt
-    txt_outfile.write(f"{item}\n")
-  File "/usr/lib/python3.12/encodings/cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2117' in position 59: character maps to <undefined>
-Stack (most recent call last):
-  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
-    return _run_code(code, main_globals, None,
-  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
-    exec(code, run_globals)
-  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
-    cli.main()
-  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
-    run()
-  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
-    runpy.run_path(target, run_name="__main__")
-  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
-    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
-  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
-    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
-  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
-    exec(code, run_globals)
-  File "/home/gerald/MusicProcessing/main.py", line 784, in <module>
-    logger.exception(e, stack_info=True)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
 
-2025-08-24 17:03:17,786 — __main__ — ERROR — main:606 — Exception propagated to main: TypeError: expected string or bytes-like object, got 'NoneType'
+2025-10-04 19:26:17,967 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/clip_vol_check_walk.txt
 Traceback (most recent call last):
-  File "D:\MusicProcessing\main.py", line 573, in main
-    normalize_walk(tld_path, norm_type)
-  File "D:\MusicProcessing\main.py", line 255, in normalize_walk
-    normalization.normalize_walk(tld_path, norm_type)
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 473, in normalize_walk
-    raise e_error
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 467, in normalize_walk
-    self.peak_normalize_file(input_file_path)
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 577, in peak_normalize_file
-    raise e_error
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 519, in peak_normalize_file
-    volume_info = self.get_volume_info(file_path)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 434, in get_volume_info
-    raise e_error
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 420, in get_volume_info
-    mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\re\__init__.py", line 177, in search
-    return _compile(pattern, flags).search(string)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: expected string or bytes-like object, got 'NoneType'
-Stack (most recent call last):
-  File "D:\MusicProcessing\main.py", line 812, in <module>
-    main(args)
-  File "D:\MusicProcessing\main.py", line 606, in main
-    logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/clip_vol_check_walk.txt'
 
-2025-08-24 17:34:03,669 — __main__ — ERROR — main:606 — Exception propagated to main: TypeError: expected string or bytes-like object, got 'NoneType'
+2025-10-04 19:26:25,238 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
 Traceback (most recent call last):
-  File "D:\MusicProcessing\main.py", line 577, in main
-    peak_file(file_path)
-  File "D:\MusicProcessing\main.py", line 265, in peak_file
-    normalization.peak_normalize_file(file_path)
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 577, in peak_normalize_file
-    raise e_error
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 519, in peak_normalize_file
-    volume_info = self.get_volume_info(file_path)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 434, in get_volume_info
-    raise e_error
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 420, in get_volume_info
-    mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\re\__init__.py", line 177, in search
-    return _compile(pattern, flags).search(string)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: expected string or bytes-like object, got 'NoneType'
-Stack (most recent call last):
-  File "D:\MusicProcessing\main.py", line 812, in <module>
-    main(args)
-  File "D:\MusicProcessing\main.py", line 606, in main
-    logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
 
-2025-08-24 17:34:12,094 — __main__ — ERROR — main:606 — Exception propagated to main: TypeError: expected string or bytes-like object, got 'NoneType'
+2025-10-04 19:26:29,724 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
 Traceback (most recent call last):
-  File "D:\MusicProcessing\main.py", line 577, in main
-    peak_file(file_path)
-  File "D:\MusicProcessing\main.py", line 265, in peak_file
-    normalization.peak_normalize_file(file_path)
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 577, in peak_normalize_file
-    raise e_error
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 519, in peak_normalize_file
-    volume_info = self.get_volume_info(file_path)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 434, in get_volume_info
-    raise e_error
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 420, in get_volume_info
-    mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\re\__init__.py", line 177, in search
-    return _compile(pattern, flags).search(string)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: expected string or bytes-like object, got 'NoneType'
-Stack (most recent call last):
-  File "D:\MusicProcessing\main.py", line 812, in <module>
-    main(args)
-  File "D:\MusicProcessing\main.py", line 606, in main
-    logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
 
-2025-08-24 17:34:38,670 — __main__ — ERROR — _print_message:66 — Argparse Error: usage: main.py peak-file [-h] file
-
-2025-08-24 17:34:38,670 — __main__ — ERROR — _print_message:66 — Argparse Error: main.py peak-file: error: argument file: File not found: C:\Music\Bear
-
-2025-08-24 17:35:23,136 — __main__ — ERROR — _print_message:66 — Argparse Error: usage: main.py peak-file [-h] file
-
-2025-08-24 17:35:23,137 — __main__ — ERROR — _print_message:66 — Argparse Error: main.py peak-file: error: argument file: File not found:  C:\Music\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3
-
-2025-08-24 17:36:20,378 — __main__ — ERROR — _print_message:66 — Argparse Error: usage: main.py peak-file [-h] file
-
-2025-08-24 17:36:20,379 — __main__ — ERROR — _print_message:66 — Argparse Error: main.py peak-file: error: argument file: File not found:  C:\Music\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3
-
-2025-08-24 17:43:46,674 — __main__ — ERROR — _print_message:66 — Argparse Error: usage: main.py peak-file [-h] file
-
-2025-08-24 17:43:46,678 — __main__ — ERROR — _print_message:66 — Argparse Error: main.py peak-file: error: argument file: File not found:  C:\Music\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3
-
-2025-08-24 17:52:27,610 — __main__ — ERROR — main:606 — Exception propagated to main: TypeError: expected string or bytes-like object, got 'NoneType'
+2025-10-04 19:26:30,456 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
 Traceback (most recent call last):
-  File "D:\MusicProcessing/main.py", line 577, in main
-    peak_file(file_path)
-  File "D:\MusicProcessing/main.py", line 265, in peak_file
-    normalization.peak_normalize_file(file_path)
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 577, in peak_normalize_file
-    raise e_error
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 519, in peak_normalize_file
-    volume_info = self.get_volume_info(file_path)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 434, in get_volume_info
-    raise e_error
-  File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 420, in get_volume_info
-    mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\re\__init__.py", line 177, in search
-    return _compile(pattern, flags).search(string)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: expected string or bytes-like object, got 'NoneType'
-Stack (most recent call last):
-  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
-    return _run_code(code, main_globals, None,
-  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
-    exec(code, run_globals)
-  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
-    cli.main()
-  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
-    run()
-  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
-    runpy.run_path(target, run_name="__main__")
-  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
-    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
-  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
-    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
-  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
-    exec(code, run_globals)
-  File "D:\MusicProcessing/main.py", line 812, in <module>
-    main(args)
-  File "D:\MusicProcessing/main.py", line 606, in main
-    logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:26:30,458 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:26:30,624 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:26:31,184 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:26:31,703 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:26:31,712 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:26:35,245 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt'
+
+2025-10-04 19:26:46,795 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt'
+
+2025-10-04 19:26:48,517 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt'
+
+2025-10-04 19:26:54,777 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt'
+
+2025-10-04 19:26:56,767 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt'
+
+2025-10-04 19:27:44,645 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:27:50,129 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:27:54,240 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:27:58,348 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:27:59,710 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:27:59,712 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:27:59,860 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:28:00,333 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:28:00,771 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:28:00,779 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:28:03,790 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt'
+
+2025-10-04 19:28:22,199 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:43,161 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:48,349 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:52,351 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:56,302 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:57,582 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:30:57,584 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:30:57,731 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:30:58,181 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:30:58,591 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:30:58,604 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:31:01,418 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt'
+
+2025-10-06 16:26:13,701 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:29:35,800 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:30:39,639 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:30:44,512 — src.dir_processing.directory_processing — ERROR — make_dir:343 — OSError permission denied for creating D:\MusicProcessing\src\generated_files\Music\DirOne\DirTwo
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1193, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] Permission denied
+
+2025-10-06 16:32:04,804 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:32:08,016 — src.dir_processing.directory_processing — ERROR — make_dir:343 — OSError permission denied for creating D:\MusicProcessing\src\generated_files\Music\DirOne\DirTwo
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1193, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] Permission denied
+
+2025-10-06 16:35:42,479 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:35:50,159 — src.dir_processing.directory_processing — ERROR — make_dir:343 — OSError permission denied for creating D:\MusicProcessing\src\generated_files\Music\DirOne\DirTwo
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1193, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] Permission denied
+
+2025-10-06 16:38:16,628 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:41:25,350 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?bad_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?bad_path'
+
+2025-10-06 16:41:56,125 — src.dir_processing.directory_processing — ERROR — make_dir:343 — OSError permission denied for creating D:\MusicProcessing\src\generated_files\Music\DirOne\DirTwo
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1193, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] Permission denied
+
+2025-10-06 16:52:21,067 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?bad_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?bad_path'
+
+2025-10-06 16:57:29,016 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?bad_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?bad_path'
+
+2025-10-07 12:43:19,476 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:47:41,076 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:48:02,648 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:53:27,650 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 16:00:24,449 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 16:02:55,649 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 14:38:23,227 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:477 — removed 1 empty album directories
+
+2025-10-08 14:42:07,149 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:477 — removed 1 empty album directories
+
+2025-10-08 15:39:02,329 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:39:20,790 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:39:46,038 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:39:48,361 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:41:29,700 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:41:31,957 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:46:36,518 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:47:08,764 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — H:\\ is file system root
+
+2025-10-08 15:47:35,243 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:48:50,241 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:49:20,707 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — Z:\ is file system root
+
+2025-10-08 15:49:26,307 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:49:42,640 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:50:02,573 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — C:\ is file system root
+
+2025-10-08 15:50:26,205 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 16:08:19,257 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:08:35,016 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — D:\ is file system root
+
+2025-10-08 16:09:29,489 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — c:\ is file system root
+
+2025-10-08 16:09:50,924 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 16:10:46,451 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:13:36,938 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:14:24,265 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:56:26,692 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:56:26,692 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — C:\ is file system root
+
+2025-10-08 16:56:26,692 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 20:29:16,584 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 20:30:04,681 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-08 20:30:34,978 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 10:54:06,506 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 10:54:06,511 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 10:54:06,512 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 10:54:24,157 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 10:54:31,432 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 10:54:31,435 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:00:55,470 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:01:01,768 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:01:01,770 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:01:34,617 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:02:23,399 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:02:23,402 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:03:58,121 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:09:42,399 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:10:21,962 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:10:21,964 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:13:33,526 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:13:52,374 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:14:44,474 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:14:44,476 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:15:52,412 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:26:29,849 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:26:29,856 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:26:29,857 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:33:47,530 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:34:58,176 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:38:29,481 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:40:51,894 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:41:25,352 — src.dir_processing.directory_processing — INFO — remove_pattern:533 — Deleted: /home/gerald/MusicProcessing/src/generated_files/Music/test.m3u
+
+2025-10-09 11:41:42,053 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:41:42,054 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad

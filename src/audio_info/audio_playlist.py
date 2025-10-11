@@ -13,30 +13,25 @@ import os
 from os import strerror
 from pathlib import Path
 
-# local modules
+# local module methods
+from src import add_module_handler
+# local module constants
 from src import AUDIO_EXTS
-from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
+from src import MP3_EXT
 from src import PLAYLIST_EXTS
-from src.generated_files import GENERATED_FILES
+from src.generated_files import GENERATED_PATH
+# local module errors
 from src import PlaylistError
+# local module classes
 from src.dir_processing import DirectoryProcessing
 
 gc.enable()
 
-directory = DirectoryProcessing()
-
-# Configure logging
-basename = os.path.basename(__file__)
-stem = os.path.splitext(basename)[0]
-file = stem + LOG_EXT
-log_filename = os.path.join(GENERATED_FILES, LOG_DIR, file)
-# override the default logging level WARN to lowest level so we can log all levels
-logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
-
-# create logger for module and restrict to module
-# use raise in exception handling if we need send something inter-module
 logger = logging.getLogger(__name__)
-logger.propagate = False
+basename = os.path.basename(__file__)
+add_module_handler(logger, basename)
+
+directory = DirectoryProcessing()
 
 DELIMITER = ","
 
@@ -69,6 +64,7 @@ class AudioPlaylist():
 
         @param line (str) Line of text read from m3u file containing a #EXTINF tag
         @return audio_file {str} Audio file name with extension.
+
         @exception PlaylistError Indicates an error occurred in playlist class.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -85,7 +81,7 @@ class AudioPlaylist():
                 # wma and m4a files need mp3 extension
                 if input_ext != AUDIO_EXTS[0]:
                     input_stem = os.path.splitext(os.path.basename(input_audio))[0]
-                    audio = input_stem + AUDIO_EXTS[0]
+                    audio = input_stem + MP3_EXT
                 else:
                     audio = input_audio
             else:
@@ -111,6 +107,7 @@ class AudioPlaylist():
 
         @param tld_path {str} The top level directory where playlist and music files are located.
         @param input_m3u {str} The full file path to playlist needing conversion.
+
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -127,8 +124,14 @@ class AudioPlaylist():
         comment = "#:"
 
         try:
+            # verify m3u input
+            _, input_file_ext = os.path.splitext(input_m3u)
+            if input_file_ext.lower() not in PLAYLIST_EXTS:
+                logger.exception(f"PlaylistError input file {input_m3u} is not a playlist", stack_info=True)
+                raise PlaylistError(f"PlaylistError input file {input_m3u} is not a playlist")
+
             # new m3u file gets created in generated files directory so can later be move to correct tld
-            export_path = GENERATED_FILES
+            export_path = GENERATED_PATH
             input_basename = os.path.basename(input_m3u)
             export_m3u = os.path.join(export_path, input_basename)
 
@@ -163,6 +166,8 @@ class AudioPlaylist():
         except OSError as os_error:
             logger.error(f"OSError {(strerror(os_error.errno))} writing data from {input_m3u} to {export_m3u}", exc_info=True)
             raise os_error
+        except PlaylistError as p_error:
+            raise p_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} updating playlist tld_path: {tld_path}, input_m3u: {input_m3u}", stack_info=True)
             raise e_error
@@ -175,6 +180,7 @@ class AudioPlaylist():
         @brief Updates playlists relative pathing.
 
         @param tld_path {str} The top level directory where playlist and music files are located.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -195,5 +201,3 @@ class AudioPlaylist():
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} updating m3u files in tld_path: {tld_path}", stack_info=True)
             raise e_error
-        else:
-            logger.info(f"Updated m3u files in {tld_path}\n")

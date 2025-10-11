@@ -9,138 +9,203 @@
 # standard modules
 import gc
 import inspect
-import logging
 import os
+import shutil
 import unittest
 from pathlib import Path
 from subprocess import CalledProcessError
-from unittest.mock import patch
+from unittest import TestCase
 
-# local modules
-from src import EXPORT_TLD
-from src import FOLDER_ART
+# local module constants
+from src import AUDIO_EXTS, FOLDER_ART, PLAYLIST_EXTS
+from tests import TEST_M3U
+from tests import TEST_M4A_DAVIS, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_NO_TAG, TEST_WMA_HOLIDAY, TEST_WMA_JOHN
+from tests import TESTS_PATH, TESTS_TLD
+# local module classes
 from src.audio_info import AudioArt
 
 gc.enable()
 
-# get the dir path for test location need it to find audio files
-TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
-TESTS_TLD = os.path.join(TESTS_PATH, EXPORT_TLD)
-
-EXPECTED_M4A_JPG = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", FOLDER_ART)
-EXPECTED_MP3_JPG = os.path.join(TESTS_TLD, "Crush", "Here", FOLDER_ART)
-EXPECTED_NO_STREAM_JPG = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", FOLDER_ART)
-EXPECTED_NO_TAG_MP3_JPG = os.path.join(TESTS_TLD, FOLDER_ART)
-EXPECTED_WMA_JPG = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART)
-
-EXPECTED_JPGS = [EXPECTED_MP3_JPG, EXPECTED_M4A_JPG, EXPECTED_NO_STREAM_JPG, EXPECTED_WMA_JPG]
-
-INPUT_M3U = os.path.join(TESTS_TLD, "test.m3u")
-
-SRC_HAS_JPG_AUDIO = os.path.join(TESTS_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
-SRC_HAS_JPG_PATH = os.path.join(TESTS_TLD, "Abba", "Waterloo")
-SRC_MP3 = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
-SRC_M4A = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.m4a")
-SRC_NO_STREAM_WMA = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", "Billie Holiday-Georgia On My Mind.wma")
-SRC_NO_TAG_MP3 = os.path.join(TESTS_TLD, "Crush", "Here", "No_tag_Crush-Live.mp3")
-SRC_WMA = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", "Elton John-Saturday Night's Alright for Fighting.wma")
-
 art = AudioArt()
 
-'''
-Get the effective level so we can disable logging when necessary.
-In tests that use assertRaises, disable the logger at or below the log level of the tested function,
-encapsulate the assertRaises in a try block, and use a finally to restore the original log level.
-'''
-original_log_level = logging.getLogger().getEffectiveLevel()
 
-
-class TestAudioArt(unittest.TestCase):
+class TestAudioArt(TestCase):
     '''
     @brief Tests AudioArt class functions.
     '''
+
+    @classmethod
+    def setUpClass(cls):
+        '''
+        @brief Initialize data for test suite.
+
+        @details These datums are used throughout class and only need init once.
+        '''
+
+        # directory for "walk" type tests: D:\MusicProcessing\tests\PreppedMusic
+        cls.prepped = os.path.join(TESTS_PATH, "PreppedMusic")
+
+        # audio source files for walk tests
+        cls.src_file_paths = [TEST_M4A_DAVIS, TEST_MP3_CRUSH, TEST_WMA_JOHN]
+
+        # test patterns
+        cls.m3u_pattern = PLAYLIST_EXTS[0]
+        cls.mp3_pattern = AUDIO_EXTS[0]
+
+        # results files
+        cls.mp3_result = os.path.join(cls.prepped, "Crush", "Here", FOLDER_ART)
+
+        cls.prepped_results = []
+        cls.prepped_results.append(os.path.join(cls.prepped, "Joshua Davis", "The Voice Peformance", FOLDER_ART))
+        cls.prepped_results.append(cls.mp3_result)
+        cls.prepped_results.append(os.path.join(cls.prepped, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART))
+
+        # copy input files to "walk" directory
+        for src_path in cls.src_file_paths:
+            # get the audio file name w/o path
+            file_name = os.path.basename(src_path)
+
+            # get audio file parent path parts
+            file_path = Path(src_path)
+            file_parent = file_path.parent
+            path_parts = file_parent.parts
+
+            # build up the artist & album path, from last 2 elements of file parent path parts
+            full_len = len(path_parts)
+            artist_len = full_len - 2
+            artist_album = ""
+            for i in range(artist_len, full_len):
+                artist_album = os.path.join(artist_album, path_parts[i])
+
+            # create the destination directory and copy file
+            dest_dir = os.path.join(cls.prepped, artist_album)
+            os.makedirs(dest_dir, exist_ok=True)
+            dest_path = os.path.join(dest_dir, file_name)
+            shutil.copy(src_path, dest_path)
+
+        # don't add this one to delete list used by tearDown, need it for an error test
+        cls.found_album_art_jpg = os.path.join(TESTS_TLD, "Abba", "Waterloo", FOLDER_ART)
+
+        cls.m4a_jpg = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", FOLDER_ART)
+        cls.mp3_jpg = os.path.join(TESTS_TLD, "Crush", "Here", FOLDER_ART)
+        cls.no_stream_jpg = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", FOLDER_ART)
+        cls.set_album_art_jpg = os.path.join(TESTS_TLD, "Albert Collins", "Best Of The Blues, Vol. 1", FOLDER_ART)
+        cls.wma_jpg = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART)
+        cls.delete_jpgs = [cls.m4a_jpg, cls.mp3_jpg, cls.no_stream_jpg, cls.set_album_art_jpg, cls.wma_jpg]
+
+        cls.src_has_jpg_path = os.path.join(TESTS_TLD, "Abba", "Waterloo")
+        cls.src_no_tag_mp3 = TEST_MP3_NO_TAG
+
+        cls.src_has_jpg_audio = TEST_MP3_ABBA
+        cls.src_m4a = TEST_M4A_DAVIS
+        cls.src_mp3 = TEST_MP3_CRUSH
+        cls.src_no_stream_wma = TEST_WMA_HOLIDAY
+        cls.src_wma = TEST_WMA_JOHN
+
+
+    @classmethod
+    def tearDownClass(cls):
+        '''
+        @brief Cleans up the walk type tests source audio files and directories.
+        '''
+
+        if os.path.exists(cls.prepped):
+            shutil.rmtree(cls.prepped)
+
 
     def tearDown(self):
         '''
         @brief Clean up the created Folder.jpg files.
         '''
 
-        for jpg in EXPECTED_JPGS:
+        for jpg in self.delete_jpgs:
+            if os.path.exists(jpg):
+                os.remove(jpg)
+
+        for jpg in self.prepped_results:
             if os.path.exists(jpg):
                 os.remove(jpg)
 
 
-    @patch('src.audio_info.audio_art.logger.info')
-    def test_extract_album_art_folder_exists(self, mock_warning):
-        '''
-        brief Test Try to extract album art from file that already has co-located Folder.jpg file.
-        '''
-
-        input_audio = SRC_HAS_JPG_AUDIO
-        album_path = Path(input_audio).parent
-        art.extract_album_art(input_audio)
-        mock_warning.assert_called_once_with(f"{album_path} has a {FOLDER_ART}")
-
-
-    @patch('src.audio_info.audio_art.logger.info')
-    def test_extract_album_art_invalid_audio(self, mock_warning):
-        '''
-        @brief Tests Try to extract album art from non-valid file.
-        '''
-
-        input_audio = INPUT_M3U
-        input_path = Path(input_audio)
-        art.extract_album_art(input_audio)
-        mock_warning.assert_called_once_with(f"{input_path.name} is not an audio file")
-
-    # per https://stackoverflow.com/questions/15763394/mocking-two-functions-with-patch-for-a-unit-test
-    # the order of stacked patch decorators and calls to the matching assert_called_once_with matter,
-    # and its FILO (first in, last out)
-    # so if a warning is 1st patch, then the same warning has to be last assert
-    # the declaration order in signature doesn't matter though
-
-
-    @patch('src.audio_info.audio_art.logger.warning')
-    @patch('src.audio_info.audio_art.logger.info')
-    def test_extract_album_art_no_tag_or_stream(self, mock_info, mock_warning):
-        '''
-        @brief Test try to extract art from audio file with no stream or metadata tags at all.
-
-        @details This a complete no result test, as the function has 2 possible extraction methods,
-        ffmpeg (first), mutagen (backup).
-        '''
-
-        input_audio = SRC_NO_TAG_MP3
-        art.extract_album_art(input_audio)
-        art_exists = os.path.exists(EXPECTED_NO_TAG_MP3_JPG)
-        self.assertFalse(art_exists)
-        mock_info.assert_called_once_with(f"No video stream album art present in {input_audio}")
-        mock_warning.assert_called_once_with(f"No album art present in {input_audio}")
-
-
-    def test_extract_album_art_with_stream_and_tag(self):
+    def test_extract_album_art(self):
         '''
         @brief Tests if album art is extracted from audio file.
 
         @details Happy path test case.
         '''
 
-        input_audio = SRC_WMA
+        input_audio = self.src_wma
         art.extract_album_art(input_audio)
-        has_jpg = os.path.exists(EXPECTED_WMA_JPG)
+        has_jpg = os.path.exists(self.wma_jpg)
         self.assertTrue(has_jpg)
+
+
+    def test_extract_album_art_folder_exists(self):
+        '''
+        brief Tests try to extract album art from file that already has co-located Folder.jpg file.
+        '''
+
+        input_audio = self.src_has_jpg_audio
+        album_path = Path(input_audio).parent
+        log_msg = f"{album_path} has a {FOLDER_ART}"
+
+        with self.assertLogs() as captured:
+            art.extract_album_art(input_audio)
+
+        self.assertEqual(len(captured.records), 1)
+        self.assertEqual(captured.records[0].getMessage(), log_msg)
+
+
+    def test_extract_album_art_invalid_audio(self):
+        '''
+        @brief Tests try to extract album art from non-valid file.
+        '''
+
+        input_audio = TEST_M3U
+        input_path = Path(input_audio)
+        log_msg = f"{input_path.name} is not an audio file"
+
+        with self.assertLogs() as captured:
+            art.extract_album_art(input_audio)
+
+        self.assertEqual(len(captured.records), 1)
+        self.assertEqual(captured.records[0].getMessage(), log_msg)
+
+
+    def test_extract_album_art_no_tag_or_stream(self):
+        '''
+        @brief Test try to extract art from audio file with no stream or metadata tags at all.
+
+        @details This a complete no result test, as the function has 2 possible extraction methods,
+        ffmpeg (primary), mutagen (secondary).
+        '''
+
+        input_audio = self.src_no_tag_mp3
+        no_jpg = os.path.join(TESTS_TLD, FOLDER_ART)
+        info_msg = f"No video stream album art present in {input_audio}"
+        warning_msg = f"No album art present in {input_audio}"
+
+        with self.assertLogs() as captured:
+            art.extract_album_art(input_audio)
+
+        art_exists = os.path.exists(no_jpg)
+        self.assertFalse(art_exists)
+
+        self.assertEqual(len(captured.records), 2)
+        self.assertEqual(captured.records[0].getMessage(), info_msg)
+        self.assertEqual(captured.records[1].getMessage(), warning_msg)
 
 
     def test_extract_album_art_without_stream_with_tag(self):
         '''
         @brief Tests if album art is extracted from audio file.
 
-        @details Uses wma audio without a stream to ensure secondary (mutagen) extraction method is used.
+        @details Uses wma audio without a stream to ensure mutagen (secondary) extraction method is used.
         '''
 
-        input_audio = SRC_NO_STREAM_WMA
+        input_audio = self.src_no_stream_wma
         art.extract_album_art(input_audio)
-        has_jpg = os.path.exists(EXPECTED_NO_STREAM_JPG)
+        has_jpg = os.path.exists(self.no_stream_jpg)
         self.assertTrue(has_jpg)
 
 
@@ -149,20 +214,20 @@ class TestAudioArt(unittest.TestCase):
         @brief Tests if album art is extracted from wma/asf audio file.
         '''
 
-        input_audio = SRC_WMA
+        input_audio = self.src_wma
         art.extract_asf_art(input_audio)
-        art_exists = os.path.exists(EXPECTED_WMA_JPG)
+        art_exists = os.path.exists(self.wma_jpg)
         self.assertTrue(art_exists)
 
 
     def test_extract_ffmpeg_art(self):
         '''
-        @brief Tests if album art is extracted from m4a audio file.
+        @brief Tests if album art is extracted from an audio file.
         '''
 
-        input_audio = SRC_MP3
+        input_audio = self.src_mp3
         art.extract_ffmpeg_art(input_audio)
-        art_exists = os.path.exists(EXPECTED_MP3_JPG)
+        art_exists = os.path.exists(self.mp3_jpg)
         self.assertTrue(art_exists)
 
 
@@ -173,20 +238,15 @@ class TestAudioArt(unittest.TestCase):
         @details Expected to throw CalledProcessError.
         '''
 
-        input_audio = SRC_NO_STREAM_WMA
+        input_audio = self.src_no_stream_wma
 
-        logging.disable(logging.ERROR)
+        with self.assertRaises(CalledProcessError) as cm:
+            art.extract_ffmpeg_art(input_audio)
 
-        try:
-            with self.assertRaises(CalledProcessError) as cm:
-                art.extract_ffmpeg_art(input_audio)
-
-            art_exists = os.path.exists(EXPECTED_NO_STREAM_JPG)
-            self.assertFalse(art_exists)
-            # Invalid argument is ffmpeg saying no video stream present
-            self.assertTrue("Invalid argument" in cm.exception.stderr.strip())
-        finally:
-            logging.disable(original_log_level)
+        art_exists = os.path.exists(self.no_stream_jpg)
+        self.assertFalse(art_exists)
+        # Invalid argument is ffmpeg saying no video stream present
+        self.assertTrue("Invalid argument" in cm.exception.stderr.strip())
 
 
     def test_extract_m4a_art(self):
@@ -194,9 +254,9 @@ class TestAudioArt(unittest.TestCase):
         @brief Tests if album art is extracted from m4a audio file.
         '''
 
-        input_audio = SRC_M4A
+        input_audio = self.src_m4a
         art.extract_m4a_art(input_audio)
-        art_exists = os.path.exists(EXPECTED_M4A_JPG)
+        art_exists = os.path.exists(self.m4a_jpg)
         self.assertTrue(art_exists)
 
 
@@ -205,10 +265,53 @@ class TestAudioArt(unittest.TestCase):
         @brief Tests if album art is extracted from mp3 audio file.
         '''
 
-        input_audio = SRC_MP3
+        input_audio = self.src_mp3
         art.extract_mp3_art(input_audio)
-        art_exists = os.path.exists(EXPECTED_MP3_JPG)
+        art_exists = os.path.exists(self.mp3_jpg)
         self.assertTrue(art_exists)
+
+
+    def test_extract_walk(self):
+        '''
+        #brief Test extracting album art from all valid audio files in a top level directory.
+
+        @details Audio files must not have a co-located Folder.jpg file.
+        @details Happy path test without a file pattern.
+        '''
+
+        art.extract_walk(self.prepped, None)
+
+        for jpg_file in self.prepped_results:
+            jpg_exists = os.path.exists(jpg_file)
+            self.assertTrue(jpg_exists)
+
+
+    def test_extract_walk_pattern(self):
+        '''
+        #brief Test extracting album art from mp3 audio files in a top level directory.
+
+        @details Audio files must not have a co-located Folder.jpg file.
+        @details Happy path test with a file pattern.
+        '''
+
+        art.extract_walk(self.prepped, self.mp3_pattern)
+
+        jpg_exists = os.path.exists(self.mp3_result)
+        self.assertTrue(jpg_exists)
+
+
+    def test_extract_walk_pattern_invalid(self):
+        '''
+        #brief Test try extracting album art with invalid file pattern.
+        '''
+
+        log_msg = f"Pattern {self.m3u_pattern} is not for a valid audio file"
+
+        with self.assertLogs() as captured:
+            art.extract_walk(self.prepped, self.m3u_pattern)
+
+        self.assertEqual(len(captured.records), 1)
+        self.assertEqual(captured.records[0].getMessage(), log_msg)
 
 
     def test_has_video_stream_false(self):
@@ -216,7 +319,7 @@ class TestAudioArt(unittest.TestCase):
         @brief Tests if audio file does not have video stream.
         '''
 
-        input_audio = SRC_NO_STREAM_WMA
+        input_audio = self.src_no_stream_wma
         has_video = art.has_video_stream(input_audio)
         self.assertFalse(has_video)
 
@@ -226,18 +329,23 @@ class TestAudioArt(unittest.TestCase):
         @brief Tests if audio file does have video stream.
         '''
 
-        input_audio = SRC_MP3
+        input_audio = self.src_mp3
         has_video = art.has_video_stream(input_audio)
         self.assertTrue(has_video)
 
 
-    # @unittest.skip("Skip until code written")
-    # def test_has_video_stream_json_fail(self):
-    #     '''
-    #     @brief Tests if audio file with album art video stream fails json decoding.
-    #     '''
+    def test_set_album_art(self):
+        '''
+        @brief Tests setting album art file.
+        '''
 
-    #     pass
+        art.set_album_art(TESTS_TLD)
+
+        found_art_exists = os.path.exists(self.found_album_art_jpg)
+        set_art_exists = os.path.exists(self.set_album_art_jpg)
+
+        self.assertTrue(found_art_exists)
+        self.assertTrue(set_art_exists)
 
 
 def get_method_names(cls):

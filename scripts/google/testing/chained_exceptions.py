@@ -1,4 +1,5 @@
 import unittest
+from unittest import TestCase
 
 
 class MyError(Exception):
@@ -16,7 +17,7 @@ def function_that_raises_chained_exception():
         raise AnotherError("Chained error") from e
 
 
-class TestChainedExceptions(unittest.TestCase):
+class TestChainedExceptions(TestCase):
     def test_chained_exception(self):
         with self.assertRaises(AnotherError) as cm:
             function_that_raises_chained_exception()

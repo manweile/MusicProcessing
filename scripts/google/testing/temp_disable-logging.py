@@ -1,8 +1,8 @@
 import logging
-import unittest
+from unittest import TestCase
 
 
-class MyTest(unittest.TestCase):
+class MyTest(TestCase):
     def test_function_with_logging(self):
         # Store original logging level
         original_level = logging.getLogger().getEffectiveLevel()

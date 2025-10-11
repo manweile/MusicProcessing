@@ -44,7 +44,7 @@ These files have all been metadata edited with Windows Media Player.
 
 ### Working Copy
 The files on the HTPC will be copied as is to a micro-sd card.
-The files will be copied to respective hdd (ubuntu laptop and win 10 desktop)
+The files will be copied to respective hdd (ubuntu laptop and win 10 desktop).
 The project will read files from the respective hdd.
 
 ### Directory Structure
@@ -187,3 +187,10 @@ I will use the music processing  python code to:
 - create album sub-dirs for artist directories
 - set cover art for compilation albums
 - extract embedded cover art if no cover art exists for album
+
+# Processing Flow
+- Copy source music from HTPC (\\Office1\Music\).
+- Prepare metadata (text and art), directory structure & file names.
+- Convert music files to mp3 with embedded art.
+- Normalize music to EBU R128 standard.
+- Finalize music with updated playlists.
