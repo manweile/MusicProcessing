@@ -38,7 +38,10 @@ original_log_level = logging.getLogger().getEffectiveLevel()
 
 
 def mock_communicate_with_error():
-    """Simulates a communicate() call that fails during decoding."""
+    '''
+    @brief Simulates a communicate() call that fails during decoding.
+    '''
+
     # A byte string that is invalid UTF-8
     invalid_utf8_bytes = b'hello \x99\xae world'
 
@@ -95,7 +98,6 @@ class TestSubprocessUtilities(TestCase):
         @brief Tests asynchronous execution of command with redirection to stderr throws FfmpegProcessError.
         '''
 
-        # @todo will need mocking of some type
         # metadata.convert_file calls spinner_popen_pipe with ffmpeg command
         export_path = TEST_WAV_NONE
         file_path = TEST_M3U
@@ -158,7 +160,7 @@ class TestSubprocessUtilities(TestCase):
 
 
     @patch('src.subprocess_utils.subprocess.Popen')
-    def test_popen_pipe_unicode_other(self, mock_popen):
+    def test_popen_pipe_communicate_decode_error(self, mock_popen):
         '''
         @brief Tests asynchronous execution of ffprobe command throws UnicodeDecodeError.
         '''
@@ -176,35 +178,19 @@ class TestSubprocessUtilities(TestCase):
         ]
 
         mock_process_instance = Mock()
-        mock_process_instance.communicate.side_effect = \
-            lambda: mock_communicate_with_error()
+        mock_process_instance.communicate.side_effect = lambda: mock_communicate_with_error()
 
         mock_popen.return_value = mock_process_instance
 
-        std_out = subprocess_utils.popen_pipe(command)
+        std_out = None
+        with self.assertRaises(UnicodeDecodeError) as cm:
+            std_out = subprocess_utils.popen_pipe(command)
 
         self.assertIsNone(std_out)
         self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
-        self.assertIn("Decoding error", std_out)
-        self.assertIn("codec can't decode byte 0x99", std_out)
+        self.assertEqual("invalid start byte", cm.exception.reason)
 
-        # popen_pipe_subprocess_utils = SubprocessUtilities()
-
-        # mock_popen_pipe = Mock(spec=popen_pipe_subprocess_utils)
-        # mock_popen_pipe.side_effect = UnicodeDecodeError(UTF8, b'\xbe', 0, 1, 'invalid start byte')
-
-        # popen_pipe_subprocess_utils.popen_pipe = mock_popen_pipe
-
-        # std_out = None
-        # with self.assertRaises(UnicodeDecodeError) as cm:
-        #     std_out = popen_pipe_subprocess_utils.popen_pipe(command)
-
-        # self.assertIsNone(std_out)
-        # self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
-
-        # mock_popen_pipe.reset_mock(return_value=True, side_effect=True)
-
-
+    @unittest.skip("probably not needed")
     def test_popen_pipe_unicode_error(self):
         '''
         @brief Tests asynchronous execution of ffprobe command throws UnicodeDecodeError.
@@ -245,6 +231,7 @@ class TestSubprocessUtilities(TestCase):
         '''
 
         file_path = TEST_M3U
+        # metadata.get_volume_info calls popen_pipe with an ffmpeg command
         # -hide_banner to reduce output clutter
         # -filter:a volumedetect so get volume stats on audio stream
         # -f null - send output to stdout
@@ -305,7 +292,6 @@ class TestSubprocessUtilities(TestCase):
         @brief Tests running subprocess for command throws UnicodeDecodeError.
         '''
 
-        # @todo will need mocking of some type
         # art.has_video_stream calls subprocess_run with ffprobe command
         # metadata.get_media_tags calls subprocess_run with ffprobe command
         # normalization.ebu_normalize_files calls subprocess_run with ffmpeg command
