@@ -56,8 +56,9 @@ class SubprocessUtilities():
 
         @details Asynchronous execution of ffprobe command with redirection to stdout.
 
-        @param command {str} Ffprobe command for Popen subprocess  to run.
+        @param command {str} Ffprobe command for Popen subprocess to run.
         @return stdout {str} The decoded subprocess output.
+
         @exception RuntimeError A runtime error from subprocess popen.
         @exception UnicodeDecodeError A unicode decode error on subprocess stdout bytes.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -102,6 +103,7 @@ class SubprocessUtilities():
         @param command {str} Ffmpeg command for Popen subprocess to run.
         @param show_spinner {bool} Flag to use spinner or not. Default True.
         @return success_msg {str} Success message on completion.
+
         @exception FfmpegProcessError Exception occurred processing a ffmpeg command.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -168,6 +170,7 @@ class SubprocessUtilities():
         @param command {str} Command for subprocess  to run.
         @param text {str} Text for spinner to display.
         @return results (process, spinner) ({CompletedProcess}, {Yaspin}) Tuple containing completed process and spinner objects.
+
         @exception CalledProcessError A subprocess error from ffmpeg command execution.
         @exception UnicodeDecodeError A unicode decode error on subprocess stdout bytes.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -194,7 +197,7 @@ class SubprocessUtilities():
             logger.exception(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", stack_info=True)
             raise cp_error
         except UnicodeDecodeError as ud_error:
-            logger.exception(f"UnicodeDecodeError decoding stdout: {process.stdout} or stderr: {process.stderr} from command {shlex.join(command)}", stack_info=True)
+            logger.exception(f"UnicodeDecodeError reason: {ud_error.reason} on object {ud_error.object} from command {shlex.join(command)}", stack_info=True)
             raise ud_error
         except Exception as e_error:
             logger.exception(f"Exception processing command: {command}", stack_info=True)
@@ -224,6 +227,7 @@ class SubprocessUtilities():
             encoding for cross-platform compatibility & avoid decoding errors
             text decodes stdout/stderr as text
             '''
+
             process = subprocess.run(
                 command,
                 check=True,
@@ -236,7 +240,7 @@ class SubprocessUtilities():
             logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
             raise cp_error
         except UnicodeDecodeError as ud_error:
-            logger.exception(f"UnicodeDecodeError decoding stdout: {process.stdout} or stderr: {process.stderr} from command {shlex.join(command)}", stack_info=True)
+            logger.exception(f"UnicodeDecodeError reason: {ud_error.reason} on object {ud_error.object} from command {shlex.join(command)}", stack_info=True)
             raise ud_error
         except Exception as e_error:
             logger.exception(f"Exception processing command: {command}", stack_info=True)

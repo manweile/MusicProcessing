@@ -10,15 +10,14 @@
 # standard modules
 import gc
 import inspect
-import logging
 import unittest
 from subprocess import CalledProcessError
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
 # local module constants
-from tests import TEST_M3U, TEST_MP3_CRUSH, TEST_WAV_NONE
 from src import UTF8
+from tests import TEST_M3U, TEST_MP3_CRUSH, TEST_WAV_NONE
 # local module errors
 from src import FfmpegProcessError
 # local module classes
@@ -28,13 +27,6 @@ gc.enable()
 
 # instantiate classes here
 subprocess_utils = SubprocessUtilities()
-
-'''
-Get the effective level so we can disable logging when necessary.
-In tests that use assertRaises, disable the logger at or below the log level of the tested function,
-encapsulate the assertRaises in a try block, and use a finally to restore the original log level.
-'''
-original_log_level = logging.getLogger().getEffectiveLevel()
 
 
 def mock_communicate_with_error():
@@ -64,14 +56,9 @@ class TestSubprocessUtilities(TestCase):
         export_path = TEST_WAV_NONE
         file_path = TEST_M3U
         bitrate = 128198
-        # from metadata.convert_file, command for an audio file conversion to mp3
-        # ffmpeg
-        # -hide_banner            # reduce output clutter
-        # -i file_path            # specify input file D:\MusicProcessing\tests\Music\test.m3u
-        # -vn -map_metadata -1    # -vn drops video stream and -map_metadata -1 drops all text metadata
-        # -codec:a libmp3lame     # -codec:a libmp3lame sets audio codec for mp3
-        # -id3v2_version 3        # known bug have to specify id3v2 version
-        # -b:a 128198             # ffmpeg will downgrade bitrate if you don't set it
+
+        # from metadata.convert_file,
+        # calls popen_pipe with a ffmpeg command for an audio file conversion to mp3
         mpeg_command = [
             "ffmpeg", "-hide_banner",
             "-i", file_path,
@@ -98,18 +85,11 @@ class TestSubprocessUtilities(TestCase):
         @brief Tests asynchronous execution of command with redirection to stderr throws FfmpegProcessError.
         '''
 
-        # metadata.convert_file calls spinner_popen_pipe with ffmpeg command
         export_path = TEST_WAV_NONE
         file_path = TEST_M3U
         bitrate = 128198
-        # from metadata.convert_file, command for an audio file conversion to mp3
-        # ffmpeg
-        # -hide_banner            # reduce output clutter
-        # -i file_path            # specify input file D:\MusicProcessing\tests\Music\test.m3u
-        # -vn -map_metadata -1    # -vn drops video stream and -map_metadata -1 drops all text metadata
-        # -codec:a libmp3lame     # -codec:a libmp3lame sets audio codec for mp3
-        # -id3v2_version 3        # known bug have to specify id3v2 version
-        # -b:a 128198             # ffmpeg will downgrade bitrate if you don't set it
+        # from metadata.convert_file,
+        # calls popen_pipe with ffmpeg command for an audio file conversion to mp3
         mpeg_command = [
             "ffmpeg", "-hide_banner",
             "-i", file_path,
@@ -138,10 +118,8 @@ class TestSubprocessUtilities(TestCase):
 
         file_path = TEST_M3U
 
-        # from metadata.get_media_info, command for getting all media file info
-        # -v quiet reduce output clutter
-        # -show_format get high level details of media file
-        # -show_streams gets all information about each media stream in the input
+        # from metadata.get_media_info,
+        # calls popen_pipe with ffprobe command for getting all media file info
         command = [
             "ffprobe",
             "-v", "quiet",
@@ -162,13 +140,11 @@ class TestSubprocessUtilities(TestCase):
     @patch('src.subprocess_utils.subprocess.Popen')
     def test_popen_pipe_communicate_decode_error(self, mock_popen):
         '''
-        @brief Tests asynchronous execution of ffprobe command throws UnicodeDecodeError.
+        @brief Tests asynchronous Popen execution of command throws UnicodeDecodeError.
         '''
 
-        # metadata.get_media_info calls popen_pipe with an ffprobe command
-        # -v quiet reduce output clutter
-        # -show_format get high level details of media file
-        # -show_streams gets all information about each media stream in the input
+        # from metadata.get_media_info,
+        # calls popen_pipe with an ffprobe command to get all media info from media file
         command = [
             "ffprobe",
             "-v", "quiet",
@@ -190,39 +166,8 @@ class TestSubprocessUtilities(TestCase):
         self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
         self.assertEqual("invalid start byte", cm.exception.reason)
 
-    @unittest.skip("probably not needed")
-    def test_popen_pipe_unicode_error(self):
-        '''
-        @brief Tests asynchronous execution of ffprobe command throws UnicodeDecodeError.
-        '''
-
-        # metadata.get_media_info calls popen_pipe with an ffprobe command
-        # -v quiet reduce output clutter
-        # -show_format get high level details of media file
-        # -show_streams gets all information about each media stream in the input
-        command = [
-            "ffprobe",
-            "-v", "quiet",
-            "-show_format",
-            "-show_streams",
-            TEST_MP3_CRUSH
-        ]
-
-        popen_pipe_subprocess_utils = SubprocessUtilities()
-
-        mock_popen_pipe = Mock(spec=popen_pipe_subprocess_utils)
-        mock_popen_pipe.side_effect = UnicodeDecodeError(UTF8, b'\xbe', 0, 1, 'invalid start byte')
-
-        popen_pipe_subprocess_utils.popen_pipe = mock_popen_pipe
-
-        std_out = None
-        with self.assertRaises(UnicodeDecodeError) as cm:
-            std_out = popen_pipe_subprocess_utils.popen_pipe(command)
-
-        self.assertIsNone(std_out)
-        self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
-
-        mock_popen_pipe.reset_mock(return_value=True, side_effect=True)
+        mock_popen.reset_mock(return_value=True, side_effect=True)
+        mock_process_instance.reset_mock(return_value=True, side_effect=True)
 
 
     def test_subprocess_run_ffmpeg_invalid_file(self):
@@ -263,10 +208,8 @@ class TestSubprocessUtilities(TestCase):
 
         input_audio = TEST_WAV_NONE
 
-        # -hide_banner reduce output clutter
-        # -select_streams v:0 only want video stream
-        # -show_streams gets all information about each media stream in the input
-        # -of json output information in json format
+        # from art.has_video_stream,
+        # calls subprocess_run with an ffprobe command to check if audio file has embedded art
         probe_command = [
             'ffprobe',
             '-hide_banner',
@@ -286,21 +229,32 @@ class TestSubprocessUtilities(TestCase):
         self.assertEqual(stderr, expected_err)
 
 
-    @unittest.skip("complete")
-    def test_subprocess_run_unicode_error(self):
+    @patch('src.subprocess_utils.subprocess.run')
+    def test_subprocess_run_communicate_decode_error(self, mock_subprocess_run):
         '''
         @brief Tests running subprocess for command throws UnicodeDecodeError.
         '''
 
-        # art.has_video_stream calls subprocess_run with ffprobe command
-        # metadata.get_media_tags calls subprocess_run with ffprobe command
-        # normalization.ebu_normalize_files calls subprocess_run with ffmpeg command
-        # normalization.get_bit_rate calls subprocess_run with ffprobe command
-        # normalization.get_sample_rate calls subprocess_run with ffprobe command
-        # normalization.ebu_get_volume_info calls subprocess_run with ffmpeg command
-        # normalization.peak_normalize_files calls subprocess_run with ffmpeg command
-        # normalization.rms_normalize_files calls subprocess_run with ffmpeg command
-        pass
+        # from normalization.get_volume_info,
+        # calls subprocess_run with ffmpeg command to get volume info from an audio file
+        command = [
+            'ffmpeg', '-hide_banner',
+            '-i', TEST_MP3_CRUSH,
+            '-filter:a', 'volumedetect',
+            '-f', 'null', '-'
+        ]
+
+        mock_subprocess_run.side_effect = UnicodeDecodeError(UTF8, b'\xff', 0, 1, 'invalid start byte')
+
+        process = None
+        with self.assertRaises(UnicodeDecodeError) as cm:
+            process = subprocess_utils.subprocess_run(command)
+
+        self.assertIsNone(process)
+        self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
+        self.assertEqual("invalid start byte", cm.exception.reason)
+
+        mock_subprocess_run.reset_mock(return_value=True, side_effect=True)
 
 
 def get_method_names(cls):
