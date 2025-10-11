@@ -88,6 +88,7 @@ class TestSubprocessUtilities(TestCase):
         export_path = TEST_WAV_NONE
         file_path = TEST_M3U
         bitrate = 128198
+
         # from metadata.convert_file,
         # calls popen_pipe with ffmpeg command for an audio file conversion to mp3
         mpeg_command = [
@@ -230,7 +231,7 @@ class TestSubprocessUtilities(TestCase):
 
 
     @patch('src.subprocess_utils.subprocess.run')
-    def test_subprocess_run_communicate_decode_error(self, mock_subprocess_run):
+    def test_subprocess_run_unicode_decode_error(self, mock_subprocess_run):
         '''
         @brief Tests running subprocess for command throws UnicodeDecodeError.
         '''
