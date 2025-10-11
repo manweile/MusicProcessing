@@ -72,10 +72,8 @@ class SubprocessUtilities():
             )
 
             # ffprobe returns via stdout (unlike ffmpeg, which uses stderr)
-            # stdout_bytes = res.communicate()[0]
             stdout_bytes, stderr_bytes = res.communicate()
             stdout = stdout_bytes.decode(UTF8)
-            stderr = stderr_bytes.decode(UTF8)
 
             if res.returncode != 0:
                 logger.error(f"RuntimeError running command {shlex.join(command)}", exc_info=True)
@@ -119,8 +117,8 @@ class SubprocessUtilities():
                         p = subprocess.Popen(
                             command,
                             stdin=devnull,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
+                            stdout=PIPE,
+                            stderr=PIPE,
                             universal_newlines=True
                         )
 
@@ -135,14 +133,17 @@ class SubprocessUtilities():
                     p = subprocess.Popen(
                         command,
                         stdin=devnull,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
+                        stdout=PIPE,
+                        stderr=PIPE,
                     )
 
+                # ffmpeg returns via stderr (unlike ffprobe, which uses stdout)
                 p_out, p_err = p.communicate()
+                # using 'ignore' because I don't want a UnicodeDecodeError to happen
+                std_err = p_err.decode(errors='ignore')
 
             if p.returncode != 0:
-                fp_error_msg = f"Ffmpeg returned error code: {p.returncode}\n, with output: {p_err.decode(errors='ignore')}\n for command:{command}\n"
+                fp_error_msg = f"Ffmpeg returned error code: {p.returncode}\n, with output: {std_err}\n for command:{command}\n"
                 logger.exception(fp_error_msg, stack_info=True)
                 raise FfmpegProcessError(fp_error_msg)
 
