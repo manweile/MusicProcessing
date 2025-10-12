@@ -7,6 +7,7 @@
 '''
 
 # standard modules
+import errno
 import gc
 import inspect
 import os
@@ -399,6 +400,7 @@ class TestAudioArt(TestCase):
         '''
 
         # needs mocking & name mangling for private method
+        # look at test_directory_processing.test_remove_pattern_permission for partial example
         pass
 
 
@@ -409,6 +411,22 @@ class TestAudioArt(TestCase):
         '''
 
         # needs mocking & name mangling for private method
+        # look at test_directory_processing.test_remove_pattern_permission for example
+        write_data_os_error_art = AudioArt()
+
+        mock_write_data = Mock(spec=write_data_os_error_art)
+        mock_write_data.side_effect = OSError(errno.EACCES, "Permission denied")
+
+        write_data_os_error_art.__write_data = mock_write_data
+
+        data_bytes = b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
+        data_byte_array = bytearray(data_bytes)
+
+        with self.assertRaises(OSError) as cm:
+            write_data_os_error_art.__write_data(TEST_MP3_CRUSH, data_byte_array)
+
+        self.assertEqual(cm.exception.errno, errno.EACCES)
+        mock_write_data.reset_mock(return_value=True, side_effect=True)
         pass
 
 
