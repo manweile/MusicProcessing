@@ -370,8 +370,7 @@ class TestAudioArt(TestCase):
         self.assertEqual(err_msg, cm.exception.args[0])
 
 
-    @unittest.skip("debug patch")
-    @patch('src.audio_info.audio_art.AudioArt.__unpack_asf_image')
+    @patch.object(AudioArt, '_AudioArt__unpack_asf_image')
     def test_unpack_asf_image_unicode_decode_error(self, mock_unpack_asf_image):
         '''
         @brief Tests unpack_asf_image throws UnicodeDecodeError.
@@ -384,7 +383,7 @@ class TestAudioArt(TestCase):
         unpacked_art = None
 
         with self.assertRaises(UnicodeDecodeError) as cm:
-            unpacked_art = art.__unpack_asf_image(data_byte_array)
+            unpacked_art = art._AudioArt__unpack_asf_image(data_byte_array)
 
         self.assertIsNone(unpacked_art)
         self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
