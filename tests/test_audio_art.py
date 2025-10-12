@@ -11,13 +11,16 @@ import gc
 import inspect
 import os
 import shutil
+import struct
 import unittest
 from pathlib import Path
+
 from subprocess import CalledProcessError
 from unittest import TestCase
-
+from unittest.mock import Mock, patch
 # local module constants
 from src import AUDIO_EXTS, FOLDER_ART, PLAYLIST_EXTS
+from src import UTF8
 from tests import TEST_M3U
 from tests import TEST_M4A_DAVIS, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_NO_TAG, TEST_WMA_HOLIDAY, TEST_WMA_JOHN
 from tests import TESTS_PATH, TESTS_TLD
@@ -346,6 +349,68 @@ class TestAudioArt(TestCase):
 
         self.assertTrue(found_art_exists)
         self.assertTrue(set_art_exists)
+
+
+    def test_unpack_asf_image_struct_error(self):
+        '''
+        @brief Tests unpack_asf_image throws struct error.
+        '''
+
+        data_bytes = b'\xff'
+        data_byte_array = bytearray(data_bytes)
+        unpacked_art = None
+
+        with self.assertRaises(struct.error) as cm:
+            unpacked_art = art._AudioArt__unpack_asf_image(data_byte_array)
+
+        self.assertIsNone(unpacked_art)
+        self.assertEqual("error", cm.exception.__class__.__name__)
+
+        err_msg = "unpack_from requires a buffer of at least 5 bytes for unpacking 5 bytes at offset 0 (actual buffer size is 1)"
+        self.assertEqual(err_msg, cm.exception.args[0])
+
+
+    @unittest.skip("debug patch")
+    @patch('src.audio_info.audio_art.AudioArt.__unpack_asf_image')
+    def test_unpack_asf_image_unicode_decode_error(self, mock_unpack_asf_image):
+        '''
+        @brief Tests unpack_asf_image throws UnicodeDecodeError.
+        '''
+
+        mock_unpack_asf_image.side_effect = UnicodeDecodeError(UTF8, b'\xff', 0, 1, 'invalid start byte')
+
+        data_bytes = b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
+        data_byte_array = bytearray(data_bytes)
+        unpacked_art = None
+
+        with self.assertRaises(UnicodeDecodeError) as cm:
+            unpacked_art = art.__unpack_asf_image(data_byte_array)
+
+        self.assertIsNone(unpacked_art)
+        self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
+        self.assertEqual("invalid start byte", cm.exception.reason)
+
+        mock_unpack_asf_image.reset_mock(return_value=True, side_effect=True)
+
+
+    @unittest.skip("complete")
+    def test_write_data_blocking_error(self):
+        '''
+        @brief Tests write_data throws BlockingIOError.
+        '''
+
+        # needs mocking & name mangling for private method
+        pass
+
+
+    @unittest.skip("complete")
+    def test_write_data_os_error(self):
+        '''
+        @brief Tests write_data throws OSError.
+        '''
+
+        # needs mocking & name mangling for private method
+        pass
 
 
 def get_method_names(cls):
