@@ -10,6 +10,7 @@
 # standard modules
 import gc
 import inspect
+import os
 import unittest
 from subprocess import CalledProcessError
 from unittest import TestCase
@@ -18,6 +19,7 @@ from unittest.mock import Mock, patch
 # local module constants
 from src import UTF8
 from tests import TEST_M3U, TEST_MP3_CRUSH, TEST_WAV_NONE
+from tests import TESTS_PATH
 # local module errors
 from src import FfmpegProcessError
 # local module classes
@@ -60,7 +62,8 @@ class TestSubprocessUtilities(TestCase):
         # from metadata.convert_file,
         # calls popen_pipe with a ffmpeg command for an audio file conversion to mp3
         mpeg_command = [
-            "ffmpeg", "-hide_banner",
+            "ffmpeg",
+            "-hide_banner",
             "-i", file_path,
             "-vn", "-map_metadata", "-1",
             "-codec:a", "libmp3lame",
@@ -92,7 +95,8 @@ class TestSubprocessUtilities(TestCase):
         # from metadata.convert_file,
         # calls popen_pipe with ffmpeg command for an audio file conversion to mp3
         mpeg_command = [
-            "ffmpeg", "-hide_banner",
+            "ffmpeg",
+            "-hide_banner",
             "-i", file_path,
             "-vn", "-map_metadata", "-1",
             "-codec:a", "libmp3lame",
@@ -112,6 +116,31 @@ class TestSubprocessUtilities(TestCase):
         self.assertTrue(cm.exception.args[0], err_msg)
 
 
+    def test_get_media_info_invalid_data(self):
+        '''
+        @brief Test trying to get media info invalid from mp3 file.
+        '''
+
+        file_path = os.path.join(TESTS_PATH, "No_audio_Crush-Live.mp3")
+
+        # from metadata.get_media_info,
+        # calls popen_pipe with ffprobe command for getting all media file info
+        command = [
+            "ffprobe",
+            "-v", "error",
+            "-show_format",
+            "-show_streams",
+            file_path
+        ]
+        std_out = None
+
+        with self.assertRaises(RuntimeError) as cm:
+            std_out = subprocess_utils.popen_pipe(command)
+
+        self.assertIsNone(std_out)
+        self.assertTrue(cm.exception.args[0], f"{file_path}: Invalid data found when processing input")
+
+
     def test_popen_pipe_ffprobe_invalid_file(self):
         '''
         @brief Tests trying to get ffprobe media info from invalid file type throws RuntimeError.
@@ -123,7 +152,7 @@ class TestSubprocessUtilities(TestCase):
         # calls popen_pipe with ffprobe command for getting all media file info
         command = [
             "ffprobe",
-            "-v", "quiet",
+            "-v", "error",
             "-show_format",
             "-show_streams",
             file_path
@@ -148,7 +177,7 @@ class TestSubprocessUtilities(TestCase):
         # calls popen_pipe with an ffprobe command to get all media info from media file
         command = [
             "ffprobe",
-            "-v", "quiet",
+            "-v", "error",
             "-show_format",
             "-show_streams",
             TEST_MP3_CRUSH
@@ -182,7 +211,8 @@ class TestSubprocessUtilities(TestCase):
         # -filter:a volumedetect so get volume stats on audio stream
         # -f null - send output to stdout
         mpeg_command = [
-            'ffmpeg', '-hide_banner',
+            'ffmpeg',
+            '-hide_banner',
             '-i', file_path,
             '-filter:a', 'volumedetect',
             '-f', 'null', '-'
@@ -239,7 +269,8 @@ class TestSubprocessUtilities(TestCase):
         # from normalization.get_volume_info,
         # calls subprocess_run with ffmpeg command to get volume info from an audio file
         command = [
-            'ffmpeg', '-hide_banner',
+            'ffmpeg',
+            '-hide_banner',
             '-i', TEST_MP3_CRUSH,
             '-filter:a', 'volumedetect',
             '-f', 'null', '-'

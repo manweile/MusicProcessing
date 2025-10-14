@@ -74,10 +74,11 @@ class SubprocessUtilities():
             # ffprobe returns via stdout (unlike ffmpeg, which uses stderr)
             stdout_bytes, stderr_bytes = res.communicate()
             stdout = stdout_bytes.decode(UTF8)
+            std_err = stderr_bytes.decode(UTF8)
 
             if res.returncode != 0:
-                logger.error(f"RuntimeError running command {shlex.join(command)}", exc_info=True)
-                raise RuntimeError(f"RuntimeError running command {shlex.join(command)}")
+                logger.error(f"RuntimeError running command {shlex.join(command)} with stderr: {std_err}", exc_info=True)
+                raise RuntimeError(f"RuntimeError running command {shlex.join(command)} with stderr: {std_err}")
 
         except RuntimeError as r_error:
             raise r_error

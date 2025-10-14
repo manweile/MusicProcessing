@@ -598,7 +598,7 @@ class AudioMetadata():
             # -show_streams gets all information about each media stream in the input
             command = [
                 "ffprobe",
-                "-v", "quiet",
+                "-v", "error",
                 "-show_format",
                 "-show_streams",
                 file_path
@@ -755,7 +755,7 @@ class AudioMetadata():
             # -show_entries format_tags we only care about tags
             command = [
                 "ffprobe",
-                "-v", "quiet",
+                "-v", "error",
                 "-of", "json",
                 "-show_entries", "format_tags",
                 file_path

@@ -312,16 +312,6 @@ class TestAudioNormalization(TestCase):
         self.assertDictEqual(volumes, self.vol_info_res)
 
 
-    @unittest.skip("complete")
-    def test_get_volume_info_regex_error(self):
-        '''
-        @brief Tests getting volume info failing due to regex error.
-        '''
-
-        # @todo needs mocking to simulate regex error
-        pass
-
-
     def test_loudnorm_json_parse(self):
         '''
         @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output.
