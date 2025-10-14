@@ -352,6 +352,28 @@ class TestAudioArt(TestCase):
         self.assertTrue(set_art_exists)
 
 
+    @patch.object(AudioArt, '_AudioArt__unpack_asf_image')
+    def test_unpack_asf_image_decode_error(self, mock_unpack_asf_image):
+        '''
+        @brief Tests unpack_asf_image throws UnicodeDecodeError.
+        '''
+
+        data_bytes = b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
+        data_byte_array = bytearray(data_bytes)
+        unpacked_art = None
+
+        mock_unpack_asf_image.side_effect = UnicodeDecodeError(UTF8, b'\xff', 0, 1, 'invalid start byte')
+
+        with self.assertRaises(UnicodeDecodeError) as cm:
+            unpacked_art = art._AudioArt__unpack_asf_image(data_byte_array)
+
+        self.assertIsNone(unpacked_art)
+        self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
+        self.assertEqual("invalid start byte", cm.exception.reason)
+
+        mock_unpack_asf_image.reset_mock(return_value=True, side_effect=True)
+
+
     def test_unpack_asf_image_struct_error(self):
         '''
         @brief Tests unpack_asf_image throws struct error.
@@ -371,63 +393,52 @@ class TestAudioArt(TestCase):
         self.assertEqual(err_msg, cm.exception.args[0])
 
 
-    @patch.object(AudioArt, '_AudioArt__unpack_asf_image')
-    def test_unpack_asf_image_unicode_decode_error(self, mock_unpack_asf_image):
-        '''
-        @brief Tests unpack_asf_image throws UnicodeDecodeError.
-        '''
-
-        mock_unpack_asf_image.side_effect = UnicodeDecodeError(UTF8, b'\xff', 0, 1, 'invalid start byte')
-
-        data_bytes = b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
-        data_byte_array = bytearray(data_bytes)
-        unpacked_art = None
-
-        with self.assertRaises(UnicodeDecodeError) as cm:
-            unpacked_art = art._AudioArt__unpack_asf_image(data_byte_array)
-
-        self.assertIsNone(unpacked_art)
-        self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
-        self.assertEqual("invalid start byte", cm.exception.reason)
-
-        mock_unpack_asf_image.reset_mock(return_value=True, side_effect=True)
-
-
-    @unittest.skip("complete")
     def test_write_data_blocking_error(self):
         '''
         @brief Tests write_data throws BlockingIOError.
         '''
 
-        # needs mocking & name mangling for private method
-        # look at test_directory_processing.test_remove_pattern_permission for partial example
-        pass
+        data_bytes = b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
+        data_byte_array = bytearray(data_bytes)
+
+        write_data_art = AudioArt()
+
+        mock_write_data = Mock(spec=write_data_art)
+        mock_write_data.side_effect = BlockingIOError(errno.EWOULDBLOCK, "Operation blocked")
+
+        write_data_art.__write_data = mock_write_data
+
+        with self.assertRaises(BlockingIOError) as cm:
+            write_data_art.__write_data(TEST_MP3_CRUSH, data_byte_array)
+
+        self.assertEqual(cm.exception.errno, errno.EWOULDBLOCK)
+        self.assertEqual(cm.exception.strerror, "Operation blocked")
+
+        mock_write_data.reset_mock(return_value=True, side_effect=True)
 
 
-    @unittest.skip("complete")
     def test_write_data_os_error(self):
         '''
         @brief Tests write_data throws OSError.
         '''
 
-        # needs mocking & name mangling for private method
-        # look at test_directory_processing.test_remove_pattern_permission for example
-        write_data_os_error_art = AudioArt()
-
-        mock_write_data = Mock(spec=write_data_os_error_art)
-        mock_write_data.side_effect = OSError(errno.EACCES, "Permission denied")
-
-        write_data_os_error_art.__write_data = mock_write_data
-
         data_bytes = b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
         data_byte_array = bytearray(data_bytes)
 
+        write_data_art = AudioArt()
+
+        mock_write_data = Mock(spec=write_data_art)
+        mock_write_data.side_effect = OSError(errno.EACCES, "Permission denied")
+
+        write_data_art.__write_data = mock_write_data
+
         with self.assertRaises(OSError) as cm:
-            write_data_os_error_art.__write_data(TEST_MP3_CRUSH, data_byte_array)
+            write_data_art.__write_data(TEST_MP3_CRUSH, data_byte_array)
 
         self.assertEqual(cm.exception.errno, errno.EACCES)
+        self.assertEqual(cm.exception.strerror, "Permission denied")
+
         mock_write_data.reset_mock(return_value=True, side_effect=True)
-        pass
 
 
 def get_method_names(cls):
