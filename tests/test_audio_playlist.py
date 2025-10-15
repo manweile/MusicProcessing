@@ -25,6 +25,7 @@ from src.audio_info import AudioPlaylist
 
 gc.enable()
 
+# @todo put these in setUpClass
 EXPECTED_M3U = os.path.join(TESTS_PATH, "expected.m3u")
 GENERATED_M3U = os.path.join(GENERATED_PATH, "test.m3u")
 

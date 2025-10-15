@@ -72,6 +72,7 @@ class TestAudioMetadata(TestCase):
         # directory for "walk" type tests: D:\MusicProcessing\tests\PreppedMusic
         cls.prepped = os.path.join(TESTS_PATH, "PreppedMusic")
 
+        # @todo use these directly in tests (see AudioArt tests)
         # test patterns
         cls.m3u_pattern = PLAYLIST_EXTS[0]
         cls.mp3_pattern = MP3_EXT
@@ -224,6 +225,7 @@ class TestAudioMetadata(TestCase):
         elif os.environ.get('GITHUB_ACTIONS') == 'true':
             cls.media_dict["filename"] = ci_linux
 
+        # @todo single use. create where used.
         # no matter the os/environment, inner dict TAG is always same
         cls.tag_dict = {
             'title': 'Live', 'artist': 'Crush', 'track': '1/12', 'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
@@ -248,6 +250,7 @@ class TestAudioMetadata(TestCase):
         }
         cls.id3_date_values = set(["1962", "1963"])
 
+        # @todo all single use. create where used.
         cls.m4a_mapped = {
             'TALB': 'Desperado',
             'TPE2': 'Eagles',

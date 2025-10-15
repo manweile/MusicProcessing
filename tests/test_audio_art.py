@@ -87,6 +87,7 @@ class TestAudioArt(TestCase):
             shutil.copy(src_path, dest_path)
 
         # don't add this one to delete list used by tearDown, need it for an error test
+        # @todo single use, create where used
         cls.found_album_art_jpg = os.path.join(TESTS_TLD, "Abba", "Waterloo", FOLDER_ART)
 
         cls.m4a_jpg = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", FOLDER_ART)
@@ -96,10 +97,12 @@ class TestAudioArt(TestCase):
         cls.wma_jpg = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART)
         cls.delete_jpgs = [cls.m4a_jpg, cls.mp3_jpg, cls.no_stream_jpg, cls.set_album_art_jpg, cls.wma_jpg]
 
-        cls.src_has_jpg_path = os.path.join(TESTS_TLD, "Abba", "Waterloo")
+        # @todo single use, create where used
         cls.src_no_tag_mp3 = TEST_MP3_NO_TAG
 
+        # @todo single use, create where used
         cls.src_has_jpg_audio = TEST_MP3_ABBA
+        # @todo single use, create where used
         cls.src_m4a = TEST_M4A_DAVIS
         cls.src_mp3 = TEST_MP3_CRUSH
         cls.src_no_stream_wma = TEST_WMA_HOLIDAY
