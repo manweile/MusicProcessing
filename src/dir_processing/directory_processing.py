@@ -34,8 +34,16 @@ from src import MusicProcessingError
 
 gc.enable()
 
+## @var logger
+# @brief the logger instance for module
+# @details sets the logger name to module name
 logger = logging.getLogger(__name__)
+
+## @var basename
+# @brief name for logger file handler log file
+# @details gets the module file name
 basename = os.path.basename(__file__)
+
 add_module_handler(logger, basename)
 
 
@@ -44,21 +52,19 @@ class DirectoryProcessing():
     @brief Defines the base directory processing used by project.
     '''
 
-    def __init__(self, tld_path=None):
+    def __init__(self) -> None:
         '''
         @brief Initializes the DirectoryProcessing class.
 
-        @param tld_path {str} Optional, the top level directory path that contains all the music files.
-        @return DirectoryProcessing {instance} An instance of the class.
+        @details A basic class implementation with no instantiation parameters.
 
-        @exception OSError A system related error occurred.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @return DirectoryProcessing {instance} An instance of the class.
         '''
 
         pass
 
 
-    def create_csv(self, csv_filename, data, csv_dir=None, header_row=None, sort_col=None):
+    def create_csv(self, csv_filename: str, data: list, csv_dir: str | None = None, header_row: list | None = None, sort_col: int | None = None) -> None:
         '''
         @brief Creates a csv file
 
@@ -105,7 +111,7 @@ class DirectoryProcessing():
             raise e_error
 
 
-    def create_txt(self, txt_filename, data, txt_dir=None):
+    def create_txt(self, txt_filename: str, data: list, txt_dir: str | None = None) -> None:
         '''
         @brief Creates a text file
 
@@ -140,7 +146,7 @@ class DirectoryProcessing():
             raise e_error
 
 
-    def get_audio_file_list(self, start_path):
+    def get_audio_file_list(self, start_path: str) -> None:
         '''
         @brief Generates a csv containing full path for all audio files.
 
@@ -250,7 +256,7 @@ class DirectoryProcessing():
             raise e_error
 
 
-    def get_ext_file_list(self, start_path, file_pattern):
+    def get_ext_file_list(self, start_path: str, file_pattern: str) -> None:
         '''
         @brief Generates a csv containing full file path for audio file extension.
 
@@ -297,7 +303,7 @@ class DirectoryProcessing():
             raise e_error
 
 
-    def get_file_directory(self, start_path, file_name):
+    def get_file_directory(self, start_path: str, file_name: str) -> str:
         '''
         @brief Finds the directory path of a file given its name and a starting search path.
 
@@ -322,7 +328,7 @@ class DirectoryProcessing():
             return dir_path
 
 
-    def make_dir(self, dir_path):
+    def make_dir(self, dir_path: str) -> None:
         '''
         @brief Creates a directory.
 
@@ -350,7 +356,7 @@ class DirectoryProcessing():
             raise e_error
 
 
-    def path_info(self, file_path):
+    def path_info(self, file_path: str) -> str:
         '''
         @brief Creates export path for audio file conversions and normalizations.
 
@@ -435,7 +441,7 @@ class DirectoryProcessing():
             return export_path
 
 
-    def remove_empty_album_dir(self, start_path):
+    def remove_empty_album_dir(self, start_path: str) -> None:
         '''
         @brief Removes empty album directories.
 
@@ -489,7 +495,7 @@ class DirectoryProcessing():
             raise e_error
 
 
-    def remove_pattern(self, start_path, file_pattern):
+    def remove_pattern(self, start_path: str, file_pattern: str) -> None:
         '''
         @brief Removes file matching specified pattern.
 

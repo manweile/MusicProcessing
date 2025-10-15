@@ -56,6 +56,9 @@ add_module_handler(logger, basename)
 # @brief instance of AudioMetadata class
 # @details used for accessing class functionality
 metadata = AudioMetadata()
+
+# @brief instance of AudioNormalization class
+# @details used for accessing class functionality
 normalization = AudioNormalization()
 
 ## @var subprocess_utils

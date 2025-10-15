@@ -16,6 +16,7 @@ import os
 import re
 from json import JSONDecodeError
 from pathlib import Path
+from subprocess import CompletedProcess
 
 # local module methods
 from src import add_module_handler
@@ -30,11 +31,26 @@ from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
 
+## @var logger
+# @brief the logger instance for module
+# @details sets the logger name to module name
 logger = logging.getLogger(__name__)
+
+## @var basename
+# @brief name for logger file handler log file
+# @details gets the module file name
 basename = os.path.basename(__file__)
+
 add_module_handler(logger, basename)
 
+## @var directory
+# @brief instance of DirectoryProcessing class
+# @details used for accessing class functionality
 directory = DirectoryProcessing()
+
+## @var subprocess_utils
+# @brief instance of SubprocessUtilities class
+# @details used for accessing class functionality
 subprocess_utils = SubprocessUtilities()
 
 
@@ -43,7 +59,7 @@ class AudioNormalization():
     @brief Defines the base normalization processing used by project.
     '''
 
-    def __init__(self):
+    def __init__(self) -> None:
         '''
         @brief Initializes the AudioNormalization class.
 
@@ -55,7 +71,7 @@ class AudioNormalization():
         pass
 
 
-    def __loudnorm_json_parse(self, input_process):
+    def __loudnorm_json_parse(self, input_process: CompletedProcess) -> dict:
         '''
         @brief Parse json element out of ffmpeg loudnorm subprocess stderr output.
 
@@ -121,7 +137,7 @@ class AudioNormalization():
             return output_data
 
 
-    def ebu_normalize_file(self, file_path, show_spinner=True):
+    def ebu_normalize_file(self, file_path: str, show_spinner: bool = True) -> None:
         '''
         @brief Normalizes audio file level to ebu r128 standard.
 
@@ -288,7 +304,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def get_bit_rate(self, file_path):
+    def get_bit_rate(self, file_path: str) -> int:
         '''
         @brief Retrieves the bitrate of a media file using ffprobe.
 
@@ -307,7 +323,7 @@ class AudioNormalization():
             # -show_entries format=bit_rate gets just the bit rate
             command = [
                 'ffprobe',
-                '-v', 'quiet',
+                '-v', 'error',
                 '-print_format', 'json',
                 '-show_entries', 'format=bit_rate',
                 file_path
@@ -334,7 +350,7 @@ class AudioNormalization():
             return bit_rate
 
 
-    def get_sample_rate(self, file_path):
+    def get_sample_rate(self, file_path: str) -> int:
         '''
         @brief Gets the sample rate from audio file.
 
@@ -355,7 +371,7 @@ class AudioNormalization():
             # -of json to output in json format
             command = [
                 'ffprobe',
-                '-v', 'quiet',
+                '-v', 'error',
                 '-select_streams', 'a:0',
                 '-show_entries', 'stream=sample_rate',
                 '-of', 'json',
@@ -383,7 +399,7 @@ class AudioNormalization():
             return sample_rate
 
 
-    def get_volume_info(self, file_path):
+    def get_volume_info(self, file_path: str) -> dict:
         '''
         @brief Gets mean and max volume from audio file using ffmpeg.
 
@@ -405,7 +421,8 @@ class AudioNormalization():
             # -filter:a volumedetect so get volume stats on audio stream
             # -f null - send output to stdout
             command = [
-                'ffmpeg', '-hide_banner',
+                'ffmpeg',
+                '-hide_banner',
                 '-i', file_path,
                 '-filter:a', 'volumedetect',
                 '-f', 'null', '-'
@@ -435,7 +452,7 @@ class AudioNormalization():
             return volumes
 
 
-    def normalize_walk(self, tld_path, norm_type, show_spinner=True):
+    def normalize_walk(self, tld_path: str, norm_type: str, show_spinner: bool = True) -> None:
         '''
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
@@ -473,7 +490,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def peak_normalize_file(self, file_path, show_spinner=True):
+    def peak_normalize_file(self, file_path: str, show_spinner: bool = True) -> None:
         '''
         @brief Peak normalizes audio file level.
 
@@ -547,7 +564,8 @@ class AudioNormalization():
             # -id3v2_version 3 required to properly copy embedded art, known ffmpeg bug
             # -y on the output file to force an overwrite if needed
             command = [
-                "ffmpeg", "-hide_banner",
+                "ffmpeg",
+                "-hide_banner",
                 "-i", file_path,
                 "-filter:a", (f"volume={adjustment:.2f}dB"),
                 "-c:v", "copy",
@@ -578,7 +596,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def rms_normalize_file(self, file_path, show_spinner=True):
+    def rms_normalize_file(self, file_path: str, show_spinner: bool = True) -> None:
         '''
         @brief RMS normalizes audio file level.
 
@@ -654,7 +672,8 @@ class AudioNormalization():
             # -id3v2_version 3 required to properly copy embedded art, known ffmpeg bug
             # -y on the output file to force an overwrite if needed
             command = [
-                "ffmpeg", "-hide_banner",
+                "ffmpeg",
+                "-hide_banner",
                 "-i", file_path,
                 "-filter:a", (f"volume={adjustment:.2f}dB"),
                 "-c:v", "copy",

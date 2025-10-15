@@ -242,7 +242,7 @@ class AudioMetadata():
             return id3_tags
 
 
-    def convert_file(self, file_path: str, show_spinner=True) -> None:
+    def convert_file(self, file_path: str, show_spinner: bool = True) -> None:
         '''
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file, using ffmpeg directly.
 
@@ -388,7 +388,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def convert_walk(self, start_path: str, file_pattern: str, show_spinner=True) -> None:
+    def convert_walk(self, start_path: str, file_pattern: str, show_spinner: bool = True) -> None:
         '''
         @brief Converts all audio files found in specified path to mp3 format.
 
@@ -809,7 +809,7 @@ class AudioMetadata():
             return metadata_type
 
 
-    def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe=False) -> None:
+    def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe: bool = False) -> None:
         '''
         @brief Gets tags for audio files and saves to file.
 
