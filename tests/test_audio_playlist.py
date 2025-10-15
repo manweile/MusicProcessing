@@ -28,6 +28,9 @@ gc.enable()
 EXPECTED_M3U = os.path.join(TESTS_PATH, "expected.m3u")
 GENERATED_M3U = os.path.join(GENERATED_PATH, "test.m3u")
 
+## @var playlist
+# @brief instance of AudioPlaylist class
+# @details used for accessing class functionality
 playlist = AudioPlaylist()
 
 

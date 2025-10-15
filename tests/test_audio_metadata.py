@@ -46,7 +46,9 @@ from src.audio_info import AudioMetadata
 
 gc.enable()
 
-# instantiate classes here
+## @var metadata
+# @brief instance of AudioMetadata class
+# @details used for accessing class functionality
 metadata = AudioMetadata()
 
 

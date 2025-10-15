@@ -33,6 +33,9 @@ from src.audio_normalize import AudioNormalization
 
 gc.enable()
 
+## @var normalization
+# @brief instance of AudioNormalization class
+# @details used for accessing class functionality
 normalization = AudioNormalization()
 
 

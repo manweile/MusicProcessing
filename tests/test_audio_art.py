@@ -30,6 +30,9 @@ from src.audio_info import AudioArt
 
 gc.enable()
 
+## @var art
+# @brief instance of AudioArt class
+# @details used for accessing class functionality
 art = AudioArt()
 
 

@@ -27,11 +27,13 @@ from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
 
-# instantiate classes here
+## @var subprocess_utils
+# @brief instance of SubprocessUtilities class
+# @details used for accessing class functionality
 subprocess_utils = SubprocessUtilities()
 
 
-def mock_communicate_with_error():
+def mock_communicate_with_error() -> tuple:
     '''
     @brief Simulates a communicate() call that fails during decoding.
     '''
@@ -173,6 +175,7 @@ class TestSubprocessUtilities(TestCase):
         @brief Tests asynchronous Popen execution of command throws UnicodeDecodeError.
         '''
 
+        file_path = TEST_MP3_CRUSH
         # from metadata.get_media_info,
         # calls popen_pipe with an ffprobe command to get all media info from media file
         command = [
@@ -180,7 +183,7 @@ class TestSubprocessUtilities(TestCase):
             "-v", "error",
             "-show_format",
             "-show_streams",
-            TEST_MP3_CRUSH
+            file_path
         ]
 
         mock_process_instance = Mock()
