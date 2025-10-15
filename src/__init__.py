@@ -31,17 +31,10 @@ ASF_TYPE = "ASF"
 # @details use this when working with os library
 AUDIO_EXTS = [".mp3", ".m4a", ".wma"]
 
-# @todo no need for list, use single constants MP3_FILE, M4A_file, ASF_FILE instead
 ## @var AUDIO_FILES
 # @brief audio file type to mutagen class mapping
 # @details use this when working with mutagen library
 AUDIO_FILES = ["MP3", "MP4", "ASF"]
-
-# @todo remove. not needed.
-## @var AUDIO_TYPES
-# @brief audio file types in my collection
-# @details use this when you just need the type
-AUDIO_TYPES = ["mp3", "m4a", "wma"]
 
 ## @var CSV_FILES
 # @brief final part of csv files directory path
@@ -149,7 +142,7 @@ WMA_EXT = ".wma"
 # @details In modules needing the error class, add 'from src.errors import <error>'
 __all__ = [
     "ASF_TYPE",
-    "AUDIO_EXTS", "AUDIO_FILES", "AUDIO_TYPES",
+    "AUDIO_EXTS", "AUDIO_FILES",
     "CSV_DIR", "CSV_EXT",
     "ERROR_LOG_FORMAT",
     "LOG_DIR", "LOG_EXT",
