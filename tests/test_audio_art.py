@@ -20,7 +20,7 @@ from subprocess import CalledProcessError
 from unittest import TestCase
 from unittest.mock import Mock, patch
 # local module constants
-from src import AUDIO_EXTS, FOLDER_ART, PLAYLIST_EXTS
+from src import FOLDER_ART, MP3_EXT, PLAYLIST_EXTS
 from src import UTF8
 from tests import TEST_M3U
 from tests import TEST_M4A_DAVIS, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_NO_TAG, TEST_WMA_HOLIDAY, TEST_WMA_JOHN
@@ -54,10 +54,6 @@ class TestAudioArt(TestCase):
 
         # audio source files for walk tests
         cls.src_file_paths = [TEST_M4A_DAVIS, TEST_MP3_CRUSH, TEST_WMA_JOHN]
-
-        # test patterns
-        cls.m3u_pattern = PLAYLIST_EXTS[0]
-        cls.mp3_pattern = AUDIO_EXTS[0]
 
         # results files
         cls.mp3_result = os.path.join(cls.prepped, "Crush", "Here", FOLDER_ART)
@@ -301,7 +297,7 @@ class TestAudioArt(TestCase):
         @details Happy path test with a file pattern.
         '''
 
-        art.extract_walk(self.prepped, self.mp3_pattern)
+        art.extract_walk(self.prepped, MP3_EXT)
 
         jpg_exists = os.path.exists(self.mp3_result)
         self.assertTrue(jpg_exists)
@@ -312,10 +308,10 @@ class TestAudioArt(TestCase):
         #brief Test try extracting album art with invalid file pattern.
         '''
 
-        log_msg = f"Pattern {self.m3u_pattern} is not for a valid audio file"
+        log_msg = f"Pattern {PLAYLIST_EXTS[0]} is not for a valid audio file"
 
         with self.assertLogs() as captured:
-            art.extract_walk(self.prepped, self.m3u_pattern)
+            art.extract_walk(self.prepped, PLAYLIST_EXTS[0])
 
         self.assertEqual(len(captured.records), 1)
         self.assertEqual(captured.records[0].getMessage(), log_msg)
