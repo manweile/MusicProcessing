@@ -116,9 +116,9 @@ class TestSubprocessUtilities(TestCase):
         self.assertTrue(cm.exception.args[0], err_msg)
 
 
-    def test_get_media_info_invalid_data(self):
+    def test_popen_pipe_ffprobe_invalid_data(self):
         '''
-        @brief Test trying to get media info invalid from mp3 file.
+        @brief Test trying to get ffprobe media info from invalid mp3 file throws RuntimeError.
         '''
 
         file_path = os.path.join(TESTS_PATH, "No_audio_Crush-Live.mp3")
