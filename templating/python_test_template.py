@@ -28,7 +28,7 @@ from src import MUSIC_TLD
 # from src import FOLDER_ART
 # from src import PLAYLIST_EXTS
 # from src.generated_files import GENERATED_FILES
-from tests import TESTS_PATH
+from tests import TESTS_PATH, TESTS_TLD
 # local module errors
 # from src.errors import JSONOutputError
 # from src.errors import MusicProcessingError
@@ -44,15 +44,41 @@ from tests import TESTS_PATH
 
 gc.enable()
 
-# instantiate module levels vars here
-TESTS_TLD = os.path.join(TESTS_PATH, MUSIC_TLD)
-
 # instantiate classes here
+
+## @var art
+# @brief instance of AudioArt class
+# @details used for accessing class functionality
 # art = AudioArt()
+
+## @var directory
+# @brief instance of DirectoryProcessing class
+# @details used for accessing class functionality
 # directory = DirectoryProcessing()
+
+## @var metadata
+# @brief instance of AudioMetadata class
+# @details used for accessing class functionality
 # metadata = AudioMetadata()
+
+## @var normalization
+# @brief instance of AudioNormalization class
+# @details used for accessing class functionality
 # normalization = AudioNormalization()
+
+## @var playlist
+# @brief instance of AudioPlaylist class
+# @details used for accessing class functionality
 # playlist = AudioPlaylist()
+
+## @var utilities
+# @brief instance of AudioUtilities class
+# @details used for accessing class functionality
+# utilities = AudioUtilities()
+
+## @var subprocess_utils
+# @brief instance of SubprocessUtilities class
+# @details used for accessing class functionality
 # subprocess_utils = SubprocessUtilities()
 
 
@@ -60,6 +86,44 @@ class ${class_name}(TestCase):
     \'\'\'
     @brief Tests ${class_brief} class functions.
     \'\'\'
+
+    @classmethod
+    def setUpClass(cls):
+        '''
+        @brief Initialize data for test suite.
+
+        @details These datums are used throughout class and only need init once.
+        '''
+
+
+    @classmethod
+    def tearDownClass(cls):
+        '''
+        @brief Cleans up class datums.
+        '''
+
+        pass
+
+
+    def setUp(self):
+        '''
+        @brief Sets up before individual tests.
+
+        @details Does setup that is required before individual tests.
+        '''
+
+        pass
+
+
+    def tearDown(self):
+        '''
+        @brief Cleans up after individual tests.
+
+        @details Does clean that is required after every test.
+        '''
+
+        pass
+
 
     def ${def_name}(self):
         \'\'\'
