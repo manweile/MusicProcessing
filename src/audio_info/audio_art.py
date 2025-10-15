@@ -40,14 +40,32 @@ from .audio_metadata import AudioMetadata
 
 gc.enable()
 
+## @var logger
+# @brief the logger instance for module
+# @details sets the logger name to module name
 logger = logging.getLogger(__name__)
+
+## @var basename
+# @brief name for logger file handler log file
+# @details gets the module file name
 basename = os.path.basename(__file__)
+
 add_module_handler(logger, basename)
 
+## @var metadata
+# @brief instance of AudioMetadata class
+# @details used for accessing class functionality
 metadata = AudioMetadata()
 normalization = AudioNormalization()
+
+## @var subprocess_utils
+# @brief instance of SubprocessUtilities class
+# @details used for accessing class functionality
 subprocess_utils = SubprocessUtilities()
 
+## @var ALBUM_ART
+# @brief Album art directory for compilation albums
+# @details used for setting album art
 ALBUM_ART = "AlbumArt"
 
 
@@ -56,7 +74,7 @@ class AudioArt():
     @brief Defines the base art processing class used by project.
     '''
 
-    def __init__(self):
+    def __init__(self) -> None:
         '''
         @brief Initializes the AudioArt class.
 
@@ -68,7 +86,7 @@ class AudioArt():
         pass
 
 
-    def __unpack_asf_image(self, data):
+    def __unpack_asf_image(self, data: bytearray) -> tuple:
         '''
         @brief Unpack image data from a WM/Picture tag.
 
@@ -85,6 +103,8 @@ class AudioArt():
         '''
 
         try:
+            unpacked = None
+
             r'''
             <:little-endian byte order, b: signed char (1 byte), i: signed int (4 bytes)
             unpacks first 5 bytes in tuple where type is C signed char (1 byte)/Python integer and size is C signed int (4 bytes)/Python integer
@@ -115,7 +135,7 @@ class AudioArt():
             pos += 2
             image_data = data[pos:pos + size]
 
-            return (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
+            unpacked = (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
 
         except struct.error as s_error:
             logger.error("Struct unpacking from error", exc_info=True)
@@ -126,9 +146,11 @@ class AudioArt():
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} unpacking asf image from tag data", stack_info=True)
             raise e_error
+        else:
+            return unpacked
 
 
-    def __write_data(self, file_path, image_data):
+    def __write_data(self, file_path, image_data: bytearray):
         '''
         @brief Writes image data for audio file to separate jpeg file.
 
@@ -160,7 +182,7 @@ class AudioArt():
             raise e_error
 
 
-    def extract_album_art(self, file_path):
+    def extract_album_art(self, file_path: str) -> None:
         '''
         @brief Extract and save embedded album art.
 
@@ -219,7 +241,7 @@ class AudioArt():
             raise e_error
 
 
-    def extract_asf_art(self, file_path):
+    def extract_asf_art(self, file_path: str) -> None:
         '''
         @brief Extracts cover art from wma files.
 
@@ -250,7 +272,7 @@ class AudioArt():
             raise e_error
 
 
-    def extract_ffmpeg_art(self, file_path):
+    def extract_ffmpeg_art(self, file_path: str) -> None:
         '''
         @brief Extracts and saves embedded album art.
 
@@ -293,7 +315,7 @@ class AudioArt():
             raise e_error
 
 
-    def extract_m4a_art(self, file_path):
+    def extract_m4a_art(self, file_path: str) -> None:
         '''
         @brief Extracts cover art from m4a files
 
@@ -330,7 +352,7 @@ class AudioArt():
             raise e_error
 
 
-    def extract_mp3_art(self, file_path):
+    def extract_mp3_art(self, file_path: str) -> None:
         '''
         @brief Extracts cover art from mp3 files.
 
@@ -360,7 +382,7 @@ class AudioArt():
             raise e_error
 
 
-    def extract_walk(self, start_path, file_pattern):
+    def extract_walk(self, start_path: str, file_pattern: str) -> None:
         '''
         @brief Extracts all embedded album art from audio files.
 
@@ -415,7 +437,7 @@ class AudioArt():
             raise e_error
 
 
-    def has_video_stream(self, file_path):
+    def has_video_stream(self, file_path: str) -> bool:
         '''
         @brief Checks if an audio file has a video stream.
 
@@ -463,7 +485,7 @@ class AudioArt():
             return has_stream
 
 
-    def set_album_art(self, input_path):
+    def set_album_art(self, input_path: str) -> None:
         '''
         @brief Sets album art file for an album directory.
 
