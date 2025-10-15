@@ -323,7 +323,6 @@ class AudioMetadata():
                 tags = None
 
             # get the input file info - want bitrate so can preserve the quality in exported file
-            # @todo look at using get_bit_rate instead
             media_info = self.get_media_info(file_path)
             bitrate = media_info['bit_rate']
 
@@ -335,7 +334,8 @@ class AudioMetadata():
             # -id3v2_version 3        # known bug have to specify id3v2 version
             # -b:a 128198             # ffmpeg will downgrade bitrate if you don't set it
             command = [
-                "ffmpeg", "-hide_banner",
+                "ffmpeg",
+                "-hide_banner",
                 "-i", file_path,
                 "-vn", "-map_metadata", "-1",
                 "-codec:a", "libmp3lame",
