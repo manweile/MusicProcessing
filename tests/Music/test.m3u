@@ -1,0 +1,31 @@
+#EXTM3U
+#:the os dir sep token in the relative pathing doesn't matter,
+#:as the relative paths are not read by update function
+
+#:no change, happy path
+#EXTINF:0,Sawyer Fredricks - Shots Fired.mp3
+Sawyer Fredericks\A Good Storm\Sawyer Fredricks - Shots Fired.mp3
+
+#:should update wma to mp3
+#EXTINF:0,Crush-Live.wma
+Crush\Here\Crush-Live.wma
+
+#:should update m4a to mp3
+#EXTINF:0,ABBA-Waterloo.m4a
+Abba\Waterloo\ABBA-Waterloo.m4a
+
+#:should update new artist to The Lord of the Rings
+#EXTINF:0,Annie Lennox - Into the West.mp3
+Annie Lennox\Return of the King\Annie Lennox - Into the West.mp3
+
+#:should update album dir to Devil's Got a new Disguise-The very Best of Aerosmith
+#EXTINF:0,Aerosmith-Dream On.mp3
+Aerosmith\Devil's Got a New Disguise_ The Very Bes\Aerosmith-Dream On.mp3
+
+#:should remove, file not found in tld, then continue
+#EXTINF:0,Daughtry-Home.mp3
+Daughtry\Daughtry-Home.mp3
+
+#:should remove, file not found because of renaming, then continue
+#EXTINF:0,.38 Special-Teacher, Teacher.mp3
+38 Special\Teachers\.38 Special-Teacher, Teacher.mp3

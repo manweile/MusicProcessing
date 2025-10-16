@@ -1,0 +1,56 @@
+using pydub to convert audio:
+call from_file with audio file you want to convert
+this creates a temp wav file that has it's data stored in audio segment object.
+from_file function call:
+ffmpeg -y -i /home/gerald/Music/Crush/Here/Crush-Live.mp3 -acodec pcm_s16le -vn -f wav -
+
+
+export function call with just tags:
+creates a final output file from supplied path_info -> out_f
+starts a seek at first byte
+creates a named temp file -> data
+creates an empty temp wav file from temp file -> wave_data
+gets the wav data from audio segment object -> self._data
+with named temp file "data" opens a wave file -> wave_data
+writes the self._data wav data to the wave_data
+closes wave_data
+creates another named temp file for output -> output
+update ffmpeg command string with data.name as wav format input file
+sets default mp3 codec if not supplied in ffmpeg command
+sets bitrate if supplied in ffmpeg command
+walks through simple tags dict if supplied and adds metadata in ffmpeg command
+sets id3 version in ffmpeg command
+sets output format and named temp output file name "output.name" in ffmpeg command
+run subprocess popen with ffmpeg command
+goes to 0 byte of temp out put file "output"
+reads bytes of named temp output file "output" into final output file out_f
+closes named temp file "data"
+unlinks "data.name"
+unlinks "output.name"
+returns "out_f"
+
+ffmpeg
+-y
+-f wav -i /tmp/tmpjt82pnha
+-b:a 129156
+-metadata TALB=Here -metadata TPE2=Crush -metadata TPE1=Crush -metadata TCOM=Paul Lamb -metadata TPOS=1/1 -metadata TCON=Pop -metadata TPUB=Sonic Records -metadata TIT2=Live -metadata TRCK=1/12 -metadata TMED=CD -metadata TYER=2002 -metadata TCMP=0
+-id3v2_version 3
+-f mp3 /tmp/tmpy7xag0x5
+
+export function call with cover and tags:
+ffmpeg -y -f wav -i /tmp/tmpao_1w84l
+-i /home/gerald/Music/Crush/Here/Folder.jpg
+-map 0 -map 1 -c:v mjpeg -b:a 129156
+-metadata TALB=Here -metadata TPE2=Crush -metadata TPE1=Crush -metadata TCOM=Paul Lamb -metadata TPOS=1/1 -metadata TCON=Pop -metadata TPUB=Sonic Records -metadata TIT2=Live -metadata TRCK=1/12 -metadata TMED=CD -metadata TYER=2002 -metadata TCMP=0
+-id3v2_version 3 -f mp3 /tmp/tmp7x93x8kw
+
+
+https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg
+
+this copied text metadata and embedded album art!!
+F:\PreppedMusic\Elton John\Goodbye Yellow Brick Road\
+ffmpeg -i '.\Elton John-Saturday Night''s Alright for Fighting.wma' -map 0 -c:v copy -id3v2_version 3 -ab 128k '.\Elton John-Saturday Night''s Alright for Fighting.mp3' -y
+
+the -map 0 was needed to copy text metadata - proven empirically
+the -c:v copy  needing -id3v2_version 3 is already known bug to copy embedded art
+Conclusion - might not need pydub at all!

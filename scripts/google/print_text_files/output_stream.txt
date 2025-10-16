@@ -1,0 +1,5 @@
+{   'age': 25,
+    'city': 'London',
+    'details': {'company': 'Creative Studio', 'occupation': 'Designer'},
+    'hobbies': ['painting', 'gaming'],
+    'name': 'Bob'}

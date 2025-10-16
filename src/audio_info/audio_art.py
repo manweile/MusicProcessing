@@ -10,32 +10,66 @@
 import fnmatch
 import gc
 import json
+import logging
 import os
 import shutil
 import struct
-from pathlib import Path
 from json import JSONDecodeError
+from os import strerror
+from pathlib import Path
 
 # third party modules
 from mutagen.asf import ASF
 from mutagen.id3 import ID3
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen._util import MutagenError
 
-# local modules
-from src import _AUDIO_EXTS
+# local module methods
+from src import add_module_handler
+# local module constants
+from src import AUDIO_EXTS
+from src import FOLDER_ART
+from src import M4A_EXT, MP3_EXT, WMA_EXT
+from src.generated_files import GENERATED_PATH
+# local module classes
 from src.audio_normalize import AudioNormalization
-from src.generated_files import generated_files
+from src.subprocess_utils import SubprocessUtilities
+# relative import so don't get circular import error
+from .audio_metadata import AudioMetadata
 
 gc.enable()
 
-_ALBUM_ART = "AlbumArt"
-_ASF = "ASF"
-_FOLDER_ART = "Folder.jpg"
-_MP3 = "MP3"
-_MP4 = "MP4"
+## @var logger
+# @brief the logger instance for module
+# @details sets the logger name to module name
+logger = logging.getLogger(__name__)
 
+## @var basename
+# @brief name for logger file handler log file
+# @details gets the module file name
+basename = os.path.basename(__file__)
+
+add_module_handler(logger, basename)
+
+## @var metadata
+# @brief instance of AudioMetadata class
+# @details used for accessing class functionality
+metadata = AudioMetadata()
+
+# @brief instance of AudioNormalization class
+# @details used for accessing class functionality
 normalization = AudioNormalization()
+
+## @var subprocess_utils
+# @brief instance of SubprocessUtilities class
+# @details used for accessing class functionality
+subprocess_utils = SubprocessUtilities()
+
+## @var ALBUM_ART
+# @brief Album art directory for compilation albums
+# @details used for setting album art
+ALBUM_ART = "AlbumArt"
 
 
 class AudioArt():
@@ -43,7 +77,7 @@ class AudioArt():
     @brief Defines the base art processing class used by project.
     '''
 
-    def __init__(self):
+    def __init__(self) -> None:
         '''
         @brief Initializes the AudioArt class.
 
@@ -55,19 +89,25 @@ class AudioArt():
         pass
 
 
-    def __unpack_asf_image(self, data):
+    def __unpack_asf_image(self, data: bytearray) -> tuple:
         '''
         @brief Unpack image data from a WM/Picture tag.
 
-        @details https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243
+        @details https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243.
         @details This function is treated as "untrusted" and could throw all manner of exceptions (out-of-bounds, etc.).
 
+        @param data {bytearray} The byte attribute data from asf audio WM/Picture tag.
         @return (mime, image_data, type, description) ({str}, {bytes}, {int}, {str}) Tuple containing the MIME type, the raw image data, a type indicator, and
         the image's description.
+
+        @exception struct.error A struct module error occurred.
+        @exception UnicodeDecodeError An illegal sequence of str characters occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
+            unpacked = None
+
             r'''
             <:little-endian byte order, b: signed char (1 byte), i: signed int (4 bytes)
             unpacks first 5 bytes in tuple where type is C signed char (1 byte)/Python integer and size is C signed int (4 bytes)/Python integer
@@ -98,18 +138,30 @@ class AudioArt():
             pos += 2
             image_data = data[pos:pos + size]
 
-            return (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
+            unpacked = (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
 
-        except Exception as e:
-            raise Exception(f"Exception {e} extracting asf embedded art from tag data")
+        except struct.error as s_error:
+            logger.error("Struct unpacking from error", exc_info=True)
+            raise s_error
+        except UnicodeDecodeError as ud_error:
+            logger.exception("UnicodeDecodeError decoding asf image from tag data", stack_info=True)
+            raise ud_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} unpacking asf image from tag data", stack_info=True)
+            raise e_error
+        else:
+            return unpacked
 
 
-    def __write_data(self, file_path, image_data):
+    def __write_data(self, file_path, image_data: bytearray):
         '''
         @brief Writes image data for audio file to separate jpeg file.
 
         @param file_path {str} The full path to audio file.
         @param image_data {bytearray} The image bytes extracted from audio file.
+
+        @exception BlockingIOError An input/output operation was blocked.
+        @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -117,16 +169,23 @@ class AudioArt():
             if image_data:
                 input_path = Path(file_path)
                 album_path = input_path.parent
-                output_file = os.path.join(album_path, _FOLDER_ART)
+                output_file = os.path.join(album_path, FOLDER_ART)
+
                 with open(output_file, 'wb') as img_file:
                     img_file.write(image_data)
-                print(f"Album art written from {input_path.name} and saved to {album_path}")
 
-        except Exception as e:
-            raise Exception(f"Exception: {e} writing embedded art from {file_path}")
+        except BlockingIOError as bio_error:
+            logger.error(f"BlockingIOError writing image data to {file_path}", exc_info=True)
+            raise bio_error
+        except OSError as os_error:
+            logger.error(f"OSError {(strerror(os_error.errno))} writing data with {file_path}", exc_info=True)
+            raise os_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} writing image data from {file_path}", stack_info=True)
+            raise e_error
 
 
-    def extract_album_art(self, file_path):
+    def extract_album_art(self, file_path: str) -> None:
         '''
         @brief Extract and save embedded album art.
 
@@ -135,6 +194,7 @@ class AudioArt():
         then by metadata art tag (from specific audio file type).
 
         @param file_path {str} The full path to audio file.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -144,46 +204,55 @@ class AudioArt():
 
             # don't need to waste cycles if we have a Folder.jpg from a previous execution
             album_contents = os.listdir(album_path)
-            if _FOLDER_ART in album_contents:
+            if FOLDER_ART in album_contents:
+                logger.info(f"{album_path} has a {FOLDER_ART}")
                 return
 
             # we don't touch non-audio files like m3u etc
             input_file_ext = input_path.suffix
-            if input_file_ext.lower() not in _AUDIO_EXTS:
+            if input_file_ext.lower() not in AUDIO_EXTS:
+                logger.warning(f"{input_path.name} is not an audio file")
                 return
 
-            # file with video stream can use audio type agnostic extraction
+            # ffmpeg extraction is primary method because is file type agnostic,
+            # so long as file has a video stream
             if self.has_video_stream(input_path):
                 self.extract_ffmpeg_art(input_path)
                 return
             else:
-                print(f"No video stream album art present in {file_path}")
+                # info because mutagen check/extract methods may yet work
+                logger.info(f"No video stream album art present in {file_path}")
 
-            # no matter what extraction method, file must have an art tag
-            if self.has_art_tag(input_path):
-                # each audio file type has different extraction method
-                metadata_type = self.get_metadata_type(input_path)
-                if metadata_type == _ASF:
-                    self.extract_asf_art(file_path)
-                elif metadata_type == _MP3:
+            # mutagen extraction is secondary method, because not file type agnostic,
+            # and file must have an art metadata tag
+            if metadata.has_art_tag(input_path):
+                if input_file_ext.lower() == MP3_EXT:
                     self.extract_mp3_art(file_path)
-                elif metadata_type == _MP4:
+                elif input_file_ext.lower() == M4A_EXT:
                     self.extract_m4a_art(file_path)
+                elif input_file_ext.lower() == WMA_EXT:
+                    self.extract_asf_art(file_path)
             else:
-                print(f"No album art present in {file_path}")
+                # warning because by this point,
+                # negative result from both art present checks,
+                # so simply can't extract any art
+                logger.warning(f"No album art present in {file_path}")
                 return
 
-        except Exception as e:
-            raise Exception(f"Exception {e} extracting art from {file_path}")
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} extracting album art from {file_path}", stack_info=True)
+            raise e_error
 
 
-    def extract_asf_art(self, file_path):
+    def extract_asf_art(self, file_path: str) -> None:
         '''
-        @brief Extracts cover art from wma files
+        @brief Extracts cover art from wma files.
 
         @details Input file is expected to have embedded cover art.
 
         @param file_path {str} The full path to audio file.
+
+        @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -197,18 +266,24 @@ class AudioArt():
 
             self.__write_data(file_path, image_data)
 
-        except Exception as e:
-            raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
+        except MutagenError as m_error:
+            # handle mutagen ASF error
+            logger.error(f"MutagenError {m_error} loading {file_path}", exc_info=True)
+            raise m_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} extracting asf art from {file_path}", stack_info=True)
+            raise e_error
 
 
-    def extract_ffmpeg_art(self, file_path):
+    def extract_ffmpeg_art(self, file_path: str) -> None:
         '''
         @brief Extracts and saves embedded album art.
 
         @details Uses ffmpeg and is audio file type agnostic.
-        @details Input file must have a video stream and an art tag.
+        @details Input file must have a video stream.
 
         @param file_path {str} The full path to audio file.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -216,7 +291,7 @@ class AudioArt():
             input_path = Path(file_path)
             album_path = input_path.parent
 
-            output_file = os.path.join(album_path, _FOLDER_ART)
+            output_file = os.path.join(album_path, FOLDER_ART)
 
             # -hide_banner to reduce output clutter
             # -an specifies ignore audio stream
@@ -236,20 +311,22 @@ class AudioArt():
                 output_file, '-y'
             ]
 
-            _ = normalization.subprocess_run(command)
-            print(f"FFMPEG extracted album art from {input_path.name} and saved to {album_path}")
+            _ = subprocess_utils.subprocess_run(command)
 
-        except Exception as e:
-            raise Exception(f"Exception {e} extracting art from {input_path}")
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} using ffmpeg to extract art from {input_path}", stack_info=True)
+            raise e_error
 
 
-    def extract_m4a_art(self, file_path):
+    def extract_m4a_art(self, file_path: str) -> None:
         '''
         @brief Extracts cover art from m4a files
 
         @details Input file is expected to have cover art.
 
         @param file_path {str} The full path to audio file.
+
+        @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -269,17 +346,24 @@ class AudioArt():
 
             self.__write_data(file_path, image_data)
 
-        except Exception as e:
-            raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
+        except MutagenError as m_error:
+            # handle mutagen ASF error
+            logger.error(f"MutagenError {m_error} loading {file_path}", exc_info=True)
+            raise m_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} extracting m4a art from {file_path}", stack_info=True)
+            raise e_error
 
 
-    def extract_mp3_art(self, file_path):
+    def extract_mp3_art(self, file_path: str) -> None:
         '''
-        @brief Extracts cover art from wma files.
+        @brief Extracts cover art from mp3 files.
 
         @details Input file is expected to have cover art.
 
         @param file_path {str} The full path to audio file.
+
+        @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -292,11 +376,16 @@ class AudioArt():
 
             self.__write_data(file_path, image_data)
 
-        except Exception as e:
-            raise Exception(f"Exception: {e} extracting embedded art from {file_path}")
+        except MutagenError as m_error:
+            # handle mutagen ASF error
+            logger.error(f"MutagenError {m_error} loading {file_path}", exc_info=True)
+            raise m_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} extracting mp3 embedded art from {file_path}", stack_info=True)
+            raise e_error
 
 
-    def extract_walk(self, start_path, file_pattern):
+    def extract_walk(self, start_path: str, file_pattern: str) -> None:
         '''
         @brief Extracts all embedded album art from audio files.
 
@@ -304,11 +393,17 @@ class AudioArt():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         input_file_ext = None
 
         try:
+            if file_pattern and file_pattern not in AUDIO_EXTS:
+                logger.warning(f"Pattern {file_pattern} is not for a valid audio file")
+                return
+
             input_path = Path(start_path)
 
             for dir_path, _, file_names in os.walk(input_path):
@@ -319,29 +414,33 @@ class AudioArt():
 
                 # don't need to waste cycles if we have a Folder.jpg from a previous iteration
                 dir_contents = os.listdir(dir_path)
-                if _FOLDER_ART in dir_contents:
+                if FOLDER_ART in dir_contents:
                     continue
 
                 for file in file_names:
                     _, input_file_ext = os.path.splitext(file)
+
                     # we don't touch non-audio files like m3u etc
-                    if input_file_ext.lower() not in _AUDIO_EXTS:
+                    if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
+                    elif file_pattern:
+                        if not fnmatch.fnmatch(input_file_ext.lower(), file_pattern.lower()):
+                            continue
 
-                    if file_pattern and not fnmatch.fnmatch(file, file_pattern.lower()):
-                        continue
-                    else:
-                        input_file_path = os.path.join(dir_path, file)
-                        self.extract_album_art(input_file_path)
+                    input_file_path = os.path.join(dir_path, file)
+                    self.extract_album_art(input_file_path)
 
-        except Exception as e:
+        except Exception as e_error:
             if file_pattern:
-                raise Exception(f"Exception {e} walking {start_path} to extract art from {file_pattern} audio files")
+                exc_msg = f"Exception {type(e_error).__name__} walking {start_path} to extract art from {file_pattern} audio files"
             else:
-                raise Exception(f"Exception {e} walking {start_path} to extract art from audio files")
+                exc_msg = f"Exception {type(e_error).__name__} walking {start_path} to extract art from audio files"
+
+            logger.exception(exc_msg, stack_info=True)
+            raise e_error
 
 
-    def has_video_stream(self, file_path):
+    def has_video_stream(self, file_path: str) -> bool:
         '''
         @brief Checks if an audio file has a video stream.
 
@@ -350,7 +449,8 @@ class AudioArt():
 
         @param file_path {str} The full path to audio file.
         @return has_video {boolean} Returns true if video stream is present, false otherwise.
-        @exception JSONDecodeError as json decoding error.
+
+        @exception JSONDecodeError A json decoding error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -370,7 +470,7 @@ class AudioArt():
                 file_path
             ]
 
-            probe_process = normalization.subprocess_run(command)
+            probe_process = subprocess_utils.subprocess_run(command)
             # ffprobe outputs to stdout, unlike ffmpeg
             probe = json.loads(probe_process.stdout)
 
@@ -378,15 +478,17 @@ class AudioArt():
                 if stream['codec_type'] == 'video':
                     has_stream = True
 
-        except JSONDecodeError as e:
-            raise JSONDecodeError(f"Error: {e} decoding JSON output from ffprobe on audio file: {file_path}")
-        except Exception as e:
-            raise Exception(f"Exception {e} extracting art from {file_path}")
+        except JSONDecodeError as jd_error:
+            logger.error(f"JSONDecodeError on audio file: {file_path}", exc_info=True)
+            raise jd_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} extracting video stream from {file_path}", stack_info=True)
+            raise e_error
+        else:
+            return has_stream
 
-        return has_stream
 
-
-    def set_album_art(self, input_path):
+    def set_album_art(self, input_path: str) -> None:
         '''
         @brief Sets album art file for an album directory.
 
@@ -395,6 +497,7 @@ class AudioArt():
         renames it to album art folder constant and moves it to album directory.
 
         @param input_path {str} The full path to album directory.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -411,7 +514,8 @@ class AudioArt():
                 album_path = Path(dir_path)                                     # Eg. "C:\Music\Albert Collins\Best Of The Blues, Vol. 1
                 album_content = os.listdir(album_path)
 
-                if _FOLDER_ART in album_content:
+                if FOLDER_ART in album_content:
+                    logger.info(f"Found {FOLDER_ART} in {album_path}")
                     continue
 
                 # check in AlbumArt folder if a jpg for album name exists
@@ -419,16 +523,16 @@ class AudioArt():
                 album_jpg = album_dir_name + ".jpg"                             # should be "Best Of The Blues, Vol. 1.jpg"
 
                 # get the album art directory, per the project hierarchy
-                album_art_dir = os.path.join(generated_files, _ALBUM_ART)       # D:\MusicProcessing\src\generated_files\ALbumArt
+                album_art_dir = os.path.join(GENERATED_PATH, ALBUM_ART)       # D:\MusicProcessing\src\generated_files\ALbumArt
                 album_art_dir_content = os.listdir(album_art_dir)
 
                 if album_jpg in album_art_dir_content:
-                    album_art_jpg = os.path.join(album_art_dir, album_jpg)      # D:\MusicProcessing\src\generated_files\ALbumArt\Best Of The Blues, Vol. 1.jpg
-                    folder_jpg = os.path.join(album_path, _FOLDER_ART)          # C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Folder.jpg
+                    album_art_jpg = os.path.join(album_art_dir, album_jpg)     # D:\MusicProcessing\src\generated_files\ALbumArt\Best Of The Blues, Vol. 1.jpg
+                    folder_jpg = os.path.join(album_path, FOLDER_ART)          # C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Folder.jpg
                     shutil.copy(album_art_jpg, folder_jpg)
-                    print(f"Set {album_art_jpg} as {_FOLDER_ART} for {album_path}")
                 else:
-                    print(f"No album art set for {album_path}")
+                    logger.warning(f"No album art set for {album_path}")
 
-        except Exception as e:
-            raise Exception(f"Exception {e} setting album art for {album_path}")
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} setting album art for {input_path}", stack_info=True)
+            raise e_error

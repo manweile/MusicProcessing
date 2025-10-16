@@ -1,0 +1,14 @@
+Found 18 artist directories
+Found 18 album directories
+Found 36 total directories
+Found 15 mp3 files
+Found 2 m4a files
+Found 3 wma files
+Found 20 total audio files
+Found 1 csv files
+Found 5 jpg files
+Found 1 text files
+Found 1 m3u files
+Found 1 unknown type files
+Found 9 non-audio files
+Found 29 total files

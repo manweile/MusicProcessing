@@ -1,0 +1,152 @@
+
+2025-10-04 19:26:02,639 — src.audio_info.audio_playlist — INFO — update_paths:175 — Updated test.m3u
+
+
+2025-10-04 19:26:07,958 — src.audio_info.audio_art — INFO — extract_album_art:180 — /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo has a Folder.jpg
+
+2025-10-04 19:26:08,187 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/Music/Crush/Here/No_tag_Crush-Live.mp3
+
+2025-10-04 19:26:08,418 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma
+
+2025-10-04 19:26:09,480 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/Abba/ABBA-Waterloo.mp3
+
+2025-10-04 19:26:11,531 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/Creedence Clearwater Revival/Creedence Clearwater Revival-Fortunate Son.wma
+
+2025-10-04 19:26:11,763 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3
+
+2025-10-04 19:26:11,967 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/Abba/ABBA-Waterloo.mp3
+
+2025-10-04 19:26:12,574 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/PreppedMusic/NoMetadata/No_tag_Crush-Live.mp3
+
+2025-10-04 19:26:12,961 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Genesis/In Too Deep-I’d Rather Be You
+
+2025-10-04 19:26:12,961 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo
+
+2025-10-04 19:26:12,964 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/The Eagles/Desperado
+
+2025-10-04 19:26:12,985 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Creedence Clearwater Revival/Chronicle, Vol. 1
+
+2025-10-04 19:26:12,985 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/NoMetadata/Here
+
+2025-10-04 19:27:28,771 — src.audio_info.audio_art — INFO — extract_album_art:180 — /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo has a Folder.jpg
+
+2025-10-04 19:27:28,935 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/Music/Crush/Here/No_tag_Crush-Live.mp3
+
+2025-10-04 19:27:29,120 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma
+
+2025-10-04 19:27:31,101 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Genesis/In Too Deep-I’d Rather Be You
+
+2025-10-04 19:27:31,102 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo
+
+2025-10-04 19:27:31,104 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/The Eagles/Desperado
+
+2025-10-04 19:27:31,105 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Creedence Clearwater Revival/Chronicle, Vol. 1
+
+2025-10-04 19:27:31,105 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/NoMetadata/Here
+
+2025-10-04 19:30:19,945 — src.audio_info.audio_art — INFO — extract_album_art:180 — /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo has a Folder.jpg
+
+2025-10-04 19:30:20,110 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/Music/Crush/Here/No_tag_Crush-Live.mp3
+
+2025-10-04 19:30:20,297 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in /home/gerald/MusicProcessing/tests/Music/Billie Holiday/Georgia On My Mind/Billie Holiday-Georgia On My Mind.wma
+
+2025-10-04 19:30:22,250 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Genesis/In Too Deep-I’d Rather Be You
+
+2025-10-04 19:30:22,250 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Abba/Waterloo
+
+2025-10-04 19:30:22,252 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/The Eagles/Desperado
+
+2025-10-04 19:30:22,253 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/Creedence Clearwater Revival/Chronicle, Vol. 1
+
+2025-10-04 19:30:22,254 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in /home/gerald/MusicProcessing/tests/Music/NoMetadata/Here
+
+2025-10-04 19:35:15,059 — src.audio_info.audio_playlist — INFO — update_paths:175 — Updated test.m3u
+
+
+2025-10-04 19:43:03,612 — src.audio_info.audio_playlist — INFO — update_paths:175 — Updated test.m3u
+
+
+2025-10-07 10:26:42,358 — src.audio_info.audio_art — INFO — extract_album_art:180 — D:\MusicProcessing\tests\Music\Abba\Waterloo has a Folder.jpg
+
+2025-10-07 10:26:42,742 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in D:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
+
+2025-10-07 10:26:43,265 — src.audio_info.audio_art — INFO — extract_album_art:196 — No video stream album art present in D:\MusicProcessing\tests\Music\Billie Holiday\Georgia On My Mind\Billie Holiday-Georgia On My Mind.wma
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in D:\MusicProcessing\tests\Music\Abba\Waterloo
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in D:\MusicProcessing\tests\Music\Creedence Clearwater Revival\Chronicle, Vol. 1
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in D:\MusicProcessing\tests\Music\Genesis\In Too Deep-I’d Rather Be You
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in D:\MusicProcessing\tests\Music\NoMetadata\Here
+
+2025-10-07 10:26:46,513 — src.audio_info.audio_art — INFO — set_album_art:483 — Found Folder.jpg in D:\MusicProcessing\tests\Music\The Eagles\Desperado
+
+2025-10-07 10:30:37,077 — src.audio_info.audio_playlist — INFO — update_paths:175 — Updated test.m3u
+
+
+2025-10-07 12:43:19,476 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:47:41,076 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:48:02,648 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:53:27,650 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 16:00:24,449 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 16:02:55,649 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 14:38:23,227 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:477 — removed 1 empty album directories
+
+2025-10-08 14:42:07,149 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:477 — removed 1 empty album directories
+
+2025-10-08 15:39:02,329 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:39:46,038 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:41:29,700 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:46:36,518 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:48:50,241 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:49:42,640 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:08:19,257 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:10:46,451 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:13:36,938 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:14:24,265 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:56:26,692 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 20:29:16,584 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 10:54:06,506 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 10:54:24,157 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:00:55,470 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:01:34,617 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:03:58,121 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:09:42,399 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:13:33,526 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:15:52,412 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:33:47,530 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:34:58,176 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:38:29,481 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:40:51,894 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:41:25,352 — src.dir_processing.directory_processing — INFO — remove_pattern:533 — Deleted: /home/gerald/MusicProcessing/src/generated_files/Music/test.m3u

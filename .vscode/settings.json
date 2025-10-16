@@ -5,9 +5,8 @@
     ],
     "files.trimTrailingWhitespace": true,
     "python.autoComplete.addBrackets": true,
-    "python.testing.promptToConfigure": false,
     "python.testing.pytestEnabled": false,
-    "python.testing.unittestEnabled": false,
+    "python.testing.unittestEnabled": true,
     "python.testing.nosetestsEnabled": false,
     "idf.pythonInstallPath": "C:\\Users\\gmanw\\.espressif\\tools\\idf-python\\3.11.2\\python.exe",
     "cSpell.words": [
@@ -67,6 +66,7 @@
         "inputfile",
         "intlimits",
         "ismap",
+        "jsonlogger",
         "labelfontname",
         "libclang",
         "LOGFILE",
@@ -127,5 +127,12 @@
         "vhdl",
         "VHDL",
         "Xapian"
+    ],
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./tests",
+        "-p",
+        "test_*.py"
     ]
 }

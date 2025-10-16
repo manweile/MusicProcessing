@@ -1,0 +1,13 @@
+
+exception: CalledProcessError(183, ['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-'])
+args: (183, ['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-'])
+cmd: ['ffmpeg', '-hide_banner', '-i', '/home/gerald/MusicProcessing/tests/Music/test.m3u', '-filter:a', 'volumedetect', '-f', 'null', '-']
+ooutput: ''
+returncode: 183
+stderr: '[in#0 @ 0x5bf4ad4804c0] Error opening input: Invalid data found when processing input\n
+	Error opening input file /home/gerald/MusicProcessing/tests/Music/test.m3u.\n
+	Error opening input files: Invalid data found when processing input\n'
+stdout: ''
+expected_regex: None
+msg: None
+obj_name: None
