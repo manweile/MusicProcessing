@@ -37,7 +37,9 @@ from src.dir_processing import DirectoryProcessing
 
 gc.enable()
 
-# instantiate classes here
+## @var directory
+# @brief instance of DirectoryProcessing class
+# @details used for accessing class functionality
 directory = DirectoryProcessing()
 
 

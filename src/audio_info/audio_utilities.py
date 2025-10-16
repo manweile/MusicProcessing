@@ -19,7 +19,6 @@ from pathlib import Path
 from src import add_module_handler
 # local module constants
 from src import MP3_EXT, TP
-# local module errors
 # local module classes
 from src.dir_processing import DirectoryProcessing
 from src.audio_normalize import AudioNormalization
@@ -27,13 +26,31 @@ from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
 
-# Configure logging
+## @var logger
+# @brief the logger instance for module
+# @details sets the logger name to module name
 logger = logging.getLogger(__name__)
+
+## @var basename
+# @brief name for logger file handler log file
+# @details gets the module file name
 basename = os.path.basename(__file__)
+
 add_module_handler(logger, basename)
 
+## @var directory
+# @brief instance of DirectoryProcessing class
+# @details used for accessing class functionality
 directory = DirectoryProcessing()
+
+## @var normalization
+# @brief instance of AudioNormalization class
+# @details used for accessing class functionality
 normalization = AudioNormalization()
+
+## @var subprocess_utils
+# @brief instance of SubprocessUtilities class
+# @details used for accessing class functionality
 subprocess_utils = SubprocessUtilities()
 
 
@@ -42,7 +59,7 @@ class AudioUtilities():
     @brief Defines the base audio utilities processing used by project.
     '''
 
-    def __init__(self):
+    def __init__(self) -> None:
         '''
         @brief Initialize the AudioUtilities class.
 
@@ -57,7 +74,7 @@ class AudioUtilities():
     '''
     Normalization utilities
     '''
-    def clip_vol_check_walk(self, tld_path):
+    def clip_vol_check_walk(self, tld_path: str) -> None:
         '''
         @brief walk tld and gets max vol & clip check amount for audio files.
 
@@ -134,7 +151,7 @@ class AudioUtilities():
             raise e_error
 
 
-    def normalize_walk(self, tld_path, norm_type, show_spinner=True):
+    def normalize_walk(self, tld_path: str, norm_type: str, show_spinner: bool = True) -> None:
         '''
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
@@ -153,7 +170,7 @@ class AudioUtilities():
     '''
     Art Utilities
     '''
-    def extract_walk(self, start_path, file_pattern):
+    def extract_walk(self, start_path: str, file_pattern: str) -> None:
         '''
         @brief Extracts all embedded album art from audio files.
 
@@ -161,6 +178,7 @@ class AudioUtilities():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -168,7 +186,7 @@ class AudioUtilities():
         pass
 
 
-    def set_album_art(self, input_path):
+    def set_album_art(self, input_path: str) -> None:
         '''
         @brief Sets album art file for an album directory.
 
@@ -177,6 +195,7 @@ class AudioUtilities():
         renames it to album art folder constant and moves it to album directory.
 
         @param input_path {str} The full path to album directory.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -187,7 +206,7 @@ class AudioUtilities():
     '''
     Metadata utilities
     '''
-    def convert_walk(self, start_path: str, file_pattern: str, show_spinner=True) -> None:
+    def convert_walk(self, start_path: str, file_pattern: str, show_spinner: bool = True) -> None:
         '''
         @brief Converts all audio files found in specified path to mp3 format.
 
@@ -237,7 +256,7 @@ class AudioUtilities():
         pass
 
 
-    def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe=False) -> None:
+    def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe: bool = False) -> None:
         '''
         @brief Gets tags for audio files and saves to file.
 
@@ -273,7 +292,7 @@ class AudioUtilities():
     '''
     Playlist utilities
     '''
-    def update_walk(self, tld_path):
+    def update_walk(self, tld_path: str) -> None:
         '''
         @brief Updates playlists relative pathing.
 
@@ -289,7 +308,7 @@ class AudioUtilities():
     '''
     Directory Utilities
     '''
-    def get_audio_file_list(self, start_path):
+    def get_audio_file_list(self, start_path: str) -> None:
         '''
         @brief Generates a csv containing full path for all audio files.
 
@@ -306,7 +325,7 @@ class AudioUtilities():
         pass
 
 
-    def get_ext_file_list(self, file_ext, start_path):
+    def get_ext_file_list(self, file_ext: str, start_path: str) -> None:
         '''
         @brief Wrapper for function that generates a csv containing full file path for an extension.
 
@@ -323,7 +342,7 @@ class AudioUtilities():
         pass
 
 
-    def remove_empty_album_dir(self, start_path):
+    def remove_empty_album_dir(self, start_path: str) -> None:
         '''
         @brief Removes empty album directories.
 
@@ -340,7 +359,7 @@ class AudioUtilities():
         pass
 
 
-    def remove_pattern(self, start_path, file_pattern):
+    def remove_pattern(self, start_path: str, file_pattern: str) -> None:
         '''
         @brief Removes file matching specified pattern.
 

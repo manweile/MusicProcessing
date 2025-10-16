@@ -15,6 +15,7 @@ import subprocess
 from pathlib import Path
 from subprocess import PIPE
 from subprocess import CalledProcessError
+from subprocess import CompletedProcess
 
 # third party modules
 from yaspin import yaspin
@@ -38,7 +39,7 @@ class SubprocessUtilities():
     @brief Defines the base subprocess utilities processing used by project.
     '''
 
-    def __init__(self):
+    def __init__(self) -> None:
         '''
         @brief Initialize the SubprocessUtilities class.
 
@@ -50,7 +51,7 @@ class SubprocessUtilities():
         pass
 
 
-    def popen_pipe(self, command):
+    def popen_pipe(self, command: str) -> str:
         '''
         @brief Runs command in new process.
 
@@ -74,10 +75,11 @@ class SubprocessUtilities():
             # ffprobe returns via stdout (unlike ffmpeg, which uses stderr)
             stdout_bytes, stderr_bytes = res.communicate()
             stdout = stdout_bytes.decode(UTF8)
+            std_err = stderr_bytes.decode(UTF8)
 
             if res.returncode != 0:
-                logger.error(f"RuntimeError running command {shlex.join(command)}", exc_info=True)
-                raise RuntimeError(f"RuntimeError running command {shlex.join(command)}")
+                logger.error(f"RuntimeError running command {shlex.join(command)} with stderr: {std_err}", exc_info=True)
+                raise RuntimeError(f"RuntimeError running command {shlex.join(command)} with stderr: {std_err}")
 
         except RuntimeError as r_error:
             raise r_error
@@ -91,7 +93,7 @@ class SubprocessUtilities():
             return stdout
 
 
-    def spinner_popen_pipe(self, export_path, command, show_spinner=True):
+    def spinner_popen_pipe(self, export_path: str, command: str, show_spinner: bool = True) -> str:
         '''
         @brief Runs command in new process with option to display a spinner.
 
@@ -162,7 +164,7 @@ class SubprocessUtilities():
             return success_msg
 
 
-    def spinner_subprocess_run(self, command, text):
+    def spinner_subprocess_run(self, command: str, text: str) -> tuple:
         '''
         @brief Runs command in subprocess with a spinner.
 
@@ -207,7 +209,7 @@ class SubprocessUtilities():
             return process, spinner
 
 
-    def subprocess_run(self, command):
+    def subprocess_run(self, command: str) -> CompletedProcess:
         '''
         @brief Runs command in subprocess.
 

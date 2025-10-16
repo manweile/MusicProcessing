@@ -20,7 +20,9 @@ from src.audio_info import AudioUtilities
 
 gc.enable()
 
-# normalization = AudioNormalization()
+## @var utilities
+# @brief instance of AudioUtilities class
+# @details used for accessing class functionality
 utilities = AudioUtilities()
 
 

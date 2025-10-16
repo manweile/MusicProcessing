@@ -46,7 +46,9 @@ from src.audio_info import AudioMetadata
 
 gc.enable()
 
-# instantiate classes here
+## @var metadata
+# @brief instance of AudioMetadata class
+# @details used for accessing class functionality
 metadata = AudioMetadata()
 
 
@@ -70,9 +72,7 @@ class TestAudioMetadata(TestCase):
         # directory for "walk" type tests: D:\MusicProcessing\tests\PreppedMusic
         cls.prepped = os.path.join(TESTS_PATH, "PreppedMusic")
 
-        # test patterns
-        cls.m3u_pattern = PLAYLIST_EXTS[0]
-        cls.mp3_pattern = MP3_EXT
+        cls.txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
 
         # audio source files for walk tests
         cls.src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_WMA_CCR]
@@ -198,7 +198,7 @@ class TestAudioMetadata(TestCase):
                 'comment': 'Cover (front)', 'title': 'Live', 'artist': 'Crush', 'track': '1/12', 'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
                 'MusicBrainz Release Track Id': '2475137d-6745-3951-a361-d4c29798f5d1', 'album_artist': 'Crush', 'TSO2': 'Crush', 'artist-sort': 'Crush', 'composer': 'Paul Lamb',
                 'SCRIPT': 'Latn', 'publisher': 'Sonic Records', 'ARTISTS': 'Crush', 'ASIN': 'B000065PP6', 'originalyear': '2002', 'BARCODE': '627915092229',
-                'CATALOGNUMBER': '2 50922', 'MusicBrainz Album Type': 'album', 'MusicBrainz Album Status': 'official','MusicBrainz Album Release Country': 'CA',
+                'CATALOGNUMBER': '2 50922', 'MusicBrainz Album Type': 'album', 'MusicBrainz Album Status': 'official', 'MusicBrainz Album Release Country': 'CA',
                 'Acoustid Id': '4fdf7757-ba58-4a4b-a1df-1ad4d102a474', 'MusicBrainz Album Id': '18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6',
                 'MusicBrainz Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f', 'MusicBrainz Album Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f',
                 'MusicBrainz Release Group Id': 'a7927f70-2431-3a58-b7ae-48576808cec1', 'date': '2002'},
@@ -222,17 +222,6 @@ class TestAudioMetadata(TestCase):
         elif os.environ.get('GITHUB_ACTIONS') == 'true':
             cls.media_dict["filename"] = ci_linux
 
-        # no matter the os/environment, inner dict TAG is always same
-        cls.tag_dict = {
-            'title': 'Live', 'artist': 'Crush', 'track': '1/12', 'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
-            'MusicBrainz Release Track Id': '2475137d-6745-3951-a361-d4c29798f5d1', 'album_artist': 'Crush', 'TSO2': 'Crush', 'artist-sort': 'Crush', 'composer': 'Paul Lamb',
-            'SCRIPT': 'Latn', 'publisher': 'Sonic Records', 'ARTISTS': 'Crush', 'ASIN': 'B000065PP6', 'originalyear': '2002', 'BARCODE': '627915092229',
-            'CATALOGNUMBER': '2 50922', 'MusicBrainz Album Type': 'album', 'MusicBrainz Album Status': 'official', 'MusicBrainz Album Release Country': 'CA',
-            'Acoustid Id': '4fdf7757-ba58-4a4b-a1df-1ad4d102a474', 'MusicBrainz Album Id': '18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6',
-            'MusicBrainz Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f', 'MusicBrainz Album Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f',
-            'MusicBrainz Release Group Id': 'a7927f70-2431-3a58-b7ae-48576808cec1', 'date': '2002'
-        }
-
         cls.id3_input_tags = {
             "TALB": "Waterloo",
             "TPE2": "ABBA",
@@ -245,46 +234,6 @@ class TestAudioMetadata(TestCase):
             "TYER": "1900"
         }
         cls.id3_date_values = set(["1962", "1963"])
-
-        cls.m4a_mapped = {
-            'TALB': 'Desperado',
-            'TPE2': 'Eagles',
-            'TPE1': 'Eagles',
-            'TCOM': 'Don Henley/Glenn Frey',
-            'TCOP': '1973 Asylum Records',
-            'TPOS': '1/1',
-            'TCON': 'Rock',
-            'TPUB': 'Asylum Records',
-            'TIT2': 'Desperado',
-            'TRCK': '5/11',
-            'TYER': '1973'
-        }
-
-        cls.mp3_mapped = {
-            "TALB": "Waterloo",
-            "TPE2": "ABBA",
-            "TPE1": "ABBA",
-            "TCOM": "Benny Andersson/Björn Ulvaeus/Stig Anderson",
-            "TCON": "Pop",
-            "TPUB": "Polydor",
-            "TIT2": "Waterloo",
-            "TRCK": "1",
-            "TYER": "1963",
-            "TPOS": "1/1"
-        }
-
-        cls.wma_mapped = {
-            'TALB': 'Chronicle, Vol. 1',
-            'TPE2': 'Creedence Clearwater Revival',
-            'TPE1': 'Creedence Clearwater Revival',
-            'TCOM': 'John Fogerty',
-            'TCON': 'Classic Rock',
-            'TPUB': 'Fantasy',
-            'TIT2': 'Fortunate Son',
-            'TRCK': 9,
-            'TYER': '1976',
-            'TPOS': '1/1'
-        }
 
 
     @classmethod
@@ -349,7 +298,7 @@ class TestAudioMetadata(TestCase):
         no_metadata = TEST_MP3_NO_METADATA
         metadata.convert_file(no_metadata, show_spinner=False)
 
-        audio_file = os.path.join(GENERATED_PATH, MUSIC_TLD, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
+        audio_file = os.path.join(self.norm_path, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
         audio_exists = os.path.exists(audio_file)
         self.assertTrue(audio_exists)
 
@@ -377,7 +326,7 @@ class TestAudioMetadata(TestCase):
         @details Happy path test with a file pattern.
         '''
 
-        metadata.convert_walk(self.converted, self.mp3_pattern, show_spinner=False)
+        metadata.convert_walk(self.converted, MP3_EXT, show_spinner=False)
 
         audio_exists = os.path.exists(self.mp3_result)
         self.assertTrue(audio_exists)
@@ -388,10 +337,10 @@ class TestAudioMetadata(TestCase):
         #brief Test try converting invalid file pattern to mp3 format.
         '''
 
-        log_msg = f"Pattern {self.m3u_pattern} is not for a valid audio file"
+        log_msg = f"Pattern {PLAYLIST_EXTS[0]} is not for a valid audio file"
 
         with self.assertLogs() as captured:
-            metadata.convert_walk(self.converted, self.m3u_pattern, show_spinner=False)
+            metadata.convert_walk(self.converted, PLAYLIST_EXTS[0], show_spinner=False)
 
         self.assertEqual(len(captured.records), 1)
         self.assertEqual(captured.records[0].getMessage(), log_msg)
@@ -517,9 +466,8 @@ class TestAudioMetadata(TestCase):
         # use the ConvertedMusic dir
         metadata.get_media_info_walk(self.converted, None)
 
-        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_media_info_walk" + RESULT_EXT
-        txt_path = os.path.join(txt_dir, txt_filename)
+        txt_path = os.path.join(self.txt_dir, txt_filename)
 
         output_exists = os.path.exists(txt_path)
         self.assertTrue(output_exists)
@@ -541,9 +489,8 @@ class TestAudioMetadata(TestCase):
         # use the ConvertedMusic dir
         metadata.get_media_info_walk(self.converted, PLAYLIST_EXTS[0])
 
-        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_media_info_walk" + RESULT_EXT
-        txt_path = os.path.join(txt_dir, txt_filename)
+        txt_path = os.path.join(self.txt_dir, txt_filename)
         output_exists = os.path.exists(txt_path)
         file_size = os.path.getsize(txt_path)
 
@@ -559,9 +506,8 @@ class TestAudioMetadata(TestCase):
         # use the ConvertedMusic dir
         metadata.get_media_info_walk(self.converted, MP3_EXT)
 
-        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_media_info_walk" + RESULT_EXT
-        txt_path = os.path.join(txt_dir, txt_filename)
+        txt_path = os.path.join(self.txt_dir, txt_filename)
         output_exists = os.path.exists(txt_path)
 
         self.assertTrue(output_exists)
@@ -578,9 +524,20 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting media tags.
         '''
 
+        # no matter the os/environment, inner dict TAG is always same
+        tag_dict = {
+            'title': 'Live', 'artist': 'Crush', 'track': '1/12', 'album': 'Here', 'disc': '1/1', 'genre': 'Pop', 'TMED': 'CD', 'TORY': '2002',
+            'MusicBrainz Release Track Id': '2475137d-6745-3951-a361-d4c29798f5d1', 'album_artist': 'Crush', 'TSO2': 'Crush', 'artist-sort': 'Crush', 'composer': 'Paul Lamb',
+            'SCRIPT': 'Latn', 'publisher': 'Sonic Records', 'ARTISTS': 'Crush', 'ASIN': 'B000065PP6', 'originalyear': '2002', 'BARCODE': '627915092229',
+            'CATALOGNUMBER': '2 50922', 'MusicBrainz Album Type': 'album', 'MusicBrainz Album Status': 'official', 'MusicBrainz Album Release Country': 'CA',
+            'Acoustid Id': '4fdf7757-ba58-4a4b-a1df-1ad4d102a474', 'MusicBrainz Album Id': '18f635aa-dc20-4fbf-a3f3-d63de3bd0fb6',
+            'MusicBrainz Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f', 'MusicBrainz Album Artist Id': '6d5088d8-e756-47c4-84ae-bc675dee004f',
+            'MusicBrainz Release Group Id': 'a7927f70-2431-3a58-b7ae-48576808cec1', 'date': '2002'
+        }
+
         media_tags = metadata.get_media_tags(TEST_MP3_CRUSH)
 
-        self.assertDictEqual(media_tags, self.tag_dict)
+        self.assertDictEqual(media_tags, tag_dict)
 
 
     @patch('src.audio_info.audio_metadata.SubprocessUtilities.subprocess_run')
@@ -663,9 +620,8 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting tags for a input pattern
         '''
 
-        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_tags_walk" + RESULT_EXT
-        txt_path = os.path.join(txt_dir, txt_filename)
+        txt_path = os.path.join(self.txt_dir, txt_filename)
 
         metadata.get_tags_walk(self.converted, MP3_EXT, ffprobe=True)
 
@@ -680,9 +636,8 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting ffprobe  tags for audio files.
         '''
 
-        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_tags_walk" + RESULT_EXT
-        txt_path = os.path.join(txt_dir, txt_filename)
+        txt_path = os.path.join(self.txt_dir, txt_filename)
 
         metadata.get_tags_walk(self.converted, None, ffprobe=True)
 
@@ -699,9 +654,8 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting ffprobe  tags for audio files.
         '''
 
-        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_tags_walk" + RESULT_EXT
-        txt_path = os.path.join(txt_dir, txt_filename)
+        txt_path = os.path.join(self.txt_dir, txt_filename)
 
         metadata.get_tags_walk(self.converted, None)
 
@@ -718,9 +672,8 @@ class TestAudioMetadata(TestCase):
         @brief Tests getting an unique set of metadata keys for audio files in specified path.
         '''
 
-        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
         txt_filename = "get_unique_media_keys" + RESULT_EXT
-        txt_path = os.path.join(txt_dir, txt_filename)
+        txt_path = os.path.join(self.txt_dir, txt_filename)
 
         metadata.get_unique_media_keys(TESTS_TLD)
 
@@ -819,10 +772,24 @@ class TestAudioMetadata(TestCase):
         @brief Tests mapping native m4a tags to preferred id3 format.
         '''
 
+        m4a_mapped = {
+            'TALB': 'Desperado',
+            'TPE2': 'Eagles',
+            'TPE1': 'Eagles',
+            'TCOM': 'Don Henley/Glenn Frey',
+            'TCOP': '1973 Asylum Records',
+            'TPOS': '1/1',
+            'TCON': 'Rock',
+            'TPUB': 'Asylum Records',
+            'TIT2': 'Desperado',
+            'TRCK': '5/11',
+            'TYER': '1973'
+        }
+
         input_tags = metadata.get_any_tags(TEST_M4A_EAGLES)
         id3_tags = metadata.map_m4a_tags(input_tags)
 
-        self.assertDictEqual(id3_tags, self.m4a_mapped)
+        self.assertDictEqual(id3_tags, m4a_mapped)
 
 
     def test_map_mp3_tags(self):
@@ -830,10 +797,23 @@ class TestAudioMetadata(TestCase):
         @brief Tests mapping native mp3 tags to preferred id3 format.
         '''
 
+        mp3_mapped = {
+            "TALB": "Waterloo",
+            "TPE2": "ABBA",
+            "TPE1": "ABBA",
+            "TCOM": "Benny Andersson/Björn Ulvaeus/Stig Anderson",
+            "TCON": "Pop",
+            "TPUB": "Polydor",
+            "TIT2": "Waterloo",
+            "TRCK": "1",
+            "TYER": "1963",
+            "TPOS": "1/1"
+        }
+
         input_tags = metadata.get_any_tags(TEST_MP3_ABBA)
         id3_tags = metadata.map_mp3_tags(input_tags)
 
-        self.assertDictEqual(id3_tags, self.mp3_mapped)
+        self.assertDictEqual(id3_tags, mp3_mapped)
 
 
     def test_map_wma_tags(self):
@@ -841,10 +821,23 @@ class TestAudioMetadata(TestCase):
         @brief Tests mapping native wma tags to preferred id3 format.
         '''
 
+        wma_mapped = {
+            'TALB': 'Chronicle, Vol. 1',
+            'TPE2': 'Creedence Clearwater Revival',
+            'TPE1': 'Creedence Clearwater Revival',
+            'TCOM': 'John Fogerty',
+            'TCON': 'Classic Rock',
+            'TPUB': 'Fantasy',
+            'TIT2': 'Fortunate Son',
+            'TRCK': 9,
+            'TYER': '1976',
+            'TPOS': '1/1'
+        }
+
         input_tags = metadata.get_any_tags(TEST_WMA_CCR)
         id3_tags = metadata.map_wma_tags(input_tags)
 
-        self.assertDictEqual(id3_tags, self.wma_mapped)
+        self.assertDictEqual(id3_tags, wma_mapped)
 
 
     def test_update_id3(self):

@@ -10,6 +10,8 @@
 # standard modules
 import gc
 import inspect
+import os
+import shlex
 import unittest
 from subprocess import CalledProcessError
 from unittest import TestCase
@@ -18,6 +20,7 @@ from unittest.mock import Mock, patch
 # local module constants
 from src import UTF8
 from tests import TEST_M3U, TEST_MP3_CRUSH, TEST_WAV_NONE
+from tests import TESTS_PATH
 # local module errors
 from src import FfmpegProcessError
 # local module classes
@@ -25,11 +28,13 @@ from src.subprocess_utils import SubprocessUtilities
 
 gc.enable()
 
-# instantiate classes here
+## @var subprocess_utils
+# @brief instance of SubprocessUtilities class
+# @details used for accessing class functionality
 subprocess_utils = SubprocessUtilities()
 
 
-def mock_communicate_with_error():
+def mock_communicate_with_error() -> tuple:
     '''
     @brief Simulates a communicate() call that fails during decoding.
     '''
@@ -48,35 +53,63 @@ class TestSubprocessUtilities(TestCase):
     '''
 
 
+    @classmethod
+    def setUpClass(cls):
+        '''
+        @brief Initialize data for test suite.
+
+        @details These datums are used throughout class and only need init once.
+        '''
+
+        cls.file_path = TEST_M3U
+
+        # from metadata.get_media_info,
+        # calls popen_pipe with ffprobe command for getting all media file info
+        # append a valid file_path when using
+        cls.ffprobe_command = [
+            "ffprobe",
+            "-v", "error",
+            "-show_format",
+            "-show_streams"
+        ]
+
+        # from metadata.convert_file,
+        # calls popen_pipe with a ffmpeg command for an audio file conversion to mp3
+        cls.ffmpeg_command = [
+            "ffmpeg",
+            "-hide_banner",
+            "-i", cls.file_path,
+            "-vn", "-map_metadata", "-1",
+            "-codec:a", "libmp3lame",
+            "-id3v2_version", "3",
+            "-b:a", str(128198),
+            TEST_WAV_NONE, '-y'
+        ]
+
+        # from normalization.get_volume_info,
+        # calls popen_pipe with an ffmpeg command for audio file getting volume info
+        # -hide_banner to reduce output clutter
+        # -i file_path
+        # -filter:a volumedetect so get volume stats on audio stream
+        # -f null - send output to stdout
+        # to use, create an empty list, extend with ffmpeg_hide_banner, append with file_path, extend with ffmpeg_filter
+        cls.ffmpeg_hide_banner = ['ffmpeg', '-hide_banner', '-i']
+        cls.ffmpeg_filter = ['-filter:a', 'volumedetect', '-f', 'null', '-']
+
+
     def test_popen_pipe_ffmpeg_invalid_file(self):
         '''
         @brief Tests trying to get ffprobe media info from invalid file type throws RuntimeError.
         '''
 
-        export_path = TEST_WAV_NONE
-        file_path = TEST_M3U
-        bitrate = 128198
-
-        # from metadata.convert_file,
-        # calls popen_pipe with a ffmpeg command for an audio file conversion to mp3
-        mpeg_command = [
-            "ffmpeg", "-hide_banner",
-            "-i", file_path,
-            "-vn", "-map_metadata", "-1",
-            "-codec:a", "libmp3lame",
-            "-id3v2_version", "3",
-            "-b:a", str(bitrate),
-            export_path, '-y'
-        ]
-
         mpeg_process = None
 
         with self.assertRaises(RuntimeError) as cm:
-            mpeg_process = subprocess_utils.popen_pipe(mpeg_command)
+            mpeg_process = subprocess_utils.popen_pipe(self.ffmpeg_command)
 
         self.assertIsNone(mpeg_process)
         self.assertEqual("RuntimeError", cm.exception.__class__.__name__)
-        err_msg = f"RuntimeError running command ffmpeg -hide_banner -i {TEST_M3U} -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 {TEST_WAV_NONE} -y"
+        err_msg = f"RuntimeError running command {shlex.join(self.ffmpeg_command)}"
         self.assertTrue(cm.exception.args[0], err_msg)
 
 
@@ -85,31 +118,34 @@ class TestSubprocessUtilities(TestCase):
         @brief Tests asynchronous execution of command with redirection to stderr throws FfmpegProcessError.
         '''
 
-        export_path = TEST_WAV_NONE
-        file_path = TEST_M3U
-        bitrate = 128198
-
-        # from metadata.convert_file,
-        # calls popen_pipe with ffmpeg command for an audio file conversion to mp3
-        mpeg_command = [
-            "ffmpeg", "-hide_banner",
-            "-i", file_path,
-            "-vn", "-map_metadata", "-1",
-            "-codec:a", "libmp3lame",
-            "-id3v2_version", "3",
-            "-b:a", str(bitrate),
-            export_path, '-y'
-        ]
-
         mpeg_process = None
 
         with self.assertRaises(FfmpegProcessError) as cm:
-            mpeg_process = subprocess_utils.spinner_popen_pipe(file_path, mpeg_command, show_spinner=False)
+            mpeg_process = subprocess_utils.spinner_popen_pipe(self.file_path, self.ffmpeg_command, show_spinner=False)
 
         self.assertIsNone(mpeg_process)
         self.assertEqual("FfmpegProcessError", cm.exception.__class__.__name__)
-        err_msg = f"FfmpegProcessError running command ffmpeg -hide_banner -i {TEST_M3U} -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198 {TEST_WAV_NONE} -y"
+        err_msg = f"FfmpegProcessError running command {shlex.join(self.ffmpeg_command)}"
         self.assertTrue(cm.exception.args[0], err_msg)
+
+
+    def test_popen_pipe_ffprobe_invalid_data(self):
+        '''
+        @brief Test trying to get ffprobe media info from invalid mp3 file throws RuntimeError.
+        '''
+
+        file_path = os.path.join(TESTS_PATH, "No_audio_Crush-Live.mp3")
+
+        command = self.ffprobe_command
+        command.append(file_path)
+
+        std_out = None
+
+        with self.assertRaises(RuntimeError) as cm:
+            std_out = subprocess_utils.popen_pipe(command)
+
+        self.assertIsNone(std_out)
+        self.assertTrue(cm.exception.args[0], f"{file_path}: Invalid data found when processing input")
 
 
     def test_popen_pipe_ffprobe_invalid_file(self):
@@ -119,22 +155,15 @@ class TestSubprocessUtilities(TestCase):
 
         file_path = TEST_M3U
 
-        # from metadata.get_media_info,
-        # calls popen_pipe with ffprobe command for getting all media file info
-        command = [
-            "ffprobe",
-            "-v", "quiet",
-            "-show_format",
-            "-show_streams",
-            file_path
-        ]
+        command = self.ffprobe_command
+        command.append(file_path)
 
         std_out = None
         with self.assertRaises(RuntimeError) as cm:
             std_out = subprocess_utils.popen_pipe(command)
 
         self.assertIsNone(std_out)
-        err_msg = f"RuntimeError running command ffprobe -v quiet -show_format -show_streams {TEST_M3U}"
+        err_msg = f"RuntimeError running command {shlex.join(command)}"
         self.assertTrue(cm.exception.args[0], err_msg)
 
 
@@ -144,15 +173,10 @@ class TestSubprocessUtilities(TestCase):
         @brief Tests asynchronous Popen execution of command throws UnicodeDecodeError.
         '''
 
-        # from metadata.get_media_info,
-        # calls popen_pipe with an ffprobe command to get all media info from media file
-        command = [
-            "ffprobe",
-            "-v", "quiet",
-            "-show_format",
-            "-show_streams",
-            TEST_MP3_CRUSH
-        ]
+        file_path = TEST_MP3_CRUSH
+
+        command = self.ffprobe_command
+        command.append(file_path)
 
         mock_process_instance = Mock()
         mock_process_instance.communicate.side_effect = lambda: mock_communicate_with_error()
@@ -177,16 +201,12 @@ class TestSubprocessUtilities(TestCase):
         '''
 
         file_path = TEST_M3U
-        # metadata.get_volume_info calls popen_pipe with an ffmpeg command
-        # -hide_banner to reduce output clutter
-        # -filter:a volumedetect so get volume stats on audio stream
-        # -f null - send output to stdout
-        mpeg_command = [
-            'ffmpeg', '-hide_banner',
-            '-i', file_path,
-            '-filter:a', 'volumedetect',
-            '-f', 'null', '-'
-        ]
+
+        mpeg_command = []
+        mpeg_command.extend(self.ffmpeg_hide_banner)
+        mpeg_command.append(file_path)
+        mpeg_command.extend(self.ffmpeg_filter)
+
         mpeg_process = None
 
         with self.assertRaises(CalledProcessError) as cm:
@@ -194,7 +214,7 @@ class TestSubprocessUtilities(TestCase):
 
         self.assertIsNone(mpeg_process)
         self.assertEqual("CalledProcessError", cm.exception.__class__.__name__)
-        err_msg = f"Error opening input file {TEST_M3U}"
+        err_msg = f"Error opening input file {file_path}"
         self.assertTrue(err_msg in cm.exception.stderr.strip())
 
 
@@ -207,7 +227,7 @@ class TestSubprocessUtilities(TestCase):
         AudioArt.has_video_stream has its own tests, which are not an appropriate location for subprocess_run testing.
         '''
 
-        input_audio = TEST_WAV_NONE
+        file_path = TEST_WAV_NONE
 
         # from art.has_video_stream,
         # calls subprocess_run with an ffprobe command to check if audio file has embedded art
@@ -217,7 +237,7 @@ class TestSubprocessUtilities(TestCase):
             '-select_streams', 'v:0',
             '-show_streams',
             '-of', 'json',
-            input_audio
+            file_path
         ]
         probe_process = None
 
@@ -226,7 +246,7 @@ class TestSubprocessUtilities(TestCase):
 
         self.assertIsNone(probe_process)
         stderr = cm.exception.stderr.strip()
-        expected_err = f"{input_audio}: No such file or directory"
+        expected_err = f"{file_path}: No such file or directory"
         self.assertEqual(stderr, expected_err)
 
 
@@ -236,20 +256,19 @@ class TestSubprocessUtilities(TestCase):
         @brief Tests running subprocess for command throws UnicodeDecodeError.
         '''
 
-        # from normalization.get_volume_info,
-        # calls subprocess_run with ffmpeg command to get volume info from an audio file
-        command = [
-            'ffmpeg', '-hide_banner',
-            '-i', TEST_MP3_CRUSH,
-            '-filter:a', 'volumedetect',
-            '-f', 'null', '-'
-        ]
+        file_path = TEST_MP3_CRUSH
+
+        mpeg_command = []
+        mpeg_command.extend(self.ffmpeg_hide_banner)
+        mpeg_command.append(file_path)
+        mpeg_command.extend(self.ffmpeg_filter)
 
         mock_subprocess_run.side_effect = UnicodeDecodeError(UTF8, b'\xff', 0, 1, 'invalid start byte')
 
         process = None
+
         with self.assertRaises(UnicodeDecodeError) as cm:
-            process = subprocess_utils.subprocess_run(command)
+            process = subprocess_utils.subprocess_run(mpeg_command)
 
         self.assertIsNone(process)
         self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)

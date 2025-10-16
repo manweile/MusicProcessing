@@ -25,9 +25,9 @@ from src.audio_info import AudioPlaylist
 
 gc.enable()
 
-EXPECTED_M3U = os.path.join(TESTS_PATH, "expected.m3u")
-GENERATED_M3U = os.path.join(GENERATED_PATH, "test.m3u")
-
+## @var playlist
+# @brief instance of AudioPlaylist class
+# @details used for accessing class functionality
 playlist = AudioPlaylist()
 
 
@@ -36,13 +36,26 @@ class TestAudioPlaylist(TestCase):
     @brief Tests AudioPlaylist class functions.
     '''
 
+
+    @classmethod
+    def setUpClass(cls):
+        '''
+        @brief Initialize data for test suite.
+
+        @details These datums are used throughout class and only need init once.
+        '''
+
+        cls.expected_m3u = os.path.join(TESTS_PATH, "expected.m3u")
+        cls.generated_m3u = os.path.join(GENERATED_PATH, "test.m3u")
+
+
     def tearDown(self):
         '''
         @brief Clean up the created playlist file.
         '''
 
-        if os.path.exists(GENERATED_M3U):
-            os.remove(GENERATED_M3U)
+        if os.path.exists(self.generated_m3u):
+            os.remove(self.generated_m3u)
 
 
     def test_get_audio_name_error(self):
@@ -101,7 +114,7 @@ class TestAudioPlaylist(TestCase):
         '''
 
         playlist.update_paths(TESTS_TLD, TEST_M3U)
-        m3u_exists = os.path.exists(GENERATED_M3U)
+        m3u_exists = os.path.exists(self.generated_m3u)
         self.assertTrue(m3u_exists)
 
         # warning order will be last in first out - so 38 special then Daughtry, which is invert of order in test m3u
@@ -111,7 +124,7 @@ class TestAudioPlaylist(TestCase):
         generated_inf = []
         expected_inf = []
 
-        with open(GENERATED_M3U, "r") as generated_file, open(EXPECTED_M3U, "r") as expected_file:
+        with open(self.generated_m3u, "r") as generated_file, open(self.expected_m3u, "r") as expected_file:
             for generated_line, expected_line in zip(generated_file, expected_file):
                 if "#EXTINF:0," in generated_line:
                     generated_inf.append(generated_line)

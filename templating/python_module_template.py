@@ -33,9 +33,16 @@ from src import add_module_handler
 
 gc.enable()
 
-# Configure logging
+## @var logger
+# @brief the logger instance for module
+# @details sets the logger name to module name
 logger = logging.getLogger(__name__)
+
+## @var basename
+# @brief name for logger file handler log file
+# @details gets the module file name
 basename = os.path.basename(__file__)
+
 add_module_handler(logger, basename)
 
 # instantiate classes here
@@ -50,7 +57,7 @@ class ${class_name}():
     @brief Defines the base ${class_description} processing used by project.
     \'\'\'
 
-    def __init__(self):
+    def __init__(self) -> None:
         \'\'\'
         @brief Initialize the ${class_name} class.
 

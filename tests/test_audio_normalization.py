@@ -33,6 +33,9 @@ from src.audio_normalize import AudioNormalization
 
 gc.enable()
 
+## @var normalization
+# @brief instance of AudioNormalization class
+# @details used for accessing class functionality
 normalization = AudioNormalization()
 
 
@@ -310,16 +313,6 @@ class TestAudioNormalization(TestCase):
         volumes = normalization.get_volume_info(self.vol_info_src)
         self.maxDiff = None
         self.assertDictEqual(volumes, self.vol_info_res)
-
-
-    @unittest.skip("complete")
-    def test_get_volume_info_regex_error(self):
-        '''
-        @brief Tests getting volume info failing due to regex error.
-        '''
-
-        # @todo needs mocking to simulate regex error
-        pass
 
 
     def test_loudnorm_json_parse(self):

@@ -27,12 +27,26 @@ from src.dir_processing import DirectoryProcessing
 
 gc.enable()
 
+## @var logger
+# @brief the logger instance for module
+# @details sets the logger name to module name
 logger = logging.getLogger(__name__)
+
+## @var basename
+# @brief name for logger file handler log file
+# @details gets the module file name
 basename = os.path.basename(__file__)
+
 add_module_handler(logger, basename)
 
+## @var directory
+# @brief instance of DirectoryProcessing class
+# @details used for accessing class functionality
 directory = DirectoryProcessing()
 
+## @var DELIMITER
+# @brief delimiter used in m3u files
+# @details used for processing m3u files
 DELIMITER = ","
 
 
@@ -41,7 +55,7 @@ class AudioPlaylist():
     @brief Defines the base playlist processing used by project.
     '''
 
-    def __init__(self):
+    def __init__(self) -> None:
         '''
         @brief Initialize the AudioPlaylist class.
 
@@ -53,7 +67,7 @@ class AudioPlaylist():
         pass
 
 
-    def get_audio_name(self, line):
+    def get_audio_name(self, line: str) -> str:
         '''
         @brief Gets audio file name from a #EXTINF line
 
@@ -97,7 +111,7 @@ class AudioPlaylist():
             return audio
 
 
-    def update_paths(self, tld_path, input_m3u):
+    def update_paths(self, tld_path: str, input_m3u: str) -> None:
         '''
         @brief Updates an old playlist relative pathing.
 
@@ -175,7 +189,7 @@ class AudioPlaylist():
             logger.info(f"Updated {input_basename}\n")
 
 
-    def update_walk(self, tld_path):
+    def update_walk(self, tld_path: str) -> None:
         '''
         @brief Updates playlists relative pathing.
 

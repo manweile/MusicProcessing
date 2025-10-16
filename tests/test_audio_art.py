@@ -7,17 +7,21 @@
 '''
 
 # standard modules
+import errno
 import gc
 import inspect
 import os
 import shutil
+import struct
 import unittest
 from pathlib import Path
+
 from subprocess import CalledProcessError
 from unittest import TestCase
-
+from unittest.mock import Mock, patch
 # local module constants
-from src import AUDIO_EXTS, FOLDER_ART, PLAYLIST_EXTS
+from src import FOLDER_ART, MP3_EXT, PLAYLIST_EXTS
+from src import UTF8
 from tests import TEST_M3U
 from tests import TEST_M4A_DAVIS, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_NO_TAG, TEST_WMA_HOLIDAY, TEST_WMA_JOHN
 from tests import TESTS_PATH, TESTS_TLD
@@ -26,6 +30,9 @@ from src.audio_info import AudioArt
 
 gc.enable()
 
+## @var art
+# @brief instance of AudioArt class
+# @details used for accessing class functionality
 art = AudioArt()
 
 
@@ -47,10 +54,6 @@ class TestAudioArt(TestCase):
 
         # audio source files for walk tests
         cls.src_file_paths = [TEST_M4A_DAVIS, TEST_MP3_CRUSH, TEST_WMA_JOHN]
-
-        # test patterns
-        cls.m3u_pattern = PLAYLIST_EXTS[0]
-        cls.mp3_pattern = AUDIO_EXTS[0]
 
         # results files
         cls.mp3_result = os.path.join(cls.prepped, "Crush", "Here", FOLDER_ART)
@@ -93,15 +96,6 @@ class TestAudioArt(TestCase):
         cls.wma_jpg = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART)
         cls.delete_jpgs = [cls.m4a_jpg, cls.mp3_jpg, cls.no_stream_jpg, cls.set_album_art_jpg, cls.wma_jpg]
 
-        cls.src_has_jpg_path = os.path.join(TESTS_TLD, "Abba", "Waterloo")
-        cls.src_no_tag_mp3 = TEST_MP3_NO_TAG
-
-        cls.src_has_jpg_audio = TEST_MP3_ABBA
-        cls.src_m4a = TEST_M4A_DAVIS
-        cls.src_mp3 = TEST_MP3_CRUSH
-        cls.src_no_stream_wma = TEST_WMA_HOLIDAY
-        cls.src_wma = TEST_WMA_JOHN
-
 
     @classmethod
     def tearDownClass(cls):
@@ -134,7 +128,7 @@ class TestAudioArt(TestCase):
         @details Happy path test case.
         '''
 
-        input_audio = self.src_wma
+        input_audio = TEST_WMA_JOHN
         art.extract_album_art(input_audio)
         has_jpg = os.path.exists(self.wma_jpg)
         self.assertTrue(has_jpg)
@@ -145,7 +139,7 @@ class TestAudioArt(TestCase):
         brief Tests try to extract album art from file that already has co-located Folder.jpg file.
         '''
 
-        input_audio = self.src_has_jpg_audio
+        input_audio = TEST_MP3_ABBA
         album_path = Path(input_audio).parent
         log_msg = f"{album_path} has a {FOLDER_ART}"
 
@@ -180,7 +174,7 @@ class TestAudioArt(TestCase):
         ffmpeg (primary), mutagen (secondary).
         '''
 
-        input_audio = self.src_no_tag_mp3
+        input_audio = TEST_MP3_NO_TAG
         no_jpg = os.path.join(TESTS_TLD, FOLDER_ART)
         info_msg = f"No video stream album art present in {input_audio}"
         warning_msg = f"No album art present in {input_audio}"
@@ -203,7 +197,7 @@ class TestAudioArt(TestCase):
         @details Uses wma audio without a stream to ensure mutagen (secondary) extraction method is used.
         '''
 
-        input_audio = self.src_no_stream_wma
+        input_audio = TEST_WMA_HOLIDAY
         art.extract_album_art(input_audio)
         has_jpg = os.path.exists(self.no_stream_jpg)
         self.assertTrue(has_jpg)
@@ -214,7 +208,7 @@ class TestAudioArt(TestCase):
         @brief Tests if album art is extracted from wma/asf audio file.
         '''
 
-        input_audio = self.src_wma
+        input_audio = TEST_WMA_JOHN
         art.extract_asf_art(input_audio)
         art_exists = os.path.exists(self.wma_jpg)
         self.assertTrue(art_exists)
@@ -225,7 +219,7 @@ class TestAudioArt(TestCase):
         @brief Tests if album art is extracted from an audio file.
         '''
 
-        input_audio = self.src_mp3
+        input_audio = TEST_MP3_CRUSH
         art.extract_ffmpeg_art(input_audio)
         art_exists = os.path.exists(self.mp3_jpg)
         self.assertTrue(art_exists)
@@ -238,7 +232,7 @@ class TestAudioArt(TestCase):
         @details Expected to throw CalledProcessError.
         '''
 
-        input_audio = self.src_no_stream_wma
+        input_audio = TEST_WMA_HOLIDAY
 
         with self.assertRaises(CalledProcessError) as cm:
             art.extract_ffmpeg_art(input_audio)
@@ -254,7 +248,7 @@ class TestAudioArt(TestCase):
         @brief Tests if album art is extracted from m4a audio file.
         '''
 
-        input_audio = self.src_m4a
+        input_audio = TEST_M4A_DAVIS
         art.extract_m4a_art(input_audio)
         art_exists = os.path.exists(self.m4a_jpg)
         self.assertTrue(art_exists)
@@ -265,7 +259,7 @@ class TestAudioArt(TestCase):
         @brief Tests if album art is extracted from mp3 audio file.
         '''
 
-        input_audio = self.src_mp3
+        input_audio = TEST_MP3_CRUSH
         art.extract_mp3_art(input_audio)
         art_exists = os.path.exists(self.mp3_jpg)
         self.assertTrue(art_exists)
@@ -294,7 +288,7 @@ class TestAudioArt(TestCase):
         @details Happy path test with a file pattern.
         '''
 
-        art.extract_walk(self.prepped, self.mp3_pattern)
+        art.extract_walk(self.prepped, MP3_EXT)
 
         jpg_exists = os.path.exists(self.mp3_result)
         self.assertTrue(jpg_exists)
@@ -305,10 +299,10 @@ class TestAudioArt(TestCase):
         #brief Test try extracting album art with invalid file pattern.
         '''
 
-        log_msg = f"Pattern {self.m3u_pattern} is not for a valid audio file"
+        log_msg = f"Pattern {PLAYLIST_EXTS[0]} is not for a valid audio file"
 
         with self.assertLogs() as captured:
-            art.extract_walk(self.prepped, self.m3u_pattern)
+            art.extract_walk(self.prepped, PLAYLIST_EXTS[0])
 
         self.assertEqual(len(captured.records), 1)
         self.assertEqual(captured.records[0].getMessage(), log_msg)
@@ -319,7 +313,7 @@ class TestAudioArt(TestCase):
         @brief Tests if audio file does not have video stream.
         '''
 
-        input_audio = self.src_no_stream_wma
+        input_audio = TEST_WMA_HOLIDAY
         has_video = art.has_video_stream(input_audio)
         self.assertFalse(has_video)
 
@@ -329,7 +323,7 @@ class TestAudioArt(TestCase):
         @brief Tests if audio file does have video stream.
         '''
 
-        input_audio = self.src_mp3
+        input_audio = TEST_MP3_CRUSH
         has_video = art.has_video_stream(input_audio)
         self.assertTrue(has_video)
 
@@ -346,6 +340,95 @@ class TestAudioArt(TestCase):
 
         self.assertTrue(found_art_exists)
         self.assertTrue(set_art_exists)
+
+
+    @patch.object(AudioArt, '_AudioArt__unpack_asf_image')
+    def test_unpack_asf_image_decode_error(self, mock_unpack_asf_image):
+        '''
+        @brief Tests unpack_asf_image throws UnicodeDecodeError.
+        '''
+
+        data_bytes = b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
+        data_byte_array = bytearray(data_bytes)
+        unpacked_art = None
+
+        mock_unpack_asf_image.side_effect = UnicodeDecodeError(UTF8, b'\xff', 0, 1, 'invalid start byte')
+
+        with self.assertRaises(UnicodeDecodeError) as cm:
+            unpacked_art = art._AudioArt__unpack_asf_image(data_byte_array)
+
+        self.assertIsNone(unpacked_art)
+        self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
+        self.assertEqual("invalid start byte", cm.exception.reason)
+
+        mock_unpack_asf_image.reset_mock(return_value=True, side_effect=True)
+
+
+    def test_unpack_asf_image_struct_error(self):
+        '''
+        @brief Tests unpack_asf_image throws struct error.
+        '''
+
+        data_bytes = b'\xff'
+        data_byte_array = bytearray(data_bytes)
+        unpacked_art = None
+
+        with self.assertRaises(struct.error) as cm:
+            unpacked_art = art._AudioArt__unpack_asf_image(data_byte_array)
+
+        self.assertIsNone(unpacked_art)
+        self.assertEqual("error", cm.exception.__class__.__name__)
+
+        err_msg = "unpack_from requires a buffer of at least 5 bytes for unpacking 5 bytes at offset 0 (actual buffer size is 1)"
+        self.assertEqual(err_msg, cm.exception.args[0])
+
+
+    def test_write_data_blocking_error(self):
+        '''
+        @brief Tests write_data throws BlockingIOError.
+        '''
+
+        data_bytes = b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
+        data_byte_array = bytearray(data_bytes)
+
+        write_data_art = AudioArt()
+
+        mock_write_data = Mock(spec=write_data_art)
+        mock_write_data.side_effect = BlockingIOError(errno.EWOULDBLOCK, "Operation blocked")
+
+        write_data_art.__write_data = mock_write_data
+
+        with self.assertRaises(BlockingIOError) as cm:
+            write_data_art.__write_data(TEST_MP3_CRUSH, data_byte_array)
+
+        self.assertEqual(cm.exception.errno, errno.EWOULDBLOCK)
+        self.assertEqual(cm.exception.strerror, "Operation blocked")
+
+        mock_write_data.reset_mock(return_value=True, side_effect=True)
+
+
+    def test_write_data_os_error(self):
+        '''
+        @brief Tests write_data throws OSError.
+        '''
+
+        data_bytes = b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
+        data_byte_array = bytearray(data_bytes)
+
+        write_data_art = AudioArt()
+
+        mock_write_data = Mock(spec=write_data_art)
+        mock_write_data.side_effect = OSError(errno.EACCES, "Permission denied")
+
+        write_data_art.__write_data = mock_write_data
+
+        with self.assertRaises(OSError) as cm:
+            write_data_art.__write_data(TEST_MP3_CRUSH, data_byte_array)
+
+        self.assertEqual(cm.exception.errno, errno.EACCES)
+        self.assertEqual(cm.exception.strerror, "Permission denied")
+
+        mock_write_data.reset_mock(return_value=True, side_effect=True)
 
 
 def get_method_names(cls):

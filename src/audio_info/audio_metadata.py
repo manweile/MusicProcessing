@@ -242,7 +242,7 @@ class AudioMetadata():
             return id3_tags
 
 
-    def convert_file(self, file_path: str, show_spinner=True) -> None:
+    def convert_file(self, file_path: str, show_spinner: bool = True) -> None:
         '''
         @brief Converts a wma, m4a or mp3 audio file to mp3 audio file, using ffmpeg directly.
 
@@ -323,7 +323,6 @@ class AudioMetadata():
                 tags = None
 
             # get the input file info - want bitrate so can preserve the quality in exported file
-            # @todo look at using get_bit_rate instead
             media_info = self.get_media_info(file_path)
             bitrate = media_info['bit_rate']
 
@@ -335,7 +334,8 @@ class AudioMetadata():
             # -id3v2_version 3        # known bug have to specify id3v2 version
             # -b:a 128198             # ffmpeg will downgrade bitrate if you don't set it
             command = [
-                "ffmpeg", "-hide_banner",
+                "ffmpeg",
+                "-hide_banner",
                 "-i", file_path,
                 "-vn", "-map_metadata", "-1",
                 "-codec:a", "libmp3lame",
@@ -388,7 +388,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def convert_walk(self, start_path: str, file_pattern: str, show_spinner=True) -> None:
+    def convert_walk(self, start_path: str, file_pattern: str, show_spinner: bool = True) -> None:
         '''
         @brief Converts all audio files found in specified path to mp3 format.
 
@@ -598,7 +598,7 @@ class AudioMetadata():
             # -show_streams gets all information about each media stream in the input
             command = [
                 "ffprobe",
-                "-v", "quiet",
+                "-v", "error",
                 "-show_format",
                 "-show_streams",
                 file_path
@@ -755,7 +755,7 @@ class AudioMetadata():
             # -show_entries format_tags we only care about tags
             command = [
                 "ffprobe",
-                "-v", "quiet",
+                "-v", "error",
                 "-of", "json",
                 "-show_entries", "format_tags",
                 file_path
@@ -809,7 +809,7 @@ class AudioMetadata():
             return metadata_type
 
 
-    def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe=False) -> None:
+    def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe: bool = False) -> None:
         '''
         @brief Gets tags for audio files and saves to file.
 

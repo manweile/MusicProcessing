@@ -20,7 +20,7 @@ from unittest import TestCase
 # import ipsumlorem
 
 # local module constants
-# from src import AUDIO_EXTS, AUDIO_TYPES
+# from src import AUDIO_EXTS
 from src import MUSIC_TLD
 # from src import FOLDER_ART
 # from src import PLAYLIST_EXTS
