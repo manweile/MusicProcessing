@@ -87,7 +87,6 @@ class TestAudioArt(TestCase):
             shutil.copy(src_path, dest_path)
 
         # don't add this one to delete list used by tearDown, need it for an error test
-        # @todo single use, create where used
         cls.found_album_art_jpg = os.path.join(TESTS_TLD, "Abba", "Waterloo", FOLDER_ART)
 
         cls.m4a_jpg = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", FOLDER_ART)
@@ -96,17 +95,6 @@ class TestAudioArt(TestCase):
         cls.set_album_art_jpg = os.path.join(TESTS_TLD, "Albert Collins", "Best Of The Blues, Vol. 1", FOLDER_ART)
         cls.wma_jpg = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", FOLDER_ART)
         cls.delete_jpgs = [cls.m4a_jpg, cls.mp3_jpg, cls.no_stream_jpg, cls.set_album_art_jpg, cls.wma_jpg]
-
-        # @todo single use, create where used
-        cls.src_no_tag_mp3 = TEST_MP3_NO_TAG
-
-        # @todo single use, create where used
-        cls.src_has_jpg_audio = TEST_MP3_ABBA
-        # @todo single use, create where used
-        cls.src_m4a = TEST_M4A_DAVIS
-        cls.src_mp3 = TEST_MP3_CRUSH
-        cls.src_no_stream_wma = TEST_WMA_HOLIDAY
-        cls.src_wma = TEST_WMA_JOHN
 
 
     @classmethod
@@ -140,7 +128,7 @@ class TestAudioArt(TestCase):
         @details Happy path test case.
         '''
 
-        input_audio = self.src_wma
+        input_audio = TEST_WMA_JOHN
         art.extract_album_art(input_audio)
         has_jpg = os.path.exists(self.wma_jpg)
         self.assertTrue(has_jpg)
@@ -151,7 +139,7 @@ class TestAudioArt(TestCase):
         brief Tests try to extract album art from file that already has co-located Folder.jpg file.
         '''
 
-        input_audio = self.src_has_jpg_audio
+        input_audio = TEST_MP3_ABBA
         album_path = Path(input_audio).parent
         log_msg = f"{album_path} has a {FOLDER_ART}"
 
@@ -186,7 +174,7 @@ class TestAudioArt(TestCase):
         ffmpeg (primary), mutagen (secondary).
         '''
 
-        input_audio = self.src_no_tag_mp3
+        input_audio = TEST_MP3_NO_TAG
         no_jpg = os.path.join(TESTS_TLD, FOLDER_ART)
         info_msg = f"No video stream album art present in {input_audio}"
         warning_msg = f"No album art present in {input_audio}"
@@ -209,7 +197,7 @@ class TestAudioArt(TestCase):
         @details Uses wma audio without a stream to ensure mutagen (secondary) extraction method is used.
         '''
 
-        input_audio = self.src_no_stream_wma
+        input_audio = TEST_WMA_HOLIDAY
         art.extract_album_art(input_audio)
         has_jpg = os.path.exists(self.no_stream_jpg)
         self.assertTrue(has_jpg)
@@ -220,7 +208,7 @@ class TestAudioArt(TestCase):
         @brief Tests if album art is extracted from wma/asf audio file.
         '''
 
-        input_audio = self.src_wma
+        input_audio = TEST_WMA_JOHN
         art.extract_asf_art(input_audio)
         art_exists = os.path.exists(self.wma_jpg)
         self.assertTrue(art_exists)
@@ -231,7 +219,7 @@ class TestAudioArt(TestCase):
         @brief Tests if album art is extracted from an audio file.
         '''
 
-        input_audio = self.src_mp3
+        input_audio = TEST_MP3_CRUSH
         art.extract_ffmpeg_art(input_audio)
         art_exists = os.path.exists(self.mp3_jpg)
         self.assertTrue(art_exists)
@@ -244,7 +232,7 @@ class TestAudioArt(TestCase):
         @details Expected to throw CalledProcessError.
         '''
 
-        input_audio = self.src_no_stream_wma
+        input_audio = TEST_WMA_HOLIDAY
 
         with self.assertRaises(CalledProcessError) as cm:
             art.extract_ffmpeg_art(input_audio)
@@ -260,7 +248,7 @@ class TestAudioArt(TestCase):
         @brief Tests if album art is extracted from m4a audio file.
         '''
 
-        input_audio = self.src_m4a
+        input_audio = TEST_M4A_DAVIS
         art.extract_m4a_art(input_audio)
         art_exists = os.path.exists(self.m4a_jpg)
         self.assertTrue(art_exists)
@@ -271,7 +259,7 @@ class TestAudioArt(TestCase):
         @brief Tests if album art is extracted from mp3 audio file.
         '''
 
-        input_audio = self.src_mp3
+        input_audio = TEST_MP3_CRUSH
         art.extract_mp3_art(input_audio)
         art_exists = os.path.exists(self.mp3_jpg)
         self.assertTrue(art_exists)
@@ -325,7 +313,7 @@ class TestAudioArt(TestCase):
         @brief Tests if audio file does not have video stream.
         '''
 
-        input_audio = self.src_no_stream_wma
+        input_audio = TEST_WMA_HOLIDAY
         has_video = art.has_video_stream(input_audio)
         self.assertFalse(has_video)
 
@@ -335,7 +323,7 @@ class TestAudioArt(TestCase):
         @brief Tests if audio file does have video stream.
         '''
 
-        input_audio = self.src_mp3
+        input_audio = TEST_MP3_CRUSH
         has_video = art.has_video_stream(input_audio)
         self.assertTrue(has_video)
 
