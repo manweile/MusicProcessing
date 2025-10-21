@@ -23,6 +23,16 @@
             "justMyCode": false
         },
         {
+            "name": "Python Debugger: MusicProcessing with ignore Gooey and args input",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py --ignore-gooey",
+            "args": "${command:pickArgs}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",  // <-- this is key
+            "justMyCode": false
+        },
+        {
             "name": "Python Debugger: Not Implemented with args input",
             "type": "debugpy",
             "request": "launch",

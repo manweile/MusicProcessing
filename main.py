@@ -14,8 +14,10 @@ import argparse
 import gc
 import logging
 import os
-# import pprint
 import sys
+
+# third party modules
+from gooey import Gooey, GooeyParser
 
 # local modules
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
@@ -429,6 +431,7 @@ Main application functions
 '''
 
 
+@Gooey(program_name="Music Processing")
 def arg_parser():
     '''
     @brief Parses and validates input arguments.
@@ -440,7 +443,8 @@ def arg_parser():
     '''
 
     try:
-        parser = CustomArgumentParser(description='Music Processing')
+        # parser = CustomArgumentParser(description='Music Processing')
+        parser = GooeyParser(description='Music Processing')
         subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
         # convert audio file specified to mp3 format
@@ -448,7 +452,19 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
         convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
-        convert_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        convert_file_parser.add_argument(
+            "file", type=existing_file,
+            help="mandatory full path to audio file",
+            widget="FileChooser",
+            gooey_options=dict(
+                wildcard=(
+                    "Audio files (*.m4a;*.mp3;*.wma)|*.m4a;*.mp3;*.wma|"
+                    "M4A files (*.m4a)|*.m4a|"
+                    "MP3 files (*.mp3)|*.mp3|"
+                    "WMA files (*.wma)|*.wma"
+                )
+            )
+        )
         convert_file_parser.set_defaults(func=convert_file)
 
         # convert all audio files found in top level directory
