@@ -17,14 +17,13 @@ import os
 import sys
 
 # third party modules
-from gooey import Gooey, GooeyParser
 
 # local modules
 # from src import APP_NAME, APP_PATH
 # from src import ARG_CLI_FILE, ARG_CLI_PATTERN, ARG_CLI_TLD
 # from src import ARG_HELP_AUDIO, ARG_HELP_TLD, ARG_HELP_PATTERN
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
-from src import M4A_EXT, MP3_EXT, WMA_EXT
+# from src import M4A_EXT, MP3_EXT, WMA_EXT
 from src.generated_files import GENERATED_PATH
 from src.audio_info import AudioArt
 from src.audio_info import AudioMetadata
@@ -483,7 +482,6 @@ Main application functions
 '''
 
 
-@Gooey(program_name="Music Processing", program_description="Convert and normalize audio files", advanced=True)
 def arg_parser():
     '''
     @brief Parses and validates input arguments.
@@ -504,19 +502,7 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
         convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
-
         convert_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
-        # convert_file_parser.add_argument(
-        #     f"-{ARG_CLI_FILE}", type=existing_file, help=ARG_HELP_AUDIO, widget="FileChooser",
-        #     gooey_options={
-        #         "wildcard":
-        #             f"Audio files (*{M4A_EXT};*{MP3_EXT};*{WMA_EXT})|*{M4A_EXT};*{MP3_EXT};*{WMA_EXT}|"
-        #             f"M4A files (*{M4A_EXT})|*{M4A_EXT}|"
-        #             f"MP3 files (*{MP3_EXT})|*{MP3_EXT}|"
-        #             f"WMA files (*{WMA_EXT})|*{WMA_EXT}",
-        #             "default_dir": APP_PATH
-        #     }
-        # )
         convert_file_parser.set_defaults(func=convert_file)
 
         # convert all audio files found in top level directory
@@ -525,20 +511,9 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'convert-walk', 'C:\Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' } ]
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-walk', '/home/gerald/Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' } ]
         convert_walk_parser = subparsers.add_parser("convert-walk", help="Converts all audio files to mp3")
-
         convert_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        # convert_walk_parser.add_argument(
-        #     f"-{ARG_CLI_TLD}", type=existing_path, help=ARG_HELP_TLD, widget="DirChooser",
-        #     gooey_options={
-        #         "default_dir": APP_PATH
-        #     }
-        # )
-
         # convert_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
-        # not working!! see https://pakstech.com/blog/python-gooey/
-        # pattern_choices = ["*.m4a", "*.mp3", "*.wma"]
-        convert_walk_parser.add_argument(
-            ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN)
+        convert_walk_parser.add_argument(ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN)
         convert_walk_parser.set_defaults(func=convert_walk)
 
         # create album directories
@@ -546,31 +521,15 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'create-album', 'C:\Music']
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'create-album', '/home/gerald/Music']
         create_albums_parser = subparsers.add_parser("create-albums", help="Create album sub-directories")
-
         create_albums_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        # create_albums_parser.add_argument(
-        #     ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD, widget="DirChooser",
-        #     gooey_options={
-        #         "default_dir": APP_PATH
-        #     }
-        # )
-        # create_albums_parser.set_defaults(func=create_albums)
+        create_albums_parser.set_defaults(func=create_albums)
 
         # ebu normalize an audio file (destructive)
         # 1 mandatory arg, the path to audio file
         # sys.argv = ['D:\MusicProcessing\main.py', 'ebu-file', "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'ebu-file', "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp3"]
         ebu_file_parser = subparsers.add_parser("ebu-file", help="EBU R128 normalizes a mp3 audio file level")
-
         ebu_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
-        # ebu_file_parser.add_argument(
-        #     ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO, widget="FileChooser",
-        #     gooey_options={
-        #         "wildcard":
-        #             f"MP3 files (*{MP3_EXT})|*{MP3_EXT}",
-        #             "default_dir": APP_PATH
-        #     }
-        # )
         ebu_file_parser.set_defaults(func=ebu_file)
 
         # extract album art from specified audio file
@@ -578,19 +537,7 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'extract-art', 'C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma',
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-art', '/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma',
         extract_file_parser = subparsers.add_parser("extract-file", help="Extracts embedded art from audio file")
-
         extract_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
-        # extract_file_parser.add_argument(
-        #     ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO, widget="FileChooser",
-        #     gooey_options={
-        #         "wildcard":
-        #             f"Audio files (*{M4A_EXT};*{MP3_EXT};*{WMA_EXT})|*{M4A_EXT};*{MP3_EXT};*{WMA_EXT}|"
-        #             f"M4A files (*{M4A_EXT})|*{M4A_EXT}|"
-        #             f"MP3 files (*{MP3_EXT})|*{MP3_EXT}|"
-        #             f"WMA files (*{WMA_EXT})|*{WMA_EXT}",
-        #             "default_dir": APP_PATH
-        #     }
-        # )
         extract_file_parser.set_defaults(func=extract_file)
 
         # extract album art from all audio files found in top level directory
@@ -599,22 +546,11 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'extract-walk', 'C:\Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' } ]
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-walk', '/home/gerald/Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' } ]
         extract_walk_parser = subparsers.add_parser("extract-walk", help="Extracts embedded art from all audio files")
-
         extract_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        # extract_walk_parser.add_argument(
-        #     ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD, widget="DirChooser",
-        #     gooey_options={
-        #         "default_dir": APP_PATH
-        #     }
-        # )
-
         # extract_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
         extract_walk_parser.add_argument(ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN)
         # @todo needs to be a select 1 from list input restricted to { '*.mp3' | '*.m4a' | '*.wma' }
-        # extract_walk_parser.add_argument(
-        #     "--pattern", type=str, help="optional file pattern"
-
-        # )
+        # extract_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
         extract_walk_parser.set_defaults(func=extract_walk)
 
         # get ffprobe media information for files
@@ -624,18 +560,10 @@ def arg_parser():
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' | *.* } ]
         get_media_info_walk_parser = subparsers.add_parser("get-media-info-walk", help="Gets ffprobe media info for audio files")
         get_media_info_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        # get_media_info_walk_parser.add_argument(
-        #     ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD,
-
-        # )
+        # get_media_info_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
         get_media_info_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
         # @todo needs to be a select 1 from list input restricted to { '*.mp3' | '*.m4a' | '*.wma' }
-        # extract_walk_parser.add_argument(
-        #     "--pattern",
-        #     type=str,
-        #     help="optional file pattern"
-
-        # )
+        # extract_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
         get_media_info_walk_parser.set_defaults(func=get_media_info_walk)
 
         # get metadata tags from all audio files found in top level directory
