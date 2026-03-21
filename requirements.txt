@@ -3,7 +3,6 @@ colorama==0.4.6                         # dependency of tqdm
 termcolor===2.3.0                       # dependency of yaspin
 # required project external libraries
 mutagen==1.47.0
-pathvalidate==3.2.1
-pydub==0.25.1
+pathvalidate==3.2.3
 tqdm==4.67.1
-yaspin==2.5.0
+yaspin==3.1.0

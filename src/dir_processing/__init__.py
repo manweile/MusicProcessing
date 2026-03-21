@@ -1,6 +1,7 @@
 '''
 @brief Package with directory_processing module
 '''
+
 # using absolute import as don't expect to be re-organizing directories
 from src.dir_processing.directory_processing import DirectoryProcessing
 

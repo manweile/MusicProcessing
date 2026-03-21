@@ -1,0 +1,565 @@
+
+2025-10-04 19:26:02,357 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_audio_file_list.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_audio_file_list.txt'
+
+2025-10-04 19:26:02,566 — src.dir_processing.directory_processing — ERROR — get_audio_file_list:249 — Exception FileNotFoundError getting files for /home/gerald/MusicProcessing/tests/Music
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 246, in get_audio_file_list
+    self.create_txt(txt_filename, txt_data, None)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 137, in create_txt
+    raise os_error
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_audio_file_list.txt'
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_directory_processing.py", line 142, in test_get_audio_file
+    directory.get_audio_file_list(TESTS_TLD)
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 249, in get_audio_file_list
+    logger.exception(f"Exception {type(e_error).__name__} getting files for {start_path}", stack_info=True)
+
+2025-10-04 19:26:14,172 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:26:17,967 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/clip_vol_check_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/clip_vol_check_walk.txt'
+
+2025-10-04 19:26:25,238 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:26:29,724 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:26:30,456 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:26:30,458 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:26:30,624 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:26:31,184 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:26:31,703 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:26:31,712 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:26:35,245 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt'
+
+2025-10-04 19:26:46,795 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt'
+
+2025-10-04 19:26:48,517 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt'
+
+2025-10-04 19:26:54,777 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/peak_normalize_file.txt'
+
+2025-10-04 19:26:56,767 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/rms_normalize_file.txt'
+
+2025-10-04 19:27:44,645 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:27:50,129 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:27:54,240 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:27:58,348 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:27:59,710 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:27:59,712 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:27:59,860 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:28:00,333 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:28:00,771 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:28:00,779 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:28:03,790 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt'
+
+2025-10-04 19:28:22,199 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:43,161 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:48,349 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:52,351 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:56,302 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/convert_file.txt'
+
+2025-10-04 19:30:57,582 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:30:57,584 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:30:57,731 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_media_info_walk.txt'
+
+2025-10-04 19:30:58,181 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:30:58,591 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:30:58,604 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_tags_walk.txt'
+
+2025-10-04 19:31:01,418 — src.dir_processing.directory_processing — ERROR — create_txt:136 — OSError No such file or directory writing data to /home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt
+Traceback (most recent call last):
+  File "/home/gerald/MusicProcessing/src/dir_processing/directory_processing.py", line 129, in create_txt
+    txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/gerald/MusicProcessing/src/generated_files/result_files/get_unique_media_keys.txt'
+
+2025-10-06 16:26:13,701 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:29:35,800 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:30:39,639 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:30:44,512 — src.dir_processing.directory_processing — ERROR — make_dir:343 — OSError permission denied for creating D:\MusicProcessing\src\generated_files\Music\DirOne\DirTwo
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1193, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] Permission denied
+
+2025-10-06 16:32:04,804 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:32:08,016 — src.dir_processing.directory_processing — ERROR — make_dir:343 — OSError permission denied for creating D:\MusicProcessing\src\generated_files\Music\DirOne\DirTwo
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1193, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] Permission denied
+
+2025-10-06 16:35:42,479 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:35:50,159 — src.dir_processing.directory_processing — ERROR — make_dir:343 — OSError permission denied for creating D:\MusicProcessing\src\generated_files\Music\DirOne\DirTwo
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1193, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] Permission denied
+
+2025-10-06 16:38:16,628 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?no_permission_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?no_permission_path'
+
+2025-10-06 16:41:25,350 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?bad_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?bad_path'
+
+2025-10-06 16:41:56,125 — src.dir_processing.directory_processing — ERROR — make_dir:343 — OSError permission denied for creating D:\MusicProcessing\src\generated_files\Music\DirOne\DirTwo
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1134, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1138, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py", line 1193, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] Permission denied
+
+2025-10-06 16:52:21,067 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?bad_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?bad_path'
+
+2025-10-06 16:57:29,016 — src.dir_processing.directory_processing — ERROR — make_dir:346 — OSError Invalid argument making directory with ?bad_path
+Traceback (most recent call last):
+  File "D:\MusicProcessing\src\dir_processing\directory_processing.py", line 337, in make_dir
+    os.makedirs(dir_path)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\os.py", line 225, in makedirs
+    mkdir(name, mode)
+OSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect: '?bad_path'
+
+2025-10-07 12:43:19,476 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:47:41,076 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:48:02,648 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 12:53:27,650 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 16:00:24,449 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-07 16:02:55,649 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 14:38:23,227 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:477 — removed 1 empty album directories
+
+2025-10-08 14:42:07,149 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:477 — removed 1 empty album directories
+
+2025-10-08 15:39:02,329 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:39:20,790 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:39:46,038 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:39:48,361 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:41:29,700 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:41:31,957 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:46:36,518 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:47:08,764 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — H:\\ is file system root
+
+2025-10-08 15:47:35,243 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:48:50,241 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:49:20,707 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — Z:\ is file system root
+
+2025-10-08 15:49:26,307 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 15:49:42,640 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 15:50:02,573 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — C:\ is file system root
+
+2025-10-08 15:50:26,205 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 16:08:19,257 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:08:35,016 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — D:\ is file system root
+
+2025-10-08 16:09:29,489 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — c:\ is file system root
+
+2025-10-08 16:09:50,924 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 16:10:46,451 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:13:36,938 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:14:24,265 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:56:26,692 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 16:56:26,692 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — C:\ is file system root
+
+2025-10-08 16:56:26,692 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-08 20:29:16,584 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-08 20:30:04,681 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-08 20:30:34,978 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 10:54:06,506 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 10:54:06,511 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 10:54:06,512 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 10:54:24,157 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 10:54:31,432 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 10:54:31,435 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:00:55,470 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:01:01,768 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:01:01,770 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:01:34,617 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:02:23,399 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:02:23,402 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:03:58,121 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:09:42,399 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:10:21,962 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:10:21,964 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:13:33,526 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:13:52,374 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:14:44,474 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:14:44,476 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:15:52,412 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:26:29,849 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:26:29,856 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:26:29,857 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad
+
+2025-10-09 11:33:47,530 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:34:58,176 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:38:29,481 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:40:51,894 — src.dir_processing.directory_processing — INFO — remove_empty_album_dir:478 — removed 1 empty album directories
+
+2025-10-09 11:41:25,352 — src.dir_processing.directory_processing — INFO — remove_pattern:533 — Deleted: /home/gerald/MusicProcessing/src/generated_files/Music/test.m3u
+
+2025-10-09 11:41:42,053 — src.dir_processing.directory_processing — ERROR — remove_pattern:511 — / is file system root
+
+2025-10-09 11:41:42,054 — src.dir_processing.directory_processing — ERROR — remove_pattern:521 — *.* is too broad

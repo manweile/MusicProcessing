@@ -10,54 +10,44 @@
 import gc
 import logging
 import os
-from datetime import datetime
+from os import strerror
 from pathlib import Path
 
-# local modules
-from src import _AUDIO_EXTS, _PLAYLIST_EXTS
+# local module methods
+from src import add_module_handler
+# local module constants
+from src import AUDIO_EXTS
+from src import MP3_EXT
+from src import PLAYLIST_EXTS
+from src.generated_files import GENERATED_PATH
+# local module errors
+from src import PlaylistError
+# local module classes
 from src.dir_processing import DirectoryProcessing
-from src.generated_files import generated_files
 
 gc.enable()
 
-_DELIMITER = ","
+## @var logger
+# @brief the logger instance for module
+# @details sets the logger name to module name
+logger = logging.getLogger(__name__)
 
-# @todo move these into src.__init__.py
-# @todo figure out one time declaration for logging
-# @todo the only thing that really changes is the log filename
-# @tdo google search: python logging def for many modules
-# @todo https://docs.python.org/3/library/logging.html
-# https://docs.python.org/3/howto/logging.html#logging-advanced-tutorial
-_DATETIME_FORMAT = "%Y-%m-%d_%H%M-%S"
-_LOG_EXT = '.log'
-_LOG_FORMAT = '%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+## @var basename
+# @brief name for logger file handler log file
+# @details gets the module file name
+basename = os.path.basename(__file__)
 
+add_module_handler(logger, basename)
+
+## @var directory
+# @brief instance of DirectoryProcessing class
+# @details used for accessing class functionality
 directory = DirectoryProcessing()
 
-start_execution = datetime.now()
-start_datetime = datetime.strftime(start_execution, _DATETIME_FORMAT)
-
-# debug & info logging
-# log_filename = "playlist" + '_' + str(start_datetime) + _LOG_EXT
-log_filename = "playlist" + _LOG_EXT
-log_filepath = os.path.join(generated_files, log_filename)
-
-# error/exception logging
-error_logname = "error" + '_' + str(start_datetime) + _LOG_EXT
-error_filepath = os.path.join(generated_files, error_logname)
-
-# always want name of executing function for hierarchal logging
-logger = logging.getLogger(__name__)
-# override the default logging level WARN to lowest level so we can log all level messages
-logger.setLevel(logging.DEBUG)
-
-# debug and info log format & handlers for normal function output
-message_log_formatter = logging.Formatter(_LOG_FORMAT)
-
-# file handler logs debug level to log file only, no output to console
-file_handler = logging.FileHandler(log_filepath)
-file_handler.setFormatter(message_log_formatter)
-logger.addHandler(file_handler)
+## @var DELIMITER
+# @brief delimiter used in m3u files
+# @details used for processing m3u files
+DELIMITER = ","
 
 
 class AudioPlaylist():
@@ -65,7 +55,7 @@ class AudioPlaylist():
     @brief Defines the base playlist processing used by project.
     '''
 
-    def __init__(self):
+    def __init__(self) -> None:
         '''
         @brief Initialize the AudioPlaylist class.
 
@@ -77,7 +67,7 @@ class AudioPlaylist():
         pass
 
 
-    def get_audio_name(self, line):
+    def get_audio_name(self, line: str) -> str:
         '''
         @brief Gets audio file name from a #EXTINF line
 
@@ -85,36 +75,43 @@ class AudioPlaylist():
         @details A  extinf tag containing line is in format: #EXTINF:N,<name>.<ext>,
         where N is length of song in seconds, or -1 or 0, and
         @details <ext> is one of mp3, m4a, or wma.
+
         @param line (str) Line of text read from m3u file containing a #EXTINF tag
-        @return audio_file {str} Audio file name with extension, otherwise None.
+        @return audio_file {str} Audio file name with extension.
+
+        @exception PlaylistError Indicates an error occurred in playlist class.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        audio = None
-
         try:
-            index = line.find(_DELIMITER)
+            index = line.find(DELIMITER)
+
             if index != -1:
-                input_audio = line[index + len(_DELIMITER):]
+                input_audio = line[index + len(DELIMITER):]
+
                 # get the audio file name ext, may have to change it
                 input_ext = os.path.splitext(os.path.basename(input_audio))[1]
+
                 # wma and m4a files need mp3 extension
-                if input_ext != _AUDIO_EXTS[0]:
+                if input_ext != AUDIO_EXTS[0]:
                     input_stem = os.path.splitext(os.path.basename(input_audio))[0]
-                    audio = input_stem + _AUDIO_EXTS[0]
+                    audio = input_stem + MP3_EXT
                 else:
                     audio = input_audio
             else:
-                logger.warning(f"No file delimiter in {line}")
+                logger.exception(f"PlaylistError no file delimiter in {line}", stack_info=True)
+                raise PlaylistError(f"PlaylistError no file delimiter in {line}")
 
+        except PlaylistError as p_error:
+            raise p_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting audio name from {line}", stack_info=True)
+            raise e_error
+        else:
             return audio
 
-        except Exception:
-            logger.info(f"line: {line}")
-            logger.critical("Exception", exc_info=True)
 
-
-    def update_paths(self, tld_path, input_m3u):
+    def update_paths(self, tld_path: str, input_m3u: str) -> None:
         '''
         @brief Updates an old playlist relative pathing.
 
@@ -124,6 +121,8 @@ class AudioPlaylist():
 
         @param tld_path {str} The top level directory where playlist and music files are located.
         @param input_m3u {str} The full file path to playlist needing conversion.
+
+        @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -136,10 +135,17 @@ class AudioPlaylist():
 
         extheader = "#EXTM3U"
         extinf = "#EXTINF:"
+        comment = "#:"
 
         try:
+            # verify m3u input
+            _, input_file_ext = os.path.splitext(input_m3u)
+            if input_file_ext.lower() not in PLAYLIST_EXTS:
+                logger.exception(f"PlaylistError input file {input_m3u} is not a playlist", stack_info=True)
+                raise PlaylistError(f"PlaylistError input file {input_m3u} is not a playlist")
+
             # new m3u file gets created in generated files directory so can later be move to correct tld
-            export_path = generated_files
+            export_path = GENERATED_PATH
             input_basename = os.path.basename(input_m3u)
             export_m3u = os.path.join(export_path, input_basename)
 
@@ -150,14 +156,12 @@ class AudioPlaylist():
                         if extheader in line:
                             # the ext header is simply copied over
                             outfile.write(line)
+                        elif comment in line:
+                            continue
                         elif extinf in line:
                             # get the audio file name, change ext to mp3 if needed
                             audio_file = self.get_audio_name(line.strip("\n"))
-                            if audio_file:
-                                audio_file_path = directory.get_file_directory(tld_path, audio_file)
-                            else:
-                                logger.warning(f"unable to get audio file name from {line.strip("\n")} in {input_basename}")
-                                continue
+                            audio_file_path = directory.get_file_directory(tld_path, audio_file)
 
                             if audio_file_path:
                                 found_file = Path(audio_file_path)
@@ -165,25 +169,33 @@ class AudioPlaylist():
                                 album = found_parts[-1]
                                 artist = found_parts[-2]
                                 relative_path = os.path.join(artist, album, audio_file) + "\n"
-                                new_extinf = extinf + "0" + _DELIMITER + audio_file + "\n"
+                                new_extinf = extinf + "0" + DELIMITER + audio_file + "\n"
                                 outfile.write(new_extinf)
                                 outfile.write(relative_path)
                                 outfile.write("\n")
                             else:
-                                print(f"{audio_file} not found in {tld_path}")
-                                logger.info(f"{audio_file} from {input_basename} not found in {tld_path}")
+                                logger.warning(f"{audio_file} from {input_basename} not found in {tld_path}")
                                 continue
 
+        except OSError as os_error:
+            logger.error(f"OSError {(strerror(os_error.errno))} writing data from {input_m3u} to {export_m3u}", exc_info=True)
+            raise os_error
+        except PlaylistError as p_error:
+            raise p_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} updating playlist tld_path: {tld_path}, input_m3u: {input_m3u}", stack_info=True)
+            raise e_error
+        else:
             logger.info(f"Updated {input_basename}\n")
 
-        except Exception:
-            logger.info(f"tld_path: {tld_path}, input_m3u: {input_m3u}")
-            logger.critical("Exception", exc_info=True)
 
-
-    def update_walk(self, tld_path):
+    def update_walk(self, tld_path: str) -> None:
         '''
+        @brief Updates playlists relative pathing.
 
+        @param tld_path {str} The top level directory where playlist and music files are located.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -193,15 +205,13 @@ class AudioPlaylist():
                 for file in file_names:
                     _, input_file_ext = os.path.splitext(file)
 
-                    # file is not mp3, m4a, or wma, so carry on to next file
-                    if input_file_ext.lower() not in _PLAYLIST_EXTS:
+                    # file is not m3u, carry on to next file
+                    if input_file_ext.lower() not in PLAYLIST_EXTS:
                         continue
 
                     input_file_path = os.path.join(dir_path, file)
                     self.update_paths(dir_path, input_file_path)
 
-            logger.info(f"Updated m3u files in {tld_path}\n")
-
-        except Exception:
-            logger.info(f"tld_path: {tld_path}")
-            logger.critical("Exception", exc_info=True)
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} updating m3u files in tld_path: {tld_path}", stack_info=True)
+            raise e_error

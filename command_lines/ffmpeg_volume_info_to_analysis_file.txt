@@ -1,0 +1,60 @@
+PS D:\MusicProcessing\tests\Music\Bear McCreary\Battlestar Galactica> ffmpeg -hide_banner -i 'F:\ConvertedMusic\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3' -filter:a volumedetect -f null nul 2> analysis.txt
+
+ffmpeg : Input #0, mp3, from 'F:\ConvertedMusic\Bear McCreary\Battlestar Galactica\Bear McCreary - BSG Gayatri Mantra Theme Song.mp3':
+At line:1 char:1
++ ffmpeg -hide_banner -i 'F:\ConvertedMusic\Bear McCreary\Battlestar Ga ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Input #0, mp3, ...heme Song.mp3'::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  Metadata:
+    title           : BSG Gayatri Mantra Theme Song
+    artist          : Bear McCreary & Richard Gibbs
+    track           : 1/26
+    album           : Battlestar Galactica
+    disc            : 1/1
+    publisher       : LaΓÇÉLa Land Records
+    album_artist    : Richard Gibbs
+    encoder         : Lavf60.16.100
+    date            : 2004
+  Duration: 00:05:27.31, start: 0.025056, bitrate: 128 kb/s
+  Stream #0:0: Audio: mp3 (mp3float), 44100 Hz, stereo, fltp, 128 kb/s
+      Metadata:
+        encoder         : Lavc60.31
+  Stream #0:1: Video: mjpeg (Baseline), yuvj420p(pc, bt470bg/unknown/unknown), 500x500 [SAR 1:1 DAR 1:1], 90k tbr, 90k tbn (attached pic)
+      Metadata:
+        title           : Cover
+        comment         : Cover (front)
+[Parsed_volumedetect_0 @ 0000021c123acec0] n_samples: 0
+Stream mapping:
+  Stream #0:1 -> #0:0 (mjpeg (native) -> wrapped_avframe (native))
+  Stream #0:0 -> #0:1 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, null, to 'nul':
+  Metadata:
+    title           : BSG Gayatri Mantra Theme Song
+    artist          : Bear McCreary & Richard Gibbs
+    track           : 1/26
+    album           : Battlestar Galactica
+    disc            : 1/1
+    publisher       : LaΓÇÉLa Land Records
+    album_artist    : Richard Gibbs
+    date            : 2004
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuvj420p(pc, bt470bg/unknown/unknown, progressive), 500x500 [SAR 1:1 DAR 1:1], q=2-31, 200 kb/s, 90k fps, 90k tbn (attached pic)
+      Metadata:
+        title           : Cover
+        comment         : Cover (front)
+        encoder         : Lavc61.19.101 wrapped_avframe
+  Stream #0:1: Audio: pcm_s16le, 44100 Hz, stereo, s16, 1411 kb/s
+      Metadata:
+        encoder         : Lavc61.19.101 pcm_s16le
+frame=    1 fps=0.0 q=-0.0 size=N/A time=00:00:00.00 bitrate=N/A speed=2.14e-05x    
+[Parsed_volumedetect_0 @ 0000021c1238d880] n_samples: 28866816
+[Parsed_volumedetect_0 @ 0000021c1238d880] mean_volume: -15.8 dB
+[Parsed_volumedetect_0 @ 0000021c1238d880] max_volume: -0.1 dB
+[Parsed_volumedetect_0 @ 0000021c1238d880] histogram_0db: 916
+[Parsed_volumedetect_0 @ 0000021c1238d880] histogram_1db: 8996
+[Parsed_volumedetect_0 @ 0000021c1238d880] histogram_2db: 27166
+[out#0/null @ 0000021c1235af80] video:0KiB audio:56380KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=    1 fps=0.0 q=-0.0 Lsize=N/A time=00:00:00.00 bitrate=N/A speed=1.39e-05x    

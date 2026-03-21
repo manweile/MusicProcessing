@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    // To use with any Python\Lib\site-packages\<library>\,
+    // change the value of module appropriately
+    "version": "0.2.0",
+    "configurations": [
+        // for debuging C:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\site-packages\ffmpeg_normalize\
+        // with cli args
+        {
+            "name": "Python Debugger: Module with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "args": "${command:pickArgs}",
+            "env": {"PYTHONPATH":"${workspaceRoot}"},
+            "module": "ffmpeg_normalize",
+            "stopOnEntry": true,
+            "justMyCode": false
+        }
+    ]
+}

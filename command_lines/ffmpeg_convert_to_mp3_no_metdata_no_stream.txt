@@ -1,0 +1,25 @@
+option 1)
+simplest working:
+no video stream, no metadata, preserves bitrate, but saves as id3V2.4
+ffmpeg -hide-banner -i ~/PreppedMusic/Crush/Here/Crush-Live.mp3 -vn -map_metadata -1 Crush-Live.mp3 -y
+ffmpeg -hide_banner -i F:\PreppedMusic\Crush\Here\Crush-Live.mp3 -vn -map_metadata -1 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
+
+option 2)
+no video stream, no metadata, preserves bitrate, saves as id3v2.3, empirically tested as best option with subprocess  spinner_popen_pipe
+ffmpeg -hide_banner -i D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -vn -map_metadata -1 -id3v2_version 3 -b:a 128198 D:\MusicProcessing\src\generated_files\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -y
+same as above, but sets specified metadata TALB, empirically tested as best option with subprocess  spinner_popen_pipe
+ffmpeg -hide_banner -i D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -vn -map_metadata -1 -id3v2_version 3 -b:a 128198 -metadata TALB=Waterloo D:\MusicProcessing\src\generated_files\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -y
+
+option 3)
+no video stream, no metadata, but saves as id3V2.4
+ffmpeg -hide_banner -i ~/PreppedMusic/Crush/Here/Crush-Live.mp3 -vn -map_metadata -1 -codec:a libmp3lame -b:a 128k Crush-Live.mp3 -y
+ffmpeg -hide_banner -i F:\PreppedMusic\Crush\Here\Crush-Live.mp3 -vn -map_metadata -1 -codec:a libmp3lame -b:a 128k D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
+ffmpeg -hide_banner -i ~/PreppedMusic/Elton\ John/Goodbye\ Yellow\ Brick\ Road/Elton\ John-Goodbye\ Yellow\ Brick\ Road.wma -vn -map_metadata -1 -codec:a libmp3lame -b:a 128k Elton\ John-Goodbye\ Yellow\ Brick\ Road.mp3 -y
+ffmpeg -hide_banner -i /home/gerald/PreppedMusic/The\ Eagles/Desperado/The\ Eagles-Desperado.m4a  -vn -map_metadata -1 -codec:a libmp3lame -b:a 128k The\ Eagles-Desperado.mp3 -y
+
+option 4)
+no video stream, no metadata, saves as id3V2.3 !!!
+ffmpeg -hide_banner -i F:\PreppedMusic\Crush\Here\Crush-Live.mp3 -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128k D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
+ffmpeg -hide_banner -i ~/PreppedMusic/Crush/Here/Crush-Live.mp3 -vn -map_metadata -1  -id3v2_version 3 -ab 128k Crush-Live.mp3 -y
+
+MUST include -id3v2_version 3

@@ -1,0 +1,46 @@
+ffprobe
+-v quiet
+-of json
+-show_entries format_tags
+"D:\MusicProcessing\tests\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
+{
+    "format": {
+        "tags": {
+            "major_brand": "mp42",
+            "minor_version": "0",
+            "compatible_brands": "mp42dby1isom",
+            "creation_time": "2013-06-25T12:10:09.000000Z",
+            "title": "Desperado",
+            "artist": "Eagles",
+            "composer": "Don Henley/Glenn Frey",
+            "album": "Desperado",
+            "genre": "Rock",
+            "track": "5/11",
+            "disc": "1/1",
+            "date": "1973",
+            "MEDIA": "CD",
+            "MusicBrainz Album Release Country": "US",
+            "originalyear": "1973",
+            "SCRIPT": "Latn",
+            "MusicBrainz Album Type": "album",
+            "CATALOGNUMBER": "5068-2",
+            "ARTISTS": "Eagles",
+            "MusicBrainz Album Status": "official",
+            "originaldate": "1973-04-17",
+            "BARCODE": "075596062725",
+            "LABEL": "Asylum Records",
+            "ISRC": "USAS19900038",
+            "MusicBrainz Release Track Id": "04d5a99a-303b-42f5-8394-970dc7cf5b5e",
+            "MusicBrainz Album Id": "7c77f23a-7699-4aab-aecd-e4b3cc6ac4c3",
+            "MusicBrainz Track Id": "96308d6d-77c8-48d6-b866-bdc48675ef10",
+            "MusicBrainz Release Group Id": "9e7b49bb-b4bd-3583-87ba-f516f793eff2",
+            "MusicBrainz Album Artist Id": "f46bd570-5768-462e-b84c-c7c993bbf47e",
+            "MusicBrainz Artist Id": "f46bd570-5768-462e-b84c-c7c993bbf47e",
+            "album_artist": "Eagles",
+            "sort_album_artist": "Eagles",
+            "sort_artist": "Eagles",
+            "copyright": "1973 Asylum Records",
+            "comment": "Purchased from 7digital.com"
+        }
+    }
+}

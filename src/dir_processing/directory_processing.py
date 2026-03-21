@@ -11,17 +11,40 @@ import csv
 import errno
 import fnmatch
 import gc
-import shutil
+import inspect
+import logging
 import os
-import sys
 from operator import itemgetter
+from os import strerror
 from pathlib import Path
 
-# local modules
-from src import _AUDIO_EXTS, _AUDIO_TYPES, _EXPORT_TLD, _HOME, _MEDIA
-from src.generated_files import generated_files
+# local module methods
+from src import add_module_handler
+# local module constants
+from src import AUDIO_EXTS
+from src import M4A_EXT, MP3_EXT, WMA_EXT
+from src import CSV_DIR, CSV_EXT
+from src import MUSIC_TLD
+from src import PLAYLIST_EXTS
+from src import RESULT_DIR, RESULT_EXT
+from src import UTF8
+from src.generated_files import GENERATED_PATH
+# local module errors
+from src import MusicProcessingError
 
 gc.enable()
+
+## @var logger
+# @brief the logger instance for module
+# @details sets the logger name to module name
+logger = logging.getLogger(__name__)
+
+## @var basename
+# @brief name for logger file handler log file
+# @details gets the module file name
+basename = os.path.basename(__file__)
+
+add_module_handler(logger, basename)
 
 
 class DirectoryProcessing():
@@ -29,123 +52,44 @@ class DirectoryProcessing():
     @brief Defines the base directory processing used by project.
     '''
 
-    def __init__(self, tld_path=None):
+    def __init__(self) -> None:
         '''
-        @brief      Initializes the DirectoryProcessing class.
+        @brief Initializes the DirectoryProcessing class.
 
-        @param      tld_path {str} Optional, the top level directory path that contains all the music files.
-        @return     DirectoryProcessing {instance} An instance of the class.
-        @exception  OSError An os error.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
-        '''
+        @details A basic class implementation with no instantiation parameters.
 
-        if tld_path is not None:
-            try:
-                if os.path.isdir(tld_path):
-                    self._tld_path = tld_path
-
-            except OSError as e:
-                if e.errno == errno.ENOENT:
-                    raise OSError(f"Exception: Path {tld_path} not found")
-                else:
-                    raise Exception(f"Exception {e} setting path {tld_path}")
-        else:
-            pass
-
-
-    def __ext_file_list(self, file_ext, start_path):
-        '''
-        @brief Generates a csv containing full file path for an audio file type.
-
-        @details The csv file has one column that shows the filepath for files with audio file type we looked for.
-        @details The csv file is sorted in directory path as found by os walk top down order.
-        @details The csv file is created in the designated generated files directory.
-
-        @param      file_ext {str} The file type want file paths for.
-        @param      start_path {str} The starting point of the directory walk.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @return DirectoryProcessing {instance} An instance of the class.
         '''
 
-        data = []
-        csv_filename = "found_" + file_ext + ".csv"
-        csv_dir = generated_files
-        header_row = [file_ext + " file path"]
-        type_count = 0
-
-        try:
-            # top down walk for files of the specified extension type
-            # want the directory path & file names so we can get full file path
-            # don't care about the sub-directory names at all
-            for dir_path, dir_names, filenames in os.walk(start_path):
-                for file in filenames:
-                    if (file.endswith('.' + file_ext)):
-                        audio_file_path = os.path.join(dir_path, file)
-                        data.append([audio_file_path])
-                        type_count += 1
-
-            self.create_csv(csv_filename, data, csv_dir, header_row, None)
-            print(f"Found {type_count} {file_ext} files")
-
-        except Exception as e:
-            raise Exception(f"Exception {e} getting files for extension {file_ext} in {start_path}")
+        pass
 
 
-    @property
-    def tld_path(self):
-        '''
-        @brief Returns the full top level directory path.
-
-        @return tld_path {str} The top level directory path.
-        '''
-
-        return self._tld_path
-
-
-    @tld_path.setter
-    def tld_path(self, tld_path):
-        '''
-        @brief Sets the top level directory.
-
-        @details The top level directory is expected to exist already.
-
-        @param      tld_path {str} The top level directory path that contains all the music files.
-        @exception  OSError An os path not found or other os error.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            if os.path.isdir(tld_path):
-                self._tld_path = tld_path
-
-        except OSError as e:
-            if e.errno == errno.ENOENT:
-                raise OSError(f"OSError path {tld_path} not found")
-            else:
-                raise OSError(f"OSError {e} setting path {tld_path}")
-        except Exception as e:
-            raise Exception(f"Exception {e} setting path {tld_path}")
-
-
-    def create_csv(self, csv_filename, data, csv_dir, header_row=None, sort_col=None):
+    def create_csv(self, csv_filename: str, data: list, csv_dir: str | None = None, header_row: list | None = None, sort_col: int | None = None) -> None:
         '''
         @brief Creates a csv file
 
         @details Creates a csv file in specified directory.
         @details Header row and sorting are optional.
 
-        @param      csv_filename {str} Filename for csv.
-        @param      data [{str}] Data to write into csv. Expected to be 1 line per element.
-        @param      csv_dir {str} Path for csv file.
-        @param      header_row [{str}] Optional, the starting row naming fields.
-        @param      sort_col {int} Optional, the column to sort data on.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param csv_filename {str} Base filename (w/o extension) for csv file
+        @param data [{str}] Data to write into csv. Expected to be 1 line per element.
+        @param csv_dir {str} Optional, path for csv file.
+        @param header_row [{str}] Optional, the starting row naming fields.
+        @param sort_col {int} Optional, the column to sort data on.
+
+        @exception OSError A system related error occurred.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
-            csv_path = os.path.join(csv_dir, csv_filename)
+            if csv_dir is None:
+                csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
+
+            csv_path = os.path.join(csv_dir, csv_filename + CSV_EXT)
 
             # I don't care about any previous file contents
-            csv_outfile = open(csv_path, mode='w', encoding='windows-1252', newline='')
+            csv_outfile = open(csv_path, mode='w', encoding=UTF8, newline='')
+            # using semicolon as delimiter cause have audio files with comma in dir path and/or file name
             csv_file_writer = csv.writer(csv_outfile, dialect='excel', delimiter=';')
 
             if header_row is not None:
@@ -159,34 +103,79 @@ class DirectoryProcessing():
             csv_file_writer.writerows(sorted_data)
             csv_outfile.close()
 
-        except Exception as e:
-            raise Exception(f"Exception {e} writing {csv_filename}")
+        except OSError as os_error:
+            logger.error(f"OSError {(strerror(os_error.errno))} writing data to {csv_path}", exc_info=True)
+            raise os_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__}writing {csv_filename}", stack_info=True)
+            raise e_error
 
 
-    def get_audio_file_list(self, start_path):
+    def create_txt(self, txt_filename: str, data: list, txt_dir: str | None = None) -> None:
+        '''
+        @brief Creates a text file
+
+        @details Creates a text file in user specified directory, or default directory.
+
+        @param txt_filename {str} Base filename (w/o extension) for text file.
+        @param data [{str}] Data to write into txt. Expected to be 1 line per element.
+        @param txt_dir {str} Optional path for txt file.
+
+        @exception OSError A system related error occurred.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            if txt_dir is None:
+                txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
+
+            txt_path = os.path.join(txt_dir, txt_filename + RESULT_EXT)
+
+            # need to overwrite cause expecting many runs
+            txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+            for item in data:
+                txt_outfile.write(f"{item}\n")
+
+            txt_outfile.close()
+
+        except OSError as os_error:
+            logger.error(f"OSError {(strerror(os_error.errno))} writing data to {txt_path}", exc_info=True)
+            raise os_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} writing {txt_path}", stack_info=True)
+            raise e_error
+
+
+    def get_audio_file_list(self, start_path: str) -> None:
         '''
         @brief Generates a csv containing full path for all audio files.
 
-        @details Without a start path input, the top level directory MUST have been set.
-        @details The csv file is created in the designated generated files directory.
+        @details Start path input required.
+        @details The csv & txt files are created in the designated generated files directory.
         @details The csv has 2 columns, full file path for audio file and extension.
 
-        @param      start_path {str} Optional, the starting point of the directory walk.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param start_path {str} Optional, the starting point of the directory walk.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        data = []
+        csv_data = []
+        csv_filename = inspect.currentframe().f_code.co_name
+
+        txt_data = []
+        txt_filename = inspect.currentframe().f_code.co_name
+
         directory_counts = {}
 
         audio_count = 0
         album_count = 0
         artist_count = 0
         csv_count = 0
-        csv_dir = generated_files
-        csv_filename = "found_audio_files.csv"
+
         dir_count = 0
         file_extension = None
         header_row = ["file path", "audio file type"]
+        jpg_count = 0
         m4a_count = 0
         mp3_count = 0
         m3u_count = 0
@@ -196,14 +185,10 @@ class DirectoryProcessing():
         txt_count = 0
         wma_count = 0
 
-
-        if start_path is None:
-            start_path = self._tld_path
-
         try:
             initial_depth = len(start_path.split(os.sep))
 
-            # top down walk for files of the specified extension type
+            # top down walk for files in specified top level directory
             # want the directory path & file names so we can get full file path
             # we don't care about the sub-directory names
             for dir_path, dir_names, filenames in os.walk(start_path):
@@ -215,179 +200,172 @@ class DirectoryProcessing():
                 for file in filenames:
                     _, file_extension = os.path.splitext(file)
 
-                    if (file_extension.lower() in _AUDIO_EXTS):
+                    if (file_extension.lower() in AUDIO_EXTS):
                         audio_file_path = os.path.join(dir_path, file)
-                        data.append([audio_file_path, file_extension])
+                        csv_data.append([audio_file_path, file_extension])
                         audio_count += 1
 
-                        if file_extension == _AUDIO_EXTS[0]:
+                        if file_extension == MP3_EXT:
                             mp3_count += 1
-                        elif file_extension == _AUDIO_EXTS[1]:
+                        elif file_extension == M4A_EXT:
                             m4a_count += 1
-                        elif file_extension == _AUDIO_EXTS[2]:
+                        elif file_extension == WMA_EXT:
                             wma_count += 1
                     else:
-                        if file_extension == ".csv":
+                        if file_extension == CSV_EXT:
                             csv_count += 1
-                        elif file_extension == ".m3u":
+                        elif file_extension == PLAYLIST_EXTS[0]:
                             m3u_count += 1
-                        elif file_extension == ".txt":
+                        elif file_extension == RESULT_EXT:
                             txt_count += 1
+                        elif file_extension == ".jpg":
+                            jpg_count += 1
                         else:
                             not_count += 1
 
                     tot_count += 1
 
-            self.create_csv(csv_filename, data, csv_dir, header_row, 1)
+            self.create_csv(csv_filename, csv_data, None, header_row, 1)
 
             artist_count = directory_counts[0]
             album_count = directory_counts[1]
             dir_count = artist_count + album_count
-            other_count = csv_count + txt_count + m3u_count + not_count
+            other_count = csv_count + jpg_count + txt_count + m3u_count + not_count
 
-            print(f"Found {artist_count} artist directories")
-            print(f"Found {album_count} album directories")
-            print(f"Found {dir_count} total directories")
+            txt_data.append(f"Found {artist_count} artist directories")
+            txt_data.append(f"Found {album_count} album directories")
+            txt_data.append(f"Found {dir_count} total directories")
 
-            print(f"Found {mp3_count} {_AUDIO_TYPES[0]} files")
-            print(f"Found {m4a_count} {_AUDIO_TYPES[1]} files")
-            print(f"Found {wma_count} {_AUDIO_TYPES[2]} files")
-            print(f"Found {audio_count} total audio files")
+            txt_data.append(f"Found {mp3_count} {MP3_EXT.removeprefix(".")} files")
+            txt_data.append(f"Found {m4a_count} {M4A_EXT.removeprefix(".")} files")
+            txt_data.append(f"Found {wma_count} {WMA_EXT.removeprefix(".")} files")
+            txt_data.append(f"Found {audio_count} total audio files")
 
-            print(f"Found {csv_count} csv files")
-            print(f"Found {txt_count} text files")
-            print(f"Found {m3u_count} m3u files")
-            print(f"Found {not_count} unknown type files")
-            print(f"Found {other_count} non-audio files")
+            txt_data.append(f"Found {csv_count} csv files")
+            txt_data.append(f"Found {jpg_count} jpg files")
+            txt_data.append(f"Found {txt_count} text files")
+            txt_data.append(f"Found {m3u_count} m3u files")
+            txt_data.append(f"Found {not_count} unknown type files")
+            txt_data.append(f"Found {other_count} non-audio files")
 
-            print(f"Found {tot_count} total files")
+            txt_data.append(f"Found {tot_count} total files")
+            self.create_txt(txt_filename, txt_data, None)
 
-        except Exception as e:
-            raise Exception(f"Exception {e} getting files for {start_path}")
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting files for {start_path}", stack_info=True)
+            raise e_error
 
 
-    def get_ext_file_list(self, file_ext, start_path):
+    def get_ext_file_list(self, start_path: str, file_pattern: str) -> None:
         '''
-        @brief Wrapper for function that generates a csv containing full file path for an extension.
+        @brief Generates a csv containing full file path for audio file extension.
 
-        @details Without a start path input, the top level directory MUST have been set.
-        @details If file extension is not supplied, uses the preset audio types list.
+        @details if file pattern not specified, returns all valid audio files.
 
+        @param  start_path {str} The starting point of the directory walk.
         @param  file_ext {str} Optional, the file extension want file paths for.
-        @param  start_path {str} Optional, the starting point of the directory walk.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        if start_path is None:
-            start_path = self._tld_path
-
-        if (file_ext):
-            self.__ext_file_list(file_ext, start_path)
+        data = []
+        if file_pattern:
+            csv_filename = inspect.currentframe().f_code.co_name + "_" + file_pattern.lower().removeprefix(".")
         else:
-            for file_ext in _AUDIO_TYPES:
-                self.__ext_file_list(file_ext, start_path)
+            csv_filename = inspect.currentframe().f_code.co_name + "_all"
+        header_row = ["File Path", "File Ext"]
+
+        try:
+            # top down walk for files of the specified extension type
+            # want the directory path & file names so we can get full file path
+            # don't care about the sub-directory names at all
+            for dir_path, _, filenames in os.walk(start_path):
+                for file in filenames:
+                    file_name, file_ext = os.path.splitext(file)
+
+                    if file_ext.lower() not in AUDIO_EXTS:
+                        # we don't touch non-audio files like jpg's, on to next
+                        continue
+                    elif file_pattern:
+                        if not fnmatch.fnmatch(file_ext.lower(), file_pattern.lower()):
+                            # no match for input pattern, on to next
+                            continue
+
+                    # have a valid file type, no pattern input or matched pattern, either can create valid file path
+                    audio_file_path = os.path.join(dir_path, file_name)
+
+                    data.append([audio_file_path, file_ext.lower().removeprefix(".")])
+
+            self.create_csv(csv_filename, data, None, header_row, None)
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting file list for files with {file_ext} for {start_path}", stack_info=True)
+            raise e_error
 
 
-    def get_file_directory(self, start_path, file_name):
+    def get_file_directory(self, start_path: str, file_name: str) -> str:
         '''
         @brief Finds the directory path of a file given its name and a starting search path.
 
-        @param filename (str) The name of the file to find.
         @param start_path (str) The root directory to start from.
+        @param file_name (str) The name of the file to find.
+        @return dir_path {str} The directory path for file, None if not found.
+
         @exception  Exception A common baseclass exception to handle unforeseen errors.
         '''
+
+        dir_path = None
 
         try:
             for root, dirs, files in os.walk(start_path):
                 if file_name in files:
-                    return root
+                    dir_path = root
 
-            return None
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting directory path for {file_name} and starting path {start_path}", stack_info=True)
+            raise e_error
+        else:
+            return dir_path
 
-        except Exception as e:
-            raise Exception(f"Exception {e} getting directory path for {file_name} and starting path {start_path}")
 
-
-    def get_file_ext(self, file_path):
+    def make_dir(self, dir_path: str) -> None:
         '''
-        @brief Returns the file type of audio file without leading period.
+        @brief Creates a directory.
 
-        @details Returns the file type using os library as opposed to getting it from audio metadata.
+        @param dir_path {str} The path to create.
 
-        @param  file_path {str} The full audio file path.
-        @return file_ext {str} The file type of audio file or None.
+        @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        file_ext = None
-
         try:
-            if file_path:
-                # get the file extension, don't care about the file name
-                _, split_extension = os.path.splitext(file_path)
-                # want the type, not the full extension with the period
-                file_ext = split_extension[1:]
+            if not os.path.exists(dir_path):
+                os.makedirs(dir_path)
+            else:
+                return
 
-        except Exception:
-            print('File type error: {} occurred'.format(sys.exec_info()[0]))
-
-        return file_ext
-
-
-    def make_album_dir(self, artist_dirpath, album_dir):
-        '''
-        @brief Creates an album sub-directory in an artist directory.
-
-        @details The album name for the directory is drawn from the metadata.
-        @details The audio file(s) for the created album directory will moved into the created directory by another function.
-
-        @param      artist_dirpath {str} The absolute path artist directory the new album directory will be created in.
-        @param      album_dir {str} The sanitized & validated name of the album for new album directory.
-        @exception  OSError An os permission error.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        music_dir = os.path.join(artist_dirpath, album_dir)
-
-        if not os.path.exists(music_dir):
-            try:
-                os.mkdir(music_dir)
-
-            except Exception as e:
-                if e.errno == errno.EACCES:
-                    raise OSError(f"Exception: permission denied for creating {music_dir}")
-                else:
-                    raise Exception(f"Exception {e} creating {music_dir}")
+        except OSError as os_error:
+            if os_error.errno == errno.EACCES:
+                logger.error(f"OSError permission denied for creating {dir_path}", exc_info=True)
+                raise OSError(f"OSError permission denied for creating {dir_path}")
+            else:
+                logger.error(f"OSError {(strerror(os_error.errno))} making directory with {dir_path}", exc_info=True)
+                raise os_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} creating {dir_path}", stack_info=True)
+            raise e_error
 
 
-    def move_audio_file(self, file_path, destination_dir):
-        '''
-        @brief Moves an audio file to a new directory.
-
-        @details The destination path must exist already.
-
-        @param      file_path {str} File path for audio file.
-        @param      destination_path {str} New directory for audio file.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        audio_file = os.path.basename(file_path)
-        destination_path = os.path.join(destination_dir, audio_file)
-
-        try:
-            shutil.move(file_path, destination_path)
-
-        except Exception as e:
-            raise Exception(f"Exception {e} moving {audio_file} from {os.path.dirname(file_path)} to {destination_dir}")
-
-
-    def path_info(self, file_path):
+    def path_info(self, file_path: str) -> str:
         '''
         @brief Creates export path for audio file conversions and normalizations.
 
-        @details Creates export directory if it doesn't exist.
+        @details Calling function needs to create export directory if it doesn't exist.
+        @details The input file must be an acceptable audio file.
 
-        @param file_path {str} The full file path for audio file.
-        @return export_path {str} The export path.
+        @param file_path {str} The full file path for exported mp3 audio file.
+        @return export_path {str} The export path, otherwise None.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -399,8 +377,9 @@ class DirectoryProcessing():
             input_path = Path(file_path)
 
             input_ext = input_path.suffix
-            if input_ext.lower() not in _AUDIO_EXTS:
-                raise Exception(f"File {input_path} is not in {_AUDIO_TYPES}")
+            if input_ext.lower() not in AUDIO_EXTS:
+                logger.warning(f"File {input_path} is not in {AUDIO_EXTS}")
+                return None
 
             r'''
             Ubuntu file path:
@@ -437,63 +416,46 @@ class DirectoryProcessing():
             # remove the anchor (ie. / or H:\), have no use for it
             input_path_parts = input_path_parent.parts[1:]
 
-            # platform module doesn't help us here, ubuntu has differing paths for hdd (home) vs usb (media), unlike windows
-            # to keep the artist dir and album dir we need to look at the 1st element of our anchor trimmed path parts
-            if input_path_parts[0] == _MEDIA:
-                # Ubuntu usb is going to have <mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>
-                # so 6 elements, we don't want elements 0 to 3: 'media', 'gerald', 'Lexar', 'Music'
-                input_path_components = input_path_parts[4:]
-            elif input_path_parts[0] == _HOME:
-                # Ubuntu hdd is going to have <mount point>/<usr>/<tld>/<artist dir>/<album dir>
-                # so 5 elements, we don't want  elements 0 to 2: 'home', 'gerald', 'Music'
-                input_path_components = input_path_parts[3:]
-            else:
-                # Windows is going to have <tld>/<artist dir>/<album dir>
-                # so 3 elements, we don't want element 1: 'Music'
-                input_path_components = input_path_parts[1:]
-
             # using fixed storage path because will always know project structure
-            export_dir = os.path.join(generated_files, _EXPORT_TLD)
+            export_dir = os.path.join(GENERATED_PATH, MUSIC_TLD)
 
-            for component in input_path_components:
-                export_dir = os.path.join(export_dir, component)
+            full_len = len(input_path_parts)
+            artist_len = full_len - 2
 
-            # directory is already extant if we are processing multiple songs for the same artist & album
-            if not os.path.exists(export_dir):
-                os.makedirs(export_dir)
+            # iterate over last 2 elements, which will be artist and album directories
+            for i in range(artist_len, full_len):
+                export_dir = os.path.join(export_dir, input_path_parts[i])
 
             # get mp3 audio extension from package constants
-            export_ext = _AUDIO_EXTS[0]
+            export_ext = MP3_EXT
 
             input_name = input_path.stem
 
             export_name = input_name + export_ext
             export_path = os.path.join(export_dir, export_name)
 
-        except Exception as e:
-            raise Exception(f"Exception {e} getting export path {file_path}")
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting export path {file_path}", stack_info=True)
+            raise e_error
+        else:
+            return export_path
 
-        return export_path
 
-
-    def remove_album_dir(self, start_path):
+    def remove_empty_album_dir(self, start_path: str) -> None:
         '''
         @brief Removes empty album directories.
 
         @details Walks through top level directory to remove empty second level album directories contained in artist first level directories.
-        @details Without a start path input, the top level directory MUST have been set.
 
-        @param      start_path {str} The starting point of the directory walk.
-        @exception  OSError An os permission error.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param start_path {str} The starting point of the directory walk.
+
+        @exception OSError A system related error occurred.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         dir_count = 0
 
         try:
-            if start_path is None:
-                start_path = self._tld_path
-
             # get the artist dirs under tld
             tld_content = os.listdir(start_path)
 
@@ -519,31 +481,51 @@ class DirectoryProcessing():
                         os.rmdir(artist_item_path)
                         dir_count += 1
 
-            print(f"removed {dir_count} empty album directories")
+            logger.info(f"removed {dir_count} empty album directories")
 
-        except Exception as e:
-            if e.errno == errno.EACCES:
-                raise OSError(f"Exception: permission denied for deleting {artist_item_path}")
+        except OSError as os_error:
+            if os_error.errno == errno.EACCES:
+                logger.error(f"OSError permission denied for  deleting {artist_item_path}", exc_info=True)
+                raise OSError(f"OSError permission denied for  deleting {artist_item_path}")
             else:
-                raise Exception(f"Exception {e} deleting {artist_item_path}")
+                logger.error(f"OSError {(strerror(os_error.errno))} deleting {artist_item_path}", exc_info=True)
+                raise os_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} deleting {artist_item_path}", stack_info=True)
+            raise e_error
 
 
-    def remove_pattern(self, start_path, file_pattern):
+    def remove_pattern(self, start_path: str, file_pattern: str) -> None:
         '''
         @brief Removes file matching specified pattern.
 
         @details Walks through top level directory and removes files matching specified file pattern.
-        @details Without a start path input, the top level directory MUST have been set.
+        @details Will not delete from file system root or a mount point.
+        @details Will not delete *.* wildcard pattern.
 
-        @param      start_path {str} Optional, the starting point of the directory walk.
-        @param      file_pattern {str} The file pattern we want to delete.
-        @exception  OSError An os permission error.
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param start_path {str} The starting point of the directory walk.
+        @param file_pattern {str} The file pattern we want to delete.
+
+        @exception OSError A system related error occurred.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
-            if start_path is None:
-                start_path = self._tld_path
+            # guard against attempting root directory deletions
+            resolved_path = Path(start_path).resolve()
+            if resolved_path == resolved_path.parent:
+                logger.error(f"{start_path} is file system root")
+                raise MusicProcessingError(f"{start_path} is file system root")
+
+            # guard against mount point deletion
+            if os.path.ismount(start_path):
+                logger.error(f"{start_path} is a mount point")
+                raise MusicProcessingError(f"{start_path} is a mount point")
+
+            # guard against full wildcard pattern
+            if file_pattern == "*.*":
+                logger.error(f"{file_pattern} is too broad")
+                raise MusicProcessingError(f"{file_pattern} is too broad")
 
             # top down walk for files of the specified pattern
             # want the directory path & file names so we can get full file path
@@ -554,10 +536,17 @@ class DirectoryProcessing():
                     if fnmatch.fnmatch(file, file_pattern.lower()):
                         file_path = os.path.join(dir_path, file)
                         os.remove(file_path)
-                        print(f"Deleted: {file_path}")
+                        logger.info(f"Deleted: {file_path}")
 
-        except Exception as e:
-            if e.errno == errno.EACCES:
-                raise OSError(f"Exception: permission denied for deleting {file_path}")
+        except MusicProcessingError as mp_error:
+            raise mp_error
+        except OSError as os_error:
+            if os_error.errno == errno.EACCES:
+                logger.error(f"OSError permission denied for  deleting {file_path}", exc_info=True)
+                raise OSError(f"OSError permission denied for  deleting {file_path}")
             else:
-                raise Exception(f"Exception {e} deleting file {file_path}")
+                logger.error(f"OSError {(strerror(os_error.errno))} deleting {file_path}", exc_info=True)
+                raise os_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} deleting {file_path}", stack_info=True)
+            raise e_error

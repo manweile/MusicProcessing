@@ -1,0 +1,252 @@
+
+2025-10-04 19:26:02,566 — src.audio_info.audio_playlist — ERROR — get_audio_name:88 — PlaylistError no file delimiter in #EXTINF:0The Eagles-Desperado.m4a
+NoneType: None
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_playlist.py", line 57, in test_get_audio_name_error
+    audio = playlist.get_audio_name(line)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_playlist.py", line 88, in get_audio_name
+    logger.exception(f"PlaylistError no file delimiter in {line}", stack_info=True)
+
+2025-10-04 19:26:02,639 — src.audio_info.audio_playlist — INFO — update_paths:175 — Updated test.m3u
+
+
+2025-10-04 19:26:02,683 — src.audio_info.audio_playlist — ERROR — update_paths:130 — PlaylistError input file /home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3 is not a playlist
+NoneType: None
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_playlist.py", line 130, in test_update_paths_fail
+    playlist.update_paths(TESTS_TLD, TEST_MP3_CRUSH)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_playlist.py", line 130, in update_paths
+    logger.exception(f"PlaylistError input file {input_m3u} is not a playlist", stack_info=True)
+
+2025-10-04 19:35:15,051 — src.audio_info.audio_playlist — ERROR — get_audio_name:88 — PlaylistError no file delimiter in #EXTINF:0The Eagles-Desperado.m4a
+NoneType: None
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_playlist.py", line 160, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_playlist.py", line 57, in test_get_audio_name_error
+    audio = playlist.get_audio_name(line)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_playlist.py", line 88, in get_audio_name
+    logger.exception(f"PlaylistError no file delimiter in {line}", stack_info=True)
+
+2025-10-04 19:35:15,059 — src.audio_info.audio_playlist — INFO — update_paths:175 — Updated test.m3u
+
+
+2025-10-04 19:35:15,061 — src.audio_info.audio_playlist — ERROR — update_paths:130 — PlaylistError input file /home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3 is not a playlist
+NoneType: None
+Stack (most recent call last):
+  File "/usr/lib/python3.12/runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.12/runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/__main__.py", line 71, in <module>
+    cli.main()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 501, in main
+    run()
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/adapter/../../debugpy/launcher/../../debugpy/../debugpy/server/cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gerald/.vscode/extensions/ms-python.debugpy-2025.10.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "/home/gerald/MusicProcessing/tests/test_audio_playlist.py", line 160, in <module>
+    runner.run(suite)
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_playlist.py", line 130, in test_update_paths_fail
+    playlist.update_paths(TESTS_TLD, TEST_MP3_CRUSH)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_playlist.py", line 130, in update_paths
+    logger.exception(f"PlaylistError input file {input_m3u} is not a playlist", stack_info=True)
+
+2025-10-04 19:43:03,604 — src.audio_info.audio_playlist — ERROR — get_audio_name:88 — PlaylistError no file delimiter in #EXTINF:0The Eagles-Desperado.m4a
+NoneType: None
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_playlist.py", line 57, in test_get_audio_name_error
+    audio = playlist.get_audio_name(line)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_playlist.py", line 88, in get_audio_name
+    logger.exception(f"PlaylistError no file delimiter in {line}", stack_info=True)
+
+2025-10-04 19:43:03,612 — src.audio_info.audio_playlist — INFO — update_paths:175 — Updated test.m3u
+
+
+2025-10-04 19:43:03,612 — src.audio_info.audio_playlist — ERROR — update_paths:130 — PlaylistError input file /home/gerald/MusicProcessing/tests/Music/Crush/Here/Crush-Live.mp3 is not a playlist
+NoneType: None
+Stack (most recent call last):
+  File "<string>", line 206, in <module>
+  File "<string>", line 187, in run_tests
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "/home/gerald/MusicProcessing/tests/test_audio_playlist.py", line 130, in test_update_paths_fail
+    playlist.update_paths(TESTS_TLD, TEST_MP3_CRUSH)
+  File "/home/gerald/MusicProcessing/src/audio_info/audio_playlist.py", line 130, in update_paths
+    logger.exception(f"PlaylistError input file {input_m3u} is not a playlist", stack_info=True)
+
+2025-10-07 10:30:37,040 — src.audio_info.audio_playlist — ERROR — get_audio_name:88 — PlaylistError no file delimiter in #EXTINF:0The Eagles-Desperado.m4a
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_audio_playlist.py", line 160, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_audio_playlist.py", line 57, in test_get_audio_name_error
+    audio = playlist.get_audio_name(line)
+  File "D:\MusicProcessing\src\audio_info\audio_playlist.py", line 88, in get_audio_name
+    logger.exception(f"PlaylistError no file delimiter in {line}", stack_info=True)
+
+2025-10-07 10:30:37,077 — src.audio_info.audio_playlist — INFO — update_paths:175 — Updated test.m3u
+
+
+2025-10-07 10:30:37,077 — src.audio_info.audio_playlist — ERROR — update_paths:130 — PlaylistError input file D:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3 is not a playlist
+NoneType: None
+Stack (most recent call last):
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 198, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\runpy.py", line 88, in _run_code
+    exec(code, run_globals)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy\__main__.py", line 71, in <module>
+    cli.main()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 501, in main
+    run()
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\launcher/../..\debugpy/..\debugpy\server\cli.py", line 351, in run_file
+    runpy.run_path(target, run_name="__main__")
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+    return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+    _run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+  File "c:\Users\gmanw\.vscode\extensions\ms-python.debugpy-2025.10.0-win32-x64\bundled\libs\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+    exec(code, run_globals)
+  File "D:\MusicProcessing\tests\test_audio_playlist.py", line 160, in <module>
+    runner.run(suite)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\runner.py", line 240, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\suite.py", line 122, in run
+    test(result)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "c:\Users\gmanw\AppData\Local\Programs\Python\Python312\Lib\unittest\case.py", line 589, in _callTestMethod
+    if method() is not None:
+  File "D:\MusicProcessing\tests\test_audio_playlist.py", line 130, in test_update_paths_fail
+    playlist.update_paths(TESTS_TLD, TEST_MP3_CRUSH)
+  File "D:\MusicProcessing\src\audio_info\audio_playlist.py", line 130, in update_paths
+    logger.exception(f"PlaylistError input file {input_m3u} is not a playlist", stack_info=True)
