@@ -1,21 +1,15 @@
-# external library dependencies
-# dependency of tqdm
+# project external library dependencies
+## dependency of tqdm
 colorama==0.4.6
-# dependency of yaspin
+## dependency of yaspin
 termcolor===2.3.0
-# dependency of Gooey
-Pillow>=4.3.0
-psutil>=5.4.2
-colored>=1.3.93
-pygtrie>=2.3.3
+# project external libraries
+## gui libraries
 wxpython>=4.2.3
-# required project external libraries
-# gui libraries
-Gooey==1.0.8.1
-# audio libraries
+## audio libraries
 mutagen==1.47.0
-# path validation libraries
+## path validation libraries
 pathvalidate==3.2.3
-# progress bar libraries
+## progress bar libraries
 tqdm==4.67.1
 yaspin==3.1.0
