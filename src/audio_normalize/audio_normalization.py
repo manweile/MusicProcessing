@@ -216,7 +216,6 @@ class AudioNormalization():
             data.append(stats_pre_text)
 
             if show_spinner:
-                # stats_process, stats_spinner = subprocess_utils.spinner_subprocess_run(stats_text, stats_command)
                 stats_process, stats_spinner = subprocess_utils.spinner_subprocess_run(stats_command, stats_text)
                 stats_time = stats_spinner.elapsed_time
                 stats_post_text = f"Analyzed loudnorm stats in {stats_time:.2f} secs"
@@ -272,7 +271,6 @@ class AudioNormalization():
             data.append(post_text)
 
             if show_spinner:
-                # normalize_process, normalize_spinner = subprocess_utils.spinner_subprocess_run(normalizing_text, normalize_command)
                 normalize_process, normalize_spinner = subprocess_utils.spinner_subprocess_run(normalize_command, normalizing_text)
                 normalization_time = normalize_spinner.elapsed_time
                 apply_post_text = f"Applied loudnorm stats in {normalization_time:.2f} secs"
@@ -582,7 +580,6 @@ class AudioNormalization():
             data.append(command)
 
             if show_spinner:
-                # _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
                 _, spinner = subprocess_utils.spinner_subprocess_run(command, text)
                 success_text = f"Successful peak normalization on {input_path_basename} in {spinner.elapsed_time:.2f} secs\n"
             else:
@@ -691,7 +688,6 @@ class AudioNormalization():
             data.append(command)
 
             if show_spinner:
-                # _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
                 _, spinner = subprocess_utils.spinner_subprocess_run(command, text)
                 success_text = f"Successful rms normalization on {input_path_basename} in {spinner.elapsed_time:.2f} secs\n"
             else:
