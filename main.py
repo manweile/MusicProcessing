@@ -19,11 +19,17 @@ import sys
 # third party modules
 
 # local modules
-# from src import APP_NAME, APP_PATH
-# from src import ARG_CLI_FILE, ARG_CLI_PATTERN, ARG_CLI_TLD
-# from src import ARG_HELP_AUDIO, ARG_HELP_TLD, ARG_HELP_PATTERN
+from src import APP_NAME
+from src import ARG_CLI_EXT
+from src import ARG_CLI_FFPROBE, ARG_CLI_FILE
+from src import ARG_CLI_PATTERN, ARG_CLI_PLAYLIST
+from src import ARG_CLI_TLD, ARG_CLI_TYPE
+from src import ARG_HELP_AUDIO
+from src import ARG_HELP_FFPROBE, ARG_HELP_FILE
+from src import ARG_HELP_NORMAL
+from src import ARG_HELP_PATTERN_MAN, ARG_HELP_PATTERN_OPT, ARG_HELP_PLAYLIST
+from src import ARG_HELP_TLD
 from src import ERROR_LOG_FORMAT, LOG_DIR, LOG_EXT, UTF8          # logging constants
-# from src import M4A_EXT, MP3_EXT, WMA_EXT
 from src.generated_files import GENERATED_PATH
 from src.audio_info import AudioArt
 from src.audio_info import AudioMetadata
@@ -47,54 +53,6 @@ directory = DirectoryProcessing()
 metadata = AudioMetadata()
 normalization = AudioNormalization()
 playlist = AudioPlaylist()
-
-# @todo single use in main.py
-## @var APP_NAME
-# @brief The app description
-# @details use when needing application name/description
-APP_NAME = "Music Processing"
-
-# @todo multiple use in main.py
-## @var APP_PATH
-# @brief The main script path
-# @details Getting the directory name for importing means will not need a hard coded "magic spell" else where in codebase
-APP_PATH = os.path.dirname(os.path.abspath(__file__))
-
-# @todo multiple use in main.py
-## @var ARG_CLI_FILE
-# @brief add argument cli
-# @details use when needing file cli
-ARG_CLI_FILE = "file"
-
-# @todo multiple use in main.py
-## @var ARG_CLI_PATTERN
-# @brief add argument cli
-# @details use when needing pattern cli
-ARG_CLI_PATTERN = "--pattern"
-
-# @todo multiple use in main.py
-## @var ARG_CLI_TLD
-# @brief add argument cli
-# @details use when needing tld cli
-ARG_CLI_TLD = "tld"
-
-# @todo multiple use in main.py
-## @var ARG_HELP_PATH
-# @brief add argument help
-# @details use when needing mandatory file path input
-ARG_HELP_AUDIO = "mandatory full path to audio file"
-
-# @todo multiple use in main.py
-## @var ARG_HELP_TLD
-# @brief add argument help
-# @details use when needing mandatory directory input
-ARG_HELP_TLD = "mandatory top level directory"
-
-# @todo multiple use in main.py
-## @var ARG_HELP_PATTERN
-# @brief add argument help
-# @details use when needing optional pattern input
-ARG_HELP_PATTERN = "optional file pattern"
 
 
 class CustomArgumentParser(argparse.ArgumentParser):
@@ -493,8 +451,8 @@ def arg_parser():
     '''
 
     try:
-        parser = CustomArgumentParser(description='Music Processing')
-        # parser = GooeyParser(description=APP_NAME)
+        # parser = CustomArgumentParser(description='Music Processing')
+        parser = CustomArgumentParser(description=APP_NAME)
         subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
         # convert audio file specified to mp3 format
@@ -502,7 +460,7 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
         convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
-        convert_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        convert_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
         convert_file_parser.set_defaults(func=convert_file)
 
         # convert all audio files found in top level directory
@@ -511,9 +469,8 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'convert-walk', 'C:\Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' } ]
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-walk', '/home/gerald/Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' } ]
         convert_walk_parser = subparsers.add_parser("convert-walk", help="Converts all audio files to mp3")
-        convert_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        # convert_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
-        convert_walk_parser.add_argument(ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN)
+        convert_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
+        convert_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN_OPT)
         convert_walk_parser.set_defaults(func=convert_walk)
 
         # create album directories
@@ -521,7 +478,7 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'create-album', 'C:\Music']
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'create-album', '/home/gerald/Music']
         create_albums_parser = subparsers.add_parser("create-albums", help="Create album sub-directories")
-        create_albums_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        create_albums_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
         create_albums_parser.set_defaults(func=create_albums)
 
         # ebu normalize an audio file (destructive)
@@ -529,7 +486,7 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'ebu-file', "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'ebu-file', "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp3"]
         ebu_file_parser = subparsers.add_parser("ebu-file", help="EBU R128 normalizes a mp3 audio file level")
-        ebu_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        ebu_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
         ebu_file_parser.set_defaults(func=ebu_file)
 
         # extract album art from specified audio file
@@ -537,7 +494,7 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'extract-art', 'C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma',
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-art', '/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma',
         extract_file_parser = subparsers.add_parser("extract-file", help="Extracts embedded art from audio file")
-        extract_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        extract_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
         extract_file_parser.set_defaults(func=extract_file)
 
         # extract album art from all audio files found in top level directory
@@ -546,11 +503,9 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'extract-walk', 'C:\Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' } ]
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-walk', '/home/gerald/Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' } ]
         extract_walk_parser = subparsers.add_parser("extract-walk", help="Extracts embedded art from all audio files")
-        extract_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        # extract_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
-        extract_walk_parser.add_argument(ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN)
+        extract_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
         # @todo needs to be a select 1 from list input restricted to { '*.mp3' | '*.m4a' | '*.wma' }
-        # extract_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
+        extract_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN_OPT)
         extract_walk_parser.set_defaults(func=extract_walk)
 
         # get ffprobe media information for files
@@ -559,11 +514,9 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'get-media-info-walk', 'C:\Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' | '*.*' } ]
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' | *.* } ]
         get_media_info_walk_parser = subparsers.add_parser("get-media-info-walk", help="Gets ffprobe media info for audio files")
-        get_media_info_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        # get_media_info_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
-        get_media_info_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
+        get_media_info_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
         # @todo needs to be a select 1 from list input restricted to { '*.mp3' | '*.m4a' | '*.wma' }
-        # extract_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
+        get_media_info_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN_OPT)
         get_media_info_walk_parser.set_defaults(func=get_media_info_walk)
 
         # get metadata tags from all audio files found in top level directory
@@ -574,8 +527,8 @@ def arg_parser():
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music', '--pattern', { '*.mp3' | '*.m4a' | '*.wma' | *.* }, '--ffprobe', 'True']
         get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Gets metadata tags from audio files")
         get_tags_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_AUDIO)
-        get_tags_walk_parser.add_argument(ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN)
-        get_tags_walk_parser.add_argument("--ffprobe", type=bool, help="optional ffprobe tags")
+        get_tags_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN_OPT)
+        get_tags_walk_parser.add_argument("--" + ARG_CLI_FFPROBE, type=bool, help=ARG_HELP_FFPROBE)
         get_tags_walk_parser.set_defaults(func=get_tags_walk)
 
         # gets set of unique ffprobe metadata tag keys for entire collection
@@ -601,7 +554,7 @@ def arg_parser():
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'list-type', '/home/gerald/Music', '--ext', { 'mp3' | 'm4a' | 'wma' | 'abc' } ]
         list_type_parser = subparsers.add_parser("list-type", help="Generates a csv containing full file path for an audio file type")
         list_type_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
-        list_type_parser.add_argument("--ext", type=str, help='optional file extension')
+        list_type_parser.add_argument("--" + ARG_CLI_EXT, type=str, help=ARG_HELP_FILE)
         list_type_parser.set_defaults(func=list_type)
 
         # normalize mp3 files from tld
@@ -609,7 +562,7 @@ def arg_parser():
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'normalize-walk', '/home/gerald/ConvertedMusic', { 'ebu' | 'peak' | 'rms' } ]
         normalize_walk_parser = subparsers.add_parser("normalize-walk", help="Normalizes files with specified pattern")
         normalize_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
-        normalize_walk_parser.add_argument("type", type=str, help="mandatory normalization type")
+        normalize_walk_parser.add_argument(ARG_CLI_TYPE, type=str, help=ARG_HELP_NORMAL)
         normalize_walk_parser.set_defaults(func=normalize_walk)
 
         # remove empty album directories
@@ -626,7 +579,7 @@ def arg_parser():
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'remove-pattern', '/home/gerald/Music', { 'AlbumArtSmall.jpg' | 'AlbumArt*Small.jpg' | '*.db' | '*.ini' } ]
         remove_pattern_parser = subparsers.add_parser("remove-pattern", help="Removes files with specified pattern")
         remove_pattern_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
-        remove_pattern_parser.add_argument("pattern", type=str, help="mandatory file pattern")
+        remove_pattern_parser.add_argument(ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN_MAN)
         remove_pattern_parser.set_defaults(func=remove_pattern)
 
         # peak normalize an audio file (destructive)
@@ -634,7 +587,7 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'peak-file', "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'peak-file', "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp3"]
         peak_file_parser = subparsers.add_parser("peak-file", help="Peak normalizes a mp3 audio file level")
-        peak_file_parser.add_argument("file", type=existing_file, help=ARG_HELP_AUDIO)
+        peak_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
         peak_file_parser.set_defaults(func=peak_file)
 
         # rms normalize an audio file (destructive)
@@ -642,7 +595,7 @@ def arg_parser():
         # sys.argv = ['D:\MusicProcessing\main.py', 'rms-file', "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'rms-file', "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp3"]
         rms_file_parser = subparsers.add_parser("rms-file", help="Rms normalizes a mp3 audio file level")
-        rms_file_parser.add_argument("file", type=existing_file, help=ARG_HELP_AUDIO)
+        rms_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
         rms_file_parser.set_defaults(func=rms_file)
 
         # set album art file
@@ -660,7 +613,7 @@ def arg_parser():
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'update-m3u', '~/MusicProcessing/tests/Music', '~/MusicProcessing/tests/Music/test.m3u']
         update_m3u_parsers = subparsers.add_parser("update-m3u", help="Update playlist paths")
         update_m3u_parsers.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
-        update_m3u_parsers.add_argument("m3u", type=existing_file, help="mandatory m3u file path")
+        update_m3u_parsers.add_argument(ARG_CLI_PLAYLIST, type=existing_file, help=ARG_HELP_PLAYLIST)
         update_m3u_parsers.set_defaults(func=update_paths)
 
         # update m3u playlist walk
@@ -744,12 +697,12 @@ def main(args):
 
     try:
         if args.subcommand == "convert-file":
-            file_path = getattr(args, "file")
+            file_path = getattr(args, ARG_CLI_FILE)
             convert_file(file_path)
 
         if args.subcommand == "convert-walk":
             tld_path = getattr(args, ARG_CLI_TLD)
-            file_pattern = getattr(args, "pattern")
+            file_pattern = getattr(args, ARG_CLI_PATTERN)
             convert_walk(tld_path, file_pattern)
 
         if args.subcommand == "create-albums":
@@ -757,27 +710,27 @@ def main(args):
             create_albums(tld_path)
 
         if args.subcommand == "ebu-file":
-            file_path = getattr(args, "file")
+            file_path = getattr(args, ARG_CLI_FILE)
             ebu_file(file_path)
 
         if args.subcommand == "extract-file":
-            file_path = getattr(args, "file")
+            file_path = getattr(args, ARG_CLI_FILE)
             extract_file(file_path)
 
         if args.subcommand == "extract-walk":
             tld_path = getattr(args, ARG_CLI_TLD)
-            file_pattern = getattr(args, "pattern")
+            file_pattern = getattr(args, ARG_CLI_PATTERN)
             extract_walk(tld_path, file_pattern)
 
         if args.subcommand == "get-media-info-walk":
             tld_path = getattr(args, ARG_CLI_TLD)
-            file_pattern = getattr(args, "pattern")
+            file_pattern = getattr(args, ARG_CLI_PATTERN)
             get_media_info_walk(tld_path, file_pattern)
 
         if args.subcommand == "get-tags-walk":
             tld_path = getattr(args, ARG_CLI_TLD)
-            file_pattern = getattr(args, "pattern")
-            ffprobe = getattr(args, "ffprobe")
+            file_pattern = getattr(args, ARG_CLI_PATTERN)
+            ffprobe = getattr(args, ARG_CLI_FFPROBE)
             get_tags_walk(tld_path, file_pattern, ffprobe)
 
         if args.subcommand == "get-unique-media":
@@ -790,20 +743,20 @@ def main(args):
 
         if args.subcommand == "list-type":
             tld_path = getattr(args, ARG_CLI_TLD)
-            file_ext = getattr(args, "ext")
+            file_ext = getattr(args, ARG_CLI_EXT)
             list_type(tld_path, file_ext)
 
         if args.subcommand == "normalize-walk":
             tld_path = getattr(args, ARG_CLI_TLD)
-            norm_type = getattr(args, "type")
+            norm_type = getattr(args, ARG_CLI_TYPE)
             normalize_walk(tld_path, norm_type)
 
         if args.subcommand == "peak-file":
-            file_path = getattr(args, "file")
+            file_path = getattr(args, ARG_CLI_FILE)
             peak_file(file_path)
 
         if args.subcommand == "rms-file":
-            file_path = getattr(args, "file")
+            file_path = getattr(args, ARG_CLI_FILE)
             rms_file(file_path)
 
         if args.subcommand == "remove-albums":
@@ -812,7 +765,7 @@ def main(args):
 
         if args.subcommand == "remove-pattern":
             tld_path = getattr(args, ARG_CLI_TLD)
-            file_pattern = getattr(args, "pattern")
+            file_pattern = getattr(args, ARG_CLI_PATTERN)
             remove_pattern(tld_path, file_pattern)
 
         if args.subcommand == "set-album-art":
@@ -821,7 +774,7 @@ def main(args):
 
         if args.subcommand == "update-m3u":
             tld_path = getattr(args, ARG_CLI_TLD)
-            input_m3u = getattr(args, "m3u")
+            input_m3u = getattr(args, ARG_CLI_PLAYLIST)
             update_paths(tld_path, input_m3u)
 
         if args.subcommand == "update-walk":

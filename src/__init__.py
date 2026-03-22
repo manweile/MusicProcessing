@@ -21,55 +21,86 @@ from src.errors import VideoStreamError
 # local module classes
 from src.level_filter import LevelFilter
 
-# # @todo single use in main.py
-# ## @var APP_NAME
-# # @brief The app description
-# # @details use when needing application name/description
-# APP_NAME = "Music Processing"
+## @var APP_NAME
+# @brief The app description
+# @details use when needing application name/description
+APP_NAME = "Music Processing"
 
-# # @todo multiple use in main.py
-# ## @var APP_PATH
-# # @brief The main script path
-# # @details Getting the directory name for importing means will not need a hard coded "magic spell" else where in codebase
-# APP_PATH = os.path.dirname(os.path.abspath(__file__))
+## @var ARG_CLI_EXT
+# @brief add argument cli
+# @details use when needing mandatory file extension cli
+ARG_CLI_EXT = "ext"
 
-# # @todo multiple use in main.py
-# ## @var ARG_CLI_FILE
-# # @brief add argument cli
-# # @details use when needing file cli
-# ARG_CLI_FILE = "file"
+## @var ARG_CLI_FFPROBE
+# @brief add argument cli
+# @details use when needing optional ffprobe cli
+ARG_CLI_FFPROBE = "ffprobe"
 
-# # @todo multiple use in main.py
-# ## @var ARG_CLI_PATTERN
-# # @brief add argument cli
-# # @details use when needing pattern cli
-# ARG_CLI_PATTERN = "--pattern"
+## @var ARG_CLI_FILE
+# @brief add argument cli
+# @details use when needing mandatory file cli
+ARG_CLI_FILE = "file"
 
-# # @todo multiple use in main.py
-# ## @var ARG_CLI_TLD
-# # @brief add argument cli
-# # @details use when needing tld cli
-# ARG_CLI_TLD = "tld"
+## @var ARG_CLI_PLAYLIST
+# @brief add argument cli
+# @details use when needing optional playlist cli
+ARG_CLI_PLAYLIST = "m3u"
 
-# # @todo multiple use in main.py
-# ## @var ARG_HELP_PATH
-# # @brief add argument help
-# # @details use when needing mandatory file path input
-# ARG_HELP_AUDIO = "mandatory full path to audio file"
+## @var ARG_CLI_PATTERN
+# @brief add argument cli
+# @details use when needing mandatory pattern cli
+ARG_CLI_PATTERN = "pattern"
 
-# # @todo multiple use in main.py
-# ## @var ARG_HELP_TLD
-# # @brief add argument help
-# # @details use when needing mandatory directory input
-# ARG_HELP_TLD = "mandatory top level directory"
+## @var ARG_CLI_TLD
+# @brief add argument cli
+# @details use when needing mandatory tld cli
+ARG_CLI_TLD = "tld"
 
-# # @todo multiple use in main.py
-# ## @var ARG_HELP_PATTERN
-# # @brief add argument help
-# # @details use when needing optional pattern input
-# ARG_HELP_PATTERN = "optional file pattern"
+## @var ARG_CLI_TYPE
+# @brief add argument cli
+# @details use when needing mandatory type cli
+ARG_CLI_TYPE = "type"
 
-# @todo single use in audio_metadata.py
+## @var ARG_HELP_PATH
+# @brief add argument help
+# @details use when needing mandatory file path input
+ARG_HELP_AUDIO = "mandatory full path to audio file"
+
+## @var ARG_HELP_FFPROBE
+# @brief add argument help
+# @details use when needing optional ffprobe input
+ARG_HELP_FFPROBE = "optional ffprobe tags"
+
+## @var ARG_HELP_FILE
+# @brief add argument help
+# @details use when needing optional file extension
+ARG_HELP_FILE = "optional file extension"
+
+## @var ARG_HELP_NORMAL
+# @brief add argument help
+# @details use when needing mandatory normalization type
+ARG_HELP_NORMAL = "mandatory normalization type"
+
+## @var ARG_HELP_PATTERN_MAN
+# @brief add argument help
+# @details use when needing mandatory pattern input
+ARG_HELP_PATTERN_MAN = "mandatory file pattern"
+
+## @var ARG_HELP_PATTERN_OPT
+# @brief add argument help
+# @details use when needing optional pattern input
+ARG_HELP_PATTERN_OPT = "optional file pattern"
+
+## @var ARG_HELP_PLAYLIST
+# @brief add argument help
+# @details use when needing mandatory m3u file path
+ARG_HELP_PLAYLIST = "mandatory m3u file path"
+
+## @var ARG_HELP_TLD
+# @brief add argument help
+# @details use when needing mandatory directory input
+ARG_HELP_TLD = "mandatory top level directory"
+
 ## @var ASF_TYPE
 # @brief mutagen audio file type
 # @details use this when working with mutagen library
@@ -157,12 +188,6 @@ MUSIC_TLD = "Music"
 # @details use this when working with os library
 PLAYLIST_EXTS = [".m3u"]
 
-# @todo never used!!!
-## @var PLAYLIST_TYPES
-# @brief playlist file types in my collection
-# @details use this when you just need the type
-PLAYLIST_TYPES = ["m3u"]
-
 ## @var RESULTS_FILES
 # @brief final part of results files directory path
 # @details use this to set result files directory path
@@ -193,9 +218,16 @@ WMA_EXT = ".wma"
 # @details In modules needing the constant add 'from src import <constant>'
 # @details In modules needing the error class, add 'from src.errors import <error>'
 __all__ = [
-    # "APP_NAME", "APP_PATH",
-    # "ARG_CLI_FILE", "ARG_CLI_TLD", "ARG_CLI_PATTERN",
-    # "ARG_HELP_AUDIO", "ARG_HELP_TLD", "ARG_HELP_PATTERN",
+    "APP_NAME",
+    "ARG_CLI_EXT",
+    "ARG_CLI_FFPROBE", "ARG_CLI_FILE",
+    "ARG_CLI_PATTERN", "ARG_CLI_PLAYLIST",
+    "ARG_CLI_TLD", "ARG_CLI_TYPE",
+    "ARG_HELP_AUDIO",
+    "ARG_HELP_FFPROBE", "ARG_HELP_FILE",
+    "ARG_HELP_NORMAL",
+    "ARG_HELP_PATTERN_MAN", "ARG_HELP_PATTERN_OPT", "ARG_HELP_PLAYLIST",
+    "ARG_HELP_TLD",
     "ASF_TYPE",
     "AUDIO_EXTS", "AUDIO_FILES",
     "CSV_DIR", "CSV_EXT",
@@ -205,7 +237,7 @@ __all__ = [
     "ILT",
     "LRA",
     "M4A_EXT", "MP3_EXT", "MP3_TYPE", "MP4_TYPE", "MUSIC_TLD",
-    "PLAYLIST_EXTS", "PLAYLIST_TYPES",
+    "PLAYLIST_EXTS",
     "RESULT_DIR", "RESULT_EXT",
     "TP",
     "UTF8",
