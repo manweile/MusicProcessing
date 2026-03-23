@@ -194,3 +194,15 @@ I will use the music processing  python code to:
 - Convert music files to mp3 with embedded art. See ConvertedMusic.md.
 - Normalize music to EBU R128 standard. See NormalizedMusic.md.
 - Finalize music with updated playlists. See FinalizedMusic.md.
+
+## GUI Mode (wxPython)
+
+The project now includes a `gui` subcommand using wxPython.
+
+Usage:
+- `python main.py gui`
+
+Requirements:
+- `wxPython` package installed (e.g., `pip install wxPython`).
+
+The GUI exposes convert, normalize, metadata, directory, and playlist operations in tabs.

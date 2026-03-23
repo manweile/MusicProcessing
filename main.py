@@ -624,6 +624,10 @@ def arg_parser():
         update_walk_parsers.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
         update_walk_parsers.set_defaults(func=update_walk)
 
+        # gui mode uses wxPython graphical user interface
+        gui_parser = subparsers.add_parser("gui", help="Launch wxPython GUI")
+        gui_parser.set_defaults(func=None)
+
         args = parser.parse_args()
 
     except NotImplementedError as ni_e:
@@ -696,6 +700,12 @@ def main(args):
     '''
 
     try:
+        if args.subcommand == "gui":
+            # Lazy import GUI module to avoid adding GUI dependencies to CLI-only use cases.
+            from src.gui.wx_app import run_gui
+            run_gui()
+            return
+
         if args.subcommand == "convert-file":
             file_path = getattr(args, ARG_CLI_FILE)
             convert_file(file_path)
