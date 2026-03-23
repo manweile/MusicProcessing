@@ -374,3 +374,5 @@ Stack (most recent call last):
 2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\The Lord of the Rings\The Two Towers
 
 2025-10-07 10:26:46,513 — src.audio_info.audio_art — WARNING — set_album_art:499 — No album art set for D:\MusicProcessing\tests\Music\X Ambassadors\VHS
+
+2026-03-23 16:54:03,492 — src.audio_info.audio_art — INFO — extract_album_art:208 — F:\iTunesPrepped\Belinda Carlisle\Her Greatest Hits has a Folder.jpg

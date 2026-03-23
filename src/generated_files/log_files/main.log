@@ -10,3 +10,5 @@
                ...
 
 2025-10-21 17:40:24,804 — __main__ — ERROR — _print_message:68 — Argparse Error: main.py: error: argument subcommand: invalid choice: 'blah' (choose from 'convert-file', 'convert-walk', 'create-albums', 'ebu-file', 'extract-file', 'extract-walk', 'get-media-info-walk', 'get-tags-walk', 'get-unique-media', 'list-audio', 'list-type', 'normalize-walk', 'remove-albums', 'remove-pattern', 'peak-file', 'rms-file', 'set-album-art', 'update-m3u', 'update-walk')
+
+2026-03-23 16:54:03,492 — src.audio_info.audio_art — INFO — extract_album_art:208 — F:\iTunesPrepped\Belinda Carlisle\Her Greatest Hits has a Folder.jpg
