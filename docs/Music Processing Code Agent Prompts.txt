@@ -1,0 +1,16 @@
+Music Processing Code Agent Prompts
+Primary Prompt:
+add wxPython gui to existing command line application
+
+Additional Prompts:
+1) dialog box not saving selection for use
+2) add an Art panel for missing audio_art.py functions
+3) set panel order left to right as art, convert, normalize, playlist, metadata, directory
+4) launch application maximized
+5) enable log_ctrl text control re-sizable by user
+6) After any conversion or normalization operation succeeds, a directory browser dialog opens automatically showing the generated_files\Music directory. Users can then navigate to select and move desired mp3 files
+7) add tool tip for text boxes that says "enter path or click browse button"
+8) for art extract-walk function, change optional pattern input text control to select-able drop down list populated from AUDIO_EXTS and an any file type
+9) add tool tip to Art panel Pattern drop down list
+10) Art panel Audio file (extract art) browse dialog should only be able to select files listed in AUDO_EXTS
+11) Convert panel Audio file to convert browse dialog should only be able to select files listed in AUDO_EXTS
