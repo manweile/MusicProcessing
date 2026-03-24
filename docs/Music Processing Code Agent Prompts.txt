@@ -1,4 +1,6 @@
 Music Processing Code Agent Prompts
+Session Name: Integrating wxPython GUI with Command Line App
+
 Primary Prompt:
 add wxPython gui to existing command line application
 
@@ -14,3 +16,5 @@ Additional Prompts:
 9) add tool tip to Art panel Pattern drop down list
 10) Art panel Audio file (extract art) browse dialog should only be able to select files listed in AUDO_EXTS
 11) Convert panel Audio file to convert browse dialog should only be able to select files listed in AUDO_EXTS
+12) for convert panel convert-walk function, change optional pattern input text control to select-able drop down list populated from AUDIO_EXTS and an any file type
+13) add tool tip to Normalize panel Type drop down list
