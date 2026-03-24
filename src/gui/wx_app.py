@@ -111,37 +111,84 @@ class MainFrame(wx.Frame):
 
     def _make_normalize_panel(self, parent):
         panel = wx.Panel(parent)
-        grid = wx.GridBagSizer(8, 8)
 
-        self.norm_walk_tld, norm_walk_tld_btn = self._make_path_controls(panel)
+        # Nested subpanel for normalize-walk options
+        normalize_box = wx.StaticBox(panel, label="Normalize Walk Options")
+        normalize_sizer = wx.StaticBoxSizer(normalize_box, wx.VERTICAL)
+        normalize_subpanel = wx.Panel(panel)
+        normalize_grid = wx.GridBagSizer(8, 8)
+
+        self.norm_walk_tld, norm_walk_tld_btn = self._make_path_controls(normalize_subpanel)
         norm_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.on_browse_dir(evt, self.norm_walk_tld))
-        self.norm_type_choice = wx.Choice(panel, choices=["ebu", "peak", "rms"])
+        self.norm_type_choice = wx.Choice(normalize_subpanel, choices=["ebu", "peak", "rms"])
         self.norm_type_choice.SetSelection(0)
         self.norm_type_choice.SetToolTip("Select normalization type: ebu (loudness), peak (peak level), or rms (RMS level)")
-        norm_walk_exec = wx.Button(panel, label="Normalize Walk")
+        norm_walk_exec = wx.Button(normalize_subpanel, label="Normalize Walk")
         norm_walk_exec.Bind(wx.EVT_BUTTON, self.on_normalize_walk)
 
-        self.ebu_file_path, ebu_file_btn = self._make_path_controls(panel)
+        normalize_grid.Add(wx.StaticText(normalize_subpanel, label="Top-level dir (normalize walk):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        normalize_grid.Add(self.norm_walk_tld, pos=(0, 1), flag=wx.EXPAND)
+        normalize_grid.Add(norm_walk_tld_btn, pos=(0, 2))
+        normalize_grid.Add(wx.StaticText(normalize_subpanel, label="Type:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        normalize_grid.Add(self.norm_type_choice, pos=(1, 1), flag=wx.EXPAND)
+        normalize_grid.Add(norm_walk_exec, pos=(1, 2))
+
+        normalize_grid.AddGrowableCol(1)
+        normalize_subpanel.SetSizer(normalize_grid)
+        normalize_sizer.Add(normalize_subpanel, 1, wx.EXPAND | wx.ALL, 4)
+
+        grid = wx.GridBagSizer(8, 8)
+        grid.Add(normalize_sizer, pos=(0, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
+
+        # Specific normalizations nested subpanel
+        specific_box = wx.StaticBox(panel, label="Specific Normalizations")
+        specific_sizer = wx.StaticBoxSizer(specific_box, wx.VERTICAL)
+        specific_subpanel = wx.Panel(panel)
+        specific_grid = wx.GridBagSizer(8, 8)
+
+        self.ebu_file_path, ebu_file_btn = self._make_path_controls(specific_subpanel)
         ebu_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.on_browse_file(evt, self.ebu_file_path))
-        ebu_file_exec = wx.Button(panel, label="EBU File")
+        ebu_file_exec = wx.Button(specific_subpanel, label="EBU File")
         ebu_file_exec.Bind(wx.EVT_BUTTON, self.on_ebu_file)
 
-        self.peak_file_path, peak_file_btn = self._make_path_controls(panel)
+        self.peak_file_path, peak_file_btn = self._make_path_controls(specific_subpanel)
         peak_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.on_browse_file(evt, self.peak_file_path))
-        peak_file_exec = wx.Button(panel, label="Peak File")
+        peak_file_exec = wx.Button(specific_subpanel, label="Peak File")
         peak_file_exec.Bind(wx.EVT_BUTTON, self.on_peak_file)
 
-        self.rms_file_path, rms_file_btn = self._make_path_controls(panel)
+        self.rms_file_path, rms_file_btn = self._make_path_controls(specific_subpanel)
         rms_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.on_browse_file(evt, self.rms_file_path))
-        rms_file_exec = wx.Button(panel, label="RMS File")
+        rms_file_exec = wx.Button(specific_subpanel, label="RMS File")
         rms_file_exec.Bind(wx.EVT_BUTTON, self.on_rms_file)
 
-        grid.Add(wx.StaticText(panel, label="Top-level dir (normalize walk):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.norm_walk_tld, pos=(0, 1), flag=wx.EXPAND)
-        grid.Add(norm_walk_tld_btn, pos=(0, 2))
-        grid.Add(wx.StaticText(panel, label="Type:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.norm_type_choice, pos=(1, 1), flag=wx.EXPAND)
-        grid.Add(norm_walk_exec, pos=(1, 2))
+        specific_grid.Add(wx.StaticText(specific_subpanel, label="EBU file:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        specific_grid.Add(self.ebu_file_path, pos=(0, 1), flag=wx.EXPAND)
+        specific_grid.Add(ebu_file_btn, pos=(0, 2))
+        specific_grid.Add(ebu_file_exec, pos=(0, 3))
+
+        specific_grid.Add(wx.StaticText(specific_subpanel, label="Peak file:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        specific_grid.Add(self.peak_file_path, pos=(1, 1), flag=wx.EXPAND)
+        specific_grid.Add(peak_file_btn, pos=(1, 2))
+        specific_grid.Add(peak_file_exec, pos=(1, 3))
+
+        specific_grid.Add(wx.StaticText(specific_subpanel, label="RMS file:"), pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        specific_grid.Add(self.rms_file_path, pos=(2, 1), flag=wx.EXPAND)
+        specific_grid.Add(rms_file_btn, pos=(2, 2))
+        specific_grid.Add(rms_file_exec, pos=(2, 3))
+
+        specific_grid.AddGrowableCol(1)
+        specific_subpanel.SetSizer(specific_grid)
+        specific_sizer.Add(specific_subpanel, 1, wx.EXPAND | wx.ALL, 4)
+
+        grid.Add(specific_sizer, pos=(1, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
+
+        grid.AddGrowableCol(1)
+        panel.SetSizer(grid)
+        return panel
+
+        grid.AddGrowableCol(1)
+        panel.SetSizer(grid)
+        return panel
 
         grid.Add(wx.StaticText(panel, label="EBU file:"), pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         grid.Add(self.ebu_file_path, pos=(2, 1), flag=wx.EXPAND)
