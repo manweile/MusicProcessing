@@ -18,3 +18,13 @@ Additional Prompts:
 11) Convert panel Audio file to convert browse dialog should only be able to select files listed in AUDO_EXTS
 12) for convert panel convert-walk function, change optional pattern input text control to select-able drop down list populated from AUDIO_EXTS and an any file type
 13) add tool tip to Normalize panel Type drop down list
+14) in Normalize panel, create a nested panel that contains the top-level dir (normalize-walk) input text and the Type drop down list.
+15) in Normalize panel, create a nested panel that contains the ebu file, Peak file and RMS file inut text fields. Title the nested panel "Specific Normalizations"
+todo
+Playlist gui
+Metadata gui
+Directory GUI
+
+GUI selenium?
+
+send error.info and error.warning to text log ui instead of log files
