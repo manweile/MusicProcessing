@@ -606,6 +606,9 @@ def arg_parser():
         set_album_art_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
         set_album_art_parser.set_defaults(func=set_album_art)
 
+        # @todo this function does not need tld path input,
+        # that can be gotten full file path, not sure why I wrote it needing tld input
+
         # update m3u playlist
         # 2 mandatory args, the tld path and the m3u path
         # update-m3u D:\MusicProcessing\tests\Music D:\MusicProcessing\tests\Music\test.m3u
