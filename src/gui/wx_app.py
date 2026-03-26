@@ -18,7 +18,13 @@ class MainFrame(wx.Frame):
     def __init__(self, parent=None):
         super().__init__(parent, title="MusicProcessing GUI", size=(960, 760))
 
+        # Increase font size by 2 points
+        font = wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT)
+        font.SetPointSize(font.GetPointSize() + 2)
+        self.SetFont(font)
+
         self.panel = wx.Panel(self)
+        self.panel.SetFont(font)
 
         # Create splitter window for resizable notebook/log split
         self.splitter = wx.SplitterWindow(self.panel, style=wx.SP_LIVE_UPDATE)
@@ -234,7 +240,7 @@ class MainFrame(wx.Frame):
         grid = wx.GridBagSizer(8, 8)
 
         # Specific file extraction nested subpanel
-        specific_box = wx.StaticBox(panel, label="Specific File Extraction")
+        specific_box = wx.StaticBox(panel, label="Specific File Art Extraction")
         specific_sizer = wx.StaticBoxSizer(specific_box, wx.VERTICAL)
         specific_subpanel = wx.Panel(panel)
         specific_grid = wx.GridBagSizer(8, 8)
@@ -253,33 +259,57 @@ class MainFrame(wx.Frame):
         specific_subpanel.SetSizer(specific_grid)
         specific_sizer.Add(specific_subpanel, 1, wx.EXPAND | wx.ALL, 4)
 
-        self.extract_walk_art_tld, extract_walk_art_btn = self._make_path_controls(panel)
+        # Bulk directory art extraction nested subpanel
+        bulk_box = wx.StaticBox(panel, label="Bulk Directory Art Extraction")
+        bulk_sizer = wx.StaticBoxSizer(bulk_box, wx.VERTICAL)
+        bulk_subpanel = wx.Panel(panel)
+        bulk_grid = wx.GridBagSizer(8, 8)
+
+        self.extract_walk_art_tld, extract_walk_art_btn = self._make_path_controls(bulk_subpanel)
         extract_walk_art_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.extract_walk_art_tld))
         pattern_choices = ["Any file type"] + AUDIO_EXTS
-        self.extract_walk_art_pattern = wx.Choice(panel, choices=pattern_choices)
+        self.extract_walk_art_pattern = wx.Choice(bulk_subpanel, choices=pattern_choices)
         self.extract_walk_art_pattern.SetSelection(0)  # Default to "Any file type"
         self.extract_walk_art_pattern.SetToolTip("Select file type pattern or 'Any file type' to process all supported audio files")
-        extract_walk_art_exec = wx.Button(panel, label="Extract Walk Art")
+        extract_walk_art_exec = wx.Button(bulk_subpanel, label="Extract Directory Art")
         extract_walk_art_exec.Bind(wx.EVT_BUTTON, self.handlers.on_extract_walk_art)
 
-        self.set_album_art_tld, set_album_art_btn = self._make_path_controls(panel)
+        bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulk_grid.Add(self.extract_walk_art_tld, pos=(0, 1), flag=wx.EXPAND)
+        bulk_grid.Add(extract_walk_art_btn, pos=(0, 2))
+        bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Extract from Audio File Format:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulk_grid.Add(self.extract_walk_art_pattern, pos=(1, 1), span=(1, 2), flag=wx.EXPAND)
+        bulk_grid.Add(extract_walk_art_exec, pos=(1, 3))
+
+        bulk_grid.AddGrowableCol(1)
+        bulk_subpanel.SetSizer(bulk_grid)
+        bulk_sizer.Add(bulk_subpanel, 1, wx.EXPAND | wx.ALL, 4)
+
+        # Set album art bulk directory nested subpanel
+        set_bulk_box = wx.StaticBox(panel, label="Bulk Directory Art Setting")
+        set_bulk_sizer = wx.StaticBoxSizer(set_bulk_box, wx.VERTICAL)
+        set_bulk_subpanel = wx.Panel(panel)
+        set_bulk_grid = wx.GridBagSizer(8, 8)
+
+        self.set_album_art_tld, set_album_art_btn = self._make_path_controls(set_bulk_subpanel)
         set_album_art_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.set_album_art_tld))
-        set_album_art_exec = wx.Button(panel, label="Set Album Art")
+        set_album_art_exec = wx.Button(set_bulk_subpanel, label="Set Album Art")
         set_album_art_exec.Bind(wx.EVT_BUTTON, self.handlers.on_set_album_art)
 
-        grid.Add(specific_sizer, pos=(0, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
+        set_bulk_grid.Add(wx.StaticText(set_bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        set_bulk_grid.Add(self.set_album_art_tld, pos=(0, 1), flag=wx.EXPAND)
+        set_bulk_grid.Add(set_album_art_btn, pos=(0, 2))
+        set_bulk_grid.Add(set_album_art_exec, pos=(0, 3))
 
-        grid.Add(wx.StaticText(panel, label="Top-level dir (extract walk):"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.extract_walk_art_tld, pos=(1, 1), flag=wx.EXPAND)
-        grid.Add(extract_walk_art_btn, pos=(1, 2))
-        grid.Add(wx.StaticText(panel, label="Pattern (optional):"), pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.extract_walk_art_pattern, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
-        grid.Add(extract_walk_art_exec, pos=(2, 3))
+        set_bulk_grid.AddGrowableCol(1)
+        set_bulk_subpanel.SetSizer(set_bulk_grid)
+        set_bulk_sizer.Add(set_bulk_subpanel, 1, wx.EXPAND | wx.ALL, 4)
 
-        grid.Add(wx.StaticText(panel, label="Top-level dir (set art):"), pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.set_album_art_tld, pos=(3, 1), flag=wx.EXPAND)
-        grid.Add(set_album_art_btn, pos=(3, 2))
-        grid.Add(set_album_art_exec, pos=(3, 3))
+        grid.Add(bulk_sizer, pos=(0, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
+
+        grid.Add(specific_sizer, pos=(1, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
+
+        grid.Add(set_bulk_sizer, pos=(2, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
 
         grid.AddGrowableCol(1)
         panel.SetSizer(grid)
