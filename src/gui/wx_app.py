@@ -233,10 +233,25 @@ class MainFrame(wx.Frame):
         panel = wx.Panel(parent)
         grid = wx.GridBagSizer(8, 8)
 
-        self.extract_file_art_path, extract_file_art_btn = self._make_path_controls(panel)
+        # Specific file extraction nested subpanel
+        specific_box = wx.StaticBox(panel, label="Specific File Extraction")
+        specific_sizer = wx.StaticBoxSizer(specific_box, wx.VERTICAL)
+        specific_subpanel = wx.Panel(panel)
+        specific_grid = wx.GridBagSizer(8, 8)
+
+        self.extract_file_art_path, extract_file_art_btn = self._make_path_controls(specific_subpanel)
         extract_file_art_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.extract_file_art_path, "Audio files (*.mp3;*.m4a;*.wma)|*.mp3;*.m4a;*.wma"))
-        extract_file_art_exec = wx.Button(panel, label="Extract File Art")
+        extract_file_art_exec = wx.Button(specific_subpanel, label="Extract File Art")
         extract_file_art_exec.Bind(wx.EVT_BUTTON, self.handlers.on_extract_file_art)
+
+        specific_grid.Add(wx.StaticText(specific_subpanel, label="Audio file to extract art from:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        specific_grid.Add(self.extract_file_art_path, pos=(0, 1), flag=wx.EXPAND)
+        specific_grid.Add(extract_file_art_btn, pos=(0, 2))
+        specific_grid.Add(extract_file_art_exec, pos=(0, 3))
+
+        specific_grid.AddGrowableCol(1)
+        specific_subpanel.SetSizer(specific_grid)
+        specific_sizer.Add(specific_subpanel, 1, wx.EXPAND | wx.ALL, 4)
 
         self.extract_walk_art_tld, extract_walk_art_btn = self._make_path_controls(panel)
         extract_walk_art_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.extract_walk_art_tld))
@@ -252,10 +267,7 @@ class MainFrame(wx.Frame):
         set_album_art_exec = wx.Button(panel, label="Set Album Art")
         set_album_art_exec.Bind(wx.EVT_BUTTON, self.handlers.on_set_album_art)
 
-        grid.Add(wx.StaticText(panel, label="Audio file (extract art):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.extract_file_art_path, pos=(0, 1), flag=wx.EXPAND)
-        grid.Add(extract_file_art_btn, pos=(0, 2))
-        grid.Add(extract_file_art_exec, pos=(0, 3))
+        grid.Add(specific_sizer, pos=(0, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
 
         grid.Add(wx.StaticText(panel, label="Top-level dir (extract walk):"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         grid.Add(self.extract_walk_art_tld, pos=(1, 1), flag=wx.EXPAND)
