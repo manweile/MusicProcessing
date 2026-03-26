@@ -47,8 +47,13 @@ Primary Prompt:
 24) if a single file PEAK normalization succeeds, display the peak_normalize_file.txt contents in results
 
 25) if a single file rms normalization succeeds, display the rms_normalize_file.txt contents in results
-Small tasks
+
+26) in Art panel, create a nested panel that contains the Audio file (extract art): file input text field. Title the nested panel "Specific File Extraction"
+
 todo
+the 23-25 above removed "After any conversion or normalization operation succeeds, a directory browser dialog opens automatically showing the generated_files\Music directory. Users can then navigate to select and move desired mp3 files"
+
+Small tasks
 
 Add the "command results" text exporter to logs (e.g., files created list).
 Add main.py gui --headless / dry-run to support scripting/testing.
