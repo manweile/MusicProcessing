@@ -50,6 +50,14 @@ Primary Prompt:
 
 26) in Art panel, create a nested panel that contains the Audio file (extract art): file input text field. Title the nested panel "Specific File Extraction"
 
+27) in Art panel, create a nested spanel that contains the Top-level dir (extract walk): input field and Pattern (optional): drop down list. Title the nested panel "Bulk Directory Art Extraction".
+
+28) increase font size by 2 points
+
+29) in Art panel, create a nested panel that contains the Top-level dir (set art): input field. Change the label text to "Top Level Directory to walk:". Title the nested panel "Set Bulk Album Directory Art".
+
+30) In Art panel, move Specific File Art Extraction nested panel in between Bulk Directory Art Extraction nested panel and Set Bulk Album Directory Art nested panel.
+
 todo
 the 23-25 above removed "After any conversion or normalization operation succeeds, a directory browser dialog opens automatically showing the generated_files\Music directory. Users can then navigate to select and move desired mp3 files"
 
