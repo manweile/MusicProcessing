@@ -2,25 +2,60 @@ Music Processing Code Agent Prompts
 Session Name: Integrating wxPython GUI with Command Line App
 
 Primary Prompt:
-add wxPython gui to existing command line application
+1) add wxPython gui to existing command line application
+    2) dialog box not saving selection for use
 
-Additional Prompts:
-1) dialog box not saving selection for use
-2) add an Art panel for missing audio_art.py functions
-3) set panel order left to right as art, convert, normalize, playlist, metadata, directory
-4) launch application maximized
-5) enable log_ctrl text control re-sizable by user
-6) After any conversion or normalization operation succeeds, a directory browser dialog opens automatically showing the generated_files\Music directory. Users can then navigate to select and move desired mp3 files
-7) add tool tip for text boxes that says "enter path or click browse button"
-8) for art extract-walk function, change optional pattern input text control to select-able drop down list populated from AUDIO_EXTS and an any file type
-9) add tool tip to Art panel Pattern drop down list
-10) Art panel Audio file (extract art) browse dialog should only be able to select files listed in AUDO_EXTS
-11) Convert panel Audio file to convert browse dialog should only be able to select files listed in AUDO_EXTS
-12) for convert panel convert-walk function, change optional pattern input text control to select-able drop down list populated from AUDIO_EXTS and an any file type
-13) add tool tip to Normalize panel Type drop down list
-14) in Normalize panel, create a nested panel that contains the top-level dir (normalize-walk) input text and the Type drop down list.
-15) in Normalize panel, create a nested panel that contains the ebu file, Peak file and RMS file inut text fields. Title the nested panel "Specific Normalizations"
+3) add an Art panel for missing audio_art.py functions
+
+4) set panel order left to right as art, convert, normalize, playlist, metadata, directory
+
+5) launch application maximized
+
+6) enable log_ctrl text control re-sizable by user
+
+7) After any conversion or normalization operation succeeds, a directory browser dialog opens automatically showing the generated_files\Music directory. Users can then navigate to select and move desired mp3 files
+
+8) add tool tip for text boxes that says "enter path or click browse button"
+
+9) for art extract-walk function, change optional pattern input text control to select-able drop down list populated from AUDIO_EXTS and an any file type
+
+10) add tool tip to Art panel Pattern drop down list
+
+11) Art panel Audio file (extract art) browse dialog should only be able to select files listed in AUDO_EXTS
+
+12) Convert panel Audio file to convert browse dialog should only be able to select files listed in AUDO_EXTS
+
+13) for convert panel convert-walk function, change optional pattern input text control to select-able drop down list populated from AUDIO_EXTS and an any file type
+
+14) add tool tip to Normalize panel Type drop down list
+
+15) in Normalize panel, create a nested panel that contains the top-level dir (normalize-walk) input text and the Type drop down list.
+
+16) in Normalize panel, create a nested panel that contains the ebu file, Peak file and RMS file input text fields. Title the nested panel "Specific Normalizations"
+
+17) add src/gui/handler.py abstraction layer
+    18) event handlers not removed from wx_app.py
+    19) browse buttons are not opening dialogs
+    20) ebu file browse button not opening file dialog
+
+21) ebu file, Peak file, and RMS file browser dialogs should only be able to select mp3 files
+
+22) Add wx focus-to-text-target improvements and better control enable/disable state.
+
+23) if a single file ebu normalization succeeds, display the ebu_normalize_file.txt contents in results
+
+24) if a single file PEAK normalization succeeds, display the peak_normalize_file.txt contents in results
+
+25) if a single file rms normalization succeeds, display the rms_normalize_file.txt contents in results
+Small tasks
 todo
+
+Add the "command results" text exporter to logs (e.g., files created list).
+Add main.py gui --headless / dry-run to support scripting/testing.
+Add a tests/test_main_gui_invocation.py for full CLI -> GUI entrypoint.
+Add pyinstaller packaging snippet (extra branch).
+
+check todo
 Playlist gui
 Metadata gui
 Directory GUI
