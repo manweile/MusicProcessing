@@ -37,9 +37,9 @@ class MainFrame(wx.Frame):
         self.art_panel = self._make_art_panel(self.notebook)
         self.convert_panel = self._make_convert_panel(self.notebook)
         self.normalize_panel = self._make_normalize_panel(self.notebook)
-        self.metadata_panel = self._make_metadata_panel(self.notebook)
-
         self.playlist_panel = self._make_playlist_panel(self.notebook)
+
+        self.metadata_panel = self._make_metadata_panel(self.notebook)
         self.dir_panel = self._make_directory_panel(self.notebook)
 
         self.notebook.AddPage(self.art_panel, "Art")
@@ -73,8 +73,49 @@ class MainFrame(wx.Frame):
         return textbox, button
 
     def _make_art_panel(self, parent):
+        '''
+        @brief This panel includes controls for both extracting and setting album art
+
+        @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
+        '''
+
         panel = wx.Panel(parent)
         grid = wx.GridBagSizer(8, 8)
+
+        # Bulk directory art extraction nested subpanel
+        bulk_box = wx.StaticBox(panel, label="Bulk Directory Art Extraction")
+        bulk_sizer = wx.StaticBoxSizer(bulk_box, wx.VERTICAL)
+        bulk_subpanel = wx.Panel(panel)
+        bulk_grid = wx.GridBagSizer(8, 8)
+
+        # Path controls for bulk directory art extraction
+        self.extract_walk_art_tld, extract_walk_art_btn = self._make_path_controls(bulk_subpanel)
+        extract_walk_art_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.extract_walk_art_tld))
+
+        # file type drop list for bulk art extraction
+        file_types = ["Any file type"] + AUDIO_EXTS
+        self.extract_walk_art_pattern = wx.Choice(bulk_subpanel, choices=file_types)
+        self.extract_walk_art_pattern.SetSelection(0)  # Default to "Any file type"
+        self.extract_walk_art_pattern.SetToolTip("Select file type pattern or 'Any file type' to process all supported audio files")
+
+        # execute button for bulk directory art extraction
+        extract_walk_art_exec = wx.Button(bulk_subpanel, label="Extract Directory Art")
+        extract_walk_art_exec.Bind(wx.EVT_BUTTON, self.handlers.on_extract_walk_art)
+
+        # order the top level directory controls in the bulk directory art extraction subpanel grid
+        bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulk_grid.Add(self.extract_walk_art_tld, pos=(0, 1), flag=wx.EXPAND)
+        bulk_grid.Add(extract_walk_art_btn, pos=(0, 2))
+
+        # order the file type pattern controls in the bulk directory art extraction subpanel grid
+        bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Extract from Audio File Format:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulk_grid.Add(self.extract_walk_art_pattern, pos=(1, 1), span=(1, 2), flag=wx.EXPAND)
+        bulk_grid.Add(extract_walk_art_exec, pos=(1, 3))
+
+        # order the subpanels in the main grid
+        bulk_grid.AddGrowableCol(1)
+        bulk_subpanel.SetSizer(bulk_grid)
+        bulk_sizer.Add(bulk_subpanel, 1, wx.EXPAND | wx.ALL, 4)
 
         # Specific file extraction nested subpanel
         specific_box = wx.StaticBox(panel, label="Specific File Art Extraction")
@@ -95,35 +136,6 @@ class MainFrame(wx.Frame):
         specific_grid.AddGrowableCol(1)
         specific_subpanel.SetSizer(specific_grid)
         specific_sizer.Add(specific_subpanel, 1, wx.EXPAND | wx.ALL, 4)
-
-        # Bulk directory art extraction nested subpanel
-        bulk_box = wx.StaticBox(panel, label="Bulk Directory Art Extraction")
-        bulk_sizer = wx.StaticBoxSizer(bulk_box, wx.VERTICAL)
-        bulk_subpanel = wx.Panel(panel)
-        bulk_grid = wx.GridBagSizer(8, 8)
-
-        self.extract_walk_art_tld, extract_walk_art_btn = self._make_path_controls(bulk_subpanel)
-        extract_walk_art_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.extract_walk_art_tld))
-
-        file_types = ["Any file type"] + AUDIO_EXTS
-        self.extract_walk_art_pattern = wx.Choice(bulk_subpanel, choices=file_types)
-        self.extract_walk_art_pattern.SetSelection(0)  # Default to "Any file type"
-        self.extract_walk_art_pattern.SetToolTip("Select file type pattern or 'Any file type' to process all supported audio files")
-
-        extract_walk_art_exec = wx.Button(bulk_subpanel, label="Extract Directory Art")
-        extract_walk_art_exec.Bind(wx.EVT_BUTTON, self.handlers.on_extract_walk_art)
-
-        bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulk_grid.Add(self.extract_walk_art_tld, pos=(0, 1), flag=wx.EXPAND)
-        bulk_grid.Add(extract_walk_art_btn, pos=(0, 2))
-
-        bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Extract from Audio File Format:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulk_grid.Add(self.extract_walk_art_pattern, pos=(1, 1), span=(1, 2), flag=wx.EXPAND)
-        bulk_grid.Add(extract_walk_art_exec, pos=(1, 3))
-
-        bulk_grid.AddGrowableCol(1)
-        bulk_subpanel.SetSizer(bulk_grid)
-        bulk_sizer.Add(bulk_subpanel, 1, wx.EXPAND | wx.ALL, 4)
 
         # Set album art bulk directory nested subpanel
         set_bulk_box = wx.StaticBox(panel, label="Bulk Directory Art Setting")
@@ -155,6 +167,12 @@ class MainFrame(wx.Frame):
         return panel
 
     def _make_convert_panel(self, parent):
+        '''
+        @brief This panel includes controls for audio file conversion
+
+        @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
+        '''
+
         panel = wx.Panel(parent)
         grid = wx.GridBagSizer(8, 8)
 
@@ -184,7 +202,7 @@ class MainFrame(wx.Frame):
         bulk_subpanel = wx.Panel(panel)
         bulk_grid = wx.GridBagSizer(8, 8)
 
-        # input text field and browse dialog button for top-level directory to convert
+        # Path controls for bulk directory audio conversion
         self.convert_walk_tld, convert_walk_tld_btn = self._make_path_controls(bulk_subpanel)
         convert_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.convert_walk_tld))
 
