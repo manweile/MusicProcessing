@@ -227,11 +227,15 @@ class MainFrame(wx.Frame):
         specific_subpanel = wx.Panel(panel)
         specific_grid = wx.GridBagSizer(8, 8)
 
+        # Path controls for specific audio file conversion
         self.convert_file_path, convert_file_btn = self._make_path_controls(specific_subpanel)
         convert_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.convert_file_path, "Audio files (*.mp3;*.m4a;*.wma)|*.mp3;*.m4a;*.wma"))
+
+        # execute button for specific audio file conversion
         convert_file_exec = wx.Button(specific_subpanel, label="Convert Audio File")
         convert_file_exec.Bind(wx.EVT_BUTTON, self.handlers.on_convert_file)
 
+        # order the controls in the specific audio file conversion subpanel grid
         specific_grid.Add(wx.StaticText(specific_subpanel, label="Audio file to convert:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         specific_grid.Add(self.convert_file_path, pos=(0, 1), flag=wx.EXPAND)
         specific_grid.Add(convert_file_btn, pos=(0, 2))
