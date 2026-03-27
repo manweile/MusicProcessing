@@ -334,7 +334,7 @@ class MainFrame(wx.Frame):
         specific_grid.Add(ebu_file_btn, pos=(0, 2))
         specific_grid.Add(ebu_file_exec, pos=(0, 3))
 
-
+        # order the specific file peak normalization controls in the grid
         specific_grid.Add(wx.StaticText(specific_subpanel, label="File to Peak Normalize:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         specific_grid.Add(self.peak_file_path, pos=(1, 1), flag=wx.EXPAND)
         specific_grid.Add(peak_file_btn, pos=(1, 2))
