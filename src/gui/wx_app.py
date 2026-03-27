@@ -255,35 +255,48 @@ class MainFrame(wx.Frame):
         return panel
 
     def _make_normalize_panel(self, parent):
+        '''
+        @brief This panel includes controls for audio normalization
+
+        @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
+        '''
+
         panel = wx.Panel(parent)
+        grid = wx.GridBagSizer(8, 8)
 
-        # Nested subpanel for normalize-walk options
-        normalize_box = wx.StaticBox(panel, label="Bulk Directory Normalizations")
-        normalize_sizer = wx.StaticBoxSizer(normalize_box, wx.VERTICAL)
-        normalize_subpanel = wx.Panel(panel)
-        normalize_grid = wx.GridBagSizer(8, 8)
+        # Bulk directory audio normalization nested subpanel
+        bulk_box = wx.StaticBox(panel, label="Bulk Directory Normalizations")
+        bulk_sizer = wx.StaticBoxSizer(bulk_box, wx.VERTICAL)
+        bulk_subpanel = wx.Panel(panel)
+        bulk_grid = wx.GridBagSizer(8, 8)
 
-        self.norm_walk_tld, norm_walk_tld_btn = self._make_path_controls(normalize_subpanel)
+        # Path controls for bulk directory audio normalization
+        self.norm_walk_tld, norm_walk_tld_btn = self._make_path_controls(bulk_subpanel)
         norm_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.norm_walk_tld))
-        self.norm_type_choice = wx.Choice(normalize_subpanel, choices=["ebu", "peak", "rms"])
+
+        # normalization type drop list for bulk normalization
+        self.norm_type_choice = wx.Choice(bulk_subpanel, choices=["ebu", "peak", "rms"])
         self.norm_type_choice.SetSelection(0)
         self.norm_type_choice.SetToolTip("Select normalization type: ebu (loudness), peak (peak level), or rms (RMS level)")
-        norm_walk_exec = wx.Button(normalize_subpanel, label="Normalize Directory")
+
+        # execute button for bulk directory audio normalization
+        norm_walk_exec = wx.Button(bulk_subpanel, label="Normalize Directory")
         norm_walk_exec.Bind(wx.EVT_BUTTON, self.handlers.on_normalize_walk)
 
-        normalize_grid.Add(wx.StaticText(normalize_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        normalize_grid.Add(self.norm_walk_tld, pos=(0, 1), flag=wx.EXPAND)
-        normalize_grid.Add(norm_walk_tld_btn, pos=(0, 2))
-        normalize_grid.Add(wx.StaticText(normalize_subpanel, label="Normalization Type:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        normalize_grid.Add(self.norm_type_choice, pos=(1, 1), flag=wx.EXPAND)
-        normalize_grid.Add(norm_walk_exec, pos=(1, 2))
+        # order the top level directory controls in the bulk directory normalization subpanel grid
+        bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulk_grid.Add(self.norm_walk_tld, pos=(0, 1), flag=wx.EXPAND)
+        bulk_grid.Add(norm_walk_tld_btn, pos=(0, 2))
 
-        normalize_grid.AddGrowableCol(1)
-        normalize_subpanel.SetSizer(normalize_grid)
-        normalize_sizer.Add(normalize_subpanel, 1, wx.EXPAND | wx.ALL, 4)
+        # order the normalization type controls in the bulk directory normalization subpanel grid
+        bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Normalization Type:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulk_grid.Add(self.norm_type_choice, pos=(1, 1), flag=wx.EXPAND)
+        bulk_grid.Add(norm_walk_exec, pos=(1, 2))
 
-        grid = wx.GridBagSizer(8, 8)
-        grid.Add(normalize_sizer, pos=(0, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
+        # order the subpanels in the main grid
+        bulk_grid.AddGrowableCol(1)
+        bulk_subpanel.SetSizer(bulk_grid)
+        bulk_sizer.Add(bulk_subpanel, 1, wx.EXPAND | wx.ALL, 4)
 
         # Specific normalizations nested subpanel
         specific_box = wx.StaticBox(panel, label="Single File Normalizations")
@@ -291,42 +304,55 @@ class MainFrame(wx.Frame):
         specific_subpanel = wx.Panel(panel)
         specific_grid = wx.GridBagSizer(8, 8)
 
+        # Path controls for specific file ebu normalizations
         mp3_wildcard = "MP3 files (*.mp3)|*.mp3"
-
         self.ebu_file_path, ebu_file_btn = self._make_path_controls(specific_subpanel)
         ebu_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.ebu_file_path, mp3_wildcard))
+
+        # execute button for specific file EBU normalization
         ebu_file_exec = wx.Button(specific_subpanel, label="EBU Normalize File")
         ebu_file_exec.Bind(wx.EVT_BUTTON, self.handlers.on_ebu_file)
 
+        # Path controls for specific file peak normalizations
         self.peak_file_path, peak_file_btn = self._make_path_controls(specific_subpanel)
         peak_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.peak_file_path, mp3_wildcard))
+
         peak_file_exec = wx.Button(specific_subpanel, label="Peak Normalize File")
         peak_file_exec.Bind(wx.EVT_BUTTON, self.handlers.on_peak_file)
 
+        # Path controls for specific file RMS normalizations
         self.rms_file_path, rms_file_btn = self._make_path_controls(specific_subpanel)
         rms_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.rms_file_path, mp3_wildcard))
+
+        # execute button for specific file RMS normalization
         rms_file_exec = wx.Button(specific_subpanel, label="RMS Normalize File")
         rms_file_exec.Bind(wx.EVT_BUTTON, self.handlers.on_rms_file)
 
+        # order the specific file ebu normalization controls in the grid
         specific_grid.Add(wx.StaticText(specific_subpanel, label="File to EBU Normalize:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         specific_grid.Add(self.ebu_file_path, pos=(0, 1), flag=wx.EXPAND)
         specific_grid.Add(ebu_file_btn, pos=(0, 2))
         specific_grid.Add(ebu_file_exec, pos=(0, 3))
+
 
         specific_grid.Add(wx.StaticText(specific_subpanel, label="File to Peak Normalize:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         specific_grid.Add(self.peak_file_path, pos=(1, 1), flag=wx.EXPAND)
         specific_grid.Add(peak_file_btn, pos=(1, 2))
         specific_grid.Add(peak_file_exec, pos=(1, 3))
 
+        # order the specific file RMS normalization controls in the grid
         specific_grid.Add(wx.StaticText(specific_subpanel, label="File to RMS Normalize:"), pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         specific_grid.Add(self.rms_file_path, pos=(2, 1), flag=wx.EXPAND)
         specific_grid.Add(rms_file_btn, pos=(2, 2))
         specific_grid.Add(rms_file_exec, pos=(2, 3))
 
+        # allow specific subpanel to expand when frame is resized
         specific_grid.AddGrowableCol(1)
         specific_subpanel.SetSizer(specific_grid)
         specific_sizer.Add(specific_subpanel, 1, wx.EXPAND | wx.ALL, 4)
 
+        # order the sub panels in the main grid
+        grid.Add(bulk_sizer, pos=(0, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
         grid.Add(specific_sizer, pos=(1, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
 
         grid.AddGrowableCol(1)
