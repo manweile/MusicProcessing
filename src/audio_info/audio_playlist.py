@@ -53,6 +53,8 @@ DELIMITER = ","
 class AudioPlaylist():
     '''
     @brief Defines the base playlist processing used by project.
+
+    @details This class provides methods for creating and processing audio playlists, including generating m3u files from directories of audio files and parsing existing m3u files to extract track information.
     '''
 
     def __init__(self) -> None:
