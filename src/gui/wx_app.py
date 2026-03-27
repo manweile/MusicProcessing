@@ -1,21 +1,57 @@
+'''
+@file wx_app.py
+@brief Defines the main GUI application using wxPython.
+
+@author Gerald Manweiler
+@copyright @showdate "%Y" GWN Software. All rights reserved.
+'''
+
+# standard modules
 import datetime
 import os
 import shutil
 import threading
 
+# third party modules
 import wx
 
+# local module constants
 from src.generated_files import GENERATED_PATH
 from src import MUSIC_TLD, AUDIO_EXTS, PLAYLIST_EXTS, RESULT_DIR, RESULT_EXT
+# local module classes
 from src.gui.handlers import EventHandlers
 
 
 def _timestamp():
+    '''
+    @brief Get the current timestamp as a string.
+
+    @details This function is used for generating unique result file names based on the current date and time.
+
+    @return A string representing the current timestamp in the format "YYYY-MM-DD HH:MM:SS".
+    '''
+
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 class MainFrame(wx.Frame):
+    '''
+    @brief Main frame for the MusicProcessing GUI application.
+
+    @details This class defines the main window of the application, including the layout, panels, and event handlers.
+    '''
+
     def __init__(self, parent=None):
+        '''
+        @brief Initialize the MainFrame class.
+
+        @details This constructor sets up the main window, including the layout, panels, and event handlers.
+
+        @param parent The parent window, if any.
+
+        @return None
+        '''
+
         super().__init__(parent, title="MusicProcessing GUI", size=(960, 760))
 
         # Increase font size by 2 points
@@ -65,18 +101,14 @@ class MainFrame(wx.Frame):
         self.panel.SetSizer(main_sizer)
         self.Maximize()
 
-    def _make_path_controls(self, parent):
-        textbox = wx.TextCtrl(parent)
-        textbox.SetToolTip("Enter path or click Browse button")
-        button = wx.Button(parent, label="Browse")
-        button.SetToolTip("Browse for a path")
-        return textbox, button
-
     def _make_art_panel(self, parent):
         '''
         @brief This panel includes controls for both extracting and setting album art
 
         @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
+
+        @param parent The parent window for the panel.
+        @return The created art panel.
         '''
 
         panel = wx.Panel(parent)
@@ -181,6 +213,9 @@ class MainFrame(wx.Frame):
         @brief This panel includes controls for audio file conversion
 
         @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
+
+        @param parent The parent window for the panel.
+        @return The created convert panel.
         '''
 
         panel = wx.Panel(parent)
@@ -254,11 +289,132 @@ class MainFrame(wx.Frame):
         panel.SetSizer(grid)
         return panel
 
+    def _make_directory_panel(self, parent):
+        '''
+        @brief Create the directory panel.
+
+        @details This panel provides controls for listing audio files, listing files by type, and removing empty albums or files matching a pattern.
+        It includes options for selecting top-level directories and specifying file extensions or patterns.
+
+        @param parent The parent window for the panel.
+        @return The created directory panel.
+        '''
+
+        panel = wx.Panel(parent)
+        grid = wx.GridBagSizer(8, 8)
+
+        self.list_audio_tld, list_audio_btn = self._make_path_controls(panel)
+        list_audio_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.list_audio_tld))
+        list_audio_exec = wx.Button(panel, label="List Audio")
+        list_audio_exec.Bind(wx.EVT_BUTTON, self.handlers.on_list_audio)
+
+        self.list_type_tld, list_type_btn = self._make_path_controls(panel)
+        list_type_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.list_type_tld))
+        self.list_type_ext = wx.TextCtrl(panel)
+        list_type_exec = wx.Button(panel, label="List Type")
+        list_type_exec.Bind(wx.EVT_BUTTON, self.handlers.on_list_type)
+
+        self.remove_albums_tld, remove_albums_btn = self._make_path_controls(panel)
+        remove_albums_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.remove_albums_tld))
+        remove_albums_exec = wx.Button(panel, label="Remove Empty Albums")
+        remove_albums_exec.Bind(wx.EVT_BUTTON, self.handlers.on_remove_albums)
+
+        self.remove_pattern_tld, remove_pattern_btn = self._make_path_controls(panel)
+        remove_pattern_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.remove_pattern_tld))
+        self.remove_pattern_pattern = wx.TextCtrl(panel)
+        remove_pattern_exec = wx.Button(panel, label="Remove Pattern")
+        remove_pattern_exec.Bind(wx.EVT_BUTTON, self.handlers.on_remove_pattern)
+
+        grid.Add(wx.StaticText(panel, label="Top-level dir (list audio):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(self.list_audio_tld, pos=(0, 1), flag=wx.EXPAND)
+        grid.Add(list_audio_btn, pos=(0, 2))
+        grid.Add(list_audio_exec, pos=(0, 3))
+
+        grid.Add(wx.StaticText(panel, label="Top-level dir (list type):"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(self.list_type_tld, pos=(1, 1), flag=wx.EXPAND)
+        grid.Add(list_type_btn, pos=(1, 2))
+        grid.Add(wx.StaticText(panel, label="Ext (e.g. mp3):"), pos=(1, 4), flag=wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(self.list_type_ext, pos=(1, 5))
+        grid.Add(list_type_exec, pos=(1, 6))
+
+        grid.Add(self.remove_albums_tld, pos=(2, 1), flag=wx.EXPAND)
+        grid.Add(remove_albums_btn, pos=(2, 2))
+        grid.Add(remove_albums_exec, pos=(2, 3))
+
+        grid.Add(self.remove_pattern_tld, pos=(3, 1), flag=wx.EXPAND)
+        grid.Add(remove_pattern_btn, pos=(3, 2))
+        grid.Add(wx.StaticText(panel, label="Pattern:"), pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(self.remove_pattern_pattern, pos=(3, 3), span=(1, 2), flag=wx.EXPAND)
+        grid.Add(remove_pattern_exec, pos=(3, 5))
+
+        grid.AddGrowableCol(1)
+        panel.SetSizer(grid)
+        return panel
+
+    def _make_metadata_panel(self, parent):
+        '''
+        @brief Create the metadata panel.
+
+        @details This panel provides controls for retrieving and displaying metadata from media files.
+        It includes options for tags walk, media info walk, and unique media extraction.
+
+        @param parent The parent window for the panel.
+        @return The created metadata panel.
+        '''
+
+        panel = wx.Panel(parent)
+        grid = wx.GridBagSizer(8, 8)
+
+        self.tags_walk_tld, tags_walk_tld_btn = self._make_path_controls(panel)
+        tags_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.tags_walk_tld))
+        self.tags_walk_pattern = wx.TextCtrl(panel)
+        self.tags_walk_ffprobe = wx.CheckBox(panel, label="Use ffprobe")
+        tags_walk_exec = wx.Button(panel, label="Get Tags Walk")
+        tags_walk_exec.Bind(wx.EVT_BUTTON, self.handlers.on_get_tags_walk)
+
+        self.media_info_tld, media_info_btn = self._make_path_controls(panel)
+        media_info_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.media_info_tld))
+        self.media_info_pattern = wx.TextCtrl(panel)
+        media_info_exec = wx.Button(panel, label="Get Media Info Walk")
+        media_info_exec.Bind(wx.EVT_BUTTON, self.handlers.on_get_media_info_walk)
+
+        self.unique_media_tld, unique_media_btn = self._make_path_controls(panel)
+        unique_media_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.unique_media_tld))
+        unique_media_exec = wx.Button(panel, label="Get Unique Media")
+        unique_media_exec.Bind(wx.EVT_BUTTON, self.handlers.on_get_unique_media)
+
+        grid.Add(wx.StaticText(panel, label="Top-level dir (tags walk):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(self.tags_walk_tld, pos=(0, 1), flag=wx.EXPAND)
+        grid.Add(tags_walk_tld_btn, pos=(0, 2))
+        grid.Add(wx.StaticText(panel, label="Pattern:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(self.tags_walk_pattern, pos=(1, 1), span=(1, 2), flag=wx.EXPAND)
+        grid.Add(self.tags_walk_ffprobe, pos=(2, 1))
+        grid.Add(tags_walk_exec, pos=(2, 2))
+
+        grid.Add(wx.StaticText(panel, label="Top-level dir (media info walk):"), pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(self.media_info_tld, pos=(3, 1), flag=wx.EXPAND)
+        grid.Add(media_info_btn, pos=(3, 2))
+        grid.Add(wx.StaticText(panel, label="Pattern:"), pos=(4, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(self.media_info_pattern, pos=(4, 1), span=(1, 2), flag=wx.EXPAND)
+        grid.Add(media_info_exec, pos=(4, 3))
+
+        grid.Add(wx.StaticText(panel, label="Top-level dir (unique media):"), pos=(5, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(self.unique_media_tld, pos=(5, 1), flag=wx.EXPAND)
+        grid.Add(unique_media_btn, pos=(5, 2))
+        grid.Add(unique_media_exec, pos=(5, 3))
+
+        grid.AddGrowableCol(1)
+        panel.SetSizer(grid)
+        return panel
+
     def _make_normalize_panel(self, parent):
         '''
         @brief This panel includes controls for audio normalization
 
         @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
+
+        @param parent The parent window for the panel.
+        @return The created normalize panel.
         '''
 
         panel = wx.Panel(parent)
@@ -359,53 +515,33 @@ class MainFrame(wx.Frame):
         panel.SetSizer(grid)
         return panel
 
-    def _make_metadata_panel(self, parent):
-        panel = wx.Panel(parent)
-        grid = wx.GridBagSizer(8, 8)
+    def _make_path_controls(self, parent):
+        '''
+        @brief Helper function to create a standard set of path controls (text box and browse button).
 
-        self.tags_walk_tld, tags_walk_tld_btn = self._make_path_controls(panel)
-        tags_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.tags_walk_tld))
-        self.tags_walk_pattern = wx.TextCtrl(panel)
-        self.tags_walk_ffprobe = wx.CheckBox(panel, label="Use ffprobe")
-        tags_walk_exec = wx.Button(panel, label="Get Tags Walk")
-        tags_walk_exec.Bind(wx.EVT_BUTTON, self.handlers.on_get_tags_walk)
+        @details This function is used to create consistent path input controls across different panels in the application.
 
-        self.media_info_tld, media_info_btn = self._make_path_controls(panel)
-        media_info_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.media_info_tld))
-        self.media_info_pattern = wx.TextCtrl(panel)
-        media_info_exec = wx.Button(panel, label="Get Media Info Walk")
-        media_info_exec.Bind(wx.EVT_BUTTON, self.handlers.on_get_media_info_walk)
+        @param parent The parent window for the controls.
+        @return A tuple containing the text control and the browse button.
+        '''
 
-        self.unique_media_tld, unique_media_btn = self._make_path_controls(panel)
-        unique_media_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.unique_media_tld))
-        unique_media_exec = wx.Button(panel, label="Get Unique Media")
-        unique_media_exec.Bind(wx.EVT_BUTTON, self.handlers.on_get_unique_media)
-
-        grid.Add(wx.StaticText(panel, label="Top-level dir (tags walk):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.tags_walk_tld, pos=(0, 1), flag=wx.EXPAND)
-        grid.Add(tags_walk_tld_btn, pos=(0, 2))
-        grid.Add(wx.StaticText(panel, label="Pattern:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.tags_walk_pattern, pos=(1, 1), span=(1, 2), flag=wx.EXPAND)
-        grid.Add(self.tags_walk_ffprobe, pos=(2, 1))
-        grid.Add(tags_walk_exec, pos=(2, 2))
-
-        grid.Add(wx.StaticText(panel, label="Top-level dir (media info walk):"), pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.media_info_tld, pos=(3, 1), flag=wx.EXPAND)
-        grid.Add(media_info_btn, pos=(3, 2))
-        grid.Add(wx.StaticText(panel, label="Pattern:"), pos=(4, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.media_info_pattern, pos=(4, 1), span=(1, 2), flag=wx.EXPAND)
-        grid.Add(media_info_exec, pos=(4, 3))
-
-        grid.Add(wx.StaticText(panel, label="Top-level dir (unique media):"), pos=(5, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.unique_media_tld, pos=(5, 1), flag=wx.EXPAND)
-        grid.Add(unique_media_btn, pos=(5, 2))
-        grid.Add(unique_media_exec, pos=(5, 3))
-
-        grid.AddGrowableCol(1)
-        panel.SetSizer(grid)
-        return panel
+        textbox = wx.TextCtrl(parent)
+        textbox.SetToolTip("Enter path or click Browse button")
+        button = wx.Button(parent, label="Browse")
+        button.SetToolTip("Browse for a path")
+        return textbox, button
 
     def _make_playlist_panel(self, parent):
+        '''
+        @brief Create the playlist panel.
+
+        @details This panel provides controls for updating M3U playlists and performing directory walks.
+        It includes options for selecting playlist files and top-level directories for update walks.
+
+        @param parent The parent window for the panel.
+        @return The created playlist panel.
+        '''
+
         panel = wx.Panel(parent)
         grid = wx.GridBagSizer(8, 8)
 
@@ -435,117 +571,27 @@ class MainFrame(wx.Frame):
         panel.SetSizer(grid)
         return panel
 
-    def _make_directory_panel(self, parent):
-        panel = wx.Panel(parent)
-        grid = wx.GridBagSizer(8, 8)
-
-        self.list_audio_tld, list_audio_btn = self._make_path_controls(panel)
-        list_audio_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.list_audio_tld))
-        list_audio_exec = wx.Button(panel, label="List Audio")
-        list_audio_exec.Bind(wx.EVT_BUTTON, self.handlers.on_list_audio)
-
-        self.list_type_tld, list_type_btn = self._make_path_controls(panel)
-        list_type_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.list_type_tld))
-        self.list_type_ext = wx.TextCtrl(panel)
-        list_type_exec = wx.Button(panel, label="List Type")
-        list_type_exec.Bind(wx.EVT_BUTTON, self.handlers.on_list_type)
-
-        self.remove_albums_tld, remove_albums_btn = self._make_path_controls(panel)
-        remove_albums_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.remove_albums_tld))
-        remove_albums_exec = wx.Button(panel, label="Remove Empty Albums")
-        remove_albums_exec.Bind(wx.EVT_BUTTON, self.handlers.on_remove_albums)
-
-        self.remove_pattern_tld, remove_pattern_btn = self._make_path_controls(panel)
-        remove_pattern_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.remove_pattern_tld))
-        self.remove_pattern_pattern = wx.TextCtrl(panel)
-        remove_pattern_exec = wx.Button(panel, label="Remove Pattern")
-        remove_pattern_exec.Bind(wx.EVT_BUTTON, self.handlers.on_remove_pattern)
-
-        grid.Add(wx.StaticText(panel, label="Top-level dir (list audio):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.list_audio_tld, pos=(0, 1), flag=wx.EXPAND)
-        grid.Add(list_audio_btn, pos=(0, 2))
-        grid.Add(list_audio_exec, pos=(0, 3))
-
-        grid.Add(wx.StaticText(panel, label="Top-level dir (list type):"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.list_type_tld, pos=(1, 1), flag=wx.EXPAND)
-        grid.Add(list_type_btn, pos=(1, 2))
-        grid.Add(wx.StaticText(panel, label="Ext (e.g. mp3):"), pos=(1, 4), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.list_type_ext, pos=(1, 5))
-        grid.Add(list_type_exec, pos=(1, 6))
-
-        grid.Add(self.remove_albums_tld, pos=(2, 1), flag=wx.EXPAND)
-        grid.Add(remove_albums_btn, pos=(2, 2))
-        grid.Add(remove_albums_exec, pos=(2, 3))
-
-        grid.Add(self.remove_pattern_tld, pos=(3, 1), flag=wx.EXPAND)
-        grid.Add(remove_pattern_btn, pos=(3, 2))
-        grid.Add(wx.StaticText(panel, label="Pattern:"), pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.remove_pattern_pattern, pos=(3, 3), span=(1, 2), flag=wx.EXPAND)
-        grid.Add(remove_pattern_exec, pos=(3, 5))
-
-        grid.AddGrowableCol(1)
-        panel.SetSizer(grid)
-        return panel
-
-    def log(self, message):
-        wx.CallAfter(self.log_ctrl.AppendText, f"[{_timestamp()}] {message}\n")
-
     def _set_busy_state(self, busy=True):
+        '''
+        @brief Set the busy state of the application.
+
+        @details This method enables or disables the main window and log control based on the busy state.
+        It also changes the cursor to a wait cursor when busy and back to the default cursor when not busy.
+
+        @param busy {bool} True to set the application to busy state, False to set it to idle state.
+        '''
+
         self.Enable(not busy)
         self.log_ctrl.Enable(True)
         self.SetCursor(wx.Cursor(wx.CURSOR_WAIT if busy else wx.CURSOR_ARROW))
 
-    def run_task(self, func, *args, on_success=None):
-        def worker():
-            self.log(f"Running {func.__name__}...")
-            try:
-                func(*args)
-                self.log(f"{func.__name__} completed.")
-                if on_success:
-                    wx.CallAfter(on_success)
-            except Exception as e:
-                self.log(f"{func.__name__} failed: {e}")
-                wx.CallAfter(wx.MessageBox, str(e), "Error", wx.ICON_ERROR)
-            finally:
-                wx.CallAfter(self._set_busy_state, False)
-
-        self._set_busy_state(True)
-        threading.Thread(target=worker, daemon=True).start()
-
-    def _validate_file(self, path):
-        if not path:
-            wx.MessageBox("Please specify a file path.", "Validation", wx.ICON_WARNING)
-            return False
-        if not os.path.isfile(path):
-            wx.MessageBox(f"File not found: {path}", "Validation", wx.ICON_ERROR)
-            return False
-        return True
-
-    def _validate_dir(self, path):
-        if not path:
-            wx.MessageBox("Please specify a directory path.", "Validation", wx.ICON_WARNING)
-            return False
-        if not os.path.isdir(path):
-            wx.MessageBox(f"Directory not found: {path}", "Validation", wx.ICON_ERROR)
-            return False
-        return True
-
-    def _show_result_file(self, filename):
-        result_path = os.path.join(GENERATED_PATH, RESULT_DIR, filename + RESULT_EXT)
-        if not os.path.isfile(result_path):
-            wx.MessageBox(
-                f"Result file not found: {result_path}",
-                "Info",
-                wx.ICON_INFORMATION,
-            )
-            return
-
-        with open(result_path, "r", encoding="utf-8") as result_file:
-            content = result_file.read()
-
-        wx.CallAfter(self.log_ctrl.SetValue, f"=== {filename + RESULT_EXT} ===\n{content}")
-
     def _show_generated_files_dialog(self):
+        '''
+        @brief Display a file dialog to select generated MP3 files for moving.
+
+        @details This method opens a file dialog starting in the directory where generated MP3 files are stored.
+        '''
+
         generated_dir = os.path.join(GENERATED_PATH, MUSIC_TLD)
         if not os.path.isdir(generated_dir):
             wx.MessageBox(
@@ -567,21 +613,87 @@ class MainFrame(wx.Frame):
             selected_files = dlg.GetPaths()
             if selected_files:
                 self._move_files_dialog(selected_files)
+
         dlg.Destroy()
 
-    def _move_files_dialog(self, file_paths):
-        dest_dlg = wx.DirDialog(
-            self,
-            "Select destination directory to move files to:",
-            style=wx.DD_DIR_MUST_EXIST,
-        )
+    def _show_result_file(self, filename):
+        '''
+        @brief Display the contents of a result file in the log control.
 
-        if dest_dlg.ShowModal() == wx.ID_OK:
-            dest_dir = dest_dlg.GetPath()
-            self._move_files(file_paths, dest_dir)
-        dest_dlg.Destroy()
+        @details This method constructs the path to the result file based on the provided filename and checks if it exists.
+
+        @param filename {str} The base name of the result file (without extension) to display.
+        '''
+
+        result_path = os.path.join(GENERATED_PATH, RESULT_DIR, filename + RESULT_EXT)
+
+        if not os.path.isfile(result_path):
+            wx.MessageBox(
+                f"Result file not found: {result_path}",
+                "Info",
+                wx.ICON_INFORMATION,
+            )
+            return
+
+        with open(result_path, "r", encoding="utf-8") as result_file:
+            content = result_file.read()
+
+        wx.CallAfter(self.log_ctrl.SetValue, f"=== {filename + RESULT_EXT} ===\n{content}")
+
+    def _validate_dir(self, path):
+        '''
+        @brief Validate that the provided path is a directory.
+
+        @details This method checks if the provided path is not empty and exists as a directory.
+        If the validation fails, it displays an appropriate message box to the user.
+
+        @param path {str} The directory path to validate.
+        @return bool True if the path is a valid directory, False otherwise.
+        '''
+
+        if not path:
+            wx.MessageBox("Please specify a directory path.", "Validation", wx.ICON_WARNING)
+            return False
+
+        if not os.path.isdir(path):
+            wx.MessageBox(f"Directory not found: {path}", "Validation", wx.ICON_ERROR)
+            return False
+
+        return True
+
+    def _validate_file(self, path):
+        '''
+        @brief Validate that the provided path is a file.
+
+        @details This method checks if the provided path is not empty and exists as a file.
+        If the validation fails, it displays an appropriate message box to the user.
+
+        @param path {str} The file path to validate.
+        @return bool True if the path is a valid file, False otherwise.
+        '''
+
+        if not path:
+            wx.MessageBox("Please specify a file path.", "Validation", wx.ICON_WARNING)
+            return False
+
+        if not os.path.isfile(path):
+            wx.MessageBox(f"File not found: {path}", "Validation", wx.ICON_ERROR)
+            return False
+
+        return True
 
     def _move_files(self, file_paths, dest_dir):
+        '''
+        @brief Move selected files to the specified destination directory and display a summary of the operation.
+
+        @details This method attempts to move each file in the provided list of file paths to the specified destination directory.
+
+        @param file_paths {list} A list of file paths to move.
+        @param dest_dir {str} The destination directory to move the files to.
+
+        @exception Exception If an error occurs while moving a file, the exception is caught and recorded in the failed list, which is included in the summary message displayed to the user.
+        '''
+
         moved = []
         failed = []
 
@@ -596,14 +708,93 @@ class MainFrame(wx.Frame):
         message = f"Moved {len(moved)} file(s)"
         if moved:
             message += f": {', '.join(moved[:3])}" + ("..." if len(moved) > 3 else "")
+
         if failed:
             message += f"\n\nFailed ({len(failed)}):\n" + "\n".join(failed[:5]) + (
                 "\n..." if len(failed) > 5 else ""
             )
+
         wx.MessageBox(message, "Move Summary", wx.ICON_INFORMATION)
+
+    def _move_files_dialog(self, file_paths):
+        '''
+        @brief Display a dialog to select the destination directory for moving files.
+
+        @param file_paths {list} A list of file paths to move.
+        '''
+
+        dest_dlg = wx.DirDialog(
+            self,
+            "Select destination directory to move files to:",
+            style=wx.DD_DIR_MUST_EXIST,
+        )
+
+        if dest_dlg.ShowModal() == wx.ID_OK:
+            dest_dir = dest_dlg.GetPath()
+            self._move_files(file_paths, dest_dir)
+
+        dest_dlg.Destroy()
+
+    def log(self, message):
+        '''
+        @brief Log a message to the log control with a timestamp.
+
+        @details This method uses wx.CallAfter to ensure that log updates are thread-safe and do not cause issues with the GUI responsiveness.
+        Each log entry is prefixed with a timestamp for better tracking of events.
+
+        @param message {str} The message to log.
+        @return None
+        '''
+
+        wx.CallAfter(self.log_ctrl.AppendText, f"[{_timestamp()}] {message}\n")
+
+    def run_task(self, func, *args, on_success=None):
+        '''
+        @brief Run a long-running task in a separate thread to keep the GUI responsive.
+
+        @param func The function to run as the task.
+        @param args {tuple} Arguments to pass to the function.
+        @param on_success {callback} Optional callback to run on the main thread after successful completion of the task
+        @return None
+        '''
+
+        def worker():
+            '''
+            @brief Worker function to run the task and handle logging and exceptions.
+
+            @details This function runs in a separate thread, executes the given task function, logs the start and completion of the task, and handles any exceptions that occur.
+            It also ensures that the busy state of the GUI is properly managed.
+
+            @return None
+
+            @exception Exception Any exception raised by the task function is caught and logged, and an error message box is displayed to the user.
+            '''
+
+            self.log(f"Running {func.__name__}...")
+
+            try:
+                func(*args)
+                self.log(f"{func.__name__} completed.")
+                if on_success:
+                    wx.CallAfter(on_success)
+
+            except Exception as e:
+                self.log(f"{func.__name__} failed: {e}")
+                wx.CallAfter(wx.MessageBox, str(e), "Error", wx.ICON_ERROR)
+            finally:
+                wx.CallAfter(self._set_busy_state, False)
+
+        self._set_busy_state(True)
+        threading.Thread(target=worker, daemon=True).start()
 
 
 def run_gui():
+    '''
+    @brief Entry point to run the GUI application.
+
+    @details This function initializes the wx.App, creates the main frame, and starts the main event loop.
+    '''
+
     app = wx.App(False)
     frame = MainFrame()
     frame.Show()
