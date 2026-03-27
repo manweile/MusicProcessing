@@ -400,18 +400,17 @@ AudioPlaylist functions
 '''
 
 
-def update_paths(tld_path, input_m3u):
+def update_playlist(input_m3u):
     '''
     @brief Updates an old playlist relative pathing.
 
-    @param start_path {str} The top level directory where playlist is located.
     @param input_m3u {str} The full file path to playlist needing conversion.
 
     @exception Exception A common baseclass exception to handle unforeseen errors.
     '''
 
     try:
-        playlist.update_paths(tld_path, input_m3u)
+        playlist.update_playlist(input_m3u)
 
     except Exception as e:
         logger.exception(f"Exception: {type(e).__name__}: {e}", stack_info=True)
@@ -606,18 +605,14 @@ def arg_parser():
         set_album_art_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
         set_album_art_parser.set_defaults(func=set_album_art)
 
-        # @todo this function does not need tld path input,
-        # that can be gotten full file path, not sure why I wrote it needing tld input
-
         # update m3u playlist
-        # 2 mandatory args, the tld path and the m3u path
-        # update-m3u D:\MusicProcessing\tests\Music D:\MusicProcessing\tests\Music\test.m3u
-        # sys.argv = ['D:\MusicProcessing\main.py'', 'update-m3u', 'D:\MusicProcessing\tests\Music', 'D:\MusicProcessing\tests/Music\test.m3u']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'update-m3u', '~/MusicProcessing/tests/Music', '~/MusicProcessing/tests/Music/test.m3u']
+        # 1 mandatory arg, the m3u path
+        # update-m3u D:\MusicProcessing\tests\Music\test.m3u
+        # sys.argv = ['D:\MusicProcessing\main.py'', 'update-m3u', 'D:\MusicProcessing\tests\Music\test.m3u']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'update-m3u', '~/MusicProcessing/tests/Music/test.m3u']
         update_m3u_parsers = subparsers.add_parser("update-m3u", help="Update playlist paths")
-        update_m3u_parsers.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
         update_m3u_parsers.add_argument(ARG_CLI_PLAYLIST, type=existing_file, help=ARG_HELP_PLAYLIST)
-        update_m3u_parsers.set_defaults(func=update_paths)
+        update_m3u_parsers.set_defaults(func=update_playlist)
 
         # update m3u playlist walk
         # 1 mandatory arg, the tld path
@@ -786,9 +781,8 @@ def main(args):
             set_album_art(tld_path)
 
         if args.subcommand == "update-m3u":
-            tld_path = getattr(args, ARG_CLI_TLD)
             input_m3u = getattr(args, ARG_CLI_PLAYLIST)
-            update_paths(tld_path, input_m3u)
+            update_playlist(input_m3u)
 
         if args.subcommand == "update-walk":
             tld_path = getattr(args, ARG_CLI_TLD)

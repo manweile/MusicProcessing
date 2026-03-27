@@ -411,8 +411,6 @@ class MainFrame(wx.Frame):
 
         playlist_wildcard = f"Playlist files ({';'.join('*' + ext for ext in PLAYLIST_EXTS)})|{';'.join('*' + ext for ext in PLAYLIST_EXTS)}"
 
-        self.update_m3u_tld, update_m3u_btn = self._make_path_controls(panel)
-        update_m3u_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.update_m3u_tld))
         self.update_m3u_file, update_m3u_file_btn = self._make_path_controls(panel)
         update_m3u_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.update_m3u_file, playlist_wildcard))
         update_m3u_exec = wx.Button(panel, label="Update M3U")
@@ -423,18 +421,15 @@ class MainFrame(wx.Frame):
         update_walk_exec = wx.Button(panel, label="Update Walk")
         update_walk_exec.Bind(wx.EVT_BUTTON, self.handlers.on_update_walk)
 
-        grid.Add(wx.StaticText(panel, label="Top-level dir (update m3u):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.update_m3u_tld, pos=(0, 1), flag=wx.EXPAND)
-        grid.Add(update_m3u_btn, pos=(0, 2))
-        grid.Add(wx.StaticText(panel, label="Playlist file (.m3u):"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.update_m3u_file, pos=(1, 1), flag=wx.EXPAND)
-        grid.Add(update_m3u_file_btn, pos=(1, 2))
-        grid.Add(update_m3u_exec, pos=(1, 3))
+        grid.Add(wx.StaticText(panel, label="Playlist file (.m3u):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(self.update_m3u_file, pos=(0, 1), flag=wx.EXPAND)
+        grid.Add(update_m3u_file_btn, pos=(0, 2))
+        grid.Add(update_m3u_exec, pos=(0, 3))
 
-        grid.Add(wx.StaticText(panel, label="Top-level dir (update walk):"), pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.update_walk_tld, pos=(2, 1), flag=wx.EXPAND)
-        grid.Add(update_walk_btn, pos=(2, 2))
-        grid.Add(update_walk_exec, pos=(2, 3))
+        grid.Add(wx.StaticText(panel, label="Top-level dir (update walk):"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(self.update_walk_tld, pos=(1, 1), flag=wx.EXPAND)
+        grid.Add(update_walk_btn, pos=(1, 2))
+        grid.Add(update_walk_exec, pos=(1, 3))
 
         grid.AddGrowableCol(1)
         panel.SetSizer(grid)

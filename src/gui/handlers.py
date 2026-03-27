@@ -154,14 +154,10 @@ class EventHandlers:
         self.frame.run_task(directory.remove_pattern, tld, pattern, on_success=self.frame._show_generated_files_dialog)
 
     def on_update_m3u(self, event):
-        tld = self.frame.update_m3u_tld.GetValue().strip()
-        if not self.frame._validate_dir(tld):
-            return
         m3u_file = self.frame.update_m3u_file.GetValue().strip()
-        if not m3u_file:
-            wx.MessageBox("Please select an M3U file", "Error", wx.ICON_ERROR)
+        if not self.frame._validate_file(m3u_file):
             return
-        self.frame.run_task(playlist.update_m3u, tld, m3u_file, on_success=self.frame._show_generated_files_dialog)
+        self.frame.run_task(playlist.update_playlist, m3u_file, on_success=self.frame._show_generated_files_dialog)
 
     def on_update_walk(self, event):
         tld = self.frame.update_walk_tld.GetValue().strip()
