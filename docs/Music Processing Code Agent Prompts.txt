@@ -64,9 +64,17 @@ Primary Prompt:
 
 33) alphabetically sort handlers.py defs, without changing method bodies
 
+34) Rebuild the Playlist panel based on the command line interface from audio_playlist.py.  
+
+35) add a show generated playlist file dialog that opens in the generated file directory and only can select m3u files when a playlist update succeeds
+
+todo  need playlist "walk" type operation success file move dialog to allow multiple file selection ie all *.m3u files
+
+todo check if single & directory walk art extract success ops open file tranfser dialog . they should not, as art function creates the folder.jpg in same album dir as audio file.
+
 
 todo
-the 23-25 above removed "After any conversion or normalization operation succeeds, a directory browser dialog opens automatically showing the generated_files\Music directory. Users can then navigate to select and move desired mp3 files"
+23-25 above removed "After any conversion or normalization operation succeeds, a directory browser dialog opens automatically showing the generated_files\Music directory. Users can then navigate to select and move desired mp3 files"
 
 Small tasks
 
