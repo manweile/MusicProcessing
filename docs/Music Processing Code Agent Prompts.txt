@@ -58,6 +58,13 @@ Primary Prompt:
 
 30) In Art panel, move Specific File Art Extraction nested panel in between Bulk Directory Art Extraction nested panel and Set Bulk Album Directory Art nested panel.
 
+31) In Convert panel, create nested pnel that contains the Top-level dir (convert wlak): input field . Change the label text to "Top Level Directory to walk". Also include the Pattern (optional) drop down list. Change the label text to "Convert from Audio File Format:". Title the nested panel "Bulk Directory Conversion".
+
+32) modify update_playlist to not need tld_path input parameter
+
+33) alphabetically sort handlers.py defs, without changing method bodies
+
+
 todo
 the 23-25 above removed "After any conversion or normalization operation succeeds, a directory browser dialog opens automatically showing the generated_files\Music directory. Users can then navigate to select and move desired mp3 files"
 
