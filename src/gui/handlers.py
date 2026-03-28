@@ -380,7 +380,7 @@ class EventHandlers:
         @brief Handle the event for updating an M3U playlist.
 
         @details Retrieves the M3U file path from the GUI, validates it, and then runs the playlist update task.
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
+        The task is executed asynchronously, and upon success, a dialog is shown with generated playlist files.
 
         @param event {object} The event object.
         '''
@@ -389,14 +389,14 @@ class EventHandlers:
         if not self.frame._validate_file(m3u_file):
             return
 
-        self.frame.run_task(playlist.update_playlist, m3u_file, on_success=self.frame._show_generated_files_dialog)
+        self.frame.run_task(playlist.update_playlist, m3u_file, on_success=self.frame._show_generated_playlist_dialog)
 
     def on_update_walk(self, event):
         '''
         @brief Handle the event for updating a directory walk.
 
         @details Retrieves the top-level directory from the GUI, validates it, and then runs the directory walk update task.
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
+        The task is executed asynchronously, and upon success, a dialog is shown with generated playlist files.
 
         @param event {object} The event object.
         '''
@@ -405,4 +405,4 @@ class EventHandlers:
         if not self.frame._validate_dir(tld):
             return
 
-        self.frame.run_task(playlist.update_walk, tld, on_success=self.frame._show_generated_files_dialog)
+        self.frame.run_task(playlist.update_walk, tld, on_success=self.frame._show_generated_playlist_dialog)

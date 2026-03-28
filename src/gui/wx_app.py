@@ -536,7 +536,7 @@ class MainFrame(wx.Frame):
         @brief Create the playlist panel.
 
         @details This panel provides controls for updating M3U playlists and performing directory walks.
-        It includes options for selecting playlist files and top-level directories for update walks.
+        It includes nested subpanels for updating a specific playlist file and for walking a directory tree.
 
         @param parent The parent window for the panel.
         @return The created playlist panel.
@@ -545,27 +545,60 @@ class MainFrame(wx.Frame):
         panel = wx.Panel(parent)
         grid = wx.GridBagSizer(8, 8)
 
-        playlist_wildcard = f"Playlist files ({';'.join('*' + ext for ext in PLAYLIST_EXTS)})|{';'.join('*' + ext for ext in PLAYLIST_EXTS)}"
+        # Update Playlist Walk nested subpanel
+        bulk_box = wx.StaticBox(panel, label="Bulk Directory Playlist Update")
+        bulk_sizer = wx.StaticBoxSizer(bulk_box, wx.VERTICAL)
+        bulk_subpanel = wx.Panel(panel)
+        bulk_grid = wx.GridBagSizer(8, 8)
 
-        self.update_m3u_file, update_m3u_file_btn = self._make_path_controls(panel)
+        # Path controls for updating playlist walk
+        self.bulk_tld, bulk_btn = self._make_path_controls(bulk_subpanel)
+        bulk_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.bulk_tld))
+
+        # execute button for updating playlist walk
+        bulk_exec = wx.Button(bulk_subpanel, label="Update Directory Playlist")
+        bulk_exec.Bind(wx.EVT_BUTTON, self.handlers.on_update_walk)
+
+        # order the controls in the update playlist walk subpanel grid
+        bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulk_grid.Add(self.bulk_tld, pos=(0, 1), flag=wx.EXPAND)
+        bulk_grid.Add(bulk_btn, pos=(0, 2))
+        bulk_grid.Add(bulk_exec, pos=(0, 3))
+
+        # allows update playlist walk subpanel to expand when frame is resized
+        bulk_grid.AddGrowableCol(1)
+        bulk_subpanel.SetSizer(bulk_grid)
+        bulk_sizer.Add(bulk_subpanel, 1, wx.EXPAND | wx.ALL, 4)
+
+        # Specific playlist update nested subpanel
+        specific_box = wx.StaticBox(panel, label="Specific Playlist Update")
+        specific_sizer = wx.StaticBoxSizer(specific_box, wx.VERTICAL)
+        specific_subpanel = wx.Panel(panel)
+        specific_grid = wx.GridBagSizer(8, 8)
+
+        # Path controls for updating M3U playlist
+        playlist_wildcard = f"Playlist files ({';'.join('*' + ext for ext in PLAYLIST_EXTS)})|{';'.join('*' + ext for ext in PLAYLIST_EXTS)}"
+        self.update_m3u_file, update_m3u_file_btn = self._make_path_controls(specific_subpanel)
         update_m3u_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.update_m3u_file, playlist_wildcard))
-        update_m3u_exec = wx.Button(panel, label="Update M3U")
+
+        # Execute button for updating M3U playlist
+        update_m3u_exec = wx.Button(specific_subpanel, label="Update Playlist File")
         update_m3u_exec.Bind(wx.EVT_BUTTON, self.handlers.on_update_m3u)
 
-        self.update_walk_tld, update_walk_btn = self._make_path_controls(panel)
-        update_walk_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.update_walk_tld))
-        update_walk_exec = wx.Button(panel, label="Update Walk")
-        update_walk_exec.Bind(wx.EVT_BUTTON, self.handlers.on_update_walk)
+        # order the controls in the update M3U playlist subpanel grid
+        specific_grid.Add(wx.StaticText(specific_subpanel, label="Playlist file to update:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        specific_grid.Add(self.update_m3u_file, pos=(0, 1), flag=wx.EXPAND)
+        specific_grid.Add(update_m3u_file_btn, pos=(0, 2))
+        specific_grid.Add(update_m3u_exec, pos=(0, 3))
 
-        grid.Add(wx.StaticText(panel, label="Playlist file (.m3u):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.update_m3u_file, pos=(0, 1), flag=wx.EXPAND)
-        grid.Add(update_m3u_file_btn, pos=(0, 2))
-        grid.Add(update_m3u_exec, pos=(0, 3))
+        # allows update M3U subpanel to expand when frame is resized
+        specific_grid.AddGrowableCol(1)
+        specific_subpanel.SetSizer(specific_grid)
+        specific_sizer.Add(specific_subpanel, 1, wx.EXPAND | wx.ALL, 4)
 
-        grid.Add(wx.StaticText(panel, label="Top-level dir (update walk):"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.update_walk_tld, pos=(1, 1), flag=wx.EXPAND)
-        grid.Add(update_walk_btn, pos=(1, 2))
-        grid.Add(update_walk_exec, pos=(1, 3))
+        # order the subpanels in the main grid
+        grid.Add(bulk_sizer, pos=(0, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
+        grid.Add(specific_sizer, pos=(1, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
 
         grid.AddGrowableCol(1)
         panel.SetSizer(grid)
@@ -606,6 +639,39 @@ class MainFrame(wx.Frame):
             "Select MP3 files to move (generated files):",
             defaultDir=generated_dir,
             wildcard="MP3 files (*.mp3)|*.mp3|All files (*.*)|*.*",
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_CHANGE_DIR,
+        )
+
+        if dlg.ShowModal() == wx.ID_OK:
+            selected_files = dlg.GetPaths()
+            if selected_files:
+                self._move_files_dialog(selected_files)
+
+        dlg.Destroy()
+
+    def _show_generated_playlist_dialog(self):
+        '''
+        @brief Display a file dialog to select generated playlist files for moving.
+
+        @details This method opens a file dialog starting in the generated files directory.
+        It restricts file selection to playlist file extensions only.
+        '''
+
+        generated_dir = GENERATED_PATH
+        if not os.path.isdir(generated_dir):
+            wx.MessageBox(
+                f"Generated files directory not found: {generated_dir}",
+                "Info",
+                wx.ICON_INFORMATION,
+            )
+            return
+
+        playlist_patterns = ';'.join('*' + ext for ext in PLAYLIST_EXTS)
+        dlg = wx.FileDialog(
+            self,
+            "Select generated playlist files:",
+            defaultDir=generated_dir,
+            wildcard=f"Playlist files ({playlist_patterns})|{playlist_patterns}",
             style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_CHANGE_DIR,
         )
 
