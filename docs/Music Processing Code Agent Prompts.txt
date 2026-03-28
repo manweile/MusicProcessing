@@ -68,10 +68,19 @@ Primary Prompt:
 
 35) add a show generated playlist file dialog that opens in the generated file directory and only can select m3u files when a playlist update succeeds
 
+36) fix test_gui.py so it runs in github build
+    37) fix unit per traceback:
+        Traceback (most recent call last):
+        [MusicProcessing/build] File "/mnt/d/MusicProcessing/tests/test_gui.py", line 39, in test_mainframe_can_instantiate
+        [MusicProcessing/build] app = wx.App(False)
+        [MusicProcessing/build] ^^^^^^^^^^^^^
+        [MusicProcessing/build] File "/opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/wx/core.py", line 2189, in init
+        [MusicProcessing/build] raise SystemExit(msg)
+        [MusicProcessing/build] SystemExit: Unable to access the X Display, is $DISPLAY set properly?
+
 todo  need playlist "walk" type operation success file move dialog to allow multiple file selection ie all *.m3u files
 
 todo check if single & directory walk art extract success ops open file tranfser dialog . they should not, as art function creates the folder.jpg in same album dir as audio file.
-
 
 todo
 23-25 above removed "After any conversion or normalization operation succeeds, a directory browser dialog opens automatically showing the generated_files\Music directory. Users can then navigate to select and move desired mp3 files"
