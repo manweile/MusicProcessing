@@ -75,6 +75,8 @@ ALBUM_ART = "AlbumArt"
 class AudioArt():
     '''
     @brief Defines the base art processing class used by project.
+
+    @details This class provides methods for extracting and setting album art for audio files, as well as checking for the presence of video streams that may contain embedded art.
     '''
 
     def __init__(self) -> None:

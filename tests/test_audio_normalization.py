@@ -173,6 +173,15 @@ class TestAudioNormalization(TestCase):
         self.assertTrue(os.path.exists(self.ebu_dynamic_res))
 
 
+    def test_ebu_normalize_dynamic_spinner(self):
+        '''
+        @brief Tests dynamic ebu normalize audio file level.
+        '''
+
+        normalization.ebu_normalize_file(self.ebu_dynamic_src, show_spinner=True)
+        self.assertTrue(os.path.exists(self.ebu_dynamic_res))
+
+
     def test_ebu_normalize_linear(self):
         '''
         @brief Tests linear ebu normalize audio file level.

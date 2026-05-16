@@ -189,8 +189,20 @@ I will use the music processing  python code to:
 - extract embedded cover art if no cover art exists for album
 
 # Processing Flow
-- Copy source music from HTPC (\\Office1\Music\).
-- Prepare metadata (text and art), directory structure & file names.
-- Convert music files to mp3 with embedded art.
-- Normalize music to EBU R128 standard.
-- Finalize music with updated playlists.
+- Copy source music from HTPC (\\Office1\Music\). See SourceMusic.md.
+- Prepare metadata (text and art), directory structure & file names. See PreppedMusic.md.
+- Convert music files to mp3 with embedded art. See ConvertedMusic.md.
+- Normalize music to EBU R128 standard. See NormalizedMusic.md.
+- Finalize music with updated playlists. See FinalizedMusic.md.
+
+## GUI Mode (wxPython)
+
+The project now includes a `gui` subcommand using wxPython.
+
+Usage:
+- `python main.py gui`
+
+Requirements:
+- `wxPython` package installed (e.g., `pip install wxPython`).
+
+The GUI exposes convert, normalize, metadata, directory, and playlist operations in tabs.

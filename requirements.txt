@@ -1,8 +1,15 @@
-# external library dependencies
-colorama==0.4.6                         # dependency of tqdm
-termcolor===2.3.0                       # dependency of yaspin
-# required project external libraries
+# project external library dependencies
+## dependency of tqdm
+colorama==0.4.6
+## dependency of yaspin
+termcolor===2.3.0
+# project external libraries
+## gui libraries
+wxpython>=4.2.3
+## audio libraries
 mutagen==1.47.0
+## path validation libraries
 pathvalidate==3.2.3
+## progress bar libraries
 tqdm==4.67.1
 yaspin==3.1.0

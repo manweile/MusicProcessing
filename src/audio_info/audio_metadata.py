@@ -297,7 +297,8 @@ class AudioMetadata():
             '''
             metadata transfer
             I dont want every possible tag, just the subset that Windows will display AND are ID3v2.3 format.
-            Comments are ASF/ID3v2.3/MP4, but MusicBrainz/MP3Tag/puddletag have difficulty displaying, so passing on transferring comment metadata.
+            Comments are ASF/ID3v2.3/MP4.
+            MusicBrainz/MP3Tag/puddletag have difficulty displaying, so passing on transferring comment metadata.
             Compilation is not ID3v2.3, so passing on transferring compilation metadata.
             Date info is most problematic part of metadata, ASF/ID3v2.3/MP4 have multiple date type tags,
             the data types could be a full ISO date, or could just be a 4 digit year string,
@@ -352,7 +353,10 @@ class AudioMetadata():
                     for key, value in tags.items():
                         command.extend(['-metadata', '{0}={1}'.format(key, value)])
 
-            # export_path -y        # specify the output with overwrite flag D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
+            # export_path -y
+            # specify the output with overwrite flag
+            # eg if D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 exists,
+            # want to replace it
             command.extend([export_path, '-y'])
 
             success_msg = None
@@ -373,6 +377,8 @@ class AudioMetadata():
                         data=album_art_file.read()
                     )
                 )
+            # have to specify ID3v2 version to avoid defaults to v2.4
+            # which are not compatible with Windows display
             mp3_file.save(v2_version=3)
 
             directory.create_txt(txt_filename, data)
@@ -509,8 +515,10 @@ class AudioMetadata():
                         # sanitize because the metadata might have characters invalid for directory names
                         # platform is "Windows" because it is more restrictive (therefore os universal),
                         # the characters \, :, *, ?, ", <, >, | will be replaced by "-"
-                        # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
-                        sanitized_album_name = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
+                        # refer to:
+                        # https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
+                        sanitized_album_name = pathvalidate.sanitize_filepath(
+                            album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
 
                         data.append([audio_file, file_media_tags['album'], sanitized_album_name])
 

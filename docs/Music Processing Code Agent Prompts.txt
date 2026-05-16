@@ -1,0 +1,102 @@
+Music Processing Code Agent Prompts
+Session Name: Integrating wxPython GUI with Command Line App
+
+Primary Prompt:
+1) add wxPython gui to existing command line application
+    2) dialog box not saving selection for use
+
+3) add an Art panel for missing audio_art.py functions
+
+4) set panel order left to right as art, convert, normalize, playlist, metadata, directory
+
+5) launch application maximized
+
+6) enable log_ctrl text control re-sizable by user
+
+7) After any conversion or normalization operation succeeds, a directory browser dialog opens automatically showing the generated_files\Music directory. Users can then navigate to select and move desired mp3 files
+
+8) add tool tip for text boxes that says "enter path or click browse button"
+
+9) for art extract-walk function, change optional pattern input text control to select-able drop down list populated from AUDIO_EXTS and an any file type
+
+10) add tool tip to Art panel Pattern drop down list
+
+11) Art panel Audio file (extract art) browse dialog should only be able to select files listed in AUDO_EXTS
+
+12) Convert panel Audio file to convert browse dialog should only be able to select files listed in AUDO_EXTS
+
+13) for convert panel convert-walk function, change optional pattern input text control to select-able drop down list populated from AUDIO_EXTS and an any file type
+
+14) add tool tip to Normalize panel Type drop down list
+
+15) in Normalize panel, create a nested panel that contains the top-level dir (normalize-walk) input text and the Type drop down list.
+
+16) in Normalize panel, create a nested panel that contains the ebu file, Peak file and RMS file input text fields. Title the nested panel "Specific Normalizations"
+
+17) add src/gui/handler.py abstraction layer
+    18) event handlers not removed from wx_app.py
+    19) browse buttons are not opening dialogs
+    20) ebu file browse button not opening file dialog
+
+21) ebu file, Peak file, and RMS file browser dialogs should only be able to select mp3 files
+
+22) Add wx focus-to-text-target improvements and better control enable/disable state.
+
+23) if a single file ebu normalization succeeds, display the ebu_normalize_file.txt contents in results
+
+24) if a single file PEAK normalization succeeds, display the peak_normalize_file.txt contents in results
+
+25) if a single file rms normalization succeeds, display the rms_normalize_file.txt contents in results
+
+26) in Art panel, create a nested panel that contains the Audio file (extract art): file input text field. Title the nested panel "Specific File Extraction"
+
+27) in Art panel, create a nested spanel that contains the Top-level dir (extract walk): input field and Pattern (optional): drop down list. Title the nested panel "Bulk Directory Art Extraction".
+
+28) increase font size by 2 points
+
+29) in Art panel, create a nested panel that contains the Top-level dir (set art): input field. Change the label text to "Top Level Directory to walk:". Title the nested panel "Set Bulk Album Directory Art".
+
+30) In Art panel, move Specific File Art Extraction nested panel in between Bulk Directory Art Extraction nested panel and Set Bulk Album Directory Art nested panel.
+
+31) In Convert panel, create nested pnel that contains the Top-level dir (convert wlak): input field . Change the label text to "Top Level Directory to walk". Also include the Pattern (optional) drop down list. Change the label text to "Convert from Audio File Format:". Title the nested panel "Bulk Directory Conversion".
+
+32) modify update_playlist to not need tld_path input parameter
+
+33) alphabetically sort handlers.py defs, without changing method bodies
+
+34) Rebuild the Playlist panel based on the command line interface from audio_playlist.py.  
+
+35) add a show generated playlist file dialog that opens in the generated file directory and only can select m3u files when a playlist update succeeds
+
+36) fix test_gui.py so it runs in github build
+    37) fix unit per traceback:
+        Traceback (most recent call last):
+        [MusicProcessing/build] File "/mnt/d/MusicProcessing/tests/test_gui.py", line 39, in test_mainframe_can_instantiate
+        [MusicProcessing/build] app = wx.App(False)
+        [MusicProcessing/build] ^^^^^^^^^^^^^
+        [MusicProcessing/build] File "/opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/wx/core.py", line 2189, in init
+        [MusicProcessing/build] raise SystemExit(msg)
+        [MusicProcessing/build] SystemExit: Unable to access the X Display, is $DISPLAY set properly?
+
+todo  need playlist "walk" type operation success file move dialog to allow multiple file selection ie all *.m3u files
+
+todo check if single & directory walk art extract success ops open file tranfser dialog . they should not, as art function creates the folder.jpg in same album dir as audio file.
+
+todo
+23-25 above removed "After any conversion or normalization operation succeeds, a directory browser dialog opens automatically showing the generated_files\Music directory. Users can then navigate to select and move desired mp3 files"
+
+Small tasks
+
+Add the "command results" text exporter to logs (e.g., files created list).
+Add main.py gui --headless / dry-run to support scripting/testing.
+Add a tests/test_main_gui_invocation.py for full CLI -> GUI entrypoint.
+Add pyinstaller packaging snippet (extra branch).
+
+check todo
+Playlist gui
+Metadata gui
+Directory GUI
+
+GUI selenium?
+
+send error.info and error.warning to text log ui instead of log files
