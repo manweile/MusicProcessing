@@ -195,6 +195,8 @@ I will use the music processing  python code to:
 - Normalize music to EBU R128 standard. See NormalizedMusic.md.
 - Finalize music with updated playlists. See FinalizedMusic.md.
 
+Copy from source > Prepare metadata > Convert to mp3 > Normalize to EBU R128 > Finalize updated playlists
+
 ## GUI Mode (wxPython)
 
 The project now includes a `gui` subcommand using wxPython.
