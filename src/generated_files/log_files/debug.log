@@ -6200,3 +6200,5 @@ Stack (most recent call last):
     probe_process = subprocess_utils.subprocess_run(probe_command)
   File "D:\MusicProcessing\src\subprocess_utils.py", line 236, in subprocess_run
     logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
+
+2026-03-23 16:54:03,492 — src.audio_info.audio_art — INFO — extract_album_art:208 — F:\iTunesPrepped\Belinda Carlisle\Her Greatest Hits has a Folder.jpg

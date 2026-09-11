@@ -24,17 +24,34 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: "3.12"
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libgtk-3-dev libnotify-dev libsdl2-dev libtiff-dev
+
+    - name: Workaround for libtiff.so.5
+      run: |
+        # Create a symbolic link for libtiff.so.5, which is missing in Ubuntu 24.04
+        sudo ln -s /lib/x86_64-linux-gnu/libtiff.so.6 /lib/x86_64-linux-gnu/libtiff.so.5
+
+    - name: Install wxPython
+      run: |
+        python -m pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-24.04 wxPython
+
     - name: Cache ffmpeg download
       uses: actions/cache@v3
       id: cache-ffmpeg
       with:
         path: /opt/ffmpeg/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz
         key: ${{ runner.os }}-ffmpeg
+
     - name: Download ffmpeg if not cached
       if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
       run: |
         echo "Downloading ffmpeg ${FFMPEG_VERSION}"
         wget -q https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz -P /opt/ffmpeg
+
     - name: Extract and install ffmpeg
       run: |
         echo "Extracting ffmpeg ${FFMPEG_VERSION}"
@@ -43,6 +60,7 @@ jobs:
         echo "Installing ffmpeg ${FFMPEG_VERSION}"
         sudo cp /opt/ffmpeg/extracted/bin/ffmpeg /usr/bin/ffmpeg
         sudo cp /opt/ffmpeg/extracted/bin/ffprobe /usr/bin/ffprobe
+
     - name: Cache pip modules
       uses: actions/cache@v3
       with:
@@ -50,10 +68,12 @@ jobs:
         key: ${{ runner.os }}-python-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-python-
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+
     - name: Test with unittest
       env:
         PYTHONTRACEMALLOC: 1 # Enable tracemalloc

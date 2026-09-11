@@ -53,6 +53,8 @@ DELIMITER = ","
 class AudioPlaylist():
     '''
     @brief Defines the base playlist processing used by project.
+
+    @details This class provides methods for creating and processing audio playlists, including generating m3u files from directories of audio files and parsing existing m3u files to extract track information.
     '''
 
     def __init__(self) -> None:
@@ -111,7 +113,7 @@ class AudioPlaylist():
             return audio
 
 
-    def update_paths(self, tld_path: str, input_m3u: str) -> None:
+    def update_playlist(self, input_m3u: str) -> None:
         '''
         @brief Updates an old playlist relative pathing.
 
@@ -119,7 +121,6 @@ class AudioPlaylist():
         @details The updated playlist is created in generated files directory.
         @details The new file is expected to be moved to the correct top level directory  for the relative paths.
 
-        @param tld_path {str} The top level directory where playlist and music files are located.
         @param input_m3u {str} The full file path to playlist needing conversion.
 
         @exception OSError A system related error occurred.
@@ -143,6 +144,8 @@ class AudioPlaylist():
             if input_file_ext.lower() not in PLAYLIST_EXTS:
                 logger.exception(f"PlaylistError input file {input_m3u} is not a playlist", stack_info=True)
                 raise PlaylistError(f"PlaylistError input file {input_m3u} is not a playlist")
+
+            tld_path = os.path.dirname(input_m3u)
 
             # new m3u file gets created in generated files directory so can later be move to correct tld
             export_path = GENERATED_PATH
@@ -210,7 +213,7 @@ class AudioPlaylist():
                         continue
 
                     input_file_path = os.path.join(dir_path, file)
-                    self.update_paths(dir_path, input_file_path)
+                    self.update_playlist(input_file_path)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} updating m3u files in tld_path: {tld_path}", stack_info=True)

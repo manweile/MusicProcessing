@@ -113,7 +113,7 @@ class TestAudioPlaylist(TestCase):
         @brief Tests if the updated m3u file is equal to expected results.
         '''
 
-        playlist.update_paths(TESTS_TLD, TEST_M3U)
+        playlist.update_playlist(TEST_M3U)
         m3u_exists = os.path.exists(self.generated_m3u)
         self.assertTrue(m3u_exists)
 
@@ -140,7 +140,7 @@ class TestAudioPlaylist(TestCase):
         '''
 
         with self.assertRaises(PlaylistError) as cm:
-            playlist.update_paths(TESTS_TLD, TEST_MP3_CRUSH)
+            playlist.update_playlist(TEST_MP3_CRUSH)
 
         self.assertEqual(cm.exception.message, f"PlaylistError input file {TEST_MP3_CRUSH} is not a playlist")
 

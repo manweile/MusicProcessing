@@ -1,36 +1,37 @@
-Beginning ebu normalization on: Howard Shore-The Taming Of Smeagol.mp3
-Source directory path: D:\MusicProcessing\tests\NormalizedMusic\The Lord of the Rings\The Two Towers
+Beginning ebu normalization on: Jennifer Warnes & bill Medly - (I've Had) The Time of My Life.mp3
+Source directory path: F:\iTunesConverted\Jennifer Warnes\Platinum & Gold Collection
 Source sample rate: 44100 hz
 Getting loudnorm stats
-['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\NormalizedMusic\\The Lord of the Rings\\The Two Towers\\Howard Shore-The Taming Of Smeagol.mp3', '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
+['ffmpeg', '-hide_banner', '-i', "F:\\iTunesConverted\\Jennifer Warnes\\Platinum & Gold Collection\\Jennifer Warnes & bill Medly - (I've Had) The Time of My Life.mp3", '-vn', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:print_format=json', '-f', 'null', '-']
 Pre-normalization stats:
 {
-    "input_i": "-25.72",
-    "input_tp": "-0.16",
-    "input_lra": "13.60",
-    "input_thresh": "-36.49",
-    "output_i": "-40.64",
+    "input_i": "-12.26",
+    "input_tp": "0.56",
+    "input_lra": "13.30",
+    "input_thresh": "-22.85",
+    "output_i": "-13.96",
     "output_tp": "-2.00",
-    "output_lra": "9.50",
-    "output_thresh": "-51.04",
+    "output_lra": "5.70",
+    "output_thresh": "-24.18",
     "normalization_type": "dynamic",
-    "target_offset": "24.64"
+    "target_offset": "-2.04"
 }
-Analyzed loudnorm stats
+Analyzed loudnorm stats in 10.27 secs
 Normalizing audio
-['ffmpeg', '-hide_banner', '-i', 'D:\\MusicProcessing\\tests\\NormalizedMusic\\The Lord of the Rings\\The Two Towers\\Howard Shore-The Taming Of Smeagol.mp3', '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-25.72:measured_TP=-0.16:measured_LRA=13.60:measured_thresh=-36.49:offset=24.64:linear=true:print_format=json', '-ar', '44100', 'D:\\MusicProcessing\\src\\generated_files\\Music\\The Lord of the Rings\\The Two Towers\\Howard Shore-The Taming Of Smeagol.mp3', '-y']
+['ffmpeg', '-hide_banner', '-i', "F:\\iTunesConverted\\Jennifer Warnes\\Platinum & Gold Collection\\Jennifer Warnes & bill Medly - (I've Had) The Time of My Life.mp3", '-id3v2_version', '3', '-af', 'loudnorm=I=-16.0:TP=-2.0:LRA=11.0:measured_I=-12.26:measured_TP=0.56:measured_LRA=13.30:measured_thresh=-22.85:offset=-2.04:linear=true:print_format=json', '-ar', '44100', "D:\\MusicProcessing\\src\\generated_files\\Music\\Jennifer Warnes\\Platinum & Gold Collection\\Jennifer Warnes & bill Medly - (I've Had) The Time of My Life.mp3", '-y']
 Post normalization stats:
 {
-    "input_i": "-25.72",
-    "input_tp": "-0.16",
-    "input_lra": "13.60",
-    "input_thresh": "-36.49",
-    "output_i": "-40.07",
+    "input_i": "-12.26",
+    "input_tp": "0.56",
+    "input_lra": "13.30",
+    "input_thresh": "-22.85",
+    "output_i": "-15.79",
     "output_tp": "-2.00",
-    "output_lra": "12.70",
-    "output_thresh": "-50.52",
+    "output_lra": "11.90",
+    "output_thresh": "-26.39",
     "normalization_type": "dynamic",
-    "target_offset": "24.07"
+    "target_offset": "-0.21"
 }
-Applied loudnorm stats
-FFMPEG used dynamic normalization on Howard Shore-The Taming Of Smeagol.mp3
+Applied loudnorm stats in 11.64 secs
+FFMPEG used dynamic normalization on Jennifer Warnes & bill Medly - (I've Had) The Time of My Life.mp3 in total time 21.91 secs
+ 
