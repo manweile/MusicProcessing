@@ -29,12 +29,12 @@ ASF_TYPE = "ASF"
 ## @var AUDIO_EXTS
 # @brief audio file extensions in my collection
 # @details use this when working with os library
-AUDIO_EXTS = [".mp3", ".m4a", ".wma"]
+AUDIO_EXTS = [".mp3", ".m4a", ".wma", ".flac"]
 
 ## @var AUDIO_FILES
 # @brief audio file type to mutagen class mapping
 # @details use this when working with mutagen library
-AUDIO_FILES = ["MP3", "MP4", "ASF"]
+AUDIO_FILES = ["MP3", "MP4", "ASF", "FLAC"]
 
 ## @var CSV_FILES
 # @brief final part of csv files directory path
@@ -50,6 +50,16 @@ CSV_EXT = ".csv"
 # @brief error log file format
 # @details use this to set error logging file format
 ERROR_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
+
+## @var FLAC_EXT
+# @brief flac file type extension
+# @details use this when needing just this file type extension and not file list of valid extensions
+FLAC_EXT = ".flac"
+
+## @var FLAC_TYPE
+# @brief mutagen audio file type
+# @details use this when working with mutagen library
+FLAC_TYPE = "FLAC"
 
 ## @var FOLDER_ART
 # @brief name of album art jpg
@@ -146,6 +156,7 @@ __all__ = [
     "CSV_DIR", "CSV_EXT",
     "ERROR_LOG_FORMAT",
     "LOG_DIR", "LOG_EXT",
+    "FLAC_EXT", "FLAC_TYPE",
     "FOLDER_ART",
     "ILT",
     "LRA",

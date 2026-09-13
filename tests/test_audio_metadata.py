@@ -29,12 +29,14 @@ from mutagen._util import MutagenError
 
 # local module constants
 from src import AUDIO_FILES, FOLDER_ART
+from src import CSV_DIR, CSV_EXT
 from src import MP3_EXT, MUSIC_TLD
 from src import PLAYLIST_EXTS
 from src import RESULT_DIR, RESULT_EXT
+from src import UTF8
 from src.generated_files import GENERATED_PATH
 from tests import TEST_M4A_EAGLES
-from tests import TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_GENESIS, TEST_MP3_NO_TAG, TEST_MP3_NO_METADATA
+from tests import TEST_MP3_10CC, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_GENESIS, TEST_MP3_NO_TAG, TEST_MP3_NO_METADATA
 from tests import TEST_WAV_NONE
 from tests import TEST_WMA_CCR
 from tests import TEST_M3U
@@ -243,10 +245,10 @@ class TestAudioMetadata(TestCase):
         '''
 
         if os.path.exists(cls.converted):
-            shutil.rmtree(cls.converted)
+            shutil.rmtree(cls.converted, ignore_errors=True)
 
         if os.path.exists(cls.prepped):
-            shutil.rmtree(cls.prepped)
+            shutil.rmtree(cls.prepped, ignore_errors=True)
 
 
     def tearDown(self):
@@ -838,6 +840,142 @@ class TestAudioMetadata(TestCase):
         id3_tags = metadata.map_wma_tags(input_tags)
 
         self.assertDictEqual(id3_tags, wma_mapped)
+
+
+    def test_normalize_filename(self):
+        '''
+        @brief Tests renaming an ID3v2.3 MP3 using its album artist and title metadata.
+
+        @details Happy path test using 10cc audio file.
+        '''
+
+        test_dir = os.path.join(self.norm_path, "10cc", "10cc")
+        os.makedirs(test_dir, exist_ok=True)
+
+        src_file = os.path.join(test_dir, "04 - Donna.mp3")
+        shutil.copy(TEST_MP3_10CC, src_file)
+
+        normalized_file = os.path.join(test_dir, "10cc-Donna.mp3")
+
+        metadata.normalize_filename(src_file)
+
+        self.assertFalse(os.path.exists(src_file))
+        self.assertTrue(os.path.exists(normalized_file))
+
+        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
+        self.assertTrue(os.path.exists(csv_path))
+
+        with open(csv_path, "r", encoding=UTF8) as f:
+            lines = f.readlines()
+
+        expected_row = f"{src_file};10cc;Donna;{normalized_file}\n"
+        self.assertIn(expected_row, lines)
+
+
+    def test_normalize_filename_already_correct(self):
+        '''
+        @brief Tests normalize_filename does nothing when filename already matches correct pattern.
+        '''
+
+        test_dir = os.path.join(self.norm_path, "10cc", "10cc")
+        os.makedirs(test_dir, exist_ok=True)
+
+        correct_filenames = [
+            "10cc-Donna.mp3",
+            "10cc - Donna.mp3",
+            "10cc -Donna.mp3",
+            "10cc- Donna.mp3",
+        ]
+
+        for fname in correct_filenames:
+            file_path = os.path.join(test_dir, fname)
+            shutil.copy(TEST_MP3_10CC, file_path)
+            metadata.normalize_filename(file_path)
+            self.assertTrue(os.path.exists(file_path))
+
+
+    def test_normalize_filename_sanitizes_windows_invalid_chars(self):
+        '''
+        @brief Tests normalize_filename sanitizes Windows invalid filename characters.
+        '''
+
+        test_dir = os.path.join(self.norm_path, "10cc", "10cc")
+        os.makedirs(test_dir, exist_ok=True)
+
+        src_file = os.path.join(test_dir, "04 - Donna.mp3")
+        shutil.copy(TEST_MP3_10CC, src_file)
+
+        class DummyTag:
+            def __init__(self, text):
+                self.text = [text]
+
+        class DummyAudioFile:
+            def __init__(self):
+                self.tags = Mock()
+                self.tags.version = (2, 3, 0)
+                self.tags.get.side_effect = lambda key: {
+                    "TPE2": DummyTag("10cc"),
+                    "TIT2": DummyTag("Ships Don't Disappear In The Night (Do They?)"),
+                }.get(key)
+
+        normalized_file = os.path.join(test_dir, "10cc-Ships Don't Disappear In The Night (Do They).mp3")
+
+        with patch("src.audio_info.audio_metadata.MP3", DummyAudioFile), patch.object(
+            metadata, "load_any_file", return_value=DummyAudioFile()
+        ):
+            metadata.normalize_filename(src_file)
+
+        self.assertFalse(os.path.exists(src_file))
+        self.assertTrue(os.path.exists(normalized_file))
+
+
+    def test_normalize_filename_invalid_ext(self):
+        '''
+        @brief Tests normalize_filename raises ValueError for non-MP3 audio file.
+        '''
+
+        with self.assertRaises(ValueError) as cm:
+            metadata.normalize_filename(TEST_M4A_EAGLES)
+
+        err_msg = f"ValueError with file: {TEST_M4A_EAGLES} has invalid extension: .m4a"
+        self.assertEqual(str(cm.exception), err_msg)
+
+
+    def test_normalize_filename_wo_metadata(self):
+        '''
+        @brief Tests normalize_filename raises ValueError for MP3 without ID3v2.3 metadata.
+        '''
+
+        with self.assertRaises(ValueError) as cm:
+            metadata.normalize_filename(TEST_MP3_NO_METADATA)
+
+        err_msg = f"ValueError loading ID3v2.3 metadata from {TEST_MP3_NO_METADATA}"
+        self.assertEqual(str(cm.exception), err_msg)
+
+
+    def test_normalize_filename_walk(self):
+        '''
+        @brief Test normalizing filenames for ID3v2.3 MP3 files in a directory walk.
+
+        @details Verifies MP3 files are renamed while non-MP3 files are skipped.
+        '''
+
+        test_dir = os.path.join(self.norm_path, "10cc", "10cc")
+        os.makedirs(test_dir, exist_ok=True)
+
+        src_file = os.path.join(test_dir, "04 - Donna.mp3")
+        shutil.copy(TEST_MP3_10CC, src_file)
+
+        non_mp3_file = os.path.join(test_dir, "The Eagles-Desperado.m4a")
+        shutil.copy(TEST_M4A_EAGLES, non_mp3_file)
+
+        normalized_file = os.path.join(test_dir, "10cc-Donna.mp3")
+
+        metadata.normalize_filename_walk(self.norm_path)
+
+        self.assertFalse(os.path.exists(src_file))
+        self.assertTrue(os.path.exists(normalized_file))
+        self.assertTrue(os.path.exists(non_mp3_file))
 
 
     def test_update_id3(self):

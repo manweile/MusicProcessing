@@ -40,6 +40,11 @@ TEST_M4A_DAVIS = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance",
 # @details This mp3 has a co-located Folder.jpg file.
 TEST_M4A_EAGLES = os.path.join(TESTS_TLD, "The Eagles", "Desperado", "The Eagles-Desperado.m4a")
 
+## @var TEST_MP3_10CC
+# @brief Path to mp3 audio file for tests.
+# @details Use this when needing a mp3 audio file for audio metadata tests.
+TEST_MP3_10CC = os.path.join(TESTS_TLD, "10cc", "10cc", "04 - Donna.mp3")
+
 ## @var TEST_MP3_ABBA
 # @brief Path to mp3 audio file for tests.
 # @details Use this when needing a mp3 audio file for audio art tests.
@@ -116,7 +121,7 @@ TEST_WMA_JOHN = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road
 __all__ = [
     "TESTS_PATH", "TESTS_TLD",
     "TEST_M3U", "TEST_WAV_NONE",
-    "TEST_M4A_DAVIS", "TEST_M4A_EAGLES"
-    "TEST_MP3_ABBA", "TEST_MP3_CRUSH", "TEST_MP3_GENESIS", "TEST_MP3_NO_METADATA", "TEST_MP3_NO_TAG", "TEST_MP3_SMEAGOL", "TEST_MP3_X",
+    "TEST_M4A_DAVIS", "TEST_M4A_EAGLES",
+    "TEST_MP3_10CC", "TEST_MP3_ABBA", "TEST_MP3_CRUSH", "TEST_MP3_GENESIS", "TEST_MP3_NO_METADATA", "TEST_MP3_NO_TAG", "TEST_MP3_SMEAGOL", "TEST_MP3_X",
     "TEST_WMA_CCR", "TEST_WMA_HOLIDAY", "TEST_WMA_JOHN"
 ]

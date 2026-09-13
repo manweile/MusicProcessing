@@ -112,6 +112,31 @@ GEN_KEYS = {
     'track'                 # nice to have                  ffmpeg mapping: TRCK
 }
 
+## @var FLAC_KEYS
+# @brief the set of generic FLAC metadata keys
+# @details the FLAC keys used for mapping to windows display compatible metadata
+FLAC_KEYS = {
+    'album': 'ALBUM',
+    'album_artist': 'ALBUMARTIST',
+    'artist': 'ARTIST',
+    'composer': 'COMPOSER',
+    'copyright': 'COPYRIGHT',
+    'date': 'DATE',
+    'disc': 'DISCNUMBER',
+    'genre': 'GENRE',
+    'originalyear': 'DATE',
+    'publisher': 'PUBLISHER',
+    'title': 'TITLE',
+    'track': 'TRACKNUMBER'
+}
+
+## @var FLAC_TIME_KEYS
+# @brief FLAC time keys
+# @details used to set DATE metadata
+FLAC_TIME_KEYS = {
+    'DATE'                                                 # preferred key
+}
+
 ## @var MP3_KEYS
 # @brief the set of generic ID3v2.3 (mp3) metadata keys
 # @details the ID3 keys used for mapping to windows display compatible metadata
@@ -388,6 +413,84 @@ class AudioMetadata():
             raise e_error
 
 
+    def normalize_filename(self, file_path: str) -> None:
+        '''
+        @brief Renames an ID3v2.3 MP3 using its album artist and title metadata.
+
+        @details Calling function MUST supply path to an existing valid MP3 file.
+        @details The MP3 MUST contain ID3v2.3 metadata with TPE2 and TIT2 frames.
+        @details The metadata values are assumed to be sanitized already.
+        @details A CSV report is created after the file is renamed.
+
+        @param file_path {str} The path for the MP3 file to rename.
+
+        @exception ValueError Indicates invalid input or missing required metadata.
+        @exception ValidationError Indicates the created filename is invalid.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        csv_filename = inspect.currentframe().f_code.co_name
+
+        try:
+            _, file_ext = os.path.splitext(file_path)
+            if file_ext.lower() != MP3_EXT:
+                logger.error(f"ValueError with file: {file_path} has invalid extension: {file_ext}", exc_info=True)
+                raise ValueError(f"ValueError with file: {file_path} has invalid extension: {file_ext}")
+
+            audio_file = self.load_any_file(file_path)
+
+            if not isinstance(audio_file, MP3) or audio_file.tags is None:
+                logger.error(f"ValueError loading ID3v2.3 metadata from {file_path}", exc_info=True)
+                raise ValueError(f"ValueError loading ID3v2.3 metadata from {file_path}")
+
+            if audio_file.tags.version != (2, 3, 0):
+                logger.error(f"ValueError with file: {file_path} metadata is not ID3v2.3", exc_info=True)
+                raise ValueError(f"ValueError with file: {file_path} metadata is not ID3v2.3")
+
+            album_artist_tag = audio_file.tags.get('TPE2')
+            title_tag = audio_file.tags.get('TIT2')
+
+            if album_artist_tag is None or not album_artist_tag.text:
+                logger.error(f"ValueError with file: {file_path} missing album artist metadata", exc_info=True)
+                raise ValueError(f"ValueError with file: {file_path} missing album artist metadata")
+
+            if title_tag is None or not title_tag.text:
+                logger.error(f"ValueError with file: {file_path} missing title metadata", exc_info=True)
+                raise ValueError(f"ValueError with file: {file_path} missing title metadata")
+
+            album_artist = album_artist_tag.text[0]
+            title = title_tag.text[0]
+
+            file_stem = os.path.splitext(os.path.basename(file_path))[0]
+            if re.fullmatch(rf"{re.escape(album_artist)}\s*-\s*{re.escape(title)}", file_stem):
+                return
+
+            normalized_name = f"{album_artist}-{title}{MP3_EXT}"
+            normalized_name = pathvalidate.sanitize_filename(
+                normalized_name,
+                replacement_text="",
+                platform="Windows",
+                validate_after_sanitize=True,
+            )
+
+            normalized_path = os.path.join(os.path.dirname(file_path), normalized_name)
+            os.rename(file_path, normalized_path)
+
+            data.append([file_path, album_artist, title, normalized_path])
+            header_row = ["original file path", "album artist", "title", "normalized file path"]
+            directory.create_csv(csv_filename, data, None, header_row, 0)
+
+        except ValidationError as validation_error:
+            logger.exception(f"ValidationError creating normalized filename for {file_path}", stack_info=True)
+            raise validation_error
+        except ValueError as v_error:
+            raise v_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} normalizing filename for {file_path}", stack_info=True)
+            raise e_error
+
+
     def convert_walk(self, start_path: str, file_pattern: str, show_spinner: bool = True) -> None:
         '''
         @brief Converts all audio files found in specified path to mp3 format.
@@ -431,6 +534,38 @@ class AudioMetadata():
                 exc_msg = f"Exception {type(e_error).__name__} walking {start_path} to convert audio files to mp3"
 
             logger.exception(exc_msg, stack_info=True)
+            raise e_error
+
+
+    def normalize_filename_walk(self, start_path: str) -> None:
+        '''
+        @brief Renames ID3v2.3 MP3 files found in specified path using album artist and title metadata.
+
+        @details Calling functions MUST verify valid start path.
+
+        @param start_path {str} The starting point of the directory walk.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        input_file_ext = None
+
+        try:
+            input_path = Path(start_path)
+
+            for dir_path, _, file_names in os.walk(input_path):
+                for file in file_names:
+                    _, input_file_ext = os.path.splitext(file)
+
+                    # only process MP3 files
+                    if input_file_ext.lower() != MP3_EXT:
+                        continue
+
+                    input_file_path = os.path.join(dir_path, file)
+                    self.normalize_filename(input_file_path)
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} walking {start_path} to normalize audio files", stack_info=True)
             raise e_error
 
 

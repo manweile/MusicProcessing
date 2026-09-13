@@ -78,6 +78,26 @@ def convert_file(file_path):
     metadata.convert_file(file_path)
 
 
+def normalize_filename(file_path):
+    '''
+    @brief Renames an MP3 using its album artist and title metadata.
+
+    @param file_path {str} The full path to the MP3 file.
+    '''
+
+    metadata.normalize_filename(file_path)
+
+
+def normalize_filename_walk(tld_path):
+    '''
+    @brief Renames MP3 files in specified top level directory using album artist and title metadata.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    '''
+
+    metadata.normalize_filename_walk(tld_path)
+
+
 def convert_walk(tld_path, file_pattern):
     '''
     @brief Converts all audio files in specified top level directory to mp3 format.
@@ -241,7 +261,7 @@ def list_type(tld_path, file_ext=None):
     @param file_ext {str} The specified extension to get list of.
     '''
 
-    directory.get_ext_file_list(file_ext, tld_path)
+    directory.get_ext_file_list(tld_path, file_ext)
 
 
 def normalize_walk(tld_path, norm_type):
@@ -342,6 +362,14 @@ def main(args):
         if args.subcommand == "convert-file":
             file_path = getattr(args, "file")
             convert_file(file_path)
+
+        if args.subcommand == "normalize-filename":
+            file_path = getattr(args, "file")
+            normalize_filename(file_path)
+
+        if args.subcommand == "normalize-filename-walk":
+            tld_path = getattr(args, "tld")
+            normalize_filename_walk(tld_path)
 
         if args.subcommand == "convert-walk":
             tld_path = getattr(args, "tld")
@@ -461,6 +489,21 @@ if __name__ == "__main__":
         convert_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
         convert_file_parser.set_defaults(func=convert_file)
 
+        # normalize an mp3 filename from its metadata
+        # 1 mandatory arg, the audio file path
+        # sys.argv = ['D:\\MusicProcessing\\main.py', 'normalize-filename', 'C:\\Music\\artist-title.mp3']
+        normalize_filename_parser = subparsers.add_parser("normalize-filename", help="Renames an MP3 from its metadata")
+        normalize_filename_parser.add_argument("file", type=existing_file, help="mandatory full path to MP3 file")
+        normalize_filename_parser.set_defaults(func=normalize_filename)
+
+        # normalize mp3 filenames from metadata for files in top level directory
+        # 1 mandatory arg, the tld path
+        # sys.argv = ['D:\MusicProcessing\main.py', 'normalize-filename-walk', 'C:\Music']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'normalize-filename-walk', '/home/gerald/Music']
+        normalize_filename_walk_parser = subparsers.add_parser("normalize-filename-walk", help="Renames MP3 files from metadata")
+        normalize_filename_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        normalize_filename_walk_parser.set_defaults(func=normalize_filename_walk)
+
         # convert all audio files found in top level directory
         # 1 mandatory arg, the tld path
         # 1 optional arg, the file pattern to match
@@ -572,7 +615,7 @@ if __name__ == "__main__":
         # 1 mandatory arg, the tld path
         # 1 optional arg, the file extension
         # sys.argv = ['D:\MusicProcessing\main.py', 'list-type', 'C:\Music', '--ext', { 'mp3' | 'm4a' | 'wma' | 'abc' } ]
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'list-type', '/home/gerald/Music', '--ext', { 'mp3' | 'm4a' | 'wma' | 'abc' } ]
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'list-type', '/home/gerald/Music', '--ext', { '.mp3' | '.m4a' | '.wma' | '.abc' } ]
         list_type_parser = subparsers.add_parser("list-type", help="Generates a csv containing full file path for an audio file type")
         list_type_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         list_type_parser.add_argument("--ext", type=str, help='optional file extension')
