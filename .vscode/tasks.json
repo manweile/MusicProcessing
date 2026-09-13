@@ -3,48 +3,99 @@
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
-        {
-            "label": "Create Doxygen Documentation",
-            "type": "shell",
-            "command": "doxygen",
-            "options": {
-                "cwd": "${workspaceFolder}/docs"
-            },
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false,
-                "close": true
-            }
+
+      /** Doxygen Tasks */
+      // Create Doxygen Documentation
+      // This task runs the Doxygen command to generate documentation based on the configuration specified in the Doxyfile.
+      {
+          "label": "Create Doxygen Documentation",
+          "type": "shell",
+          "command": "doxygen",
+          "options": {
+              "cwd": "${workspaceFolder}/docs"
+          },
+          "problemMatcher": [],
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "presentation": {
+              "echo": true,
+              "reveal": "always",
+              "focus": false,
+              "panel": "shared",
+              "showReuseMessage": true,
+              "clear": false,
+              "close": true
+          }
+      },
+
+      // Open Doxygen Documentation
+      // This task opens the generated Doxygen documentation in Firefox.
+      // It constructs a file URL pointing to the index.html file in the Doxygen output directory and launches Firefox to display the documentation.
+      {
+          "label": "Open Doxygen Documentation",
+          // Using process type instead of custom powershell specified in settings.json
+          // Ensures Firefox command executes in clean environment
+          "type": "process",
+          "command": "Firefox",
+          "windows": {
+              "command": "C:/Program Files/Mozilla Firefox/firefox.exe"
+          },
+          "args": [
+              "file:///${workspaceFolder}/docs/html/index.html"
+          ],
+          "problemMatcher": [],
+          "presentation": {
+              "echo": true,
+              "reveal": "always",
+              "focus": false,
+              "panel": "shared",
+              "showReuseMessage": true,
+              "clear": false,
+              "close": true
+          }
+      },
+
+      /** Native Standalone Terminal */
+      // Open Windows Terminal PowerShell
+      // this task opens a new instance of Windows Terminal (wt.exe) with a PowerShell session, starting in the workspace folder.
+
+      // type shell and command cmd.exe forces VS Code to run a standard hidden command propmt shell instance,
+      // which is required to launch Windows Terminal (wt.exe) in a separate process.
+      // args  "/c", "start" fires wt.exe into its own completely separate background thread and instantly closes the calling cmd.exe window.
+      // arg "\"\"" is a placeholder for the title of the new terminal window, which is left empty to avoid displaying a title.
+      // The -d argument specifies the starting directory for the new terminal session, which is set to the workspace folder.
+      // Because the cmd.exe wrapper exits a fraction of a second after firing the start command,
+      // VS Code immediately registers the task as terminated with exit code 0.
+      // This allows using shortcut keys as many times as wanted without lingering ghost tasks or having to use "Task: Terminate Task".
+      {
+        "label": "Open Windows Terminal PowerShell",
+        "type": "shell",
+        "command": "cmd.exe",
+        "args": [
+          "/c", "start",
+          "\"\"",
+          "${env:LOCALAPPDATA}/Microsoft/WindowsApps/wt.exe",
+          "--maximized",
+          "-d", "${workspaceFolder}",
+          "powershell.exe"
+        ],
+        "problemMatcher": [],
+        "isBackground": false,
+        "group": {
+          "kind": "test",
+          "isDefault": true
         },
-        {
-            "label": "Open Doxygen Documentation",
-            "type": "process",
-            "command": "Firefox",
-            "windows": {
-                "command": "C:/Program Files/Mozilla Firefox/firefox.exe"
-            },
-            "args": [
-                "file:///${workspaceFolder}/docs/html/index.html"
-            ],
-            "problemMatcher": [],
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false,
-                "close": true
-            }
+        "presentation": {
+          "echo": false,
+          "reveal": "never",
+          "focus": false,
+          "panel": "shared",
+          "showReuseMessage": false,
+          "close": true
         }
+      }
+
     ]
 }
