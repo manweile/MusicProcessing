@@ -1,25 +1,37 @@
 '''
 @package src
+@file src/__init__.py
+@author Gerald Manweiler
+
 @brief Holds package level constants and imports used by other modules.
+
+@details Also enables logging for the package.
+
+@version 1.0.0
+@date 2024-06-05
+
+@copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
 # standard modules
-import logging
-import os
-from logging import DEBUG, FileHandler, Formatter
+import logging                                              # standard logging module
+import os                                                   # standard os module
+from logging import DEBUG                                   # standard logging level for debug messages
+from logging import FileHandler                             # standard logging file handler
+from logging import Formatter                               # standard logging formatter
 
 # local module constants
-from src.generated_files import GENERATED_PATH
+from src.generated_files import GENERATED_PATH              # path to the directory where generated files are stored
 # local module errors
-from src.errors import FfmpegProcessError
-from src.errors import JSONOutputError
-from src.errors import MetadataTypeError
-from src.errors import MusicProcessingError
-from src.errors import PathInfoError
-from src.errors import PlaylistError
-from src.errors import VideoStreamError
+from src.errors import FfmpegProcessError                   # custom error for ffmpeg process failures
+from src.errors import JSONOutputError                      # custom error for JSON output issues
+from src.errors import MetadataTypeError                    # custom error for metadata type mismatches
+from src.errors import MusicProcessingError                 # custom error for general music processing issues
+from src.errors import PathInfoError                        # custom error for path information issues
+from src.errors import PlaylistError                        # custom error for playlist related issues
+from src.errors import VideoStreamError                     # custom error for video stream related issues
 # local module classes
-from src.level_filter import LevelFilter
+from src.level_filter import LevelFilter                    # custom logging level filter class
 
 ## @var ASF_TYPE
 # @brief mutagen audio file type
@@ -173,16 +185,17 @@ __all__ = [
     "VideoStreamError"
 ]
 
-r'''
-MusicProcessing has multi-level logging setup.
-from https://realpython.com/python-logging-source-code/#a-multi-handler-design tutorial.
-All loggers wil have file handlers.
-Every module will instantiate it's own logger.
-This will cause all logging initiated within a module to log to that modules log.
-Additionally, there will be level based loggers.
-The debug logger will not have a filter, making it the master log repository.
+'''
+MusicProcessing has multi-level logging setup.<br>
+from https://realpython.com/python-logging-source-code/#a-multi-handler-design tutorial.<br>
+All loggers wil have file handlers.<br>
+Every module will instantiate it's own logger.<br>
+This will cause all logging initiated within a module to log to that modules log.<br>
+Additionally, there will be level based loggers.<br>
+The debug logger will not have a filter, making it the master log repository.<br>
 The info through critical loggers will be filtered to only accept log records of their level.
 '''
+
 ## @var handler
 # @brief log file handler
 # @details creates log file handler for log level
@@ -223,6 +236,10 @@ log_path = os.path.join(GENERATED_PATH, LOG_DIR)
 # @details uses name of package so logger is parent to loggers in other modules in same package
 src_logger = logging.getLogger(__name__)
 
+# Create necessary directories for generated files
+for generated_dir in (CSV_DIR, LOG_DIR, RESULT_DIR):
+    os.makedirs(os.path.join(GENERATED_PATH, generated_dir), exist_ok=True)
+
 # override the default logging level WARN to lowest level so we can log all levels
 src_logger.setLevel(DEBUG)
 
@@ -244,12 +261,15 @@ for level in levels:
     src_logger.addHandler(handler)
 
 
+# Public Methods
+
+
 def add_module_handler(logger, basename, level=DEBUG, format=ERROR_LOG_FORMAT, propagate=True):
     '''
     @brief Adds FileHandler to a logger.
 
-    @details Logger is expected to be defined with __name__ dunder by calling module.
-    @details basename is expected to be defined by __file__ dunder in calling module.
+    @details Logger is expected to be defined with __name__ dunder by calling module.<br>
+    basename is expected to be defined by __file__ dunder in calling module.
 
     @param logger (Logger) Logger instance for a module.
     @param basename {str} File handler log file name for logger.

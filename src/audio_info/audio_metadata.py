@@ -7,6 +7,7 @@
 @details AudioMetadata class which encapsulates the functionality for handling and processing audio metadata across various audio file formats.
 
 @version 1.0.0
+@date 2024-06-05
 
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
@@ -147,7 +148,8 @@ FLAC_KEYS = {
     'originalyear': 'ORIGINALYEAR',
     'publisher': 'PUBLISHER',
     'title': 'TITLE',
-    'track': 'TRACKNUMBER'
+    'track': 'TRACKNUMBER',
+    'year': 'YEAR'
 }
 
 ## @var FLAC_TIME_KEYS
@@ -175,6 +177,7 @@ MP3_KEYS = {
     'publisher': 'TPUB',
     'title': 'TIT2',
     'track': 'TRCK',
+    'year': 'TYER',
     'originaldate': 'TDOR',                                 # ID3v2.4 field to ID3v2.3 TYER
     'release_date': 'TDRC',                                 # ID3v2.4 field convert YYYY portion to ID3v2.3 TYER
     'custom_original_year': 'TXXX=originalyear'             # ID3 user defined original year field convert to ID3v2.3 TYER
@@ -247,9 +250,9 @@ WMA_TIME_KEYS = {
 
 class AudioMetadata():
     '''
-    @brief Defines the base metadata processing used by project.
+    @brief Metadata handling class.
 
-    @details Defines the base metadata processing used by the project.
+    @details Provides methods for handling and updating audio file metadata across different formats.
     '''
 
     def __init__(self) -> None:
@@ -262,6 +265,9 @@ class AudioMetadata():
         '''
 
         pass
+
+
+    # Private Methods
 
 
     def __update_id3(self, date_values: set[str], id3_tags: dict) -> dict:
@@ -292,6 +298,9 @@ class AudioMetadata():
             raise e_error
         else:
             return id3_tags
+
+
+    # Public Methods
 
 
     def convert_file(self, file_path: str, show_spinner: bool = True) -> None:
@@ -1116,7 +1125,7 @@ class AudioMetadata():
 
                 if flac_tag:
                     mp3_key = MP3_KEYS[metadata_field]
-                    metadata_value = input_tags[flac_value][0]
+                    metadata_value = flac_tag[0]
 
                     if isinstance(metadata_value, str) and flac_value in FLAC_TIME_KEYS:
                         # just in case string is "YYYY-MM-DD"
