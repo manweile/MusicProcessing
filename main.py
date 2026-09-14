@@ -78,24 +78,74 @@ def convert_file(file_path):
     metadata.convert_file(file_path)
 
 
-def normalize_filename(file_path):
+def normalize_mp3_filename(file_path):
     '''
     @brief Renames an MP3 using its album artist and title metadata.
 
     @param file_path {str} The full path to the MP3 file.
     '''
 
-    metadata.normalize_filename(file_path)
+    metadata.normalize_mp3_filename(file_path)
 
 
-def normalize_filename_walk(tld_path):
+def normalize_flac_filename(file_path):
+    '''
+    @brief Renames a FLAC using its album artist and title metadata.
+
+    @param file_path {str} The full path to the FLAC file.
+    '''
+
+    metadata.normalize_flac_filename(file_path)
+
+
+def normalize_mp4_filename(file_path):
+    '''
+    @brief Renames an M4A using its album artist and title metadata.
+
+    @param file_path {str} The full path to the M4A file.
+    '''
+
+    metadata.normalize_mp4_filename(file_path)
+
+
+def normalize_wma_filename_walk(tld_path):
+    '''
+    @brief Renames WMA files in specified top level directory using album artist and title metadata.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    '''
+
+    metadata.normalize_wma_filename_walk(tld_path)
+
+
+def normalize_mp3_filename_walk(tld_path):
     '''
     @brief Renames MP3 files in specified top level directory using album artist and title metadata.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
-    metadata.normalize_filename_walk(tld_path)
+    metadata.normalize_mp3_filename_walk(tld_path)
+
+
+def normalize_flac_filename_walk(tld_path):
+    '''
+    @brief Renames FLAC files in specified top level directory using album artist and title metadata.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    '''
+
+    metadata.normalize_flac_filename_walk(tld_path)
+
+
+def normalize_mp4_filename_walk(tld_path):
+    '''
+    @brief Renames M4A files in specified top level directory using album artist and title metadata.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    '''
+
+    metadata.normalize_mp4_filename_walk(tld_path)
 
 
 def convert_walk(tld_path, file_pattern):
@@ -363,13 +413,33 @@ def main(args):
             file_path = getattr(args, "file")
             convert_file(file_path)
 
-        if args.subcommand == "normalize-filename":
+        if args.subcommand == "normalize-mp3-filename":
             file_path = getattr(args, "file")
-            normalize_filename(file_path)
+            normalize_mp3_filename(file_path)
 
-        if args.subcommand == "normalize-filename-walk":
+        if args.subcommand == "normalize-flac-filename":
+            file_path = getattr(args, "file")
+            normalize_flac_filename(file_path)
+
+        if args.subcommand == "normalize-mp4-filename":
+            file_path = getattr(args, "file")
+            normalize_mp4_filename(file_path)
+
+        if args.subcommand == "normalize-mp3-filename-walk":
             tld_path = getattr(args, "tld")
-            normalize_filename_walk(tld_path)
+            normalize_mp3_filename_walk(tld_path)
+
+        if args.subcommand == "normalize-flac-filename-walk":
+            tld_path = getattr(args, "tld")
+            normalize_flac_filename_walk(tld_path)
+
+        if args.subcommand == "normalize-mp4-filename-walk":
+            tld_path = getattr(args, "tld")
+            normalize_mp4_filename_walk(tld_path)
+
+        if args.subcommand == "normalize-wma-filename-walk":
+            tld_path = getattr(args, "tld")
+            normalize_wma_filename_walk(tld_path)
 
         if args.subcommand == "convert-walk":
             tld_path = getattr(args, "tld")
@@ -491,18 +561,51 @@ if __name__ == "__main__":
 
         # normalize an mp3 filename from its metadata
         # 1 mandatory arg, the audio file path
-        # sys.argv = ['D:\\MusicProcessing\\main.py', 'normalize-filename', 'C:\\Music\\artist-title.mp3']
-        normalize_filename_parser = subparsers.add_parser("normalize-filename", help="Renames an MP3 from its metadata")
-        normalize_filename_parser.add_argument("file", type=existing_file, help="mandatory full path to MP3 file")
-        normalize_filename_parser.set_defaults(func=normalize_filename)
+        # sys.argv = ['D:\\MusicProcessing\\main.py', 'normalize-mp3-filename', 'C:\\Music\\artist-title.mp3']
+        normalize_mp3_filename_parser = subparsers.add_parser("normalize-mp3-filename", help="Renames an MP3 from its metadata")
+        normalize_mp3_filename_parser.add_argument("file", type=existing_file, help="mandatory full path to MP3 file")
+        normalize_mp3_filename_parser.set_defaults(func=normalize_mp3_filename)
+
+        # normalize a FLAC filename from its metadata
+        # 1 mandatory arg, the audio file path
+        # sys.argv = ['D:\\MusicProcessing\\main.py', 'normalize-flac-filename', 'C:\\Music\\artist-title.flac']
+        normalize_flac_filename_parser = subparsers.add_parser("normalize-flac-filename", help="Renames a FLAC from its metadata")
+        normalize_flac_filename_parser.add_argument("file", type=existing_file, help="mandatory full path to FLAC file")
+        normalize_flac_filename_parser.set_defaults(func=normalize_flac_filename)
+
+        # normalize an M4A filename from its metadata
+        # 1 mandatory arg, the audio file path
+        normalize_mp4_filename_parser = subparsers.add_parser("normalize-mp4-filename", help="Renames an M4A from its metadata")
+        normalize_mp4_filename_parser.add_argument("file", type=existing_file, help="mandatory full path to M4A file")
+        normalize_mp4_filename_parser.set_defaults(func=normalize_mp4_filename)
 
         # normalize mp3 filenames from metadata for files in top level directory
         # 1 mandatory arg, the tld path
-        # sys.argv = ['D:\MusicProcessing\main.py', 'normalize-filename-walk', 'C:\Music']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'normalize-filename-walk', '/home/gerald/Music']
-        normalize_filename_walk_parser = subparsers.add_parser("normalize-filename-walk", help="Renames MP3 files from metadata")
-        normalize_filename_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        normalize_filename_walk_parser.set_defaults(func=normalize_filename_walk)
+        # sys.argv = ['D:\MusicProcessing\main.py', 'normalize-mp3-filename-walk', 'C:\Music']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'normalize-mp3-filename-walk', '/home/gerald/Music']
+        normalize_mp3_filename_walk_parser = subparsers.add_parser("normalize-mp3-filename-walk", help="Renames MP3 files from metadata")
+        normalize_mp3_filename_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        normalize_mp3_filename_walk_parser.set_defaults(func=normalize_mp3_filename_walk)
+
+        # normalize FLAC filenames from metadata for files in top level directory
+        # 1 mandatory arg, the tld path
+        # sys.argv = ['D:\MusicProcessing\main.py', 'normalize-flac-filename-walk', 'C:\Music']
+        # normalize-flac-filename-walk F:\RickPrepped
+        normalize_flac_filename_walk_parser = subparsers.add_parser("normalize-flac-filename-walk", help="Renames FLAC files from metadata")
+        normalize_flac_filename_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        normalize_flac_filename_walk_parser.set_defaults(func=normalize_flac_filename_walk)
+
+        # normalize M4A filenames from metadata for files in top level directory
+        # 1 mandatory arg, the tld path
+        normalize_mp4_filename_walk_parser = subparsers.add_parser("normalize-mp4-filename-walk", help="Renames M4A files from metadata")
+        normalize_mp4_filename_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        normalize_mp4_filename_walk_parser.set_defaults(func=normalize_mp4_filename_walk)
+
+        # normalize WMA filenames from metadata for files in top level directory
+        # 1 mandatory arg, the tld path
+        normalize_wma_filename_walk_parser = subparsers.add_parser("normalize-wma-filename-walk", help="Renames WMA files from metadata")
+        normalize_wma_filename_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        normalize_wma_filename_walk_parser.set_defaults(func=normalize_wma_filename_walk)
 
         # convert all audio files found in top level directory
         # 1 mandatory arg, the tld path
@@ -579,6 +682,8 @@ if __name__ == "__main__":
         # 1 mandatory arg, the path to audio file
         # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags', '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
+        # sys.argv = ['D:\MusicProcessing\main.py', 'get-any-tags', 'F:\RickPrepped\Cream\Goodbye\02. Politician.flac']
+        # get-any-tags "F:\RickPrepped\Cream\Goodbye\02. Politician.flac"
         get_tags_parser = subparsers.add_parser("get-any-tags", help="Gets metadata tags from audio file")
         get_tags_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
         get_tags_parser.set_defaults(func=get_any_tags)

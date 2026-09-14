@@ -20,7 +20,7 @@ from pathlib import Path
 from shutil import ExecError
 from subprocess import CompletedProcess
 from unittest import TestCase
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 from unittest.mock import patch
 
 # third party modules
@@ -30,15 +30,20 @@ from mutagen._util import MutagenError
 # local module constants
 from src import AUDIO_FILES, FOLDER_ART
 from src import CSV_DIR, CSV_EXT
-from src import MP3_EXT, MUSIC_TLD
+from src import FLAC_EXT, M4A_EXT, MP3_EXT, MUSIC_TLD
 from src import PLAYLIST_EXTS
 from src import RESULT_DIR, RESULT_EXT
 from src import UTF8
 from src.generated_files import GENERATED_PATH
+from tests import TEST_M4A_DAVIS, TEST_M4A_DAVIS_ALBUM_ARTIST, TEST_M4A_DAVIS_TITLE
 from tests import TEST_M4A_EAGLES
-from tests import TEST_MP3_10CC, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_GENESIS, TEST_MP3_NO_TAG, TEST_MP3_NO_METADATA
+from tests import TEST_FLAC_CREAM, TEST_FLAC_CREAM_ALBUM_ARTIST, TEST_FLAC_CREAM_BADGE, TEST_FLAC_CREAM_INVALID_TITLE, TEST_FLAC_CREAM_TITLE
+from tests import TEST_MP3_10CC, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_GENESIS
+from tests import TEST_MP3_10CC_ALBUM_ARTIST, TEST_MP3_10CC_TITLE
+from tests import TEST_MP3_NO_TAG, TEST_MP3_NO_METADATA
 from tests import TEST_WAV_NONE
 from tests import TEST_WMA_CCR
+from tests import TEST_WMA_JOHN
 from tests import TEST_M3U
 from tests import TESTS_PATH, TESTS_TLD
 # local module errors
@@ -87,6 +92,7 @@ class TestAudioMetadata(TestCase):
         cls.converted_results.append(os.path.join(cls.norm_path, "The Eagles", "Desperado", "The Eagles-Desperado.mp3"))
         cls.converted_results.append(os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3"))
         cls.converted_results.append(os.path.join(cls.norm_path, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.mp3"))
+        # cls.converted_results.append(os.path.join(cls.norm_path, "Cream", "Goodbye", "Cream-Goodbye.mp3"))
 
         # for create albums test
         cls.prepped_src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_GENESIS, TEST_MP3_NO_METADATA, TEST_WMA_CCR]
@@ -101,6 +107,7 @@ class TestAudioMetadata(TestCase):
         cls.mp3_line = os.path.join(cls.converted, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
         cls.wma_line = os.path.join(cls.converted, "Creedence Clearwater Revival", "Chronicle, Vol. 1", "Creedence Clearwater Revival-Fortunate Son.wma")
         cls.m4a_line = os.path.join(cls.converted, "The Eagles", "Desperado", "The Eagles-Desperado.m4a")
+        # cls.flac_line = os.path.join(cls.converted, "Cream", "Goodbye", "Cream-Goodbye.flac")
 
         # copy input files to converted "walk" directory
         for src_converted in cls.src_file_paths:
@@ -481,6 +488,7 @@ class TestAudioMetadata(TestCase):
         self.assertIn(f"{self.mp3_line} has 37 keys\n", lines)
         self.assertIn(f"{self.wma_line} has 38 keys\n", lines)
         self.assertIn(f"{self.m4a_line} has 56 keys\n", lines)
+        # self.assertIn(f"{self.flac_line} has 36 keys\n", lines)
 
 
     def test_get_media_info_walk_invalid_pattern(self):
@@ -649,6 +657,7 @@ class TestAudioMetadata(TestCase):
         self.assertIn(f"{self.mp3_line} has 9 ffprobe tags\n", lines)
         self.assertIn(f"{self.wma_line} has 23 ffprobe tags\n", lines)
         self.assertIn(f"{self.m4a_line} has 35 ffprobe tags\n", lines)
+        # self.assertIn(f"{self.flac_line} has 36 ffprobe tags\n", lines)
 
 
     def test_get_tags_walk_mutagen(self):
@@ -667,6 +676,7 @@ class TestAudioMetadata(TestCase):
         self.assertIn(f"{self.mp3_line} has 9 MP3 tags\n", lines)
         self.assertIn(f"{self.wma_line} has 31 ASF tags\n", lines)
         self.assertIn(f"{self.m4a_line} has 32 MP4 tags\n", lines)
+        # self.assertIn(f"{self.flac_line} has 36 FLAC tags\n", lines)
 
 
     def test_get_unique_media_keys(self):
@@ -793,6 +803,46 @@ class TestAudioMetadata(TestCase):
 
         self.assertDictEqual(id3_tags, m4a_mapped)
 
+    def test_map_flac_tags(self):
+        '''
+        @brief Tests mapping Cream-Badge FLAC tags to preferred ID3 format.
+        '''
+
+        flac_mapped = {
+            'TALB': 'Goodbye',
+            'TPE2': 'Cream',
+            'TPE1': 'Cream',
+            'TCOM': 'Eric Clapton',
+            'TCOP': 'PMEDIA',
+            'TCON': 'Pop, Rock',
+            'TPUB': 'PMEDIA',
+            'TIT2': 'Badge',
+            'TRCK': '4',
+            'TYER': '1969',
+            'TPOS': '1'
+        }
+
+        input_tags = metadata.get_any_tags(TEST_FLAC_CREAM_BADGE)
+        id3_tags = metadata.map_flac_tags(input_tags)
+
+        self.assertDictEqual(id3_tags, flac_mapped)
+
+
+    def test_map_flac_tags_adds_default_discnumber(self):
+        '''
+        @brief Tests mapping FLAC tags adds a default DISCNUMBER when it is missing.
+        '''
+
+        input_tags = {
+            'ALBUMARTIST': [TEST_FLAC_CREAM_ALBUM_ARTIST],
+            'TITLE': [TEST_FLAC_CREAM_TITLE],
+        }
+
+        id3_tags = metadata.map_flac_tags(input_tags)
+
+        self.assertEqual(input_tags['DISCNUMBER'], ['1'])
+        self.assertEqual(id3_tags['TPOS'], '1')
+
 
     def test_map_mp3_tags(self):
         '''
@@ -842,39 +892,52 @@ class TestAudioMetadata(TestCase):
         self.assertDictEqual(id3_tags, wma_mapped)
 
 
-    def test_normalize_filename(self):
+    def test_normalize_mp3_filename(self):
         '''
         @brief Tests renaming an ID3v2.3 MP3 using its album artist and title metadata.
 
         @details Happy path test using 10cc audio file.
         '''
 
-        test_dir = os.path.join(self.norm_path, "10cc", "10cc")
+        test_dir = os.path.join(self.norm_path, TEST_MP3_10CC_ALBUM_ARTIST, TEST_MP3_10CC_ALBUM_ARTIST)
         os.makedirs(test_dir, exist_ok=True)
 
-        src_file = os.path.join(test_dir, "04 - Donna.mp3")
-        shutil.copy(TEST_MP3_10CC, src_file)
+        src_file = os.path.join(test_dir, os.path.basename(TEST_MP3_10CC))
+        normalized_file = os.path.join(test_dir, f"{TEST_MP3_10CC_ALBUM_ARTIST}-{TEST_MP3_10CC_TITLE}.mp3")
 
-        normalized_file = os.path.join(test_dir, "10cc-Donna.mp3")
+        class DummyTag:
+            def __init__(self, text):
+                self.text = [text]
 
-        metadata.normalize_filename(src_file)
+        class DummyAudioFile:
+            def __init__(self):
+                self.tags = Mock()
+                self.tags.version = (2, 3, 0)
+                self.tags.get.side_effect = lambda key: {
+                    "TPE2": DummyTag(TEST_MP3_10CC_ALBUM_ARTIST),
+                    "TIT2": DummyTag(TEST_MP3_10CC_TITLE),
+                }.get(key)
 
-        self.assertFalse(os.path.exists(src_file))
-        self.assertTrue(os.path.exists(normalized_file))
+        with patch("src.audio_info.audio_metadata.MP3", DummyAudioFile), patch.object(
+            metadata, "load_any_file", return_value=DummyAudioFile()
+        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+            metadata.normalize_mp3_filename(src_file)
 
-        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
+        mock_rename.assert_called_once_with(src_file, normalized_file)
+
+        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_mp3_filename" + CSV_EXT)
         self.assertTrue(os.path.exists(csv_path))
 
         with open(csv_path, "r", encoding=UTF8) as f:
             lines = f.readlines()
 
-        expected_row = f"{src_file};10cc;Donna;{normalized_file}\n"
+        expected_row = f"{src_file};{TEST_MP3_10CC_ALBUM_ARTIST};{TEST_MP3_10CC_TITLE};{normalized_file}\n"
         self.assertIn(expected_row, lines)
 
 
-    def test_normalize_filename_already_correct(self):
+    def test_normalize_mp3_filename_already_correct(self):
         '''
-        @brief Tests normalize_filename does nothing when filename already matches correct pattern.
+        @brief Tests normalize_mp3_filename does nothing when filename already matches correct pattern.
         '''
 
         test_dir = os.path.join(self.norm_path, "10cc", "10cc")
@@ -890,13 +953,13 @@ class TestAudioMetadata(TestCase):
         for fname in correct_filenames:
             file_path = os.path.join(test_dir, fname)
             shutil.copy(TEST_MP3_10CC, file_path)
-            metadata.normalize_filename(file_path)
+            metadata.normalize_mp3_filename(file_path)
             self.assertTrue(os.path.exists(file_path))
 
 
-    def test_normalize_filename_sanitizes_windows_invalid_chars(self):
+    def test_normalize_mp3_filename_sanitizes_windows_invalid_chars(self):
         '''
-        @brief Tests normalize_filename sanitizes Windows invalid filename characters.
+        @brief Tests normalize_mp3_filename sanitizes Windows invalid filename characters.
         '''
 
         test_dir = os.path.join(self.norm_path, "10cc", "10cc")
@@ -923,37 +986,37 @@ class TestAudioMetadata(TestCase):
         with patch("src.audio_info.audio_metadata.MP3", DummyAudioFile), patch.object(
             metadata, "load_any_file", return_value=DummyAudioFile()
         ):
-            metadata.normalize_filename(src_file)
+            metadata.normalize_mp3_filename(src_file)
 
         self.assertFalse(os.path.exists(src_file))
         self.assertTrue(os.path.exists(normalized_file))
 
 
-    def test_normalize_filename_invalid_ext(self):
+    def test_normalize_mp3_filename_invalid_ext(self):
         '''
-        @brief Tests normalize_filename raises ValueError for non-MP3 audio file.
+        @brief Tests normalize_mp3_filename raises ValueError for non-MP3 audio file.
         '''
 
         with self.assertRaises(ValueError) as cm:
-            metadata.normalize_filename(TEST_M4A_EAGLES)
+            metadata.normalize_mp3_filename(TEST_M4A_EAGLES)
 
         err_msg = f"ValueError with file: {TEST_M4A_EAGLES} has invalid extension: .m4a"
         self.assertEqual(str(cm.exception), err_msg)
 
 
-    def test_normalize_filename_wo_metadata(self):
+    def test_normalize_mp3_filename_wo_metadata(self):
         '''
-        @brief Tests normalize_filename raises ValueError for MP3 without ID3v2.3 metadata.
+        @brief Tests normalize_mp3_filename raises ValueError for MP3 without ID3v2.3 metadata.
         '''
 
         with self.assertRaises(ValueError) as cm:
-            metadata.normalize_filename(TEST_MP3_NO_METADATA)
+            metadata.normalize_mp3_filename(TEST_MP3_NO_METADATA)
 
         err_msg = f"ValueError loading ID3v2.3 metadata from {TEST_MP3_NO_METADATA}"
         self.assertEqual(str(cm.exception), err_msg)
 
 
-    def test_normalize_filename_walk(self):
+    def test_normalize_mp3_filename_walk(self):
         '''
         @brief Test normalizing filenames for ID3v2.3 MP3 files in a directory walk.
 
@@ -971,11 +1034,238 @@ class TestAudioMetadata(TestCase):
 
         normalized_file = os.path.join(test_dir, "10cc-Donna.mp3")
 
-        metadata.normalize_filename_walk(self.norm_path)
+        metadata.normalize_mp3_filename_walk(self.norm_path)
 
         self.assertFalse(os.path.exists(src_file))
         self.assertTrue(os.path.exists(normalized_file))
         self.assertTrue(os.path.exists(non_mp3_file))
+
+
+    def test_normalize_flac_filename(self):
+        '''
+        @brief Tests renaming a FLAC using its album artist and title metadata.
+        '''
+
+        test_dir = os.path.join(self.norm_path, TEST_FLAC_CREAM_ALBUM_ARTIST, "Goodbye")
+        os.makedirs(test_dir, exist_ok=True)
+
+        src_file = os.path.join(test_dir, os.path.basename(TEST_FLAC_CREAM))
+        normalized_file = os.path.join(test_dir, f"{TEST_FLAC_CREAM_ALBUM_ARTIST}-{TEST_FLAC_CREAM_TITLE}.flac")
+
+        class DummyFlacFile:
+            def __init__(self):
+                self.tags = {
+                    "albumartist": [TEST_FLAC_CREAM_ALBUM_ARTIST],
+                    "title": [TEST_FLAC_CREAM_TITLE],
+                }
+
+        with patch("src.audio_info.audio_metadata.FLAC", DummyFlacFile), patch.object(
+            metadata, "load_any_file", return_value=DummyFlacFile()
+        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+            metadata.normalize_flac_filename(src_file)
+
+        mock_rename.assert_called_once_with(src_file, normalized_file)
+
+        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_flac_filename" + CSV_EXT)
+        self.assertTrue(os.path.exists(csv_path))
+
+        with open(csv_path, "r", encoding=UTF8) as f:
+            lines = f.readlines()
+
+        expected_row = f"{src_file};{TEST_FLAC_CREAM_ALBUM_ARTIST};{TEST_FLAC_CREAM_TITLE};{normalized_file}\n"
+        self.assertIn(expected_row, lines)
+
+
+    def test_normalize_flac_filename_already_correct(self):
+        '''
+        @brief Tests normalize_flac_filename does nothing when filename already matches correct pattern.
+        '''
+
+        test_dir = os.path.join(self.norm_path, TEST_FLAC_CREAM_ALBUM_ARTIST, os.path.basename(os.path.dirname(TEST_FLAC_CREAM)))
+        correct_filenames = [
+            f"{TEST_FLAC_CREAM_ALBUM_ARTIST}-{TEST_FLAC_CREAM_TITLE}{FLAC_EXT}",
+            f"{TEST_FLAC_CREAM_ALBUM_ARTIST} - {TEST_FLAC_CREAM_TITLE}{FLAC_EXT}",
+            f"{TEST_FLAC_CREAM_ALBUM_ARTIST} -{TEST_FLAC_CREAM_TITLE}{FLAC_EXT}",
+            f"{TEST_FLAC_CREAM_ALBUM_ARTIST}- {TEST_FLAC_CREAM_TITLE}{FLAC_EXT}",
+        ]
+
+        class DummyFlacFile:
+            def __init__(self):
+                self.tags = {
+                    "albumartist": [TEST_FLAC_CREAM_ALBUM_ARTIST],
+                    "title": [TEST_FLAC_CREAM_TITLE],
+                }
+
+        with patch("src.audio_info.audio_metadata.FLAC", DummyFlacFile), patch.object(
+            metadata, "load_any_file", return_value=DummyFlacFile()
+        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+            for file_name in correct_filenames:
+                metadata.normalize_flac_filename(os.path.join(test_dir, file_name))
+
+        mock_rename.assert_not_called()
+
+
+    def test_normalize_flac_filename_sanitizes_windows_invalid_chars(self):
+        '''
+        @brief Tests normalize_flac_filename removes Windows-invalid filename characters.
+        '''
+
+        test_dir = os.path.join(self.norm_path, TEST_FLAC_CREAM_ALBUM_ARTIST, os.path.basename(os.path.dirname(TEST_FLAC_CREAM)))
+        src_file = os.path.join(test_dir, os.path.basename(TEST_FLAC_CREAM))
+        normalized_title = TEST_FLAC_CREAM_INVALID_TITLE.replace("?", "")
+        normalized_file = os.path.join(test_dir, f"{TEST_FLAC_CREAM_ALBUM_ARTIST}-{normalized_title}{FLAC_EXT}")
+
+        class DummyFlacFile:
+            def __init__(self):
+                self.tags = {
+                    "albumartist": [TEST_FLAC_CREAM_ALBUM_ARTIST],
+                    "title": [TEST_FLAC_CREAM_INVALID_TITLE],
+                }
+
+        with patch("src.audio_info.audio_metadata.FLAC", DummyFlacFile), patch.object(
+            metadata, "load_any_file", return_value=DummyFlacFile()
+        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+            metadata.normalize_flac_filename(src_file)
+
+        mock_rename.assert_called_once_with(src_file, normalized_file)
+
+
+    def test_normalize_flac_filename_invalid_ext(self):
+        '''
+        @brief Tests normalize_flac_filename raises ValueError for non-FLAC audio file.
+        '''
+
+        with self.assertRaises(ValueError) as cm:
+            metadata.normalize_flac_filename(TEST_M4A_EAGLES)
+
+        file_ext = os.path.splitext(TEST_M4A_EAGLES)[1]
+        err_msg = f"ValueError with file: {TEST_M4A_EAGLES} has invalid extension: {file_ext}"
+        self.assertEqual(str(cm.exception), err_msg)
+
+
+    def test_normalize_flac_filename_wo_metadata(self):
+        '''
+        @brief Tests normalize_flac_filename raises ValueError for FLAC without metadata.
+        '''
+
+        class DummyFlacFile:
+            tags = None
+
+        with patch("src.audio_info.audio_metadata.FLAC", DummyFlacFile), patch.object(
+            metadata, "load_any_file", return_value=DummyFlacFile()
+        ), self.assertRaises(ValueError) as cm:
+            metadata.normalize_flac_filename(TEST_FLAC_CREAM)
+
+        err_msg = f"ValueError loading FLAC metadata from {TEST_FLAC_CREAM}"
+        self.assertEqual(str(cm.exception), err_msg)
+
+
+    def test_normalize_flac_filename_walk(self):
+        '''
+        @brief Tests normalizing FLAC filenames while skipping other audio formats.
+        '''
+
+        test_dir = os.path.join(self.norm_path, TEST_FLAC_CREAM_ALBUM_ARTIST, os.path.basename(os.path.dirname(TEST_FLAC_CREAM)))
+        os.makedirs(test_dir, exist_ok=True)
+        flac_file = os.path.join(test_dir, os.path.basename(TEST_FLAC_CREAM))
+        non_flac_file = os.path.join(test_dir, os.path.basename(TEST_M4A_EAGLES))
+        Path(flac_file).touch()
+        Path(non_flac_file).touch()
+
+        with patch.object(metadata, "normalize_flac_filename") as mock_normalize:
+            metadata.normalize_flac_filename_walk(self.norm_path)
+
+        mock_normalize.assert_called_once_with(flac_file)
+
+
+    def test_normalize_mp4_filename(self):
+        '''
+        @brief Tests renaming an M4A using its album artist and title metadata.
+        '''
+
+        test_dir = os.path.join(self.norm_path, TEST_M4A_DAVIS_ALBUM_ARTIST, os.path.basename(os.path.dirname(TEST_M4A_DAVIS)))
+        os.makedirs(test_dir, exist_ok=True)
+        src_file = os.path.join(test_dir, os.path.basename(TEST_M4A_DAVIS))
+        normalized_file = os.path.join(test_dir, f"{TEST_M4A_DAVIS_ALBUM_ARTIST}-{TEST_M4A_DAVIS_TITLE}{M4A_EXT}")
+
+        class DummyMp4File:
+            def __init__(self):
+                self.tags = {
+                    "aART": [TEST_M4A_DAVIS_ALBUM_ARTIST],
+                    "\xa9nam": [TEST_M4A_DAVIS_TITLE],
+                }
+
+        with patch("src.audio_info.audio_metadata.MP4", DummyMp4File), patch.object(
+            metadata, "load_any_file", return_value=DummyMp4File()
+        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+            metadata.normalize_mp4_filename(src_file)
+
+        mock_rename.assert_called_once_with(src_file, normalized_file)
+
+        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_mp4_filename" + CSV_EXT)
+        self.assertTrue(os.path.exists(csv_path))
+
+        with open(csv_path, "r", encoding=UTF8) as f:
+            lines = f.readlines()
+
+        expected_row = f"{src_file};{TEST_M4A_DAVIS_ALBUM_ARTIST};{TEST_M4A_DAVIS_TITLE};{normalized_file}\n"
+        self.assertIn(expected_row, lines)
+
+
+    def test_normalize_mp4_filename_invalid_ext(self):
+        '''
+        @brief Tests normalize_mp4_filename raises ValueError for a WMA file.
+        '''
+
+        with self.assertRaises(ValueError) as cm:
+            metadata.normalize_mp4_filename(TEST_WMA_JOHN)
+
+        file_ext = os.path.splitext(TEST_WMA_JOHN)[1]
+        err_msg = f"ValueError with file: {TEST_WMA_JOHN} has invalid extension: {file_ext}"
+        self.assertEqual(str(cm.exception), err_msg)
+
+
+    def test_normalize_mp4_filename_walk(self):
+        '''
+        @brief Tests normalizing M4A filenames while skipping WMA files.
+        '''
+
+        test_dir = os.path.join(self.norm_path, "M4A")
+        os.makedirs(test_dir, exist_ok=True)
+        davis_file = os.path.join(test_dir, os.path.basename(TEST_M4A_DAVIS))
+        eagles_file = os.path.join(test_dir, os.path.basename(TEST_M4A_EAGLES))
+
+        wma_file = os.path.join(test_dir, os.path.basename(TEST_WMA_JOHN))
+
+        Path(davis_file).touch()
+        Path(eagles_file).touch()
+        Path(wma_file).touch()
+
+        with patch.object(metadata, "normalize_mp4_filename") as mock_normalize:
+            metadata.normalize_mp4_filename_walk(self.norm_path)
+
+        self.assertCountEqual(mock_normalize.call_args_list, [call(davis_file), call(eagles_file)])
+
+
+    def test_normalize_wma_filename_walk(self):
+        '''
+        @brief Tests normalizing WMA filenames while skipping M4A files.
+        '''
+
+        test_dir = os.path.join(self.norm_path, "WMA")
+        os.makedirs(test_dir, exist_ok=True)
+        ccr_file = os.path.join(test_dir, os.path.basename(TEST_WMA_CCR))
+        john_file = os.path.join(test_dir, os.path.basename(TEST_WMA_JOHN))
+        m4a_file = os.path.join(test_dir, os.path.basename(TEST_M4A_EAGLES))
+
+        Path(ccr_file).touch()
+        Path(john_file).touch()
+        Path(m4a_file).touch()
+
+        with patch.object(metadata, "normalize_wma_filename") as mock_normalize:
+            metadata.normalize_wma_filename_walk(self.norm_path)
+
+        self.assertCountEqual(mock_normalize.call_args_list, [call(ccr_file), call(john_file)])
 
 
     def test_update_id3(self):

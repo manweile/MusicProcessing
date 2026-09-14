@@ -20,6 +20,7 @@ from pathlib import Path
 
 # third party modules
 from mutagen.asf import ASF
+from mutagen.flac import FLAC
 from mutagen.id3 import ID3
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
@@ -30,7 +31,7 @@ from src import add_module_handler
 # local module constants
 from src import AUDIO_EXTS
 from src import FOLDER_ART
-from src import M4A_EXT, MP3_EXT, WMA_EXT
+from src import FLAC_EXT, M4A_EXT, MP3_EXT, WMA_EXT
 from src.generated_files import GENERATED_PATH
 # local module classes
 from src.audio_normalize import AudioNormalization
@@ -232,6 +233,8 @@ class AudioArt():
                     self.extract_m4a_art(file_path)
                 elif input_file_ext.lower() == WMA_EXT:
                     self.extract_asf_art(file_path)
+                elif input_file_ext.lower() == FLAC_EXT:
+                    self.extract_flac_art(file_path)
             else:
                 # warning because by this point,
                 # negative result from both art present checks,
@@ -352,6 +355,36 @@ class AudioArt():
             raise m_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} extracting m4a art from {file_path}", stack_info=True)
+            raise e_error
+
+
+    def extract_flac_art(self, file_path: str) -> None:
+        '''
+        @brief Extracts cover art from FLAC files.
+
+        @details Extracts the front-cover picture when present; otherwise extracts the first embedded picture.
+
+        @param file_path {str} The full path to FLAC file.
+
+        @exception MutagenError A custom exception in Mutagen occurred.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            audio = FLAC(file_path)
+            cover_picture = next((picture for picture in audio.pictures if picture.type == 3), None)
+
+            if cover_picture is None and audio.pictures:
+                cover_picture = audio.pictures[0]
+
+            if cover_picture is not None:
+                self.__write_data(file_path, cover_picture.data)
+
+        except MutagenError as m_error:
+            logger.error(f"MutagenError {m_error} loading {file_path}", exc_info=True)
+            raise m_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} extracting FLAC art from {file_path}", stack_info=True)
             raise e_error
 
 
