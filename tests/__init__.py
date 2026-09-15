@@ -1,13 +1,23 @@
 '''
 @package tests
+@file __init__.py
+@author Gerald Manweiler
+
 @brief Gets directory name for importing by other modules.
+
+@details Provides the initialization for the tests package, setting up paths and constants used across various test modules.
+
+@version 1.0.0
+@date 2024-06-05
+
+@copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
 # standard modules
-import os
+import os                                                   # for operating system dependent functionality
 
 # local module constants
-from src import MUSIC_TLD
+from src import MUSIC_TLD                                   # for the top-level music directory used in tests
 
 ## @var TESTS_PATH
 # @brief Path to where test files and inputs used by the tests are stored.
@@ -162,11 +172,10 @@ TEST_WMA_JOHN = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road
 # @details In modules needing the top level directory, add `from src.tests.TESTS_TLD`
 # @details In modules needing the playlist file, add `from src.tests.TEST_MRU`
 # @details In modules needing the audio file, add `from src.tests.<audio file constant>`
-
 __all__ = [
     "TESTS_PATH", "TESTS_TLD", "TEST_M3U", "TEST_WAV_NONE", "TEST_M4A_DAVIS", "TEST_M4A_DAVIS_ALBUM_ARTIST", "TEST_M4A_DAVIS_TITLE",
-    "TEST_M4A_EAGLES", "TEST_M4A_EAGLES_ALBUM_ARTIST", "TEST_M4A_EAGLES_TITLE", "TEST_FLAC_CREAM", "TEST_FLAC_CREAM_BADGE", "TEST_MP3_10CC", "TEST_MP3_ABBA",
-    "TEST_FLAC_CREAM_ALBUM_ARTIST", "TEST_FLAC_CREAM_TITLE", "TEST_FLAC_CREAM_INVALID_TITLE", "TEST_MP3_10CC_ALBUM_ARTIST", "TEST_MP3_10CC_TITLE", "TEST_MP3_CRUSH",
-    "TEST_MP3_GENESIS", "TEST_MP3_NO_METADATA", "TEST_MP3_NO_TAG", "TEST_MP3_SMEAGOL", "TEST_MP3_X", "TEST_WMA_CCR", "TEST_WMA_HOLIDAY",
-    "TEST_WMA_JOHN"
+    "TEST_M4A_EAGLES", "TEST_M4A_EAGLES_ALBUM_ARTIST", "TEST_M4A_EAGLES_TITLE", "TEST_FLAC_CREAM", "TEST_FLAC_CREAM_BADGE", "TEST_MP3_10CC",
+    "TEST_MP3_ABBA", "TEST_FLAC_CREAM_ALBUM_ARTIST", "TEST_FLAC_CREAM_TITLE", "TEST_FLAC_CREAM_INVALID_TITLE", "TEST_MP3_10CC_ALBUM_ARTIST",
+    "TEST_MP3_10CC_TITLE", "TEST_MP3_CRUSH", "TEST_MP3_GENESIS", "TEST_MP3_NO_METADATA", "TEST_MP3_NO_TAG", "TEST_MP3_SMEAGOL", "TEST_MP3_X",
+    "TEST_WMA_CCR", "TEST_WMA_HOLIDAY", "TEST_WMA_JOHN"
 ]

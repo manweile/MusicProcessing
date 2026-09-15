@@ -346,7 +346,7 @@ class AudioMetadata():
         '''
 
         '''
-        This ffmpeg cli command is for converting audio files to mp3 format, wiping out any existing metadata.<br>
+        This ffmpeg cli command is for converting audio files to mp3 format, wiping out any existing metadata.
 
         ffmpeg -hide_banner -i `file_path` -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198<br>
         -hide_banner                                        reduce output clutter<br>
@@ -395,8 +395,7 @@ class AudioMetadata():
 
             if input_tags:
                 if metadata_type == FLAC_TYPE:
-                    # tags = self.map_flac_tags(input_tags)
-                    pass
+                    tags = self.map_flac_tags(input_tags)
                 elif metadata_type == MP3_TYPE:
                     tags = self.map_mp3_tags(input_tags)
                 elif metadata_type == MP4_TYPE:
@@ -469,7 +468,9 @@ class AudioMetadata():
         '''
         @brief Converts all audio files found in specified path to mp3 format.
 
-        @details Calling functions MUST verify valid start path.
+        @details Calling functions MUST verify valid start path.<br>
+        If file pattern not specified, processes all valid audio files.<br>
+        Otherwise must be a valid audio file extension like '.mp3', '.m4a', '.wma', or '.flac'.
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
@@ -491,7 +492,7 @@ class AudioMetadata():
                 for file in file_names:
                     _, input_file_ext = os.path.splitext(file)
 
-                    # file is not mp3, m4a, or wma, so carry on to next file
+                    # file is not flac, mp3, m4a, or wma, so carry on to next file
                     if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
                     elif file_pattern:
@@ -842,10 +843,10 @@ class AudioMetadata():
         This cli will only return textual audio metadata.
 
         ffprobe -v -of json -show_entries format_tags `file_path`<br>
-        -v                                                  quiet reduce console clutter<br>
-        -of json                                            output in json format<br>
-        -show_entries format_tags                           we only care about tags<br>
-        `file_path`                                         the path to the audio file<br>
+        -v quiet reduce console clutter<br>
+        -of json output in json format<br>
+        -show_entries format_tags we only care about tags<br>
+        `file_path` the path to the audio file<br>
         '''
 
         try:

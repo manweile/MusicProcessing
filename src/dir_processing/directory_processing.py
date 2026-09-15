@@ -260,10 +260,11 @@ class DirectoryProcessing():
         '''
         @brief Generates a csv containing full file path for audio file extension.
 
-        @details if file pattern not specified, returns all valid audio files.
+        @details If file pattern not specified, returns all valid audio files.<br>
+        Otherwise must be a valid audio file extension like '.mp3', '.m4a', '.wma', or '.flac'.
 
         @param  start_path {str} The starting point of the directory walk.
-        @param  file_ext {str} Optional, the file extension want file paths for.
+        @param  file_pattern {str} Optional, the file extension want file paths for.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''

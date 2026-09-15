@@ -450,7 +450,8 @@ class AudioArt():
         '''
         @brief Extracts all embedded album art from audio files.
 
-        @details Extracts embedded art from m4a, mp3, and wma files.
+        @details If file pattern not specified, returns all valid audio files.<br>
+        Otherwise must be a valid audio file extension like '.mp3', '.m4a', '.wma', or '.flac'.
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
