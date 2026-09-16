@@ -64,12 +64,15 @@ class DirectoryProcessing():
         pass
 
 
-    def create_csv(self, csv_filename: str, data: list, csv_dir: str | None = None, header_row: list | None = None, sort_col: int | None = None) -> None:
+    def create_csv(self, csv_filename: str, data: list,
+                   csv_dir: str | None = None, text_mode: str | None = None, header_row: list | None = None, sort_col: int | None = None) -> None:
         '''
         @brief Creates a csv file
 
-        @details Creates a csv file in specified directory.
-        @details Header row and sorting are optional.
+        @details Creates a csv file in the specified directory or default directory.<br>
+        Text mode can be specified for the file opening mode.<br>
+        Header row and sorting are optional.
+
 
         @param csv_filename {str} Base filename (w/o extension) for csv file
         @param data [{str}] Data to write into csv. Expected to be 1 line per element.
@@ -82,13 +85,18 @@ class DirectoryProcessing():
         '''
 
         try:
+            # Determine the directory to save the CSV file, set to default if not specified
             if csv_dir is None:
                 csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
 
             csv_path = os.path.join(csv_dir, csv_filename + CSV_EXT)
 
-            # I don't care about any previous file contents
-            csv_outfile = open(csv_path, mode='w', encoding=UTF8, newline='')
+            # Set the default text mode to overwrite if not specified
+            if text_mode is None:
+                text_mode = 'w'
+
+            csv_outfile = open(csv_path, mode=text_mode, encoding=UTF8, newline='')
+
             # using semicolon as delimiter cause have audio files with comma in dir path and/or file name
             csv_file_writer = csv.writer(csv_outfile, dialect='excel', delimiter=';')
 
@@ -225,7 +233,7 @@ class DirectoryProcessing():
 
                     tot_count += 1
 
-            self.create_csv(csv_filename, csv_data, None, header_row, 1)
+            self.create_csv(csv_filename, csv_data, None, None, header_row, 1)
 
             artist_count = directory_counts[0]
             album_count = directory_counts[1]
@@ -297,7 +305,7 @@ class DirectoryProcessing():
 
                     data.append([audio_file_path, file_ext.lower().removeprefix(".")])
 
-            self.create_csv(csv_filename, data, None, header_row, None)
+            self.create_csv(csv_filename, data, None, None, header_row, None)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting file list for files with {file_ext} for {start_path}", stack_info=True)

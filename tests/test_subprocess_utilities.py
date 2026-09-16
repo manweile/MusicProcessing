@@ -15,11 +15,14 @@ import shlex
 import unittest
 from subprocess import CalledProcessError
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
+from unittest.mock import patch
 
 # local module constants
 from src import UTF8
-from tests import TEST_M3U, TEST_MP3_CRUSH, TEST_WAV_NONE
+from tests import TEST_M3U
+from tests import TEST_MP3_CRUSH
+from tests import TEST_WAV_NONE
 from tests import TESTS_PATH
 # local module errors
 from src import FfmpegProcessError
@@ -281,6 +284,8 @@ def get_method_names(cls):
     '''
     @brief Returns a list of names of methods defined within a given class.
 
+    @details Returns a detailed description of the methods defined within the given class.
+
     @param cls {Class} The name of the class to get methods list from.
     @return method_names [{str}] The names of the methods defined in class.
     '''
@@ -294,6 +299,12 @@ def get_method_names(cls):
 
 
 if __name__ == "__main__":
+    '''
+    @brief Entry point for running the test suite for TestSubprocessUtilities.
+
+    @details Runs all test methods defined in the TestSubprocessUtilities class using the unittest framework.
+    '''
+
     methods = get_method_names(TestSubprocessUtilities)
 
     suite = unittest.TestSuite()

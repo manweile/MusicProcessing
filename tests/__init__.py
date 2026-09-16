@@ -1,6 +1,6 @@
 '''
 @package tests
-@file __init__.py
+@file tests/__init__.py
 @author Gerald Manweiler
 
 @brief Gets directory name for importing by other modules.

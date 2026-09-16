@@ -101,9 +101,6 @@ class AudioArt():
         pass
 
 
-    # Private Methods
-
-
     def __unpack_asf_image(self, data: bytearray) -> tuple:
         '''
         @brief Unpack image data from a WM/Picture tag.

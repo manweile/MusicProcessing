@@ -1,4 +1,5 @@
 '''
+@class AudioMetadata
 @file audio_metadata.py
 @author Gerald Manweiler
 
@@ -12,7 +13,7 @@
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
+# Standard Modules
 import fnmatch                                              # for filename pattern matching
 import gc                                                   # for garbage collection
 import inspect                                              # for inspecting live objects
@@ -26,7 +27,7 @@ from json import JSONDecodeError                            # for handling JSON 
 from pathlib import Path                                    # for object-oriented filesystem paths
 from shutil import ExecError                                # for handling shutil execution errors
 
-# third party modules
+# Third Party Modules
 import mutagen                                              # for audio metadata handling
 import pathvalidate                                         # for validating filesystem paths
 from mutagen import FileType                                # for handling different audio file types
@@ -45,9 +46,10 @@ from mutagen._util import MutagenError                      # for handling mutag
 from pathvalidate.error import ValidationError              # for handling path validation errors
 from tqdm import tqdm                                       # for displaying progress bars
 
-# local module methods
+# Local Module Methods
 from src import add_module_handler                          # for adding module-specific logging handlers
-# local module constants
+
+# Local Module Constants
 from src import ASF_TYPE                                    # for ASF audio file type
 from src import FLAC_TYPE                                   # for FLAC audio file type
 from src import MP4_TYPE                                    # for MP4 audio file type
@@ -59,11 +61,13 @@ from src import FLAC_EXT                                    # for FLAC file exte
 from src import M4A_EXT                                     # for M4A file extension
 from src import MP3_EXT                                     # for MP3 file extension
 from src import WMA_EXT                                     # for WMA file extension
-# local module errors
+
+# Local Module Errors
 from src import MetadataTypeError                           # for handling metadata type errors
 from src import MusicProcessingError                        # for handling music processing errors
 from src import PathInfoError                               # for handling path info errors
-# local module classes
+
+# Local Module Classes
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
 from src.dir_processing import DirectoryProcessing          # for directory processing functionality
 from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functionality
@@ -267,9 +271,6 @@ class AudioMetadata():
         pass
 
 
-    # Private Methods
-
-
     def __update_id3(self, date_values: set[str], id3_tags: dict) -> dict:
         '''
         @brief Updates tags dictionary with newest year value and ands default disc value if needed.
@@ -298,9 +299,6 @@ class AudioMetadata():
             raise e_error
         else:
             return id3_tags
-
-
-    # Public Methods
 
 
     def convert_file(self, file_path: str, show_spinner: bool = True) -> None:
@@ -610,7 +608,7 @@ class AudioMetadata():
                 tld_bar.update(1)
 
             tld_bar.close()
-            directory.create_csv(csv_filename, data, None, header_row, 0)
+            directory.create_csv(csv_filename, data, None, None, header_row, 0)
 
         except ExecError as exc_error:
             logger.exception(f"ExecError moving {file_path} to {destination_path}", exc_info=True)
@@ -893,7 +891,7 @@ class AudioMetadata():
 
             if audio_file is not None:
                 # the built in class name of the filetype returned shows what metadata type
-                # Eg mp3 = MP3, m4a = MP4, wma = ASF
+                # Eg flac = FLAC, mp3 = MP3, m4a = MP4, wma = ASF
                 metadata_type = audio_file.__class__.__name__
             else:
                 logger.error(f"ValueError getting metadata type: {file_path} returned None", exc_info=True)
@@ -1376,7 +1374,7 @@ class AudioMetadata():
 
             data.append([file_path, album_artist, title, normalized_path])
             header_row = ["original file path", "album artist", "title", "normalized file path"]
-            directory.create_csv(csv_filename, data, None, header_row, 0)
+            directory.create_csv(csv_filename, data, None, None, header_row, 0)
 
         except ValidationError as validation_error:
             logger.exception(f"ValidationError creating normalized filename for {file_path}", stack_info=True)
@@ -1454,7 +1452,7 @@ class AudioMetadata():
 
             data.append([file_path, album_artist, title, normalized_path])
             header_row = ["original file path", "album artist", "title", "normalized file path"]
-            directory.create_csv(csv_filename, data, None, header_row, 0)
+            directory.create_csv(csv_filename, data, None, None, header_row, 0)
 
         except ValidationError as validation_error:
             logger.exception(f"ValidationError creating normalized filename for {file_path}", stack_info=True)
@@ -1527,7 +1525,7 @@ class AudioMetadata():
 
             data.append([file_path, album_artist, title, normalized_path])
             header_row = ["original file path", "album artist", "title", "normalized file path"]
-            directory.create_csv(csv_filename, data, None, header_row, 0)
+            directory.create_csv(csv_filename, data, None, None, header_row, 0)
 
         except ValidationError as validation_error:
             logger.exception(f"ValidationError creating normalized filename for {file_path}", stack_info=True)
@@ -1601,7 +1599,7 @@ class AudioMetadata():
 
             data.append([file_path, album_artist, title, normalized_path])
             header_row = ["original file path", "album artist", "title", "normalized file path"]
-            directory.create_csv(csv_filename, data, None, header_row, 0)
+            directory.create_csv(csv_filename, data, None, None, header_row, 0)
 
         except ValidationError as validation_error:
             logger.exception(f"ValidationError creating normalized filename for {file_path}", stack_info=True)

@@ -1,9 +1,15 @@
-
 '''
+@class TestDirectoryProcessing
 @file test_directory_processing.py
+@author Gerald Manweiler
+
 @brief Defines the test directory processing class.
 
-@author Gerald Manweiler
+@details This class contains unit tests for the DirectoryProcessing class.
+
+@version 1.0.0
+@date 2024-06-05
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
@@ -109,7 +115,7 @@ class TestDirectoryProcessing(TestCase):
 
         header_row = ["Col1", "Col2"]
 
-        directory.create_csv(csv_filename, data, csv_dir, header_row, 1)
+        directory.create_csv(csv_filename, data, csv_dir, None, header_row, 1)
 
         created_csv = os.path.join(self.csv_files, csv_filename + CSV_EXT)
         created_exists = os.path.exists(created_csv)
