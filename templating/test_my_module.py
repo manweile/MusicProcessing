@@ -1,4 +1,3 @@
-
 '''
 @file test_my_module.py
 @brief Defines the test my module class.

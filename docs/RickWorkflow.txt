@@ -1,0 +1,20 @@
+Rick Music Workflow
+
+Copy artist from F:\RickSource to F:\RickPrepped
+
+Review artist folder
+    Split into Albums if possible
+        Normalize album name if needed
+        Choose quality if needed
+    Run create-albums if only songs under artist
+        
+    Review songs in albums
+        Remove duplicates
+        Remove unwanted songs
+        run normalize-<file type>-filename (or normalize-<file type>-filename-walk) if needed
+        run remove-pattern to get rid of *.db, *.ini, AlbumArt*.jpg
+        
+    Extract album art
+        run extract-walk for top level directory 
+        run extract-file for single file
+        run set-album-art 
