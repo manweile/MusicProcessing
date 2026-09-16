@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 '''
 @file main.py
+@author Gerald Manweiler
 @brief Music Processing project executable script.
 
 @details Run this script with appropriate input arguments to process audio files.
 
-@author Gerald Manweiler
+@version 1.0.0
+@date 2024-06-05
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
@@ -56,12 +59,12 @@ class CustomArgumentParser(argparse.ArgumentParser):
     '''
 
 
-    # Private method
-
-
     def _print_message(self, message, file=None):
         '''
         @brief Override argparse.ArgumentParser._print_message so stderr gets logged instead of output to console.
+
+        @details Overrides the default behavior of printing messages to stderr by logging them instead.<br>
+        This ensures that all argparse errors are captured in the log file rather than being printed to the console.
 
         @param message {str} The error message to log.
         @param file {TextIOWrapper} A file-like object for stderr.
@@ -80,6 +83,8 @@ def convert_file(file_path):
     '''
     @brief Converts specified audio file to mp3 format.
 
+    @details Converts the specified audio file to mp3 format using the metadata conversion functionality.
+
     @param file_path {str} The full path to audio file.
     '''
 
@@ -89,6 +94,8 @@ def convert_file(file_path):
 def normalize_mp3_filename(file_path):
     '''
     @brief Renames an MP3 using its album artist and title metadata.
+
+    @details Renames the specified MP3 file using its album artist and title metadata.
 
     @param file_path {str} The full path to the MP3 file.
     '''
@@ -100,6 +107,8 @@ def normalize_flac_filename(file_path):
     '''
     @brief Renames a FLAC using its album artist and title metadata.
 
+    @details Renames the specified FLAC file using its album artist and title metadata.
+
     @param file_path {str} The full path to the FLAC file.
     '''
 
@@ -109,6 +118,8 @@ def normalize_flac_filename(file_path):
 def normalize_mp4_filename(file_path):
     '''
     @brief Renames an M4A using its album artist and title metadata.
+
+    @details Renames the specified M4A file using its album artist and title metadata.
 
     @param file_path {str} The full path to the M4A file.
     '''
@@ -120,6 +131,8 @@ def normalize_wma_filename_walk(tld_path):
     '''
     @brief Renames WMA files in specified top level directory using album artist and title metadata.
 
+    @details Renames all WMA files in the specified top level directory using their album artist and title metadata.
+
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
@@ -129,6 +142,8 @@ def normalize_wma_filename_walk(tld_path):
 def normalize_mp3_filename_walk(tld_path):
     '''
     @brief Renames MP3 files in specified top level directory using album artist and title metadata.
+
+    @details Renames all MP3 files in the specified top level directory using their album artist and title metadata.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
@@ -140,6 +155,8 @@ def normalize_flac_filename_walk(tld_path):
     '''
     @brief Renames FLAC files in specified top level directory using album artist and title metadata.
 
+    @details Renames all FLAC files in the specified top level directory using their album artist and title metadata.
+
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
@@ -150,6 +167,8 @@ def normalize_mp4_filename_walk(tld_path):
     '''
     @brief Renames M4A files in specified top level directory using album artist and title metadata.
 
+    @details Renames all M4A files in the specified top level directory using their album artist and title metadata.
+
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
@@ -159,6 +178,8 @@ def normalize_mp4_filename_walk(tld_path):
 def convert_walk(tld_path, file_pattern):
     '''
     @brief Converts all audio files in specified top level directory to mp3 format.
+
+    @details Converts all audio files matching the specified file pattern in the top level directory to mp3 format.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     @param file_pattern {str} The file pattern we want to convert.
@@ -171,6 +192,9 @@ def create_albums(tld_path):
     '''
     @brief Create album 2nd level directories under artist first level directories in top level directory.
 
+    @details Creates album directories as second level directories under artist directories which are first level directories
+    in the specified top level directory.
+
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
@@ -180,6 +204,8 @@ def create_albums(tld_path):
 def ebu_file(file_path):
     '''
     @brief EBU R128 normalize the specified audio file.
+
+    @details Normalizes the audio file to the EBU R128 loudness standard.
 
     @param file_path {str} The full path to audio file.
     '''
@@ -191,8 +217,11 @@ def existing_file(file):
     '''
     @brief Checks if file exists.
 
+    @details Checks if the specified file exists and raises an ArgumentTypeError if it does not.
+
     @param file {str} The file path.
     @return file {str} The file path.
+
     @exception ArgumentTypeError indicating the file was not found.
     '''
 
@@ -206,8 +235,11 @@ def existing_path(path):
     '''
     @brief Checks if directory exists.
 
+    @details Checks if the specified directory exists and raises an ArgumentTypeError if it does not.
+
     @param file {str} The directory path.
     @return file {str} The directory path.
+
     @exception ArgumentTypeError indicating the directory was not found.
     '''
 
@@ -221,6 +253,8 @@ def extract_file(file_path):
     '''
     @brief Extracts and saves embedded album art from specified audio file.
 
+    @details Extracts and saves the embedded album art from the specified audio file.
+
     @param file_path {str} The full path to audio file.
     '''
 
@@ -229,10 +263,12 @@ def extract_file(file_path):
 
 def extract_walk(tld_path, file_pattern):
     '''
-    @brief Extracts and save embedded art from  all audio files in specified top level directory with specified pattern.
+    @brief Extracts and saves embedded album art from all audio files in specified top level directory with specified pattern.
+
+    @details Extracts and saves the embedded album art from all audio files in the specified top level directory that match the given file pattern.
 
     @param tld_path {str} The top level directory path that contains all the music files.
-    @param file_pattern {str} The file pattern we want to delete.
+    @param file_pattern {str} The file pattern we want to extract album art from.
     '''
 
     art.extract_walk(tld_path, file_pattern)
@@ -241,6 +277,8 @@ def extract_walk(tld_path, file_pattern):
 def get_media_info(file_path):
     '''
     @brief Gets media info.
+
+    @details Retrieves detailed media information for the specified audio file.
 
     @param file_path {str} The full path to audio file.
     '''
@@ -252,7 +290,10 @@ def get_media_info_walk(start_path, file_pattern):
     '''
     @brief Gets media info.
 
-    @param file_path {str} The full path to audio file.
+    @details Retrieves detailed media information for all audio files in the specified top level directory that match the given file pattern.
+
+    @param start_path {str} The full path to the top level directory containing audio files.
+    @param file_pattern {str} The file pattern we want to get media info for.
     '''
 
     metadata.get_media_info_walk(start_path, file_pattern)
@@ -261,6 +302,8 @@ def get_media_info_walk(start_path, file_pattern):
 def get_media_tags(file_path):
     '''
     @brief Gets media tags.
+
+    @details Retrieves the metadata tags for the specified audio file.
 
     @param file_path {str} The full path to audio file.
     '''
@@ -272,6 +315,8 @@ def get_any_tags(file_path):
     '''
     @brief Gets metadata from specified audio file.
 
+    @details Retrieves all available metadata tags from the specified audio file.
+
     @param file_path {str} The full path to audio file.
     '''
 
@@ -281,7 +326,9 @@ def get_any_tags(file_path):
 
 def get_tags_walk(tld_path, file_pattern, ffprobe):
     '''
-    @brief Gets metadata from  all audio files in specified top level directory with specified pattern.
+    @brief Gets metadata from all audio files in specified top level directory with specified pattern.
+
+    @details Retrieves all available metadata tags from all audio files in the specified top level directory that match the given file pattern.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     @param file_pattern {str} The file pattern we want to get tags for.
@@ -295,6 +342,8 @@ def get_unique_media(tld_path):
     '''
     @brief Gets set of unique keys for entire collection found by ffprobe.
 
+    @details Retrieves a set of unique metadata keys from all audio files in the specified top level directory using ffprobe.
+
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
@@ -305,6 +354,8 @@ def list_audio(tld_path):
     '''
     @brief List all audio files from specified top level directory.
 
+    @details Retrieves a list of all audio files from the specified top level directory.
+
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
@@ -314,6 +365,8 @@ def list_audio(tld_path):
 def list_type(tld_path, file_ext=None):
     '''
     @brief List files from specified top level directory by specified extension.
+
+    @details Retrieves a list of all files with the specified extension from the specified top level directory.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     @param file_ext {str} The specified extension to get list of.
@@ -326,6 +379,8 @@ def normalize_walk(tld_path, norm_type):
     '''
     @brief Normalizes all audio files in specified top level directory per input normalization type.
 
+    @details Normalizes all audio files in the specified top level directory according to the specified normalization type.
+
     @param tld_path {str} The top level directory path that contains all the music files.
     @param norm_type {str} The type of normalization to perform.
     '''
@@ -337,6 +392,8 @@ def peak_file(file_path):
     '''
     @brief Peak normalize the specified audio file.
 
+    @details Peak normalizes the specified audio file.
+
     @param file_path {str} The full path to audio file.
     '''
 
@@ -345,7 +402,9 @@ def peak_file(file_path):
 
 def rms_file(file_path):
     '''
-    @brief Peak normalize the specified audio file.
+    @brief RMS normalize the specified audio file.
+
+    @details RMS normalizes the specified audio file.
 
     @param file_path {str} The full path to audio file.
     '''
@@ -357,6 +416,8 @@ def remove_albums(tld_path):
     '''
     @brief Remove empty album directories from specified top level directory.
 
+    @details Recursively scans the specified top level directory and removes any empty album directories.
+
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
@@ -366,6 +427,8 @@ def remove_albums(tld_path):
 def remove_pattern(tld_path, file_pattern):
     '''
     @brief Remove files with specified pattern from specified top level directory.
+
+    @details Recursively scans the specified top level directory and removes any files that match the given pattern.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     @param file_pattern {str} The file pattern we want to delete.
@@ -378,6 +441,8 @@ def set_album_art(tld_path):
     '''
     @brief Sets album art file for an album directory.
 
+    @details Sets the album art for all album directories within the specified top level directory.
+
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
@@ -388,7 +453,9 @@ def update_paths(tld_path, input_m3u):
     '''
     @brief Updates an old playlist relative pathing.
 
-    @param start_path {str} The top level directory where playlist is located.
+    @details Updates the relative paths in the specified playlist file based on the current top level directory structure.
+
+    @param tld_path {str} The top level directory where playlist is located.
     @param input_m3u {str} The full file path to playlist needing conversion.
     '''
 
@@ -399,7 +466,9 @@ def update_walk(tld_path):
     '''
     @brief Updates an old playlist relative pathing.
 
-    @param start_path {str} The top level directory where playlists are located.
+    @details Updates the relative paths in all playlist files within the specified top level directory based on the current directory structure.
+
+    @param tld_path {str} The top level directory where playlists are located.
     '''
 
     playlist.update_walk(tld_path)
@@ -558,6 +627,8 @@ if __name__ == "__main__":
     @details Sets up argument parsing and subcommand handling.
 
     @note Any input file paths that contain spaces must be enclosed in quotes.
+
+    @exception Exception A common baseclass exception to handle unforeseen errors.
     '''
 
     try:
@@ -566,8 +637,10 @@ if __name__ == "__main__":
 
         # convert audio file specified to mp3 format
         # 1 mandatory arg, the audio file path
-        # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file', 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file', '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
+        # sys.argv = ['D:\MusicProcessing\main.py', 'convert-file',
+        # 'C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file',
+        # '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
         # convert-file "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"
         convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
         convert_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
@@ -577,7 +650,8 @@ if __name__ == "__main__":
         # 1 mandatory arg, the tld path
         # 1 optional arg, the file pattern to match
         # sys.argv = ['D:\MusicProcessing\main.py', 'convert-walk', 'C:\Music', '--pattern', { '.flac' | '.mp3' | '.m4a' | '.wma' } ]
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-walk', '/home/gerald/Music', '--pattern', { '.flac' | '.mp3' | '.m4a' | '.wma' } ]
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-walk', '/home/gerald/Music',
+        # '--pattern', { '.flac' | '.mp3' | '.m4a' | '.wma' } ]
         # convert-walk C:\Music --pattern .m4a
         # convert-walk F:\RickPrepped
         convert_walk_parser = subparsers.add_parser("convert-walk", help="Converts all audio files to mp3")
@@ -596,8 +670,10 @@ if __name__ == "__main__":
 
         # ebu normalize an audio file (destructive)
         # 1 mandatory arg, the path to audio file
-        # sys.argv = ['D:\MusicProcessing\main.py', 'ebu-file', "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'ebu-file', "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp3"]
+        # sys.argv = ['D:\MusicProcessing\main.py', 'ebu-file',
+        # "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'ebu-file',
+        # "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp3"]
         # ebu-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
         ebu_file_parser = subparsers.add_parser("ebu-file", help="EBU R128 normalizes a mp3 audio file level")
         ebu_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
@@ -605,8 +681,10 @@ if __name__ == "__main__":
 
         # extract album art from specified audio file
         # 1 mandatory arg, the path to audio file
-        # sys.argv = ['D:\MusicProcessing\main.py', 'extract-art', 'C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma',
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-art', '/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma',
+        # sys.argv = ['D:\MusicProcessing\main.py', 'extract-art',
+        # 'C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-art',
+        # '/home/gerald/Music/Elton John/Goodbye Yellow Brick Road/Elton John-Saturday Night's Alright for Fighting.wma']
         # extract-file "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"
         extract_file_parser = subparsers.add_parser("extract-file", help="Extracts embedded art from audio file")
         extract_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
@@ -616,7 +694,8 @@ if __name__ == "__main__":
         # 1 mandatory arg, the tld path
         # 1 optional arg, the file pattern to match
         # sys.argv = ['D:\MusicProcessing\main.py', 'extract-walk', 'C:\Music', '--pattern', { '.flac' | '.mp3' | '.m4a' | '.wma' } ]
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-walk', '/home/gerald/Music', '--pattern', { '.flac' | '.mp3' | '.m4a' | '.wma' } ]
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'extract-walk', '/home/gerald/Music',
+        # '--pattern', { '.flac' | '.mp3' | '.m4a' | '.wma' } ]
         # extract-walk C:\Music --pattern .flac
         # extract-walk C:\Music --pattern .mp3
         # extract-walk C:\Music --pattern .m4a
@@ -641,7 +720,8 @@ if __name__ == "__main__":
         # 1 mandatory arg, the tld path
         # 1 optional arg, the file pattern to match
         # sys.argv = ['D:\MusicProcessing\main.py', 'get-media-info-walk', 'C:\Music', '--pattern', { '.flac' | `'.mp3' | '.m4a' | '.wma' } ]
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music', '--pattern', {  '.flac' | '.mp3' | '.m4a' | '.wma' } ]
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music',
+        # '--pattern', {  '.flac' | '.mp3' | '.m4a' | '.wma' } ]
         # get-media-info-walk C:\Music --pattern .mp3
         # get-media-info-walk C:\Music --pattern .m4a
         # get-media-info-walk C:\Music --pattern .wma
@@ -675,7 +755,8 @@ if __name__ == "__main__":
         # 1 optional arg, the file pattern to match
         # 1 optional arg, use ffprobe boolean
         # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags-walk', 'C:\Music', '--pattern', { '.mp3' | '.m4a' | '.wma' | '.flac' } , '--ffprobe' 'True']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music', '--pattern', { '.mp3' | '.m4a' | '.wma' | '.flac' }, '--ffprobe', 'True']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music',
+        # '--pattern', { '.mp3' | '.m4a' | '.wma' | '.flac' }, '--ffprobe', 'True']
         # get-tags-walk C:\Music --pattern .mp3 --ffprobe True
         # get-tags-walk C:\Music --pattern .m4a --ffprobe True
         # get-tags-walk C:\Music --pattern .wma --ffprobe True
@@ -801,7 +882,8 @@ if __name__ == "__main__":
         # remove files matching specified file pattern
         # 2 mandatory args, the tld path and the file pattern
         # sys.argv = ['D:\MusicProcessing\main.py', 'remove-pattern', 'C:\Music', { 'AlbumArtSmall.jpg' | 'AlbumArt*Small.jpg' | '*.db' | '*.ini' } ]
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'remove-pattern', '/home/gerald/Music', { 'AlbumArtSmall.jpg' | 'AlbumArt*Small.jpg' | '*.db' | '*.ini' } ]
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'remove-pattern', '/home/gerald/Music',
+        # { 'AlbumArtSmall.jpg' | 'AlbumArt*Small.jpg' | '*.db' | '*.ini' } ]
         # remove-pattern C:\Music *.db
         # remove-pattern C:\Music *.ini
         # remove-pattern C:\Music AlbumArtSmall.jpg
@@ -814,8 +896,10 @@ if __name__ == "__main__":
 
         # peak normalize an audio file (destructive)
         # 1 mandatory arg, the path to audio file
-        # sys.argv = ['D:\MusicProcessing\main.py', 'peak-file', "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'peak-file', "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp3"]
+        # sys.argv = ['D:\MusicProcessing\main.py', 'peak-file',
+        # "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'peak-file',
+        # "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp3"]
         # peak-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
         peak_file_parser = subparsers.add_parser("peak-file", help="Peak normalizes a mp3 audio file level")
         peak_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
@@ -823,8 +907,10 @@ if __name__ == "__main__":
 
         # rms normalize an audio file (destructive)
         # 1 mandatory arg, the path to audio file
-        # sys.argv = ['D:\MusicProcessing\main.py', 'rms-file', "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'rms-file', "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp3"]
+        # sys.argv = ['D:\MusicProcessing\main.py', 'rms-file',
+        # "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'rms-file',
+        # "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp3"]
         # rms-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
         rms_file_parser = subparsers.add_parser("rms-file", help="Rms normalizes a mp3 audio file level")
         rms_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
@@ -859,7 +945,6 @@ if __name__ == "__main__":
         update_walk_parsers.add_argument("tld", type=existing_path, help="mandatory top level directory")
         update_walk_parsers.set_defaults(func=update_walk)
 
-        # args = create_parser()
         args = parser.parse_args()
         main(args)
 

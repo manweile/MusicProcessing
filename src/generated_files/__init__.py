@@ -1,9 +1,20 @@
 '''
+@package src.generated_files
+@file src/generated_files/__init__.py
+@author Gerald Manweiler
+
 @brief Gets directory name for importing by other modules.
+
+@details Gets the directory name for importing by other modules.
+
+@version 1.0.0
+@date 2024-06-05
+
+@copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
 # standard modules
-import os
+import os                                                   # Standard module for interacting with the operating system
 
 ## @var GENERATED_PATH
 # @brief Path to where files created by the project are stored.

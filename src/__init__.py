@@ -13,16 +13,14 @@
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import logging                                              # standard logging module
-import os                                                   # standard os module
-from logging import DEBUG                                   # standard logging level for debug messages
-from logging import FileHandler                             # standard logging file handler
-from logging import Formatter                               # standard logging formatter
+# Local Module Functions
+from src.logging_config import add_module_handler           # for adding module-specific file handlers to loggers
+from src.logging_config import configure_package_logging    # for configuring package-level file logging
 
-# local module constants
+# Local Module Constants
 from src.generated_files import GENERATED_PATH              # path to the directory where generated files are stored
-# local module errors
+
+# Local Module Errors
 from src.errors import FfmpegProcessError                   # custom error for ffmpeg process failures
 from src.errors import JSONOutputError                      # custom error for JSON output issues
 from src.errors import MetadataTypeError                    # custom error for metadata type mismatches
@@ -30,8 +28,6 @@ from src.errors import MusicProcessingError                 # custom error for g
 from src.errors import PathInfoError                        # custom error for path information issues
 from src.errors import PlaylistError                        # custom error for playlist related issues
 from src.errors import VideoStreamError                     # custom error for video stream related issues
-# local module classes
-from src.level_filter import LevelFilter                    # custom logging level filter class
 
 ## @var ASF_TYPE
 # @brief mutagen audio file type
@@ -158,138 +154,53 @@ UTF8 = "utf-8"
 # @details use this when needing just this file type extension and not file list of valid extensions
 WMA_EXT = ".wma"
 
+# Configure package-level logging
+src_logger = configure_package_logging(
+    GENERATED_PATH,
+    CSV_DIR,
+    LOG_DIR,
+    RESULT_DIR,
+    LOG_EXT,
+    UTF8,
+    ERROR_LOG_FORMAT
+)
+
 ## @var __all__
 # @brief Exposes variables for importing by other modules.
 # @details In modules needing the constant add 'from src import <constant>'
 # @details In modules needing the error class, add 'from src.errors import <error>'
 __all__ = [
     "ASF_TYPE",
-    "AUDIO_EXTS", "AUDIO_FILES",
-    "CSV_DIR", "CSV_EXT",
+    "AUDIO_EXTS",
+    "AUDIO_FILES",
+    "CSV_DIR",
+    "CSV_EXT",
     "ERROR_LOG_FORMAT",
-    "LOG_DIR", "LOG_EXT",
-    "FLAC_EXT", "FLAC_TYPE",
+    "LOG_DIR",
+    "LOG_EXT",
+    "FLAC_EXT",
+    "FLAC_TYPE",
     "FOLDER_ART",
     "ILT",
     "LRA",
-    "M4A_EXT", "MP3_EXT", "MP3_TYPE", "MP4_TYPE", "MUSIC_TLD",
-    "PLAYLIST_EXTS", "PLAYLIST_TYPES",
-    "RESULT_DIR", "RESULT_EXT",
+    "M4A_EXT",
+    "MP3_EXT",
+    "MP3_TYPE",
+    "MP4_TYPE",
+    "MUSIC_TLD",
+    "PLAYLIST_EXTS",
+    "PLAYLIST_TYPES",
+    "RESULT_DIR",
+    "RESULT_EXT",
     "TP",
     "UTF8",
     "WMA_EXT",
     "FfmpegProcessError",
     "JSONOutputError",
-    "MetadataTypeError", "MusicProcessingError",
-    "PathInfoError", "PlaylistError",
-    "VideoStreamError"
+    "MetadataTypeError",
+    "MusicProcessingError",
+    "PathInfoError",
+    "PlaylistError",
+    "VideoStreamError",
+    "add_module_handler"
 ]
-
-'''
-MusicProcessing has multi-level logging setup.<br>
-from https://realpython.com/python-logging-source-code/#a-multi-handler-design tutorial.<br>
-All loggers wil have file handlers.<br>
-Every module will instantiate it's own logger.<br>
-This will cause all logging initiated within a module to log to that modules log.<br>
-Additionally, there will be level based loggers.<br>
-The debug logger will not have a filter, making it the master log repository.<br>
-The info through critical loggers will be filtered to only accept log records of their level.
-'''
-
-## @var handler
-# @brief log file handler
-# @details creates log file handler for log level
-handler = FileHandler
-
-## @var handler_formatter
-# @brief logging formatter
-# @details the logging format for log level
-handler_formatter = Formatter
-
-## @ var handler_level
-# @brief handler log level
-# @details the log level for handler
-handler_level = int()
-
-## @var levels
-# @brief logging levels for project
-# @details specifies what log levels will generate logs
-levels = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
-
-## @var level_log_file
-# @brief log file name
-# @details creates log file name from log level
-level_log_file = str()
-
-## @var level_log_path
-# @brief log file path
-# @details creates log file path for a log file
-level_log_path = str()
-
-## @var log_path
-# @brief path to log files
-# @details specifies fixed log path for project
-log_path = os.path.join(GENERATED_PATH, LOG_DIR)
-
-## @var src_logger
-# @brief logger for package
-# @details uses name of package so logger is parent to loggers in other modules in same package
-src_logger = logging.getLogger(__name__)
-
-# Create necessary directories for generated files
-for generated_dir in (CSV_DIR, LOG_DIR, RESULT_DIR):
-    os.makedirs(os.path.join(GENERATED_PATH, generated_dir), exist_ok=True)
-
-# override the default logging level WARN to lowest level so we can log all levels
-src_logger.setLevel(DEBUG)
-
-# add a handler for each level and attach it to the single logger at top of hierarchy
-for level in levels:
-    level_log_file = f"{level.lower()}{LOG_EXT}"
-    level_log_path = os.path.join(log_path, level_log_file)
-
-    handler = FileHandler(level_log_path, mode="a", encoding=UTF8)
-
-    handler_formatter = Formatter(ERROR_LOG_FORMAT)
-    handler.setFormatter(handler_formatter)
-
-    handler_level = getattr(logging, level)
-
-    if level != "DEBUG":
-        handler.addFilter(LevelFilter(handler_level, handler_level))
-
-    src_logger.addHandler(handler)
-
-
-# Public Methods
-
-
-def add_module_handler(logger, basename, level=DEBUG, format=ERROR_LOG_FORMAT, propagate=True):
-    '''
-    @brief Adds FileHandler to a logger.
-
-    @details Logger is expected to be defined with __name__ dunder by calling module.<br>
-    basename is expected to be defined by __file__ dunder in calling module.
-
-    @param logger (Logger) Logger instance for a module.
-    @param basename {str} File handler log file name for logger.
-    @param level {int} Optional, Logger & file handler logging level.
-    @param format {str} Optional, File handler logging format.
-    @param propagate {bool} Optional, Logger propagation to root logger.
-    '''
-
-    logger.setLevel(level)
-
-    # log files always go to fixed location
-    stem = os.path.splitext(basename)[0]
-    log_file = stem + LOG_EXT
-    log_path = os.path.join(GENERATED_PATH, LOG_DIR, log_file)
-
-    formatter = Formatter(format)
-
-    handler = FileHandler(log_path, encoding=UTF8)
-    handler.setFormatter(formatter)
-    handler.setLevel(level)
-
-    logger.addHandler(handler)
-    logger.propagate = propagate
