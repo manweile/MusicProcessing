@@ -4,7 +4,12 @@ applyTo: "**/*.py"
 
 # Python Documentation Standards
 
-- All new Python files require a file-level Doxygen block.
+- All new normal source Python files require a file-level Doxygen block.
+- The following Python files do not require a file-level Doxygen block:
+  - stub/demo scripts
+  - Migration utilities
+  - one-off developer tools
+  - generated code
 
 ## Python
 
@@ -23,54 +28,51 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   2. Module Level Constants
   3. Module Level Variables
   4. Classes
+    1. Class function definitions
   5. Functions
   - List items alphabetically within each group or subgroup unless a section below states otherwise.
   - Separate Import, Module Level Constants and Module Level Variables with a blank line.
   - Separate classes from preceding code with 2 blank lines.
   - Separate functions inside classes from preceding code with 2 blank lines.
+  - Separate functions outside classes from preceding code with 2 blank lines.
   - In class and function definitions, the Doxygen documentation block is placed immediately after the definition line as the Python docstring.
   - All python files end with a blank line.
 
 ## Shared Doxygen Rules
 
-- Use a one-line `@brief`.
+- Use a one-line `@brief`, terminated by a period.
 - Leave an empty line after `@brief`.
 - Add a `@details` block.
-- Use imperative voice in `@details`.
-- Leave an empty line after the `@details` block.
 - Follow the Details Block Formatting Rules.
 - Use:
-  - `@param name {type} description` for input parameters
-  - `@return name {type} description` when the function returns a specifically named value
-  - `@return {type} description` when the function returns an unnamed value or expression
+  - `@param name {type} description` for input parameters, terminated by a period.
+  - `@return name {type} description` when the function returns a specifically named value, terminated by a period.
+  - `@return {type} description` when the function returns an unnamed value or expression, terminated by a period.
 - Leave an empty line after `@param` and `@return` blocks.
 - Omit `@param` entirely for functions with no parameters.
 - Omit `@return` entirely for functions that return `None`.
-- Use `@exception {type} description` for exceptions raised by the function.
+- Use `@exception {type} description` for exceptions raised by the function, terminated by a period.
 - Omit `@exception` entirely for functions that do not raise any exceptions.
+- All Doxygen documentation blocks in class definitions are followed by 1 blank line.
+- All Doxygen documentation blocks in function definitions inside classes are followed by 1 blank line.
+- All Doxygen documentation blocks in functions definitions outside of classes are followed by 1 blank line.
 
-## Column Alignment Rules
+## Column Length Rules
 
 - All text in Python source files, including code, comments, and Doxygen documentation, must not exceed column 150.
-- Inline comments are denoted by `#`.
-- Prefer readable formatting over strict visual alignment.
-- For global constants and global variables:
-  - keep the declaration on one line when it remains readable and does not exceed column 150.
-  - place an inline `#` comment on the same line when it remains readable.
-  - if the declaration or inline comment would become difficult to read on one line, place the comment on the immediately preceding line.
+- Inline comments are denoted by `#` and do not have a period at the end
 - For imports:
   - follow the Import Rules for placement of purpose comments.
 - For long parameter lists:
   - break parameters across continuation lines using standard Python indentation.
   - align continuation lines with the opening delimiter or use a hanging indent of 4 spaces.
-- Do not add extra spacing solely to align `#` comments or assignment operators across multiple lines.
 
 ## Details Block Formatting Rules
 
 - Apply these rules to every `@details` block in Python Doxygen comments, including:
   1. File-level documentation blocks
   2. Functions documentation blocks
-- Write each `@details` line as a complete sentence ending with a period.
+- Write each `@details` line as a concise & clear complete sentence ending with a period.
 - Keep each `@details` line at or below column 150; shorten wording if necessary.
 - If the shortest clear wording still exceeds column 150, break the line after, in this order of preference:
   1. a comma
@@ -80,6 +82,7 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - If a line is broken, do not append a `<br>` to the end of the line; instead, start the next line with a lowercase letter.
 - Do not append a `<br>` to a single line `@details` block.
 - Append a `<br>` for lines ending with a period, except for the final line of a multiline `@details` block.
+- Leave an empty line after the last line of a `@details` block.
 
 ## File Block Rules
 
@@ -96,6 +99,7 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   - `Defines the ... module` in module files
   - `Defines the ... class` in class files
   - `Defines the test ... class` in test files
+  - terminate `@brief ...` with a period.
 - Add an empty line after `@brief`.
 - Add a `@details` block.
   - Follow the Details Block Formatting Rules.
@@ -177,9 +181,8 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   - Maintain consistent comment annotations and alphabetical order in `import` and `from ... import ...` statements.
 - Leave a blank line after each subgroup.
 
-### Package and Module Level Variables, Constants, and Lists
+### Module Level Variables, Constants, and Lists
 
-- Applies to package, class, and test files
 - Have a Doxygen documentation block for all module level variables and constants.
 - The Doxygen documentation block should include:
   - `##@var <variable_name>` line for specifying the name of the module level variable or constant.
@@ -202,11 +205,13 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 
 ## Package Files
 
+- Package files are Python files whose primary purpose is to define a package.
 - Package files are Python files that expose public names for import by other modules.
+  - Follow Module Level Variables, Constants, and Lists rules for placement of purpose comments.
   - They may contain import statements for standard, third-party, and local modules.
   - They have a `__all__` export list to specify the public API of the package.
     - The `__all__` export list is at the bottom of the file.
-    - `__all__` export lists have 1 item per line.
+    - The `__all__` export lists have 1 item per line.
       - Example:
 
       ```python
@@ -221,20 +226,24 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 ## Module Files
 
 - Module files are Python files that define the functionality of a specific module within the package.
-  - They contain class and function definitions relevant to the module's purpose.
-  - They may contain module-level variables and constants.
-  - They may contain import statements for standard, third-party, and local modules.
-  - They may contain a `__all__` export list to specify the public API of the module.
+- Module files are Python files whose primary purpose is to define module-level functionality such as:
+  - helper functions, constants, lightweight data containers, or support logic.
+- Follow Module Level Variables, Constants, and Lists rules for placement of purpose comments.
+- They contain class and function definitions relevant to the module's purpose.
+- They may contain module-level variables and constants.
+- They may contain import statements for standard, third-party, and local modules.
+- They may contain a `__all__` export list to specify the public API of the module.
 
 ## Class Files
 
-- Class files are Python files that define a single class.
+- Class files are Python files whose primary purpose is to define one main behavioral class.
 - Class files reside in the `src` directory and its sub-directories, and follow the naming convention `<class_name>.py`.
-  - They follow the Class File Logging Setup rules as described below.
-  - They contain the class definition and its methods.
-  - They may contain class-level variables and constants.
-  - They may contain import statements for standard and third-party modules.
-  - They may contain a `__all__` export list to specify the public API of the class.
+- Follow Module Level Variables, Constants, and Lists rules for placement of purpose comments.
+- They follow the Class File Logging Setup rules as described below.
+- They contain the class definition and its methods.
+- They may contain class-level variables and constants.
+- They may contain import statements for standard and third-party modules.
+- They may contain a `__all__` export list to specify the public API of the class.
 
 ### Class File Logging Setup
 
@@ -260,11 +269,14 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   add_module_handler(logger, basename)
   ```
 
-## Test Files (`test_*.py`)
+## Test Files
 
+- Test files are Python files whose primary purpose is to define unit tests for the project.
+- Test files are Python files that contain test cases for the classes defined in the project.
 - Files named `test_*.py` are implementation-only test sources, not public API.
 - test files reside in the `tests` directory and follow the naming convention `test_*.py`.
 - Test files are class files and should follow the same header and import rules as regular class files.
+- Follow Module Level Variables, Constants, and Lists rules for placement of purpose comments.
 - Test files do not follow the Class File Logging Setup rules.
 - Test files have a class level `setUpClass` method for initializing test fixtures, with a `@classmethod` decorator.
 - Test files have a class level `tearDownClass` method for cleaning up test fixtures, with a `@classmethod` decorator.
@@ -278,10 +290,11 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 ## Main File
 
 - The main file is the Python file that serves as the entry point of the application.
-  - There is only one main file in the project.
-  - It contains the `if __name__ == "__main__":` block to execute the main functionality.
-  - It may contain import statements for standard, third-party modules, and local modules.
-  - It may contain a `__all__` export list to specify the public API of the main file.
+- Follow Module Level Variables, Constants, and Lists rules for placement of purpose comments.
+- There is only one main file in the project.
+- It contains the `if __name__ == "__main__":` block to execute the main functionality.
+- It may contain import statements for standard, third-party modules, and local modules.
+- It may contain a `__all__` export list to specify the public API of the main file.
 
 ### Main File Logging Setup
 

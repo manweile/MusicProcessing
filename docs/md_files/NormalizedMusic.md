@@ -1,4 +1,6 @@
-F:\NormalizedMusic directory is the result of normalization on ConvertedMusic directory.
+# Normalized
+
+Directory is the result of normalization on ConvertedMusic directory.
 
 Created Jul 12, this directory was updated on Jul 13th after debugging normalization def.
 F:\ConvertedMusic is up to date as of Jul 9.
@@ -25,6 +27,7 @@ All album directories contain only mp3 files.
 The playlist files can now be copied from PreppedMusic directory and then edited for filename changes.
 
 Directory structure is:
+
 ```text
 tld
 |_ playlist 1

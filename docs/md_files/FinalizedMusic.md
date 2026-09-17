@@ -1,4 +1,6 @@
-F:\FinalizedMusic directory is the result of manual metadata checks and playlist updates on NormalizedMusic directory.
+# Finalized
+
+Directory is the result of manual metadata checks and playlist updates on NormalizedMusic directory.
 
 F:\NormalizedMusic is up to date as of Jul 11th.
 Created July 11th, audio metadata in this directory was updated on July 12th.
@@ -12,6 +14,7 @@ All playlist files are relative pathed m3u files.
 
 All audio files are in mp3 format.
 All audio files have minimum set of ID3v2.3 metadata:
+
 - album
 - album artist
 - artist
@@ -20,6 +23,7 @@ All audio files have minimum set of ID3v2.3 metadata:
 - title
 
 Any of the nice to have metadata that was found is also mapped to ID3v2.3:
+
 - composer
 - copyright
 - disc
@@ -30,6 +34,7 @@ All audio files have embedded album art (as ID3v2.3 APIC tag).
 All audio files have been normalized to EBU R128 standard.
 
 Play test music.
+
 - Make any required metadata only changes here.
 - If any normalization changes are required:
   - copy the file from Converted directory to here
@@ -38,6 +43,7 @@ Play test music.
 - update \\Office1\Music, and micro sd card(s)
 
 Directory structure is:
+
 ```text
 tld
 |_ playlist 1

@@ -46,10 +46,29 @@ log_filename = os.path.join(GENERATED_PATH, LOG_DIR, file)
 logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
 logger = logging.getLogger(__name__)
 
+## @var art
+# @brief instance of AudioArt class
+# @details used for accessing class functionality
 art = AudioArt()
+
+## @var directory
+# @brief instance of DirectoryProcessing class
+# @details used for accessing class functionality
 directory = DirectoryProcessing()
+
+## @var metadata
+# @brief instance of AudioMetadata class
+# @details used for accessing class functionality
 metadata = AudioMetadata()
+
+## @var normalization
+# @brief instance of AudioNormalization class
+# @details used for accessing class functionality
 normalization = AudioNormalization()
+
+## @var playlist
+# @brief instance of AudioPlaylist class
+# @details used for accessing class functionality
 playlist = AudioPlaylist()
 
 

@@ -1,4 +1,6 @@
-F:\PreppedMusic directory is the original audio & playlist files from the HTPC (\\Office1\Music\).
+# Prepped
+
+Directory is the original audio & playlist files from the HTPC (\\Office1\Music\).
 Ubuntu dev: /home/gerald/Music
 Windows dev: C:\Music
 None of these locations need updating.
@@ -34,7 +36,7 @@ Audio file names have been edited as needed into artist-title (or artist - title
 Album art metadata has been manually reviewed to ensure reasonably accuracy.
 Album art metadata has been processed to ensure one of:
         already embedded in audio file
-        present as <album directory>.jpg in AlbumArt special directory
+        present as `album directory`.jpg in AlbumArt special directory
 
 Album art has been "extracted" to ensure a Folder.jpg album art file exists in each album sub-directory.
 
@@ -44,6 +46,7 @@ These audio files are now ready for conversion:
     album art embedding as ID3v2.3 art tag
 
 Directory structure is:
+
 ```text
 tld
 |_ playlist 1

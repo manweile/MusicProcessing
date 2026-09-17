@@ -41,6 +41,9 @@
 
 11) add function to update genre metadata
   a) file type agnostic ie uses all 4 (.flac, .mp3, .m4a, .wma)
-  b) starts at top level directory, looks at all audio files for supplied artist input, sets genre field from supplied input
-    i) resets genre field from supplied input if tag exists
-    ii) adds genre tag if necessary, populated with supplied input
+  b) starts at top level directory supplied input, looks at all audio files for supplied artist input, sets genre field from supplied input
+    i) if genre tag exists, resets genre field from supplied input
+    ii) if genre tag does not exist, adds genre tag, populated with supplied input
+
+12) determine if I even need templating if I have a python.instructions.md
+  a) if yes, determine how they can work together
