@@ -280,7 +280,7 @@ class AudioMetadata():
 
         @param date_values ({str}) Set of unique YYYY date strings.
         @param id3_tags {dict} Source ID3 tags.
-        @return output_tags {dict} Updated ID3 tags.
+        @return id3_tags {dict} Updated ID3 tags.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''

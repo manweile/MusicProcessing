@@ -62,7 +62,6 @@ def configure_package_logging(generated_path, csv_dir, log_dir, result_dir, log_
     @param log_ext {str} File extension for log files.
     @param encoding {str} Text encoding for log files.
     @param log_format {str} Format string for log records.
-
     @return logger {Logger} Configured package logger.
     '''
 
@@ -80,6 +79,7 @@ def configure_package_logging(generated_path, csv_dir, log_dir, result_dir, log_
     logger.setLevel(DEBUG)
 
     log_path = os.path.join(generated_path, log_dir)
+
     for level in ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"):
         log_file = f"{level.lower()}{log_ext}"
         handler = FileHandler(os.path.join(log_path, log_file), mode="a", encoding=encoding)

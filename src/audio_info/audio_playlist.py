@@ -77,7 +77,7 @@ class AudioPlaylist():
         @details <ext> is one of mp3, m4a, or wma.
 
         @param line (str) Line of text read from m3u file containing a #EXTINF tag
-        @return audio_file {str} Audio file name with extension.
+        @return audio {str} Audio file name with extension.
 
         @exception PlaylistError Indicates an error occurred in playlist class.
         @exception Exception A common baseclass exception to handle unforeseen errors.

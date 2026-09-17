@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 '''
+@main main
 @file main.py
 @author Gerald Manweiler
+
 @brief Music Processing project executable script.
 
 @details Run this script with appropriate input arguments to process audio files.
@@ -237,8 +239,8 @@ def existing_path(path):
 
     @details Checks if the specified directory exists and raises an ArgumentTypeError if it does not.
 
-    @param file {str} The directory path.
-    @return file {str} The directory path.
+    @param path {str} The directory path.
+    @return path {str} The directory path.
 
     @exception ArgumentTypeError indicating the directory was not found.
     '''

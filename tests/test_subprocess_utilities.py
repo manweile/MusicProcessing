@@ -40,14 +40,20 @@ subprocess_utils = SubprocessUtilities()
 def mock_communicate_with_error() -> tuple:
     '''
     @brief Simulates a communicate() call that fails during decoding.
+
+    @details Simulates a failure during the decoding of subprocess output.
+
+    @test Simulates a failure during the decoding of subprocess output.
+
+    @return undecoded_bytes {tuple} A tuple simulating the output of communicate() with undecoded bytes.
     '''
 
     # A byte string that is invalid UTF-8
     invalid_utf8_bytes = b'hello \x99\xae world'
 
-    # communicate() returns (stdout, stderr) tuples.
-    # To cause a decode error later, return undecoded bytes.
-    return (invalid_utf8_bytes, b'')
+    # communicate() returns (stdout, stderr) tuples, to cause a decode error later, return undecoded bytes
+    undecoded_bytes = (invalid_utf8_bytes, b'')
+    return undecoded_bytes
 
 
 class TestSubprocessUtilities(TestCase):

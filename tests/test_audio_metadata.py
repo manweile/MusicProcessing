@@ -1,5 +1,6 @@
 
 '''
+@class TestAudioMetadata
 @file test_audio_metadata.py
 @author Gerald Manweiler
 
@@ -13,7 +14,7 @@
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
+# Standard Modules
 import copy                                                 # for creating deep copies of objects
 import gc                                                   # for garbage collection control
 import inspect                                              # for inspecting live objects
@@ -30,16 +31,16 @@ from unittest import TestCase                               # for creating test 
 from unittest.mock import Mock, call                        # for mocking objects and asserting calls
 from unittest.mock import patch                             # for patching objects in tests
 
-# third party modules
+# Third Party Modules
 import mutagen                                              # for handling various audio metadata formats
 from mutagen._util import MutagenError                      # for handling mutagen-specific errors
 
-# local module constants
+# Local Module Constants
 from src import AUDIO_FILES                                 # directory containing audio files
-from src import FOLDER_ART                                  # directory containing folder art images
 from src import CSV_DIR                                     # directory containing CSV files
 from src import CSV_EXT                                     # file extension for CSV files
 from src import FLAC_EXT                                    # file extension for FLAC audio files
+from src import FOLDER_ART                                  # directory containing folder art images
 from src import M4A_EXT                                     # file extension for M4A audio files
 from src import MP3_EXT                                     # file extension for MP3 audio files
 from src import MUSIC_TLD                                   # top-level directory for music files
@@ -48,31 +49,34 @@ from src import RESULT_DIR                                  # directory for stor
 from src import RESULT_EXT                                  # file extension for result files
 from src import UTF8                                        # UTF-8 encoding constant
 from src.generated_files import GENERATED_PATH              # path to generated files
-from tests import TEST_M4A_DAVIS                            # test data for M4A Davis audio file
-from tests import TEST_M4A_DAVIS_ALBUM_ARTIST               # test data for M4A Davis album artist
-from tests import TEST_M4A_DAVIS_TITLE                      # test data for M4A Davis title
-from tests import TEST_M4A_EAGLES                           # test data for M4A Eagles audio file
 from tests import TEST_FLAC_CREAM                           # test data for FLAC Cream audio file
 from tests import TEST_FLAC_CREAM_ALBUM_ARTIST              # test data for FLAC Cream album artist
 from tests import TEST_FLAC_CREAM_BADGE                     # test data for FLAC Cream badge
 from tests import TEST_FLAC_CREAM_INVALID_TITLE             # test data for FLAC Cream invalid title
 from tests import TEST_FLAC_CREAM_TITLE                     # test data for FLAC Cream title
+from tests import TEST_M3U                                  # test data for M3U playlist
+from tests import TEST_M4A_DAVIS                            # test data for M4A Davis audio file
+from tests import TEST_M4A_DAVIS_ALBUM_ARTIST               # test data for M4A Davis album artist
+from tests import TEST_M4A_DAVIS_TITLE                      # test data for M4A Davis title
+from tests import TEST_M4A_EAGLES                           # test data for M4A Eagles audio file
 from tests import TEST_MP3_10CC                             # test data for MP3 10CC audio file
+from tests import TEST_MP3_10CC_ALBUM_ARTIST                # test data for MP3 10CC album artist
+from tests import TEST_MP3_10CC_TITLE                       # test data for MP3 10CC title
 from tests import TEST_MP3_ABBA                             # test data for MP3 ABBA audio file
 from tests import TEST_MP3_CRUSH                            # test data for MP3 Crush audio file
 from tests import TEST_MP3_GENESIS                          # test data for MP3 Genesis audio file
-from tests import TEST_MP3_10CC_ALBUM_ARTIST                # test data for MP3 10CC album artist
-from tests import TEST_MP3_10CC_TITLE                       # test data for MP3 10CC title
 from tests import TEST_MP3_NO_TAG                           # test data for MP3 with no tag
 from tests import TEST_MP3_NO_METADATA                      # test data for MP3 with no metadata
+from tests import TESTS_PATH                                # path directory for tests
+from tests import TESTS_TLD                                 # top-level directory for tests
 from tests import TEST_WAV_NONE                             # test data for WAV with no metadata
 from tests import TEST_WMA_CCR                              # test data for WMA CCR audio file
 from tests import TEST_WMA_JOHN                             # test data for WMA John audio file
-from tests import TEST_M3U                                  # test data for M3U playlist
-from tests import TESTS_PATH, TESTS_TLD                     # path and top-level directory for tests
-# local module errors
+
+# Local Module Errors
 from src import MusicProcessingError                        # custom error class for music processing exceptions
-# local module classes
+
+# Local Module Classes
 from src.audio_info import AudioMetadata                    # class for accessing audio metadata
 
 gc.enable()
@@ -1081,9 +1085,9 @@ class TestAudioMetadata(TestCase):
 
     def test_normalize_mp3_filename(self):
         '''
-        @brief Tests renaming an ID3v2.3 MP3 using its album artist and title metadata.
+        @brief Tests renaming an ID3v2.3 MP3.
 
-        @details Happy path test using 10cc audio file.
+        @details Requires nested classes to simulate the behavior of the actual MP3 file and its tags.
 
         @test This is a happy path test for normalizing MP3 filenames based on album artist and title metadata.
         '''
@@ -1095,11 +1099,35 @@ class TestAudioMetadata(TestCase):
         normalized_file = os.path.join(test_dir, f"{TEST_MP3_10CC_ALBUM_ARTIST}-{TEST_MP3_10CC_TITLE}.mp3")
 
         class DummyTag:
+            '''
+            @brief Simulates an ID3 tag for testing purposes.
+
+            @details The DummyTag class mimics the structure of an ID3 tag, storing the text value in a list.
+            '''
+
             def __init__(self, text):
+                '''
+                @brief Initializes the DummyTag with the given text value.
+
+                @details The text value is stored in a list to mimic the ID3 tag structure.
+                '''
+
                 self.text = [text]
 
         class DummyAudioFile:
+            '''
+            @brief Simulates an MP3 audio file for testing purposes.
+
+            @details The DummyAudioFile class mimics the structure of an MP3 file, including its tags and version information.
+            '''
+
             def __init__(self):
+                '''
+                @brief Initializes the DummyAudioFile instance.
+
+                @details Sets up the tags and version information for the simulated MP3 file.
+                '''
+
                 self.tags = Mock()
                 self.tags.version = (2, 3, 0)
                 self.tags.get.side_effect = lambda key: {
@@ -1107,9 +1135,11 @@ class TestAudioMetadata(TestCase):
                     "TIT2": DummyTag(TEST_MP3_10CC_TITLE),
                 }.get(key)
 
-        with patch("src.audio_info.audio_metadata.MP3", DummyAudioFile), patch.object(
-            metadata, "load_any_file", return_value=DummyAudioFile()
-        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+        with (
+            patch("src.audio_info.audio_metadata.MP3", DummyAudioFile),
+            patch.object(metadata, "load_any_file", return_value=DummyAudioFile()),
+            patch("src.audio_info.audio_metadata.os.rename") as mock_rename,
+        ):
             metadata.normalize_mp3_filename(src_file)
 
         mock_rename.assert_called_once_with(src_file, normalized_file)
@@ -1154,9 +1184,10 @@ class TestAudioMetadata(TestCase):
         '''
         @brief Tests normalize_mp3_filename sanitizes Windows invalid filename characters.
 
-        @details The function should replace or remove characters that are invalid in Windows filenames.
+        @details The function should replace or remove characters that are invalid in Windows filenames.<br>
+        Requires nested classes to simulate the behavior of the actual MP3 file and its tags.
 
-        @test This is a happy path test for handling Windows invalid filename characters.
+        @test This is a edge case test for handling Windows invalid filename characters.
         '''
 
         test_dir = os.path.join(self.norm_path, "10cc", "10cc")
@@ -1166,11 +1197,35 @@ class TestAudioMetadata(TestCase):
         shutil.copy(TEST_MP3_10CC, src_file)
 
         class DummyTag:
+            '''
+            @brief Simulates an ID3 tag for testing purposes.
+
+            @details The DummyTag class mimics the structure of an ID3 tag, storing the text value in a list.
+            '''
+
             def __init__(self, text):
+                '''
+                @brief Initializes the DummyTag instance with the given text value.
+
+                @details The text value is stored in a list to mimic the ID3 tag structure.
+                '''
+
                 self.text = [text]
 
         class DummyAudioFile:
+            '''
+            @brief Simulates an MP3 audio file for testing purposes.
+
+            @details The DummyAudioFile class mimics the structure of an MP3 file, including its tags and version information.
+            '''
+
             def __init__(self):
+                '''
+                @brief Initializes the DummyAudioFile instance.
+
+                @details Sets up the tags and version information for the simulated MP3 file.
+                '''
+
                 self.tags = Mock()
                 self.tags.version = (2, 3, 0)
                 self.tags.get.side_effect = lambda key: {
@@ -1264,7 +1319,19 @@ class TestAudioMetadata(TestCase):
         normalized_file = os.path.join(test_dir, f"{TEST_FLAC_CREAM_ALBUM_ARTIST}-{TEST_FLAC_CREAM_TITLE}.flac")
 
         class DummyFlacFile:
+            '''
+            @brief Simulates a FLAC audio file for testing purposes.
+
+            @details The DummyFlacFile class mimics the structure of a FLAC file, including its tags.
+            '''
+
             def __init__(self):
+                '''
+                @brief Initializes the DummyFlacFile instance.
+
+                @details Sets up the tags for the simulated FLAC file.
+                '''
+
                 self.tags = {
                     "albumartist": [TEST_FLAC_CREAM_ALBUM_ARTIST],
                     "title": [TEST_FLAC_CREAM_TITLE],
@@ -1304,6 +1371,7 @@ class TestAudioMetadata(TestCase):
             f"{TEST_FLAC_CREAM_ALBUM_ARTIST}- {TEST_FLAC_CREAM_TITLE}{FLAC_EXT}",
         ]
 
+        # Create a dummy FLAC file class to simulate the behavior of the actual FLAC file.
         class DummyFlacFile:
             def __init__(self):
                 self.tags = {
@@ -1334,6 +1402,7 @@ class TestAudioMetadata(TestCase):
         normalized_title = TEST_FLAC_CREAM_INVALID_TITLE.replace("?", "")
         normalized_file = os.path.join(test_dir, f"{TEST_FLAC_CREAM_ALBUM_ARTIST}-{normalized_title}{FLAC_EXT}")
 
+        # Create a dummy FLAC file class to simulate the behavior of the actual FLAC file.
         class DummyFlacFile:
             def __init__(self):
                 self.tags = {
@@ -1376,6 +1445,7 @@ class TestAudioMetadata(TestCase):
         @test This is a negative path test for handling FLAC files without metadata.
         '''
 
+        # Create a dummy FLAC file class to simulate the behavior of the actual FLAC file.
         class DummyFlacFile:
             tags = None
 
@@ -1424,6 +1494,7 @@ class TestAudioMetadata(TestCase):
         src_file = os.path.join(test_dir, os.path.basename(TEST_M4A_DAVIS))
         normalized_file = os.path.join(test_dir, f"{TEST_M4A_DAVIS_ALBUM_ARTIST}-{TEST_M4A_DAVIS_TITLE}{M4A_EXT}")
 
+        # Create a dummy MP4 file class to simulate the behavior of the actual MP4 file.
         class DummyMp4File:
             def __init__(self):
                 self.tags = {

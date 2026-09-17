@@ -12,11 +12,12 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 & doxygen [javadoc style](https://en.wikipedia.org/wiki/Javadoc) `@` [special commands](https://doxygen.nl/manual/commands.html).
 
 - These Python rules apply only to `.py` files.
+- Use paired triple single quotes `''' ... '''` for Python docstrings that are formatted as Doxygen documentation blocks.
+  - These docstrings are both valid Python docstrings and the required Doxygen documentation format for this repository.
+- Use `#` for inline comments.
 
 ## Shared Python Rules
 
-- Use paired triple single quotes `''' ... '''` for Doxygen blocks in Python.
-- Use `#` for inline comments.
 - After the file block, order declarations as follows:
   1. Imports
   2. Module Level Constants
@@ -27,7 +28,7 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   - Separate Import, Module Level Constants and Module Level Variables with a blank line.
   - Separate classes from preceding code with 2 blank lines.
   - Separate functions inside classes from preceding code with 2 blank lines.
-  - In class and function definitions, the Doxygen blocks are immediately after the class or function definition line.
+  - In class and function definitions, the Doxygen documentation block is placed immediately after the definition line as the Python docstring.
   - All python files end with a blank line.
 
 ## Shared Doxygen Rules
@@ -40,7 +41,8 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - Follow the Details Block Formatting Rules.
 - Use:
   - `@param name {type} description` for input parameters
-  - `@return name {type} description` for return values
+  - `@return name {type} description` when the function returns a specifically named value
+  - `@return {type} description` when the function returns an unnamed value or expression
 - Leave an empty line after `@param` and `@return` blocks.
 - Omit `@param` entirely for functions with no parameters.
 - Omit `@return` entirely for functions that return `None`.
@@ -49,13 +51,19 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 
 ## Column Alignment Rules
 
+- All text in Python source files, including code, comments, and Doxygen documentation, must not exceed column 150.
 - Inline comments are denoted by `#`.
-- Use consistent column alignment for inline `#` comments.
-- Place inline `#` comments aligned consistently, targeting column 61 where practical.
-- Keep inline comments within column 150; shorten wording if necessary.
-- Declarations must not extend past column 60; shorten wording if necessary.
-- These rules apply to global constants and global variables.
-- Break long parameter lists to continuation lines starting at column 61.
+- Prefer readable formatting over strict visual alignment.
+- For global constants and global variables:
+  - keep the declaration on one line when it remains readable and does not exceed column 150.
+  - place an inline `#` comment on the same line when it remains readable.
+  - if the declaration or inline comment would become difficult to read on one line, place the comment on the immediately preceding line.
+- For imports:
+  - follow the Import Rules for placement of purpose comments.
+- For long parameter lists:
+  - break parameters across continuation lines using standard Python indentation.
+  - align continuation lines with the opening delimiter or use a hanging indent of 4 spaces.
+- Do not add extra spacing solely to align `#` comments or assignment operators across multiple lines.
 
 ## Details Block Formatting Rules
 
@@ -76,11 +84,12 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 ## File Block Rules
 
 - All files start with a Doxygen file header block.
-- The start the first line of the file header must follow the per file type header block rule.
+- The first line of the file header must follow the per file type header block rule.
   1. Package Files Header Block rules for package files.
   2. Module Files Header Block rules for module files.
   3. Class Files Header Block rules for class files.
   4. Test Files Header Block rules for test files.
+  5. Main Files Header Block rules for the main file.
 - Add `@author` Gerald Manweiler, followed by an empty line.
 - Add `@brief`
   - `Package ...` in package files
@@ -97,28 +106,34 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 
 ## Package Files Header Block
 
-- Package files are `__init__.py` files.
+- Package files are `__init__.py` Python files whose primary purpose is to define a package.
   - Their header blocks start with `@package ...` where `...` is the name of the package.
   - Their next line is `@file ...` where `...` is the name of the relative file path; eg: `@file src/__init__.py`
 
 ## Module Files Header Block
 
-- Module files are `*.py` files that contain one or more class definitions with an `__init__` method, but no additional methods,
-  and do not define a package.
-  - Their header blocks start with `@module ...` where `...` is the name of the module.
-  - Their next line is `@file ...` where `...` is the name of the file; eg: `@file module_file.py`
+- Module files are non-`__init__.py` Python files whose primary purpose is to define module-level functionality such as helper
+  functions, constants, lightweight data containers, or support logic.
+  - Their header blocks start with `@module ...` where `...` is the module name.
+  - Their next line is `@file ...` where `...` is the file name; eg: `@file module_file.py`
 
 ## Class Files Header Block
 
-- Class files are `*.py` files that contain a class definition, an `__init__` method, and at least one additional method.
-  - Their header blocks start with `@class ...` where `...` is the name of the class.
-  - Their next line is `@file ...` where `...` is the name of the file; eg: `@file class_file.py`
+- Class files are Python files whose primary purpose is to define one main behavioral class.
+  - Their header blocks start with `@class ...` where `...` is the primary class name.
+  - Their next line is `@file ...` where `...` is the file name; eg: `@file class_file.py`
 
 ## Test Files Header Block
 
-- Test files are `test_class_file.py` files that contain test cases for the project.
-  - Their header blocks start with `@class ...` where `...` is the name of the class.
-  - Their next line is `@file ...` where `...` is the name of the file; eg: `@file test_class_file.py`
+- Test files are `test_*.py` Python files whose primary purpose is to define unit tests for the project.
+  - Their header blocks start with `@class ...` where `...` is the name of the primary test class.
+  - Their next line is `@file ...` where `...` is the file name; eg: `@file test_class_file.py`
+
+## Main File Header Block
+
+- Main files are Python files that serve as the entry point of the application.
+  - Their header blocks start with `@main ...` where `...` is the name of the main file.
+  - Their next line is `@file ...` where `...` is the file name; eg: `@file main_file.py`
 
 ## Import Rules
 
@@ -127,17 +142,21 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - Always use 1 import per line, never combine multiple imports in a single statement.
 - Always use absolute imports for local modules in package files.
 - Group imports in this order:
-  1. Python standard modules
-  2. third party modules
-  3. local modules
+  1. Python standard modules - the modules installed with Python itself.
+  2. third party modules - the modules installed via package managers like pip.
+  3. local modules - the modules defined within the project itself.
 - List imports alphabetically within each subgroup.
 - Precede each subgroup with:
   - `# Standard Modules`
   - `# Third Party Modules`
   - `# Local Modules`
 - Within each subgroup, maintain alphabetical order and use consistent comment annotations.
-- Within the `# Local Modules` subgroup, partition imports with semantic headings named `# Local Module <type>`,
-  where `<type>` identifies the imported module member category, such as `Methods`, `Constants`, `Errors`, or `Classes`.
+- Within the `# Local Modules` subgroup, partition imports with semantic headings named `# Local Module <type>`
+  - where `<type>` identifies the imported module member category
+    1. `Methods`
+    2. `Constants`
+    3. `Errors`
+    4. `Classes`
   - Apply these semantic headings to both `import ...` and `from ... import ...` statements.
   - Use the imported member name to determine its category and place it under the corresponding heading.
   - Order the semantic headings in this order:
@@ -145,10 +164,15 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
     2. Constants
     3. Errors
     4. Classes
-- add an plain `#` inline comment that explains the purpose of the placeholder comment
-  - The inline comment must never exceed column 150.
-    - place the inline comment after the import statement starting on line 61 if there is room.
-    - place the inline comment immediately before the import statement if the import statement exceeds column 61.
+- all imports have an `# ...` comment where `...` explains the purpose of the import statement.
+  - The entire import statement plus same line comment must never exceed column 150.
+  - use the shortest possible comment that clearly conveys the purpose of the import.
+  - if the import statement does not exceed column 61, and the comment is less than 90 characters,
+    - place the comment after the import statement on the same line, starting at column 61.
+  - if the import statement does not exceed column 61, but the comment is 90 characters or more,
+    - place the comment immediately before the import statement.
+  - if the import statement exceeds column 61,
+    - place the comment immediately before the import statement.
 - For all subgroups, imports via `import` come first, followed by `from ... import ...` statements
   - Maintain consistent comment annotations and alphabetical order in `import` and `from ... import ...` statements.
 - Leave a blank line after each subgroup.
@@ -161,10 +185,10 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   - `##@var <variable_name>` line for specifying the name of the module level variable or constant.
   - `# @brief <description>` line for providing a brief summary of the variable or constant.
   - `# @details <details>` line for providing additional information about the variable or constant.
-    - module level variables and constant can have multiple `@details` lines if needed.
-      - Each `@details` line should be concise and relevant to the variable or constant it describes.
+    - module level variables and constants can have multiple `@details` lines if needed.
+      - Each `@details` line should be atomically granular, concise and relevant to the variable or constant it describes.
     - `__all__` export lists have a `@details <details>` line for each item, in alphabetical order.
-      - Each `@details` line should explain how to import the item
+      - Each `@details` line for an `__all__` item should explain how to import the item
       - Example:
 
       ```python
@@ -178,48 +202,123 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 
 ## Package Files
 
-- Package files have a `__all__` export list to specify the public API of the package.
-- `__all__` export lists have 1 item per line.
-  - Example:
+- Package files are Python files that expose public names for import by other modules.
+  - They may contain import statements for standard, third-party, and local modules.
+  - They have a `__all__` export list to specify the public API of the package.
+    - The `__all__` export list is at the bottom of the file.
+    - `__all__` export lists have 1 item per line.
+      - Example:
 
-  ```python
-  __all__ = [
-      "AudioArt",
-      "AudioMetadata",
-      "AudioPlaylist",
-      "AudioUtilities",
-  ]
-  ```
+      ```python
+      __all__ = [
+          "AudioArt",
+          "AudioMetadata",
+          "AudioPlaylist",
+          "AudioUtilities",
+      ]
+      ```
 
-## Garbage Collection
+## Module Files
 
-- All class files, test files, and the main.py file should properly manage garbage collection to avoid memory leaks.
-  - Import the `gc` standard module.
-  - place `gc.enable()` after last import statement, followed by a blank line.
-- Module and package files do not need to explicitly manage garbage collection.
+- Module files are Python files that define the functionality of a specific module within the package.
+  - They contain class and function definitions relevant to the module's purpose.
+  - They may contain module-level variables and constants.
+  - They may contain import statements for standard, third-party, and local modules.
+  - They may contain a `__all__` export list to specify the public API of the module.
+
+## Class Files
+
+- Class files are Python files that define a single class.
+- Class files reside in the `src` directory and its sub-directories, and follow the naming convention `<class_name>.py`.
+  - They follow the Class File Logging Setup rules as described below.
+  - They contain the class definition and its methods.
+  - They may contain class-level variables and constants.
+  - They may contain import statements for standard and third-party modules.
+  - They may contain a `__all__` export list to specify the public API of the class.
 
 ### Class File Logging Setup
 
-- All class files with more than 1 method definition should include a logging setup section.
-  - the logging setup is after the import statements.
-- Test files do not include logging setup.
+- All class files, excepting test files, must include a logging setup section.
+  - The class file must import the standard modules `logging` and `os` modules.
+  - The class file must import the local module method `add_module_handler`.
+  - The logging setup is placed after the import statements.
+  - The logging setup defines a module logger named with `__name__`.
+  - The logging setup defines the module file basename for the logger file handler.
+  - The logging setup calls `add_module_handler(logger, basename)`.
+
+  ```python
+  ## @var logger
+  # @brief Logger instance for the module.
+  # @details Set the logger name to the module name.
+  logger = logging.getLogger(__name__)
+
+  ## @var basename
+  # @brief Base name for the logger file handler log file.
+  # @details Get the module file name from the current file path.
+  basename = os.path.basename(__file__)
+
+  add_module_handler(logger, basename)
+  ```
 
 ## Test Files (`test_*.py`)
 
 - Files named `test_*.py` are implementation-only test sources, not public API.
+- test files reside in the `tests` directory and follow the naming convention `test_*.py`.
 - Test files are class files and should follow the same header and import rules as regular class files.
-- Test files do not have logging enabled.
-- Test files have a class level `setupClass` method for initializing test fixtures, with a `@classmethod` decorator.
+- Test files do not follow the Class File Logging Setup rules.
+- Test files have a class level `setUpClass` method for initializing test fixtures, with a `@classmethod` decorator.
 - Test files have a class level `tearDownClass` method for cleaning up test fixtures, with a `@classmethod` decorator.
 - Test files have a `tearDown` method for cleaning up individual test cases.
-- Test files test cases are named `test_<functionality>`, where `<functionality>` describes the specific feature or behavior being tested.
-- Test cases have a `@test` describing which describes the specific functionality being tested in their Doxygen documentation.
+- Test cases are named `test_<functionality>`, where `<functionality>` describes the specific feature or behavior being tested.
+- Test cases have an additional tag `@test` in their Doxygen documentation.
   - The `@test` line is placed after the blank line following the`@details` block, and is followed by a blank line.
+  - The `@test` tag describes if this is a happy path, edge case, error case, or corner case.
 - Test cases using mock objects have an appropriate `@patch` decorator for the mock in the test case.
 
-### This Repo Rules
+## Main File
 
-- Use `snake_case` for new file names, functions, variables, and module names.
+- The main file is the Python file that serves as the entry point of the application.
+  - There is only one main file in the project.
+  - It contains the `if __name__ == "__main__":` block to execute the main functionality.
+  - It may contain import statements for standard, third-party modules, and local modules.
+  - It may contain a `__all__` export list to specify the public API of the main file.
+
+### Main File Logging Setup
+
+- The `main.py` file must include a logging setup section.
+  - The main file must import the standard modules `logging` and `os` modules.
+  - The main file must import the following local modules:
+    - `ERROR_LOG_FORMAT`, `LOG_EXT`, `GENERATED_PATH`, `LOG_DIR`, and `UTF8` from the appropriate local module.
+  - The logging setup is placed after the import statements.
+  - The logging setup defines the log file name from the current file name.
+  - The logging setup appends `LOG_EXT` to the file stem.
+  - The logging setup creates the log file path with `GENERATED_PATH`, `LOG_DIR`, and the log file name.
+  - The logging setup calls `logging.basicConfig(...)` to configure file logging.
+  - The logging setup sets the logging level to `logging.DEBUG`.
+  - The logging setup uses `ERROR_LOG_FORMAT` for the logging format.
+  - The logging setup uses append mode with `filemode="a"`.
+  - The logging setup uses `UTF8` for the file encoding.
+  - The logging setup defines a module logger with `logging.getLogger(__name__)`.
+
+  ```python
+  # Configure logging
+  basename = os.path.basename(__file__)
+  stem = os.path.splitext(basename)[0]
+  file = stem + LOG_EXT
+  log_filename = os.path.join(GENERATED_PATH, LOG_DIR, file)
+
+  # override the default logging level WARN to lowest level so we can log all levels
+  logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
+  logger = logging.getLogger(__name__)
+
+  ```
+
+### Casing Rules
+
+- Use `snake_case` for public file names, methods, variables, and module names.
+- Use single-leading-underscore `snake_case` for non-public helper methods.
+- Use double-leading-underscore `snake_case`
+  - only for class methods that intentionally rely on Python name mangling to avoid accidental override or external access.
+- Use leading-underscore `snake_case` for non-public module, class, and instance members; for example, `_private_variable` or `_private_method`.
 - Use `PascalCase` for classes.
 - USE `ALL_CAPS` for constants.
-- When changing Python test behavior or requirements, validate the narrowest applicable path.

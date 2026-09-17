@@ -223,7 +223,8 @@ class SubprocessUtilities():
             logger.exception(f"Exception processing command: {command}", stack_info=True)
             raise e_error
         else:
-            return process, spinner
+            results = (process, spinner)
+            return results
 
 
     def subprocess_run(self, command: str) -> CompletedProcess:

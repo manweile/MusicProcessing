@@ -1,0 +1,46 @@
+1) Doxygen html output
+  a) get detailed description to show immediately underneath brief description instead of linked by "More..."
+
+2) determine why Cream-Badge folder.jpg keeps getting deleted in audio metadata test suite
+
+3) determine why audio_utilities.py exists
+
+4) using gc.enable()
+  a) Python GC is normally already enabled.
+  b) Explicit gc.enable() usually does not prevent ordinary leaks.
+  c) Real leaks often come from references, caches, cycles with finalizes, external resources, or native extensions.
+
+5) markdown files
+  a) consolidate the "directory" markdowns into a workflow.md
+  b) finish testing markdown
+  c) clean up markdown errors in doxygen_usage.md
+    i) pattern it after esp scale doxygen markdown
+
+6) doxyfile
+  a) use custom css - copy from esp scale project
+  b) change output directory
+  c) move doxyfile to root
+  d) might need custom xml too, that depends on how dox files uses markdown files, if at all
+
+7) index.dox file
+  a) move it to root
+  b) think about how to update with contents of various md files
+    i) direct use of md files like esp scale?
+    ii) find other ways of getting markdown content into dox file
+
+8) import doxygen create from esp scale project
+
+9) run python.instructions.md on all files
+
+10) workflow yamls (refer to esp scale yamls)
+  a) split current python-app.yaml
+    i) build yaml
+    ii) test yaml
+  b) add an orchestration yaml
+  c) add cleanup yamls
+
+11) add function to update genre metadata
+  a) file type agnostic ie uses all 4 (.flac, .mp3, .m4a, .wma)
+  b) starts at top level directory, looks at all audio files for supplied artist input, sets genre field from supplied input
+    i) resets genre field from supplied input if tag exists
+    ii) adds genre tag if necessary, populated with supplied input

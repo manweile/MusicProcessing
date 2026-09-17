@@ -109,7 +109,7 @@ class AudioArt():
         From https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243.
 
         @param data {bytearray} The byte attribute data from asf audio WM/Picture tag.
-        @return (mime, image_data, type, description) ({str}, {bytes}, {int}, {str})<br>
+        @return unpacked (mime, image_data, type, description) ({str}, {bytes}, {int}, {str})<br>
         Tuple containing the MIME type, the raw image data, a type indicator, and the image's description.
 
         @exception struct.error A struct module error occurred.
@@ -506,7 +506,7 @@ class AudioArt():
         @details Audio files can have embedded art in video streams, embedded art is the first frame.
 
         @param file_path {str} The full path to audio file.
-        @return has_video {boolean} Returns true if video stream is present, false otherwise.
+        @return has_stream {boolean} Returns true if video stream is present, false otherwise.
 
         @exception JSONDecodeError A json decoding error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.

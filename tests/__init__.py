@@ -73,6 +73,7 @@ TEST_FLAC_CREAM = os.path.join(TESTS_TLD, "Cream", "Goodbye", "02. Politician.fl
 
 ## @var TEST_FLAC_CREAM_BADGE
 # @brief Path to Cream-Badge FLAC file for audio metadata tests.
+# @details This FLAC has a co-located Folder.jpg file.
 TEST_FLAC_CREAM_BADGE = os.path.join(TESTS_TLD, "Cream", "Goodbye", "Cream-Badge.flac")
 
 ## @var TEST_FLAC_CREAM_ALBUM_ARTIST
