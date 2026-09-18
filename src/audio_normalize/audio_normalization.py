@@ -182,6 +182,11 @@ class AudioNormalization():
             sample_rate = self.get_sample_rate(file_path)
             data.append(f"Source sample rate: {sample_rate} hz")
 
+            # get original bitrate and ensure it does not exceed 192000 bps to have nice compromise between file size and audio quality
+            original_bitrate = self.get_bit_rate(file_path)
+            target_bitrate = min(original_bitrate, 192000)
+            data.append(f"Source bitrate: {original_bitrate} bps -> Target bitrate: {target_bitrate} bps")
+
             stats_text = "Getting loudnorm stats"
             data.append(stats_text)
 
@@ -207,7 +212,9 @@ class AudioNormalization():
                 "-hide_banner",
                 "-i", file_path,
                 "-vn",
-                "-af", (f"loudnorm=I={ILT}:TP={TP}:LRA={LRA}:print_format=json"),
+                "-af", (f"loudnorm=I={ILT}:TP={TP}:LRA={LRA}:"
+                        f"print_format=json"
+                        ),
                 "-f", "null", "-"
             ]
             data.append(stats_command)
@@ -249,6 +256,7 @@ class AudioNormalization():
             # -af loudnorm audio filter needs same I integrated loudness target, LRA loudness range target, TP max true peak,
             # and from first pass, measured_I=input_i, measured_LRA=input_lra, measured_TP=input_tp, measured_thresh=input_thresh, offset=target_offset,
             # linear=true to normalize by linearly scaling source audio, output in json format
+            # -b:a to set the target audio bitrate (capped at 192000 bps) to ensure a balance between file size and audio quality
             # -ar input file sample_rate, 1st pass loudnorm filter auto up scales to 192 khz, so need to down scale to original
             # -y on the output file to force an overwrite if needed
 
@@ -263,6 +271,7 @@ class AudioNormalization():
                         f"offset={offset}:linear=true"
                         f":print_format=json"
                         ),
+                "-b:a", str(target_bitrate),
                 "-ar", str(sample_rate),
                 export_path, "-y"
             ]
@@ -454,7 +463,7 @@ class AudioNormalization():
             return volumes
 
 
-    def normalize_walk(self, tld_path: str, norm_type: str, show_spinner: bool = True) -> None:
+    def level_normalize_walk(self, tld_path: str, norm_type: str, show_spinner: bool = True) -> None:
         '''
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
