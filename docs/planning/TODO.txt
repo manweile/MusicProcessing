@@ -11,10 +11,11 @@ Action:
   a) Find another flac file with embedded art (other than Cream)
   b) extract the art to a Folder.jpg
   c) save flac file and Folder.jpg to tests\Music\artist\album\
-  d) add constant for new path to tests\__init__.py
-  e) import new constant in test_audio_metadata.py
-  f) use new constant in cls.src_file_paths instead of TEST_FLAC_REAM_BADGE
-IN PROGRESS
+  d) add constant for new path to tests\__init__.py and add to __all_ list
+  e) import new constant in test_audio_art.py
+  f) use new constant instead of TEST_FLAC_CREAM_BADGE
+  g) change cls.flac.jpg to use new artist & album
+COMPLETED
 
 3) determine why audio_utilities.py exists
 TODO

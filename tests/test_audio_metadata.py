@@ -503,7 +503,7 @@ class TestAudioMetadata(TestCase):
         '''
 
         for src_file in self.src_file_paths:
-            tags = metadata.get_any_tags(src_file)
+            tags = metadata.get_mutagen_tags(src_file)
             tags_list = tags.values()
             if src_file == TEST_M4A_EAGLES:
                 self.assertTrue(len(tags_list) == 32)
@@ -524,7 +524,7 @@ class TestAudioMetadata(TestCase):
 
         tags = None
 
-        tags = metadata.get_any_tags(TEST_MP3_NO_TAG)
+        tags = metadata.get_mutagen_tags(TEST_MP3_NO_TAG)
 
         self.assertIsNone(tags)
 
@@ -538,7 +538,7 @@ class TestAudioMetadata(TestCase):
         @test This is a happy path test for retrieving media information.
         '''
 
-        results_dict = metadata.get_media_info(TEST_MP3_CRUSH)
+        results_dict = metadata.get_ffrobe_media_info(TEST_MP3_CRUSH)
 
         self.assertDictEqual(self.media_dict, results_dict)
 
@@ -556,7 +556,7 @@ class TestAudioMetadata(TestCase):
         results_dict = None
         mock_popen_pipe.return_value = f"[STREAM]\nindex=0\n[/STREAM]\n[FORMAT]\nfilename={TEST_MP3_ABBA}\n[/FORMAT]\n"
 
-        results_dict = metadata.get_media_info(TEST_MP3_ABBA)
+        results_dict = metadata.get_ffrobe_media_info(TEST_MP3_ABBA)
         expected_dict = {"index": "0", "filename": f"{TEST_MP3_ABBA}"}
         self.assertDictEqual(results_dict, expected_dict)
 
@@ -571,9 +571,9 @@ class TestAudioMetadata(TestCase):
         '''
 
         # use the ConvertedMusic dir
-        metadata.get_media_info_walk(self.converted, None)
+        metadata.get_ffprobe_media_info_walk(self.converted, None)
 
-        txt_filename = "get_media_info_walk" + RESULT_EXT
+        txt_filename = "get_ffprobe_media_info_walk" + RESULT_EXT
         txt_path = os.path.join(self.txt_dir, txt_filename)
 
         output_exists = os.path.exists(txt_path)
@@ -599,9 +599,9 @@ class TestAudioMetadata(TestCase):
         '''
 
         # use the ConvertedMusic dir
-        metadata.get_media_info_walk(self.converted, PLAYLIST_EXTS[0])
+        metadata.get_ffprobe_media_info_walk(self.converted, PLAYLIST_EXTS[0])
 
-        txt_filename = "get_media_info_walk" + RESULT_EXT
+        txt_filename = "get_ffprobe_media_info_walk" + RESULT_EXT
         txt_path = os.path.join(self.txt_dir, txt_filename)
         output_exists = os.path.exists(txt_path)
         file_size = os.path.getsize(txt_path)
@@ -621,9 +621,9 @@ class TestAudioMetadata(TestCase):
         '''
 
         # use the ConvertedMusic dir
-        metadata.get_media_info_walk(self.converted, MP3_EXT)
+        metadata.get_ffprobe_media_info_walk(self.converted, MP3_EXT)
 
-        txt_filename = "get_media_info_walk" + RESULT_EXT
+        txt_filename = "get_ffprobe_media_info_walk" + RESULT_EXT
         txt_path = os.path.join(self.txt_dir, txt_filename)
         output_exists = os.path.exists(txt_path)
 
@@ -657,7 +657,7 @@ class TestAudioMetadata(TestCase):
             'MusicBrainz Release Group Id': 'a7927f70-2431-3a58-b7ae-48576808cec1', 'date': '2002'
         }
 
-        media_tags = metadata.get_media_tags(TEST_MP3_CRUSH)
+        media_tags = metadata.get_ffprobe_media_tags(TEST_MP3_CRUSH)
 
         self.assertDictEqual(media_tags, tag_dict)
 
@@ -703,7 +703,7 @@ class TestAudioMetadata(TestCase):
         media_tags = None
 
         with self.assertRaises(JSONDecodeError) as cm:
-            media_tags = metadata.get_media_tags(TEST_MP3_CRUSH)
+            media_tags = metadata.get_ffprobe_media_tags(TEST_MP3_CRUSH)
 
         self.assertIsNone(media_tags)
         self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
@@ -721,7 +721,7 @@ class TestAudioMetadata(TestCase):
 
         media_tags = None
 
-        media_tags = metadata.get_media_tags(TEST_MP3_NO_TAG)
+        media_tags = metadata.get_ffprobe_media_tags(TEST_MP3_NO_TAG)
 
         self.assertIsNone(media_tags)
 
@@ -973,7 +973,7 @@ class TestAudioMetadata(TestCase):
             'TYER': '1973'
         }
 
-        input_tags = metadata.get_any_tags(TEST_M4A_EAGLES)
+        input_tags = metadata.get_mutagen_tags(TEST_M4A_EAGLES)
         id3_tags = metadata.map_m4a_tags(input_tags)
 
         self.assertDictEqual(id3_tags, m4a_mapped)
@@ -1001,7 +1001,7 @@ class TestAudioMetadata(TestCase):
             'TPOS': '1'
         }
 
-        input_tags = metadata.get_any_tags(TEST_FLAC_CREAM_BADGE)
+        input_tags = metadata.get_mutagen_tags(TEST_FLAC_CREAM_BADGE)
         id3_tags = metadata.map_flac_tags(input_tags)
 
         self.assertDictEqual(id3_tags, flac_mapped)
@@ -1049,7 +1049,7 @@ class TestAudioMetadata(TestCase):
             "TPOS": "1/1"
         }
 
-        input_tags = metadata.get_any_tags(TEST_MP3_ABBA)
+        input_tags = metadata.get_mutagen_tags(TEST_MP3_ABBA)
         id3_tags = metadata.map_mp3_tags(input_tags)
 
         self.assertDictEqual(id3_tags, mp3_mapped)
@@ -1077,7 +1077,7 @@ class TestAudioMetadata(TestCase):
             'TPOS': '1/1'
         }
 
-        input_tags = metadata.get_any_tags(TEST_WMA_CCR)
+        input_tags = metadata.get_mutagen_tags(TEST_WMA_CCR)
         id3_tags = metadata.map_wma_tags(input_tags)
 
         self.assertDictEqual(id3_tags, wma_mapped)

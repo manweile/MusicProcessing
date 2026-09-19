@@ -211,7 +211,7 @@ def extract_walk(tld_path, file_pattern):
     art.extract_walk(tld_path, file_pattern)
 
 
-def get_media_info(file_path):
+def get_ffprobe_media_info(file_path):
     '''
     @brief Gets media info.
 
@@ -220,10 +220,10 @@ def get_media_info(file_path):
     @param file_path {str} The full path to audio file.
     '''
 
-    metadata.get_media_info(file_path)
+    metadata.get_ffprobe_media_info(file_path)
 
 
-def get_media_info_walk(start_path, file_pattern):
+def get_ffprobe_media_info_walk(start_path, file_pattern):
     '''
     @brief Gets media info.
 
@@ -233,10 +233,10 @@ def get_media_info_walk(start_path, file_pattern):
     @param file_pattern {str} The file pattern we want to get media info for.
     '''
 
-    metadata.get_media_info_walk(start_path, file_pattern)
+    metadata.get_ffprobe_media_info_walk(start_path, file_pattern)
 
 
-def get_media_tags(file_path):
+def get_ffprobe_media_tags(file_path):
     '''
     @brief Gets media tags.
 
@@ -245,10 +245,10 @@ def get_media_tags(file_path):
     @param file_path {str} The full path to audio file.
     '''
 
-    metadata.get_media_tags(file_path)
+    metadata.get_ffprobe_media_tags(file_path)
 
 
-def get_any_tags(file_path):
+def get_mutagen_tags(file_path):
     '''
     @brief Gets metadata from specified audio file.
 
@@ -257,7 +257,7 @@ def get_any_tags(file_path):
     @param file_path {str} The full path to audio file.
     '''
 
-    tags = metadata.get_any_tags(file_path)
+    tags = metadata.get_mutagen_tags(file_path)
     return tags
 
 
@@ -546,22 +546,22 @@ def main(args):
             file_pattern = getattr(args, "pattern")
             extract_walk(tld_path, file_pattern)
 
-        if args.subcommand == "get-media-info":
+        if args.subcommand == "get-ffprobe-media-info":
             file_path = getattr(args, "file")
-            get_media_info(file_path)
+            get_ffrobe_media_info(file_path)
 
-        if args.subcommand == "get-media-info-walk":
+        if args.subcommand == "get-ffprobe-media-info-walk":
             tld_path = getattr(args, "tld")
             file_pattern = getattr(args, "pattern")
-            get_media_info_walk(tld_path, file_pattern)
+            get_ffprobe_media_info_walk(tld_path, file_pattern)
 
-        if args.subcommand == "get-media-tags":
+        if args.subcommand == "get-ffprobe-media-tags":
             file_path = getattr(args, "file")
-            get_media_tags(file_path)
+            get_ffprobe_media_tags(file_path)
 
-        if args.subcommand == "get-any-tags":
+        if args.subcommand == "get-mutagen-tags":
             file_path = getattr(args, "file")
-            tags = get_any_tags(file_path)
+            tags = get_mutagen_tags(file_path)
             # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
             # not as a simple dict of string key/value
             # so need mutagen pprint and splitlines to "format" into simple dict
@@ -745,47 +745,47 @@ if __name__ == "__main__":
 
         # get ffprobe media information for a file
         # 1 mandatory arg, the path to audio file
-        # sys.argv = ['D:\MusicProcessing\main.py', 'get-media-info', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-media-info', '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
-        # get-media-info "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
-        # get-media-info D:\MusicProcessing\tests\Music\Cream\Goodbye\Cream-Goodbye.flac
-        get_media_info_parser = subparsers.add_parser("get-media-info", help="Gets ffprobe media info for audio file")
-        get_media_info_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
-        get_media_info_parser.set_defaults(func=get_media_info)
+        # sys.argv = ['D:\MusicProcessing\main.py', 'get-ffprobe-media-info', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-ffprobe-media-info', '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
+        # get-ffprobe-media-info "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
+        # get-ffprobe-media-info D:\MusicProcessing\tests\Music\Cream\Goodbye\Cream-Goodbye.flac
+        get_ffprobe_media_info_parser = subparsers.add_parser("get-ffprobe-media-info", help="Gets ffprobe media info for audio file")
+        get_ffprobe_media_info_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        get_ffprobe_media_info_parser.set_defaults(func=get_ffprobe_media_info)
 
         # get ffprobe media information for files
         # 1 mandatory arg, the tld path
         # 1 optional arg, the file pattern to match
-        # sys.argv = ['D:\MusicProcessing\main.py', 'get-media-info-walk', 'C:\Music', '--pattern', { '.flac' | `'.mp3' | '.m4a' | '.wma' } ]
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music',
+        # sys.argv = ['D:\MusicProcessing\main.py', 'get-ffprobe-media-info-walk', 'C:\Music', '--pattern', { '.flac' | `'.mp3' | '.m4a' | '.wma' } ]
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-ffprobe-media-info-walk', '/home/gerald/Music',
         # '--pattern', {  '.flac' | '.mp3' | '.m4a' | '.wma' } ]
-        # get-media-info-walk C:\Music --pattern .mp3
-        # get-media-info-walk C:\Music --pattern .m4a
-        # get-media-info-walk C:\Music --pattern .wma
-        # get-media-info-walk C:\Music --pattern .flac
-        # get-media-info-walk C:\Music
-        get_media_info_walk_parser = subparsers.add_parser("get-media-info-walk", help="Gets ffprobe media info for audio files")
-        get_media_info_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        get_media_info_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
-        get_media_info_walk_parser.set_defaults(func=get_media_info_walk)
+        # get-ffprobe-media-info-walk C:\Music --pattern .mp3
+        # get-ffprobe-media-info-walk C:\Music --pattern .m4a
+        # get-ffprobe-media-info-walk C:\Music --pattern .wma
+        # get-ffprobe-media-info-walk C:\Music --pattern .flac
+        # get-ffprobe-media-info-walk C:\Music
+        get_ffprobe_media_info_walk_parser = subparsers.add_parser("get-ffprobe-media-info-walk", help="Gets ffprobe media info for audio files")
+        get_ffprobe_media_info_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        get_ffprobe_media_info_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
+        get_ffprobe_media_info_walk_parser.set_defaults(func=get_ffprobe_media_info_walk)
 
         # get ffprobe media tags for a file or files
         # 1 mandatory arg, the path to audio file
-        # sys.argv = ['D:\MusicProcessing\main.py', 'get-media-tags', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-media-tags', '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
-        # get-media-tags "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
-        get_media_tags_parser = subparsers.add_parser("get-media-tags", help="Gets ffprobe media tags for audio file")
-        get_media_tags_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
-        get_media_tags_parser.set_defaults(func=get_media_tags)
+        # sys.argv = ['D:\MusicProcessing\main.py', 'get-ffprobe-media-tags', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-ffprobe-media-tags', '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
+        # get-ffprobe-media-tags "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
+        get_ffprobe_media_tags_parser = subparsers.add_parser("get-ffprobe-media-tags", help="Gets ffprobe media tags for audio file")
+        get_ffprobe_media_tags_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        get_ffprobe_media_tags_parser.set_defaults(func=get_ffprobe_media_tags)
 
         # get mutagen metadata tags for file
         # 1 mandatory arg, the path to audio file
-        # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags', '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
-        # get-any-tags F:\RickPrepped\Cream\Goodbye\Cream-Badge.flac
-        get_tags_parser = subparsers.add_parser("get-any-tags", help="Gets metadata tags from audio file")
-        get_tags_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
-        get_tags_parser.set_defaults(func=get_any_tags)
+        # sys.argv = ['D:\MusicProcessing\main.py', 'get-mutagen-tags', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-mutagen-tags', '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
+        # get-mutagen-tags F:\RickPrepped\Cream\Goodbye\Cream-Badge.flac
+        get_mutagen_tags_parser = subparsers.add_parser("get-mutagen-tags", help="Gets metadata tags from audio file")
+        get_mutagen_tags_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        get_mutagen_tags_parser.set_defaults(func=get_mutagen_tags)
 
         # get metadata tags from all audio files found in top level directory
         # 1 mandatory arg, the tld path

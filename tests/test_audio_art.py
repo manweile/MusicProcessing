@@ -23,7 +23,14 @@ from unittest.mock import Mock, patch
 from src import FOLDER_ART, MP3_EXT, PLAYLIST_EXTS
 from src import UTF8
 from tests import TEST_M3U
-from tests import TEST_FLAC_CREAM, TEST_M4A_DAVIS, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_NO_TAG, TEST_WMA_HOLIDAY, TEST_WMA_JOHN
+# from tests import TEST_FLAC_CREAM
+from tests import TEST_FLAC_ALANNAH_MYLES
+from tests import TEST_M4A_DAVIS
+from tests import TEST_MP3_ABBA
+from tests import TEST_MP3_CRUSH
+from tests import TEST_MP3_NO_TAG
+from tests import TEST_WMA_HOLIDAY
+from tests import TEST_WMA_JOHN
 from tests import TESTS_PATH, TESTS_TLD
 # local module classes
 from src.audio_info import AudioArt
@@ -90,7 +97,7 @@ class TestAudioArt(TestCase):
         cls.found_album_art_jpg = os.path.join(TESTS_TLD, "Abba", "Waterloo", FOLDER_ART)
 
         cls.m4a_jpg = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance", FOLDER_ART)
-        cls.flac_jpg = os.path.join(TESTS_TLD, "Cream", "Goodbye", FOLDER_ART)
+        cls.flac_jpg = os.path.join(TESTS_TLD, "Alannah Myles", "A-Lan-Nah", FOLDER_ART)
         cls.mp3_jpg = os.path.join(TESTS_TLD, "Crush", "Here", FOLDER_ART)
         cls.no_stream_jpg = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind", FOLDER_ART)
         cls.set_album_art_jpg = os.path.join(TESTS_TLD, "Albert Collins", "Best Of The Blues, Vol. 1", FOLDER_ART)
@@ -220,9 +227,10 @@ class TestAudioArt(TestCase):
         @brief Tests if album art is extracted from FLAC audio file.
         '''
 
-        art.extract_album_art(TEST_FLAC_CREAM)
-
-        self.assertTrue(os.path.exists(self.flac_jpg))
+        input_audio = TEST_FLAC_ALANNAH_MYLES
+        art.extract_album_art(input_audio)
+        art_exists = os.path.exists(self.flac_jpg)
+        self.assertTrue(art_exists)
 
 
     def test_extract_ffmpeg_art(self):

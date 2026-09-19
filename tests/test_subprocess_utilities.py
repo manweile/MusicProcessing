@@ -72,7 +72,7 @@ class TestSubprocessUtilities(TestCase):
 
         cls.file_path = TEST_M3U
 
-        # from metadata.get_media_info,
+        # from metadata.get_ffrobe_media_info,
         # calls popen_pipe with ffprobe command for getting all media file info
         # append a valid file_path when using
         cls.ffprobe_command = [

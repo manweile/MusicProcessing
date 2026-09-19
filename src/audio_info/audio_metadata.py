@@ -383,13 +383,13 @@ class AudioMetadata():
             data.append(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
             data.append(f"Source directory path: {input_path_parent}")
 
-            metadata_type = self.get_metadata_type(file_path)
+            metadata_type = self.get_mutagen_metadata_type(file_path)
 
             if metadata_type is None:
                 logger.error(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None", exc_info=True)
                 raise MetadataTypeError(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None")
 
-            input_tags = self.get_any_tags(file_path)
+            input_tags = self.get_mutagen_tags(file_path)
 
             if input_tags:
                 if metadata_type == FLAC_TYPE:
@@ -404,7 +404,7 @@ class AudioMetadata():
                 tags = None
 
             # get the input file info - want bitrate so can preserve the quality in exported file
-            media_info = self.get_media_info(file_path)
+            media_info = self.get_ffrobe_media_info(file_path)
             bitrate = media_info['bit_rate']
 
             command = [
@@ -574,7 +574,7 @@ class AudioMetadata():
                     if file_ext.lower() in AUDIO_EXTS:
                         audio_file = artist_item_path
                         # using ffprobe function cause it is audio file type agnostic
-                        file_media_tags = self.get_media_tags(audio_file)
+                        file_media_tags = self.get_ffprobe_media_tags(audio_file)
                     else:
                         # we found a non audio file
                         continue
@@ -621,11 +621,11 @@ class AudioMetadata():
             raise e_error
 
 
-    def get_any_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags | VCFLACDict:
+    def get_mutagen_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags | VCFLACDict:
         '''
         @brief Gets tags for any type of audio file.
 
-        @details Any type means flac, m4a, mp3, or wma files.
+        @details Any type means metadata tags Mutagen library supports.
 
         @param file_path {str} The full path to audio file.
         @return tags {object} Tag object (one of ASFTags, ID3, MP4Tags, or VCFLACDict) holding audio file tags or None.
@@ -648,7 +648,7 @@ class AudioMetadata():
             return tags
 
 
-    def get_media_info(self, file_path: str) -> dict:
+    def get_ffrobe_media_info(self, file_path: str) -> dict:
         '''
         @brief Returns dictionary with media info.
 
@@ -764,11 +764,11 @@ class AudioMetadata():
             return media_info
 
 
-    def get_media_info_walk(self, start_path: str, file_pattern: str) -> None:
+    def get_ffprobe_media_info_walk(self, start_path: str, file_pattern: str) -> None:
         '''
         @brief Gets media info (codec, duration, size, bitrate...) for audio files and saves to file.
 
-        @details Wrapper function that uses ffprobe call in `get_media_info` to walk through the directory tree
+        @details Wrapper function that uses ffprobe call in `get_ffrobe_media_info` to walk through the directory tree
         and get media information for audio files.<br>
         The collected information is stored in a list and can be saved to a file.
 
@@ -800,7 +800,7 @@ class AudioMetadata():
 
                     input_file_path = os.path.join(dir_path, file)
 
-                    media_info = self.get_media_info(input_file_path)
+                    media_info = self.get_ffrobe_media_info(input_file_path)
                     if media_info:
                         file_msg = f"\n{input_file_path} has {len(media_info)} keys"
                         data.append(file_msg)
@@ -822,7 +822,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def get_media_tags(self, file_path: str) -> dict:
+    def get_ffprobe_media_tags(self, file_path: str) -> dict:
         '''
         @brief Gets media tags.
 
@@ -873,9 +873,12 @@ class AudioMetadata():
             return media_tags
 
 
-    def get_metadata_type(self, file_path: str) -> str:
+    def get_mutagen_metadata_type(self, file_path: str) -> str:
         '''
-        @brief Returns the metadata type of any audio file.
+        @brief Returns the Mutagen library metadata type of an audio file.
+
+        @details It is responsibility of calling function to verify the metadata type returned by this function is valid for project usage.<br>
+        Eg FLAC files will return 'FLAC', MP3 files will return 'MP3', M4A files will return 'MP4', WMA files will return 'ASF'.
 
         @param file_path {str} The full path to audio file.
         @return metadata_type {str} The type of the audio file class or None.
@@ -891,7 +894,6 @@ class AudioMetadata():
 
             if audio_file is not None:
                 # the built in class name of the filetype returned shows what metadata type
-                # Eg flac = FLAC, mp3 = MP3, m4a = MP4, wma = ASF
                 metadata_type = audio_file.__class__.__name__
             else:
                 logger.error(f"ValueError getting metadata type: {file_path} returned None", exc_info=True)
@@ -910,7 +912,9 @@ class AudioMetadata():
         '''
         @brief Gets tags for audio files and saves to file.
 
-        @details File walk will skip any non-audio files like playlists, jpgs, etc. Therefore a non-audio ext input will never have a pattern match.
+        @details File walk will skip any non-audio files like playlists, jpgs, etc.<br>
+        Therefore a non-audio ext input will never have a pattern match.<br>
+        This function defaults to using Mutagen for tag extraction unless ffprobe is specified.
 
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
@@ -942,11 +946,11 @@ class AudioMetadata():
                         tag_file_path = os.path.join(dir_path, file)
 
                         if ffprobe:
-                            input_tags = self.get_media_tags(tag_file_path)
+                            input_tags = self.get_ffprobe_media_tags(tag_file_path)
                         else:
-                            metadata_type = self.get_metadata_type(tag_file_path)
+                            metadata_type = self.get_mutagen_metadata_type(tag_file_path)
                             if metadata_type in AUDIO_FILES:
-                                input_tags = self.get_any_tags(tag_file_path)
+                                input_tags = self.get_mutagen_tags(tag_file_path)
 
                         if input_tags:
                             if ffprobe:
@@ -997,7 +1001,7 @@ class AudioMetadata():
                         continue
 
                     tag_file_path = os.path.join(dir_path, file)
-                    input_tags = self.get_media_tags(tag_file_path)
+                    input_tags = self.get_ffprobe_media_tags(tag_file_path)
 
                     if input_tags:
                         file_keys = input_tags.keys()
@@ -1021,7 +1025,8 @@ class AudioMetadata():
         '''
         @brief Checks if an audio file has the embedded album art tag.
 
-        @details Checks for the presence of an embedded album art tag in the audio file.
+        @details Checks for the presence of an embedded album art tag in the audio file.<br>
+        This function only uses Mutagen for tag extraction.
 
         @param file_path {str} The full path to audio file.
         @return has_art {boolean} Returns true if art tag is present, false otherwise.
@@ -1038,7 +1043,7 @@ class AudioMetadata():
                 logger.error(f"MusicProcessingError with file: {file_name} has invalid extension: {file_ext}", exc_info=True)
                 raise MusicProcessingError(f"MusicProcessingError with file: {file_name} has invalid extension: {file_ext}")
 
-            audio_tags = self.get_any_tags(file_path)
+            audio_tags = self.get_mutagen_tags(file_path)
 
             #  FLAC files store album art in the 'pictures' attribute of the FLAC object, unlike other formats where it may be stored in tags.
             if file_ext.lower() == FLAC_EXT:
@@ -1067,9 +1072,9 @@ class AudioMetadata():
 
     def load_any_file(self, file_path: str) -> FileType:
         '''
-        @brief Loads any valid audio file type.
+        @brief Loads any valid Mutagen audio file type.
 
-        @details Expects a valid filepath to an acceptable audio file.
+        @details Expects a valid filepath to an acceptable audio file.<br>
 
         @param file_path {str} The full file path for audio file.
         @return audio_file {FileType} Mutagen instance for the input audio file type or None.
@@ -1083,7 +1088,7 @@ class AudioMetadata():
             audio_file = None
             audio_file = mutagen.File(file_path)
 
-            # mutagen did not throw an exception, but didn't load file either
+            # mutagen did not throw an exception, but didn't load file either, that's a value error scenario
             if audio_file is None:
                 logger.error(f"ValueError loading {file_path} returned None", exc_info=True)
                 raise ValueError(f"ValueError loading {file_path} returned None")

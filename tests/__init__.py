@@ -66,6 +66,11 @@ TEST_M4A_EAGLES_ALBUM_ARTIST = "Eagles"
 # @brief Title metadata in the Eagles M4A fixture.
 TEST_M4A_EAGLES_TITLE = "Desperado"
 
+## @var TEST_FLAC_ALANNAH_MYLES
+# @brief Path to Alannah Myles FLAC file for tests.
+# @details Use this when needing a FLAC file with embedded album art for audio art tests.
+TEST_FLAC_ALANNAH_MYLES = os.path.join(TESTS_TLD, "Alannah Myles", "A-Lan-Nah", "Alannah Myles-Do You Really Wanna Know Me.flac")
+
 ## @var TEST_FLAC_CREAM
 # @brief Path to FLAC file for tests.
 # @details Use this when needing a FLAC file with embedded album art for audio art tests.
@@ -174,9 +179,33 @@ TEST_WMA_JOHN = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road
 # @details In modules needing the playlist file, add `from src.tests.TEST_MRU`
 # @details In modules needing the audio file, add `from src.tests.<audio file constant>`
 __all__ = [
-    "TESTS_PATH", "TESTS_TLD", "TEST_M3U", "TEST_WAV_NONE", "TEST_M4A_DAVIS", "TEST_M4A_DAVIS_ALBUM_ARTIST", "TEST_M4A_DAVIS_TITLE",
-    "TEST_M4A_EAGLES", "TEST_M4A_EAGLES_ALBUM_ARTIST", "TEST_M4A_EAGLES_TITLE", "TEST_FLAC_CREAM", "TEST_FLAC_CREAM_BADGE", "TEST_MP3_10CC",
-    "TEST_MP3_ABBA", "TEST_FLAC_CREAM_ALBUM_ARTIST", "TEST_FLAC_CREAM_TITLE", "TEST_FLAC_CREAM_INVALID_TITLE", "TEST_MP3_10CC_ALBUM_ARTIST",
-    "TEST_MP3_10CC_TITLE", "TEST_MP3_CRUSH", "TEST_MP3_GENESIS", "TEST_MP3_NO_METADATA", "TEST_MP3_NO_TAG", "TEST_MP3_SMEAGOL", "TEST_MP3_X",
-    "TEST_WMA_CCR", "TEST_WMA_HOLIDAY", "TEST_WMA_JOHN"
+    "TESTS_PATH",
+    "TESTS_TLD",
+    "TEST_M3U",
+    "TEST_WAV_NONE",
+    "TEST_M4A_DAVIS",
+    "TEST_M4A_DAVIS_ALBUM_ARTIST",
+    "TEST_M4A_DAVIS_TITLE",
+    "TEST_M4A_EAGLES",
+    "TEST_M4A_EAGLES_ALBUM_ARTIST",
+    "TEST_M4A_EAGLES_TITLE",
+    "TEST_FLAC_ALANNAH_MYLES",
+    "TEST_FLAC_CREAM",
+    "TEST_FLAC_CREAM_BADGE",
+    "TEST_MP3_10CC",
+    "TEST_MP3_ABBA",
+    "TEST_FLAC_CREAM_ALBUM_ARTIST",
+    "TEST_FLAC_CREAM_TITLE",
+    "TEST_FLAC_CREAM_INVALID_TITLE",
+    "TEST_MP3_10CC_ALBUM_ARTIST",
+    "TEST_MP3_10CC_TITLE",
+    "TEST_MP3_CRUSH",
+    "TEST_MP3_GENESIS",
+    "TEST_MP3_NO_METADATA",
+    "TEST_MP3_NO_TAG",
+    "TEST_MP3_SMEAGOL",
+    "TEST_MP3_X",
+    "TEST_WMA_CCR",
+    "TEST_WMA_HOLIDAY",
+    "TEST_WMA_JOHN"
 ]
