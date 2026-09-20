@@ -273,10 +273,9 @@ class AudioMetadata():
 
     def __update_id3(self, date_values: set[str], id3_tags: dict) -> dict:
         '''
-        @brief Updates tags dictionary with newest year value and ands default disc value if needed.
+        @brief Updates tags dictionary with newest year value and a default disc value if needed.
 
-        @details Updates the ID3 tags dictionary with the newest year value from the set of date strings
-        and ensures a default disc value is set if not already present.
+        @details Updates the ID3 tags dictionary with the newest year value from the set of date strings.
 
         @param date_values ({str}) Set of unique YYYY date strings.
         @param id3_tags {dict} Source ID3 tags.
@@ -303,11 +302,26 @@ class AudioMetadata():
 
     def convert_file(self, file_path: str, show_spinner: bool = True) -> None:
         '''
-        @brief Converts a wma, m4a or mp3 audio file to mp3 audio file, using ffmpeg directly.
+        @brief Converts an acceptable audio file to mp3 audio file, using ffmpeg directly.
 
-        @details Converts flac, m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.<br>
-        Calling function MUST supply path to an existing valid audio file with metadata.<br>
+        @details Converts flac, m4a, mp3 & wma files to mp3 files with ID3v2.3 tags, including cover art.<br>
+        Calling function MUST supply path to an existing valid audio file with valid metadata.<br>
         The supplied audio file MUST have co-located Folder.jpg album art.
+
+        @note Initial ffmpeg command line is for converting audio files to mp3 format, wiping out existing metadata, enforcing ID3v2.3 tags,
+        and preserving bit rate.<br>
+        ffmpeg -hide_banner -i file_path -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198<br>
+        -hide_banner: reduce output clutter<br>
+        -i file_path: the path to the audio file<br>
+        -vn -map_metadata -1: -vn drops video stream and -map_metadata -1 drops all text metadata<br>
+        -codec:a libmp3lame: -codec:a libmp3lame sets audio codec for mp3<br>
+        -id3v2_version 3: known bug, MUST specify id3v2 version, else will get ID3v2.4<br>
+        -b:a 128198: ffmpeg will downgrade bitrate if you don't set it<br>
+        <br>
+        The initial ffmpeg command line is expanded twice.<br>
+        First expansion adds the preferred metadata once it has been mapped from original audio file to ID3v2.3 tags.<br>
+        Second expansion adds the export file path.<br>
+        Cover art is added directly via Mutagen MP3 module - it's easier with Mutagen than ffmpeg.
 
         @param file_path {str} The path for audio file to be converted.
         @param show_spinner {bool} Show spinner flag.
@@ -316,43 +330,6 @@ class AudioMetadata():
         @exception MusicProcessingError A generic music processing error occurred.
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        '''
-        album directories<br>
-        When an artist directory does not contain album directories for all of its audio files,
-        run create_album_dirs function to ensure there are album directories for every audio file.<br>
-        '''
-
-        '''
-        album art<br>
-        Manually review extant album art files(s), and if possible, create a Folder.jpg then move it to appropriate album directory.<br>
-        If there is no extant album art file(s), but audio files have embedded art, run extract_art_function to extract it as Folder.jpg file.<br>
-        Finally run set_album_art function to ensure a Folder.jpg exists in each album directory.<br>
-        '''
-
-        '''
-        metadata transfer<br>
-        I dont want every possible tag, just the subset that Windows will display AND are ID3v2.3 format.<br>
-        Comments are ASF/FLAC/ID3v2.3/MP4, but MusicBrainz/MP3Tag/puddletag have difficulty displaying comments properly,
-        so passing on transferring comment metadata.<br>
-        Compilation is not ID3v2.3, so passing on transferring compilation metadata too.<br>
-        Date info is most problematic part of metadata.<br>
-        ASF/FLAC/ID3v2.3/MP4 have multiple date type tags, the data types could be a full ISO date, or could just be a 4 digit year string.<br>
-        Format any found date values to YYYY and map them to ID3v2.3 TYER field. Refer to the `map_*_tags` functions for details.<br>
-        I have manually edited all audio files without date to have 1963 as default.
-        '''
-
-        '''
-        This ffmpeg cli command is for converting audio files to mp3 format, wiping out any existing metadata.
-
-        ffmpeg -hide_banner -i `file_path` -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198<br>
-        -hide_banner                                        reduce output clutter<br>
-        -i file_path                                        the path to the audio file<br>
-        -vn -map_metadata -1                                -vn drops video stream and -map_metadata -1 drops all text metadata<br>
-        -codec:a libmp3lame                                 -codec:a libmp3lame sets audio codec for mp3<br>
-        -id3v2_version 3                                    known bug, MUST specify id3v2 version, else will get ID3v2.4<br>
-        -b:a 128198                                         ffmpeg will downgrade bitrate if you don't set it
         '''
 
         data = []
@@ -511,12 +488,14 @@ class AudioMetadata():
 
 
     def create_album_dirs(self, start_path: str) -> None:
-        '''
-        @brief Creates a album sub-directories in artist directories.
+        r'''
+        @brief Creates album sub-directories in artist directories.
 
-        @details Calling functions MUST verify valid start path.<br>
-        Creates the album sub directory for the artist if needed.<br>
+        @details Creates the album sub directory for the artist if needed.<br>
+        Calling functions MUST verify valid start path.<br>
         The album name for the directory is drawn from the album metadata field, and will be sanitized to Windows OS values.<br>
+        Using Windows because it is more restrictive (therefore os universal). The characters \, :, *, ?, ", <, >, | will be replaced by "-".<br>
+        Refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename<br>
         Audio files will be moved into their respective album directories.<br>
         A csv report named after the function (`create_album_dirs`) containing all audio file paths,
         album metadata values and sanitized album directory names will be created.<br>
@@ -585,10 +564,8 @@ class AudioMetadata():
                         album = file_media_tags['album'].replace("/", "-")
 
                         # sanitize because the metadata might have characters invalid for directory names
-                        # platform is "Windows" because it is more restrictive (therefore os universal),
-                        # the characters \, :, *, ?, ", <, >, | will be replaced by "-"
-                        # refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
-                        sanitized_album_name = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
+                        sanitized_album_name = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows",
+                                                                              validate_after_sanitize=True)
 
                         data.append([audio_file, file_media_tags['album'], sanitized_album_name])
 
@@ -627,6 +604,12 @@ class AudioMetadata():
 
         @details Any type means metadata tags Mutagen library supports.
 
+        @note Mutagen normalizes legacy TYER date frames to its modern TDRC (ie ID3v2.4) representation when reading them.<br>
+        If an audio file metadata is ID3v2.3, and it's raw tag bytes contain a TYER frame without a TRDC frame,<br>
+        Mutagen will read the TYER frame and present it through the TDRC interface.<br>
+        This ensures consistent date handling across different ID3 versions.<br>
+        The audio file's metadata remains IDv2.3, it does not get automatically upgraded to ID3v2.4 version.
+
         @param file_path {str} The full path to audio file.
         @return tags {object} Tag object (one of ASFTags, ID3, MP4Tags, or VCFLACDict) holding audio file tags or None.
 
@@ -649,72 +632,68 @@ class AudioMetadata():
 
 
     def get_ffrobe_media_info(self, file_path: str) -> dict:
-        '''
+        r'''
         @brief Returns dictionary with media info.
 
         @details Uses ffprobe to get all media info from any valid audio file.<br>
         This def replaces the native pydub mediainfo function.<br>
         The file_path MUST be for a valid audio file.
 
-        @param file_path {str} The full path to audio file.
-        @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
-
-        @exception re.error An error occurred processing a regular expression with re module.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        r'''
-        This ffprobe cli WILL include 'comment' = 'Cover (front)' if the file has embedded album art in the TAG inner dict.<br>
-        A mutagen call to ASF/FLAC/ID3/MP4, would place WM\Picture, METADATA_BLOCK_PICTURE, APIC, or covr AND include the byte data for the art.<br>
-        This is because show_streams means ffprobe sees the art data as the video stream metadata instead.
-
+        @note This ffprobe cli WILL include 'comment' = 'Cover (front)' if the file has embedded album art in the TAG inner dict.<br>
+        This is because show_streams means ffprobe sees the art data as the video stream metadata instead.<br>
+        <br>
         ffprobe -v error -show_format -show_streams `file_path`<br>
-        -v quiet          reduce output clutter<br>
-        -show_format      get high level details of media file<br>
-        -show_streams     gets all information about each media stream in the input<br>
-        '''
-
-        r'''
-        output format from popen_pipe<br>
-        Note that on Windows, the line endings are \r\n, whereas on Linux it is just \n)<br>
-        DISPOSITION: and TAG: are inner dicts
-
-        [STREAM]\r\nkey=value\r\n...\r\nDISPOSITION:key=value\r\n...\r\nDISPOSITION:key=value\r\n[/STREAM]\r\n<br>
-        [FORMAT]\r\nkey=value\r\n...\r\nTAG:key=value\r\n...\r\nTAG:key=value\r\n[/FORMAT]<br>
-
-        regex command to parse out data:<br>
-        `rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")`
-
-        r - so don't have to use escaping (\\)
-
+        -v quiet: reduce output clutter<br>
+        -show_format: get high level details of media file<br>
+        -show_streams: gets all information about each media stream in the input<br>
+        <br>
+        The output format from popen_pipe varies by operating system.<br>
+        For Windows, the line endings are `\r\n`, whereas on Linux it is just `\n`<br>
+        in the output, `DISPOSITION:` and `TAG:` are inner dicts.<br>
+        Eg:<br>
+        [STREAM]`\r\n`key=value`\r\n`...`\r\n`DISPOSITION:key=value`\r\n`...`\r\n`DISPOSITION:key=value`\r\n`[/STREAM]\r\n<br>
+        [FORMAT]`\r\n`key=value`\r\n`...`\r\n`TAG:key=value`\r\n`...`\r\n`TAG:key=value`\r\n`[/FORMAT]<br>
+        <br>
+        This output requires a complex regex command to parse out data:<br>
+        rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
+        <br>
+        r - so don't have to use escaping (`\\`)<br>
+        <br>
         1st RE (Regular Expression) - to get an inner dict<br>
         (?:(?P<inner_dict>.*?):)<br>
         Question mark colon is a non-capturing version of regular parentheses.<br>
         Matches whatever regular expression is inside the parentheses - in this case, the (?P<inner_dict>.*?).<br>
         The substring matched by the group cannot be retrieved after performing a match or referenced later in the pattern.<br>
-        [STREAM], [/STREAM], [FORMAT], and [/FORMAT] never match, so they get ignored.
-
+        [STREAM], [/STREAM], [FORMAT], and [/FORMAT] never match, so they get ignored.<br>
+        <br>
         (?P<inner_dict>.*?):<br>
-        inner_dict is symbolic group name, must be valid python identifier.<br>
+        inner_dict is symbolic group name, must be a valid python identifier. The line parsing logic will use it.<br>
         Period asterisk question mark means match any char except newline, as few as possible characters will be matched.<br>
         The colon matches the token after a inner_dict name (as in DISPOSITION:)<br>
-        DISPOSITION: and TAG: are inner dicts, they get returned.
-
+        DISPOSITION: and TAG: are inner dicts, they get returned.<br>
+        <br>
         2nd RE - get the key<br>
         ?(?P<key>.*?)<br>
-        question mark causes the resulting RE to match 0 or 1 repetitions of the preceding RE
-
+        question mark causes the resulting RE to match 0 or 1 repetitions of the preceding RE<br>
+        <br>
         (?P<key>.*?):<br>
-        Question mark P <key> where key is the symbolic group name.<br>
+        Question mark P <key> where key is the symbolic group name, and another valid python identifier. The line parsing logic will use it.<br>
         Period asterisk question mark means match any char except newline, as few as possible characters will be matched<br>
-
+        <br>
         3rd RE - get the value<br>
         \=(?P<value>.*?)<br>
-        slash equal escapes the equal sign, which is the token used in key/value pairs<br>
-        period asterisk question mark means match any char except newline, as few as possible characters will be matched
-
+        slash equal escapes the equal sign, which is the token used in key/value pairs.<br>
+        Value is another valid python identifier. The line parsing logic will use it.<br>
+        period asterisk question mark means match any char except newline, as few as possible characters will be matched<br>
+        <br>
         $<br>
-        Dollar anchors a match to end of search string.
+        Dollar anchors a match to end of search string<br>
+
+        @param file_path {str} The full path to audio file.
+        @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
+
+        @exception re.error An error occurred processing a regular expression with re module.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -828,23 +807,21 @@ class AudioMetadata():
 
         @details Uses ffprobe to get tags from any valid audio file.
 
+        @note This ffprobe cli, unlike the general media info cli: ffprobe -v quiet -show_format -show_streams file_path,<br>
+        will NOT insert 'comment' = 'Cover (front)' in the tags dictionary if the audio file has embedded art.<br>
+        This cli will only return textual audio metadata.<br>
+        <br>
+        ffprobe -v -of json -show_entries format_tags file_path<br>
+        -v quiet: reduce console clutter<br>
+        -of json: output in json format<br>
+        -show_entries format_tags: we only care about tags<br>
+        file_path: the path to the audio file<br>
+
         @param file_path {str} The full path to audio file.
         @return media_tags {dict} Media tags from filepath.
 
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        '''
-        Note that this ffprobe cli, unlike the general media info cli: ffprobe -v quiet -show_format -show_streams file_path,
-        will NOT insert 'comment' = 'Cover (front)' in the tags dictionary if the audio file has embedded art.<br>
-        This cli will only return textual audio metadata.
-
-        ffprobe -v -of json -show_entries format_tags `file_path`<br>
-        -v quiet reduce console clutter<br>
-        -of json output in json format<br>
-        -show_entries format_tags we only care about tags<br>
-        `file_path` the path to the audio file<br>
         '''
 
         try:
@@ -914,7 +891,8 @@ class AudioMetadata():
 
         @details File walk will skip any non-audio files like playlists, jpgs, etc.<br>
         Therefore a non-audio ext input will never have a pattern match.<br>
-        This function defaults to using Mutagen for tag extraction unless ffprobe is specified.
+        This function defaults to using Mutagen for tag extraction unless ffprobe is specified.<br>
+        The lowest allowable directory in `file_path` is an artist directory.<br>
 
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
@@ -1106,9 +1084,13 @@ class AudioMetadata():
 
     def map_flac_tags(self, input_tags: VCFLACDict) -> dict:
         '''
-        @brief Converts FLAC metadata to generic metadata
+        @brief Converts FLAC metadata to preferred ID3v2.3 metadata
 
         @details Converts subset of tags (the ones that Window will display) from FLAC.
+
+        @note `'DATE'` is the preferred tag for the date in FLAC files, and it will probably be in the format "YYYY-MM-DD".<br>
+        `'YEAR'` and `'ORIGINALYEAR'` are alternative tags for the year in FLAC files, and they will probably be in the format "YYYY".<br>
+        Only unique dates will be considered when updating the ID3 tags.
 
         @param input_tags {VCFLACDict} The FLAC tags source.
         @return id3_tags {dict} The tags converted from FLAC tags.
@@ -1132,7 +1114,7 @@ class AudioMetadata():
                     metadata_value = flac_tag[0]
 
                     if isinstance(metadata_value, str) and flac_value in FLAC_TIME_KEYS:
-                        # just in case string is "YYYY-MM-DD"
+                        # just in case string is "YYYY-MM-DD", and if its "YYYY" only, no harm, no foul
                         date_value = metadata_value[0:4]
                         date_values.add(date_value)
                         continue
@@ -1153,13 +1135,18 @@ class AudioMetadata():
 
 
     def map_m4a_tags(self, input_tags: MP4Tags) -> dict:
-        '''
-        @brief Converts m4a (MP4) metadata to generic metadata
+        r'''
+        @brief Converts m4a (MP4) metadata to preferred ID3v2.3 metadata
 
-        @details Converts subset of tags (the ones that Window will display) from wma.
+        @details Converts subset of tags (the ones that Window will display) from m4a (MP4) files.
+
+        @note '\xa9day' is the preferred tag for the date in m4a (MP4) files, and it will probably be in the format "YYYY-MM-DD".<br>
+        '----:com.apple.iTunes:originalyear' is an alternative tag for the year in m4a (MP4) files.<br>
+        It requires different handling to extract the year correctly because it is a MP4FreeForm type.<br>
+        Only unique dates will be considered when updating the ID3 tags.
 
         @param input_tags {MP4Tags} The m4a tags source.
-        @return id3_tags {dict} The tags converted from wma tags.
+        @return id3_tags {dict} The tags converted from m4a (MP4) tags.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1177,7 +1164,7 @@ class AudioMetadata():
 
                     # for '\xa9day', ----:com.apple.iTunes:originalyear requires different handling
                     if isinstance(metadata_value, str) and m4a_value in M4A_TIME_KEYS:
-                        # just in case string is "YYYY-MM-DD"
+                        # just in case string is "YYYY-MM-DD", and if its "YYYY" only, no harm, no foul
                         date_value = metadata_value[0:4]
                         date_values.add(date_value)
                         continue
@@ -1187,7 +1174,7 @@ class AudioMetadata():
                     # so need additional step to decode from MP4FreeForm
                     if isinstance(metadata_value, MP4FreeForm) and m4a_value in M4A_TIME_KEYS:
                         decode_value = input_tags[m4a_value][0].decode()
-                        # just in case string is "YYYY-MM-DD"
+                        # just in case string is "YYYY-MM-DD", and if its "YYYY" only, no harm, no foul
                         date_value = decode_value[0:4]
                         date_values.add(date_value)
                         continue
@@ -1225,9 +1212,16 @@ class AudioMetadata():
 
     def map_mp3_tags(self, input_tags: ID3) -> dict:
         '''
-        @brief Converts mp3 metadata to id3 metadata
+        @brief Converts mp3 metadata to preferred ID3v2.3 metadata
 
         @details Converts subset of tags (the ones that Window will display) from mp3 to id3.
+
+        @note ID3 tags are the most problematic due to number of tags used to convey date/year information.<br>
+        All of them will be in ID3TimeStamp format, which is a restricted restricted form of the ISO 8601 standard;<br>
+        time stamps take the form of: YYYY-MM-DD HH:MM:SS or some partial form (YYYY-MM-DD HH, YYYY, etc.).<br>
+        Whatever the form, just the year will be extracted.<br>
+        The preferred tag is 'TYER', alternative tags are 'TORY', 'TDRC', 'TDOR' or 'TXXX=originalyear'.<br>
+        Only unique dates will be considered when updating the ID3 tags.
 
         @param input_tags {ID3} The mp3 tags source.
         @return id3_tags {dict} The tags converted from mp3 tags.
@@ -1248,7 +1242,7 @@ class AudioMetadata():
 
                     # need to get all possible date years into set, but not add to output dict just yet
                     if isinstance(metadata_value, ID3TimeStamp) and (mp3_value in MP3_TIME_KEYS):
-                        # just in case string is "YYYY-MM-DD"
+                        # just in case string is "YYYY-MM-DD", and if its "YYYY" only, no harm, no foul
                         date_value = metadata_value.text[0:4]
                         date_values.add(date_value)
                         continue
@@ -1270,9 +1264,15 @@ class AudioMetadata():
 
     def map_wma_tags(self, input_tags: ASFTags) -> dict:
         '''
-        @brief Converts wma (ASF) metadata to id3 metadata
+        @brief Converts wma (ASF) metadata to preferred ID3v2.3 metadata
 
         @details Converts subset of tags (the ones that Window will display) from wma to id3.
+
+        @note WMA time-related tags are expected to be in the format "YYYY-MM-DD HH:MM:SS" or some partial form (YYYY-MM-DD HH, YYYY, etc.).<br>
+        Only the year will be extracted and used.<br>
+        Preferred tag is 'WM/Year'.<br>
+        Alternative tag is 'WM/OriginalReleaseYear'.<br>
+        Only unique dates will be considered when updating the ID3 tags.
 
         @param input_tags {ASFTags} The wma tags source.
         @return tags {dict} The tags converted from wma tags.
@@ -1293,7 +1293,7 @@ class AudioMetadata():
 
                     # need to get all possible date years into set, but not add to output dict just yet
                     if isinstance(metadata_value, str) and (wma_value in WMA_TIME_KEYS):
-                        # just in case string is "YYYY-MM-DD"
+                        # just in case string is "YYYY-MM-DD", and if its "YYYY" only, no harm, no foul
                         date_value = metadata_value[0:4]
                         date_values.add(date_value)
                         continue
@@ -1323,7 +1323,7 @@ class AudioMetadata():
 
         @details Calling function MUST supply path to an existing FLAC file.<br>
         The FLAC MUST contain ALBUMARTIST and TITLE Vorbis comment tags.<br>
-        A csv report named after the function (`normalize_flac_filename.csv`) is created after the file is renamed.
+        A csv report named after the function (normalize_flac_filename.csv) is created after the file is renamed.
 
         @param file_path {str} The path for the FLAC file to rename.
 
@@ -1398,7 +1398,7 @@ class AudioMetadata():
         @details Calling function MUST supply path to an existing valid MP3 file.<br>
         The MP3 MUST contain ID3v2.3 metadata with TPE2 and TIT2 frames.<br>
         The metadata values are assumed to be sanitized already.<br>
-        A CSV report named after the function (`normalize_mp3_filename.csv`) is created after the file is renamed.
+        A CSV report named after the function (normalize_mp3_filename.csv) is created after the file is renamed.
 
         @param file_path {str} The path for the MP3 file to rename.
 
@@ -1475,7 +1475,7 @@ class AudioMetadata():
 
         @details Calling function MUST supply path to an existing M4A file.<br>
         The M4A MUST contain aART and title MP4 tags.<br>
-        A CSV report named after the function (`normalize_mp4_filename.csv`) is created after the file is renamed.
+        A CSV report named after the function (normalize_mp4_filename.csv) is created after the file is renamed.
 
         @param file_path {str} The path for the M4A file to rename.
 
@@ -1548,7 +1548,7 @@ class AudioMetadata():
 
         @details Calling function MUST supply path to an existing WMA file.<br>
         The WMA MUST contain 'WM/AlbumArtist' and 'Title' tags.<br>
-        A CSV report named after the function (`normalize_wma_filename.csv`) is created after the file is renamed.
+        A CSV report named after the function (normalize_wma_filename.csv) is created after the file is renamed.
 
         @param file_path {str} The path for the WMA file to rename.
 
