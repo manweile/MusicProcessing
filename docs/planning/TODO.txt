@@ -109,3 +109,6 @@ TODO
 15) rethink has_art_tag logic
   a) why call get_any_tags before checking if input file is FLAC?
 TODO
+
+16) add svg graphs to Doxygen output
+TODO

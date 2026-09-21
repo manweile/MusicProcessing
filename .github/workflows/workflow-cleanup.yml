@@ -1,0 +1,36 @@
+# @file workflow-cleanup.yml
+# @author Gerald Manweiler
+#
+# @brief Workflow Cleanup for GitHub Actions.
+#
+# @details Trigger this workflow through a reusable workflow call or manual dispatch.
+# Delete workflow runs older than three days while retaining at least three recent runs for each workflow.
+#
+# @version 1.0.0
+# @date 2026-08-24
+#
+# @copyright Copyright (c) 2026 Gerald Manweiler
+
+name: Workflow Cleanup
+
+# Called by the main CI pipeline or manually dispatched to clean up old workflow runs
+on:
+  workflow_call:                                            # Allows automatic execution by another workflow
+  workflow_dispatch:                                        # Allows manual execution
+
+jobs:
+  # deletes workflow runs from the current repository that are older than three days while retaining at least three recent runs for each workflow
+  clean-runs:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Delete old workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}                        # GitHub token for authentication of the cache deletion requests
+          repository: ${{ github.repository }}              # Repository name in the format "owner/repo" for API requests
+          retain_days: 1
+          keep_minimum_runs: 3
+          delete_run_by_conclusion_pattern: success         # Target only successful runs
+          dry_run: false                                    # Change to true first to test what gets deleted
