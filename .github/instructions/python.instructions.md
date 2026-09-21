@@ -71,7 +71,9 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 
 - Apply these rules to every `@details` block in Python Doxygen comments, including:
   1. File-level documentation blocks
-  2. Functions documentation blocks
+  2. Class documentation blocks
+  3. Functions documentation blocks
+  4. Standalone functions documentation blocks
 - Write each `@details` line as a concise & clear complete sentence ending with a period.
 - Keep each `@details` line at or below column 150; shorten wording if necessary.
 - If the shortest clear wording still exceeds column 150, break the line after, in this order of preference:
@@ -153,9 +155,9 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - Precede each subgroup with:
   - `# Standard Modules`
   - `# Third Party Modules`
-  - `# Local Modules`
+  - `# Local Modules <type>`
 - Within each subgroup, maintain alphabetical order and use consistent comment annotations.
-- Within the `# Local Modules` subgroup, partition imports with semantic headings named `# Local Module <type>`
+- Within the `# Local Modules <type>` subgroup, partition imports with semantic headings named `# Local Module <type>`
   - where `<type>` identifies the imported module member category
     1. `Methods`
     2. `Constants`
@@ -181,79 +183,126 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   - Maintain consistent comment annotations and alphabetical order in `import` and `from ... import ...` statements.
 - Leave a blank line after each subgroup.
 
-### Module Level Variables, Constants, and Lists
+### Module Level Variables and Constants
 
 - Have a Doxygen documentation block for all module level variables and constants.
+- In files that contain a class and module level variables or constants, the last module level variable or constant is followed by 2 blank lines.
 - The Doxygen documentation block should include:
-  - `##@var <variable_name>` line for specifying the name of the module level variable or constant.
+  - `## @var <variable_name>` line for specifying the name of the module level variable or constant.
   - `# @brief <description>` line for providing a brief summary of the variable or constant.
   - `# @details <details>` line for providing additional information about the variable or constant.
-    - module level variables and constants can have multiple `@details` lines if needed.
-      - Each `@details` line should be atomically granular, concise and relevant to the variable or constant it describes.
-    - `__all__` export lists have a `@details <details>` line for each item, in alphabetical order.
-      - Each `@details` line for an `__all__` item should explain how to import the item
-      - Example:
+  - Module level variables and constants can have multiple @details lines if needed.
+  - Each `@details` line should be:
+   - be atomically granular
+   - be concise
+   - be relevant to the variable or constant it describes
+   - have a maximum of 150 characters per line
+- Module level variables and constants have subgroups with this ordering:
+  - variables that call functions
+  - constant literals, sets, and lists that are defined directly
+- within each subgroup, items should be listed in alphabetical order:
+- Examples:
 
-      ```python
-      ## @var __all__
-      # @brief Exposes class for importing by other modules.
-      # @details  In modules needing the class, add `from src.audio_info.audio_art import AudioArt`
-      # @details  In modules needing the class, add `from src.audio_info.audio_metadata import AudioMetadata`
-      # @details  In modules needing the class, add `from src.audio_info.audio_playlist import AudioPlaylist`
-      # @details  In modules needing the class, add `from src.audio_info.audio_utilities import AudioUtilities`
-      ```
+  ```python
+  ## @var directory
+  # @brief Directory processing instance.
+  # @details Provides directory processing functionality.
+  directory = DirectoryProcessing()
+
+  ## @var TPOS
+  # @brief ID3 disc-of-set tag.
+  # @details Sets TPOS metadata.
+  TPOS = "TPOS"
+
+  ## @var M4A_TIME_KEYS
+  # @brief MP4 (m4a) time keys.
+  # @details Sets TYER metadata.<br>
+  # @details'\xa9day' is the preferred key for MP4 time metadata.
+  M4A_TIME_KEYS = {
+      '\xa9day',
+      '----:com.apple.iTunes:originalyear'
+  }
+
+
+  ```
 
 ## Package Files
 
 - Package files are Python files whose primary purpose is to define a package.
 - Package files are Python files that expose public names for import by other modules.
-  - Follow Module Level Variables, Constants, and Lists rules for placement of purpose comments.
-  - They may contain import statements for standard, third-party, and local modules.
-  - They have a `__all__` export list to specify the public API of the package.
-    - The `__all__` export list is at the bottom of the file.
-    - The `__all__` export lists have 1 item per line.
-      - Example:
+- Follow Module Level Variables and Constants rules for placement of purpose comments.
+- They may contain import statements for standard, third-party, and local modules.
+- Package files have an `__all__` export list to specify which members are accessible when the package is imported.
+- The `__all__` export list is always last item in the file.
+- `__all__` export lists have a `@details <details>` line for each item, in alphabetical order.
+  - Each `@details` line for an `__all__` item should explain how to import the item
+  - have a maximum of 150 characters per line
+  - Example:
 
-      ```python
-      __all__ = [
-          "AudioArt",
-          "AudioMetadata",
-          "AudioPlaylist",
-          "AudioUtilities",
-      ]
-      ```
+  ```python
+  ## @var __all__
+  # @brief Exposes class for importing by other modules.
+  # @details  In modules needing the class, add `from src.audio_info.audio_art import AudioArt`
+  # @details  In modules needing the class, add `from src.audio_info.audio_metadata import AudioMetadata`
+  # @details  In modules needing the class, add `from src.audio_info.audio_playlist import AudioPlaylist`
+  # @details  In modules needing the class, add `from src.audio_info.audio_utilities import AudioUtilities`
+  __all__ = [
+      "AudioArt",
+      "AudioMetadata",
+      "AudioPlaylist",
+      "AudioUtilities"
+  ]
+
+  ```
 
 ## Module Files
 
 - Module files are Python files that define the functionality of a specific module within the package.
 - Module files are Python files whose primary purpose is to define module-level functionality such as:
   - helper functions, constants, lightweight data containers, or support logic.
-- Follow Module Level Variables, Constants, and Lists rules for placement of purpose comments.
-- They contain class and function definitions relevant to the module's purpose.
-- They may contain module-level variables and constants.
 - They may contain import statements for standard, third-party, and local modules.
-- They may contain a `__all__` export list to specify the public API of the module.
+  - They follow Import rules.
+- They may contain module-level variables and constants.
+  - They follow Module Level Variables and Constants rules.
+- They may contain classes and function definitions relevant to the module's purpose.
+- They may contain stand alone functions relevant to the module's purpose.
 
 ## Class Files
 
 - Class files are Python files whose primary purpose is to define one main behavioral class.
 - Class files reside in the `src` directory and its sub-directories, and follow the naming convention `<class_name>.py`.
-- Follow Module Level Variables, Constants, and Lists rules for placement of purpose comments.
+- They may contain import statements for standard, third-party, and local modules.
+- They may contain class-level variables and constants.
+- They follow the Class File Garbage Collection rules as described above.
 - They follow the Class File Logging Setup rules as described below.
 - They contain the class definition and its methods.
-- They may contain class-level variables and constants.
-- They may contain import statements for standard and third-party modules.
-- They may contain a `__all__` export list to specify the public API of the class.
+
+### Class File Garbage Collection
+
+- All class files, excepting test files, must enable garbage collection.
+- The class file must import the standard module `gc`.
+- The garbage collection setup is placed after the import statements and before any other module-level code.
+- The garbage collection setup calls `gc.enable()`.
+- The garbage collection enable call is followed by a blank line.
+
+```python
+import gc                                                   # for garbage collection management
+# ... other import statements for standard, third-party, and local modules
+
+gc.enable()
+
+```
 
 ### Class File Logging Setup
 
 - All class files, excepting test files, must include a logging setup section.
-  - The class file must import the standard modules `logging` and `os` modules.
-  - The class file must import the local module method `add_module_handler`.
-  - The logging setup is placed after the import statements.
-  - The logging setup defines a module logger named with `__name__`.
-  - The logging setup defines the module file basename for the logger file handler.
-  - The logging setup calls `add_module_handler(logger, basename)`.
+- The class file must import the standard modules `logging` and `os` modules.
+- The class file must import the local module method `add_module_handler`.
+- The logging setup is placed after the garbage collection.
+- The logging setup defines a module logger named with `__name__`.
+- The logging setup defines the module file basename for the logger file handler.
+- The logging setup calls `add_module_handler(logger, basename)`.
+- The logging setup section is followed by a blank line.
 
   ```python
   ## @var logger
@@ -267,6 +316,7 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   basename = os.path.basename(__file__)
 
   add_module_handler(logger, basename)
+
   ```
 
 ## Test Files

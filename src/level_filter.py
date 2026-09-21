@@ -7,6 +7,8 @@
 
 @details from https://stackoverflow.com/questions/36337244/logging-how-to-set-a-maximum-log-level-for-a-handler/36338212#36338212
 
+@note This implementation does require garbage collection, but is part of logging functionality, and does not log messages itself.
+
 @version 1.0.0
 @date 2024-06-05
 

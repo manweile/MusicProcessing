@@ -31,6 +31,7 @@ from shutil import ExecError                                # for handling shuti
 import mutagen                                              # for audio metadata handling
 import pathvalidate                                         # for validating filesystem paths
 from mutagen import FileType                                # for handling different audio file types
+from mutagen._util import MutagenError                      # for handling mutagen errors
 from mutagen.asf import ASF                                 # for handling ASF audio files
 from mutagen.asf import ASFTags                             # for handling ASF tags
 from mutagen.flac import FLAC                               # for handling FLAC audio files
@@ -42,7 +43,6 @@ from mutagen.mp3 import MP3                                 # for handling MP3 a
 from mutagen.mp4 import MP4                                 # for handling MP4 audio files
 from mutagen.mp4 import MP4FreeForm                         # for handling MP4 freeform atoms
 from mutagen.mp4 import MP4Tags                             # for handling MP4 tags
-from mutagen._util import MutagenError                      # for handling mutagen errors
 from pathvalidate.error import ValidationError              # for handling path validation errors
 from tqdm import tqdm                                       # for displaying progress bars
 
@@ -50,16 +50,16 @@ from tqdm import tqdm                                       # for displaying pro
 from src import add_module_handler                          # for adding module-specific logging handlers
 
 # Local Module Constants
-from src import ASF_TYPE                                    # for ASF audio file type
-from src import FLAC_TYPE                                   # for FLAC audio file type
-from src import MP4_TYPE                                    # for MP4 audio file type
-from src import MP3_TYPE                                    # for MP3 audio file type
 from src import AUDIO_EXTS                                  # for audio file extensions
 from src import AUDIO_FILES                                 # for audio file paths
+from src import ASF_TYPE                                    # for ASF audio file type
+from src import FLAC_TYPE                                   # for FLAC audio file type
 from src import FOLDER_ART                                  # for folder artwork paths
 from src import FLAC_EXT                                    # for FLAC file extension
 from src import M4A_EXT                                     # for M4A file extension
 from src import MP3_EXT                                     # for MP3 file extension
+from src import MP3_TYPE                                    # for MP3 audio file type
+from src import MP4_TYPE                                    # for MP4 audio file type
 from src import WMA_EXT                                     # for WMA file extension
 
 # Local Module Errors
@@ -75,46 +75,46 @@ from src.subprocess_utils import SubprocessUtilities        # for subprocess uti
 gc.enable()
 
 ## @var logger
-# @brief the logger instance for module
-# @details sets the logger name to module name
+# @brief Logger instance for the module.
+# @details Sets the logger name to the current module name.
 logger = logging.getLogger(__name__)
 
 ## @var basename
-# @brief name for logger file handler log file
-# @details gets the module file name
+# @brief Base name for the logger file handler.
+# @details Gets the module file name from the current file path.
 basename = os.path.basename(__file__)
 
 add_module_handler(logger, basename)
 
 ## @var directory
-# @brief instance of DirectoryProcessing class
-# @details used for accessing class functionality
+# @brief Directory processing instance.
+# @details Provides directory processing functionality.
 directory = DirectoryProcessing()
 
 ## @var normalization
-# @brief instance of AudioNormalization class
-# @details used for accessing class functionality
+# @brief Audio normalization instance.
+# @details Provides audio normalization functionality.
 normalization = AudioNormalization()
 
 ## @var subprocess_utils
-# @brief instance of SubprocessUtilities class
-# @details used for accessing class functionality
+# @brief Subprocess utilities instance.
+# @details Provides subprocess utility functionality.
 subprocess_utils = SubprocessUtilities()
 
 ## @var TPOS
-# @brief ID3 disc of set tag
-# @details used to set TPOS metadata
+# @brief ID3 disc-of-set tag.
+# @details Sets TPOS metadata.
 TPOS = "TPOS"
 
 ## @var TYER
-# @brief ID3 release year tag
-# @details used to set TYER metadata
+# @brief ID3 release-year tag.
+# @details Sets TYER metadata.
 TYER = "TYER"
 
 ## @var GEN_KEYS
-# @brief the set of ffmpeg generic metadata keys for copying to converted & normalized files
-# @details these keys correspond to what Windows displays as file information in File Explorer
-# @details included for reference but not actually used
+# @brief Generic FFmpeg metadata keys.
+# @details Corresponds to metadata displayed by Windows File Explorer.<br>
+# @details Serves as reference and is not used by the module.
 GEN_KEYS = {
     'album',                # using, must have              ID3v2.3 mapping: TALB
     'album_artist',         # using, must have              ID3v2.3 mapping: TPE2
@@ -138,8 +138,8 @@ GEN_KEYS = {
 }
 
 ## @var FLAC_KEYS
-# @brief the set of generic FLAC metadata keys
-# @details the FLAC keys used for mapping to windows display compatible metadata
+# @brief Generic FLAC metadata keys.
+# @details Maps FLAC keys to Windows-compatible metadata.
 FLAC_KEYS = {
     'album': 'ALBUM',
     'album_artist': 'ALBUMARTIST',
@@ -157,8 +157,8 @@ FLAC_KEYS = {
 }
 
 ## @var FLAC_TIME_KEYS
-# @brief FLAC time keys
-# @details used to set TYER metadata
+# @brief FLAC time keys.
+# @details Sets TYER metadata.
 FLAC_TIME_KEYS = {
     'DATE',                                                # preferred key
     'YEAR',
@@ -166,8 +166,8 @@ FLAC_TIME_KEYS = {
 }
 
 ## @var MP3_KEYS
-# @brief the set of generic ID3v2.3 (mp3) metadata keys
-# @details the ID3 keys used for mapping to windows display compatible metadata
+# @brief Generic ID3v2.3 metadata keys.
+# @details Maps ID3 keys to Windows-compatible metadata.
 MP3_KEYS = {
     'album': 'TALB',
     'album_artist': 'TPE2',
@@ -188,8 +188,8 @@ MP3_KEYS = {
 }
 
 ## @var MP3_TIME_KEYS
-# @brief ID3 time keys
-# @details used to set TYER metadata
+# @brief ID3 time keys.
+# @details Sets TYER metadata.
 MP3_TIME_KEYS = {
     'TYER',                                                 # preferred key
     'TORY',
@@ -199,8 +199,8 @@ MP3_TIME_KEYS = {
 }
 
 ## @var M4A_KEYS
-# @brief the set of generic MP4 (m4a) metadata keys
-# @details the MP4 keys used for mapping to windows display compatible metadata
+# @brief Generic MP4 metadata keys.
+# @details Maps MP4 keys to Windows-compatible metadata.
 M4A_KEYS = {
     'album': '\xa9alb',
     'album_artist': 'aART',
@@ -216,17 +216,17 @@ M4A_KEYS = {
     'track': 'trkn'
 }
 
-## var M4A_TIME_KEYS
-# @brief MP4 time keys
-# @details used to set TYER metadata
+## @var M4A_TIME_KEYS
+# @brief MP4 time keys.
+# @details Sets TYER metadata.
 M4A_TIME_KEYS = {
     '\xa9day',                                              # preferred key
     '----:com.apple.iTunes:originalyear'
 }
 
 ## @var WMA_KEYS
-# @brief the set of generic ASF (wma) metadata keys
-# @details the ASF keys used for mapping to windows display compatible metadata
+# @brief Generic ASF metadata keys.
+# @details Maps ASF keys to Windows-compatible metadata.
 WMA_KEYS = {
     'album': 'WM/AlbumTitle',
     'album_artist': 'WM/AlbumArtist',
@@ -242,9 +242,9 @@ WMA_KEYS = {
     'track': 'WM/TrackNumber'
 }
 
-## var WMA_TIME_KEYS
-# @brief ASF time keys
-# @details used to set TYER metadata
+## @var WMA_TIME_KEYS
+# @brief ASF time keys.
+# @details Sets TYER metadata.
 WMA_TIME_KEYS = {
 
     'WM/Year',                                              # preferred key
@@ -263,9 +263,7 @@ class AudioMetadata():
         '''
         @brief Initializes the AudioMetadata class.
 
-        @details A basic class implementation with no instantiation parameters.
-
-        @return AudioMetadata {instance} An instance of the class.
+        @details Initializes an AudioMetadata instance without instance-specific state.
         '''
 
         pass
@@ -598,7 +596,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def get_mutagen_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags | VCFLACDict:
+    def get_mutagen_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags | VCFLACDict | None:
         '''
         @brief Gets tags for any type of audio file.
 
@@ -611,7 +609,7 @@ class AudioMetadata():
         The audio file's metadata remains IDv2.3, it does not get automatically upgraded to ID3v2.4 version.
 
         @param file_path {str} The full path to audio file.
-        @return tags {object} Tag object (one of ASFTags, ID3, MP4Tags, or VCFLACDict) holding audio file tags or None.
+        @return tags {object} Tag object holding audio file tags, or None when the file has no tags.
 
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -858,7 +856,7 @@ class AudioMetadata():
         Eg FLAC files will return 'FLAC', MP3 files will return 'MP3', M4A files will return 'MP4', WMA files will return 'ASF'.
 
         @param file_path {str} The full path to audio file.
-        @return metadata_type {str} The type of the audio file class or None.
+        @return metadata_type {str} The type of the audio file class.
 
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -1055,7 +1053,7 @@ class AudioMetadata():
         @details Expects a valid filepath to an acceptable audio file.<br>
 
         @param file_path {str} The full file path for audio file.
-        @return audio_file {FileType} Mutagen instance for the input audio file type or None.
+        @return audio_file {FileType} Mutagen instance for the input audio file type.
 
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.

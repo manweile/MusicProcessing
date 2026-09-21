@@ -1,10 +1,11 @@
 '''
-@file audio_art.py
+@class AudioArt
+@file src/audio_info/audio_art.py
 @author Gerald Manweiler
 
 @brief Defines the audio art class.
 
-@details Defines the audio art class used for handling embedded album art in various audio file formats.
+@details Defines the audio art class used to handle embedded album art in supported audio file formats.
 
 @version 1.0.0
 @date 2024-06-05
@@ -12,7 +13,7 @@
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
+# Standard Modules
 import fnmatch                                              # for filename pattern matching
 import gc                                                   # for garbage collection management
 import json                                                 # for JSON parsing and handling
@@ -24,17 +25,18 @@ from json import JSONDecodeError                            # for handling JSON 
 from os import strerror                                     # for getting error messages corresponding to errno
 from pathlib import Path                                    # for object-oriented filesystem paths
 
-# third party modules
+# Third Party Modules
+from mutagen._util import MutagenError                      # for handling Mutagen-specific errors
 from mutagen.asf import ASF                                 # for handling ASF audio files
 from mutagen.flac import FLAC                               # for handling FLAC audio files
 from mutagen.id3 import ID3                                 # for handling ID3 tags in MP3 files
 from mutagen.mp3 import MP3                                 # for handling MP3 audio files
 from mutagen.mp4 import MP4                                 # for handling MP4 audio files
-from mutagen._util import MutagenError                      # for handling Mutagen-specific errors
 
-# local module methods
+# Local Module Methods
 from src import add_module_handler                          # for adding a module-specific handler to the logger
-# local module constants
+
+# Local Module Constants
 from src import AUDIO_EXTS                                  # for supported audio file extensions
 from src import FOLDER_ART                                  # for folder art directory
 from src import FLAC_EXT                                    # for FLAC file extension
@@ -42,43 +44,44 @@ from src import M4A_EXT                                     # for M4A file exten
 from src import MP3_EXT                                     # for MP3 file extension
 from src import WMA_EXT                                     # for WMA file extension
 from src.generated_files import GENERATED_PATH              # for generated files path
-# local module classes
+
+# Local Module Classes
+from src.audio_info.audio_metadata import AudioMetadata     # for audio metadata handling functionality
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
 from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functions
-# relative import so don't get circular import error
-from .audio_metadata import AudioMetadata                   # for audio metadata handling functionality
 
 gc.enable()
 
 ## @var logger
-# @brief the logger instance for module
-# @details sets the logger name to module name
+# @brief Logger instance for the module.
+# @details Sets the logger name to the current module name.
 logger = logging.getLogger(__name__)
 
 ## @var basename
-# @brief name for logger file handler log file
-# @details gets the module file name
+# @brief Base name for the logger file handler.
+# @details Gets the module file name from the current file path.
 basename = os.path.basename(__file__)
 
 add_module_handler(logger, basename)
 
 ## @var metadata
-# @brief instance of AudioMetadata class
-# @details used for accessing class functionality
+# @brief Audio metadata instance.
+# @details Provides audio metadata functionality.
 metadata = AudioMetadata()
 
-# @brief instance of AudioNormalization class
-# @details used for accessing class functionality
+## @var normalization
+# @brief Audio normalization instance.
+# @details Provides audio normalization functionality.
 normalization = AudioNormalization()
 
 ## @var subprocess_utils
-# @brief instance of SubprocessUtilities class
-# @details used for accessing class functionality
+# @brief Subprocess utilities instance.
+# @details Provides subprocess utility functionality.
 subprocess_utils = SubprocessUtilities()
 
 ## @var ALBUM_ART
-# @brief Album art directory for compilation albums
-# @details used for setting album art
+# @brief Album art directory name.
+# @details Identifies the generated directory that stores compilation album art.
 ALBUM_ART = "AlbumArt"
 
 
@@ -93,36 +96,27 @@ class AudioArt():
         '''
         @brief Initializes the AudioArt class.
 
-        @details A basic class implementation with no instantiation parameters.
-
-        @return AudioArt {instance} An instance of the class.
+        @details Initializes an AudioArt instance without instance-specific state.
         '''
 
         pass
 
 
     def __unpack_asf_image(self, data: bytearray) -> tuple:
-        '''
+        r'''
         @brief Unpack image data from a WM/Picture tag.
 
-        @details This function is treated as "untrusted" and could throw all manner of exceptions (out-of-bounds, etc.).<br>
-        From https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243.
+        @details Parses untrusted WM/Picture tag data and can raise decoding or bounds-related exceptions.<br>
+        Adapted from https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243.
 
-        @param data {bytearray} The byte attribute data from asf audio WM/Picture tag.
-        @return unpacked (mime, image_data, type, description) ({str}, {bytes}, {int}, {str})<br>
-        Tuple containing the MIME type, the raw image data, a type indicator, and the image's description.
-
-        @exception struct.error A struct module error occurred.
-        @exception UnicodeDecodeError An illegal sequence of str characters occurred.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        r'''
-        <:little-endian byte order, b: signed char (1 byte), i: signed int (4 bytes)<br>
-        unpacks first 5 bytes in tuple where type is C signed char (1 byte)/Python integer and size is C signed int (4 bytes)/Python integer
-        for an ASF WM/Picture, 3 = Front album cover
+        @note little-endian byte order, b: signed char (1 byte), i: signed int (4 bytes)<br>
+        unpacks first 5 bytes in tuple<br>
+        where type is C signed char (1 byte)/Python integer<br>
+        and size is C signed int (4 bytes)/Python integer<br>
+        for an ASF WM/Picture, 3 = Front album cover<br>
         eg.<br>
-        b'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`<br>
+        b'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`
+        <br>
         image type and image size, elements 0-5: b'\x03\x140\x00\x00<br>
         image type, elements 0-1, b'\x03'<br>
         image size, elements 1-5, b'\x140\x00\x00 = 0x1403 little-endian, 0x3014 big-endian, decimal 12308<br>
@@ -130,6 +124,13 @@ class AudioArt():
         null terminator, elements 25 to 27: b'\x00\x00'<br>
         description, elements 27 to 29: b'\x00\x00'<br>
         data, elements 29 to 29 + size: b'\xff\xe0\x...'
+
+        @param data {bytearray} The byte attribute data from asf audio WM/Picture tag.
+        @return unpacked {tuple} Contains the MIME type, raw image data, type indicator, and image description.
+
+        @exception struct.error A struct module error occurred.
+        @exception UnicodeDecodeError An illegal sequence of str characters occurred.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -178,7 +179,7 @@ class AudioArt():
         '''
         @brief Writes image data for audio file to separate jpeg file.
 
-        @ details Writes the extracted image data to a separate JPEG file named Folder.jpg in the album directory.
+        @details Writes the extracted image data to the Folder.jpg file in the audio file's album directory.
 
         @param file_path {str} The full path to audio file.
         @param image_data {bytearray} The image bytes extracted from audio file.
@@ -212,8 +213,8 @@ class AudioArt():
         '''
         @brief Extract and save embedded album art.
 
-        @details Extracts art as Folder.jpg to album directory of input audio file.<br>
-        First tries extraction from video stream (audio file type agnostic), then by metadata art tag (from specific audio file type).
+        @details Extracts album art as Folder.jpg in the input audio file's album directory.<br>
+        Attempts video-stream extraction first, then format-specific metadata-tag extraction.
 
         @param file_path {str} The full path to audio file.
 
@@ -300,26 +301,24 @@ class AudioArt():
         '''
         @brief Extracts and saves embedded album art.
 
-        @details Uses ffmpeg and is audio file type agnostic.<br>
-        Input file must have a video stream.
+        @details Uses ffmpeg to extract art from audio files of any supported format.<br>
+        Requires the input file to contain a video stream.
+
+        @note extract art command explanation:<br>
+        ffmpeg -hide_banner -i file_path -an -map 0:v -map_metadata -1 -update 1 output_file -y<br>
+        <br>
+        -hide_banner: to reduce output clutter<br>
+        -an: specifies ignore audio stream<br>
+        -map 0:v: specifies 1st input file use video stream<br>
+        -map_metadata -1: specifies discard all alphanumeric metadata from input file<br>
+        the use of -map and -map_metadata will result in smaller jpg file than vcodec copy or -c:v copy - empirically tested<br>
+        -update 1: specifies overwrite output file with 1 frame from video, which is all we want, the embedded art IS the 1st
+        and only frame from video stream<br>
+        -y: to overwrite output file if needed
 
         @param file_path {str} The full path to audio file.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        '''
-        extract art command explanation:<br>
-        ffmpeg -hide_banner -i `file_path` -an -map 0:v -map_metadata -1 -update 1 `output_file` -y
-
-        -hide_banner to reduce output clutter<br>
-        -an specifies ignore audio stream<br>
-        -map 0:v specifies 1st input file use video stream<br>
-        -map_metadata -1 specifies discard all alphanumeric metadata from input file<br>
-        the use of -map and -map_metadata will result in smaller jpg file than vcodec copy or -c:v copy - empirically tested<br>
-        -update 1 specifies overwrite output file with 1 frame from video,
-        which is all we want, the embedded art IS the 1st and only frame from video stream<br>
-        -y to overwrite output file if needed
         '''
 
         try:
@@ -348,7 +347,7 @@ class AudioArt():
 
     def extract_m4a_art(self, file_path: str) -> None:
         '''
-        @brief Extracts cover art from m4a files
+        @brief Extracts cover art from m4a files.
 
         @details Input file is expected to have cover art.
 
@@ -447,8 +446,8 @@ class AudioArt():
         '''
         @brief Extracts all embedded album art from audio files.
 
-        @details If file pattern not specified, returns all valid audio files.<br>
-        Otherwise must be a valid audio file extension like '.mp3', '.m4a', '.wma', or '.flac'.
+        @details Processes all valid audio files when no file pattern is specified.<br>
+        Requires a valid audio extension such as '.mp3', '.m4a', '.wma', or '.flac' when a pattern is specified.
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
@@ -503,23 +502,21 @@ class AudioArt():
         '''
         @brief Checks if an audio file has a video stream.
 
-        @details Audio files can have embedded art in video streams, embedded art is the first frame.
+        @details Detects a video stream that can contain embedded album art as its first frame.
+
+        @note check for stream command explanation:<br>
+        <br>
+        ffprobe -hide_banner -select_streams v:0 -show_streams -of json file_path<br>
+        -hide_banner: reduce output clutter<br>
+        -select_streams v:0: only want video stream<br>
+        -show_streams: gets all information about each media stream in the input<br>
+        -of json: output information in json format<br>
 
         @param file_path {str} The full path to audio file.
-        @return has_stream {boolean} Returns true if video stream is present, false otherwise.
+        @return has_stream {bool} True when a video stream is present; otherwise False.
 
         @exception JSONDecodeError A json decoding error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        '''
-        check for stream command explanation:<br>
-
-        ffprobe -hide_banner -select_streams v:0 -show_streams -of json `file_path`<br>
-        -hide_banner reduce output clutter<br>
-        -select_streams v:0 only want video stream<br>
-        -show_streams gets all information about each media stream in the input<br>
-        -of json output information in json format<br>
         '''
 
         try:
@@ -557,8 +554,8 @@ class AudioArt():
         '''
         @brief Sets album art file for an album directory.
 
-        @details First check to see a folder art file is present in album directory.<br>
-        Second checks if there is a /AlbumArt/<album>.jpg cover art file, renames it to album art folder constant and moves it to album directory.
+        @details Skips album directories that already contain a folder-art file.<br>
+        Copies a matching generated AlbumArt JPEG into the album directory when it is available.
 
         @param input_path {str} The full path to album directory.
 
