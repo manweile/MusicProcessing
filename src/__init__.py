@@ -3,9 +3,9 @@
 @file src/__init__.py
 @author Gerald Manweiler
 
-@brief Holds package level constants and imports used by other modules.
+@brief Package for shared MusicProcessing constants and imports.
 
-@details Also enables logging for the package.
+@details Exposes shared constants, errors, and logging helpers for MusicProcessing modules.
 
 @version 1.0.0
 @date 2024-06-05
@@ -13,7 +13,7 @@
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# Local Module Functions
+# Local Module Methods
 from src.logging_config import add_module_handler           # for adding module-specific file handlers to loggers
 from src.logging_config import configure_package_logging    # for configuring package-level file logging
 
@@ -30,131 +30,133 @@ from src.errors import PlaylistError                        # custom error for p
 from src.errors import VideoStreamError                     # custom error for video stream related issues
 
 ## @var ASF_TYPE
-# @brief mutagen audio file type
-# @details use this when working with mutagen library
+# @brief ASF Mutagen audio file type.
+# @details Identifies the Mutagen class name for ASF files.
 ASF_TYPE = "ASF"
 
 ## @var AUDIO_EXTS
-# @brief audio file extensions in my collection
-# @details use this when working with os library
+# @brief Supported audio file extensions.
+# @details Identifies audio files during filesystem processing.
 AUDIO_EXTS = [".mp3", ".m4a", ".wma", ".flac"]
 
 ## @var AUDIO_FILES
-# @brief audio file type to mutagen class mapping
-# @details use this when working with mutagen library
+# @brief Supported Mutagen audio file types.
+# @details Identifies the Mutagen class names handled by the project.
 AUDIO_FILES = ["MP3", "MP4", "ASF", "FLAC"]
 
-## @var CSV_FILES
-# @brief final part of csv files directory path
-# @details use this to set csv files directory path
+## @var CSV_DIR
+# @brief CSV output directory name.
+# @details Identifies the directory used for generated CSV files.
 CSV_DIR = "csv_files"
 
 ## @var CSV_EXT
-# @brief csv file extension
-# @details use this to set extension for csv files
+# @brief CSV file extension.
+# @details Identifies generated comma-separated value files.
 CSV_EXT = ".csv"
 
 ## @var ERROR_LOG_FORMAT
-# @brief error log file format
-# @details use this to set error logging file format
+# @brief Error log record format.
+# @details Defines the format used for logged error records.
 ERROR_LOG_FORMAT = '\n%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s'
 
 ## @var FLAC_EXT
-# @brief flac file type extension
-# @details use this when needing just this file type extension and not file list of valid extensions
+# @brief FLAC file extension.
+# @details Identifies FLAC files independently of the supported-extension list.
 FLAC_EXT = ".flac"
 
 ## @var FLAC_TYPE
-# @brief mutagen audio file type
-# @details use this when working with mutagen library
+# @brief FLAC Mutagen audio file type.
+# @details Identifies the Mutagen class name for FLAC files.
 FLAC_TYPE = "FLAC"
 
 ## @var FOLDER_ART
-# @brief name of album art jpg
-# @details use this when need to set album art file name
+# @brief Album-art file name.
+# @details Identifies the JPEG file used for album artwork.
 FOLDER_ART = "Folder.jpg"
 
 ## @var ILT
-# @brief integrated loudness target
-# @details use this for ebu r128 normalization AES recommended value for streaming
+# @brief Integrated loudness target.
+# @details Defines the EBU R128 normalization target recommended for streaming.
 ILT = "-16.0"
 
 ## @var LOG_DIR
-# @brief final part of log files directory path
-# @details use this to set log files directory path
+# @brief Log output directory name.
+# @details Identifies the directory used for generated log files.
 LOG_DIR = "log_files"
 
 ## @var LOG_EXT
-# @brief log file extension
-# @details use this to set extension for log files
+# @brief Log file extension.
+# @details Identifies generated log files.
 LOG_EXT = ".log"
 
 ## @var LRA
-# @brief loudness range target
-# @details use this for ebu 128 normalization wider range than AES default of 7
+# @brief Loudness range target.
+# @details Defines an EBU R128 range wider than the AES default of seven.
 LRA = "11.0"
 
 ## @var M4A_EXT
-# @brief m4a file typer extension
-# @details use this when needing just this file type extension and not file list of valid extensions
+# @brief M4A file extension.
+# @details Identifies M4A files independently of the supported-extension list.
 M4A_EXT = ".m4a"
 
 ## @var MP3_EXT
-# @brief mp3 file typer extension
-# @details use this when needing just this file type extension and not file list of valid extensions
+# @brief MP3 file extension.
+# @details Identifies MP3 files independently of the supported-extension list.
 MP3_EXT = ".mp3"
 
 ## @var MP3_TYPE
-# @brief mutagen audio file type
-# @details use this when working with mutagen library
+# @brief MP3 Mutagen audio file type.
+# @details Identifies the Mutagen class name for MP3 files.
 MP3_TYPE = "MP3"
 
 ## @var MP4_TYPE
-# @brief mutagen audio file type
-# @details use this when working with mutagen library
+# @brief MP4 Mutagen audio file type.
+# @details Identifies the Mutagen class name for MP4 files.
 MP4_TYPE = "MP4"
 
 ## @var MUSIC_TLD
-# @brief the top level directory that holds music files
-# @details use this when exporting manipulated audio files
+# @brief Music top-level directory name.
+# @details Identifies the directory containing the source music collection.
 MUSIC_TLD = "Music"
 
 ## @var PLAYLIST_EXTS
-# @brief playlist file extensions in my collection
-# @details use this when working with os library
+# @brief Supported playlist file extensions.
+# @details Identifies playlist files during filesystem processing.
 PLAYLIST_EXTS = [".m3u"]
 
 ## @var PLAYLIST_TYPES
-# @brief playlist file types in my collection
-# @details use this when you just need the type
+# @brief Supported playlist file types.
+# @details Identifies the supported playlist formats.
 PLAYLIST_TYPES = ["m3u"]
 
-## @var RESULTS_FILES
-# @brief final part of results files directory path
-# @details use this to set result files directory path
+## @var RESULT_DIR
+# @brief Result output directory name.
+# @details Identifies the directory used for generated result files.
 RESULT_DIR = "result_files"
 
 ## @var RESULT_EXT
-# @brief result text file extension
-# @details use this to set extension for result text files
+# @brief Result text-file extension.
+# @details Identifies generated result text files.
 RESULT_EXT = ".txt"
 
 ## @var TP
-# @brief loudnorm maximum true peak
-# @details use this for ebu 128 normalization extra headroom
+# @brief Loudnorm maximum true peak.
+# @details Defines extra headroom for EBU R128 normalization.
 TP = "-2.0"
 
 ## @var UTF8
-# @brief utf encoding for file writing
-# @details use this when configuring file access
+# @brief UTF-8 text encoding.
+# @details Configures text-file access with UTF-8 encoding.
 UTF8 = "utf-8"
 
 ## @var WMA_EXT
-# @brief wma file type extension
-# @details use this when needing just this file type extension and not file list of valid extensions
+# @brief WMA file extension.
+# @details Identifies WMA files independently of the supported-extension list.
 WMA_EXT = ".wma"
 
-# Configure package-level logging
+## @var src_logger
+# @brief Configured package logger.
+# @details Configures package-level logging for generated project files.
 src_logger = configure_package_logging(
     GENERATED_PATH,
     CSV_DIR,
@@ -166,41 +168,72 @@ src_logger = configure_package_logging(
 )
 
 ## @var __all__
-# @brief Exposes variables for importing by other modules.
-# @details In modules needing the constant add 'from src import <constant>'
-# @details In modules needing the error class, add 'from src.errors import <error>'
+# @brief Exposes package members for importing by other modules.
+# @details Import add_module_handler with `from src import add_module_handler`.<br>
+# @details Import ASF_TYPE with `from src import ASF_TYPE`.<br>
+# @details Import AUDIO_EXTS with `from src import AUDIO_EXTS`.<br>
+# @details Import AUDIO_FILES with `from src import AUDIO_FILES`.<br>
+# @details Import CSV_DIR with `from src import CSV_DIR`.<br>
+# @details Import CSV_EXT with `from src import CSV_EXT`.<br>
+# @details Import ERROR_LOG_FORMAT with `from src import ERROR_LOG_FORMAT`.<br>
+# @details Import FLAC_EXT with `from src import FLAC_EXT`.<br>
+# @details Import FLAC_TYPE with `from src import FLAC_TYPE`.<br>
+# @details Import FOLDER_ART with `from src import FOLDER_ART`.<br>
+# @details Import FfmpegProcessError with `from src.errors import FfmpegProcessError`.<br>
+# @details Import ILT with `from src import ILT`.<br>
+# @details Import JSONOutputError with `from src.errors import JSONOutputError`.<br>
+# @details Import LOG_DIR with `from src import LOG_DIR`.<br>
+# @details Import LOG_EXT with `from src import LOG_EXT`.<br>
+# @details Import LRA with `from src import LRA`.<br>
+# @details Import M4A_EXT with `from src import M4A_EXT`.<br>
+# @details Import MetadataTypeError with `from src.errors import MetadataTypeError`.<br>
+# @details Import MP3_EXT with `from src import MP3_EXT`.<br>
+# @details Import MP3_TYPE with `from src import MP3_TYPE`.<br>
+# @details Import MP4_TYPE with `from src import MP4_TYPE`.<br>
+# @details Import MUSIC_TLD with `from src import MUSIC_TLD`.<br>
+# @details Import MusicProcessingError with `from src.errors import MusicProcessingError`.<br>
+# @details Import PathInfoError with `from src.errors import PathInfoError`.<br>
+# @details Import PLAYLIST_EXTS with `from src import PLAYLIST_EXTS`.<br>
+# @details Import PLAYLIST_TYPES with `from src import PLAYLIST_TYPES`.<br>
+# @details Import PlaylistError with `from src.errors import PlaylistError`.<br>
+# @details Import RESULT_DIR with `from src import RESULT_DIR`.<br>
+# @details Import RESULT_EXT with `from src import RESULT_EXT`.<br>
+# @details Import TP with `from src import TP`.<br>
+# @details Import UTF8 with `from src import UTF8`.<br>
+# @details Import VideoStreamError with `from src.errors import VideoStreamError`.<br>
+# @details Import WMA_EXT with `from src import WMA_EXT`.
 __all__ = [
+    "add_module_handler",
     "ASF_TYPE",
     "AUDIO_EXTS",
     "AUDIO_FILES",
     "CSV_DIR",
     "CSV_EXT",
     "ERROR_LOG_FORMAT",
-    "LOG_DIR",
-    "LOG_EXT",
     "FLAC_EXT",
     "FLAC_TYPE",
     "FOLDER_ART",
+    "FfmpegProcessError",
     "ILT",
+    "JSONOutputError",
+    "LOG_DIR",
+    "LOG_EXT",
     "LRA",
     "M4A_EXT",
+    "MetadataTypeError",
     "MP3_EXT",
     "MP3_TYPE",
     "MP4_TYPE",
     "MUSIC_TLD",
+    "MusicProcessingError",
+    "PathInfoError",
     "PLAYLIST_EXTS",
     "PLAYLIST_TYPES",
+    "PlaylistError",
     "RESULT_DIR",
     "RESULT_EXT",
     "TP",
     "UTF8",
-    "WMA_EXT",
-    "FfmpegProcessError",
-    "JSONOutputError",
-    "MetadataTypeError",
-    "MusicProcessingError",
-    "PathInfoError",
-    "PlaylistError",
     "VideoStreamError",
-    "add_module_handler"
+    "WMA_EXT",
 ]
