@@ -39,6 +39,7 @@ jobs:
   # Deletes specified artifacts from the current repository
   artifact-cleanup:
     name: Clean Actions Artifacts
+    if: github.event_name == 'schedule'
     permissions:
       actions: write
       contents: read
@@ -47,6 +48,7 @@ jobs:
   # Deletes old successful workflow runs while retaining recent runs
   clean-storage:
     name: Clean Actions Storage
+    if: github.event_name == 'schedule'
     permissions:
       actions: write
       contents: read

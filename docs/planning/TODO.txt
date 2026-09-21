@@ -59,7 +59,7 @@ TODO
     ii) test yaml
   b) add an orchestration yaml
   c) add cleanup yamls
-TODO
+COMPETED
 
 11) add function to update genre metadata
   a) works for all file types in list ie. FLAC (.flac), MP3 (.mp3), MP4 (.m4a), ASF (.wma)

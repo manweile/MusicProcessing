@@ -4,7 +4,9 @@
 # @brief Workflow Cleanup for GitHub Actions.
 #
 # @details Trigger this workflow through a reusable workflow call or manual dispatch.
-# Delete workflow runs older than three days while retaining at least three recent runs for each workflow.
+# Delete failed and action-required workflow runs older than one week.
+# Delete other completed workflow runs older than one day.
+# Retain at least three recent runs for each workflow.
 #
 # @version 1.0.0
 # @date 2026-08-24
@@ -19,18 +21,30 @@ on:
   workflow_dispatch:                                        # Allows manual execution
 
 jobs:
-  # deletes workflow runs from the current repository that are older than three days while retaining at least three recent runs for each workflow
+  # Deletes expired workflow runs
   clean-runs:
     runs-on: ubuntu-latest
     permissions:
       actions: write
     steps:
-      - name: Delete old workflow runs
+      # I don't need to keep the non-failed workflow runs older than one day, so delete them
+      - name: Delete Non-Failures
         uses: Mattraks/delete-workflow-runs@v2
         with:
           token: ${{ github.token }}                        # GitHub token for authentication of the cache deletion requests
           repository: ${{ github.repository }}              # Repository name in the format "owner/repo" for API requests
           retain_days: 1
           keep_minimum_runs: 3
-          delete_run_by_conclusion_pattern: success         # Target only successful runs
+          delete_run_by_conclusion_pattern: cancelled,skipped,success
+          dry_run: false                                    # Change to true first to test what gets deleted
+
+      # Failed and action required need looking at, so keep them for longer before deletion
+      - name: Delete old failed and action-required workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}                        # GitHub token for authentication of the cache deletion requests
+          repository: ${{ github.repository }}              # Repository name in the format "owner/repo" for API requests
+          retain_days: 7
+          keep_minimum_runs: 3
+          delete_run_by_conclusion_pattern: action_required,failure
           dry_run: false                                    # Change to true first to test what gets deleted
