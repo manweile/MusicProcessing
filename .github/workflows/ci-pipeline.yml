@@ -1,0 +1,64 @@
+# @file ci-pipeline.yml
+# @author Gerald Manweiler
+#
+# @brief Continuous integration pipeline for GitHub Actions.
+#
+# @details Trigger this workflow for selected pushes, pull requests, and daily midnight cleanup.
+# Orchestrate workflow-run cleanup, artifact cleanup, production firmware builds, QEMU Unity tests, and doxygen documentation and deployment
+# through reusable workflows.
+#
+# @version 1.1.0
+# @date 2026-08-25
+#
+# @copyright Copyright (c) 2026 Gerald Manweiler
+
+name: CI Pipeline
+
+# Orchestrates artifact & workflow cleanup, and runs unit tests
+on:
+  push:
+    branches:
+      - master
+      - development
+      - 'feature/**'
+  pull_request:
+    branches:
+      - master
+      - development
+  # Runs artifact and workflow storage cleanup every day at midnight UTC
+  schedule:
+    - cron: '0 0 * * *'
+
+# Concurrency group ensuring that only one run per branch or tag is active at a time, with in-progress runs being canceled if a new run is triggered
+concurrency:
+  # github.workflow and github.ref are used to create a unique concurrency group for each workflow and branch/tag combination
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Deletes specified artifacts from the current repository
+  artifact-cleanup:
+    name: Clean Actions Artifacts
+    if: github.event_name == 'schedule'
+    permissions:
+      actions: write
+      contents: read
+    uses: ./.github/workflows/artifact-cleanup.yml
+
+  # Deletes old successful workflow runs while retaining recent runs
+  clean-storage:
+    name: Clean Actions Storage
+    if: github.event_name == 'schedule'
+    permissions:
+      actions: write
+      contents: read
+    uses: ./.github/workflows/workflow-cleanup.yml
+
+  # execute unit tests
+  unit-tests:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    name: Run Unit Tests
+    permissions:
+      actions: write
+      contents: read
+    uses: ./.github/workflows/python-app.yml

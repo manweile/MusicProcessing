@@ -1,8 +1,15 @@
 '''
+@class SubprocessUtilities
 @file subprocess_utils.py
+@author Gerald Manweiler
+
 @brief Defines the subprocess utilities class.
 
-@author Gerald Manweiler
+@details Base class for all subprocess utilities in the MusicProcessing module.
+
+@version 1.0.0
+@date 2024-06-06
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
@@ -29,14 +36,24 @@ from src import FfmpegProcessError
 
 gc.enable()
 
+## @var logger
+# @brief the logger instance for module
+# @details sets the logger name to module name
 logger = logging.getLogger(__name__)
+
+## @var basename
+# @brief name for logger file handler log file
+# @details gets the module file name
 basename = os.path.basename(__file__)
+
 add_module_handler(logger, basename)
 
 
 class SubprocessUtilities():
     '''
     @brief Defines the base subprocess utilities processing used by project.
+
+    @details This class provides utility methods for running subprocess commands, including handling output and errors.
     '''
 
     def __init__(self) -> None:
@@ -206,7 +223,8 @@ class SubprocessUtilities():
             logger.exception(f"Exception processing command: {command}", stack_info=True)
             raise e_error
         else:
-            return process, spinner
+            results = (process, spinner)
+            return results
 
 
     def subprocess_run(self, command: str) -> CompletedProcess:

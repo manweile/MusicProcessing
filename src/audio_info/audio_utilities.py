@@ -151,7 +151,7 @@ class AudioUtilities():
             raise e_error
 
 
-    def normalize_walk(self, tld_path: str, norm_type: str, show_spinner: bool = True) -> None:
+    def level_normalize_walk(self, tld_path: str, norm_type: str, show_spinner: bool = True) -> None:
         '''
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
@@ -241,7 +241,7 @@ class AudioUtilities():
         pass
 
 
-    def get_media_info_walk(self, start_path: str, file_pattern: str) -> None:
+    def get_ffprobe_media_info_walk(self, start_path: str, file_pattern: str) -> None:
         '''
         @brief Gets media info (codec, duration, size, bitrate...) for audio files and saves to file.
 

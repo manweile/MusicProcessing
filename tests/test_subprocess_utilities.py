@@ -15,11 +15,14 @@ import shlex
 import unittest
 from subprocess import CalledProcessError
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
+from unittest.mock import patch
 
 # local module constants
 from src import UTF8
-from tests import TEST_M3U, TEST_MP3_CRUSH, TEST_WAV_NONE
+from tests import TEST_M3U
+from tests import TEST_MP3_CRUSH
+from tests import TEST_WAV_NONE
 from tests import TESTS_PATH
 # local module errors
 from src import FfmpegProcessError
@@ -37,14 +40,20 @@ subprocess_utils = SubprocessUtilities()
 def mock_communicate_with_error() -> tuple:
     '''
     @brief Simulates a communicate() call that fails during decoding.
+
+    @details Simulates a failure during the decoding of subprocess output.
+
+    @test Simulates a failure during the decoding of subprocess output.
+
+    @return undecoded_bytes {tuple} A tuple simulating the output of communicate() with undecoded bytes.
     '''
 
     # A byte string that is invalid UTF-8
     invalid_utf8_bytes = b'hello \x99\xae world'
 
-    # communicate() returns (stdout, stderr) tuples.
-    # To cause a decode error later, return undecoded bytes.
-    return (invalid_utf8_bytes, b'')
+    # communicate() returns (stdout, stderr) tuples, to cause a decode error later, return undecoded bytes
+    undecoded_bytes = (invalid_utf8_bytes, b'')
+    return undecoded_bytes
 
 
 class TestSubprocessUtilities(TestCase):
@@ -63,7 +72,7 @@ class TestSubprocessUtilities(TestCase):
 
         cls.file_path = TEST_M3U
 
-        # from metadata.get_media_info,
+        # from metadata.get_ffrobe_media_info,
         # calls popen_pipe with ffprobe command for getting all media file info
         # append a valid file_path when using
         cls.ffprobe_command = [
@@ -281,6 +290,8 @@ def get_method_names(cls):
     '''
     @brief Returns a list of names of methods defined within a given class.
 
+    @details Returns a detailed description of the methods defined within the given class.
+
     @param cls {Class} The name of the class to get methods list from.
     @return method_names [{str}] The names of the methods defined in class.
     '''
@@ -294,6 +305,12 @@ def get_method_names(cls):
 
 
 if __name__ == "__main__":
+    '''
+    @brief Entry point for running the test suite for TestSubprocessUtilities.
+
+    @details Runs all test methods defined in the TestSubprocessUtilities class using the unittest framework.
+    '''
+
     methods = get_method_names(TestSubprocessUtilities)
 
     suite = unittest.TestSuite()

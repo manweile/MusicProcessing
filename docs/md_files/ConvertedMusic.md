@@ -1,4 +1,6 @@
-F:\ConvertedMusic directory is the result of conversion on PreppedMusic directory.
+# Converted
+
+ Directory is the result of conversion on Prepped directory.
 
 Populated Jul 9th, this directory is currently up to date.
 
@@ -23,6 +25,7 @@ All album directories contain only mp3 files.
 These audio files are now ready for normalization.
 
 Directory structure is:
+
 ```text
 tld
 |_ playlist 1

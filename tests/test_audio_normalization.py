@@ -16,7 +16,7 @@ import shutil
 import unittest
 from json import JSONDecodeError
 from pathlib import Path
-from subprocess import CalledProcessError, CompletedProcess
+from subprocess import CompletedProcess
 from unittest import TestCase
 from unittest.mock import Mock
 from unittest.mock import patch
@@ -424,7 +424,7 @@ class TestAudioNormalization(TestCase):
         @brief Tests ebu normalizes all audio files in specified top level directory.
         '''
 
-        normalization.normalize_walk(self.normalized, "ebu", show_spinner=False)
+        normalization.level_normalize_walk(self.normalized, "ebu", show_spinner=False)
 
         for audio_file in self.normalized_results:
             audio_exists = os.path.exists(audio_file)
@@ -436,7 +436,7 @@ class TestAudioNormalization(TestCase):
         @brief Tests peak normalizes all audio files in specified top level directory.
         '''
 
-        normalization.normalize_walk(self.normalized, "peak", show_spinner=False)
+        normalization.level_normalize_walk(self.normalized, "peak", show_spinner=False)
 
         audio_exists = os.path.exists(self.peak_res)
         self.assertTrue(audio_exists)
@@ -447,7 +447,7 @@ class TestAudioNormalization(TestCase):
         @brief Tests rms normalizes all audio files in specified top level directory.
         '''
 
-        normalization.normalize_walk(self.normalized, "rms", show_spinner=False)
+        normalization.level_normalize_walk(self.normalized, "rms", show_spinner=False)
 
         audio_exists = os.path.exists(self.rms_res)
         self.assertTrue(audio_exists)

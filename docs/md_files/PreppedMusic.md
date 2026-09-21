@@ -1,4 +1,6 @@
-F:\PreppedMusic directory is the original audio & playlist files from the HTPC (\\Office1\Music\).
+# Prepped
+
+Directory is the original audio & playlist files from the HTPC (\\Office1\Music\).
 Ubuntu dev: /home/gerald/Music
 Windows dev: C:\Music
 None of these locations need updating.
@@ -8,6 +10,30 @@ The playlist (m3u) files have been copied as is from source music directory.
 The sundry files (csv and txt) files have not been copied from source music directory.
 The audio metadata (text and art) are in ASF, ID3v2.3, and MP4 formats.
 APE, ID3v1, ID3v2.2, and ID3v2.4 format metadata has been removed.
+
+        '''
+        album directories<br>
+        When an artist directory does not contain album directories for all of its audio files,
+        run create_album_dirs function to ensure there are album directories for every audio file.<br>
+        '''
+
+        '''
+        album art<br>
+        Manually review extant album art files(s), and if possible, create a Folder.jpg then move it to appropriate album directory.<br>
+        If there is no extant album art file(s), but audio files have embedded art, run extract_art_function to extract it as Folder.jpg file.<br>
+        Finally run set_album_art function to ensure a Folder.jpg exists in each album directory.<br>
+        '''
+
+        '''
+        metadata transfer<br>
+        I dont want every possible tag, just the subset that Windows will display AND are ID3v2.3 format.<br>
+        Comments are ASF/FLAC/ID3v2.3/MP4, but MusicBrainz/MP3Tag/puddletag have difficulty displaying comments properly,
+        so passing on transferring comment metadata.<br>
+        Compilation is not ID3v2.3, so passing on transferring compilation metadata too.<br>
+        Date info is most problematic part of metadata.<br>
+        ASF/FLAC/ID3v2.3/MP4 have multiple date type tags, the data types could be a full ISO date, or could just be a 4 digit year string.<br>
+        Format any found date values to YYYY and map them to ID3v2.3 TYER field. Refer to the `map_*_tags` functions for details.<br>
+        I have manually edited all audio files without date to have 1963 as default.
 
 The audio metadata has been manually reviewed for:
     reasonably high accuracy
@@ -34,7 +60,7 @@ Audio file names have been edited as needed into artist-title (or artist - title
 Album art metadata has been manually reviewed to ensure reasonably accuracy.
 Album art metadata has been processed to ensure one of:
         already embedded in audio file
-        present as <album directory>.jpg in AlbumArt special directory
+        present as `album directory`.jpg in AlbumArt special directory
 
 Album art has been "extracted" to ensure a Folder.jpg album art file exists in each album sub-directory.
 
@@ -44,6 +70,7 @@ These audio files are now ready for conversion:
     album art embedding as ID3v2.3 art tag
 
 Directory structure is:
+
 ```text
 tld
 |_ playlist 1

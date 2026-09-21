@@ -1,0 +1,42 @@
+Rick Music Workflow
+
+Copy all artist files from F:\RickSource to F:\RickPrepped
+
+Review artist folder
+    Split into Albums if possible
+        Normalize album name if needed
+        Choose quality if needed
+    Run create-albums if only songs under artist
+
+    Review songs in albums
+        Remove duplicates
+        Remove unwanted songs
+        run normalize-<file type>-filename-walk for a tld
+        run normalize-<file type>-filename for single file
+        run remove-pattern to get rid of *.db, *.ini
+        verify there is a a viable art file
+          embedded in at least one audio file
+          a Folder.jpg is present
+          an AlbumArt*Large.jpg (200 x 200 min) is present that can be renamed to Folder.jpg
+        run remove-pattern to get rid of AlbumArt*.jpg ONLY if there is a Folder.jpg present OR at least one audio file has embedded art
+
+    Extract album art
+        run extract-walk for top level directory
+        run extract-file for single file
+        run set-album-art for tld
+
+Convert to mp3
+  convert files in F:\RickPrepped
+  run convert-walk for a tld
+  run convert-file for single file
+  move converted to mp3 files from \generated_files\Music to F:\RickConverted
+
+Level Normalize
+  normalize files from F:\RickConverted
+  run level-normalize-walk for a tld
+  run ebu-file, or peak-file, or rms-file for a single file
+  move level normalized files from \generated_files\Music to F:\RickNormalized
+
+Finalize
+  review level normalized files in \generated_files\Music for metadata accuracy
+  move finalized metadata files from level normalized music from \generated_files\Music to F:\RickFinalized

@@ -1,0 +1,56 @@
+# @file artifact-cleanup.yml
+# @author Gerald Manweiler
+#
+# @brief Artifact Cleanup workflow for GitHub Actions.
+#
+# @details Trigger this workflow through a reusable workflow call or manual dispatch.
+# Delete artifacts older than one day from the current repository.
+#
+# @version 1.0.0
+# @date 2026-08-25
+#
+# @copyright Copyright (c) 2026 Gerald Manweiler
+
+name: Artifact Cleanup
+
+# Called by the main CI pipeline or manually dispatched to delete old artifacts
+on:
+  workflow_call:                                            # Allows automatic execution by another workflow
+  workflow_dispatch:                                        # Allows manual execution
+
+jobs:
+  # Deletes artifacts from the current repository
+  cleanup-artifacts:
+    name: Delete old artifacts
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Delete artifacts older than 1 day
+        env:
+          GH_TOKEN: ${{ github.token }}                     # GitHub token for authentication of the cache deletion requests
+          REPO: ${{ github.repository }}                    # Repository name in the format "owner/repo" for API requests
+          DAYS: 1
+        run: |
+          cutoff=$(date -u -d "$DAYS day ago" +%s)
+          artifact_list="$RUNNER_TEMP/artifacts.tsv"
+
+          # Fetch the list of artifacts from the repository using the GitHub CLI and store it in a temporary file
+          gh api "repos/$REPO/actions/artifacts?per_page=100" --paginate --jq '.artifacts[]|[.id,.name,.created_at,.expired]|@tsv' > "$artifact_list"
+
+          # Read the artifact list line by line, checking the creation date of each artifact against the cutoff date
+          while IFS=$'\t' read -r artifact_id artifact_name created_at expired; do
+            if [ "$expired" = "true" ]; then
+              continue
+            fi
+
+            # Convert the artifact's creation date to epoch time and compare it with the cutoff date
+            created_epoch=$(date -u -d "$created_at" +%s)
+
+            # If the artifact is older than the cutoff date, delete it using the GitHub API
+            if [ "$created_epoch" -lt "$cutoff" ]; then
+              echo "Deleting artifact $artifact_name ($artifact_id) created at $created_at"
+              gh api -X DELETE "repos/$REPO/actions/artifacts/$artifact_id"
+            fi
+          done < "$artifact_list"

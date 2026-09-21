@@ -1,6 +1,14 @@
-# Classes
+<!-- markdownlint-disable MD033 MD041 -->
+
+# Templates
+
+ipsum lorem
+
+## Classes
+
 Open python_module_template.py<br>
 Modify the values in data dictionary<br>
+
 ```python
     data = {
         "file_name": "my_module",
@@ -8,13 +16,16 @@ Modify the values in data dictionary<br>
         "class_name": "MyClass"
     }
 ```
+
 Execute python_module_template.py<br>
 Move the generated "my_module.py" to the desired location<br>
 Add methods to "my_module.py"
 
-# Tests
+## Tests
+
 Open python_test_template.py<br>
 Modify the values in data dictionary<br>
+
 ```python
     data = {
         "file_name": "test_my_module",
@@ -26,6 +37,7 @@ Modify the values in data dictionary<br>
         "verbosity": 2
     }
 ```
+
 Execute python_test_template.py<br>
 Move the generated "test_my_module.py" to the tests directory<br>
 Add test methods to "test_my_module.py"

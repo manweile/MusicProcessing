@@ -1,61 +1,98 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+# @file python-app.yml
+# @author Gerald Manweiler
+#
+# @brief GitHub Actions workflow for building and testing the MusicProcessing project with Python and FFmpeg.
+#
+# @details This workflow sets up the Python environment, caches FFmpeg and pip dependencies, installs FFmpeg, installs Python dependencies,
+# and runs unit tests.<br>
+# for more information, see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+#
+# @version 1.0.0
+# @date 2024-06-19
+#
+# @copyright Copyright (c) 2026 Gerald Manweiler
 
-name: MusicProcessing
+name: Unit Tests
 
+# designed for calling by other workflows, such as the main CI pipeline, is not intended for triggering directly by events
 on:
-  workflow_dispatch:
-  push:
-    branches: [ "**" ]
-  pull_request:
-    branches: [ "**" ]
+  workflow_call:
 
+# using specific version of ffmpeg because empirically proven to work
 env:
-  FFMPEG_VERSION: "7.1"
+  FFMPEG_RELEASE_TAG: "autobuild-2026-07-31-14-10"
+  FFMPEG_ARCHIVE: "ffmpeg-n7.1.5-12-g1fdbca85aa-linux64-gpl-7.1.tar.xz"
 
 jobs:
-  build:
-
+  run-unit-tests:
+    name: Unit Tests
     runs-on: ubuntu-24.04
-
+    permissions:
+      contents: read
+      actions: write
     steps:
-    - uses: actions/checkout@v5
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
-    - name: Cache ffmpeg download
-      uses: actions/cache@v3
-      id: cache-ffmpeg
-      with:
-        path: /opt/ffmpeg/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz
-        key: ${{ runner.os }}-ffmpeg
-    - name: Download ffmpeg if not cached
-      if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
-      run: |
-        echo "Downloading ffmpeg ${FFMPEG_VERSION}"
-        wget -q https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz -P /opt/ffmpeg
-    - name: Extract and install ffmpeg
-      run: |
-        echo "Extracting ffmpeg ${FFMPEG_VERSION}"
-        sudo mkdir -p /opt/ffmpeg/extracted
-        sudo tar --strip-components 1 -xf /opt/ffmpeg/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz -C /opt/ffmpeg/extracted
-        echo "Installing ffmpeg ${FFMPEG_VERSION}"
-        sudo cp /opt/ffmpeg/extracted/bin/ffmpeg /usr/bin/ffmpeg
-        sudo cp /opt/ffmpeg/extracted/bin/ffprobe /usr/bin/ffprobe
-    - name: Cache pip modules
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-python-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-python-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Test with unittest
-      env:
-        PYTHONTRACEMALLOC: 1 # Enable tracemalloc
-      run: |
-        python -m unittest discover tests
+      # Checkout the repository to ensure the workflow has access to the codebase
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          submodules: false
+
+      # The python environment is set up with the required version and dependencies for running the unit tests
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Cache FFmpeg download to speed up subsequent workflow runs
+      - name: Cache FFmpeg Download
+        uses: actions/cache@v4
+        id: cache-ffmpeg
+        with:
+          path: .cache/ffmpeg/${{ env.FFMPEG_ARCHIVE }}
+          key: ${{ runner.os }}-ffmpeg-${{ env.FFMPEG_RELEASE_TAG }}
+
+      # Download FFmpeg if necessary and cache
+      - name: Download FFmpeg
+        if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
+        run: |
+          echo "Downloading ${FFMPEG_ARCHIVE}"
+          mkdir -p .cache/ffmpeg
+          wget --quiet --show-progress --tries=5 --waitretry=2 \
+            "https://github.com/BtbN/FFmpeg-Builds/releases/download/${FFMPEG_RELEASE_TAG}/${FFMPEG_ARCHIVE}" \
+            -O ".cache/ffmpeg/${FFMPEG_ARCHIVE}"
+
+      # Install FFmpeg
+      - name: Extract and Install FFmpeg
+        run: |
+          echo "Extracting ${FFMPEG_ARCHIVE}"
+          sudo mkdir -p /opt/ffmpeg/extracted
+          sudo tar --strip-components 1 -xf ".cache/ffmpeg/${FFMPEG_ARCHIVE}" -C /opt/ffmpeg/extracted
+          sudo install -m 755 /opt/ffmpeg/extracted/bin/ffmpeg /usr/local/bin/ffmpeg
+          sudo install -m 755 /opt/ffmpeg/extracted/bin/ffprobe /usr/local/bin/ffprobe
+          ffmpeg -version
+          ffprobe -version
+
+      # Cache required pip modules to speed up subsequent workflow runs
+      - name: Cache pip modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-python-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-
+
+      # Install Python dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Run tests with unittest
+      - name: Test with unittest
+        env:
+          PYTHONTRACEMALLOC: 1 # Enable tracemalloc
+        run: |
+          python -m unittest discover tests
