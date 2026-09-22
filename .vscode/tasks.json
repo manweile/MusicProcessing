@@ -9,8 +9,16 @@
       // This task runs the Doxygen command to generate documentation based on the configuration specified in the Doxyfile.
       {
           "label": "Create Doxygen Documentation",
-          "type": "shell",
-          "command": "doxygen",
+          // Remove the previous HTML output before generating fresh docs.
+          "type": "process",
+          "command": "powershell.exe",
+          "args": [
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-Command",
+            "if (Test-Path '${workspaceFolder}/docs/html') { Remove-Item -Recurse -Force '${workspaceFolder}/docs/html' }; doxygen '${workspaceFolder}/docs/Doxyfile'"
+          ],
           "options": {
               "cwd": "${workspaceFolder}/docs"
           },
@@ -26,7 +34,7 @@
               "panel": "shared",
               "showReuseMessage": true,
               "clear": false,
-              "close": true
+              "close": false
           }
       },
 
