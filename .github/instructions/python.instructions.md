@@ -183,7 +183,8 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   - `## @var <variable_name>` line for specifying the name of the module level variable or constant.
   - `# @brief <description>` line for providing a brief summary of the variable or constant.
   - `# @details <details>` line for providing additional information about the variable or constant.
-  - Module level variables and constants can have multiple @details lines if needed.
+  - Only module level variables and constants can have multiple `@details` lines if needed.
+    - File-level, classes, class functions, and standalone functions documentation blocks can only have a single `@details` line.
   - Each `@details` line should be:
    - be atomically granular
    - be concise
@@ -284,6 +285,7 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   - helper functions, constants, lightweight data containers, or support logic.
 - They may contain import statements for standard, third-party, and local modules.
 - They may contain module-level variables and constants.
+- Follow Module Level Variables and Constants rules for placement of purpose comments.
 - They may contain classes and function definitions relevant to the module's purpose.
 - They may contain stand alone functions relevant to the module's purpose.
 
@@ -292,7 +294,8 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - Class files are Python files whose primary purpose is to define one main behavioral class.
 - Class files reside in the `src` directory and its sub-directories, and follow the naming convention `<class_name>.py`.
 - They may contain import statements for standard, third-party, and local modules.
-- They may contain class-level variables and constants.
+- They may contain module level variables and constants.
+- Follow Module Level Variables and Constants rules for placement of purpose comments.
 - They follow the Class File Garbage Collection rules as described above.
 - They follow the Class File Logging Setup rules as described below.
 - They contain the class definition and its methods.
@@ -348,7 +351,7 @@ add_module_handler(logger, basename)
 - Files named `test_*.py` are implementation-only test sources, not public API.
 - test files reside in the `tests` directory and follow the naming convention `test_*.py`.
 - Test files are class files and should follow the same header and import rules as regular class files.
-- Follow Module Level Variables, Constants, and Lists rules for placement of purpose comments.
+- Follow Module Level Variables and Constants rules for placement of purpose comments.
 - Test files do not follow the Class File Logging Setup rules.
 - Test files have a class level `setUpClass` method for initializing test fixtures, with a `@classmethod` decorator.
 - Test files have a class level `tearDownClass` method for cleaning up test fixtures, with a `@classmethod` decorator.
@@ -358,13 +361,16 @@ add_module_handler(logger, basename)
   - The `@test` line is placed after the blank line following the`@details` block, and is followed by a blank line.
   - The `@test` tag describes if this is a happy path, edge case, error case, or corner case.
 - Test cases using mock objects have an appropriate `@patch` decorator for the mock in the test case.
+- It contains the `if __name__ == "__main__":` block to execute the test functionality.
+- The `if __name__ == "__main__":` block follows Shared Doxygen rules for function documentation.
 
 ## Main File
 
 - The main file is the Python file that serves as the entry point of the application.
-- Follow Module Level Variables, Constants, and Lists rules for placement of purpose comments.
+- Follow Module Level Variables and Constants rules for placement of purpose comments.
 - There is only one main file in the project.
 - It contains the `if __name__ == "__main__":` block to execute the main functionality.
+- The `if __name__ == "__main__":` block follows Shared Doxygen rules for function documentation.
 - It may contain import statements for standard, third-party modules, and local modules.
 - It may contain a `__all__` export list to specify the public API of the main file.
 

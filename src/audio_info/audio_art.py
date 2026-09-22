@@ -106,73 +106,94 @@ class AudioArt():
         r'''
         @brief Unpack image data from a WM/Picture tag.
 
-        @details Parses untrusted WM/Picture tag data and can raise decoding or bounds-related exceptions.<br>
-        Adapted from https://github.com/beetbox/mediafile/blob/master/mediafile.py#L243.
+        @details Parses a WM/Picture tag with length-checked UTF-16 fields and image payload.
 
-        @note little-endian byte order, b: signed char (1 byte), i: signed int (4 bytes)<br>
-        unpacks first 5 bytes in tuple<br>
-        where type is C signed char (1 byte)/Python integer<br>
-        and size is C signed int (4 bytes)/Python integer<br>
-        for an ASF WM/Picture, 3 = Front album cover<br>
-        eg.<br>
-        b'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`
-        <br>
-        image type and image size, elements 0-5: b'\x03\x140\x00\x00<br>
-        image type, elements 0-1, b'\x03'<br>
-        image size, elements 1-5, b'\x140\x00\x00 = 0x1403 little-endian, 0x3014 big-endian, decimal 12308<br>
-        mime type, elements 5 to 25: b'i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00'<br>
-        null terminator, elements 25 to 27: b'\x00\x00'<br>
-        description, elements 27 to 29: b'\x00\x00'<br>
-        data, elements 29 to 29 + size: b'\xff\xe0\x...'
+        @note Based on https://github.com/beetbox/mediafile/blob/master/mediafile/storage/afs.py<br>
+        This function is treated as "untrusted", in particular:<br>
+        requires at least 5 bytes for struct.unpack_from, or raises struct.error;<br>
+        scans for UTF-16 null terminators without a bounds check;<br>
+        can loop forever when a terminator is absent: once pos passes the end, data[pos:pos+2] remains b"", which never equals b"\x00\x00";<br>
+        decodes arbitrary byte slices as UTF-16, which can raise UnicodeDecodeError;<br>
+        reads the declared image size but does not use it to validate or bound the image payload.
+
+        @code{.text}
+        An ASF WM/Picture tag starts with a little-endian header:
+        b: signed char image type (1 byte).
+        i: signed int image size (4 bytes).
+
+        The remaining fields are UTF-16-LE, null-terminated MIME type and description strings, followed by image data.
+        The image type 3 identifies a front album cover.
+
+        Example:
+          |0-1|1    -     5|5                     -                        25|25 - 27|27 - 29|29                   -              29 + image size|
+        b'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00'
+
+        Bytes 0-1: image type, b'\x03' (front album cover).
+        Bytes 1-5: image size, b'\x140\x00\x00' = 0x00003014 little-endian = 12,308 bytes.
+        Bytes 5-25: MIME type, b'i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00' = image/jpeg.
+        Bytes 25-27: MIME type terminator, b'\x00\x00'.
+        Bytes 27-29: empty description and its terminator, b'\x00\x00'.
+        Bytes 29 through 29 + image size: image data, beginning b'\xff\xd8\xff\xe0'.
+        @endcode
 
         @param data {bytearray} The byte attribute data from asf audio WM/Picture tag.
         @return unpacked {tuple} Contains the MIME type, raw image data, type indicator, and image description.
 
-        @exception struct.error A struct module error occurred.
-        @exception UnicodeDecodeError An illegal sequence of str characters occurred.
+        @exception ValueError The WM/Picture data is malformed or truncated.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
-            unpacked = None
+            if len(data) < 5:
+                raise ValueError("WM/Picture data is missing its header")
 
-            # Unpack the type and size from the first 5 bytes of the data.
-            type, size = struct.unpack_from('<bi', data)
+            image_type, image_size = struct.unpack_from('<bi', data)
+            if image_size < 0:
+                raise ValueError("WM/Picture image size cannot be negative")
+
             pos = 5
-            mime = b''
 
-            # Extract the MIME type, which is UTF-16-LE encoded and null-terminated.
-            while data[pos:pos + 2] != b'\x00\x00':
-                mime += data[pos:pos + 2]
+            # Extract null-terminated UTF-16-LE fields without reading past the supplied data.
+            mime_start = pos
+            while True:
+                if pos + 2 > len(data):
+                    raise ValueError("WM/Picture MIME type is missing its terminator")
+                if data[pos:pos + 2] == b'\x00\x00':
+                    mime = data[mime_start:pos]
+                    pos += 2
+                    break
                 pos += 2
 
-            # Skip the null terminator after the MIME type.
-            pos += 2
-            # Extract the description, which is UTF-16-LE encoded and null-terminated.
-            description = b''
-            while data[pos:pos + 2] != b'\x00\x00':
-                description += data[pos:pos + 2]
+            description_start = pos
+            while True:
+                if pos + 2 > len(data):
+                    raise ValueError("WM/Picture description is missing its terminator")
+                if data[pos:pos + 2] == b'\x00\x00':
+                    description = data[description_start:pos]
+                    pos += 2
+                    break
                 pos += 2
 
-            # Skip the null terminator after the description.
-            pos += 2
-            # Extract the image data based on the size.
-            image_data = data[pos:pos + size]
+            image_end = pos + image_size
+            if image_end > len(data):
+                raise ValueError("WM/Picture image payload is truncated")
+            if image_end != len(data):
+                raise ValueError("WM/Picture data has unexpected trailing bytes")
 
-            # Prepare the unpacked tuple with MIME type, image data, type, and description.
-            unpacked = (mime.decode("utf-16-le"), image_data, type, description.decode("utf-16-le"))
+            try:
+                mime_type = mime.decode("utf-16-le")
+                image_description = description.decode("utf-16-le")
+            except UnicodeDecodeError as ud_error:
+                raise ValueError("WM/Picture text fields are not valid UTF-16-LE") from ud_error
 
-        except struct.error as s_error:
-            logger.error("Struct unpacking from error", exc_info=True)
-            raise s_error
-        except UnicodeDecodeError as ud_error:
-            logger.exception("UnicodeDecodeError decoding asf image from tag data", stack_info=True)
-            raise ud_error
+            return mime_type, data[pos:image_end], image_type, image_description
+
+        except ValueError as v_error:
+            logger.error("Invalid WM/Picture tag data", exc_info=True)
+            raise v_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} unpacking asf image from tag data", stack_info=True)
             raise e_error
-        else:
-            return unpacked
 
 
     def __write_data(self, file_path, image_data: bytearray):
@@ -304,17 +325,18 @@ class AudioArt():
         @details Uses ffmpeg to extract art from audio files of any supported format.<br>
         Requires the input file to contain a video stream.
 
-        @note extract art command explanation:<br>
-        ffmpeg -hide_banner -i file_path -an -map 0:v -map_metadata -1 -update 1 output_file -y<br>
-        <br>
-        -hide_banner: to reduce output clutter<br>
-        -an: specifies ignore audio stream<br>
-        -map 0:v: specifies 1st input file use video stream<br>
-        -map_metadata -1: specifies discard all alphanumeric metadata from input file<br>
-        the use of -map and -map_metadata will result in smaller jpg file than vcodec copy or -c:v copy - empirically tested<br>
-        -update 1: specifies overwrite output file with 1 frame from video, which is all we want, the embedded art IS the 1st
-        and only frame from video stream<br>
+        @code{.text}
+        extract art command
+        ffmpeg -hide_banner -i file_path -an -map 0:v -map_metadata -1 -update 1 output_file -y
+
+        -hide_banner: to reduce output clutter
+        -an: specifies ignore audio stream
+        -map 0:v: specifies 1st input file use video stream
+        -map_metadata -1: specifies discard all alphanumeric metadata from input file
+        the use of -map and -map_metadata will result in smaller jpg file than vcodec copy or -c:v copy - empirically tested
+        -update 1: specifies overwrite output file with 1 frame from video, the embedded art IS the 1st and only frame from video stream
         -y: to overwrite output file if needed
+        @endcode
 
         @param file_path {str} The full path to audio file.
 
@@ -504,13 +526,15 @@ class AudioArt():
 
         @details Detects a video stream that can contain embedded album art as its first frame.
 
-        @note check for stream command explanation:<br>
-        <br>
-        ffprobe -hide_banner -select_streams v:0 -show_streams -of json file_path<br>
-        -hide_banner: reduce output clutter<br>
-        -select_streams v:0: only want video stream<br>
-        -show_streams: gets all information about each media stream in the input<br>
-        -of json: output information in json format<br>
+        @code{.text}
+        check for stream command
+        ffprobe -hide_banner -select_streams v:0 -show_streams -of json file_path
+
+        -hide_banner: reduce output clutter
+        -select_streams v:0: only want video stream
+        -show_streams: gets all information about each media stream in the input
+        -of json: output information in json format
+        @endcode
 
         @param file_path {str} The full path to audio file.
         @return has_stream {bool} True when a video stream is present; otherwise False.
