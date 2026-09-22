@@ -113,33 +113,34 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 ## Package Files Header Block
 
 - Package files are `__init__.py` Python files whose primary purpose is to define a package.
-  - Their header blocks start with `@package ...` where `...` is the name of the package.
-  - Their next line is `@file ...` where `...` is the name of the relative file path; eg: `@file src/__init__.py`
+- Their header blocks start with `@package ...` where `...` is the name of the package.
+- Their next line is `@file ...` where `...` is the name of the relative file path; eg: `@file src/__init__.py`
 
 ## Module Files Header Block
 
 - Module files are non-`__init__.py` Python files whose primary purpose is to define module-level functionality such as helper
   functions, constants, lightweight data containers, or support logic.
-  - Their header blocks start with `@module ...` where `...` is the module name.
-  - Their next line is `@file ...` where `...` is the file name; eg: `@file module_file.py`
+- Their header blocks start with `@module ...` where `...` is the module name.
+- Their next line is `@file ...` where `...` is the file name - but not the relative file path; eg: `@file module_file.py`
 
 ## Class Files Header Block
 
 - Class files are Python files whose primary purpose is to define one main behavioral class.
-  - Their header blocks start with `@class ...` where `...` is the primary class name.
-  - Their next line is `@file ...` where `...` is the file name; eg: `@file class_file.py`
+- Their header blocks start with `@class ...` where `...` is the primary class name.
+- Their next line is `@file ...` where `...` is the file name - but not the relative file path; eg: `@file class_file.py`
 
 ## Test Files Header Block
 
 - Test files are `test_*.py` Python files whose primary purpose is to define unit tests for the project.
-  - Their header blocks start with `@class ...` where `...` is the name of the primary test class.
-  - Their next line is `@file ...` where `...` is the file name; eg: `@file test_class_file.py`
+- Their header blocks start with `@class ...` where `...` is the name of the primary test class.
+- Their next line is `@file ...` where `...` is the file name - but not the relative file path; eg: `@file test_class_file.py`
 
 ## Main File Header Block
 
 - Main files are Python files that serve as the entry point of the application.
-  - Their header blocks start with `@main ...` where `...` is the name of the main file.
-  - Their next line is `@file ...` where `...` is the file name; eg: `@file main_file.py`
+- Main files are Python files that serve as the entry point of the application.
+- Their header blocks start with `@main ...` where `...` is the name of the main file.
+- Their next line is `@file ...` where `...` is the file name - but not the relative file path; eg: `@file main_file.py`
 
 ## Import Rules
 
@@ -147,46 +148,37 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - Never use relative imports (e.g., `from .module import ...`).
 - Always use 1 import per line, never combine multiple imports in a single statement.
 - Always use absolute imports for local modules in package files.
+- all imports have an `# ...` comment where `...` explains the purpose of the import statement.
+- The entire import statement plus same line comment must never exceed column 150.
+  - use the shortest possible comment that clearly conveys the purpose of the import.
+  - if the import statement does not exceed column 61, and the comment is less than 90 characters
+    - place the comment after the import statement on the same line, starting at column 61.
+  - if the import statement does not exceed column 61, but the comment is 90 characters or more
+    - place the comment immediately before the import statement.
+  - if the import statement exceeds column 61
+    - place the comment immediately before the import statement.
 - Group imports in this order:
   1. Python standard modules - the modules installed with Python itself.
   2. third party modules - the modules installed via package managers like pip.
-  3. local modules - the modules defined within the project itself.
-- List imports alphabetically within each subgroup.
-- Precede each subgroup with:
-  - `# Standard Modules`
-  - `# Third Party Modules`
-  - `# Local Modules <type>`
-- Within each subgroup, maintain alphabetical order and use consistent comment annotations.
-- Within the `# Local Modules <type>` subgroup, partition imports with semantic headings named `# Local Module <type>`
-  - where `<type>` identifies the imported module member category
-    1. `Methods`
-    2. `Constants`
-    3. `Errors`
-    4. `Classes`
-  - Apply these semantic headings to both `import ...` and `from ... import ...` statements.
-  - Use the imported member name to determine its category and place it under the corresponding heading.
-  - Order the semantic headings in this order:
-    1. Methods
-    2. Constants
-    3. Errors
-    4. Classes
-- all imports have an `# ...` comment where `...` explains the purpose of the import statement.
-  - The entire import statement plus same line comment must never exceed column 150.
-  - use the shortest possible comment that clearly conveys the purpose of the import.
-  - if the import statement does not exceed column 61, and the comment is less than 90 characters,
-    - place the comment after the import statement on the same line, starting at column 61.
-  - if the import statement does not exceed column 61, but the comment is 90 characters or more,
-    - place the comment immediately before the import statement.
-  - if the import statement exceeds column 61,
-    - place the comment immediately before the import statement.
+  3. local modules by usage category type- the modules defined within the project itself.
+- List imports alphabetically within each subgroup and use consistent comment annotations.
 - For all subgroups, imports via `import` come first, followed by `from ... import ...` statements
   - Maintain consistent comment annotations and alphabetical order in `import` and `from ... import ...` statements.
 - Leave a blank line after each subgroup.
+- Precede each subgroup with:
+  - `# Standard Modules`
+  - `# Third Party Modules`
+  - `# Local Modules <type>`, where `<type>` is one of the following:
+    1. `Methods` - functions and procedures defined within the module, Eg. `Local Module Methods` for methods.
+    2. `Constants` - constant values defined within the module, Eg. `Local Module Constants` for constants.
+    3. `Errors` - custom error classes defined within the module, Eg. `Local Module Errors` for errors.
+    4. `Classes` - classes defined within the module, Eg. `Local Module Classes` for classes.
 
 ### Module Level Variables and Constants
 
 - Have a Doxygen documentation block for all module level variables and constants.
 - In files that contain a class and module level variables or constants, the last module level variable or constant is followed by 2 blank lines.
+- The module level variables and constants always follow the logging set up.
 - The Doxygen documentation block should include:
   - `## @var <variable_name>` line for specifying the name of the module level variable or constant.
   - `# @brief <description>` line for providing a brief summary of the variable or constant.
@@ -197,11 +189,14 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
    - be concise
    - be relevant to the variable or constant it describes
    - have a maximum of 150 characters per line
+- The final subgroup should be followed by 2 blank lines before the class definition or the next section.
 - Module level variables and constants have subgroups with this ordering:
-  - variables that call functions
-  - constant literals, sets, and lists that are defined directly
+  1. Variables that call functions
+  2. Constant literals
+  3. Constant Sets
+  4. Constant Lists
 - within each subgroup, items should be listed in alphabetical order:
-- Examples:
+- Example:
 
   ```python
   ## @var directory
@@ -209,10 +204,37 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   # @details Provides directory processing functionality.
   directory = DirectoryProcessing()
 
+  ## @var normalization
+  # @brief Audio normalization instance.
+  # @details Provides audio normalization functionality.
+  normalization = AudioNormalization()
+
+  ## @var subprocess_utils
+  # @brief Subprocess utilities instance.
+  # @details Provides subprocess utility functionality.
+  subprocess_utils = SubprocessUtilities()
+
   ## @var TPOS
   # @brief ID3 disc-of-set tag.
   # @details Sets TPOS metadata.
   TPOS = "TPOS"
+
+  ## @var TYER
+  # @brief ID3 release-year tag.
+  # @details Sets TYER metadata.
+  TYER = "TYER"
+
+  ## @var MP3_TIME_KEYS
+  # @brief ID3 time keys.
+  # @details Sets TYER metadata.
+  # @details 'TYER' is the preferred key for ID3 time metadata.
+  MP3_TIME_KEYS = {
+      'TYER',
+      'TORY',
+      'TDRC',
+      'TDOR',
+      'TXXX=originalyear'
+  }
 
   ## @var M4A_TIME_KEYS
   # @brief MP4 (m4a) time keys.
@@ -261,9 +283,7 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - Module files are Python files whose primary purpose is to define module-level functionality such as:
   - helper functions, constants, lightweight data containers, or support logic.
 - They may contain import statements for standard, third-party, and local modules.
-  - They follow Import rules.
 - They may contain module-level variables and constants.
-  - They follow Module Level Variables and Constants rules.
 - They may contain classes and function definitions relevant to the module's purpose.
 - They may contain stand alone functions relevant to the module's purpose.
 
@@ -284,6 +304,7 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - The garbage collection setup is placed after the import statements and before any other module-level code.
 - The garbage collection setup calls `gc.enable()`.
 - The garbage collection enable call is followed by a blank line.
+- Example:
 
 ```python
 import gc                                                   # for garbage collection management
@@ -303,21 +324,22 @@ gc.enable()
 - The logging setup defines the module file basename for the logger file handler.
 - The logging setup calls `add_module_handler(logger, basename)`.
 - The logging setup section is followed by a blank line.
+- Example:
 
-  ```python
-  ## @var logger
-  # @brief Logger instance for the module.
-  # @details Set the logger name to the module name.
-  logger = logging.getLogger(__name__)
+```python
+## @var logger
+# @brief Logger instance for the module.
+# @details Set the logger name to the module name.
+logger = logging.getLogger(__name__)
 
-  ## @var basename
-  # @brief Base name for the logger file handler log file.
-  # @details Get the module file name from the current file path.
-  basename = os.path.basename(__file__)
+## @var basename
+# @brief Base name for the logger file handler log file.
+# @details Get the module file name from the current file path.
+basename = os.path.basename(__file__)
 
-  add_module_handler(logger, basename)
+add_module_handler(logger, basename)
 
-  ```
+```
 
 ## Test Files
 

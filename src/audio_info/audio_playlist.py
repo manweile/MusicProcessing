@@ -1,67 +1,77 @@
 '''
+@class AudioPlaylist
 @file audio_playlist.py
+@author Gerald Manweiler
+
 @brief Defines the audio playlist class.
 
-@author Gerald Manweiler
+@details Defines methods for reading and updating M3U playlists for the MusicProcessing project.
+
+@version 1.0.0
+@date 2026-09-22
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import gc
-import logging
-import os
-from os import strerror
-from pathlib import Path
+# Standard Modules
+import gc                                                   # for garbage collection management
+import logging                                              # for module logging
+import os                                                   # for operating-system interfaces
+from os import strerror                                     # for operating-system error messages
+from pathlib import Path                                    # for object-oriented filesystem paths
 
-# local module methods
-from src import add_module_handler
-# local module constants
-from src import AUDIO_EXTS
-from src import MP3_EXT
-from src import PLAYLIST_EXTS
-from src.generated_files import GENERATED_PATH
-# local module errors
-from src import PlaylistError
-# local module classes
-from src.dir_processing import DirectoryProcessing
+# Local Module Methods
+from src import add_module_handler                          # for module-specific logging handlers
+
+# Local Module Constants
+from src import AUDIO_EXTS                                  # for supported audio file extensions
+from src import MP3_EXT                                     # for MP3 file extension
+from src import PLAYLIST_EXTS                               # for supported playlist file extensions
+from src.generated_files import GENERATED_PATH              # for generated file output paths
+
+# Local Module Errors
+from src import PlaylistError                               # for playlist processing failures
+
+# Local Module Classes
+from src.dir_processing import DirectoryProcessing          # for directory processing functionality
 
 gc.enable()
 
 ## @var logger
-# @brief the logger instance for module
-# @details sets the logger name to module name
+# @brief Logger instance for the module.
+# @details Sets the logger name to the current module name.
 logger = logging.getLogger(__name__)
 
 ## @var basename
-# @brief name for logger file handler log file
-# @details gets the module file name
+# @brief Base name for the logger file handler.
+# @details Gets the module file name from the current file path.
 basename = os.path.basename(__file__)
 
 add_module_handler(logger, basename)
 
 ## @var directory
-# @brief instance of DirectoryProcessing class
-# @details used for accessing class functionality
+# @brief Directory processing instance.
+# @details Provides directory processing functionality.
 directory = DirectoryProcessing()
 
 ## @var DELIMITER
-# @brief delimiter used in m3u files
-# @details used for processing m3u files
+# @brief M3U field delimiter.
+# @details Separates duration and file name values in EXTINF playlist entries.
 DELIMITER = ","
 
 
 class AudioPlaylist():
     '''
-    @brief Defines the base playlist processing used by project.
+    @brief Defines the audio playlist processing class.
+
+    @details Provides methods that update M3U playlist entries for the project's music collection.
     '''
 
     def __init__(self) -> None:
         '''
-        @brief Initialize the AudioPlaylist class.
+        @brief Initializes the AudioPlaylist class.
 
-        @details A basic class implementation with no instantiation parameters.
-
-        @return AudioPlaylist {instance} An instance of the class.
+        @details Initializes an AudioPlaylist instance without instance-specific state.
         '''
 
         pass
@@ -69,14 +79,13 @@ class AudioPlaylist():
 
     def get_audio_name(self, line: str) -> str:
         '''
-        @brief Gets audio file name from a #EXTINF line
+        @brief Gets an audio file name from an EXTINF line.
 
-        @details The audio file extension may have changed from wma or m4a to mp3
-        @details A  extinf tag containing line is in format: #EXTINF:N,<name>.<ext>,
-        where N is length of song in seconds, or -1 or 0, and
-        @details <ext> is one of mp3, m4a, or wma.
+        @details Converts WMA and M4A file extensions to MP3.<br>
+        @details Parses EXTINF entries in the form #EXTINF:N,<name>.<ext>, where N is a song duration, -1, or 0.<br>
+        @details Supports MP3, M4A, and WMA file extensions.
 
-        @param line (str) Line of text read from m3u file containing a #EXTINF tag
+        @param line {str} Line of text read from an M3U file containing an EXTINF tag.
         @return audio {str} Audio file name with extension.
 
         @exception PlaylistError Indicates an error occurred in playlist class.
@@ -115,9 +124,9 @@ class AudioPlaylist():
         '''
         @brief Updates an old playlist relative pathing.
 
-        @details Walks through a m3u playlist updating relative paths.
-        @details The updated playlist is created in generated files directory.
-        @details The new file is expected to be moved to the correct top level directory  for the relative paths.
+        @details Updates relative paths in an M3U playlist.<br>
+        @details Creates the updated playlist in the generated-files directory.<br>
+        @details Expects the updated playlist to be moved to the music top-level directory.
 
         @param tld_path {str} The top level directory where playlist and music files are located.
         @param input_m3u {str} The full file path to playlist needing conversion.
@@ -192,6 +201,8 @@ class AudioPlaylist():
     def update_walk(self, tld_path: str) -> None:
         '''
         @brief Updates playlists relative pathing.
+
+        @details Finds M3U playlists beneath the top-level directory and updates their relative paths.
 
         @param tld_path {str} The top level directory where playlist and music files are located.
 
