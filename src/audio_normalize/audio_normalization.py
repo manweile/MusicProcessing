@@ -348,6 +348,16 @@ class AudioNormalization():
 
         @details Uses FFprobe to read the media container's bitrate.
 
+        @code{.text}
+        get bit rate command
+        ffprobe -v error -print_format json -show_entries format=bit_rate file_path
+
+        -v error; reduce clutter
+        -print_format json; output in json format
+        -show_entries format=bit_rate; get just the bit rate
+        file_path; the path to the media file to be analyzed.
+        @endcode
+
         @param file_path {str} The path to the media file.
         @return bit_rate {int | None} The bitrate in bits per second, or None if not found.
 
@@ -358,9 +368,6 @@ class AudioNormalization():
         try:
             bit_rate = None
 
-            # -v quiet suppress output clutter (-hide_banner works too)
-            # -print_format json for json output
-            # -show_entries format=bit_rate gets just the bit rate
             command = [
                 'ffprobe',
                 '-v', 'error',
@@ -396,6 +403,17 @@ class AudioNormalization():
 
         @details Uses FFprobe to read the first audio stream's sample rate.
 
+        @code{.text}
+        get sample rate command
+        ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of json file_path
+
+        -v error: reduce clutter
+        -select_streams a:0; only want audio stream
+        -show_entries stream=sample_rate; we only get the one entry specified
+        -of json; to output in json format
+        file_path; the path to the audio file to be analyzed.
+        @endcode
+
         @param file_path {str} The full path to audio file.
         @return sample_rate {int | None} The sample rate in Hz, or None if not found.
 
@@ -407,10 +425,6 @@ class AudioNormalization():
         try:
             sample_rate = None
 
-            # -v error or -hide_banner, either work to reduce clutter
-            # -select_streams a:0 only want audio stream
-            # -show_entries stream=sample_rate we only get the one entry specified
-            # -of json to output in json format
             command = [
                 'ffprobe',
                 '-v', 'error',
@@ -769,7 +783,6 @@ class AudioNormalization():
             data.append(command)
 
             if show_spinner:
-                # _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
                 _, spinner = subprocess_utils.spinner_subprocess_run(command, text)
                 success_text = f"Successful rms normalization on {input_path_basename} in {spinner.elapsed_time:.2f} secs\n"
             else:

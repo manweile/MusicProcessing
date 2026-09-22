@@ -303,23 +303,30 @@ class AudioMetadata():
         @brief Converts an acceptable audio file to mp3 audio file, using ffmpeg directly.
 
         @details Converts flac, m4a, mp3 & wma files to mp3 files with ID3v2.3 tags, including cover art.<br>
+        Metadata is read and mapped to the ID3v2.3 tags, then appended to the conversion command line.<br>
+        The final ffmpeg conversion command line is executed to produce the mp3 file with the desired metadata.<br>
+        Once the mp3 file has been created, the co-located cover art is added via Mutagen.<br>
         Calling function MUST supply path to an existing valid audio file with valid metadata.<br>
         The supplied audio file MUST have co-located Folder.jpg album art.
 
-        @note Initial ffmpeg command line is for converting audio files to mp3 format, wiping out existing metadata, enforcing ID3v2.3 tags,
-        and preserving bit rate.<br>
-        ffmpeg -hide_banner -i file_path -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198<br>
-        -hide_banner: reduce output clutter<br>
-        -i file_path: the path to the audio file<br>
-        -vn -map_metadata -1: -vn drops video stream and -map_metadata -1 drops all text metadata<br>
-        -codec:a libmp3lame: -codec:a libmp3lame sets audio codec for mp3<br>
-        -id3v2_version 3: known bug, MUST specify id3v2 version, else will get ID3v2.4<br>
-        -b:a 128198: ffmpeg will downgrade bitrate if you don't set it<br>
-        <br>
-        The initial ffmpeg command line is expanded twice.<br>
-        First expansion adds the preferred metadata once it has been mapped from original audio file to ID3v2.3 tags.<br>
-        Second expansion adds the export file path.<br>
+        @code{.text}
+        Initial ffmpeg command line converts audio files to mp3 format, wipes out existing metadata, enforces ID3v2.3 tags, and preserves bit rate.
+        ffmpeg -hide_banner -i file_path -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198
+
+        -hide_banner; reduce output clutter
+        -i file_path; the path to the audio file
+        -vn -map_metadata -1; -vn drops video stream and -map_metadata -1 drops all text metadata
+        -codec:a libmp3lame; sets audio codec for mp3
+        -id3v2_version 3; known bug, MUST specify id3v2 version, else will get ID3v2.4
+        -b:a 128198; ffmpeg will downgrade bitrate if you don't set it
+
+        The initial ffmpeg command line is expanded twice.
+        First expansion adds the preferred metadata once it has been mapped from original audio file to ID3v2.3 tags.
+
+        Second expansion adds the export file path.
+
         Cover art is added directly via Mutagen MP3 module - it's easier with Mutagen than ffmpeg.
+        @endcode
 
         @param file_path {str} The path for audio file to be converted.
         @param show_spinner {bool} Show spinner flag.
@@ -637,55 +644,58 @@ class AudioMetadata():
         This def replaces the native pydub mediainfo function.<br>
         The file_path MUST be for a valid audio file.
 
-        @note This ffprobe cli WILL include 'comment' = 'Cover (front)' if the file has embedded album art in the TAG inner dict.<br>
-        This is because show_streams means ffprobe sees the art data as the video stream metadata instead.<br>
-        <br>
-        ffprobe -v error -show_format -show_streams `file_path`<br>
-        -v quiet: reduce output clutter<br>
-        -show_format: get high level details of media file<br>
-        -show_streams: gets all information about each media stream in the input<br>
-        <br>
-        The output format from popen_pipe varies by operating system.<br>
-        For Windows, the line endings are `\r\n`, whereas on Linux it is just `\n`<br>
-        in the output, `DISPOSITION:` and `TAG:` are inner dicts.<br>
-        Eg:<br>
-        [STREAM]`\r\n`key=value`\r\n`...`\r\n`DISPOSITION:key=value`\r\n`...`\r\n`DISPOSITION:key=value`\r\n`[/STREAM]\r\n<br>
-        [FORMAT]`\r\n`key=value`\r\n`...`\r\n`TAG:key=value`\r\n`...`\r\n`TAG:key=value`\r\n`[/FORMAT]<br>
-        <br>
-        This output requires a complex regex command to parse out data:<br>
+        @code{.text}
+        This ffprobe cli WILL include 'comment' = 'Cover (front)' if the file has embedded album art in the TAG inner dict.
+        This is because show_streams means ffprobe sees the art data as the video stream metadata instead.
+
+        ffprobe -v error -show_format -show_streams file_path
+        -v quiet; reduce output clutter
+        -show_format; get high level details of media file
+        -show_streams; gets all information about each media stream in the input
+        file_path; the path to the audio file to be analyzed by ffprobe
+
+        The output format from popen_pipe varies by operating system.
+        For Windows, the line endings are `\r\n`, whereas on Linux it is just `\n`.
+        in the output, `DISPOSITION:` and `TAG:` are inner dicts.
+        Eg:
+        [STREAM]`\r\n`key=value`\r\n`...`\r\n`DISPOSITION:key=value`\r\n`...`\r\n`DISPOSITION:key=value`\r\n`[/STREAM]\r\n
+        [FORMAT]`\r\n`key=value`\r\n`...`\r\n`TAG:key=value`\r\n`...`\r\n`TAG:key=value`\r\n`[/FORMAT]
+
+        This output requires a complex regex command to parse out data:
         rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
-        <br>
-        r - so don't have to use escaping (`\\`)<br>
-        <br>
-        1st RE (Regular Expression) - to get an inner dict<br>
+
+        r - so don't have to use escaping (`\\`)
+
+        1st RE (Regular Expression) - to get an inner dict
         (?:(?P<inner_dict>.*?):)<br>
-        Question mark colon is a non-capturing version of regular parentheses.<br>
-        Matches whatever regular expression is inside the parentheses - in this case, the (?P<inner_dict>.*?).<br>
-        The substring matched by the group cannot be retrieved after performing a match or referenced later in the pattern.<br>
-        [STREAM], [/STREAM], [FORMAT], and [/FORMAT] never match, so they get ignored.<br>
-        <br>
-        (?P<inner_dict>.*?):<br>
-        inner_dict is symbolic group name, must be a valid python identifier. The line parsing logic will use it.<br>
-        Period asterisk question mark means match any char except newline, as few as possible characters will be matched.<br>
-        The colon matches the token after a inner_dict name (as in DISPOSITION:)<br>
-        DISPOSITION: and TAG: are inner dicts, they get returned.<br>
-        <br>
-        2nd RE - get the key<br>
+        Question mark colon is a non-capturing version of regular parentheses.
+        Matches whatever regular expression is inside the parentheses - in this case, the (?P<inner_dict>.*?).
+        The substring matched by the group cannot be retrieved after performing a match or referenced later in the pattern.
+        [STREAM], [/STREAM], [FORMAT], and [/FORMAT] never match, so they get ignored.
+
+        (?P<inner_dict>.*?):
+        inner_dict is symbolic group name, must be a valid python identifier. The line parsing logic will use it.
+        Period asterisk question mark means match any char except newline, as few as possible characters will be matched.
+        The colon matches the token after a inner_dict name (as in DISPOSITION:)
+        DISPOSITION: and TAG: are inner dicts, they get returned.
+
+        2nd RE - get the key
         ?(?P<key>.*?)<br>
-        question mark causes the resulting RE to match 0 or 1 repetitions of the preceding RE<br>
-        <br>
-        (?P<key>.*?):<br>
-        Question mark P <key> where key is the symbolic group name, and another valid python identifier. The line parsing logic will use it.<br>
-        Period asterisk question mark means match any char except newline, as few as possible characters will be matched<br>
-        <br>
-        3rd RE - get the value<br>
-        \=(?P<value>.*?)<br>
-        slash equal escapes the equal sign, which is the token used in key/value pairs.<br>
-        Value is another valid python identifier. The line parsing logic will use it.<br>
-        period asterisk question mark means match any char except newline, as few as possible characters will be matched<br>
-        <br>
-        $<br>
-        Dollar anchors a match to end of search string<br>
+        question mark causes the resulting RE to match 0 or 1 repetitions of the preceding RE
+
+        (?P<key>.*?):
+        Question mark P <key> where key is the symbolic group name, and another valid python identifier. The line parsing logic will use it.
+        Period asterisk question mark means match any char except newline, as few as possible characters will be matched
+
+        3rd RE - get the value
+        \=(?P<value>.*?)
+        slash equal escapes the equal sign, which is the token used in key/value pairs.
+        Value is another valid python identifier. The line parsing logic will use it.
+        period asterisk question mark means match any char except newline, as few as possible characters will be matched
+
+        $
+        Dollar anchors a match to end of search string
+        @endcode
 
         @param file_path {str} The full path to audio file.
         @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
@@ -805,15 +815,18 @@ class AudioMetadata():
 
         @details Uses ffprobe to get tags from any valid audio file.
 
-        @note This ffprobe cli, unlike the general media info cli: ffprobe -v quiet -show_format -show_streams file_path,<br>
-        will NOT insert 'comment' = 'Cover (front)' in the tags dictionary if the audio file has embedded art.<br>
-        This cli will only return textual audio metadata.<br>
-        <br>
-        ffprobe -v -of json -show_entries format_tags file_path<br>
-        -v quiet: reduce console clutter<br>
-        -of json: output in json format<br>
-        -show_entries format_tags: we only care about tags<br>
-        file_path: the path to the audio file<br>
+        @code{.text}
+        The general media info command line (ffprobe -v quiet -show_format -show_streams file_path)
+        will insert 'comment' = 'Cover (front)' in the tags dictionary when the audio file has embedded art.
+
+        This cli will only return textual audio metadata.
+        ffprobe -v -of json -show_entries format_tags file_path
+
+        -v quiet; reduce console clutter
+        -of json; output in json format
+        -show_entries format_tags; we only care about tags
+        file_path; the path to the audio file
+        @endcode
 
         @param file_path {str} The full path to audio file.
         @return media_tags {dict} Media tags from filepath.

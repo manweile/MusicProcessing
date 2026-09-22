@@ -125,21 +125,19 @@ class AudioPlaylist():
         @brief Updates an old playlist relative pathing.
 
         @details Updates relative paths in an M3U playlist.<br>
-        @details Creates the updated playlist in the generated-files directory.<br>
-        @details Expects the updated playlist to be moved to the music top-level directory.
+        Creates the updated playlist in the generated-files directory.<br>
+        Expects the updated playlist to be moved to the music top-level directory.
+
+        @note see https://en.wikipedia.org/wiki/M3U<br>
+        My playlists are relative pathed (unlike windows pls files, which are absolute pathed).<br>
+        Because I use relative pathing, m3u files MUST live in the top level directory ie in Music<br>
+        So a proper relative path will be <artist>/<album>/<title>.mp3
 
         @param tld_path {str} The top level directory where playlist and music files are located.
         @param input_m3u {str} The full file path to playlist needing conversion.
 
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        r'''
-        see https://en.wikipedia.org/wiki/M3U
-        My playlists are relative pathed (unlike windows pls files, which are absolute pathed).
-        Because I use relative pathing, m3u files MUST live in the top level directory ie in Music
-        So a proper relative path will be <artist>\<album>\<title>.mp3
         '''
 
         extheader = "#EXTM3U"
