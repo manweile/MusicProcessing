@@ -299,6 +299,7 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - They follow the Class File Garbage Collection rules as described above.
 - They follow the Class File Logging Setup rules as described below.
 - They contain the class definition and its methods.
+- Class files documentation blocks may include code examples using the `@code{.text}` and `@endcode` tags to illustrate command-line usage.
 
 ### Class File Garbage Collection
 
@@ -353,9 +354,10 @@ add_module_handler(logger, basename)
 - Test files are class files and should follow the same header and import rules as regular class files.
 - Follow Module Level Variables and Constants rules for placement of purpose comments.
 - Test files do not follow the Class File Logging Setup rules.
-- Test files have a class level `setUpClass` method for initializing test fixtures, with a `@classmethod` decorator.
-- Test files have a class level `tearDownClass` method for cleaning up test fixtures, with a `@classmethod` decorator.
-- Test files have a `tearDown` method for cleaning up individual test cases.
+- Test files documentation blocks may include code examples using the `@code{.text}` and `@endcode` tags to illustrate command-line usage.
+- Test files may have a class level `setUpClass` method for initializing test fixtures, with a `@classmethod` decorator.
+- Test files may have a class level `tearDownClass` method for cleaning up test fixtures, with a `@classmethod` decorator.
+- Test files may have a `tearDown` method for cleaning up individual test cases.
 - Test cases are named `test_<functionality>`, where `<functionality>` describes the specific feature or behavior being tested.
 - Test cases have an additional tag `@test` in their Doxygen documentation.
   - The `@test` line is placed after the blank line following the`@details` block, and is followed by a blank line.

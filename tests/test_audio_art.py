@@ -1,51 +1,59 @@
 '''
+@class TestAudioArt
 @file test_audio_art.py
 @brief Defines the test audio art class.
 
+@details Tests AudioArt album-art extraction and writing behavior.
+
+@version 1.0.0
+@date 2026-09-22
+
 @author Gerald Manweiler
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import errno
-import gc
-import inspect
-import os
-import shutil
-import struct
-import unittest
-from pathlib import Path
+# Standard Modules
+import errno                                                # for operating-system error numbers
+import inspect                                              # for test method discovery
+import os                                                   # for file-system path operations
+import shutil                                               # for test-fixture copying and removal
+import struct                                               # for binary ASF image fixture construction
+import unittest                                             # for direct test-suite execution
+from pathlib import Path                                    # for test-fixture path manipulation
+from subprocess import CalledProcessError                   # for expected ffmpeg extraction failures
+from unittest import TestCase                               # for test-case assertions and lifecycle hooks
+from unittest.mock import patch                             # for write-operation error simulation
 
-from subprocess import CalledProcessError
-from unittest import TestCase
-from unittest.mock import Mock, patch
-# local module constants
-from src import FOLDER_ART, MP3_EXT, PLAYLIST_EXTS
-from src import UTF8
-from tests import TEST_M3U
-# from tests import TEST_FLAC_CREAM
-from tests import TEST_FLAC_ALANNAH_MYLES
-from tests import TEST_M4A_DAVIS
-from tests import TEST_MP3_ABBA
-from tests import TEST_MP3_CRUSH
-from tests import TEST_MP3_NO_TAG
-from tests import TEST_WMA_HOLIDAY
-from tests import TEST_WMA_JOHN
-from tests import TESTS_PATH, TESTS_TLD
-# local module classes
-from src.audio_info import AudioArt
+# Local Module Constants
+from src import FOLDER_ART                                  # for album-art fixture filenames
+from src import MP3_EXT                                     # for MP3 file-pattern extraction tests
+from src import PLAYLIST_EXTS                               # for invalid file-pattern extraction tests
+from tests import TEST_FLAC_ALANNAH_MYLES                   # for FLAC album-art extraction tests
+from tests import TEST_M3U                                  # for invalid audio input tests
+from tests import TEST_M4A_DAVIS                            # for M4A album-art extraction tests
+from tests import TEST_MP3_ABBA                             # for existing album-art file tests
+from tests import TEST_MP3_CRUSH                            # for MP3 album-art extraction tests
+from tests import TEST_MP3_NO_TAG                           # for absent album-art tests
+from tests import TEST_WMA_HOLIDAY                          # for WMA metadata album-art tests
+from tests import TEST_WMA_JOHN                             # for WMA stream album-art tests
+from tests import TESTS_PATH                                # for prepared-fixture directory paths
+from tests import TESTS_TLD                                 # for test music fixture paths
 
-gc.enable()
+# Local Module Classes
+from src.audio_info import AudioArt                         # for album-art functionality under test
 
 ## @var art
-# @brief instance of AudioArt class
-# @details used for accessing class functionality
+# @brief AudioArt instance under test.
+# @details Provides access to album-art functionality.
 art = AudioArt()
 
 
 class TestAudioArt(TestCase):
     '''
     @brief Tests AudioArt class functions.
+
+    @details Verifies album-art extraction, writing, and ASF image parsing behavior.
     '''
 
     @classmethod
@@ -53,7 +61,9 @@ class TestAudioArt(TestCase):
         '''
         @brief Initialize data for test suite.
 
-        @details These datums are used throughout class and only need init once.
+        @details Creates shared input, output, and cleanup paths for the test suite.
+
+        @param cls {type[TestAudioArt]} Test class receiving shared fixtures.
         '''
 
         # directory for "walk" type tests: D:\MusicProcessing\tests\PreppedMusic
@@ -108,7 +118,11 @@ class TestAudioArt(TestCase):
     @classmethod
     def tearDownClass(cls):
         '''
-        @brief Cleans up the walk type tests source audio files and directories.
+        @brief Clean up walk-test source files and directories.
+
+        @details Removes the prepared directory when it was created during setup.
+
+        @param cls {type[TestAudioArt]} Test class containing shared fixtures.
         '''
 
         if os.path.exists(cls.prepped):
@@ -118,6 +132,10 @@ class TestAudioArt(TestCase):
     def tearDown(self):
         '''
         @brief Clean up the created Folder.jpg files.
+
+        @details Removes album-art files created by individual test cases.
+
+        @param self {TestAudioArt} Test instance containing cleanup paths.
         '''
 
         for jpg in self.delete_jpgs:
@@ -131,9 +149,13 @@ class TestAudioArt(TestCase):
 
     def test_extract_album_art(self):
         '''
-        @brief Tests if album art is extracted from audio file.
+        @brief Test album-art extraction from an audio file.
 
-        @details Happy path test case.
+        @details Verifies extraction creates the expected album-art file.
+
+        @test Happy path.
+
+        @param self {TestAudioArt} Test instance containing expected output paths.
         '''
 
         input_audio = TEST_WMA_JOHN
@@ -144,7 +166,13 @@ class TestAudioArt(TestCase):
 
     def test_extract_album_art_folder_exists(self):
         '''
-        brief Tests try to extract album art from file that already has co-located Folder.jpg file.
+        @brief Test album-art extraction when Folder.jpg already exists.
+
+        @details Verifies extraction logs that the co-located album-art file already exists.
+
+        @test Edge case.
+
+        @param self {TestAudioArt} Test instance containing test fixture paths.
         '''
 
         input_audio = TEST_MP3_ABBA
@@ -160,7 +188,13 @@ class TestAudioArt(TestCase):
 
     def test_extract_album_art_invalid_audio(self):
         '''
-        @brief Tests try to extract album art from non-valid file.
+        @brief Test album-art extraction from an invalid audio file.
+
+        @details Verifies extraction logs a message for a non-audio playlist file.
+
+        @test Error case.
+
+        @param self {TestAudioArt} Test instance containing test fixture paths.
         '''
 
         input_audio = TEST_M3U
@@ -176,10 +210,13 @@ class TestAudioArt(TestCase):
 
     def test_extract_album_art_no_tag_or_stream(self):
         '''
-        @brief Test try to extract art from audio file with no stream or metadata tags at all.
+        @brief Test album-art extraction without streams or metadata tags.
 
-        @details This a complete no result test, as the function has 2 possible extraction methods,
-        ffmpeg (primary), mutagen (secondary).
+        @details Verifies both ffmpeg and mutagen extraction paths report absent album art.
+
+        @test Edge case.
+
+        @param self {TestAudioArt} Test instance containing test fixture paths.
         '''
 
         input_audio = TEST_MP3_NO_TAG
@@ -200,9 +237,13 @@ class TestAudioArt(TestCase):
 
     def test_extract_album_art_without_stream_with_tag(self):
         '''
-        @brief Tests if album art is extracted from audio file.
+        @brief Test album-art extraction without a video stream.
 
-        @details Uses wma audio without a stream to ensure mutagen (secondary) extraction method is used.
+        @details Verifies the mutagen fallback extracts artwork from WM/Picture metadata.
+
+        @test Edge case.
+
+        @param self {TestAudioArt} Test instance containing expected output paths.
         '''
 
         input_audio = TEST_WMA_HOLIDAY
@@ -213,7 +254,13 @@ class TestAudioArt(TestCase):
 
     def test_extract_asf_art(self):
         '''
-        @brief Tests if album art is extracted from wma/asf audio file.
+        @brief Test ASF album-art extraction from a WMA file.
+
+        @details Verifies the ASF extraction method creates the expected album-art file.
+
+        @test Happy path.
+
+        @param self {TestAudioArt} Test instance containing expected output paths.
         '''
 
         input_audio = TEST_WMA_JOHN
@@ -224,7 +271,13 @@ class TestAudioArt(TestCase):
 
     def test_extract_flac_art(self):
         '''
-        @brief Tests if album art is extracted from FLAC audio file.
+        @brief Test FLAC album-art extraction.
+
+        @details Verifies extraction creates the expected album-art file.
+
+        @test Happy path.
+
+        @param self {TestAudioArt} Test instance containing expected output paths.
         '''
 
         input_audio = TEST_FLAC_ALANNAH_MYLES
@@ -235,7 +288,13 @@ class TestAudioArt(TestCase):
 
     def test_extract_ffmpeg_art(self):
         '''
-        @brief Tests if album art is extracted from an audio file.
+        @brief Test ffmpeg album-art extraction.
+
+        @details Verifies the ffmpeg extraction method creates the expected album-art file.
+
+        @test Happy path.
+
+        @param self {TestAudioArt} Test instance containing expected output paths.
         '''
 
         input_audio = TEST_MP3_CRUSH
@@ -246,9 +305,15 @@ class TestAudioArt(TestCase):
 
     def test_extract_ffmpeg_art_no_stream(self):
         '''
-        @brief Tests if album art is extracted from audio file without video stream.
+        @brief Test ffmpeg album-art extraction without a video stream.
 
-        @details Expected to throw CalledProcessError.
+        @details Verifies ffmpeg reports an invalid argument when no video stream is available.
+
+        @test Error case.
+
+        @param self {TestAudioArt} Test instance containing expected output paths.
+
+        @exception CalledProcessError ffmpeg fails because the input has no video stream.
         '''
 
         input_audio = TEST_WMA_HOLIDAY
@@ -258,13 +323,20 @@ class TestAudioArt(TestCase):
 
         art_exists = os.path.exists(self.no_stream_jpg)
         self.assertFalse(art_exists)
+
         # Invalid argument is ffmpeg saying no video stream present
         self.assertTrue("Invalid argument" in cm.exception.stderr.strip())
 
 
     def test_extract_m4a_art(self):
         '''
-        @brief Tests if album art is extracted from m4a audio file.
+        @brief Test M4A album-art extraction.
+
+        @details Verifies the M4A extraction method creates the expected album-art file.
+
+        @test Happy path.
+
+        @param self {TestAudioArt} Test instance containing expected output paths.
         '''
 
         input_audio = TEST_M4A_DAVIS
@@ -275,7 +347,13 @@ class TestAudioArt(TestCase):
 
     def test_extract_mp3_art(self):
         '''
-        @brief Tests if album art is extracted from mp3 audio file.
+        @brief Test MP3 album-art extraction.
+
+        @details Verifies the MP3 extraction method creates the expected album-art file.
+
+        @test Happy path.
+
+        @param self {TestAudioArt} Test instance containing expected output paths.
         '''
 
         input_audio = TEST_MP3_CRUSH
@@ -286,10 +364,13 @@ class TestAudioArt(TestCase):
 
     def test_extract_walk(self):
         '''
-        #brief Test extracting album art from all valid audio files in a top level directory.
+        @brief Test album-art extraction from all valid audio files.
 
-        @details Audio files must not have a co-located Folder.jpg file.
-        @details Happy path test without a file pattern.
+        @details Verifies walk extraction creates artwork for prepared files without a pattern.
+
+        @test Happy path.
+
+        @param self {TestAudioArt} Test instance containing prepared fixture paths.
         '''
 
         art.extract_walk(self.prepped, None)
@@ -301,10 +382,13 @@ class TestAudioArt(TestCase):
 
     def test_extract_walk_pattern(self):
         '''
-        #brief Test extracting album art from mp3 audio files in a top level directory.
+        @brief Test album-art extraction with an MP3 file pattern.
 
-        @details Audio files must not have a co-located Folder.jpg file.
-        @details Happy path test with a file pattern.
+        @details Verifies walk extraction creates artwork only for matching prepared MP3 files.
+
+        @test Happy path.
+
+        @param self {TestAudioArt} Test instance containing prepared fixture paths.
         '''
 
         art.extract_walk(self.prepped, MP3_EXT)
@@ -315,7 +399,13 @@ class TestAudioArt(TestCase):
 
     def test_extract_walk_pattern_invalid(self):
         '''
-        #brief Test try extracting album art with invalid file pattern.
+        @brief Test album-art extraction with an invalid file pattern.
+
+        @details Verifies walk extraction logs an error for a playlist file extension.
+
+        @test Error case.
+
+        @param self {TestAudioArt} Test instance containing prepared fixture paths.
         '''
 
         log_msg = f"Pattern {PLAYLIST_EXTS[0]} is not for a valid audio file"
@@ -329,7 +419,13 @@ class TestAudioArt(TestCase):
 
     def test_has_video_stream_false(self):
         '''
-        @brief Tests if audio file does not have video stream.
+        @brief Test video-stream detection when no stream exists.
+
+        @details Verifies the method returns false for a WMA file without a video stream.
+
+        @test Edge case.
+
+        @param self {TestAudioArt} Test instance containing test fixture paths.
         '''
 
         input_audio = TEST_WMA_HOLIDAY
@@ -339,7 +435,13 @@ class TestAudioArt(TestCase):
 
     def test_has_video_stream_true(self):
         '''
-        @brief Tests if audio file does have video stream.
+        @brief Test video-stream detection when a stream exists.
+
+        @details Verifies the method returns true for an MP3 file with a video stream.
+
+        @test Happy path.
+
+        @param self {TestAudioArt} Test instance containing test fixture paths.
         '''
 
         input_audio = TEST_MP3_CRUSH
@@ -349,7 +451,13 @@ class TestAudioArt(TestCase):
 
     def test_set_album_art(self):
         '''
-        @brief Tests setting album art file.
+        @brief Test setting album-art files in an audio directory.
+
+        @details Verifies existing artwork is retained and missing artwork is created.
+
+        @test Happy path.
+
+        @param self {TestAudioArt} Test instance containing expected output paths.
         '''
 
         art.set_album_art(TESTS_TLD)
@@ -361,101 +469,145 @@ class TestAudioArt(TestCase):
         self.assertTrue(set_art_exists)
 
 
-    @patch.object(AudioArt, '_AudioArt__unpack_asf_image')
-    def test_unpack_asf_image_decode_error(self, mock_unpack_asf_image):
+    def test_unpack_asf_image_invalid_utf16(self):
         '''
-        @brief Tests unpack_asf_image throws UnicodeDecodeError.
+        @brief Test ASF image parsing with invalid UTF-16 data.
+
+        @details Verifies malformed UTF-16 metadata raises a value error.
+
+        @test Error case.
+
+        @param self {TestAudioArt} Test instance used for ASF image parsing.
+
+        @exception ValueError ASF image metadata is not valid UTF-16-LE.
         '''
 
-        data_bytes = b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
+        data = bytearray(struct.pack('<bi', 3, 0) + b'\x00\xdc\x00\x00\x00\x00')
+
+        with self.assertRaisesRegex(ValueError, "not valid UTF-16-LE"):
+            art._AudioArt__unpack_asf_image(data)
+
+
+    def test_unpack_asf_image_malformed_data(self):
+        '''
+        @brief Test ASF image parsing with malformed tag data.
+
+        @details Verifies incomplete headers, MIME types, and image payloads raise value errors.
+
+        @test Error case.
+
+        @param self {TestAudioArt} Test instance used for ASF image parsing.
+
+        @exception ValueError ASF image data is malformed.
+        '''
+
+        cases = (
+            (bytearray(b'\xff'), "missing its header"),
+            (bytearray(struct.pack('<bi', 3, 0) + b'i\x00'), "MIME type is missing its terminator"),
+            (
+                bytearray(struct.pack('<bi', 3, 2) + "image/jpeg".encode("utf-16-le") + b'\x00\x00\x00\x00\xff'),
+                "image payload is truncated",
+            ),
+        )
+
+        for data, error_message in cases:
+            with self.subTest(error_message=error_message):
+                with self.assertRaisesRegex(ValueError, error_message):
+                    art._AudioArt__unpack_asf_image(data)
+
+
+    def test_unpack_asf_image_valid_data(self):
+        '''
+        @brief Test ASF image parsing with valid tag data.
+
+        @details Verifies the parser returns MIME type, image data, picture type, and description.
+
+        @test Happy path.
+
+        @param self {TestAudioArt} Test instance used for ASF image parsing.
+        '''
+
+        image_data = b'\xff\xd8'
+        data = bytearray(b''.join((
+            struct.pack('<bi', 3, len(image_data)),
+            "image/jpeg".encode("utf-16-le"),
+            b'\x00\x00',
+            "Front cover".encode("utf-16-le"),
+            b'\x00\x00',
+            image_data,
+        )))
+
+        self.assertEqual(
+            ("image/jpeg", bytearray(image_data), 3, "Front cover"),
+            art._AudioArt__unpack_asf_image(data),
+        )
+
+
+    @patch("builtins.open", side_effect=BlockingIOError(errno.EWOULDBLOCK, "Operation blocked"))
+    def test_write_data_blocking_error(self, mock_open):
+        '''
+        @brief Test write-data handling of a blocking I/O error.
+
+        @details Verifies the mocked writer preserves the blocking error number and message.
+
+        @test Error case.
+
+        @param self {TestAudioArt} Test instance used for write-data error handling.
+        @param mock_open {Mock} Patched file-opening function that raises a blocking error.
+
+        @exception BlockingIOError Mocked write operation is blocked.
+        '''
+
+        data_bytes = (b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g"
+                      b"\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00")
         data_byte_array = bytearray(data_bytes)
-        unpacked_art = None
-
-        mock_unpack_asf_image.side_effect = UnicodeDecodeError(UTF8, b'\xff', 0, 1, 'invalid start byte')
-
-        with self.assertRaises(UnicodeDecodeError) as cm:
-            unpacked_art = art._AudioArt__unpack_asf_image(data_byte_array)
-
-        self.assertIsNone(unpacked_art)
-        self.assertEqual("UnicodeDecodeError", cm.exception.__class__.__name__)
-        self.assertEqual("invalid start byte", cm.exception.reason)
-
-        mock_unpack_asf_image.reset_mock(return_value=True, side_effect=True)
-
-
-    def test_unpack_asf_image_struct_error(self):
-        '''
-        @brief Tests unpack_asf_image throws struct error.
-        '''
-
-        data_bytes = b'\xff'
-        data_byte_array = bytearray(data_bytes)
-        unpacked_art = None
-
-        with self.assertRaises(struct.error) as cm:
-            unpacked_art = art._AudioArt__unpack_asf_image(data_byte_array)
-
-        self.assertIsNone(unpacked_art)
-        self.assertEqual("error", cm.exception.__class__.__name__)
-
-        err_msg = "unpack_from requires a buffer of at least 5 bytes for unpacking 5 bytes at offset 0 (actual buffer size is 1)"
-        self.assertEqual(err_msg, cm.exception.args[0])
-
-
-    def test_write_data_blocking_error(self):
-        '''
-        @brief Tests write_data throws BlockingIOError.
-        '''
-
-        data_bytes = b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
-        data_byte_array = bytearray(data_bytes)
-
-        write_data_art = AudioArt()
-
-        mock_write_data = Mock(spec=write_data_art)
-        mock_write_data.side_effect = BlockingIOError(errno.EWOULDBLOCK, "Operation blocked")
-
-        write_data_art.__write_data = mock_write_data
 
         with self.assertRaises(BlockingIOError) as cm:
-            write_data_art.__write_data(TEST_MP3_CRUSH, data_byte_array)
+            art._AudioArt__write_data(TEST_MP3_CRUSH, data_byte_array)
 
         self.assertEqual(cm.exception.errno, errno.EWOULDBLOCK)
         self.assertEqual(cm.exception.strerror, "Operation blocked")
+        mock_open.assert_called_once()
 
-        mock_write_data.reset_mock(return_value=True, side_effect=True)
 
-
-    def test_write_data_os_error(self):
+    @patch("builtins.open", side_effect=OSError(errno.EACCES, "Permission denied"))
+    def test_write_data_os_error(self, mock_open):
         '''
-        @brief Tests write_data throws OSError.
+        @brief Test write-data handling of an operating-system error.
+
+        @details Verifies the mocked writer preserves the operating-system error number and message.
+
+        @test Error case.
+
+        @param self {TestAudioArt} Test instance used for write-data error handling.
+        @param mock_open {Mock} Patched file-opening function that raises an operating-system error.
+
+        @exception OSError Mocked write operation is denied.
         '''
 
-        data_bytes = b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
+        data_bytes = (
+            b"'\x03\x140\x00\x00i\x00m\x00a\x00g\x00e\x00/\x00j\x00p\x00e\x00g"
+            b"\x00\x00\x00\x00\x00\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00"
+        )
         data_byte_array = bytearray(data_bytes)
 
-        write_data_art = AudioArt()
-
-        mock_write_data = Mock(spec=write_data_art)
-        mock_write_data.side_effect = OSError(errno.EACCES, "Permission denied")
-
-        write_data_art.__write_data = mock_write_data
-
         with self.assertRaises(OSError) as cm:
-            write_data_art.__write_data(TEST_MP3_CRUSH, data_byte_array)
+            art._AudioArt__write_data(TEST_MP3_CRUSH, data_byte_array)
 
         self.assertEqual(cm.exception.errno, errno.EACCES)
         self.assertEqual(cm.exception.strerror, "Permission denied")
-
-        mock_write_data.reset_mock(return_value=True, side_effect=True)
+        mock_open.assert_called_once()
 
 
 def get_method_names(cls):
     '''
-    @brief Returns a list of names of methods defined within a given class.
+    @brief Get names of test methods defined by a class.
 
-    @param cls {Class} The name of the class to get methods list from.
-    @return method_names [{str}] The names of the methods defined in class.
+    @details Filters class methods to names that begin with the test prefix.
+
+    @param cls {type} Class containing test methods.
+
+    @return method_names {list[str]} Names of test methods defined by the class.
     '''
 
     method_names = []
@@ -467,6 +619,14 @@ def get_method_names(cls):
 
 
 if __name__ == "__main__":
+    '''
+    @brief Entry point for running the test suite.
+
+    @details Collects all test methods from the TestAudioArt class and executes them using a unittest test runner.
+
+    @test Execution of the test suite.
+    '''
+
     methods = get_method_names(TestAudioArt)
 
     suite = unittest.TestSuite()

@@ -1,39 +1,49 @@
 '''
+@class TestAudioPlaylist
 @file test_audio_playlist.py
 @brief Defines the test audio playlist class.
 
+@details Tests playlist entry parsing and path-update behavior.
+
+@version 1.0.0
+@date 2026-09-22
+
 @author Gerald Manweiler
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import gc
-import inspect
-import os
-import unittest
-from unittest import TestCase
-from unittest.mock import patch
+# Standard Modules
+import inspect                                              # for test method discovery
+import os                                                   # for test fixture path operations
+import unittest                                             # for direct test-suite execution
+from unittest import TestCase                               # for test-case assertions and lifecycle hooks
+from unittest.mock import patch                             # for warning-log interception
 
-# local module constants
-from src.generated_files import GENERATED_PATH
-from tests import TEST_MP3_CRUSH, TEST_M3U
-from tests import TESTS_PATH, TESTS_TLD
-# local module errors
-from src import PlaylistError
-# local module classes
-from src.audio_info import AudioPlaylist
+# Local Module Constants
+from src.generated_files import GENERATED_PATH              # for generated playlist output paths
+from tests import TEST_M3U                                  # for playlist update tests
+from tests import TEST_MP3_CRUSH                            # for invalid playlist input tests
+from tests import TESTS_PATH                                # for expected playlist fixture paths
+from tests import TESTS_TLD                                 # for playlist media root paths
 
-gc.enable()
+# Local Module Errors
+from src import PlaylistError                               # for expected playlist parsing errors
+
+# Local Module Classes
+from src.audio_info import AudioPlaylist                    # for playlist functionality under test
 
 ## @var playlist
-# @brief instance of AudioPlaylist class
-# @details used for accessing class functionality
+# @brief AudioPlaylist instance under test.
+# @details Provides access to playlist parsing and path-update functionality.
 playlist = AudioPlaylist()
 
 
 class TestAudioPlaylist(TestCase):
     '''
     @brief Tests AudioPlaylist class functions.
+
+    @details Verifies playlist parsing and audio path-update behavior.
     '''
 
 
@@ -42,7 +52,9 @@ class TestAudioPlaylist(TestCase):
         '''
         @brief Initialize data for test suite.
 
-        @details These datums are used throughout class and only need init once.
+        @details Creates shared expected and generated playlist paths for the test suite.
+
+        @param cls {type[TestAudioPlaylist]} Test class receiving shared playlist paths.
         '''
 
         cls.expected_m3u = os.path.join(TESTS_PATH, "expected.m3u")
@@ -52,6 +64,10 @@ class TestAudioPlaylist(TestCase):
     def tearDown(self):
         '''
         @brief Clean up the created playlist file.
+
+        @details Removes the generated playlist file after each test case.
+
+        @param self {TestAudioPlaylist} Test instance containing generated playlist paths.
         '''
 
         if os.path.exists(self.generated_m3u):
@@ -60,7 +76,15 @@ class TestAudioPlaylist(TestCase):
 
     def test_get_audio_name_error(self):
         '''
-        @brief Tests getting audio file name from a m3u #EXTINF line without delimiter
+        @brief Test audio-name parsing without an EXTINF delimiter.
+
+        @details Verifies malformed playlist metadata raises a playlist error.
+
+        @test Error case.
+
+        @param self {TestAudioPlaylist} Test instance containing playlist fixtures.
+
+        @exception PlaylistError The EXTINF line has no filename delimiter.
         '''
 
         audio = None
@@ -76,7 +100,13 @@ class TestAudioPlaylist(TestCase):
 
     def test_get_audio_name_m4a(self):
         '''
-        @brief Tests getting m4a audio file name from a m3u #EXTINF line
+        @brief Test M4A audio-name parsing from an EXTINF line.
+
+        @details Verifies M4A filenames are converted to MP3 filenames.
+
+        @test Happy path.
+
+        @param self {TestAudioPlaylist} Test instance containing playlist fixtures.
         '''
 
         line = "#EXTINF:0,The Eagles-Desperado.m4a"
@@ -87,7 +117,13 @@ class TestAudioPlaylist(TestCase):
 
     def test_get_audio_name_mp3(self):
         '''
-        @brief Tests getting mp3 audio file name from a m3u #EXTINF line
+        @brief Test MP3 audio-name parsing from an EXTINF line.
+
+        @details Verifies MP3 filenames are retained unchanged.
+
+        @test Happy path.
+
+        @param self {TestAudioPlaylist} Test instance containing playlist fixtures.
         '''
 
         line = "#EXTINF:0,Sawyer Fredricks - Shots Fired.mp3"
@@ -98,7 +134,13 @@ class TestAudioPlaylist(TestCase):
 
     def test_get_audio_name_wma(self):
         '''
-        @brief Tests getting wma audio file name from a m3u #EXTINF line
+        @brief Test WMA audio-name parsing from an EXTINF line.
+
+        @details Verifies WMA filenames are converted to MP3 filenames.
+
+        @test Happy path.
+
+        @param self {TestAudioPlaylist} Test instance containing playlist fixtures.
         '''
 
         line = "#EXTINF:0,Creedence Clearwater Revival-Fortunate Son.wma"
@@ -110,7 +152,14 @@ class TestAudioPlaylist(TestCase):
     @patch('src.audio_info.audio_playlist.logger.warning')
     def test_update_paths(self, mock_warning):
         '''
-        @brief Tests if the updated m3u file is equal to expected results.
+        @brief Test playlist path updates against expected output.
+
+        @details Verifies existing audio paths are written and missing audio paths produce warnings.
+
+        @test Happy path.
+
+        @param self {TestAudioPlaylist} Test instance containing playlist fixtures.
+        @param mock_warning {Mock} Patched warning logger for missing audio paths.
         '''
 
         playlist.update_paths(TESTS_TLD, TEST_M3U)
@@ -136,7 +185,15 @@ class TestAudioPlaylist(TestCase):
 
     def test_update_paths_fail(self):
         '''
-        @brief Tests trying to update non-m3u file.
+        @brief Test playlist path updates with a non-playlist file.
+
+        @details Verifies a non-M3U input file raises a playlist error.
+
+        @test Error case.
+
+        @param self {TestAudioPlaylist} Test instance containing playlist fixtures.
+
+        @exception PlaylistError The input file is not a supported playlist.
         '''
 
         with self.assertRaises(PlaylistError) as cm:
@@ -147,11 +204,13 @@ class TestAudioPlaylist(TestCase):
 
 def get_method_names(cls):
     '''
-    @brief Returns a list of names of methods defined within a given class.
+    @brief Get names of test methods defined by a class.
 
-    @param cls {Class} The name of the class to get methods list from.
+    @details Filters class methods to names that begin with the test prefix.
 
-    @return method_names [{str}] The names of the methods defined in class.
+    @param cls {type} Class containing test methods.
+
+    @return method_names {list[str]} Names of test methods defined by the class.
     '''
 
     method_names = []
@@ -163,6 +222,11 @@ def get_method_names(cls):
 
 
 if __name__ == "__main__":
+    '''
+    @brief Run the AudioPlaylist test suite directly.
+
+    @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
+    '''
     methods = get_method_names(TestAudioPlaylist)
 
     suite = unittest.TestSuite()

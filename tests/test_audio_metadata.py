@@ -2,25 +2,24 @@
 '''
 @class TestAudioMetadata
 @file test_audio_metadata.py
-@author Gerald Manweiler
-
 @brief Defines the test audio metadata class.
 
-@details Provides tests for the AudioMetadata class, ensuring that audio metadata is correctly read and processed across various audio file formats.
+@details Tests AudioMetadata reading, conversion, mapping, and file-name normalization behavior.
 
 @version 1.0.0
-@date 2024-06-05
+@date 2026-09-22
+
+@author Gerald Manweiler
 
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
 # Standard Modules
 import copy                                                 # for creating deep copies of objects
-import gc                                                   # for garbage collection control
 import inspect                                              # for inspecting live objects
-import platform                                             # for accessing underlying platform information
-import os                                                   # for operating system dependent functionality
-import shutil                                               # for high-level file operations
+import os                                                   # for operating-system path operations
+import platform                                             # for platform-specific fixture paths
+import shutil                                               # for test-fixture copying and removal
 import stat                                                 # for modifying file permissions
 import unittest                                             # for unit testing framework
 from json import JSONDecodeError                            # for handling JSON decode errors
@@ -28,7 +27,8 @@ from pathlib import Path                                    # for object-oriente
 from shutil import ExecError                                # for handling errors in shutil operations
 from subprocess import CompletedProcess                     # for handling completed subprocesses
 from unittest import TestCase                               # for creating test cases
-from unittest.mock import Mock, call                        # for mocking objects and asserting calls
+from unittest.mock import Mock                              # for mock test doubles
+from unittest.mock import call                              # for expected mock calls
 from unittest.mock import patch                             # for patching objects in tests
 
 # Third Party Modules
@@ -79,11 +79,9 @@ from src import MusicProcessingError                        # custom error class
 # Local Module Classes
 from src.audio_info import AudioMetadata                    # class for accessing audio metadata
 
-gc.enable()
-
 ## @var metadata
-# @brief instance of AudioMetadata class
-# @details used for accessing class functionality
+# @brief AudioMetadata instance under test.
+# @details Provides access to audio metadata functionality.
 metadata = AudioMetadata()
 
 
@@ -91,7 +89,7 @@ class TestAudioMetadata(TestCase):
     '''
     @brief Test suite for AudioMetadata class.
 
-    @details Contains unit tests for verifying the functionality of the AudioMetadata class.
+    @details Verifies AudioMetadata behavior across supported music-file fixtures.
     '''
 
     @classmethod
@@ -99,12 +97,10 @@ class TestAudioMetadata(TestCase):
         '''
         @brief Initialize data for test suite.
 
-        @details These datums are used throughout class and only need init once.<br>
-        classmethod decorator indicates that this method is bound to the class and not the instance.
-        '''
+        @details Creates shared fixture paths, expected results, and metadata values for the test suite.
 
-        r'''
-        command line that is source for media info dictionary definition:
+        @code{.text}
+                command line that is source for media info dictionary definition:
 
         `file_path` points to "<linux_path>/Crush/Here/Crush-Live.mp3" or "<win_path>\Crush\Here\Crush-Live.mp3"<br>
         Every os flavour has slight differences in the full return dict, especially the filename,
@@ -115,6 +111,9 @@ class TestAudioMetadata(TestCase):
         - show_format displays information about the format of the input file<br>
         - show_streams displays information about each media stream within the input file<br>
         `file_path` the path to the audio file<br>
+        @endcode
+
+        @param cls {type[TestAudioMetadata]} Test class receiving shared fixtures.
         '''
 
         # directory for "walk" type tests: D:\MusicProcessing\tests\ConvertedMusic
@@ -293,10 +292,11 @@ class TestAudioMetadata(TestCase):
     @classmethod
     def tearDownClass(cls):
         '''
-        @brief Cleans up the walk type tests source audio files and directories.
+        @brief Clean up walk-test source files and directories.
 
-        @details This method removes the converted and prepped directories if they exist, ensuring a clean state after all tests have run.<br>
-        class method decorator indicates that this method is bound to the class and not the instance.
+        @details Removes converted and prepared fixture directories after the test suite completes.
+
+        @param cls {type[TestAudioMetadata]} Test class containing shared fixture paths.
         '''
 
         def remove_readonly(function, path, exception):
@@ -312,10 +312,11 @@ class TestAudioMetadata(TestCase):
 
     def tearDown(self):
         '''
-        @brief Cleans up the created audio files and directories.
+        @brief Clean up generated audio files and directories.
 
-        @details These audio files are created by multiple tests and need deletion after every test.<br>
-        No decorator is used for this method as it is an instance method.
+        @details Removes generated normalization files after each test case.
+
+        @param self {TestAudioMetadata} Test instance containing generated output paths.
         '''
 
         if os.path.exists(self.norm_path):
@@ -328,7 +329,7 @@ class TestAudioMetadata(TestCase):
 
         @details The audio files must have a co-located Folder.jpg file.
 
-        @test This is a happy path test for converting a valid audio file to mp3 format.
+        @test Happy path.
         '''
 
         for src_file in self.src_file_paths:
@@ -345,7 +346,7 @@ class TestAudioMetadata(TestCase):
 
         @details The audio file does not have a co-located Folder.jpg file, which should trigger an error.
 
-        @test This is a negative path test for attempting to convert an audio file without a co-located Folder.jpg file.
+        @test Error case.
         '''
 
         input_path_parent = os.path.dirname(TEST_MP3_CRUSH)
@@ -363,7 +364,7 @@ class TestAudioMetadata(TestCase):
 
         @details The audio file lacks metadata, which should be handled gracefully.
 
-        @test This is a negative path test for attempting to convert an audio file without metadata.
+        @test Error case.
         '''
 
         no_metadata = TEST_MP3_NO_METADATA
@@ -376,11 +377,11 @@ class TestAudioMetadata(TestCase):
 
     def test_convert_walk(self):
         '''
-        #brief Test converting all valid audio files in a top level directory to mp3 format.
+        @brief Test converting all valid audio files in a top-level directory to MP3 format.
 
         @details The audio files must have a co-located Folder.jpg file.
 
-        @test This is a happy path test for converting all valid audio files in a top level directory to mp3 format.
+        @test Happy path.
         '''
 
         metadata.convert_walk(self.converted, None, show_spinner=False)
@@ -392,11 +393,11 @@ class TestAudioMetadata(TestCase):
 
     def test_convert_walk_pattern(self):
         '''
-        #brief Test converting valid audio file matching input pattern to mp3 format.
+        @brief Test converting a valid audio file matching an input pattern to MP3 format.
 
         @details The audio files must have a co-located Folder.jpg file.
 
-        @test This is a happy path test for converting a valid audio file matching the input pattern to mp3 format.
+        @test Happy path.
         '''
 
         metadata.convert_walk(self.converted, MP3_EXT, show_spinner=False)
@@ -411,7 +412,7 @@ class TestAudioMetadata(TestCase):
 
         @details The file pattern does not correspond to a valid audio file, which should trigger an error.
 
-        @test This is a negative path test for attempting to convert an invalid file pattern to mp3 format.
+        @test Error case.
         '''
 
         log_msg = f"Pattern {PLAYLIST_EXTS[0]} is not for a valid audio file"
@@ -429,7 +430,7 @@ class TestAudioMetadata(TestCase):
 
         @details The album sub-directory should be created for each album within the artist directory.
 
-        @test This is a happy path test for creating album sub-directories.
+        @test Happy path.
         '''
 
         metadata.create_album_dirs(self.prepped)
@@ -449,7 +450,7 @@ class TestAudioMetadata(TestCase):
 
         @details Attempting to create an album sub-directory should raise an ExecError.
 
-        @test This is a negative path test for handling ExecError when creating album sub-directories.
+        @test Error case.
         '''
 
         prepped_path = self.prepped
@@ -475,7 +476,7 @@ class TestAudioMetadata(TestCase):
 
         @details Attempting to create an album sub-directory should raise a ValueError.
 
-        @test This is a negative path test for handling ValueError when creating album sub-directories.
+        @test Error case.
         '''
 
         create_album_metadata = AudioMetadata()
@@ -499,7 +500,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly retrieve metadata tags for various audio file formats.
 
-        @test This is a happy path test for retrieving audio file metadata tags.
+        @test Happy path.
         '''
 
         for src_file in self.src_file_paths:
@@ -519,7 +520,7 @@ class TestAudioMetadata(TestCase):
 
         @details The audio file specified does not contain any metadata tags, so the function is expected to return None.
 
-        @test This is a negative path test for attempting to retrieve metadata from an audio file without tags.
+        @test Error case.
         '''
 
         tags = None
@@ -535,7 +536,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly retrieve media information such as codec, duration, size, and bitrate for the given audio file.
 
-        @test This is a happy path test for retrieving media information.
+        @test Happy path.
         '''
 
         results_dict = metadata.get_ffrobe_media_info(TEST_MP3_CRUSH)
@@ -546,11 +547,14 @@ class TestAudioMetadata(TestCase):
     @patch('src.audio_info.audio_metadata.SubprocessUtilities.popen_pipe')
     def test_get_media_info_regex_no_dict(self, mock_popen_pipe):
         '''
-        @brief Tests trying to returns media info dictionary from Popen return that is missing inner dictionaries.
+        @brief Test media-info parsing when nested dictionaries are absent.
 
-        @details The SubprocessUtilities.popen_pipe return is mocked to return string that will not have any inner dictionaries for regex to match.
+        @details Verifies parsing retains values when mocked ffprobe output has no nested dictionaries.
 
-        @test This is a negative path test for handling Popen return without inner dictionaries.
+        @test Edge case.
+
+        @param self {TestAudioMetadata} Test instance containing shared fixtures.
+        @param mock_popen_pipe {Mock} Patched ffprobe pipe returning simplified output.
         '''
 
         results_dict = None
@@ -567,7 +571,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly retrieve media information for all audio files located in top level directory of the specified path.
 
-        @test This is a happy path test for retrieving media information for audio files in the top level directory.
+        @test Happy path.
         '''
 
         # use the ConvertedMusic dir
@@ -595,7 +599,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should handle cases where the specified file pattern does not match any audio files.
 
-        @test This is a negative path test for handling invalid file patterns.
+        @test Error case.
         '''
 
         # use the ConvertedMusic dir
@@ -617,7 +621,7 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly retrieve media information for all audio files matching the specified pattern
         within the top level directory of the specified path.
 
-        @test This is a happy path test for retrieving media information for audio files matching a specific pattern.
+        @test Happy path.
         '''
 
         # use the ConvertedMusic dir
@@ -642,7 +646,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly retrieve all metadata tags from the specified audio file.
 
-        @test This is a happy path test for retrieving media tags from an audio file.
+        @test Happy path.
         '''
 
         # no matter the os/environment, inner dict TAG is always same
@@ -665,11 +669,21 @@ class TestAudioMetadata(TestCase):
     @patch('src.audio_info.audio_metadata.SubprocessUtilities.subprocess_run')
     def test_get_media_tags_json_error(self, mock_subprocess_run):
         '''
-        @brief Tests getting media tags from file that results in JSONDecodeError.
+        @brief Test media-tag parsing with invalid JSON output.
 
-        @details The function should raise a JSONDecodeError when the ffprobe output is not valid JSON.
+        @details Verifies invalid mocked ffprobe JSON raises a JSON decode error.
 
-        @test This is a negative path test for handling JSONDecodeError.
+        @code{.text}
+        get
+        ffprobe -v quiet -of json -show_entries format_tags "D:\\MusicProcessing\\tests\\Music\\Crush\\Here\\Crush-Live.mp3"
+        @endcode
+
+        @test Error case.
+
+        @param self {TestAudioMetadata} Test instance containing shared fixtures.
+        @param mock_subprocess_run {Mock} Patched subprocess runner returning invalid JSON.
+
+        @exception JSONDecodeError Mocked ffprobe output is not valid JSON.
         '''
 
         mock_subprocess_run.return_value = CompletedProcess(
@@ -716,7 +730,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should return None when the audio file has no metadata tags.
 
-        @test This is a negative path test for handling audio files without metadata.
+        @test Error case.
         '''
 
         media_tags = None
@@ -732,7 +746,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly identify the metadata type of the given audio file.
 
-        @test This is a happy path test for retrieving the metadata type.
+        @test Happy path.
         '''
 
         # walk through ConvertedMusic files
@@ -748,7 +762,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should return "NoneType" when attempting to get the metadata type of an invalid file.
 
-        @test This is a negative path test for handling invalid files.
+        @test Error case.
         '''
 
         audio_file = mutagen.File(TEST_M3U)
@@ -762,7 +776,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly retrieve all metadata tags for audio files matching the specified input pattern.
 
-        @test This is a happy path test for retrieving metadata tags based on an input pattern.
+        @test Happy path.
         '''
 
         txt_filename = "get_tags_walk" + RESULT_EXT
@@ -782,7 +796,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly retrieve all ffprobe metadata tags for audio files in the specified path.
 
-        @test This is a happy path test for retrieving ffprobe metadata tags.
+        @test Happy path.
         '''
 
         txt_filename = "get_tags_walk" + RESULT_EXT
@@ -805,7 +819,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly retrieve all mutagen metadata tags for audio files in the specified path.
 
-        @test This is a happy path test for retrieving mutagen metadata tags.
+        @test Happy path.
         '''
 
         txt_filename = "get_tags_walk" + RESULT_EXT
@@ -828,7 +842,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly retrieve a unique set of metadata keys for all audio files in the specified path.
 
-        @test This is a happy path test for retrieving unique metadata keys.
+        @test Happy path.
         '''
 
         txt_filename = "get_unique_media_keys" + RESULT_EXT
@@ -849,7 +863,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly identify if the specified audio file contains an embedded album art tag.
 
-        @test This is a happy path test for detecting embedded album art.
+        @test Happy path.
         '''
 
         has_art = metadata.has_art_tag(TEST_MP3_CRUSH)
@@ -862,7 +876,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly identify if the specified audio file contains an embedded album art tag.
 
-        @test This is a happy path test for detecting the absence of embedded album art.
+        @test Edge case.
         '''
 
         has_art = metadata.has_art_tag(TEST_MP3_NO_TAG)
@@ -875,7 +889,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should raise a MusicProcessingError when the specified audio file has an invalid extension.
 
-        @test This is a negative path test for handling invalid audio files.
+        @test Error case.
         '''
 
         has_art = None
@@ -896,7 +910,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly load valid audio files using mutagen.
 
-        @test This is a happy path test for loading audio files.
+        @test Happy path.
         '''
 
         for src_file in self.src_file_paths:
@@ -911,7 +925,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should raise a ValueError when attempting to load a non-audio file.
 
-        @test This is a negative path test for handling non-audio files.
+        @test Error case.
         '''
 
         audio_file = None
@@ -931,7 +945,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should raise a MutagenError when attempting to load a non-extant audio file.
 
-        @test This is a negative path test for handling non-extant audio files.
+        @test Error case.
         '''
 
         audio_file = None
@@ -956,7 +970,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly map all relevant m4a tags to their corresponding ID3 tags.
 
-        @test This is a happy path test for mapping m4a tags to ID3 format.
+        @test Happy path.
         '''
 
         m4a_mapped = {
@@ -984,7 +998,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly map all relevant FLAC tags to their corresponding ID3 tags.
 
-        @test This is a happy path test for mapping FLAC tags to ID3 format.
+        @test Happy path.
         '''
 
         flac_mapped = {
@@ -1013,7 +1027,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should add a default DISCNUMBER tag with a value of '1' if it is not present in the input FLAC tags.
 
-        @test This is a happy path test for adding a default DISCNUMBER when missing.
+        @test Edge case.
         '''
 
         input_tags = {
@@ -1033,7 +1047,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly map all relevant MP3 tags to their corresponding ID3 tags.
 
-        @test This is a happy path test for mapping MP3 tags to ID3 format.
+        @test Happy path.
         '''
 
         mp3_mapped = {
@@ -1061,7 +1075,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly map all relevant WMA tags to their corresponding ID3 tags.
 
-        @test This is a happy path test for mapping WMA tags to ID3 format.
+        @test Happy path.
         '''
 
         wma_mapped = {
@@ -1089,7 +1103,7 @@ class TestAudioMetadata(TestCase):
 
         @details Requires nested classes to simulate the behavior of the actual MP3 file and its tags.
 
-        @test This is a happy path test for normalizing MP3 filenames based on album artist and title metadata.
+        @test Happy path.
         '''
 
         test_dir = os.path.join(self.norm_path, TEST_MP3_10CC_ALBUM_ARTIST, TEST_MP3_10CC_ALBUM_ARTIST)
@@ -1160,7 +1174,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should leave the filename unchanged if it already follows the correct pattern.
 
-        @test This is a happy path test for handling already correctly named MP3 files.
+        @test Edge case.
         '''
 
         test_dir = os.path.join(self.norm_path, "10cc", "10cc")
@@ -1187,7 +1201,7 @@ class TestAudioMetadata(TestCase):
         @details The function should replace or remove characters that are invalid in Windows filenames.<br>
         Requires nested classes to simulate the behavior of the actual MP3 file and its tags.
 
-        @test This is a edge case test for handling Windows invalid filename characters.
+        @test Edge case.
         '''
 
         test_dir = os.path.join(self.norm_path, "10cc", "10cc")
@@ -1250,7 +1264,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should raise a ValueError when attempting to normalize a file with an invalid extension.
 
-        @test This is a negative path test for handling non-MP3 audio files.
+        @test Error case.
         '''
 
         with self.assertRaises(ValueError) as cm:
@@ -1266,7 +1280,7 @@ class TestAudioMetadata(TestCase):
 
         @details The function should raise a ValueError when attempting to normalize an MP3 file that lacks ID3v2.3 metadata.
 
-        @test This is a negative path test for handling MP3 files without ID3v2.3 metadata.
+        @test Error case.
         '''
 
         with self.assertRaises(ValueError) as cm:
@@ -1282,7 +1296,7 @@ class TestAudioMetadata(TestCase):
 
         @details Verifies MP3 files are renamed while non-MP3 files are skipped.
 
-        @test This is a happy path test for normalizing MP3 filenames in a directory walk.
+        @test Happy path.
         '''
 
         test_dir = os.path.join(self.norm_path, "10cc", "10cc")
@@ -1309,7 +1323,7 @@ class TestAudioMetadata(TestCase):
 
         @details Verifies that a FLAC file is renamed according to its album artist and title metadata.
 
-        @test This is a happy path test for normalizing FLAC filenames.
+        @test Happy path.
         '''
 
         test_dir = os.path.join(self.norm_path, TEST_FLAC_CREAM_ALBUM_ARTIST, "Goodbye")
@@ -1360,7 +1374,7 @@ class TestAudioMetadata(TestCase):
 
         @details Verifies that a FLAC file with a correctly formatted filename is not renamed.
 
-        @test This is a happy path test for handling already correctly named FLAC files.
+        @test Edge case.
         '''
 
         test_dir = os.path.join(self.norm_path, TEST_FLAC_CREAM_ALBUM_ARTIST, os.path.basename(os.path.dirname(TEST_FLAC_CREAM)))
@@ -1394,7 +1408,7 @@ class TestAudioMetadata(TestCase):
 
         @details Verifies that Windows-invalid characters are removed from the filename when normalizing a FLAC file.
 
-        @test This is a happy path test for sanitizing Windows-invalid filename characters.
+        @test Edge case.
         '''
 
         test_dir = os.path.join(self.norm_path, TEST_FLAC_CREAM_ALBUM_ARTIST, os.path.basename(os.path.dirname(TEST_FLAC_CREAM)))
@@ -1425,7 +1439,7 @@ class TestAudioMetadata(TestCase):
 
         @details Verifies that a ValueError is raised when attempting to normalize a file with an invalid extension.
 
-        @test This is a negative path test for handling non-FLAC audio files.
+        @test Error case.
         '''
 
         with self.assertRaises(ValueError) as cm:
@@ -1442,7 +1456,7 @@ class TestAudioMetadata(TestCase):
 
         @details Verifies that a ValueError is raised when attempting to normalize a FLAC file that lacks metadata.
 
-        @test This is a negative path test for handling FLAC files without metadata.
+        @test Error case.
         '''
 
         # Create a dummy FLAC file class to simulate the behavior of the actual FLAC file.
@@ -1464,7 +1478,7 @@ class TestAudioMetadata(TestCase):
 
         @details Verifies that only FLAC files are normalized and other audio formats are ignored during a directory walk.
 
-        @test This is a happy path test for the directory walk normalization of FLAC files.
+        @test Happy path.
         '''
 
         test_dir = os.path.join(self.norm_path, TEST_FLAC_CREAM_ALBUM_ARTIST, os.path.basename(os.path.dirname(TEST_FLAC_CREAM)))
@@ -1486,7 +1500,7 @@ class TestAudioMetadata(TestCase):
 
         @details Verifies that an M4A file is renamed according to its album artist and title metadata.
 
-        @test This is a happy path test for normalizing M4A filenames.
+        @test Happy path.
         '''
 
         test_dir = os.path.join(self.norm_path, TEST_M4A_DAVIS_ALBUM_ARTIST, os.path.basename(os.path.dirname(TEST_M4A_DAVIS)))
@@ -1525,7 +1539,7 @@ class TestAudioMetadata(TestCase):
 
         @details Verifies that a ValueError is raised when attempting to normalize a file with an invalid extension.
 
-        @test This is a negative path test for handling non-M4A audio files.
+        @test Error case.
         '''
 
         with self.assertRaises(ValueError) as cm:
@@ -1542,7 +1556,7 @@ class TestAudioMetadata(TestCase):
 
         @details Verifies that only M4A files are normalized and other audio formats are ignored during a directory walk.
 
-        @test This is a happy path test for the directory walk normalization of M4A files.
+        @test Happy path.
         '''
 
         test_dir = os.path.join(self.norm_path, "M4A")
@@ -1568,7 +1582,7 @@ class TestAudioMetadata(TestCase):
 
         @details Verifies that only WMA files are normalized and other audio formats are ignored during a directory walk.
 
-        @test This is a happy path test for the directory walk normalization of WMA files.
+        @test Happy path.
         '''
 
         test_dir = os.path.join(self.norm_path, "WMA")
@@ -1593,7 +1607,7 @@ class TestAudioMetadata(TestCase):
 
         @details Verifies that the ID3 tags dictionary is correctly updated with the newest year and disc value.
 
-        @test This is a happy path test for updating ID3 tags.
+        @test Happy path.
         '''
 
         # need name mangling to access private method
@@ -1614,14 +1628,13 @@ class TestAudioMetadata(TestCase):
 
 def get_method_names(cls):
     '''
-    @brief Returns a list of methods defined within a given class.
+    @brief Get names of test methods defined by a class.
 
-    @details This function inspects a given class and returns a list of method names that start with 'test_'.
+    @details Filters class methods to names that begin with the test prefix.
 
-    @test This is a utility function used for dynamically collecting test methods from a class.
+    @param cls {type} Class containing test methods.
 
-    @param cls {Class} The name of the class to get methods list from.
-    @return method_names [{str}] The names of the methods defined in class.
+    @return method_names {list[str]} Names of test methods defined by the class.
     '''
 
     method_names = []
@@ -1636,12 +1649,9 @@ def get_method_names(cls):
 
 if __name__ == "__main__":
     '''
-    @brief Entry point for running the test suite for the AudioMetadata class.
+    @brief Run the AudioMetadata test suite directly.
 
-    @details This block collects all test methods from the TestAudioMetadata class, adds them to a test suite,
-    and executes the suite using a text test runner.
-
-    @test This is the main execution point for running all AudioMetadata class unit tests.
+    @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
     '''
 
     methods = get_method_names(TestAudioMetadata)

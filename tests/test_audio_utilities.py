@@ -1,40 +1,53 @@
 '''
-@file test_audio_utilities.py one off functions.
+@class TestAudioUtilities
+@file test_audio_utilities.py
 
 @brief Defines the test audio utilities class.
 
+@details Tests utility behavior that checks audio clipping and volume levels.
+
+@version 1.0.0
+@date 2026-09-22
+
 @author Gerald Manweiler
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import gc
-import inspect
-import unittest
-from unittest import TestCase
+# Standard Modules
+import inspect                                              # for test method discovery
+import unittest                                             # for direct test-suite execution
+from unittest import TestCase                               # for test-case assertions
 
-# local module constants
-from tests import TESTS_TLD
-# local module classes
-from src.audio_info import AudioUtilities
+# Local Module Constants
+from tests import TESTS_TLD                                 # for audio utility walk input
 
-gc.enable()
+# Local Module Classes
+from src.audio_info import AudioUtilities                   # for utility functionality under test
 
 ## @var utilities
-# @brief instance of AudioUtilities class
-# @details used for accessing class functionality
+# @brief AudioUtilities instance under test.
+# @details Provides access to audio utility functionality.
 utilities = AudioUtilities()
 
 
 class TestAudioUtilities(TestCase):
     '''
     @brief Tests AudioUtilities class functions.
+
+    @details Verifies audio utility behavior using music test fixtures.
     '''
 
 
     def test_clip_vol_check_walk(self):
         '''
-        @brief Tests walking tld to get clipping and max volume amounts.
+        @brief Test clipping and maximum-volume analysis over a directory walk.
+
+        @details Verifies the utility processes all audio fixtures in the top-level music directory.
+
+        @test Happy path.
+
+        @param self {TestAudioUtilities} Test instance containing utility fixtures.
         '''
 
         converted_tld = TESTS_TLD
@@ -43,10 +56,13 @@ class TestAudioUtilities(TestCase):
 
 def get_method_names(cls):
     '''
-    @brief Returns a list of names of methods defined within a given class.
+    @brief Get names of test methods defined by a class.
 
-    @param cls {Class} The name of the class to get methods list from.
-    @return method_names [{str}] The names of the methods defined in class.
+    @details Filters class methods to names that begin with the test prefix.
+
+    @param cls {type} Class containing test methods.
+
+    @return method_names {list[str]} Names of test methods defined by the class.
     '''
 
     method_names = []
@@ -58,6 +74,11 @@ def get_method_names(cls):
 
 
 if __name__ == "__main__":
+    '''
+    @brief Run the AudioUtilities test suite directly.
+
+    @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
+    '''
     methods = get_method_names(TestAudioUtilities)
 
     suite = unittest.TestSuite()

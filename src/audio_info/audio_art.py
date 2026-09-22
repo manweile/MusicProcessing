@@ -534,6 +534,7 @@ class AudioArt():
         -select_streams v:0: only want video stream
         -show_streams: gets all information about each media stream in the input
         -of json: output information in json format
+        file_path: the path to the media file to be analyzed by ffprobe
         @endcode
 
         @param file_path {str} The full path to audio file.

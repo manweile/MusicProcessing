@@ -1,51 +1,54 @@
-
 '''
+@class TestSubprocessUtilities
 @file test_subprocess_utilities.py
-@brief Defines the test subprocess_utilities class.
+@brief Defines the test subprocess utilities class.
+
+@details Tests subprocess command execution, error propagation, and decoding behavior.
+
+@version 1.0.0
+@date 2026-09-22
 
 @author Gerald Manweiler
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import gc
-import inspect
-import os
-import shlex
-import unittest
-from subprocess import CalledProcessError
-from unittest import TestCase
-from unittest.mock import Mock
-from unittest.mock import patch
+# Standard Modules
+import inspect                                              # for test method discovery
+import os                                                   # for test fixture path construction
+import shlex                                                # for expected command formatting
+import unittest                                             # for direct test-suite execution
+from subprocess import CalledProcessError                   # for expected command execution errors
+from unittest import TestCase                               # for test-case assertions and lifecycle hooks
+from unittest.mock import Mock                              # for subprocess process doubles
+from unittest.mock import patch                             # for patched subprocess functions
 
-# local module constants
-from src import UTF8
-from tests import TEST_M3U
-from tests import TEST_MP3_CRUSH
-from tests import TEST_WAV_NONE
-from tests import TESTS_PATH
-# local module errors
-from src import FfmpegProcessError
-# local module classes
-from src.subprocess_utils import SubprocessUtilities
+# Local Module Constants
+from src import UTF8                                        # for decoding error fixture encoding
+from tests import TEST_M3U                                  # for invalid file-type tests
+from tests import TEST_MP3_CRUSH                            # for valid media command tests
+from tests import TEST_WAV_NONE                             # for non-existent file tests
+from tests import TESTS_PATH                                # for invalid media fixture paths
 
-gc.enable()
+# Local Module Errors
+from src import FfmpegProcessError                          # for expected ffmpeg command failures
+
+# Local Module Classes
+from src.subprocess_utils import SubprocessUtilities        # for subprocess functionality under test
 
 ## @var subprocess_utils
-# @brief instance of SubprocessUtilities class
-# @details used for accessing class functionality
+# @brief SubprocessUtilities instance under test.
+# @details Provides access to subprocess execution functionality.
 subprocess_utils = SubprocessUtilities()
 
 
 def mock_communicate_with_error() -> tuple:
     '''
-    @brief Simulates a communicate() call that fails during decoding.
+    @brief Simulate a communicate call that fails during decoding.
 
-    @details Simulates a failure during the decoding of subprocess output.
+    @details Returns undecodable bytes that trigger a Unicode decode error.
 
-    @test Simulates a failure during the decoding of subprocess output.
-
-    @return undecoded_bytes {tuple} A tuple simulating the output of communicate() with undecoded bytes.
+    @return undecoded_bytes {tuple} Simulated communicate output with undecodable bytes.
     '''
 
     # A byte string that is invalid UTF-8
@@ -59,6 +62,8 @@ def mock_communicate_with_error() -> tuple:
 class TestSubprocessUtilities(TestCase):
     '''
     @brief Tests SubprocessUtilities class functions.
+
+    @details Verifies command execution, subprocess errors, and decoding behavior.
     '''
 
 
@@ -67,14 +72,44 @@ class TestSubprocessUtilities(TestCase):
         '''
         @brief Initialize data for test suite.
 
-        @details These datums are used throughout class and only need init once.
+        @details Creates shared ffprobe and ffmpeg command fixtures for the test suite.
+
+        @code{.text}
+        get all media info command
+        ffprobe -v error -show_format -show_streams file_path
+
+        -v quiet; reduce output clutter
+        -show_format; get high level details of media file
+        -show_streams; gets all information about each media stream in the input
+        file_path; the path to the audio file to be analyzed by ffprobe
+
+        convert audio files to mp3 command
+        ffmpeg -hide_banner -i file_path -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198
+
+        -hide_banner; reduce output clutter
+        -i file_path; the path to the audio file
+        -vn -map_metadata -1; -vn drops video stream and -map_metadata -1 drops all text metadata
+        -codec:a libmp3lame; sets audio codec for mp3
+        -id3v2_version 3; known bug, MUST specify id3v2 version, else will get ID3v2.4
+        -b:a 128198; ffmpeg will downgrade bitrate if you don't set it
+        file_path: the path to the audio file
+
+        get volume information command
+        ffmpeg -hide_banner -i file_path -filter:a volumedetect -f null -
+
+        -hide_banner; to reduce output clutter
+        -i file_path; specifies the input audio file
+        -filter:a volumedetect; applies the volumedetect filter to the audio stream
+        -f null -; sends the output to null to avoid creating an actual output file
+        @endcode
+
+        @param cls {type[TestSubprocessUtilities]} Test class receiving shared command fixtures.
+
         '''
 
         cls.file_path = TEST_M3U
 
-        # from metadata.get_ffrobe_media_info,
-        # calls popen_pipe with ffprobe command for getting all media file info
-        # append a valid file_path when using
+        # ffprobe command for getting all media file info, append a valid file_path when using
         cls.ffprobe_command = [
             "ffprobe",
             "-v", "error",
@@ -82,8 +117,7 @@ class TestSubprocessUtilities(TestCase):
             "-show_streams"
         ]
 
-        # from metadata.convert_file,
-        # calls popen_pipe with a ffmpeg command for an audio file conversion to mp3
+        # ffmpeg command for an audio file conversion to mp3
         cls.ffmpeg_command = [
             "ffmpeg",
             "-hide_banner",
@@ -95,12 +129,7 @@ class TestSubprocessUtilities(TestCase):
             TEST_WAV_NONE, '-y'
         ]
 
-        # from normalization.get_volume_info,
-        # calls popen_pipe with an ffmpeg command for audio file getting volume info
-        # -hide_banner to reduce output clutter
-        # -i file_path
-        # -filter:a volumedetect so get volume stats on audio stream
-        # -f null - send output to stdout
+        # ffmpeg command for audio file getting volume info
         # to use, create an empty list, extend with ffmpeg_hide_banner, append with file_path, extend with ffmpeg_filter
         cls.ffmpeg_hide_banner = ['ffmpeg', '-hide_banner', '-i']
         cls.ffmpeg_filter = ['-filter:a', 'volumedetect', '-f', 'null', '-']
@@ -108,7 +137,15 @@ class TestSubprocessUtilities(TestCase):
 
     def test_popen_pipe_ffmpeg_invalid_file(self):
         '''
-        @brief Tests trying to get ffprobe media info from invalid file type throws RuntimeError.
+        @brief Test ffmpeg pipe execution with an invalid file type.
+
+        @details Verifies an invalid input file raises a runtime error.
+
+        @test Error case.
+
+        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+
+        @exception RuntimeError ffmpeg fails to process the invalid input file.
         '''
 
         mpeg_process = None
@@ -124,7 +161,15 @@ class TestSubprocessUtilities(TestCase):
 
     def test_popen_pipe_ffmpegprocess_error(self):
         '''
-        @brief Tests asynchronous execution of command with redirection to stderr throws FfmpegProcessError.
+        @brief Test spinner pipe execution with an ffmpeg process error.
+
+        @details Verifies failed asynchronous ffmpeg execution raises an ffmpeg process error.
+
+        @test Error case.
+
+        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+
+        @exception FfmpegProcessError ffmpeg reports a command execution failure.
         '''
 
         mpeg_process = None
@@ -140,7 +185,15 @@ class TestSubprocessUtilities(TestCase):
 
     def test_popen_pipe_ffprobe_invalid_data(self):
         '''
-        @brief Test trying to get ffprobe media info from invalid mp3 file throws RuntimeError.
+        @brief Test ffprobe pipe execution with invalid MP3 data.
+
+        @details Verifies malformed audio data raises a runtime error.
+
+        @test Error case.
+
+        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+
+        @exception RuntimeError ffprobe cannot process malformed MP3 data.
         '''
 
         file_path = os.path.join(TESTS_PATH, "No_audio_Crush-Live.mp3")
@@ -159,7 +212,15 @@ class TestSubprocessUtilities(TestCase):
 
     def test_popen_pipe_ffprobe_invalid_file(self):
         '''
-        @brief Tests trying to get ffprobe media info from invalid file type throws RuntimeError.
+        @brief Test ffprobe pipe execution with an invalid file type.
+
+        @details Verifies a playlist input raises a runtime error.
+
+        @test Error case.
+
+        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+
+        @exception RuntimeError ffprobe cannot process the playlist input.
         '''
 
         file_path = TEST_M3U
@@ -179,7 +240,16 @@ class TestSubprocessUtilities(TestCase):
     @patch('src.subprocess_utils.subprocess.Popen')
     def test_popen_pipe_communicate_decode_error(self, mock_popen):
         '''
-        @brief Tests asynchronous Popen execution of command throws UnicodeDecodeError.
+        @brief Test pipe execution with undecodable communicate output.
+
+        @details Verifies undecodable mocked output raises a Unicode decode error.
+
+        @test Error case.
+
+        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+        @param mock_popen {Mock} Patched Popen constructor returning undecodable output.
+
+        @exception UnicodeDecodeError Mocked communicate output is not valid UTF-8.
         '''
 
         file_path = TEST_MP3_CRUSH
@@ -206,7 +276,15 @@ class TestSubprocessUtilities(TestCase):
 
     def test_subprocess_run_ffmpeg_invalid_file(self):
         '''
-        @brief Tests getting ffmpeg volume info failing due to invalid file type throws CalledProcessError.
+        @brief Test ffmpeg volume analysis with an invalid file type.
+
+        @details Verifies ffmpeg raises a called process error for a playlist input.
+
+        @test Error case.
+
+        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+
+        @exception CalledProcessError ffmpeg cannot process the playlist input.
         '''
 
         file_path = TEST_M3U
@@ -229,17 +307,31 @@ class TestSubprocessUtilities(TestCase):
 
     def test_subprocess_run_ffprobe_non_extant(self):
         '''
-        @brief Tests Tries to run ffprobe video stream check for non-extant file throws CalledProcessError.
+        @brief Test ffprobe video-stream inspection with a missing file.
 
-        @details This test is a due diligence expected failure test.
-        SubprocessUtilities.subprocess_run is 4th level, called by AudioArt.has_video_stream function.
-        AudioArt.has_video_stream has its own tests, which are not an appropriate location for subprocess_run testing.
+        @details Verifies ffprobe raises a called process error for a non-existent input file.
+
+        @code{.text}
+        check for stream command
+        ffprobe -hide_banner -select_streams v:0 -show_streams -of json file_path
+
+        -hide_banner: reduce output clutter
+        -select_streams v:0: only want video stream
+        -show_streams: gets all information about each media stream in the input
+        -of json: output information in json format
+        file_path: the path to the media file to be analyzed by ffprobe
+        @endcode
+
+        @test Error case.
+
+        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+
+        @exception CalledProcessError ffprobe cannot locate the input file.
         '''
 
         file_path = TEST_WAV_NONE
 
-        # from art.has_video_stream,
-        # calls subprocess_run with an ffprobe command to check if audio file has embedded art
+        # ffprobe command to check if audio file has embedded art
         probe_command = [
             'ffprobe',
             '-hide_banner',
@@ -262,7 +354,16 @@ class TestSubprocessUtilities(TestCase):
     @patch('src.subprocess_utils.subprocess.run')
     def test_subprocess_run_unicode_decode_error(self, mock_subprocess_run):
         '''
-        @brief Tests running subprocess for command throws UnicodeDecodeError.
+        @brief Test subprocess execution with undecodable output.
+
+        @details Verifies an undecodable mocked subprocess result raises a Unicode decode error.
+
+        @test Error case.
+
+        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+        @param mock_subprocess_run {Mock} Patched subprocess runner raising a decoding error.
+
+        @exception UnicodeDecodeError Mocked subprocess output is not valid UTF-8.
         '''
 
         file_path = TEST_MP3_CRUSH
@@ -288,12 +389,13 @@ class TestSubprocessUtilities(TestCase):
 
 def get_method_names(cls):
     '''
-    @brief Returns a list of names of methods defined within a given class.
+    @brief Get names of test methods defined by a class.
 
-    @details Returns a detailed description of the methods defined within the given class.
+    @details Filters class methods to names that begin with the test prefix.
 
-    @param cls {Class} The name of the class to get methods list from.
-    @return method_names [{str}] The names of the methods defined in class.
+    @param cls {type} Class containing test methods.
+
+    @return method_names {list[str]} Names of test methods defined by the class.
     '''
 
     method_names = []
@@ -306,9 +408,9 @@ def get_method_names(cls):
 
 if __name__ == "__main__":
     '''
-    @brief Entry point for running the test suite for TestSubprocessUtilities.
+    @brief Run the SubprocessUtilities test suite directly.
 
-    @details Runs all test methods defined in the TestSubprocessUtilities class using the unittest framework.
+    @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
     '''
 
     methods = get_method_names(TestSubprocessUtilities)
