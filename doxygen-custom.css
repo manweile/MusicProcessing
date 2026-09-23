@@ -1,0 +1,36 @@
+/* Align Doxygen metadata labels and values in compact horizontal rows. */
+dl.section.author,
+dl.section.version,
+dl.section.date,
+dl.section.copyright {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+/* Add the separator in each metadata "Label: value" row. */
+dl.section.author dt::after,
+dl.section.version dt::after,
+dl.section.date dt::after,
+dl.section.copyright dt::after {
+  content: ":";
+}
+
+/* Remove Doxygen's default indentation from metadata values. */
+dl.section.author dd,
+dl.section.version dd,
+dl.section.date dd,
+dl.section.copyright dd {
+  margin-left: 0;
+}
+
+/* all images should be aligned to the left */
+.image {
+  text-align: left;
+}
+
+/* Hide documentation-only directories that contain no listed source files. */
+table.directory tr:has(span.iconfolder),
+#nav-tree li:has(> .item > .label > a[href^="dir_"]):not(:has(> .item > a[href="javascript:void(0)"])) {
+  display: none;
+}

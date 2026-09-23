@@ -17,10 +17,10 @@
             "-ExecutionPolicy",
             "Bypass",
             "-Command",
-            "if (Test-Path '${workspaceFolder}/docs/html') { Remove-Item -Recurse -Force '${workspaceFolder}/docs/html' }; doxygen '${workspaceFolder}/docs/Doxyfile'"
+            "if (Test-Path '${workspaceFolder}\\html') { Remove-Item -Recurse -Force '${workspaceFolder}\\html' }; doxygen '${workspaceFolder}\\Doxyfile'"
           ],
           "options": {
-              "cwd": "${workspaceFolder}/docs"
+              "cwd": "${workspaceFolder}"
           },
           "problemMatcher": [],
           "group": {
@@ -51,7 +51,7 @@
               "command": "C:/Program Files/Mozilla Firefox/firefox.exe"
           },
           "args": [
-              "file:///${workspaceFolder}/docs/html/index.html"
+              "file:///${workspaceFolder}/html/index.html"
           ],
           "problemMatcher": [],
           "presentation": {

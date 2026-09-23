@@ -15,8 +15,8 @@ Music Processing recognizes the following file types:
 
 @section usage_main Usage
 From a command line (Powershell or Windows cmd):
-- >cd <location of main.py>
-- >python.exe main.py <arguments>
+- >cd location/of/main.py
+- >python.exe main.py arguments
 
 @section libraries_main Libraries/Modules
 3rd party libraries
