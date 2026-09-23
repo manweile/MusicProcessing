@@ -44,11 +44,19 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - Leave an empty line after `@brief`.
 - Add a `@details` block.
 - Follow the Details Block Formatting Rules.
+- Class and Test files documentation blocks may include `@note` blocks.
+  - `@note` blocks are placed after the  blank line following the `@details` block and before any code example blocks.
+  - Note blocks are followed by a blank line.
+- Class and Test files documentation blocks may include code examples using the `@code{.text}` and `@endcode` tags to illustrate command-line usage.
+  - Code example blocks follow whatever is last of:
+    1. The `@details` block
+    2. The `@note` block
+  - the `@endcode` tag is followed by a blank line.
 - Use:
   - `@param name {type} description` for input parameters, terminated by a period.
   - `@return name {type} description` when the function returns a specifically named value, terminated by a period.
   - `@return {type} description` when the function returns an unnamed value or expression, terminated by a period.
-- Leave an empty line after `@param` and `@return` blocks.
+- Leave an empty line after the final `@param` or `@return` block.
 - Omit `@param` entirely for functions with no parameters.
 - Omit `@return` entirely for functions that return `None`.
 - Use `@exception {type} description` for exceptions raised by the function, terminated by a period.
@@ -90,13 +98,14 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 
 - All files start with a Doxygen file header block.
 - The first line of the file header must follow the per file type header block rule.
-  1. Package Files Header Block rules for package files.
-  2. Module Files Header Block rules for module files.
-  3. Class Files Header Block rules for class files.
-  4. Test Files Header Block rules for test files.
-  5. Main Files Header Block rules for the main file.
+  1. Main Files Header Block rules for the main file.
+  2. Package Files Header Block rules for package files.
+  3. Module Files Header Block rules for module files.
+  4. Class Files Header Block rules for class files.
+  5. Test Files Header Block rules for test files.
 - Add `@author` Gerald Manweiler, followed by an empty line.
 - Add `@brief`
+  - `Project Name ...` in main file
   - `Package ...` in package files
   - `Defines the ... module` in module files
   - `Defines the ... class` in class files
@@ -107,8 +116,13 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   - Follow the Details Block Formatting Rules.
 - Add `@version` using Semantic Versioning starting at 1.0.0, per semver.org in `MAJOR.MINOR.PATCH` format.
 - Add `@date`, followed by an empty line.
-- Add `@copyright` `@showdate "%Y"` GWN Software. All rights reserved.
+- Add `@copyright @showdate "%Y" GWN Software. All rights reserved.`
 - Leave one blank line after the file header block and before the first import.
+
+## Main File Header Block
+
+- Main files are Python files that serve as the entry point of the application.
+- Their next line is `@file ...` where `...` is the file name - but not the relative file path; eg: `@file main_file.py`
 
 ## Package Files Header Block
 
@@ -134,13 +148,6 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - Test files are `test_*.py` Python files whose primary purpose is to define unit tests for the project.
 - Their header blocks start with `@class ...` where `...` is the name of the primary test class.
 - Their next line is `@file ...` where `...` is the file name - but not the relative file path; eg: `@file test_class_file.py`
-
-## Main File Header Block
-
-- Main files are Python files that serve as the entry point of the application.
-- Main files are Python files that serve as the entry point of the application.
-- Their header blocks start with `@main ...` where `...` is the name of the main file.
-- Their next line is `@file ...` where `...` is the file name - but not the relative file path; eg: `@file main_file.py`
 
 ## Import Rules
 
@@ -249,6 +256,65 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 
   ```
 
+## Main File
+
+- The main file is the Python file that serves as the entry point of the application.
+- Follow Module Level Variables and Constants rules for placement of purpose comments.
+- There is only one main file in the project.
+- The main file has the shebang line `#!/usr/bin/env python3` at the very first line of the file to specify the Python interpreter.
+- It contains the `if __name__ == "__main__":` block to execute the main functionality.
+- The `if __name__ == "__main__":` block follows Shared Doxygen rules for function documentation.
+- It may contain import statements for standard, third-party modules, and local modules.
+
+### Main File Logging Setup
+
+- The `main.py` file must include a logging setup section.
+  - The main file must import the standard modules `logging` and `os` modules.
+  - The main file must import the following local modules:
+    - `ERROR_LOG_FORMAT`, `LOG_EXT`, `GENERATED_PATH`, `LOG_DIR`, and `UTF8` from the appropriate local module.
+  - The logging setup is placed after the import statements.
+  - The logging setup defines the log file name from the current file name.
+  - The logging setup appends `LOG_EXT` to the file stem.
+  - The logging setup creates the log file path with `GENERATED_PATH`, `LOG_DIR`, and the log file name.
+  - The logging setup calls `logging.basicConfig(...)` to configure file logging.
+  - The logging setup sets the logging level to `logging.DEBUG`.
+  - The logging setup uses `ERROR_LOG_FORMAT` for the logging format.
+  - The logging setup uses append mode with `filemode="a"`.
+  - The logging setup uses `UTF8` for the file encoding.
+  - The logging setup defines a module logger with `logging.getLogger(__name__)`.
+
+  ```python
+  # Configure logging
+  ## @var basename
+  # @brief Module file base name.
+  # @details Gets the current module file name for constructing the log file name.
+  basename = os.path.basename(__file__)
+
+  ## @var stem
+  # @brief Module file stem.
+  # @details Removes the extension from the module file base name.
+  stem = os.path.splitext(basename)[0]
+
+  ## @var file
+  # @brief Module log file name.
+  # @details Appends the configured log extension to the module file stem.
+  file = stem + LOG_EXT
+
+  ## @var log_filename
+  # @brief Module log file path.
+  # @details Joins the generated-files path, log directory, and module log file name.
+  log_filename = os.path.join(GENERATED_PATH, LOG_DIR, file)
+
+  # override the default logging level WARN to lowest level so we can log all levels
+  logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
+
+  ## @var logger
+  # @brief Module logger.
+  # @details Records application events using the module name.
+  logger = logging.getLogger(__name__)
+
+  ```
+
 ## Package Files
 
 - Package files are Python files whose primary purpose is to define a package.
@@ -299,7 +365,6 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - They follow the Class File Garbage Collection rules as described above.
 - They follow the Class File Logging Setup rules as described below.
 - They contain the class definition and its methods.
-- Class files documentation blocks may include code examples using the `@code{.text}` and `@endcode` tags to illustrate command-line usage.
 
 ### Class File Garbage Collection
 
@@ -349,62 +414,28 @@ add_module_handler(logger, basename)
 
 - Test files are Python files whose primary purpose is to define unit tests for the project.
 - Test files are Python files that contain test cases for the classes defined in the project.
+- Test files can be ran directly and therefore:
+  - must include the shebang line `#!/usr/bin/env python3` as the first line of the file.
+  - must contain the `if __name__ == "__main__":` block to execute the test functionality.
+  - the `if __name__ == "__main__":` block is placed at the end of the test file.
+  - The `if __name__ == "__main__":` block follows Shared Doxygen rules for function documentation.
 - Files named `test_*.py` are implementation-only test sources, not public API.
-- test files reside in the `tests` directory and follow the naming convention `test_*.py`.
+- Test files reside in the `tests` directory and follow the naming convention `test_*.py`.
 - Test files are class files and should follow the same header and import rules as regular class files.
 - Follow Module Level Variables and Constants rules for placement of purpose comments.
 - Test files do not follow the Class File Logging Setup rules.
-- Test files documentation blocks may include code examples using the `@code{.text}` and `@endcode` tags to illustrate command-line usage.
+- Test cases have an additional tag `@test` in their Doxygen documentation.
+  - The `@test` tag describes if this is a happy path, edge case, error case, or corner case.
+  - The `@test` line is placed after the blank line following whatever is last of:
+    - a `@details` block
+    - a `@note` block
+    - a code example using the `@code{.text}` and `@endcode` tags
+  - The `@test` tag is followed by a blank line.
 - Test files may have a class level `setUpClass` method for initializing test fixtures, with a `@classmethod` decorator.
 - Test files may have a class level `tearDownClass` method for cleaning up test fixtures, with a `@classmethod` decorator.
 - Test files may have a `tearDown` method for cleaning up individual test cases.
 - Test cases are named `test_<functionality>`, where `<functionality>` describes the specific feature or behavior being tested.
-- Test cases have an additional tag `@test` in their Doxygen documentation.
-  - The `@test` line is placed after the blank line following the`@details` block, and is followed by a blank line.
-  - The `@test` tag describes if this is a happy path, edge case, error case, or corner case.
 - Test cases using mock objects have an appropriate `@patch` decorator for the mock in the test case.
-- It contains the `if __name__ == "__main__":` block to execute the test functionality.
-- The `if __name__ == "__main__":` block follows Shared Doxygen rules for function documentation.
-
-## Main File
-
-- The main file is the Python file that serves as the entry point of the application.
-- Follow Module Level Variables and Constants rules for placement of purpose comments.
-- There is only one main file in the project.
-- It contains the `if __name__ == "__main__":` block to execute the main functionality.
-- The `if __name__ == "__main__":` block follows Shared Doxygen rules for function documentation.
-- It may contain import statements for standard, third-party modules, and local modules.
-- It may contain a `__all__` export list to specify the public API of the main file.
-
-### Main File Logging Setup
-
-- The `main.py` file must include a logging setup section.
-  - The main file must import the standard modules `logging` and `os` modules.
-  - The main file must import the following local modules:
-    - `ERROR_LOG_FORMAT`, `LOG_EXT`, `GENERATED_PATH`, `LOG_DIR`, and `UTF8` from the appropriate local module.
-  - The logging setup is placed after the import statements.
-  - The logging setup defines the log file name from the current file name.
-  - The logging setup appends `LOG_EXT` to the file stem.
-  - The logging setup creates the log file path with `GENERATED_PATH`, `LOG_DIR`, and the log file name.
-  - The logging setup calls `logging.basicConfig(...)` to configure file logging.
-  - The logging setup sets the logging level to `logging.DEBUG`.
-  - The logging setup uses `ERROR_LOG_FORMAT` for the logging format.
-  - The logging setup uses append mode with `filemode="a"`.
-  - The logging setup uses `UTF8` for the file encoding.
-  - The logging setup defines a module logger with `logging.getLogger(__name__)`.
-
-  ```python
-  # Configure logging
-  basename = os.path.basename(__file__)
-  stem = os.path.splitext(basename)[0]
-  file = stem + LOG_EXT
-  log_filename = os.path.join(GENERATED_PATH, LOG_DIR, file)
-
-  # override the default logging level WARN to lowest level so we can log all levels
-  logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
-  logger = logging.getLogger(__name__)
-
-  ```
 
 ### Casing Rules
 

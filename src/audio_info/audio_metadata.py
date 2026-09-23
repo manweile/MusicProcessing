@@ -454,6 +454,7 @@ class AudioMetadata():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
+        @param show_spinner {bool} Optional, whether to display a spinner during conversion. Defaults to True.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1146,12 +1147,12 @@ class AudioMetadata():
 
 
     def map_m4a_tags(self, input_tags: MP4Tags) -> dict:
-        r'''
+        '''
         @brief Converts m4a (MP4) metadata to preferred ID3v2.3 metadata
 
         @details Converts subset of tags (the ones that Window will display) from m4a (MP4) files.
 
-        @note '\xa9day' is the preferred tag for the date in m4a (MP4) files, and it will probably be in the format "YYYY-MM-DD".<br>
+        @note `'\\xa9day'` is the preferred tag for the date in m4a (MP4) files, and it will probably be in the format "YYYY-MM-DD".<br>
         '----:com.apple.iTunes:originalyear' is an alternative tag for the year in m4a (MP4) files.<br>
         It requires different handling to extract the year correctly because it is a MP4FreeForm type.<br>
         Only unique dates will be considered when updating the ID3 tags.

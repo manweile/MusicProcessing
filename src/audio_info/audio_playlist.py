@@ -82,7 +82,7 @@ class AudioPlaylist():
         @brief Gets an audio file name from an EXTINF line.
 
         @details Converts WMA and M4A file extensions to MP3.<br>
-        @details Parses EXTINF entries in the form #EXTINF:N,<name>.<ext>, where N is a song duration, -1, or 0.<br>
+        @details Parses EXTINF entries in the form `#EXTINF:N,<name>.<ext>`, where N is a song duration, -1, or 0.<br>
         @details Supports MP3, M4A, and WMA file extensions.
 
         @param line {str} Line of text read from an M3U file containing an EXTINF tag.
@@ -131,7 +131,7 @@ class AudioPlaylist():
         @note see https://en.wikipedia.org/wiki/M3U<br>
         My playlists are relative pathed (unlike windows pls files, which are absolute pathed).<br>
         Because I use relative pathing, m3u files MUST live in the top level directory ie in Music<br>
-        So a proper relative path will be <artist>/<album>/<title>.mp3
+        So a proper relative path will be artist/album/title.mp3
 
         @param tld_path {str} The top level directory where playlist and music files are located.
         @param input_m3u {str} The full file path to playlist needing conversion.
