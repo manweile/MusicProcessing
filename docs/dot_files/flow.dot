@@ -1,0 +1,254 @@
+digraph music_processing_flow {
+    graph [
+        bgcolor="white",
+        fontname="Helvetica",
+        fontsize=18,
+        label="Music Processing CLI flow (main.py)",
+        labelloc="t",
+        nodesep=0.35,
+        rankdir=TB,
+        ranksep=0.5,
+        splines=polyline
+    ];
+
+    node [
+        color="#334155",
+        fillcolor="#F8FAFC",
+        fontname="Helvetica",
+        fontsize=10,
+        margin="0.12,0.08",
+        penwidth=1.2,
+        shape=box,
+        style="rounded,filled"
+    ];
+
+    edge [
+        color="#475569",
+        fontname="Helvetica",
+        fontsize=9,
+        penwidth=1.1
+    ];
+
+    start [fillcolor="#DCFCE7", label="Start main.py"];
+    guard [fillcolor="#FEF3C7", label="__name__ == '__main__'?", shape=diamond];
+    import_complete [fillcolor="#E2E8F0", label="Module initialization complete\n(imports, logging, service instances)"];
+    entry_setup [label="Create CustomArgumentParser\nand subparsers"];
+    register_commands [label="Register 30 CLI subcommands\nand validate argument paths"];
+    parse_args [label="args = parser.parse_args()"];
+    entry_exception [color="#B91C1C", fillcolor="#FEE2E2", label="Log entry-point exception"];
+    end [fillcolor="#E2E8F0", label="End", shape=oval];
+
+    start -> import_complete;
+    import_complete -> guard;
+    guard -> entry_setup [label="yes"];
+    guard -> end [label="no"];
+    entry_setup -> register_commands -> parse_args;
+    parse_args -> dispatch_start [label="main(args)"];
+    entry_setup -> entry_exception [label="any exception in entry try", style=dashed];
+    entry_exception -> end;
+
+    subgraph cluster_main {
+        color="#94A3B8";
+        fontname="Helvetica";
+        fontsize=13;
+        label="main(args)";
+        style="rounded";
+
+        dispatch_start [fillcolor="#DBEAFE", label="Try dispatch in source order"];
+        main_exception [color="#B91C1C", fillcolor="#FEE2E2", label="Log any exception in main try"];
+        dispatch_end [fillcolor="#E2E8F0", label="Return from main", shape=oval];
+
+        convert_file_check [fillcolor="#FEF3C7", label="subcommand ==\n'convert-file'?", shape=diamond];
+        convert_file_action [label="convert_file(file)\nmetadata.convert_file"];
+        convert_walk_check [fillcolor="#FEF3C7", label="subcommand ==\n'convert-walk'?", shape=diamond];
+        convert_walk_action [label="convert_walk(tld, pattern)\nmetadata.convert_walk"];
+
+        create_albums_check [fillcolor="#FEF3C7", label="subcommand ==\n'create-albums'?", shape=diamond];
+        create_albums_action [label="create_albums(tld)\nmetadata.create_album_dirs"];
+        extract_file_check [fillcolor="#FEF3C7", label="subcommand ==\n'extract-file'?", shape=diamond];
+        extract_file_action [label="extract_file(file)\nart.extract_album_art"];
+        extract_walk_check [fillcolor="#FEF3C7", label="subcommand ==\n'extract-walk'?", shape=diamond];
+        extract_walk_action [label="extract_walk(tld, pattern)\nart.extract_walk"];
+        set_album_art_check [fillcolor="#FEF3C7", label="subcommand ==\n'set-album-art'?", shape=diamond];
+        set_album_art_action [label="set_album_art(tld)\nart.set_album_art"];
+
+        ebu_file_check [fillcolor="#FEF3C7", label="subcommand ==\n'ebu-file'?", shape=diamond];
+        ebu_file_action [label="ebu_file(file)\nnormalization.ebu_normalize_file"];
+        media_info_check [fillcolor="#FEF3C7", label="subcommand ==\n'get-ffprobe-media-info'?", shape=diamond];
+        media_info_action [label="get_ffprobe_media_info(file)\nmetadata.get_ffprobe_media_info"];
+        media_info_walk_check [fillcolor="#FEF3C7", label="subcommand ==\n'get-ffprobe-media-info-walk'?", shape=diamond];
+        media_info_walk_action [label="get_ffprobe_media_info_walk(tld, pattern)\nmetadata.get_ffprobe_media_info_walk"];
+        media_tags_check [fillcolor="#FEF3C7", label="subcommand ==\n'get-ffprobe-media-tags'?", shape=diamond];
+        media_tags_action [label="get_ffprobe_media_tags(file)\nmetadata.get_ffprobe_media_tags"];
+        mutagen_tags_check [fillcolor="#FEF3C7", label="subcommand ==\n'get-mutagen-tags'?", shape=diamond];
+        mutagen_tags_action [label="get_mutagen_tags(file), then\npprint(tags.pprint().splitlines())"];
+        tags_walk_check [fillcolor="#FEF3C7", label="subcommand ==\n'get-tags-walk'?", shape=diamond];
+        tags_walk_action [label="get_tags_walk(tld, pattern, ffprobe)\nmetadata.get_tags_walk"];
+        unique_media_check [fillcolor="#FEF3C7", label="subcommand ==\n'get-unique-media'?", shape=diamond];
+        unique_media_action [label="get_unique_media(tld)\nmetadata.get_unique_media_keys"];
+        list_audio_check [fillcolor="#FEF3C7", label="subcommand ==\n'list-audio'?", shape=diamond];
+        list_audio_action [label="list_audio(tld)\ndirectory.get_audio_file_list"];
+        list_type_check [fillcolor="#FEF3C7", label="subcommand ==\n'list-type'?", shape=diamond];
+        list_type_action [label="list_type(tld, ext)\ndirectory.get_ext_file_list"];
+
+            level_normalize_check [fillcolor="#FEF3C7", label="subcommand ==\n'level-normalize-walk'?", shape=diamond];
+            level_normalize_action [label="level_normalize_walk(tld, type)\nnormalization.level_normalize_walk"];
+            normalize_mp3_check [fillcolor="#FEF3C7", label="subcommand ==\n'normalize-mp3-filename'?", shape=diamond];
+            normalize_mp3_action [label="normalize_mp3_filename(file)\nmetadata.normalize_mp3_filename"];
+            normalize_flac_check [fillcolor="#FEF3C7", label="subcommand ==\n'normalize-flac-filename'?", shape=diamond];
+            normalize_flac_action [label="normalize_flac_filename(file)\nmetadata.normalize_flac_filename"];
+            normalize_mp4_check [fillcolor="#FEF3C7", label="subcommand ==\n'normalize-mp4-filename'?", shape=diamond];
+            normalize_mp4_action [label="normalize_mp4_filename(file)\nmetadata.normalize_mp4_filename"];
+            normalize_wma_check [fillcolor="#FEF3C7", label="subcommand ==\n'normalize-wma-filename'?", shape=diamond];
+            normalize_wma_action [label="normalize_wma_filename(file)\nmetadata.normalize_wma_filename"];
+            normalize_flac_walk_check [fillcolor="#FEF3C7", label="subcommand ==\n'normalize-flac-filename-walk'?", shape=diamond];
+            normalize_flac_walk_action [label="normalize_flac_filename_walk(tld)\nmetadata.normalize_flac_filename_walk"];
+            normalize_mp3_walk_check [fillcolor="#FEF3C7", label="subcommand ==\n'normalize-mp3-filename-walk'?", shape=diamond];
+            normalize_mp3_walk_action [label="normalize_mp3_filename_walk(tld)\nmetadata.normalize_mp3_filename_walk"];
+            normalize_mp4_walk_check [fillcolor="#FEF3C7", label="subcommand ==\n'normalize-mp4-filename-walk'?", shape=diamond];
+            normalize_mp4_walk_action [label="normalize_mp4_filename_walk(tld)\nmetadata.normalize_mp4_filename_walk"];
+            normalize_wma_walk_check [fillcolor="#FEF3C7", label="subcommand ==\n'normalize-wma-filename-walk'?", shape=diamond];
+            normalize_wma_walk_action [label="normalize_wma_filename_walk(tld)\nmetadata.normalize_wma_filename_walk"];
+            peak_file_check [fillcolor="#FEF3C7", label="subcommand ==\n'peak-file'?", shape=diamond];
+            peak_file_action [label="peak_file(file)\nnormalization.peak_normalize_file"];
+            rms_file_check [fillcolor="#FEF3C7", label="subcommand ==\n'rms-file'?", shape=diamond];
+            rms_file_action [label="rms_file(file)\nnormalization.rms_normalize_file"];
+
+            remove_albums_check [fillcolor="#FEF3C7", label="subcommand ==\n'remove-albums'?", shape=diamond];
+            remove_albums_action [label="remove_albums(tld)\ndirectory.remove_empty_album_dir"];
+            remove_pattern_check [fillcolor="#FEF3C7", label="subcommand ==\n'remove-pattern'?", shape=diamond];
+            remove_pattern_action [label="remove_pattern(tld, pattern)\ndirectory.remove_pattern"];
+            update_m3u_check [fillcolor="#FEF3C7", label="subcommand ==\n'update-m3u'?", shape=diamond];
+            update_m3u_action [label="update_paths(tld, m3u)\nplaylist.update_paths"];
+            update_walk_check [fillcolor="#FEF3C7", label="subcommand ==\n'update-walk'?", shape=diamond];
+            update_walk_action [label="update_walk(tld)\nplaylist.update_walk"];
+
+        dispatch_start -> convert_file_check;
+
+        convert_file_check -> convert_file_action [label="yes"];
+        convert_file_check -> convert_walk_check [label="no"];
+        convert_file_action -> convert_walk_check;
+        convert_walk_check -> convert_walk_action [label="yes"];
+        convert_walk_check -> create_albums_check [label="no"];
+        convert_walk_action -> create_albums_check;
+        create_albums_check -> create_albums_action [label="yes"];
+        create_albums_check -> ebu_file_check [label="no"];
+        create_albums_action -> ebu_file_check;
+        ebu_file_check -> ebu_file_action [label="yes"];
+        ebu_file_check -> extract_file_check [label="no"];
+        ebu_file_action -> extract_file_check;
+        extract_file_check -> extract_file_action [label="yes"];
+        extract_file_check -> extract_walk_check [label="no"];
+        extract_file_action -> extract_walk_check;
+        extract_walk_check -> extract_walk_action [label="yes"];
+        extract_walk_check -> media_info_check [label="no"];
+        extract_walk_action -> media_info_check;
+        media_info_check -> media_info_action [label="yes"];
+        media_info_check -> media_info_walk_check [label="no"];
+        media_info_action -> media_info_walk_check;
+        media_info_walk_check -> media_info_walk_action [label="yes"];
+        media_info_walk_check -> media_tags_check [label="no"];
+        media_info_walk_action -> media_tags_check;
+        media_tags_check -> media_tags_action [label="yes"];
+        media_tags_check -> mutagen_tags_check [label="no"];
+        media_tags_action -> mutagen_tags_check;
+        mutagen_tags_check -> mutagen_tags_action [label="yes"];
+        mutagen_tags_check -> tags_walk_check [label="no"];
+        mutagen_tags_action -> tags_walk_check;
+        tags_walk_check -> tags_walk_action [label="yes"];
+        tags_walk_check -> unique_media_check [label="no"];
+        tags_walk_action -> unique_media_check;
+        unique_media_check -> unique_media_action [label="yes"];
+        unique_media_check -> level_normalize_check [label="no"];
+        unique_media_action -> level_normalize_check;
+        level_normalize_check -> level_normalize_action [label="yes"];
+        level_normalize_check -> list_audio_check [label="no"];
+        level_normalize_action -> list_audio_check;
+        list_audio_check -> list_audio_action [label="yes"];
+        list_audio_check -> list_type_check [label="no"];
+        list_audio_action -> list_type_check;
+        list_type_check -> list_type_action [label="yes"];
+        list_type_check -> normalize_mp3_check [label="no"];
+        list_type_action -> normalize_mp3_check;
+        normalize_mp3_check -> normalize_mp3_action [label="yes"];
+        normalize_mp3_check -> normalize_flac_check [label="no"];
+        normalize_mp3_action -> normalize_flac_check;
+        normalize_flac_check -> normalize_flac_action [label="yes"];
+        normalize_flac_check -> normalize_mp4_check [label="no"];
+        normalize_flac_action -> normalize_mp4_check;
+        normalize_mp4_check -> normalize_mp4_action [label="yes"];
+        normalize_mp4_check -> normalize_wma_check [label="no"];
+        normalize_mp4_action -> normalize_wma_check;
+        normalize_wma_check -> normalize_wma_action [label="yes"];
+        normalize_wma_check -> normalize_flac_walk_check [label="no"];
+        normalize_wma_action -> normalize_flac_walk_check;
+        normalize_flac_walk_check -> normalize_flac_walk_action [label="yes"];
+        normalize_flac_walk_check -> normalize_mp3_walk_check [label="no"];
+        normalize_flac_walk_action -> normalize_mp3_walk_check;
+        normalize_mp3_walk_check -> normalize_mp3_walk_action [label="yes"];
+        normalize_mp3_walk_check -> normalize_mp4_walk_check [label="no"];
+        normalize_mp3_walk_action -> normalize_mp4_walk_check;
+        normalize_mp4_walk_check -> normalize_mp4_walk_action [label="yes"];
+        normalize_mp4_walk_check -> normalize_wma_walk_check [label="no"];
+        normalize_mp4_walk_action -> normalize_wma_walk_check;
+        normalize_wma_walk_check -> normalize_wma_walk_action [label="yes"];
+        normalize_wma_walk_check -> peak_file_check [label="no"];
+        normalize_wma_walk_action -> peak_file_check;
+        peak_file_check -> peak_file_action [label="yes"];
+        peak_file_check -> rms_file_check [label="no"];
+        peak_file_action -> rms_file_check;
+        rms_file_check -> rms_file_action [label="yes"];
+        rms_file_check -> remove_albums_check [label="no"];
+        rms_file_action -> remove_albums_check;
+        remove_albums_check -> remove_albums_action [label="yes"];
+        remove_albums_check -> remove_pattern_check [label="no"];
+        remove_albums_action -> remove_pattern_check;
+        remove_pattern_check -> remove_pattern_action [label="yes"];
+        remove_pattern_check -> set_album_art_check [label="no"];
+        remove_pattern_action -> set_album_art_check;
+        set_album_art_check -> set_album_art_action [label="yes"];
+        set_album_art_check -> update_m3u_check [label="no"];
+        set_album_art_action -> update_m3u_check;
+        update_m3u_check -> update_m3u_action [label="yes"];
+        update_m3u_check -> update_walk_check [label="no"];
+        update_m3u_action -> update_walk_check;
+        update_walk_check -> update_walk_action [label="yes"];
+        update_walk_check -> dispatch_end [label="no"];
+        update_walk_action -> dispatch_end;
+
+        dispatch_start -> main_exception [label="exception"];
+        convert_file_action -> main_exception [label="exception"];
+        convert_walk_action -> main_exception [label="exception"];
+        create_albums_action -> main_exception [label="exception"];
+        ebu_file_action -> main_exception [label="exception"];
+        extract_file_action -> main_exception [label="exception"];
+        extract_walk_action -> main_exception [label="exception"];
+        media_info_action -> main_exception [label="exception"];
+        media_info_walk_action -> main_exception [label="exception"];
+        media_tags_action -> main_exception [label="exception"];
+        mutagen_tags_action -> main_exception [label="exception"];
+        tags_walk_action -> main_exception [label="exception"];
+        unique_media_action -> main_exception [label="exception"];
+        level_normalize_action -> main_exception [label="exception"];
+        list_audio_action -> main_exception [label="exception"];
+        list_type_action -> main_exception [label="exception"];
+        normalize_mp3_action -> main_exception [label="exception"];
+        normalize_flac_action -> main_exception [label="exception"];
+        normalize_mp4_action -> main_exception [label="exception"];
+        normalize_wma_action -> main_exception [label="exception"];
+        normalize_flac_walk_action -> main_exception [label="exception"];
+        normalize_mp3_walk_action -> main_exception [label="exception"];
+        normalize_mp4_walk_action -> main_exception [label="exception"];
+        normalize_wma_walk_action -> main_exception [label="exception"];
+        peak_file_action -> main_exception [label="exception"];
+        rms_file_action -> main_exception [label="exception"];
+        remove_albums_action -> main_exception [label="exception"];
+        remove_pattern_action -> main_exception [label="exception"];
+        set_album_art_action -> main_exception [label="exception"];
+        update_m3u_action -> main_exception [label="exception"];
+        update_walk_action -> main_exception [label="exception"];
+        main_exception -> dispatch_end;
+    }
+
+    dispatch_end -> end;
+}

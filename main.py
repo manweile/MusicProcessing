@@ -532,6 +532,8 @@ def main(args):
 
     @details Takes command line arguments and executes per arguments.
 
+    @dotfile flow.dot "Application startup and task flow"
+
     @param args {argparse.Namespace} Arguments for execution.
 
     @exception {NotImplementedError} Indicates a subcommand has not been implemented.

@@ -9,24 +9,18 @@ NOT DISPOSED:
     2) find if can have parameters on same line instead of multiple lines
     TODO
 
-    3) regenerate doxyfile
-      a) use custom css - copy from esp scale project
-      b) change output directory
-      c) move doxyfile to root
-      d) might need custom xml too, that depends on how dox files uses markdown files, if at all
+    3) regenerate doxyfile - COMPLETED
+      a) use custom css - copy from esp scale project - ISSUES, INVESTIGATE
+      b) change output directory - COMPLETED
+      c) move doxyfile to root - COMPLETED
+      d) might need custom xml too, that depends on how dox files uses markdown files, if at all - INVESTIGATE
     IN PROGRESS
 
     4) index.dox file
-      a) move it to root
+      a) move it to root - COMPLETED
       b) think about how to update with contents of various md files
         i) direct use of md files like esp scale?
         ii) find other ways of getting markdown content into dox file
-    TODO
-
-    5) add svg graphs to Doxygen output
-    TODO
-
-    6) debug doxygen issues with test docs
     IN PROGRESS
 
     7) look into adding GENERATE_REQUIREMENTS tag
@@ -39,10 +33,8 @@ NOT DISPOSED:
       b) finish testing markdown
       c) clean up markdown errors in doxygen_usage.md
         i) pattern it after esp scale doxygen markdown
+      d) update doxygen_usage.md
     TODO
-
-    2) run python.instructions.md on all files
-    IN PROGRESS (main.py is last file left)
 
   Logic related:
 
@@ -172,4 +164,13 @@ DISPOSED:
     e) import new constant in test_audio_art.py
     f) use new constant instead of TEST_FLAC_CREAM_BADGE
     g) change cls.flac.jpg to use new artist & album
+  COMPLETED
+
+  4) add svg graphs to Doxygen output
+  COMPLETED
+
+  5) debug doxygen issues with test docs
+  COMPLETED
+
+  6) run python.instructions.md on all files
   COMPLETED
