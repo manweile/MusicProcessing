@@ -1,14 +1,14 @@
 '''
 @class TestAudioNormalization
 @file test_audio_normalization.py
+@author Gerald Manweiler
+
 @brief Defines the test audio normalization class.
 
 @details Tests audio normalization levels, volume analysis, and loudnorm JSON parsing behavior.
 
 @version 1.0.0
 @date 2026-09-22
-
-@author Gerald Manweiler
 
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''

@@ -1,14 +1,14 @@
 '''
 @class TestAudioPlaylist
 @file test_audio_playlist.py
+@author Gerald Manweiler
+
 @brief Defines the test audio playlist class.
 
 @details Tests playlist entry parsing and path-update behavior.
 
 @version 1.0.0
 @date 2026-09-22
-
-@author Gerald Manweiler
 
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''

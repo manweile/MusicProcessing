@@ -1,5 +1,5 @@
 '''
-@package audio_normalize
+@package src.audio_normalize
 @file src/audio_normalize/__init__.py
 @author Gerald Manweiler
 
@@ -19,7 +19,7 @@ from src.audio_normalize.audio_normalization import AudioNormalization
 
 ## @var __all__
 # @brief Exposes class for importing by other modules.
-# @details Import AudioNormalization with `from src.audio_normalize import AudioNormalization`.
+# @details In modules needing the class, add `from src.audio_normalize import AudioNormalization`.
 __all__ = [
     "AudioNormalization"
 ]

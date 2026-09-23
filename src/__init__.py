@@ -169,39 +169,39 @@ src_logger = configure_package_logging(
 
 ## @var __all__
 # @brief Exposes package members for importing by other modules.
-# @details Import add_module_handler with `from src import add_module_handler`.<br>
-# @details Import ASF_TYPE with `from src import ASF_TYPE`.<br>
-# @details Import AUDIO_EXTS with `from src import AUDIO_EXTS`.<br>
-# @details Import AUDIO_FILES with `from src import AUDIO_FILES`.<br>
-# @details Import CSV_DIR with `from src import CSV_DIR`.<br>
-# @details Import CSV_EXT with `from src import CSV_EXT`.<br>
-# @details Import ERROR_LOG_FORMAT with `from src import ERROR_LOG_FORMAT`.<br>
-# @details Import FLAC_EXT with `from src import FLAC_EXT`.<br>
-# @details Import FLAC_TYPE with `from src import FLAC_TYPE`.<br>
-# @details Import FOLDER_ART with `from src import FOLDER_ART`.<br>
-# @details Import FfmpegProcessError with `from src.errors import FfmpegProcessError`.<br>
-# @details Import ILT with `from src import ILT`.<br>
-# @details Import JSONOutputError with `from src.errors import JSONOutputError`.<br>
-# @details Import LOG_DIR with `from src import LOG_DIR`.<br>
-# @details Import LOG_EXT with `from src import LOG_EXT`.<br>
-# @details Import LRA with `from src import LRA`.<br>
-# @details Import M4A_EXT with `from src import M4A_EXT`.<br>
-# @details Import MetadataTypeError with `from src.errors import MetadataTypeError`.<br>
-# @details Import MP3_EXT with `from src import MP3_EXT`.<br>
-# @details Import MP3_TYPE with `from src import MP3_TYPE`.<br>
-# @details Import MP4_TYPE with `from src import MP4_TYPE`.<br>
-# @details Import MUSIC_TLD with `from src import MUSIC_TLD`.<br>
-# @details Import MusicProcessingError with `from src.errors import MusicProcessingError`.<br>
-# @details Import PathInfoError with `from src.errors import PathInfoError`.<br>
-# @details Import PLAYLIST_EXTS with `from src import PLAYLIST_EXTS`.<br>
-# @details Import PLAYLIST_TYPES with `from src import PLAYLIST_TYPES`.<br>
-# @details Import PlaylistError with `from src.errors import PlaylistError`.<br>
-# @details Import RESULT_DIR with `from src import RESULT_DIR`.<br>
-# @details Import RESULT_EXT with `from src import RESULT_EXT`.<br>
-# @details Import TP with `from src import TP`.<br>
-# @details Import UTF8 with `from src import UTF8`.<br>
-# @details Import VideoStreamError with `from src.errors import VideoStreamError`.<br>
-# @details Import WMA_EXT with `from src import WMA_EXT`.
+# @details In modules needing the method, add: `from src import add_module_handler`.
+# @details In modules needing the constant, add: `from src import ASF_TYPE`.
+# @details In modules needing the constant, add: `from src import AUDIO_EXTS`.
+# @details In modules needing the constant, add: `from src import AUDIO_FILES`.
+# @details In modules needing the constant, add: `from src import CSV_DIR`.
+# @details In modules needing the constant, add: `from src import CSV_EXT`.
+# @details In modules needing the constant, add: `from src import ERROR_LOG_FORMAT`.
+# @details In modules needing the constant, add: `from src import FLAC_EXT`.
+# @details In modules needing the constant, add: `from src import FLAC_TYPE`.
+# @details In modules needing the constant, add: `from src import FOLDER_ART`.
+# @details In modules needing the class, add: `from src.errors import FfmpegProcessError`.
+# @details In modules needing the constant, add: `from src import ILT`.
+# @details In modules needing the class, add: `from src.errors import JSONOutputError`.
+# @details In modules needing the constant, add: `from src import LOG_DIR`.
+# @details In modules needing the constant, add: `from src import LOG_EXT`.
+# @details In modules needing the constant, add: `from src import LRA`.
+# @details In modules needing the constant, add: `from src import M4A_EXT`.
+# @details In modules needing the class, add: `from src.errors import MetadataTypeError`.
+# @details In modules needing the constant, add: `from src import MP3_EXT`.
+# @details In modules needing the constant, add: `from src import MP3_TYPE`.
+# @details In modules needing the constant, add: `from src import MP4_TYPE`.
+# @details In modules needing the constant, add: `from src import MUSIC_TLD`.
+# @details In modules needing the class, add: `from src.errors import MusicProcessingError`.
+# @details In modules needing the class, add: `from src.errors import PathInfoError`.
+# @details In modules needing the constant, add: `from src import PLAYLIST_EXTS`.
+# @details In modules needing the constant, add: `from src import PLAYLIST_TYPES`.
+# @details In modules needing the class, add: `from src.errors import PlaylistError`.
+# @details In modules needing the constant, add: `from src import RESULT_DIR`.
+# @details In modules needing the constant, add: `from src import RESULT_EXT`.
+# @details In modules needing the constant, add: `from src import TP`.
+# @details In modules needing the constant, add: `from src import UTF8`.
+# @details In modules needing the class, add: `from src.errors import VideoStreamError`.
+# @details In modules needing the constant, add: `from src import WMA_EXT`.
 __all__ = [
     "add_module_handler",
     "ASF_TYPE",
@@ -235,5 +235,5 @@ __all__ = [
     "TP",
     "UTF8",
     "VideoStreamError",
-    "WMA_EXT",
+    "WMA_EXT"
 ]

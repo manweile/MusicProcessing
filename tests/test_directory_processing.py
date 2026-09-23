@@ -1,14 +1,14 @@
 '''
 @class TestDirectoryProcessing
 @file test_directory_processing.py
+@author Gerald Manweiler
+
 @brief Defines the test directory processing class.
 
 @details Tests directory creation, listing, path resolution, and safe removal behavior.
 
 @version 1.0.0
 @date 2026-09-22
-
-@author Gerald Manweiler
 
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''

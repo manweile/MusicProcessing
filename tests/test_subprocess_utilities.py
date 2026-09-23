@@ -1,14 +1,14 @@
 '''
 @class TestSubprocessUtilities
 @file test_subprocess_utilities.py
+@author Gerald Manweiler
+
 @brief Defines the test subprocess utilities class.
 
 @details Tests subprocess command execution, error propagation, and decoding behavior.
 
 @version 1.0.0
 @date 2026-09-22
-
-@author Gerald Manweiler
 
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''

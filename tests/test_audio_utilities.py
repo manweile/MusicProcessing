@@ -1,6 +1,7 @@
 '''
 @class TestAudioUtilities
 @file test_audio_utilities.py
+@author Gerald Manweiler
 
 @brief Defines the test audio utilities class.
 
@@ -8,8 +9,6 @@
 
 @version 1.0.0
 @date 2026-09-22
-
-@author Gerald Manweiler
 
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''

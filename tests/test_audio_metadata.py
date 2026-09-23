@@ -1,15 +1,14 @@
-
 '''
 @class TestAudioMetadata
 @file test_audio_metadata.py
+@author Gerald Manweiler
+
 @brief Defines the test audio metadata class.
 
 @details Tests AudioMetadata reading, conversion, mapping, and file-name normalization behavior.
 
 @version 1.0.0
 @date 2026-09-22
-
-@author Gerald Manweiler
 
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
@@ -100,9 +99,9 @@ class TestAudioMetadata(TestCase):
         @details Creates shared fixture paths, expected results, and metadata values for the test suite.
 
         @code{.text}
-                command line that is source for media info dictionary definition:
+        command line that is source for media info dictionary definition:
 
-        `file_path` points to "<linux_path>/Crush/Here/Crush-Live.mp3" or "<win_path>\Crush\Here\Crush-Live.mp3"<br>
+        `file_path` points to "linux_path_to_file/Crush/Here/Crush-Live.mp3" or "win_path_to_file/Crush/Here/Crush-Live.mp3"<br>
         Every os flavour has slight differences in the full return dict, especially the filename,
         so we check the platform/environment to correct the filename value
 
@@ -941,9 +940,9 @@ class TestAudioMetadata(TestCase):
 
     def test_load_any_file_non_extant(self):
         '''
-        @brief Tests attempt to load a non-extant audio file with mutagen File function.
+        @brief Tests attempt to load a nonextant audio file with mutagen File function.
 
-        @details The function should raise a MutagenError when attempting to load a non-extant audio file.
+        @details The function should raise a MutagenError when attempting to load a nonextant audio file.
 
         @test Error case.
         '''
@@ -957,7 +956,7 @@ class TestAudioMetadata(TestCase):
         self.assertIsNone(audio_file)
 
         '''
-        With a non-extant file, a mutagen load call will return a chained exception:
+        With a nonextant file, a mutagen load call will return a chained exception:
         MutagenError encapsulating a FileNotFoundError, so we check the exception context dunder,
         disable logging to prevent console clutter.
         '''

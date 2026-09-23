@@ -1,14 +1,14 @@
 '''
 @class TestAudioArt
 @file test_audio_art.py
+@author Gerald Manweiler
+
 @brief Defines the test audio art class.
 
 @details Tests AudioArt album-art extraction and writing behavior.
 
 @version 1.0.0
 @date 2026-09-22
-
-@author Gerald Manweiler
 
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''

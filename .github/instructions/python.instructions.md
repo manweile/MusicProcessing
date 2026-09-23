@@ -31,6 +31,7 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
     1. Class function definitions
   5. Functions
   - List items alphabetically within each group or subgroup unless a section below states otherwise.
+  - The final item of a sequence datatype should not have a trailing comma.
   - Separate Import, Module Level Constants and Module Level Variables with a blank line.
   - Separate classes from preceding code with 2 blank lines.
   - Separate functions inside classes from preceding code with 2 blank lines.
@@ -127,7 +128,7 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 ## Package Files Header Block
 
 - Package files are `__init__.py` Python files whose primary purpose is to define a package.
-- Their header blocks start with `@package ...` where `...` is the name of the package.
+- Their header blocks start with `@package ...` where `...` is the name python path; e.g., `src.audio_info` for the `src/audio_info` package.
 - Their next line is `@file ...` where `...` is the name of the relative file path; eg: `@file src/__init__.py`
 
 ## Module Files Header Block

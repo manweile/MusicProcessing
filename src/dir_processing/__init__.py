@@ -1,5 +1,5 @@
 '''
-@package dir_processing
+@package src.dir_processing
 @file src/dir_processing/__init__.py
 @author Gerald Manweiler
 
@@ -19,7 +19,7 @@ from src.dir_processing.directory_processing import DirectoryProcessing
 
 ## @var __all__
 # @brief Exposes class for importing by other modules.
-# @details Import DirectoryProcessing with `from src.dir_processing import DirectoryProcessing`.
+# @details In modules needing the class, add `from src.dir_processing import DirectoryProcessing`.
 __all__ = [
     "DirectoryProcessing",
 ]

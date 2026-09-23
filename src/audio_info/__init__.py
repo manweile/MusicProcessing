@@ -1,5 +1,5 @@
 '''
-@package audio_info
+@package src.audio_info
 @file src/audio_info/__init__.py
 @author Gerald Manweiler
 

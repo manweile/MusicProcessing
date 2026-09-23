@@ -155,10 +155,10 @@ TEST_MP3_SMEAGOL = os.path.join(TESTS_TLD, "The Lord of the Rings", "The Two Tow
 TEST_MP3_X = os.path.join(TESTS_TLD, "X Ambassadors", "VHS", "X Ambassadors-Renegades.mp3")
 
 ## @var TEST_WAV_NONE
-# @brief Path to wav audio file for tests..
-# @details Use this when needing a non-extant wav audio file for audio metadata tests.
-# @details Use this when needing a non-extant wav audio file for subprocess utilities tests.
-TEST_WAV_NONE = os.path.join(TESTS_TLD, "Non-extant.wav")
+# @brief Path to wav audio file for tests.
+# @details Use this when needing a nonextant wav audio file for audio metadata tests.
+# @details Use this when needing a nonextant wav audio file for subprocess utilities tests.
+TEST_WAV_NONE = os.path.join(TESTS_TLD, "nonextant.wav")
 
 ## @var TEST_WMA_CCR
 # @brief Path to wma audio file for tests.
@@ -180,35 +180,35 @@ TEST_WMA_JOHN = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road
 
 ## @var __all__
 # @brief Exposes test fixtures for importing by test modules.
-# @details Import TEST_FLAC_ALANNAH_MYLES with `from tests import TEST_FLAC_ALANNAH_MYLES`.<br>
-# @details Import TEST_FLAC_CREAM with `from tests import TEST_FLAC_CREAM`.<br>
-# @details Import TEST_FLAC_CREAM_ALBUM_ARTIST with `from tests import TEST_FLAC_CREAM_ALBUM_ARTIST`.<br>
-# @details Import TEST_FLAC_CREAM_BADGE with `from tests import TEST_FLAC_CREAM_BADGE`.<br>
-# @details Import TEST_FLAC_CREAM_INVALID_TITLE with `from tests import TEST_FLAC_CREAM_INVALID_TITLE`.<br>
-# @details Import TEST_FLAC_CREAM_TITLE with `from tests import TEST_FLAC_CREAM_TITLE`.<br>
-# @details Import TEST_M3U with `from tests import TEST_M3U`.<br>
-# @details Import TEST_M4A_DAVIS with `from tests import TEST_M4A_DAVIS`.<br>
-# @details Import TEST_M4A_DAVIS_ALBUM_ARTIST with `from tests import TEST_M4A_DAVIS_ALBUM_ARTIST`.<br>
-# @details Import TEST_M4A_DAVIS_TITLE with `from tests import TEST_M4A_DAVIS_TITLE`.<br>
-# @details Import TEST_M4A_EAGLES with `from tests import TEST_M4A_EAGLES`.<br>
-# @details Import TEST_M4A_EAGLES_ALBUM_ARTIST with `from tests import TEST_M4A_EAGLES_ALBUM_ARTIST`.<br>
-# @details Import TEST_M4A_EAGLES_TITLE with `from tests import TEST_M4A_EAGLES_TITLE`.<br>
-# @details Import TEST_MP3_10CC with `from tests import TEST_MP3_10CC`.<br>
-# @details Import TEST_MP3_10CC_ALBUM_ARTIST with `from tests import TEST_MP3_10CC_ALBUM_ARTIST`.<br>
-# @details Import TEST_MP3_10CC_TITLE with `from tests import TEST_MP3_10CC_TITLE`.<br>
-# @details Import TEST_MP3_ABBA with `from tests import TEST_MP3_ABBA`.<br>
-# @details Import TEST_MP3_CRUSH with `from tests import TEST_MP3_CRUSH`.<br>
-# @details Import TEST_MP3_GENESIS with `from tests import TEST_MP3_GENESIS`.<br>
-# @details Import TEST_MP3_NO_METADATA with `from tests import TEST_MP3_NO_METADATA`.<br>
-# @details Import TEST_MP3_NO_TAG with `from tests import TEST_MP3_NO_TAG`.<br>
-# @details Import TEST_MP3_SMEAGOL with `from tests import TEST_MP3_SMEAGOL`.<br>
-# @details Import TEST_MP3_X with `from tests import TEST_MP3_X`.<br>
-# @details Import TESTS_PATH with `from tests import TESTS_PATH`.<br>
-# @details Import TESTS_TLD with `from tests import TESTS_TLD`.<br>
-# @details Import TEST_WAV_NONE with `from tests import TEST_WAV_NONE`.<br>
-# @details Import TEST_WMA_CCR with `from tests import TEST_WMA_CCR`.<br>
-# @details Import TEST_WMA_HOLIDAY with `from tests import TEST_WMA_HOLIDAY`.<br>
-# @details Import TEST_WMA_JOHN with `from tests import TEST_WMA_JOHN`.
+# @details Import TEST_FLAC_ALANNAH_MYLES with `from tests import TEST_FLAC_ALANNAH_MYLES`
+# @details Import TEST_FLAC_CREAM with `from tests import TEST_FLAC_CREAM`
+# @details Import TEST_FLAC_CREAM_ALBUM_ARTIST with `from tests import TEST_FLAC_CREAM_ALBUM_ARTIST`
+# @details Import TEST_FLAC_CREAM_BADGE with `from tests import TEST_FLAC_CREAM_BADGE`
+# @details Import TEST_FLAC_CREAM_INVALID_TITLE with `from tests import TEST_FLAC_CREAM_INVALID_TITLE`
+# @details Import TEST_FLAC_CREAM_TITLE with `from tests import TEST_FLAC_CREAM_TITLE`
+# @details Import TEST_M3U with `from tests import TEST_M3U`
+# @details Import TEST_M4A_DAVIS with `from tests import TEST_M4A_DAVIS`
+# @details Import TEST_M4A_DAVIS_ALBUM_ARTIST with `from tests import TEST_M4A_DAVIS_ALBUM_ARTIST`
+# @details Import TEST_M4A_DAVIS_TITLE with `from tests import TEST_M4A_DAVIS_TITLE`
+# @details Import TEST_M4A_EAGLES with `from tests import TEST_M4A_EAGLES`
+# @details Import TEST_M4A_EAGLES_ALBUM_ARTIST with `from tests import TEST_M4A_EAGLES_ALBUM_ARTIST`
+# @details Import TEST_M4A_EAGLES_TITLE with `from tests import TEST_M4A_EAGLES_TITLE`
+# @details Import TEST_MP3_10CC with `from tests import TEST_MP3_10CC`
+# @details Import TEST_MP3_10CC_ALBUM_ARTIST with `from tests import TEST_MP3_10CC_ALBUM_ARTIST`
+# @details Import TEST_MP3_10CC_TITLE with `from tests import TEST_MP3_10CC_TITLE`
+# @details Import TEST_MP3_ABBA with `from tests import TEST_MP3_ABBA`
+# @details Import TEST_MP3_CRUSH with `from tests import TEST_MP3_CRUSH`
+# @details Import TEST_MP3_GENESIS with `from tests import TEST_MP3_GENESIS`
+# @details Import TEST_MP3_NO_METADATA with `from tests import TEST_MP3_NO_METADATA`
+# @details Import TEST_MP3_NO_TAG with `from tests import TEST_MP3_NO_TAG`
+# @details Import TEST_MP3_SMEAGOL with `from tests import TEST_MP3_SMEAGOL`
+# @details Import TEST_MP3_X with `from tests import TEST_MP3_X`
+# @details Import TESTS_PATH with `from tests import TESTS_PATH`
+# @details Import TESTS_TLD with `from tests import TESTS_TLD`
+# @details Import TEST_WAV_NONE with `from tests import TEST_WAV_NONE`
+# @details Import TEST_WMA_CCR with `from tests import TEST_WMA_CCR`
+# @details Import TEST_WMA_HOLIDAY with `from tests import TEST_WMA_HOLIDAY`
+# @details Import TEST_WMA_JOHN with `from tests import TEST_WMA_JOHN`
 __all__ = [
     "TEST_FLAC_ALANNAH_MYLES",
     "TEST_FLAC_CREAM",
@@ -238,5 +238,5 @@ __all__ = [
     "TEST_WAV_NONE",
     "TEST_WMA_CCR",
     "TEST_WMA_HOLIDAY",
-    "TEST_WMA_JOHN",
+    "TEST_WMA_JOHN"
 ]

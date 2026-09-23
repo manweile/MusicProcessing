@@ -23,7 +23,7 @@ GENERATED_PATH = os.path.dirname(os.path.abspath(__file__))
 
 ## @var __all__
 # @brief Exposes variable for importing by other modules.
-# @details Import GENERATED_PATH with `from src.generated_files import GENERATED_PATH`.
+# @details In modules needing the constant, add `from src.generated_files import GENERATED_PATH`.
 __all__ = [
     "GENERATED_PATH",
 ]
