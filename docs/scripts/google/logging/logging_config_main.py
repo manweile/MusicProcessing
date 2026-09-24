@@ -1,4 +1,4 @@
-import logging_config
+import docs.scripts.google.logging.logging_config as logging_config
 import logging
 
 logger = logging.getLogger(__name__)

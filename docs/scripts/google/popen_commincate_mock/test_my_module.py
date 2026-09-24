@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, Mock
-from my_module import run_and_get_output
+from docs.scripts.google.popen_commincate_mock.my_module import run_and_get_output
 
 
 # Define a function to use as a side_effect

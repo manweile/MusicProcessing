@@ -1,7 +1,7 @@
 # test_my_module.py
 import unittest
 from unittest.mock import patch
-from my_module import main_function
+from docs.scripts.google.testing.mocking.my_module import main_function
 
 
 class TestMainFunction(unittest.TestCase):
