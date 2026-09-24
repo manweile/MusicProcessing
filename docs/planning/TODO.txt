@@ -9,21 +9,7 @@ NOT DISPOSED:
     2) find if can have parameters on same line instead of multiple lines
     TODO
 
-    3) regenerate doxyfile - COMPLETED
-      a) use custom css - copy from esp scale project - ISSUES, INVESTIGATE
-      b) change output directory - COMPLETED
-      c) move doxyfile to root - COMPLETED
-      d) might need custom xml too, that depends on how dox files uses markdown files, if at all - INVESTIGATE
-    IN PROGRESS
-
-    4) index.dox file
-      a) move it to root - COMPLETED
-      b) think about how to update with contents of various md files
-        i) direct use of md files like esp scale?
-        ii) find other ways of getting markdown content into dox file
-    IN PROGRESS
-
-    7) look into adding GENERATE_REQUIREMENTS tag
+    3) look into adding GENERATE_REQUIREMENTS tag
     TODO
 
   Markdown related:
@@ -32,10 +18,10 @@ NOT DISPOSED:
       a) consolidate the "directory" markdowns into a workflow.md
       b) finish testing markdown                                  COMPLETED
       c) clean up markdown errors in doxygen_usage.md             COMPLETED
-        i) pattern it after esp scale doxygen markdown
-      d) update doxygen_usage.md
-      e) if keeping templating, complete template md file
-      f) minor clarification updates to scripting md
+        i) pattern it after esp scale doxygen markdown            COMPLETED
+      d) update doxygen_usage.md                                  COMPLETED
+      e) if keeping templating, complete template md file         IN PROGRESS
+      f) minor clarification updates to scripting md              TODO
     IN PROGRESS
 
   Logic related:
@@ -180,4 +166,18 @@ DISPOSED:
         /src              the python logic files                    COMPLETED
         /tests            the unit test framework files             COMPLETED
         /templating       automated file templates                  COMPLETED
+  COMPLETED
+
+  8) regenerate doxyfile - COMPLETED
+    a) use custom css - copy from esp scale project - ISSUES, INVESTIGATE
+    b) change output directory - COMPLETED
+    c) move doxyfile to root - COMPLETED
+    d) might need custom xml too, that depends on how dox files uses markdown files, if at all - NOT USING MARKDOWN
+  COMPLETED
+
+  9) index.dox file
+    a) move it to root - COMPLETED
+    b) think about how to update with contents of various md files DECIDED NOT TO
+      i) direct use of md files like esp scale?
+      ii) find other ways of getting markdown content into dox file
   COMPLETED

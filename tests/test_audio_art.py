@@ -624,6 +624,8 @@ if __name__ == "__main__":
 
     @details Collects all test methods from the TestAudioArt class and executes them using a unittest test runner.
 
+    @note This test module can be run directly with `python tests/test_audio_art.py`.
+
     @test Execution of the test suite.
     '''
 

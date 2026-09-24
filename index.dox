@@ -2,11 +2,12 @@
 @mainpage Music Processing Project
 
 @section description_main Description
-A python program for manipulating & normalizing audio files.
+A python project for manipulating & normalizing audio files.
 
 @section notes_main Notes
 Music Processing recognizes the following file types:
 - Audio file types:
+    - flac
     - mp3
     - m4a
     - wma
@@ -17,11 +18,6 @@ Music Processing recognizes the following file types:
 From a command line (Powershell or Windows cmd):
 - >cd location/of/main.py
 - >python.exe main.py arguments
-
-@section libraries_main Libraries/Modules
-3rd party libraries
-- mutagen (https://mutagen.readthedocs.io/en/latest/)
-- pathvalidate  (https://pathvalidate.readthedocs.io/en/latest/index.html#)
 
 @section authour_main Authour
 Gerald Manweiler

@@ -411,6 +411,10 @@ if __name__ == "__main__":
     @brief Run the SubprocessUtilities test suite directly.
 
     @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
+
+    @note This test module can be run directly with `python tests/test_subprocess_utilities.py`.
+
+    @test Execution of the test suite.
     '''
 
     methods = get_method_names(TestSubprocessUtilities)

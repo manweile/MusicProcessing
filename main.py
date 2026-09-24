@@ -526,6 +526,8 @@ def update_walk(tld_path):
     playlist.update_walk(tld_path)
 
 
+## @name Application Entry Point
+# @{
 def main(args):
     '''
     @brief Module entry point.
@@ -676,6 +678,7 @@ def main(args):
 
     except Exception as e:
         logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
+## @}
 
 
 if __name__ == "__main__":
@@ -719,8 +722,8 @@ if __name__ == "__main__":
 
         # create album directories
         # 1 mandatory arg, the tld path
-        # sys.argv = ['D:\MusicProcessing\main.py', 'create-album', 'C:\Music']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'create-album', '/home/gerald/Music']
+        # sys.argv = ['D:\MusicProcessing\main.py', 'create-albums', 'C:\Music']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'create-albums', '/home/gerald/Music']
         # create-albums C:\Music
         create_albums_parser = subparsers.add_parser("create-albums", help="Create album sub-directories")
         create_albums_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
@@ -994,7 +997,7 @@ if __name__ == "__main__":
 
         # set album art file
         # 1 mandatory arg, the tld path
-        # sys.argv = ['D:\MusicProcessing\main.py', 'set-art', 'C:\Music']
+        # sys.argv = ['D:\MusicProcessing\main.py', 'set-album-art', 'C:\Music']
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'set-art', '/home/gerald/Music']
         # set-album-art C:\Music
         set_album_art_parser = subparsers.add_parser("set-album-art", help="Set album art file")
