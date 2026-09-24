@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 MD041 -->
+
 # Normalized
 
 Directory is the result of normalization on ConvertedMusic directory.

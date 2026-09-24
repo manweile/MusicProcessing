@@ -1,3 +1,6 @@
+
+<!-- markdownlint-disable MD033 MD041 -->
+
 # Source
 
 Directory is the original audio, playlist, and sundry files from the HTPC (\\Office1\Music\).

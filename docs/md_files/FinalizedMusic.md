@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 MD041 -->
+
 # Finalized
 
 Directory is the result of manual metadata checks and playlist updates on NormalizedMusic directory.

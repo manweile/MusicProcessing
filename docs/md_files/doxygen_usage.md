@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 MD041 -->
+
 # Doxygen usage in Music Process Project
 
 ## Documentation Structure

@@ -1,7 +1,11 @@
+<!-- markdownlint-disable MD033 MD041 -->
+
 # How to run standalone scripts in a sibling directory
+
 There are basically 3 options for running stand alone scripts in a sibling directory that do NOT have a ```if __name__ = "__main__":```
 
 ## Run script as a module
+
 Useful for terminal execution of modules directly, especially when dealing with packages or when you want to avoid issues with relative imports.
 
 No need to add code or modify PYTHONPATH.
@@ -13,6 +17,7 @@ No need to add code or modify PYTHONPATH.
 - use period instead of backslash for pathing
 
 ## In code pathing
+
 Great for one off scripts if you don't mind adding the code and don't want to modify your PYTHONPATH.
 
 Is the in code version of permanently modifying PYTHONPATH.
@@ -20,25 +25,36 @@ Is the in code version of permanently modifying PYTHONPATH.
 Also allows script to be ran by VS Code python debugger.
 
 - add at **top** of script:
-```
+
+```python
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 ```
 
 ## Modify PYTHONPATH
+
 Modifying the PYTHONPATH is essentially duplicating what pip install <package> does.
 
 ### Ubuntu
+
 - Open ~/.bashrc for editing
 - Add to **bottom** of ~/.bashrc:
- - ```export PYTHONPATH="/home/gerald/MusicProcessing:$PYTHONPATH"```
+
+ ```bash
+ export PYTHONPATH="/home/gerald/MusicProcessing:$PYTHONPATH"
+ ```
+
 - Save ~/.bashrc
-- Verify
- - ```$ echo $PYTHONPATH```
- - ```    /home/gerald/MusicProcessing:```
+- Verify:
+
+```bash
+$ echo $PYTHONPATH
+/home/gerald/MusicProcessing:
+```
 
 ### Windows
+
 - Open System Properties:
   - - Press the Windows key + R, type sysdm.cpl, and press Enter
 - Go to Environment Variables:
@@ -52,5 +68,14 @@ Modifying the PYTHONPATH is essentially duplicating what pip install <package> d
     - D:\MusicProcessing;
   - Apply Changes: Click "OK" on all dialog boxes to save the changes
 - Verify:
-  - from command prompt line: ```echo %PYTHONPATH%```
-  - from Powershell: ```$env:Pythonpath```
+  - from command prompt line:
+
+  ```cmd
+  echo %PYTHONPATH%
+  ```
+
+  from Powershell:
+
+  ```powershell
+  $env:Pythonpath
+  ```

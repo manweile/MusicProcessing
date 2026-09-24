@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 MD041 -->
+
 # Converted
 
  Directory is the result of conversion on Prepped directory.
