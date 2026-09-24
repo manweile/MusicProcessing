@@ -2,7 +2,27 @@
 
 # Unit Testing
 
-ipsum lorem
+Unit tests are what keep you sane!<br>
+Develop them early, and run them often.<br>
+Incorporate them into your CI/CD on your repo too.
+
+## Documentation
+
+Build and review Doxygen to see test suite details.<br>
+I know it's not always industry standard to have Doxygen for test suites, but I like the idea.
+
+## Execution
+
+Unit tests are best ran with VS Code tests extension UI.<br>
+The UI offers far more granularity and detailed reporting.
+
+However, they can also be ran from a terminal command line.<br>
+Navigate to the tests directory and invoke the test suite script with python.
+
+```bash
+cd D:/MusicProcessing/tests
+python test_name.py
+```
 
 ## Music Files
 
