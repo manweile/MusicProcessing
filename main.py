@@ -585,7 +585,7 @@ def main(args):
         if args.subcommand == "get-mutagen-tags":
             file_path = getattr(args, "file")
             tags = get_mutagen_tags(file_path)
-            # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
+            # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects, Vorbis objects
             # not as a simple dict of string key/value
             # so need mutagen pprint and splitlines to "format" into simple dict
             pprint.pprint(tags.pprint().splitlines())
