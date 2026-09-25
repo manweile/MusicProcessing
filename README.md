@@ -16,29 +16,27 @@ There are many things I need to do:
   - top level dir
     - artist sub dir
       - album sub dirs
-        - find cover art for album dirs
+        - songs in album sub dirs
 - Rename files per my format
   - artist-title
 - Convert all non-mp3 audio files to mp3
 - Update metadata tags
-  - ensure all tags are ID3v2.3
-    - up convert any ID3 < v2.3 to 2.3
-    - down convert any ID3v2.4 to 2.3
-    - convert APEv2 to ID3v2.3
+  - map all metadata to ID3v2.3
+    - remove all metadata tags that are NOT ID3v2.3
   - ensure all songs have this minimum metadata:
     - album
     - album artist
     - artist
     - date
+    - disc number
     - genre
     - title
     - front cover album art
   - if possible, populate these "nice to have" metadata:
     - composer
     - copyright
-    - disc
     - publisher
-    - track
+    - track number
 - Normalize volume levels
   - I get truly annoyed when a playlist moves to a next song and you are suddenly lowering or increasing the volume.
 
@@ -75,43 +73,125 @@ I have these primary sources:
 
 ## Directory Structure
 
-My preferred directory structure is: "drive":\"top level dir"\"artist name"\"album name"\, with the songs for the album.
+My preferred directory structure is:
 
-- All the songs for that artist, irregardless of what album they are from, will be under the artist directory
-  - songs from compilation albums are under the contributing artist
-  - eg: "drive":\"top level dir"\"contributing artist name"\"compilation album name"\
-  - songs from compilation albums will NOT have "compilation" metadata
-    - Compilation metadata tags are a bit of a gong show in how various metadata formats implement them
-    - I found it just wasn't worth the coding effort to deal with them
-  - so there will never be a directory for compilation albums
-- multi-disc albums will be consolidated under 1 album name
-  - multi-disc albums are also a bit of gong show in regards to how the metadata is implemented
-  - also in how audio files actually HAVE correct disc number metadata
-  - songs on multi-disc albums will have a "disc number" metadata field populated with correct disc number
-  - songs on single disc albums will just have "1" in "disc number" field
+```text
+tld
+|_ artist 1
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album i
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album n
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|_ artist i
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album i
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album n
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|_ artist n
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album i
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album n
+|         |_song 1
+|         |_song i
+|         |_song n
+|_ playlist 1
+|_ playlist i
+|_ playlist n
+```
 
-## Audio Filename Format & Type/Metadata
+### Compilation Albums
 
-My preferred filename format is "artist name"-"song title", or "artist name" - "song title".<br>
-My preferred audio file type & metadata is mp3 with ID3v2.3 tags.
+Compilation metadata tags are a gong show with respect to how various metadata formats implement them.<br>
+I found it just wasn't worth the coding effort to deal with them, so there will *never be a directory* for a compilation album.<br>
+Instead, all songs that an artist participated/contributed on/for a compilation album will be **solely under the artist's name**.<br>
+Furthermore, songs from compilation albums will ***NOT*** have "compilation" metadata.<br>
+
+Eg.
+
+```text
+tld
+|_ artist
+|    |_album
+|    |    |_song
+|    |    |_song i
+|    |    |_song n
+|    |_compilation album
+|    |    |_song-by-artist
+|    |    |_song-by-artist i
+|    |    |_song-by-artist n
+|    |_album i
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album n
+|         |_song 1
+|         |_song i
+|         |_song n
+```
+
+### Multi-Disc Albums
+
+Multi-disc albums are also a bit of gong show in regards to how the metadata is implemented across various encoding formats.<br>
+However, it was reasonably straight forward coding the mapping from various encoding formats and handling missing disc number data.<br>
+Songs from multi-disc albums will be consolidated under "album name", here will never be a "album name disc 1", "album name disc 2" etc.<br>
+All songs will have a "disc number" field.
+
+- single disc albums will have value "1"
+- multi-disc albums will have correct value
+- as a corollary, the track numbers for songs on disc 2 and up of multi-disc albums will be adjusted sequentially.
+
+## Audio Filename & Playlist Name Format
+
+My preferred audio filename format is "artist name"-"song title", or "artist name" - "song title".<br>
+Playlist files (m3u) generally are named descriptively - "Favourites", "Symphonic Rock", "Romantic", etc.
 
 ## Audio File Types
 
-There are different audio file types:
+There are different audio file types, that come with different metadata encoding formats.<br>
+And of course, some audio files may have no embedded metadata (text or image).
 
 - flac
   - these are contributed by friends
+  - come with Vorbis metadata encoding
 - mp3
   - this is the majority file type, and my preferred final file type
-- wma
-  - not near as many as mp3, but 2nd most likely file type
+  - can have APEv2, ID3v1, ID3v1.1, ID3v2.3, ID3v2.4 metadata encoding
 - m4a
   - these are iTunes purchase & downloads
+  - come with MP4 metadata encoding
+- wma
+  - not near as many as mp3, but 2nd most likely file type
+  - come with ASF metadata encoding
+- wav
+  - don't have any yet, but I do anticipate needing them
+  - an come with APEv2, ID3v1, ID3v1.1, ID3v2.3, ID3v2.4, RIFF metadata encoding
 
 ## Playlist File Types
 
 - m3u
-  - general playlist file
+  - a text based general playlist file that uses relative pathing
 
 ## Tools
 
@@ -182,23 +262,37 @@ Open source, free software for recording and editing audio.
 
 #### Audacity Pros
 
-ipsum lorem
+- Free, open source
+- low resource usage
+- plugin support
 
 #### Audacity Cons
 
-ipsum lorem
+- Destructive editing
+- limited mixing capabilities
+- plugin stability issues
+- requires ffmpeg for some transcoding
+- no official direct support
 
 ### [Exact Audio Copy](https://www.exactaudiocopy.de/)
 
-Exact Audio Copy is a so called audio grabber for audio CDs using standard CD and DVD-ROM drives.
+Exact Audio Copy is a so called audio grabber for audio CDs using standard CD and DVD-ROM drives.<br>
+Best replacement I have found for playlist generation & editing now that WMP is belly up.
 
 #### EAC Pros
 
-Best replacement I have found for playlist generation & editing now that WMP is belly up.
+- Freeware (on Windows)
+- bit perfect accuracy
+- error correction
+- comprehensive format support
+- detailed logging
 
 #### EAC Cons
 
-ipsum lorem
+- Steep learning curve and setup
+- slower ripping speeds
+- outdated GUI
+- Windows only
 
 ### [ffmpeg](https://www.ffmpeg.org/)
 
@@ -263,17 +357,22 @@ VLC is a multimedia player and framework that plays most multimedia files as wel
 
 #### VLC Cons
 
-- ui could be more intuitive
+- GUI could be more intuitive
 
 ## Processing Workflow
 
-- Copy source music.
-- Prepare metadata (text and art), directory structure & file names.
-- Convert music files to mp3 with embedded art.
-- Normalize music to EBU R128 standard.
+- Copy source music
+- Prepare directory structure
+- Normalize file names
+- Prepare metadata (text and art)
+- Convert music files to mp3 with embedded art
+- Normalize music
+  - EBU R128 standard for most files
+  - Peak normalization when required
+  - RMS normalization when required
 - Finalize music with updated playlists.
 
-## Tag Editor Preprocessing
+### External Tool Processing
 
 I will use MP3Tag/MusicBrainz Picard/puddletag to:
 
@@ -283,32 +382,31 @@ I will use MP3Tag/MusicBrainz Picard/puddletag to:
 - remove all APEv2 tags from mp3 files
   - remove all non ID3v2.3 tags from mp3 files
   - verify all mp3 files have only ID2v2.3 tags
-- find accurate metadata for all tags
+- find accurate metadata for preferred tags
 - find cover art for all albums
 
-## Python Processing
+### Python Processing
 
 I will use the music processing python code to:
 
 1. Gather information
    - create csv lists
      - all audio files and their extension
-     - all flac files
-     - all mp3 files
-     - all wma files
-     - all m4a files
-2. Normalize filenames and directory names
+2. Normalize directories
+   - create album sub-dirs for artist directories
+3. Normalize filenames
    - rename audio files that have incorrect filename format
    - verify all albums have file system acceptable names for directory creation
-   - create album sub-dirs for artist directories
-3. Ensure cover art exists
-   - extract embedded cover art if no cover art exists for album
+4. Ensure cover art exists
+   - extract embedded cover art if it exists
    - set cover art for compilation albums
-4. Convert audio to mp3 file type
+   - find cover art if necessary
+5. Convert audio to mp3 file type
    - convert flac files to mp3 files with my preferred ID3v2.3 tags
    - convert wma files to mp3 files with my preferred ID3v2.3 tags
    - convert m4a files to mp3 files with my preferred ID3v2.3 tags
    - convert mp3 file to mp3 files with my preferred ID3v2.3 tags
-5. Level normalize mp3 files
+6. Level normalize mp3 files
    - level normalize mp3 files to EBU R128 standard
-6. Update playlist files
+   - use peak or rms normalization if required
+7. Update playlist files

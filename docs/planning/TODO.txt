@@ -37,27 +37,24 @@ NOT DISPOSED:
 
     3) add function to update genre metadata
       a) works for all file types in list ie. FLAC (.flac), MP3 (.mp3), MP4 (.m4a), ASF (.wma)
-      b) two input options
-        i) one off single artist: command line supplying top level directory to start from, artist name, and genre
-        ii) multiple artists: command line supplying top level directory to start from and supplying csv file to read artist names and genre from
+      b) input
+        i) top level directory to start from
+        ii) csv file containing artist names and genre
           1) csv file header: artist name, artist genre
-        iii) no matter input source
-          1) artist name(s) MUST match artist directory name exactly
-          2) only 1 genre per artist name
+          2) artist name MUST match artist directory name exactly
+          3) only 1 genre per artist name
+          4) artist names are unique set
+          5) artist names are listed alphabetically
       b) algorithm:
         i) get top level directory from supplied input
-          start walk through in top level directory
-          1) for artist name and genre in command line:
-              a) looks for all audio files for supplied artist input
-              b) sets genre field from supplied input
-          2) for csv in command line:
-              a) for each line:
-                  get artist name
-                  get genre
-                  looks for all audio files for artist
-                  set genre field
-        ii) if genre tag exists for metadata type, resets genre field with genre value
-        iii) if genre tag does not exist, adds appropriate genre tag for metadata type, populated with genre value
+          1) start walk through in top level directory
+          2) get list of all artist names sorted alphabetically
+          3) for each artist in tld dir list, find in csv
+          4) read artist genre from csv
+          5) for each song in artist album dir
+            i0 check if genre tag exists
+            ii) if genre tag exists for audio file & metadata type, resets genre field with genre value
+            iii) if genre tag does not exist, adds appropriate genre tag for audio file & metadata type, populated with genre value
       c) test cases:
         i) will need audio files in \test\Music\
             1) for all 4 types
@@ -80,6 +77,16 @@ NOT DISPOSED:
       a) why call get_any_tags before checking if input file is FLAC?
     TODO
 
+    7) function that creates list of what metadata encoding format(s) an audio file has
+      a) get_mutagen_metadata_type sort of does this for single file audio files, from which I infer metadata encoding format
+      b) need something that can handle audio with multiple metadata encoding formats WO inferring
+    IN PROGRESS, see docs\scripts\google\metadata_encoding_format_detection\metadata_encoding_detection.py
+
+    8) Write function that returns list of songs with invalid for Windows album names
+    TODO
+
+    9) consolidate normalize-*-filename-walk functions to 1 function
+
   Environment related:
 
     1) determine if I even need templating if I have a python.instructions.md
@@ -91,6 +98,9 @@ NOT DISPOSED:
 
     3) document external library launch json - why & how to use it
     TODO
+
+    4) add an environment markdown
+      a) refer to esp32 scale project's environment markdown
 
 DISPOSED:
 

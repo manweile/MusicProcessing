@@ -30,9 +30,6 @@ Directory structure is:
 
 ```text
 tld
-|_ playlist 1
-|_ playlist i
-|_ playlist n
 |_ artist 1
 |    |_album 1
 |    |    |_song 1
@@ -60,16 +57,19 @@ tld
 |    |    |_song i
 |    |    |_song n
 |_ artist n
-     |_album 1
-     |    |_song 1
-     |    |_song i
-     |    |_song n
-     |_album i
-     |    |_song 1
-     |    |_song i
-     |    |_song n
-     |_album n
-          |_song 1
-          |_song i
-          |_song n
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album i
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album n
+|         |_song 1
+|         |_song i
+|         |_song n
+|_ playlist 1
+|_ playlist i
+|_ playlist n
 ```
