@@ -70,6 +70,10 @@ digraph music_processing_flow {
         two_required_branch [fillcolor="#FEF3C7", label="if args.subcommand is one of:\nlevel-normalize-walk, remove-pattern, update-m3u"];
         two_required_action [label="Get tld_path and the command-specific\nrequired argument: type, pattern, or m3u\nCall matching handler(tld_path, required_argument)"];
 
+            update_genres_branch [fillcolor="#FEF3C7", label="if args.subcommand ==\n'update-genres-from-csv'"];
+            update_genres_action [label="tld_path = getattr(args, 'tld')\ncsv_path = getattr(args, 'csv')\nsummary = update_genres_from_csv(tld_path, csv_path)"];
+            update_genres_result [fillcolor="#FEF3C7", label="summary['failures']?", shape=diamond];
+
         { rank=same; single_file_branch; mutagen_branch; single_tld_branch; }
         { rank=same; optional_pattern_branch; tags_walk_branch; list_type_branch; }
 
@@ -80,6 +84,7 @@ digraph music_processing_flow {
         tags_walk_branch -> tags_walk_action;
         list_type_branch -> list_type_action;
         two_required_branch -> two_required_action;
+            update_genres_branch -> update_genres_action -> update_genres_result;
     }
 
     dispatch -> single_file_branch;
@@ -89,6 +94,7 @@ digraph music_processing_flow {
     dispatch -> tags_walk_branch;
     dispatch -> list_type_branch;
     dispatch -> two_required_branch;
+        dispatch -> update_genres_branch;
 
     single_file_action -> end;
     mutagen_action -> end;
@@ -97,4 +103,6 @@ digraph music_processing_flow {
     tags_walk_action -> end;
     list_type_action -> end;
     two_required_action -> end;
+        update_genres_result -> end [label="yes: return 1"];
+        update_genres_result -> end [label="no: return 0"];
 }
