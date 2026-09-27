@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 MD041 -->
+
 # Prepped
 
 Directory is the original audio & playlist files from the HTPC (\\Office1\Music\).

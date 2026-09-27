@@ -181,3 +181,6 @@ src/generated_files/result_files/*.*
 # Local FLAC test fixtures exceed GitHub's repository file-size limits
 tests/Music/Cream/Goodbye/02. Politician.flac
 tests/Music/Cream/Goodbye/Cream-Badge.flac
+
+# Doxygen generated output
+html/

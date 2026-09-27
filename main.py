@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 '''
-@main main
 @file main.py
 @author Gerald Manweiler
 
@@ -14,7 +13,7 @@
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
+# Standard Modules
 import argparse                                             # argument parsing module
 import gc                                                   # garbage collection module
 import logging                                              # logging module
@@ -22,12 +21,14 @@ import os                                                   # operating system m
 import pprint                                               # pretty-print module
 import sys                                                  # system-specific parameters and functions module
 
-# local modules
+# Local Module Constants
 from src import ERROR_LOG_FORMAT                            # error log format
 from src import LOG_DIR                                     # log directory
 from src import LOG_EXT                                     # log file extension
 from src import UTF8                                        # utf encoding for file writing
 from src.generated_files import GENERATED_PATH              # generated files path
+
+# Local Module Classes
 from src.audio_info import AudioArt                         # audio art handling class
 from src.audio_info import AudioMetadata                    # audio metadata handling class
 from src.audio_info import AudioPlaylist                    # audio playlist handling class
@@ -37,38 +38,57 @@ from src.dir_processing import DirectoryProcessing          # directory processi
 gc.enable()
 
 # Configure logging
+## @var basename
+# @brief Module file base name.
+# @details Gets the current module file name for constructing the log file name.
 basename = os.path.basename(__file__)
+
+## @var stem
+# @brief Module file stem.
+# @details Removes the extension from the module file base name.
 stem = os.path.splitext(basename)[0]
+
+## @var file
+# @brief Module log file name.
+# @details Appends the configured log extension to the module file stem.
 file = stem + LOG_EXT
+
+## @var log_filename
+# @brief Module log file path.
+# @details Joins the generated-files path, log directory, and module log file name.
 log_filename = os.path.join(GENERATED_PATH, LOG_DIR, file)
 
 # override the default logging level WARN to lowest level so we can log all levels
 logging.basicConfig(filename=log_filename, level=logging.DEBUG, format=ERROR_LOG_FORMAT, filemode="a", encoding=UTF8)
+
+## @var logger
+# @brief Module logger.
+# @details Records application events using the module name.
 logger = logging.getLogger(__name__)
 
 ## @var art
-# @brief instance of AudioArt class
-# @details used for accessing class functionality
+# @brief AudioArt handling instance.
+# @details Provides audio art handling functionality.
 art = AudioArt()
 
 ## @var directory
-# @brief instance of DirectoryProcessing class
-# @details used for accessing class functionality
+# @brief Directory processing instance.
+# @details Provides directory processing functionality.
 directory = DirectoryProcessing()
 
 ## @var metadata
-# @brief instance of AudioMetadata class
-# @details used for accessing class functionality
+# @brief Audio metadata handling instance.
+# @details Provides audio metadata handling functionality.
 metadata = AudioMetadata()
 
 ## @var normalization
-# @brief instance of AudioNormalization class
-# @details used for accessing class functionality
+# @brief Audio normalization instance.
+# @details Provides audio normalization functionality.
 normalization = AudioNormalization()
 
 ## @var playlist
-# @brief instance of AudioPlaylist class
-# @details used for accessing class functionality
+# @brief Audio playlist handling instance.
+# @details Provides audio playlist handling functionality.
 playlist = AudioPlaylist()
 
 
@@ -76,7 +96,7 @@ class CustomArgumentParser(argparse.ArgumentParser):
     '''
     @brief Custom argument parser so argparse errors can be logged.
 
-    @details https://stackoverflow.com/questions/48633847/python-argparse-errors-to-file
+    @details Logs argparse error messages that would otherwise be written to standard error.
     '''
 
 
@@ -84,8 +104,7 @@ class CustomArgumentParser(argparse.ArgumentParser):
         '''
         @brief Override argparse.ArgumentParser._print_message so stderr gets logged instead of output to console.
 
-        @details Overrides the default behavior of printing messages to stderr by logging them instead.<br>
-        This ensures that all argparse errors are captured in the log file rather than being printed to the console.
+        @details Logs standard-error messages while preserving default handling for all other output.
 
         @param message {str} The error message to log.
         @param file {TextIOWrapper} A file-like object for stderr.
@@ -129,8 +148,7 @@ def create_albums(tld_path):
     '''
     @brief Create album 2nd level directories under artist first level directories in top level directory.
 
-    @details Creates album directories as second level directories under artist directories which are first level directories
-    in the specified top level directory.
+    @details Creates album directories under first-level artist directories in the specified top-level directory.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
@@ -159,7 +177,7 @@ def existing_file(file):
     @param file {str} The file path.
     @return file {str} The file path.
 
-    @exception ArgumentTypeError indicating the file was not found.
+    @exception {ArgumentTypeError} Indicates the file was not found.
     '''
 
     if not os.path.isfile(file):
@@ -177,7 +195,7 @@ def existing_path(path):
     @param path {str} The directory path.
     @return path {str} The directory path.
 
-    @exception ArgumentTypeError indicating the directory was not found.
+    @exception {ArgumentTypeError} Indicates the directory was not found.
     '''
 
     if not os.path.isdir(path):
@@ -255,6 +273,7 @@ def get_mutagen_tags(file_path):
     @details Retrieves all available metadata tags from the specified audio file.
 
     @param file_path {str} The full path to audio file.
+    @return tags {mutagen.FileType} The metadata tags retrieved from the audio file.
     '''
 
     tags = metadata.get_mutagen_tags(file_path)
@@ -482,6 +501,32 @@ def set_album_art(tld_path):
     art.set_album_art(tld_path)
 
 
+def update_genres_from_csv(tld_path, csv_path):
+    '''
+    @brief Updates genre metadata using artist genre mappings from a CSV file.
+
+    @details Updates supported descendant audio files for artist directories that exactly match CSV artist names.
+
+    @param tld_path {str} The top-level directory containing artist directories.
+    @param csv_path {str} The full path to the artist genre CSV file.
+    @return summary {dict[str, list[str]]} Updated files, skipped artists, unsupported files, and failures.
+    '''
+
+    summary = metadata.update_genres_from_csv(tld_path, csv_path)
+    print(f"Updated files: {len(summary['updated_files'])}")
+    print(f"Skipped artists: {len(summary['skipped_artists'])}")
+    print(f"Unsupported files: {len(summary['unsupported_files'])}")
+    print(f"Failures: {len(summary['failures'])}")
+
+    for artist_name in summary["skipped_artists"]:
+        print(f"Skipped artist: {artist_name}")
+
+    for failure in summary["failures"]:
+        print(f"Failure: {failure}")
+
+    return summary
+
+
 def update_paths(tld_path, input_m3u):
     '''
     @brief Updates an old playlist relative pathing.
@@ -507,16 +552,22 @@ def update_walk(tld_path):
     playlist.update_walk(tld_path)
 
 
-def main(args):
+## @name Application Entry Point
+# @{
+def main(args) -> int:
     '''
     @brief Module entry point.
 
     @details Takes command line arguments and executes per arguments.
 
+    @dotfile flow.dot "Application startup and task flow"
+
     @param args {argparse.Namespace} Arguments for execution.
 
-    @exception NotImplementedError A subcommand not implemented error.
-    @exception Exception A common baseclass exception to handle unforeseen errors.
+    @return exit_code {int} Process exit code for the requested subcommand.
+
+    @exception {NotImplementedError} Indicates a subcommand has not been implemented.
+    @exception {Exception} Handles unforeseen errors.
     '''
 
     try:
@@ -548,7 +599,7 @@ def main(args):
 
         if args.subcommand == "get-ffprobe-media-info":
             file_path = getattr(args, "file")
-            get_ffrobe_media_info(file_path)
+            get_ffprobe_media_info(file_path)
 
         if args.subcommand == "get-ffprobe-media-info-walk":
             tld_path = getattr(args, "tld")
@@ -562,7 +613,7 @@ def main(args):
         if args.subcommand == "get-mutagen-tags":
             file_path = getattr(args, "file")
             tags = get_mutagen_tags(file_path)
-            # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects
+            # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects, Vorbis objects
             # not as a simple dict of string key/value
             # so need mutagen pprint and splitlines to "format" into simple dict
             pprint.pprint(tags.pprint().splitlines())
@@ -644,6 +695,13 @@ def main(args):
             tld_path = getattr(args, "tld")
             set_album_art(tld_path)
 
+        if args.subcommand == "update-genres-from-csv":
+            tld_path = getattr(args, "tld")
+            csv_path = getattr(args, "csv")
+            summary = update_genres_from_csv(tld_path, csv_path)
+            if summary["failures"]:
+                return 1
+
         if args.subcommand == "update-m3u":
             tld_path = getattr(args, "tld")
             input_m3u = getattr(args, "m3u")
@@ -655,6 +713,10 @@ def main(args):
 
     except Exception as e:
         logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
+        return 1
+    else:
+        return 0
+## @}
 
 
 if __name__ == "__main__":
@@ -665,7 +727,7 @@ if __name__ == "__main__":
 
     @note Any input file paths that contain spaces must be enclosed in quotes.
 
-    @exception Exception A common baseclass exception to handle unforeseen errors.
+    @exception {Exception} Handles unforeseen errors.
     '''
 
     try:
@@ -698,8 +760,8 @@ if __name__ == "__main__":
 
         # create album directories
         # 1 mandatory arg, the tld path
-        # sys.argv = ['D:\MusicProcessing\main.py', 'create-album', 'C:\Music']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'create-album', '/home/gerald/Music']
+        # sys.argv = ['D:\MusicProcessing\main.py', 'create-albums', 'C:\Music']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'create-albums', '/home/gerald/Music']
         # create-albums C:\Music
         create_albums_parser = subparsers.add_parser("create-albums", help="Create album sub-directories")
         create_albums_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
@@ -745,11 +807,15 @@ if __name__ == "__main__":
 
         # get ffprobe media information for a file
         # 1 mandatory arg, the path to audio file
-        # sys.argv = ['D:\MusicProcessing\main.py', 'get-ffprobe-media-info', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-ffprobe-media-info', '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
+        # sys.argv = ['D:\MusicProcessing\main.py', 'get-ffprobe-media-info',
+        # 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-ffprobe-media-info',
+        # '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
         # get-ffprobe-media-info "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
         # get-ffprobe-media-info D:\MusicProcessing\tests\Music\Cream\Goodbye\Cream-Goodbye.flac
-        get_ffprobe_media_info_parser = subparsers.add_parser("get-ffprobe-media-info", help="Gets ffprobe media info for audio file")
+        get_ffprobe_media_info_parser = subparsers.add_parser(
+            "get-ffprobe-media-info", help="Gets ffprobe media info for audio file"
+        )
         get_ffprobe_media_info_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
         get_ffprobe_media_info_parser.set_defaults(func=get_ffprobe_media_info)
 
@@ -764,15 +830,19 @@ if __name__ == "__main__":
         # get-ffprobe-media-info-walk C:\Music --pattern .wma
         # get-ffprobe-media-info-walk C:\Music --pattern .flac
         # get-ffprobe-media-info-walk C:\Music
-        get_ffprobe_media_info_walk_parser = subparsers.add_parser("get-ffprobe-media-info-walk", help="Gets ffprobe media info for audio files")
+        get_ffprobe_media_info_walk_parser = subparsers.add_parser(
+            "get-ffprobe-media-info-walk", help="Gets ffprobe media info for audio files"
+        )
         get_ffprobe_media_info_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         get_ffprobe_media_info_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
         get_ffprobe_media_info_walk_parser.set_defaults(func=get_ffprobe_media_info_walk)
 
         # get ffprobe media tags for a file or files
         # 1 mandatory arg, the path to audio file
-        # sys.argv = ['D:\MusicProcessing\main.py', 'get-ffprobe-media-tags', 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-ffprobe-media-tags', '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
+        # sys.argv = ['D:\MusicProcessing\main.py', 'get-ffprobe-media-tags',
+        # 'C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-ffprobe-media-tags',
+        # '/home/gerald/Music/The Eagles/Desperado/The Eagles-Desperado.m4a']
         # get-ffprobe-media-tags "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
         get_ffprobe_media_tags_parser = subparsers.add_parser("get-ffprobe-media-tags", help="Gets ffprobe media tags for audio file")
         get_ffprobe_media_tags_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
@@ -791,7 +861,8 @@ if __name__ == "__main__":
         # 1 mandatory arg, the tld path
         # 1 optional arg, the file pattern to match
         # 1 optional arg, use ffprobe boolean
-        # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags-walk', 'C:\Music', '--pattern', { '.mp3' | '.m4a' | '.wma' | '.flac' } , '--ffprobe' 'True']
+        # sys.argv = ['D:\MusicProcessing\main.py', 'get-tags-walk', 'C:\Music', '--pattern',
+        # { '.mp3' | '.m4a' | '.wma' | '.flac' }, '--ffprobe', 'True']
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-tags-walk', '/home/gerald/Music',
         # '--pattern', { '.mp3' | '.m4a' | '.wma' | '.flac' }, '--ffprobe', 'True']
         # get-tags-walk C:\Music --pattern .mp3 --ffprobe True
@@ -799,7 +870,7 @@ if __name__ == "__main__":
         # get-tags-walk C:\Music --pattern .wma --ffprobe True
         # get-tags-walk C:\Music --pattern .flac --ffprobe True
         # @todo need to test this
-        # get-tags-walk C:\Music --ffprobe True
+        # get-tags-walk D:\MusicProcessing\tests\Music --ffprobe True
         get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Gets metadata tags from audio files")
         get_tags_walk_parser.add_argument("tld", type=existing_path, help="mandatory full path to audio file")
         get_tags_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
@@ -845,7 +916,9 @@ if __name__ == "__main__":
         # list-type C:\Music --ext .m4a
         # list-type C:\Music --ext .wma
         # list-type C:\Music
-        list_type_parser = subparsers.add_parser("list-type", help="Generates a csv containing full file path for an audio file type")
+        list_type_parser = subparsers.add_parser(
+            "list-type", help="Generates a csv containing full file path for an audio file type"
+        )
         list_type_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         list_type_parser.add_argument("--ext", type=str, help='optional file extension')
         list_type_parser.set_defaults(func=list_type)
@@ -962,7 +1035,7 @@ if __name__ == "__main__":
 
         # set album art file
         # 1 mandatory arg, the tld path
-        # sys.argv = ['D:\MusicProcessing\main.py', 'set-art', 'C:\Music']
+        # sys.argv = ['D:\MusicProcessing\main.py', 'set-album-art', 'C:\Music']
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'set-art', '/home/gerald/Music']
         # set-album-art C:\Music
         set_album_art_parser = subparsers.add_parser("set-album-art", help="Set album art file")
@@ -980,6 +1053,16 @@ if __name__ == "__main__":
         update_m3u_parsers.add_argument("m3u", type=existing_file, help="mandatory m3u file path")
         update_m3u_parsers.set_defaults(func=update_paths)
 
+        # update genre metadata from artist directory mappings in a CSV file
+        # 2 mandatory args, the tld path and artist genre CSV path
+        # update-genres-from-csv F:/Rick/RickNormalized D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
+        update_genres_parser = subparsers.add_parser(
+            "update-genres-from-csv", help="Updates genre metadata from artist genre CSV mappings"
+        )
+        update_genres_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        update_genres_parser.add_argument("csv", type=existing_file, help="mandatory artist genre CSV file")
+        update_genres_parser.set_defaults(func=update_genres_from_csv)
+
         # update m3u playlist walk
         # 1 mandatory arg, the tld path
         # sys.argv = ['D:\MusicProcessing\main.py'', 'update-walk', 'D:\MusicProcessing\tests\Music']
@@ -990,7 +1073,7 @@ if __name__ == "__main__":
         update_walk_parsers.set_defaults(func=update_walk)
 
         args = parser.parse_args()
-        main(args)
+        sys.exit(main(args))
 
     except Exception as e:
         logger.exception(f"Exception propagated to entry point: {type(e).__name__}: {e}", stack_info=True)

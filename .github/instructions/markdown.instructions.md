@@ -5,7 +5,7 @@ description: "Use when creating or editing repository documentation outside GitH
 
 # Markdown Instructions
 
-- All files start with `<!-- markdownlint-disable MD033 -->`
+- All files start with `<!-- markdownlint-disable MD033 -->`, followed by a blank line.
 - Follow Line Length Rules below.
 - Use ASCII unless the source document already requires a specific non-ASCII character.
 - Preserve the existing document hierarchy: one `#` title, `##` major sections, and `###` subsections.

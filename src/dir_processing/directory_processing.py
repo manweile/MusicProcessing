@@ -1,47 +1,60 @@
 '''
+@class DirectoryProcessing
 @file directory_processing.py
-@brief Defines the base class for processing files and directories.
-
 @author Gerald Manweiler
+
+@brief Defines the directory processing class.
+
+@details Defines methods for creating files, locating media, and maintaining music directories.
+
+@version 1.0.0
+@date 2026-09-22
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import csv
-import errno
-import fnmatch
-import gc
-import inspect
-import logging
-import os
-from operator import itemgetter
-from os import strerror
-from pathlib import Path
+# Standard Modules
+import csv                                                  # for CSV file creation
+import errno                                                # for operating-system error codes
+import fnmatch                                              # for file-pattern matching
+import gc                                                   # for garbage collection management
+import inspect                                              # for current function inspection
+import logging                                              # for module logging
+import os                                                   # for operating-system interfaces
+from operator import itemgetter                             # for CSV row sorting
+from os import strerror                                     # for operating-system error messages
+from pathlib import Path                                    # for object-oriented filesystem paths
 
-# local module methods
-from src import add_module_handler
-# local module constants
-from src import AUDIO_EXTS
-from src import M4A_EXT, MP3_EXT, WMA_EXT
-from src import CSV_DIR, CSV_EXT
-from src import MUSIC_TLD
-from src import PLAYLIST_EXTS
-from src import RESULT_DIR, RESULT_EXT
-from src import UTF8
-from src.generated_files import GENERATED_PATH
-# local module errors
-from src import MusicProcessingError
+# Local Module Methods
+from src import add_module_handler                          # for module-specific logging handlers
+
+# Local Module Constants
+from src import AUDIO_EXTS                                  # for supported audio file extensions
+from src import CSV_DIR                                     # for CSV output directory name
+from src import CSV_EXT                                     # for CSV file extension
+from src import M4A_EXT                                     # for M4A file extension
+from src import MP3_EXT                                     # for MP3 file extension
+from src import MUSIC_TLD                                   # for music top-level directory name
+from src import PLAYLIST_EXTS                               # for supported playlist extensions
+from src import RESULT_DIR                                  # for text result directory name
+from src import RESULT_EXT                                  # for text result extension
+from src import UTF8                                        # for UTF-8 text encoding
+from src import WMA_EXT                                     # for WMA file extension
+from src.generated_files import GENERATED_PATH              # for generated file output paths
+
+# Local Module Errors
+from src import MusicProcessingError                        # for directory processing failures
 
 gc.enable()
 
 ## @var logger
-# @brief the logger instance for module
-# @details sets the logger name to module name
+# @brief Logger instance for the module.
+# @details Sets the logger name to the current module name.
 logger = logging.getLogger(__name__)
 
 ## @var basename
-# @brief name for logger file handler log file
-# @details gets the module file name
+# @brief Base name for the logger file handler.
+# @details Gets the module file name from the current file path.
 basename = os.path.basename(__file__)
 
 add_module_handler(logger, basename)
@@ -49,16 +62,16 @@ add_module_handler(logger, basename)
 
 class DirectoryProcessing():
     '''
-    @brief Defines the base directory processing used by project.
+    @brief Defines the directory processing class.
+
+    @details Provides methods to create generated files and maintain music-directory content.
     '''
 
     def __init__(self) -> None:
         '''
         @brief Initializes the DirectoryProcessing class.
 
-        @details A basic class implementation with no instantiation parameters.
-
-        @return DirectoryProcessing {instance} An instance of the class.
+        @details Initializes a DirectoryProcessing instance without instance-specific state.
         '''
 
         pass
@@ -67,17 +80,16 @@ class DirectoryProcessing():
     def create_csv(self, csv_filename: str, data: list,
                    csv_dir: str | None = None, text_mode: str | None = None, header_row: list | None = None, sort_col: int | None = None) -> None:
         '''
-        @brief Creates a csv file
+        @brief Creates a CSV file.
 
-        @details Creates a csv file in the specified directory or default directory.<br>
-        Text mode can be specified for the file opening mode.<br>
-        Header row and sorting are optional.
+        @details Creates a CSV file in the specified or default directory.<br>
+        Supports an optional file mode, header row, and sort column.
 
-
-        @param csv_filename {str} Base filename (w/o extension) for csv file
-        @param data [{str}] Data to write into csv. Expected to be 1 line per element.
+        @param csv_filename {str} Base filename without the CSV extension.
+        @param data {list} Rows to write into the CSV file.
         @param csv_dir {str} Optional, path for csv file.
-        @param header_row [{str}] Optional, the starting row naming fields.
+        @param text_mode {str} Optional file opening mode.
+        @param header_row {list} Optional row naming the CSV fields.
         @param sort_col {int} Optional, the column to sort data on.
 
         @exception OSError A system related error occurred.
@@ -121,12 +133,12 @@ class DirectoryProcessing():
 
     def create_txt(self, txt_filename: str, data: list, txt_dir: str | None = None) -> None:
         '''
-        @brief Creates a text file
+        @brief Creates a text file.
 
-        @details Creates a text file in user specified directory, or default directory.
+        @details Creates a text file in the user-specified or default directory.
 
-        @param txt_filename {str} Base filename (w/o extension) for text file.
-        @param data [{str}] Data to write into txt. Expected to be 1 line per element.
+        @param txt_filename {str} Base filename without the text-file extension.
+        @param data {list} Items to write as individual text-file lines.
         @param txt_dir {str} Optional path for txt file.
 
         @exception OSError A system related error occurred.
@@ -158,11 +170,11 @@ class DirectoryProcessing():
         '''
         @brief Generates a csv containing full path for all audio files.
 
-        @details Start path input required.
-        @details The csv & txt files are created in the designated generated files directory.
-        @details The csv has 2 columns, full file path for audio file and extension.
+        @details Requires a start path for the directory walk.<br>
+        Creates CSV and text files in the generated-files directory.<br>
+        Includes each audio file's full path and extension.
 
-        @param start_path {str} Optional, the starting point of the directory walk.
+        @param start_path {str} The starting point of the directory walk.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -268,11 +280,11 @@ class DirectoryProcessing():
         '''
         @brief Generates a csv containing full file path for audio file extension.
 
-        @details If file pattern not specified, returns all valid audio files.<br>
-        Otherwise must be a valid audio file extension like '.mp3', '.m4a', '.wma', or '.flac'.
+        @details Returns all valid audio files when no file pattern is specified.<br>
+        Requires a valid extension such as '.mp3', '.m4a', '.wma', or '.flac' when a pattern is specified.
 
-        @param  start_path {str} The starting point of the directory walk.
-        @param  file_pattern {str} Optional, the file extension want file paths for.
+        @param start_path {str} The starting point of the directory walk.
+        @param file_pattern {str} Optional file extension pattern for matching file paths.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -312,15 +324,17 @@ class DirectoryProcessing():
             raise e_error
 
 
-    def get_file_directory(self, start_path: str, file_name: str) -> str:
+    def get_file_directory(self, start_path: str, file_name: str) -> str | None:
         '''
         @brief Finds the directory path of a file given its name and a starting search path.
 
-        @param start_path (str) The root directory to start from.
-        @param file_name (str) The name of the file to find.
-        @return dir_path {str} The directory path for file, None if not found.
+        @details Searches the directory tree for a file with the specified name.
 
-        @exception  Exception A common baseclass exception to handle unforeseen errors.
+        @param start_path {str} The root directory to start from.
+        @param file_name {str} The name of the file to find.
+        @return dir_path {str | None} The directory path for the file, or None if not found.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         dir_path = None
@@ -331,7 +345,11 @@ class DirectoryProcessing():
                     dir_path = root
 
         except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} getting directory path for {file_name} and starting path {start_path}", stack_info=True)
+            logger.exception(
+                f"Exception {type(e_error).__name__} getting directory path for {file_name} "
+                f"and starting path {start_path}",
+                stack_info=True,
+            )
             raise e_error
         else:
             return dir_path
@@ -340,6 +358,8 @@ class DirectoryProcessing():
     def make_dir(self, dir_path: str) -> None:
         '''
         @brief Creates a directory.
+
+        @details Creates the directory and any missing parent directories when needed.
 
         @param dir_path {str} The path to create.
 
@@ -365,15 +385,15 @@ class DirectoryProcessing():
             raise e_error
 
 
-    def path_info(self, file_path: str) -> str:
+    def path_info(self, file_path: str) -> str | None:
         '''
         @brief Creates export path for audio file conversions and normalizations.
 
-        @details Calling function needs to create export directory if it doesn't exist.
-        @details The input file must be an acceptable audio file.
+        @details Requires the caller to create the export directory when needed.<br>
+        Requires the input file to have a supported audio extension.
 
         @param file_path {str} The full file path for exported mp3 audio file.
-        @return export_path {str} The export path, otherwise None.
+        @return export_path {str | None} The export path, or None for unsupported audio files.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -390,36 +410,7 @@ class DirectoryProcessing():
                 logger.warning(f"File {input_path} is not in {AUDIO_EXTS}")
                 return None
 
-            r'''
-            Ubuntu file path:
-            <anchor><mount point>/<usr>/<drive label>/<tld>/<artist dir>/<album dir>/<song file.ext> = 8 elements
-            <anchor><mount point>/<usr>/<tld>/<artist dir>/<album dir>/<song file.ext> = 7 elements
-            anchor is drive (always an empty string) + root (always a forward slash) Eg. "" + "/" = "/"
-            mount point is either "home" (a hdd) or "media" (an usb)
-            if mount point is media, then usr is immediately followed by drive label, then top level directory
-            if mount point is home, then usr is immediately followed by top level directory
-
-            Ubuntu from USB stick: "/media/gerald/Lexar/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
-            anchor = "/", mount point = "media", usr = "gerald", drive label = "Lexar", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
-
-            Ubuntu from hdd: "/home/gerald/Music/38 Special/Special Forces/38 Special-Caught Up in You.mp3"
-            anchor = "/", mount point = "home", usr = "gerald", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
-
-            Windows file path:
-            <anchor><tld>\<artist dir>\<album dir>\<song file.ext> = 5 elements
-            anchor is always a drive letter + colon + backslash Eg. C:\, H:\
-
-            Windows from USB stick: "H:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
-            anchor = "H:\", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
-
-            Windows from hdd: "C:\Music\38 Special\Special Forces\38 Special-Caught Up in You.mp3"
-            anchor = "C:\", tld = "Music", artist = "38 Special", album = "Special Forces", file = '38 Special-Caught Up in You.mp3"
-
-            I don't need anchor, mount point, usr, drive label, tld
-            I always need artist dir, album dir, and song file
-            '''
-
-            # get the full parent w/o filename so I can start removing unnecessary path components
+            # The final two parent path components identify the artist and album directories
             input_path_parent = input_path.parent
 
             # remove the anchor (ie. / or H:\), have no use for it
@@ -454,7 +445,7 @@ class DirectoryProcessing():
         '''
         @brief Removes empty album directories.
 
-        @details Walks through top level directory to remove empty second level album directories contained in artist first level directories.
+        @details Removes empty second-level album directories within artist directories.
 
         @param start_path {str} The starting point of the directory walk.
 
@@ -508,9 +499,9 @@ class DirectoryProcessing():
         '''
         @brief Removes file matching specified pattern.
 
-        @details Walks through top level directory and removes files matching specified file pattern.
-        @details Will not delete from file system root or a mount point.
-        @details Will not delete *.* wildcard pattern.
+        @details Removes files matching the specified pattern beneath the top-level directory.<br>
+        Refuses to delete from a file-system root or mount point.<br>
+        Refuses the broad *.* wildcard pattern.
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} The file pattern we want to delete.

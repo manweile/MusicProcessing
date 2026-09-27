@@ -9,10 +9,18 @@
       // This task runs the Doxygen command to generate documentation based on the configuration specified in the Doxyfile.
       {
           "label": "Create Doxygen Documentation",
-          "type": "shell",
-          "command": "doxygen",
+          // Remove the previous HTML output before generating fresh docs.
+          "type": "process",
+          "command": "powershell.exe",
+          "args": [
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-Command",
+            "if (Test-Path '${workspaceFolder}\\html') { Remove-Item -Recurse -Force '${workspaceFolder}\\html' }; doxygen '${workspaceFolder}\\Doxyfile'"
+          ],
           "options": {
-              "cwd": "${workspaceFolder}/docs"
+              "cwd": "${workspaceFolder}"
           },
           "problemMatcher": [],
           "group": {
@@ -26,7 +34,7 @@
               "panel": "shared",
               "showReuseMessage": true,
               "clear": false,
-              "close": true
+              "close": false
           }
       },
 
@@ -43,7 +51,7 @@
               "command": "C:/Program Files/Mozilla Firefox/firefox.exe"
           },
           "args": [
-              "file:///${workspaceFolder}/docs/html/index.html"
+              "file:///${workspaceFolder}/html/index.html"
           ],
           "problemMatcher": [],
           "presentation": {

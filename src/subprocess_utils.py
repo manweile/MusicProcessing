@@ -1,11 +1,11 @@
 '''
 @class SubprocessUtilities
-@file subprocess_utils.py
+@file src/subprocess_utils.py
 @author Gerald Manweiler
 
 @brief Defines the subprocess utilities class.
 
-@details Base class for all subprocess utilities in the MusicProcessing module.
+@details Defines utility methods for running and monitoring subprocess commands in the MusicProcessing project.
 
 @version 1.0.0
 @date 2024-06-06
@@ -13,37 +13,40 @@
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import gc
-import logging
-import os
-import shlex
-import subprocess
-from pathlib import Path
-from subprocess import PIPE
-from subprocess import CalledProcessError
-from subprocess import CompletedProcess
+# Standard Modules
+import gc                                                   # for garbage collection management
+import logging                                              # for module logging
+import os                                                   # for operating-system interfaces
+import shlex                                                # for command formatting
+import subprocess                                           # for process execution
+from pathlib import Path                                    # for object-oriented filesystem paths
+from subprocess import CalledProcessError                   # for subprocess execution errors
+from subprocess import CompletedProcess                     # for completed process results
+from subprocess import PIPE                                 # for subprocess stream pipes
 
-# third party modules
-from yaspin import yaspin
-from yaspin.spinners import Spinners
-# local module methods
-from src import add_module_handler
-# local module constants
-from src import UTF8
-# local module errors
-from src import FfmpegProcessError
+# Third Party Modules
+from yaspin import yaspin                                   # for command progress indicators
+from yaspin.spinners import Spinners                        # for spinner definitions
+
+# Local Module Methods
+from src import add_module_handler                          # for module-specific logging handlers
+
+# Local Module Constants
+from src import UTF8                                        # for UTF-8 text encoding
+
+# Local Module Errors
+from src import FfmpegProcessError                          # for FFmpeg process failures
 
 gc.enable()
 
 ## @var logger
-# @brief the logger instance for module
-# @details sets the logger name to module name
+# @brief Logger instance for the module.
+# @details Sets the logger name to the current module name.
 logger = logging.getLogger(__name__)
 
 ## @var basename
-# @brief name for logger file handler log file
-# @details gets the module file name
+# @brief Base name for the logger file handler.
+# @details Gets the module file name from the current file path.
 basename = os.path.basename(__file__)
 
 add_module_handler(logger, basename)
@@ -58,23 +61,21 @@ class SubprocessUtilities():
 
     def __init__(self) -> None:
         '''
-        @brief Initialize the SubprocessUtilities class.
+        @brief Initializes the SubprocessUtilities class.
 
-        @details A basic class implementation with no instantiation parameters.
-
-        @return SubprocessUtilities {instance} An instance of the class.
+        @details Initializes a SubprocessUtilities instance without instance-specific state.
         '''
 
         pass
 
 
-    def popen_pipe(self, command: str) -> str:
+    def popen_pipe(self, command: list[str]) -> str:
         '''
         @brief Runs command in new process.
 
-        @details Asynchronous execution of ffprobe command with redirection to stdout.
+        @details Runs an ffprobe command asynchronously and redirects output to standard output.
 
-        @param command {str} Ffprobe command for Popen subprocess to run.
+        @param command {list[str]} FFprobe command for Popen to run.
         @return stdout {str} The decoded subprocess output.
 
         @exception RuntimeError A runtime error from subprocess popen.
@@ -101,7 +102,10 @@ class SubprocessUtilities():
         except RuntimeError as r_error:
             raise r_error
         except UnicodeDecodeError as ud_error:
-            logger.exception(f"UnicodeDecodeError decoding {shlex.join(command)}: stdout_bytes: {stdout_bytes} stderr_bytes: {stderr_bytes}", stack_info=True)
+            logger.exception(
+                f"UnicodeDecodeError decoding {shlex.join(command)}: stdout_bytes: {stdout_bytes} stderr_bytes: {stderr_bytes}",
+                stack_info=True,
+            )
             raise ud_error
         except Exception as e_error:
             logger.exception(f"Exception running command {shlex.join(command)}", stack_info=True)
@@ -110,14 +114,14 @@ class SubprocessUtilities():
             return stdout
 
 
-    def spinner_popen_pipe(self, export_path: str, command: str, show_spinner: bool = True) -> str:
+    def spinner_popen_pipe(self, export_path: str, command: list[str], show_spinner: bool = True) -> str:
         '''
         @brief Runs command in new process with option to display a spinner.
 
-        @details Asynchronous execution of ffmpeg command with redirection to stderr.
+        @details Runs an FFmpeg command asynchronously and redirects output to standard error.
 
         @param export_path {str} Path to destination audio file.
-        @param command {str} Ffmpeg command for Popen subprocess to run.
+        @param command {list[str]} FFmpeg command for Popen to run.
         @param show_spinner {bool} Flag to use spinner or not. Default True.
         @return success_msg {str} Success message on completion.
 
@@ -181,13 +185,13 @@ class SubprocessUtilities():
             return success_msg
 
 
-    def spinner_subprocess_run(self, command: str, text: str) -> tuple:
+    def spinner_subprocess_run(self, command: list[str], text: str) -> tuple:
         '''
         @brief Runs command in subprocess with a spinner.
 
-        @details Runs subprocess for command, returns stdin & stderr.
+        @details Runs a subprocess command and returns the completed process with its spinner.
 
-        @param command {str} Command for subprocess  to run.
+        @param command {list[str]} Command for subprocess to run.
         @param text {str} Text for spinner to display.
         @return results (process, spinner) ({CompletedProcess}, {Yaspin}) Tuple containing completed process and spinner objects.
 
@@ -197,12 +201,7 @@ class SubprocessUtilities():
         '''
 
         try:
-            '''
-            check enables CalledProcessError throwing,
-            capture output to get stdout & stderr
-            encoding for cross-platform compatibility & avoid decoding errors
-            text decodes stdout/stderr as text
-            '''
+            # Check raises CalledProcessError; capture_output and text collect decoded standard streams
             with yaspin(Spinners.dots, text=text, timer=True) as spinner:
                 process = subprocess.run(
                     command,
@@ -214,10 +213,16 @@ class SubprocessUtilities():
 
 
         except CalledProcessError as cp_error:
-            logger.exception(f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}", stack_info=True)
+            logger.exception(
+                f"CalledProcessError returncode:{cp_error.returncode}, with stderr: {cp_error.stderr} on command {cp_error.cmd}",
+                stack_info=True,
+            )
             raise cp_error
         except UnicodeDecodeError as ud_error:
-            logger.exception(f"UnicodeDecodeError reason: {ud_error.reason} on object {ud_error.object} from command {shlex.join(command)}", stack_info=True)
+            logger.exception(
+                f"UnicodeDecodeError reason: {ud_error.reason} on object {ud_error.object} from command {shlex.join(command)}",
+                stack_info=True,
+            )
             raise ud_error
         except Exception as e_error:
             logger.exception(f"Exception processing command: {command}", stack_info=True)
@@ -227,13 +232,13 @@ class SubprocessUtilities():
             return results
 
 
-    def subprocess_run(self, command: str) -> CompletedProcess:
+    def subprocess_run(self, command: list[str]) -> CompletedProcess:
         '''
         @brief Runs command in subprocess.
 
-        @details Runs subprocess for command, returns stdin & stderr.
+        @details Runs a subprocess command and returns its completed process.
 
-        @param command {str} Command for subprocess  to run.
+        @param command {list[str]} Command for subprocess to run.
         @return process {CompletedProcess} Completed process object.
 
         @exception CalledProcessError A subprocess error from ffmpeg command execution.
@@ -242,12 +247,7 @@ class SubprocessUtilities():
         '''
 
         try:
-            '''
-            check enables CalledProcessError throwing,
-            capture output to get stdout & stderr
-            encoding for cross-platform compatibility & avoid decoding errors
-            text decodes stdout/stderr as text
-            '''
+            # Check raises CalledProcessError; capture_output and text collect decoded standard streams
 
             process = subprocess.run(
                 command,
@@ -261,7 +261,10 @@ class SubprocessUtilities():
             logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)
             raise cp_error
         except UnicodeDecodeError as ud_error:
-            logger.exception(f"UnicodeDecodeError reason: {ud_error.reason} on object {ud_error.object} from command {shlex.join(command)}", stack_info=True)
+            logger.exception(
+                f"UnicodeDecodeError reason: {ud_error.reason} on object {ud_error.object} from command {shlex.join(command)}",
+                stack_info=True,
+            )
             raise ud_error
         except Exception as e_error:
             logger.exception(f"Exception processing command: {command}", stack_info=True)

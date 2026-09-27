@@ -14,6 +14,7 @@
 '''
 
 # Standard Modules
+import csv                                                  # for CSV mapping input
 import fnmatch                                              # for filename pattern matching
 import gc                                                   # for garbage collection
 import inspect                                              # for inspecting live objects
@@ -31,18 +32,20 @@ from shutil import ExecError                                # for handling shuti
 import mutagen                                              # for audio metadata handling
 import pathvalidate                                         # for validating filesystem paths
 from mutagen import FileType                                # for handling different audio file types
+from mutagen._util import MutagenError                      # for handling mutagen errors
 from mutagen.asf import ASF                                 # for handling ASF audio files
+from mutagen.asf import ASFUnicodeAttribute                 # for setting ASF Unicode metadata
 from mutagen.asf import ASFTags                             # for handling ASF tags
 from mutagen.flac import FLAC                               # for handling FLAC audio files
 from mutagen.flac import VCFLACDict                         # for handling FLAC dictionaries
 from mutagen.id3 import APIC                                # for handling ID3 APIC frames
 from mutagen.id3 import ID3                                 # for handling ID3 tags
 from mutagen.id3 import ID3TimeStamp                        # for handling ID3 timestamps
+from mutagen.id3 import TCON                                # for setting ID3 genre tags
 from mutagen.mp3 import MP3                                 # for handling MP3 audio files
 from mutagen.mp4 import MP4                                 # for handling MP4 audio files
 from mutagen.mp4 import MP4FreeForm                         # for handling MP4 freeform atoms
 from mutagen.mp4 import MP4Tags                             # for handling MP4 tags
-from mutagen._util import MutagenError                      # for handling mutagen errors
 from pathvalidate.error import ValidationError              # for handling path validation errors
 from tqdm import tqdm                                       # for displaying progress bars
 
@@ -50,16 +53,16 @@ from tqdm import tqdm                                       # for displaying pro
 from src import add_module_handler                          # for adding module-specific logging handlers
 
 # Local Module Constants
-from src import ASF_TYPE                                    # for ASF audio file type
-from src import FLAC_TYPE                                   # for FLAC audio file type
-from src import MP4_TYPE                                    # for MP4 audio file type
-from src import MP3_TYPE                                    # for MP3 audio file type
 from src import AUDIO_EXTS                                  # for audio file extensions
 from src import AUDIO_FILES                                 # for audio file paths
+from src import ASF_TYPE                                    # for ASF audio file type
+from src import FLAC_TYPE                                   # for FLAC audio file type
 from src import FOLDER_ART                                  # for folder artwork paths
 from src import FLAC_EXT                                    # for FLAC file extension
 from src import M4A_EXT                                     # for M4A file extension
 from src import MP3_EXT                                     # for MP3 file extension
+from src import MP3_TYPE                                    # for MP3 audio file type
+from src import MP4_TYPE                                    # for MP4 audio file type
 from src import WMA_EXT                                     # for WMA file extension
 
 # Local Module Errors
@@ -75,46 +78,46 @@ from src.subprocess_utils import SubprocessUtilities        # for subprocess uti
 gc.enable()
 
 ## @var logger
-# @brief the logger instance for module
-# @details sets the logger name to module name
+# @brief Logger instance for the module.
+# @details Sets the logger name to the current module name.
 logger = logging.getLogger(__name__)
 
 ## @var basename
-# @brief name for logger file handler log file
-# @details gets the module file name
+# @brief Base name for the logger file handler.
+# @details Gets the module file name from the current file path.
 basename = os.path.basename(__file__)
 
 add_module_handler(logger, basename)
 
 ## @var directory
-# @brief instance of DirectoryProcessing class
-# @details used for accessing class functionality
+# @brief Directory processing instance.
+# @details Provides directory processing functionality.
 directory = DirectoryProcessing()
 
 ## @var normalization
-# @brief instance of AudioNormalization class
-# @details used for accessing class functionality
+# @brief Audio normalization instance.
+# @details Provides audio normalization functionality.
 normalization = AudioNormalization()
 
 ## @var subprocess_utils
-# @brief instance of SubprocessUtilities class
-# @details used for accessing class functionality
+# @brief Subprocess utilities instance.
+# @details Provides subprocess utility functionality.
 subprocess_utils = SubprocessUtilities()
 
 ## @var TPOS
-# @brief ID3 disc of set tag
-# @details used to set TPOS metadata
+# @brief ID3 disc-of-set tag.
+# @details Sets TPOS metadata.
 TPOS = "TPOS"
 
 ## @var TYER
-# @brief ID3 release year tag
-# @details used to set TYER metadata
+# @brief ID3 release-year tag.
+# @details Sets TYER metadata.
 TYER = "TYER"
 
 ## @var GEN_KEYS
-# @brief the set of ffmpeg generic metadata keys for copying to converted & normalized files
-# @details these keys correspond to what Windows displays as file information in File Explorer
-# @details included for reference but not actually used
+# @brief Generic FFmpeg metadata keys.
+# @details Corresponds to metadata displayed by Windows File Explorer.<br>
+# @details Serves as reference and is not used by the module.
 GEN_KEYS = {
     'album',                # using, must have              ID3v2.3 mapping: TALB
     'album_artist',         # using, must have              ID3v2.3 mapping: TPE2
@@ -138,8 +141,8 @@ GEN_KEYS = {
 }
 
 ## @var FLAC_KEYS
-# @brief the set of generic FLAC metadata keys
-# @details the FLAC keys used for mapping to windows display compatible metadata
+# @brief Generic FLAC metadata keys.
+# @details Maps FLAC keys to Windows-compatible metadata.
 FLAC_KEYS = {
     'album': 'ALBUM',
     'album_artist': 'ALBUMARTIST',
@@ -157,8 +160,8 @@ FLAC_KEYS = {
 }
 
 ## @var FLAC_TIME_KEYS
-# @brief FLAC time keys
-# @details used to set TYER metadata
+# @brief FLAC time keys.
+# @details Sets TYER metadata.
 FLAC_TIME_KEYS = {
     'DATE',                                                # preferred key
     'YEAR',
@@ -166,8 +169,8 @@ FLAC_TIME_KEYS = {
 }
 
 ## @var MP3_KEYS
-# @brief the set of generic ID3v2.3 (mp3) metadata keys
-# @details the ID3 keys used for mapping to windows display compatible metadata
+# @brief Generic ID3v2.3 metadata keys.
+# @details Maps ID3 keys to Windows-compatible metadata.
 MP3_KEYS = {
     'album': 'TALB',
     'album_artist': 'TPE2',
@@ -188,8 +191,8 @@ MP3_KEYS = {
 }
 
 ## @var MP3_TIME_KEYS
-# @brief ID3 time keys
-# @details used to set TYER metadata
+# @brief ID3 time keys.
+# @details Sets TYER metadata.
 MP3_TIME_KEYS = {
     'TYER',                                                 # preferred key
     'TORY',
@@ -199,8 +202,8 @@ MP3_TIME_KEYS = {
 }
 
 ## @var M4A_KEYS
-# @brief the set of generic MP4 (m4a) metadata keys
-# @details the MP4 keys used for mapping to windows display compatible metadata
+# @brief Generic MP4 metadata keys.
+# @details Maps MP4 keys to Windows-compatible metadata.
 M4A_KEYS = {
     'album': '\xa9alb',
     'album_artist': 'aART',
@@ -216,17 +219,17 @@ M4A_KEYS = {
     'track': 'trkn'
 }
 
-## var M4A_TIME_KEYS
-# @brief MP4 time keys
-# @details used to set TYER metadata
+## @var M4A_TIME_KEYS
+# @brief MP4 time keys.
+# @details Sets TYER metadata.
 M4A_TIME_KEYS = {
     '\xa9day',                                              # preferred key
     '----:com.apple.iTunes:originalyear'
 }
 
 ## @var WMA_KEYS
-# @brief the set of generic ASF (wma) metadata keys
-# @details the ASF keys used for mapping to windows display compatible metadata
+# @brief Generic ASF metadata keys.
+# @details Maps ASF keys to Windows-compatible metadata.
 WMA_KEYS = {
     'album': 'WM/AlbumTitle',
     'album_artist': 'WM/AlbumArtist',
@@ -242,9 +245,9 @@ WMA_KEYS = {
     'track': 'WM/TrackNumber'
 }
 
-## var WMA_TIME_KEYS
-# @brief ASF time keys
-# @details used to set TYER metadata
+## @var WMA_TIME_KEYS
+# @brief ASF time keys.
+# @details Sets TYER metadata.
 WMA_TIME_KEYS = {
 
     'WM/Year',                                              # preferred key
@@ -263,12 +266,105 @@ class AudioMetadata():
         '''
         @brief Initializes the AudioMetadata class.
 
-        @details A basic class implementation with no instantiation parameters.
-
-        @return AudioMetadata {instance} An instance of the class.
+        @details Initializes an AudioMetadata instance without instance-specific state.
         '''
 
         pass
+
+
+    def __read_artist_genres(self, csv_path: str) -> dict[str, str]:
+        '''
+        @brief Reads artist genre mappings from a CSV file.
+
+        @details Validates the required comma-delimited CSV header, artist names, and alphabetical row order.
+
+        @param csv_path {str} The full path to the artist genre CSV file.
+        @return artist_genres {dict[str, str]} Artist directory names mapped to their replacement genres.
+
+        @exception ValueError Indicates the CSV file does not conform to the required mapping format.
+        @exception OSError A system related error occurred.
+        '''
+
+        try:
+            artist_genres = {}
+            previous_artist_name = None
+
+            with open(csv_path, mode="r", encoding="utf-8", newline="") as csv_file:
+                reader = csv.DictReader(csv_file)
+
+                if reader.fieldnames != ["artist name", "artist genre"]:
+                    raise ValueError("CSV header must be: artist name,artist genre")
+
+                for line_number, row in enumerate(reader, start=2):
+                    if len(row) != 2 or None in row:
+                        raise ValueError(f"CSV row {line_number} must contain artist name and artist genre")
+
+                    artist_name = row["artist name"]
+                    artist_genre = row["artist genre"]
+
+                    if artist_name is None or not artist_name.strip() or artist_genre is None or not artist_genre.strip():
+                        raise ValueError(f"CSV row {line_number} must contain a non-empty artist name and artist genre")
+
+                    if artist_name in artist_genres:
+                        raise ValueError(f"CSV row {line_number} has duplicate artist name: {artist_name}")
+
+                    if previous_artist_name is not None and artist_name < previous_artist_name:
+                        raise ValueError(f"CSV artist names must be alphabetical; row {line_number} is out of order")
+
+                    artist_genres[artist_name] = artist_genre
+                    previous_artist_name = artist_name
+
+            if not artist_genres:
+                raise ValueError("CSV file must contain at least one artist genre mapping")
+
+        except OSError as os_error:
+            logger.error(f"OSError reading artist genre CSV {csv_path}: {os_error}", exc_info=True)
+            raise os_error
+        else:
+            return artist_genres
+
+
+    def __set_genre(self, file_path: str, artist_genre: str) -> None:
+        '''
+        @brief Replaces an audio file genre tag.
+
+        @details Sets exactly one format-appropriate genre value and saves the file with its existing metadata format.
+
+        @param file_path {str} The full path to the supported audio file.
+        @param artist_genre {str} The replacement genre value.
+
+        @exception MetadataTypeError Indicates the loaded file type is not supported.
+        @exception ValueError Indicates the file could not be loaded or tagged.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            audio_file = self.load_any_file(file_path)
+
+            if audio_file.tags is None:
+                audio_file.add_tags()
+
+            if audio_file.tags is None:
+                raise ValueError(f"ValueError creating metadata tags for file: {file_path}")
+
+            if isinstance(audio_file, FLAC):
+                audio_file.tags[FLAC_KEYS["genre"]] = [artist_genre]
+                audio_file.save()
+            elif isinstance(audio_file, MP3):
+                audio_file.tags[MP3_KEYS["genre"]] = TCON(encoding=3, text=[artist_genre])
+                audio_file.save(v2_version=3)
+            elif isinstance(audio_file, MP4):
+                audio_file.tags[M4A_KEYS["genre"]] = [artist_genre]
+                audio_file.save()
+            elif isinstance(audio_file, ASF):
+                audio_file.tags[WMA_KEYS["genre"]] = [ASFUnicodeAttribute(artist_genre)]
+                audio_file.save()
+            else:
+                raise MetadataTypeError(f"MetadataTypeError unsupported metadata type for file: {file_path}")
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} setting genre metadata for file: {file_path}", stack_info=True)
+            raise e_error
 
 
     def __update_id3(self, date_values: set[str], id3_tags: dict) -> dict:
@@ -305,23 +401,30 @@ class AudioMetadata():
         @brief Converts an acceptable audio file to mp3 audio file, using ffmpeg directly.
 
         @details Converts flac, m4a, mp3 & wma files to mp3 files with ID3v2.3 tags, including cover art.<br>
+        Metadata is read and mapped to the ID3v2.3 tags, then appended to the conversion command line.<br>
+        The final ffmpeg conversion command line is executed to produce the mp3 file with the desired metadata.<br>
+        Once the mp3 file has been created, the co-located cover art is added via Mutagen.<br>
         Calling function MUST supply path to an existing valid audio file with valid metadata.<br>
         The supplied audio file MUST have co-located Folder.jpg album art.
 
-        @note Initial ffmpeg command line is for converting audio files to mp3 format, wiping out existing metadata, enforcing ID3v2.3 tags,
-        and preserving bit rate.<br>
-        ffmpeg -hide_banner -i file_path -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198<br>
-        -hide_banner: reduce output clutter<br>
-        -i file_path: the path to the audio file<br>
-        -vn -map_metadata -1: -vn drops video stream and -map_metadata -1 drops all text metadata<br>
-        -codec:a libmp3lame: -codec:a libmp3lame sets audio codec for mp3<br>
-        -id3v2_version 3: known bug, MUST specify id3v2 version, else will get ID3v2.4<br>
-        -b:a 128198: ffmpeg will downgrade bitrate if you don't set it<br>
-        <br>
-        The initial ffmpeg command line is expanded twice.<br>
-        First expansion adds the preferred metadata once it has been mapped from original audio file to ID3v2.3 tags.<br>
-        Second expansion adds the export file path.<br>
+        @code{.text}
+        Initial ffmpeg command line converts audio files to mp3 format, wipes out existing metadata, enforces ID3v2.3 tags, and preserves bit rate.
+        ffmpeg -hide_banner -i file_path -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198
+
+        -hide_banner; reduce output clutter
+        -i file_path; the path to the audio file
+        -vn -map_metadata -1; -vn drops video stream and -map_metadata -1 drops all text metadata
+        -codec:a libmp3lame; sets audio codec for mp3
+        -id3v2_version 3; known bug, MUST specify id3v2 version, else will get ID3v2.4
+        -b:a 128198; ffmpeg will downgrade bitrate if you don't set it
+
+        The initial ffmpeg command line is expanded twice.
+        First expansion adds the preferred metadata once it has been mapped from original audio file to ID3v2.3 tags.
+
+        Second expansion adds the export file path.
+
         Cover art is added directly via Mutagen MP3 module - it's easier with Mutagen than ffmpeg.
+        @endcode
 
         @param file_path {str} The path for audio file to be converted.
         @param show_spinner {bool} Show spinner flag.
@@ -449,6 +552,7 @@ class AudioMetadata():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
+        @param show_spinner {bool} Optional, whether to display a spinner during conversion. Defaults to True.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -598,7 +702,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def get_mutagen_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags | VCFLACDict:
+    def get_mutagen_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags | VCFLACDict | None:
         '''
         @brief Gets tags for any type of audio file.
 
@@ -611,7 +715,7 @@ class AudioMetadata():
         The audio file's metadata remains IDv2.3, it does not get automatically upgraded to ID3v2.4 version.
 
         @param file_path {str} The full path to audio file.
-        @return tags {object} Tag object (one of ASFTags, ID3, MP4Tags, or VCFLACDict) holding audio file tags or None.
+        @return tags {object} Tag object holding audio file tags, or None when the file has no tags.
 
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -639,55 +743,58 @@ class AudioMetadata():
         This def replaces the native pydub mediainfo function.<br>
         The file_path MUST be for a valid audio file.
 
-        @note This ffprobe cli WILL include 'comment' = 'Cover (front)' if the file has embedded album art in the TAG inner dict.<br>
-        This is because show_streams means ffprobe sees the art data as the video stream metadata instead.<br>
-        <br>
-        ffprobe -v error -show_format -show_streams `file_path`<br>
-        -v quiet: reduce output clutter<br>
-        -show_format: get high level details of media file<br>
-        -show_streams: gets all information about each media stream in the input<br>
-        <br>
-        The output format from popen_pipe varies by operating system.<br>
-        For Windows, the line endings are `\r\n`, whereas on Linux it is just `\n`<br>
-        in the output, `DISPOSITION:` and `TAG:` are inner dicts.<br>
-        Eg:<br>
-        [STREAM]`\r\n`key=value`\r\n`...`\r\n`DISPOSITION:key=value`\r\n`...`\r\n`DISPOSITION:key=value`\r\n`[/STREAM]\r\n<br>
-        [FORMAT]`\r\n`key=value`\r\n`...`\r\n`TAG:key=value`\r\n`...`\r\n`TAG:key=value`\r\n`[/FORMAT]<br>
-        <br>
-        This output requires a complex regex command to parse out data:<br>
+        @code{.text}
+        This ffprobe cli WILL include 'comment' = 'Cover (front)' if the file has embedded album art in the TAG inner dict.
+        This is because show_streams means ffprobe sees the art data as the video stream metadata instead.
+
+        ffprobe -v error -show_format -show_streams file_path
+        -v quiet; reduce output clutter
+        -show_format; get high level details of media file
+        -show_streams; gets all information about each media stream in the input
+        file_path; the path to the audio file to be analyzed by ffprobe
+
+        The output format from popen_pipe varies by operating system.
+        For Windows, the line endings are `\r\n`, whereas on Linux it is just `\n`.
+        in the output, `DISPOSITION:` and `TAG:` are inner dicts.
+        Eg:
+        [STREAM]`\r\n`key=value`\r\n`...`\r\n`DISPOSITION:key=value`\r\n`...`\r\n`DISPOSITION:key=value`\r\n`[/STREAM]\r\n
+        [FORMAT]`\r\n`key=value`\r\n`...`\r\n`TAG:key=value`\r\n`...`\r\n`TAG:key=value`\r\n`[/FORMAT]
+
+        This output requires a complex regex command to parse out data:
         rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
-        <br>
-        r - so don't have to use escaping (`\\`)<br>
-        <br>
-        1st RE (Regular Expression) - to get an inner dict<br>
+
+        r - so don't have to use escaping (`\\`)
+
+        1st RE (Regular Expression) - to get an inner dict
         (?:(?P<inner_dict>.*?):)<br>
-        Question mark colon is a non-capturing version of regular parentheses.<br>
-        Matches whatever regular expression is inside the parentheses - in this case, the (?P<inner_dict>.*?).<br>
-        The substring matched by the group cannot be retrieved after performing a match or referenced later in the pattern.<br>
-        [STREAM], [/STREAM], [FORMAT], and [/FORMAT] never match, so they get ignored.<br>
-        <br>
-        (?P<inner_dict>.*?):<br>
-        inner_dict is symbolic group name, must be a valid python identifier. The line parsing logic will use it.<br>
-        Period asterisk question mark means match any char except newline, as few as possible characters will be matched.<br>
-        The colon matches the token after a inner_dict name (as in DISPOSITION:)<br>
-        DISPOSITION: and TAG: are inner dicts, they get returned.<br>
-        <br>
-        2nd RE - get the key<br>
+        Question mark colon is a non-capturing version of regular parentheses.
+        Matches whatever regular expression is inside the parentheses - in this case, the (?P<inner_dict>.*?).
+        The substring matched by the group cannot be retrieved after performing a match or referenced later in the pattern.
+        [STREAM], [/STREAM], [FORMAT], and [/FORMAT] never match, so they get ignored.
+
+        (?P<inner_dict>.*?):
+        inner_dict is symbolic group name, must be a valid python identifier. The line parsing logic will use it.
+        Period asterisk question mark means match any char except newline, as few as possible characters will be matched.
+        The colon matches the token after a inner_dict name (as in DISPOSITION:)
+        DISPOSITION: and TAG: are inner dicts, they get returned.
+
+        2nd RE - get the key
         ?(?P<key>.*?)<br>
-        question mark causes the resulting RE to match 0 or 1 repetitions of the preceding RE<br>
-        <br>
-        (?P<key>.*?):<br>
-        Question mark P <key> where key is the symbolic group name, and another valid python identifier. The line parsing logic will use it.<br>
-        Period asterisk question mark means match any char except newline, as few as possible characters will be matched<br>
-        <br>
-        3rd RE - get the value<br>
-        \=(?P<value>.*?)<br>
-        slash equal escapes the equal sign, which is the token used in key/value pairs.<br>
-        Value is another valid python identifier. The line parsing logic will use it.<br>
-        period asterisk question mark means match any char except newline, as few as possible characters will be matched<br>
-        <br>
-        $<br>
-        Dollar anchors a match to end of search string<br>
+        question mark causes the resulting RE to match 0 or 1 repetitions of the preceding RE
+
+        (?P<key>.*?):
+        Question mark P <key> where key is the symbolic group name, and another valid python identifier. The line parsing logic will use it.
+        Period asterisk question mark means match any char except newline, as few as possible characters will be matched
+
+        3rd RE - get the value
+        \=(?P<value>.*?)
+        slash equal escapes the equal sign, which is the token used in key/value pairs.
+        Value is another valid python identifier. The line parsing logic will use it.
+        period asterisk question mark means match any char except newline, as few as possible characters will be matched
+
+        $
+        Dollar anchors a match to end of search string
+        @endcode
 
         @param file_path {str} The full path to audio file.
         @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
@@ -807,15 +914,18 @@ class AudioMetadata():
 
         @details Uses ffprobe to get tags from any valid audio file.
 
-        @note This ffprobe cli, unlike the general media info cli: ffprobe -v quiet -show_format -show_streams file_path,<br>
-        will NOT insert 'comment' = 'Cover (front)' in the tags dictionary if the audio file has embedded art.<br>
-        This cli will only return textual audio metadata.<br>
-        <br>
-        ffprobe -v -of json -show_entries format_tags file_path<br>
-        -v quiet: reduce console clutter<br>
-        -of json: output in json format<br>
-        -show_entries format_tags: we only care about tags<br>
-        file_path: the path to the audio file<br>
+        @code{.text}
+        The general media info command line (ffprobe -v quiet -show_format -show_streams file_path)
+        will insert 'comment' = 'Cover (front)' in the tags dictionary when the audio file has embedded art.
+
+        This cli will only return textual audio metadata.
+        ffprobe -v -of json -show_entries format_tags file_path
+
+        -v quiet; reduce console clutter
+        -of json; output in json format
+        -show_entries format_tags; we only care about tags
+        file_path; the path to the audio file
+        @endcode
 
         @param file_path {str} The full path to audio file.
         @return media_tags {dict} Media tags from filepath.
@@ -858,7 +968,7 @@ class AudioMetadata():
         Eg FLAC files will return 'FLAC', MP3 files will return 'MP3', M4A files will return 'MP4', WMA files will return 'ASF'.
 
         @param file_path {str} The full path to audio file.
-        @return metadata_type {str} The type of the audio file class or None.
+        @return metadata_type {str} The type of the audio file class.
 
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -1055,7 +1165,7 @@ class AudioMetadata():
         @details Expects a valid filepath to an acceptable audio file.<br>
 
         @param file_path {str} The full file path for audio file.
-        @return audio_file {FileType} Mutagen instance for the input audio file type or None.
+        @return audio_file {FileType} Mutagen instance for the input audio file type.
 
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
@@ -1135,12 +1245,12 @@ class AudioMetadata():
 
 
     def map_m4a_tags(self, input_tags: MP4Tags) -> dict:
-        r'''
+        '''
         @brief Converts m4a (MP4) metadata to preferred ID3v2.3 metadata
 
         @details Converts subset of tags (the ones that Window will display) from m4a (MP4) files.
 
-        @note '\xa9day' is the preferred tag for the date in m4a (MP4) files, and it will probably be in the format "YYYY-MM-DD".<br>
+        @note `'\\xa9day'` is the preferred tag for the date in m4a (MP4) files, and it will probably be in the format "YYYY-MM-DD".<br>
         '----:com.apple.iTunes:originalyear' is an alternative tag for the year in m4a (MP4) files.<br>
         It requires different handling to extract the year correctly because it is a MP4FreeForm type.<br>
         Only unique dates will be considered when updating the ID3 tags.
@@ -1742,3 +1852,69 @@ class AudioMetadata():
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} walking {start_path} to normalize WMA files", stack_info=True)
             raise e_error
+
+
+    def update_genres_from_csv(self, start_path: str, csv_path: str) -> dict[str, list[str]]:
+        '''
+        @brief Updates supported audio genre metadata using artist directory mappings from a CSV file.
+
+        @details Matches immediate artist directories exactly, updates their supported descendant audio files, and reports skipped or failed files.
+
+        @param start_path {str} The top-level directory containing artist directories.
+        @param csv_path {str} The full path to the artist genre CSV file.
+        @return summary {dict[str, list[str]]} Updated files, skipped artists, unsupported files, and failures.
+
+        @exception ValueError Indicates the supplied directory or CSV file is invalid.
+        @exception OSError A system related error occurred.
+        '''
+
+        try:
+            if not os.path.isdir(start_path):
+                raise ValueError(f"Top-level directory not found: {start_path}")
+
+            if not os.path.isfile(csv_path):
+                raise ValueError(f"Artist genre CSV file not found: {csv_path}")
+
+            artist_genres = self.__read_artist_genres(csv_path)
+            summary = {
+                "updated_files": [],
+                "skipped_artists": [],
+                "unsupported_files": [],
+                "failures": []
+            }
+            artist_directories = sorted(
+                (entry for entry in os.scandir(start_path) if entry.is_dir()), key=lambda entry: entry.name
+            )
+
+            for artist_directory in artist_directories:
+                artist_name = artist_directory.name
+                artist_genre = artist_genres.get(artist_name)
+
+                if artist_genre is None:
+                    logger.warning(f"Skipping artist directory without CSV genre mapping: {artist_name}")
+                    summary["skipped_artists"].append(artist_name)
+                    continue
+
+                for dir_path, _, file_names in os.walk(artist_directory.path):
+                    for file_name in file_names:
+                        file_path = os.path.join(dir_path, file_name)
+                        _, file_extension = os.path.splitext(file_name)
+
+                        if file_extension.lower() not in AUDIO_EXTS:
+                            summary["unsupported_files"].append(file_path)
+                            continue
+
+                        try:
+                            self.__set_genre(file_path, artist_genre)
+                        except Exception as e_error:
+                            failure = f"{file_path}: {type(e_error).__name__}: {e_error}"
+                            logger.error(f"Unable to update genre metadata for {failure}", exc_info=True)
+                            summary["failures"].append(failure)
+                        else:
+                            summary["updated_files"].append(file_path)
+
+        except (OSError, ValueError) as input_error:
+            logger.error(f"Exception {type(input_error).__name__} updating genres from CSV", exc_info=True)
+            raise input_error
+        else:
+            return summary

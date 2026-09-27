@@ -1,114 +1,194 @@
-1) Doxygen html output
-  a) get detailed description to show immediately underneath brief description instead of linked by "More..."
-TODO
+NOT DISPOSED:
 
-2) determine why Cream-Badge folder.jpg keeps getting deleted in audio metadata test suite
-Results:
-  test_extract_flac_art is extracting Folder.jpg from \tests\Music\Cream\Goodbye\Cream-Badge.flac
-  then test_audio-art tearDown is deleting it
-  but test_audio_metadata test_convert_file expects the Folder.jpg to exist
-Action:
-  a) Find another flac file with embedded art (other than Cream)
-  b) extract the art to a Folder.jpg
-  c) save flac file and Folder.jpg to tests\Music\artist\album\
-  d) add constant for new path to tests\__init__.py and add to __all_ list
-  e) import new constant in test_audio_art.py
-  f) use new constant instead of TEST_FLAC_CREAM_BADGE
-  g) change cls.flac.jpg to use new artist & album
-COMPLETED
+  Doxygen related:
 
-3) determine why audio_utilities.py exists
-TODO
+    1) Doxygen html output
+      a) get detailed description to show immediately underneath brief description instead of linked by "More..."
+    TODO
 
-4) using gc.enable()
-  a) Python GC is normally already enabled.
-  b) Explicit gc.enable() usually does not prevent ordinary leaks.
-  c) Real leaks often come from references, caches, cycles with finalizes, external resources, or native extensions.
-TODO
+    2) find if can have parameters on same line instead of multiple lines
+    TODO
 
-5) markdown files
-  a) consolidate the "directory" markdowns into a workflow.md
-  b) finish testing markdown
-  c) clean up markdown errors in doxygen_usage.md
-    i) pattern it after esp scale doxygen markdown
-TODO
+    3) look into adding GENERATE_REQUIREMENTS tag
+    TODO
 
-6) doxyfile
-  a) use custom css - copy from esp scale project
-  b) change output directory
-  c) move doxyfile to root
-  d) might need custom xml too, that depends on how dox files uses markdown files, if at all
-TODO
+  Markdown related:
 
-7) index.dox file
-  a) move it to root
-  b) think about how to update with contents of various md files
-    i) direct use of md files like esp scale?
-    ii) find other ways of getting markdown content into dox file
-TODO
+    1) markdown files
+      a) consolidate the "directory" markdowns into a workflow.md
+      b) finish testing markdown                                  COMPLETED
+      c) clean up markdown errors in doxygen_usage.md             COMPLETED
+        i) pattern it after esp scale doxygen markdown            COMPLETED
+      d) update doxygen_usage.md                                  COMPLETED
+      e) if keeping templating, complete template md file         IN PROGRESS
+      f) minor clarification updates to scripting md              TODO
+    IN PROGRESS
 
-8) import doxygen create from esp scale project
-TODO
+  Logic related:
 
-9) run python.instructions.md on all files
-TODO
+    1) using gc.enable()
+      a) Python GC is normally already enabled.
+      b) Explicit gc.enable() usually does not prevent ordinary leaks.
+      c) Real leaks often come from references, caches, cycles with finalizes, external resources, or native extensions.
+    TODO
 
-10) workflow yamls (refer to esp scale yamls)
-  a) split current python-app.yaml
-    i) build yaml
-    ii) test yaml
-  b) add an orchestration yaml
-  c) add cleanup yamls
-COMPETED
+    2) determine why audio_utilities.py exists
+    TODO
 
-11) add function to update genre metadata
-  a) works for all file types in list ie. FLAC (.flac), MP3 (.mp3), MP4 (.m4a), ASF (.wma)
-  b) two input options
-    i) one off single artist: command line supplying top level directory to start from, artist name, and genre
-    ii) multiple artists: command line supplying top level directory to start from and supplying csv file to read artist names and genre from
-      1) csv file header: artist name, artist genre
-    iii) no matter input source
-      1) artist name(s) MUST match artist directory name exactly
-      2) only 1 genre per artist name
-  b) algorithm:
-    i) get top level directory from supplied input
-       start walk through in top level directory
-      1) for artist name and genre in command line:
-          a) looks for all audio files for supplied artist input
-          b) sets genre field from supplied input
-      2) for csv in command line:
-          a) for each line:
-              get artist name
-              get genre
-              looks for all audio files for artist
-              set genre field
-    ii) if genre tag exists for metadata type, resets genre field with genre value
-    iii) if genre tag does not exist, adds appropriate genre tag for metadata type, populated with genre value
-  c) test cases:
-    i) will need audio files in \test\Music\
-        1) for all 4 types
-        2) at least one of 4 files needs empty genre tag
-        3) at least one of 4 files needs no genre tag
-        4) at least one of 4 files needs genre tag with multi-values
-        5) at least one of 4 files needs genre tag with single value
-    ii) test files will be copied to test\Music\?? in test_audio_metadata.setUpClass
-    iii) will need a test.csv
-TODO
+    4) think about changing ebu normalization
+      a) to use hybrid loudnorm stats then volume adjust per google session
+    TODO
 
-12) determine if I even need templating if I have a python.instructions.md
-  a) if yes, determine how they can work together
-TODO
+    5) add mode select option to create_txt function
+    TODO
 
-13) think about changing ebu normalization
-  a) to use hybrid loudnorm stats then volume adjust per google session
-TODO
+    6) rethink has_art_tag logic
+      a) why call get_any_tags before checking if input file is FLAC?
+    TODO
 
-14) add mode select option to create_txt function
-TODO
+    7) function that creates list of what metadata encoding format(s) an audio file has
+      a) get_mutagen_metadata_type sort of does this for single file audio files, from which I infer metadata encoding format
+      b) need something that can handle audio with multiple metadata encoding formats WO inferring
+    IN PROGRESS, see docs\scripts\google\metadata_encoding_format_detection\metadata_encoding_detection.py
 
-15) rethink has_art_tag logic
-  a) why call get_any_tags before checking if input file is FLAC?
-TODO
+    8) Write function that returns list of songs with invalid for Windows album names
+    TODO
 
-16) add svg graphs to Doxygen output
-TODO
+    9) consolidate normalize-*-filename-walk functions to 1 function
+    TODO
+
+  Environment related:
+
+    1) determine if I even need templating if I have a python.instructions.md
+      a) if yes, determine how they can work together
+    TODO
+
+    2) think about moving generated_files from /src to root
+    TODO
+
+    3) document external library launch json - why & how to use it
+    TODO
+
+    4) add an environment markdown
+      a) refer to esp32 scale project's environment markdown
+
+DISPOSED:
+
+  1) import doxygen create from esp scale project
+  COMPLETED
+
+  2) workflow yamls (refer to esp scale yamls)
+    a) split current python-app.yaml
+      i) build yaml
+      ii) test yaml
+    b) add an orchestration yaml
+    c) add cleanup yamls
+  COMPETED
+
+  3) determine why Cream-Badge folder.jpg keeps getting deleted in audio metadata test suite
+  Results:
+    test_extract_flac_art is extracting Folder.jpg from \tests\Music\Cream\Goodbye\Cream-Badge.flac
+    then test_audio-art tearDown is deleting it
+    but test_audio_metadata test_convert_file expects the Folder.jpg to exist
+  Action:
+    a) Find another flac file with embedded art (other than Cream)
+    b) extract the art to a Folder.jpg
+    c) save flac file and Folder.jpg to tests\Music\artist\album\
+    d) add constant for new path to tests\__init__.py and add to __all_ list
+    e) import new constant in test_audio_art.py
+    f) use new constant instead of TEST_FLAC_CREAM_BADGE
+    g) change cls.flac.jpg to use new artist & album
+  COMPLETED
+
+  4) add svg graphs to Doxygen output
+  COMPLETED
+
+  5) debug doxygen issues with test docs
+  COMPLETED
+
+  6) run python.instructions.md on all files
+  COMPLETED
+
+  7) Consolidate directories & cleanup                              COMPLETED
+    a) delete unnecessary dirs and file                             COMPLETED
+    b) rebuild dir structure                                        COMPLETED
+      i) streamline structure                                       COMPLETED
+      ii) move files to proper locations                            COMPLETED
+      iii) structure                                                COMPLETED
+        / root contains only root level files                       COMPLETED
+          .gitignore                                                COMPLETED
+          Doxyfile                                                  COMPLETED
+          doxygen-custom.css                                        COMPLETED
+          doxygen.log                                               COMPLETED
+          index.dox                                                 COMPLETED
+          main.py                                                   COMPLETED
+          workspace file                                            COMPLETED
+          README.md                                                 COMPLETED
+          requirements.txt                                          COMPLETED
+        /.github          github instructions and workflows         COMPLETED
+          /instructions   instructions mds                          COMPLETED
+          /workflows      workflow yamls                            COMPLETED
+        /.vscode          the json files VS code uses               COMPLETED
+        /docs             information files                         COMPLETED
+          /command_lines  command line examples                     COMPLETED
+          /dot_files      external dot and image files              COMPLETED
+          /doxy_files     doxygen related info                      COMPLETED
+          /ffmpeg_info    ffmpeg source information                 COMPLETED
+          /md_files       info mds                                  COMPLETED
+          /excel          spreadsheets                              COMPLETED
+          /extensions     list of extensions in use by vscode       COMPLETED
+          /launch_configs alt launch config for external libraries  COMPLETED
+          /planning       planning files                            COMPLETED
+          /scripts        example & test scripts                    COMPLETED
+            /google       google generated                          COMPLETED
+            /mine         generated by me                           COMPLETED
+        /html             the doxygen generated html                COMPLETED
+        /src              the python logic files                    COMPLETED
+        /tests            the unit test framework files             COMPLETED
+        /templating       automated file templates                  COMPLETED
+  COMPLETED
+
+  8) regenerate doxyfile - COMPLETED
+    a) use custom css - copy from esp scale project - ISSUES, INVESTIGATE
+    b) change output directory - COMPLETED
+    c) move doxyfile to root - COMPLETED
+    d) might need custom xml too, that depends on how dox files uses markdown files, if at all - NOT USING MARKDOWN
+  COMPLETED
+
+  9) index.dox file
+    a) move it to root - COMPLETED
+    b) think about how to update with contents of various md files DECIDED NOT TO
+      i) direct use of md files like esp scale?
+      ii) find other ways of getting markdown content into dox file
+  COMPLETED
+
+  10) add function to update genre metadata
+    a) works for all file types in list ie. FLAC (.flac), MP3 (.mp3), MP4 (.m4a), ASF (.wma)
+    b) input
+      i) top level directory to start from
+      ii) csv file containing artist names and genre
+        1) csv file header: artist name, artist genre
+        2) artist name MUST match artist directory name exactly
+        3) only 1 genre per artist name
+        4) artist names are unique set
+        5) artist names are listed alphabetically
+    b) algorithm:
+      i) get top level directory from supplied input
+        1) start walk through in top level directory
+        2) get list of all artist names sorted alphabetically
+        3) for each artist in tld dir list, find in csv
+        4) read artist genre from csv
+        5) for each song in artist album dir
+          i0 check if genre tag exists
+          ii) if genre tag exists for audio file & metadata type, resets genre field with genre value
+          iii) if genre tag does not exist, adds appropriate genre tag for audio file & metadata type, populated with genre value
+    c) test cases:
+      i) will need audio files in \test\Music\
+          1) for all 4 types
+          2) at least one of 4 files needs empty genre tag
+          3) at least one of 4 files needs no genre tag
+          4) at least one of 4 files needs genre tag with multi-values
+          5) at least one of 4 files needs genre tag with single value
+      ii) test files will be copied to test\Music\?? in test_audio_metadata.setUpClass
+      iii) will need a test.csv
+  COMPLETED
