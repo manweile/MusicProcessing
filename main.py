@@ -501,6 +501,32 @@ def set_album_art(tld_path):
     art.set_album_art(tld_path)
 
 
+def update_genres_from_csv(tld_path, csv_path):
+    '''
+    @brief Updates genre metadata using artist genre mappings from a CSV file.
+
+    @details Updates supported descendant audio files for artist directories that exactly match CSV artist names.
+
+    @param tld_path {str} The top-level directory containing artist directories.
+    @param csv_path {str} The full path to the artist genre CSV file.
+    @return summary {dict[str, list[str]]} Updated files, skipped artists, unsupported files, and failures.
+    '''
+
+    summary = metadata.update_genres_from_csv(tld_path, csv_path)
+    print(f"Updated files: {len(summary['updated_files'])}")
+    print(f"Skipped artists: {len(summary['skipped_artists'])}")
+    print(f"Unsupported files: {len(summary['unsupported_files'])}")
+    print(f"Failures: {len(summary['failures'])}")
+
+    for artist_name in summary["skipped_artists"]:
+        print(f"Skipped artist: {artist_name}")
+
+    for failure in summary["failures"]:
+        print(f"Failure: {failure}")
+
+    return summary
+
+
 def update_paths(tld_path, input_m3u):
     '''
     @brief Updates an old playlist relative pathing.
@@ -528,7 +554,7 @@ def update_walk(tld_path):
 
 ## @name Application Entry Point
 # @{
-def main(args):
+def main(args) -> int:
     '''
     @brief Module entry point.
 
@@ -537,6 +563,8 @@ def main(args):
     @dotfile flow.dot "Application startup and task flow"
 
     @param args {argparse.Namespace} Arguments for execution.
+
+    @return exit_code {int} Process exit code for the requested subcommand.
 
     @exception {NotImplementedError} Indicates a subcommand has not been implemented.
     @exception {Exception} Handles unforeseen errors.
@@ -667,6 +695,13 @@ def main(args):
             tld_path = getattr(args, "tld")
             set_album_art(tld_path)
 
+        if args.subcommand == "update-genres-from-csv":
+            tld_path = getattr(args, "tld")
+            csv_path = getattr(args, "csv")
+            summary = update_genres_from_csv(tld_path, csv_path)
+            if summary["failures"]:
+                return 1
+
         if args.subcommand == "update-m3u":
             tld_path = getattr(args, "tld")
             input_m3u = getattr(args, "m3u")
@@ -678,6 +713,9 @@ def main(args):
 
     except Exception as e:
         logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
+        return 1
+    else:
+        return 0
 ## @}
 
 
@@ -832,7 +870,7 @@ if __name__ == "__main__":
         # get-tags-walk C:\Music --pattern .wma --ffprobe True
         # get-tags-walk C:\Music --pattern .flac --ffprobe True
         # @todo need to test this
-        # get-tags-walk C:\Music --ffprobe True
+        # get-tags-walk D:\MusicProcessing\tests\Music --ffprobe True
         get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Gets metadata tags from audio files")
         get_tags_walk_parser.add_argument("tld", type=existing_path, help="mandatory full path to audio file")
         get_tags_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
@@ -1015,6 +1053,16 @@ if __name__ == "__main__":
         update_m3u_parsers.add_argument("m3u", type=existing_file, help="mandatory m3u file path")
         update_m3u_parsers.set_defaults(func=update_paths)
 
+        # update genre metadata from artist directory mappings in a CSV file
+        # 2 mandatory args, the tld path and artist genre CSV path
+        # update-genres-from-csv F:/Rick/RickNormalized D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
+        update_genres_parser = subparsers.add_parser(
+            "update-genres-from-csv", help="Updates genre metadata from artist genre CSV mappings"
+        )
+        update_genres_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        update_genres_parser.add_argument("csv", type=existing_file, help="mandatory artist genre CSV file")
+        update_genres_parser.set_defaults(func=update_genres_from_csv)
+
         # update m3u playlist walk
         # 1 mandatory arg, the tld path
         # sys.argv = ['D:\MusicProcessing\main.py'', 'update-walk', 'D:\MusicProcessing\tests\Music']
@@ -1025,7 +1073,7 @@ if __name__ == "__main__":
         update_walk_parsers.set_defaults(func=update_walk)
 
         args = parser.parse_args()
-        main(args)
+        sys.exit(main(args))
 
     except Exception as e:
         logger.exception(f"Exception propagated to entry point: {type(e).__name__}: {e}", stack_info=True)

@@ -35,37 +35,6 @@ NOT DISPOSED:
     2) determine why audio_utilities.py exists
     TODO
 
-    3) add function to update genre metadata
-      a) works for all file types in list ie. FLAC (.flac), MP3 (.mp3), MP4 (.m4a), ASF (.wma)
-      b) input
-        i) top level directory to start from
-        ii) csv file containing artist names and genre
-          1) csv file header: artist name, artist genre
-          2) artist name MUST match artist directory name exactly
-          3) only 1 genre per artist name
-          4) artist names are unique set
-          5) artist names are listed alphabetically
-      b) algorithm:
-        i) get top level directory from supplied input
-          1) start walk through in top level directory
-          2) get list of all artist names sorted alphabetically
-          3) for each artist in tld dir list, find in csv
-          4) read artist genre from csv
-          5) for each song in artist album dir
-            i0 check if genre tag exists
-            ii) if genre tag exists for audio file & metadata type, resets genre field with genre value
-            iii) if genre tag does not exist, adds appropriate genre tag for audio file & metadata type, populated with genre value
-      c) test cases:
-        i) will need audio files in \test\Music\
-            1) for all 4 types
-            2) at least one of 4 files needs empty genre tag
-            3) at least one of 4 files needs no genre tag
-            4) at least one of 4 files needs genre tag with multi-values
-            5) at least one of 4 files needs genre tag with single value
-        ii) test files will be copied to test\Music\?? in test_audio_metadata.setUpClass
-        iii) will need a test.csv
-    TODO
-
     4) think about changing ebu normalization
       a) to use hybrid loudnorm stats then volume adjust per google session
     TODO
@@ -86,6 +55,7 @@ NOT DISPOSED:
     TODO
 
     9) consolidate normalize-*-filename-walk functions to 1 function
+    TODO
 
   Environment related:
 
@@ -190,4 +160,35 @@ DISPOSED:
     b) think about how to update with contents of various md files DECIDED NOT TO
       i) direct use of md files like esp scale?
       ii) find other ways of getting markdown content into dox file
+  COMPLETED
+
+  10) add function to update genre metadata
+    a) works for all file types in list ie. FLAC (.flac), MP3 (.mp3), MP4 (.m4a), ASF (.wma)
+    b) input
+      i) top level directory to start from
+      ii) csv file containing artist names and genre
+        1) csv file header: artist name, artist genre
+        2) artist name MUST match artist directory name exactly
+        3) only 1 genre per artist name
+        4) artist names are unique set
+        5) artist names are listed alphabetically
+    b) algorithm:
+      i) get top level directory from supplied input
+        1) start walk through in top level directory
+        2) get list of all artist names sorted alphabetically
+        3) for each artist in tld dir list, find in csv
+        4) read artist genre from csv
+        5) for each song in artist album dir
+          i0 check if genre tag exists
+          ii) if genre tag exists for audio file & metadata type, resets genre field with genre value
+          iii) if genre tag does not exist, adds appropriate genre tag for audio file & metadata type, populated with genre value
+    c) test cases:
+      i) will need audio files in \test\Music\
+          1) for all 4 types
+          2) at least one of 4 files needs empty genre tag
+          3) at least one of 4 files needs no genre tag
+          4) at least one of 4 files needs genre tag with multi-values
+          5) at least one of 4 files needs genre tag with single value
+      ii) test files will be copied to test\Music\?? in test_audio_metadata.setUpClass
+      iii) will need a test.csv
   COMPLETED

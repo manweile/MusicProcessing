@@ -39,6 +39,7 @@ Root-level fixtures in `tests/` are also listed when referenced by a test.<br>
 | 10cc | 10cc | 04 - Donna.mp3 | test_audio_metadata | Directory-walk filename normalization |
 | 38 Special | Teachers | 38 Special-Teacher Teacher.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | 38 Special | Teachers | 38 Special-Teacher Teacher.mp3 | test_directory_processing | Directory-walk file listing |
+| 38 Special | Teachers | 38 Special-Teacher Teacher.mp3 | test_audio_metadata | Whitespace-only MP3 genre replacement |
 | Abba | Waterloo | ABBA-Waterloo.mp3 | test_audio_art | Existing folder art |
 | Abba | Waterloo | ABBA-Waterloo.mp3 | test_audio_metadata | ID3v2.3 Metadata Mapping |
 | Abba | Waterloo | ABBA-Waterloo.mp3 | test_audio_metadata | ID3v2.3 Tag retrieval |
@@ -54,13 +55,17 @@ Root-level fixtures in `tests/` are also listed when referenced by a test.<br>
 | Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_audio_metadata | Directory-walk metadata keys |
 | Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_directory_processing | Directory-walk file listing |
+| Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_audio_metadata | Missing MP3 genre replacement |
 | Billie Holiday | Georgia On My Mind | Billie Holiday-Georgia On My Mind.wma | test_audio_art | WM/Picture artwork without a video stream |
 | Cream | Goodbye | 02. Politician.flac | test_audio_metadata | FLAC filename normalization |
 | Cream | Goodbye | Cream-Badge.flac | test_audio_metadata | Vorbis Metadata Mapping |
 | Cream | Goodbye | Cream-Badge.flac | test_audio_metadata | Vorbis Tag retrieval |
+| Cream | Goodbye | 02. Politician.flac | test_audio_metadata | Recursive FLAC genre replacement |
+| Cream | Goodbye | Cream-Badge.flac | test_audio_metadata | Multi-value FLAC genre replacement |
 | CCR | Chronicle, Vol. 1 | Creedence Clearwater Revival-Fortunate Son.wma | test_audio_metadata | Co-located folder art |
 | CCR | Chronicle, Vol. 1 | Creedence Clearwater Revival-Fortunate Son.wma | test_audio_metadata | WMA Metadata Mapping |
 | CCR | Chronicle, Vol. 1 | Creedence Clearwater Revival-Fortunate Son.wma | test_audio_metadata | WMA Tag retrieval |
+| CCR | Chronicle, Vol. 1 | Creedence Clearwater Revival-Fortunate Son.wma | test_audio_metadata | WMA genre replacement |
 | CCR | Chronicle, Vol. 1 | Creedence Clearwater Revival-Fortunate Son.wma | test_audio_playlist | Playlist WMA entry resolved to MP3 |
 | Crush | Here | Crush-Live.mp3 | test_audio_art | ID3 APIC artwork fixture |
 | Crush | Here | Crush-Live.mp3 | test_audio_metadata | Media-information retrieval |
@@ -78,6 +83,7 @@ Root-level fixtures in `tests/` are also listed when referenced by a test.<br>
 | Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_audio_metadata | Directory-walk metadata keys |
 | Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_directory_processing | Directory-walk file listing |
+| Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_audio_metadata | Unmapped artist directory is skipped |
 | Diamond Rio | Diamond Rio | Diamond Rio-Lyin' Eyes.mp3 | test_audio_art | Directory-walk album-art processing |
 | Diamond Rio | Diamond Rio | Diamond Rio-Lyin' Eyes.mp3 | test_audio_metadata | Directory-walk metadata keys |
 | Diamond Rio | Diamond Rio | Diamond Rio-Lyin' Eyes.mp3 | test_audio_utilities | Directory-walk volume analysis |
@@ -93,11 +99,13 @@ Root-level fixtures in `tests/` are also listed when referenced by a test.<br>
 | Sawyer Fredericks | A Good Storm | Sawyer Fredricks - Shots Fired.mp3 | test_directory_processing | File-directory lookup |
 | The Eagles | Desperado | The Eagles-Desperado.m4a | test_audio_metadata | Co-located folder art |
 | The Eagles | Desperado | The Eagles-Desperado.m4a | test_audio_metadata | M4A Metadata Mapping |
+| The Eagles | Desperado | The Eagles-Desperado.m4a | test_audio_metadata | Exact artist-directory M4A genre replacement |
 | The Eagles | Desperado | The Eagles-Desperado.m4a | test_audio_playlist | Playlist M4A parsing |
 | The Lord of the Rings | The Return of the King | Annie Lennox - Into the West.mp3 | test_audio_playlist | Playlist artist-path correction |
 | The Lord of the Rings | The Two Towers | Howard Shore-The Taming Of Smeagol.mp3 | test_audio_normalization | RMS normalization |
 | X Ambassadors | VHS | X Ambassadors-Renegades.mp3 | test_audio_normalization | Max-volume check |
 | N/A | /tests | expected.m3u | test_audio_playlist | Expected playlist output |
+| N/A | /tests | artist_genre_test.csv | test_audio_metadata | Valid artist-genre update mapping |
 | N/A | /tests/Music | test.m3u | test_audio_art | Rejects non-audio album-art input |
 | N/A | /tests/Music | test.m3u | test_audio_metadata | Mutagen metadata type returns None |
 | N/A | /tests/Music | test.m3u | test_audio_metadata | Rejects invalid embedded-art extension |

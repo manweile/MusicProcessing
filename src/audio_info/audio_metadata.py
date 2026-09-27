@@ -14,6 +14,7 @@
 '''
 
 # Standard Modules
+import csv                                                  # for CSV mapping input
 import fnmatch                                              # for filename pattern matching
 import gc                                                   # for garbage collection
 import inspect                                              # for inspecting live objects
@@ -33,12 +34,14 @@ import pathvalidate                                         # for validating fil
 from mutagen import FileType                                # for handling different audio file types
 from mutagen._util import MutagenError                      # for handling mutagen errors
 from mutagen.asf import ASF                                 # for handling ASF audio files
+from mutagen.asf import ASFUnicodeAttribute                 # for setting ASF Unicode metadata
 from mutagen.asf import ASFTags                             # for handling ASF tags
 from mutagen.flac import FLAC                               # for handling FLAC audio files
 from mutagen.flac import VCFLACDict                         # for handling FLAC dictionaries
 from mutagen.id3 import APIC                                # for handling ID3 APIC frames
 from mutagen.id3 import ID3                                 # for handling ID3 tags
 from mutagen.id3 import ID3TimeStamp                        # for handling ID3 timestamps
+from mutagen.id3 import TCON                                # for setting ID3 genre tags
 from mutagen.mp3 import MP3                                 # for handling MP3 audio files
 from mutagen.mp4 import MP4                                 # for handling MP4 audio files
 from mutagen.mp4 import MP4FreeForm                         # for handling MP4 freeform atoms
@@ -267,6 +270,101 @@ class AudioMetadata():
         '''
 
         pass
+
+
+    def __read_artist_genres(self, csv_path: str) -> dict[str, str]:
+        '''
+        @brief Reads artist genre mappings from a CSV file.
+
+        @details Validates the required comma-delimited CSV header, artist names, and alphabetical row order.
+
+        @param csv_path {str} The full path to the artist genre CSV file.
+        @return artist_genres {dict[str, str]} Artist directory names mapped to their replacement genres.
+
+        @exception ValueError Indicates the CSV file does not conform to the required mapping format.
+        @exception OSError A system related error occurred.
+        '''
+
+        try:
+            artist_genres = {}
+            previous_artist_name = None
+
+            with open(csv_path, mode="r", encoding="utf-8", newline="") as csv_file:
+                reader = csv.DictReader(csv_file)
+
+                if reader.fieldnames != ["artist name", "artist genre"]:
+                    raise ValueError("CSV header must be: artist name,artist genre")
+
+                for line_number, row in enumerate(reader, start=2):
+                    if len(row) != 2 or None in row:
+                        raise ValueError(f"CSV row {line_number} must contain artist name and artist genre")
+
+                    artist_name = row["artist name"]
+                    artist_genre = row["artist genre"]
+
+                    if artist_name is None or not artist_name.strip() or artist_genre is None or not artist_genre.strip():
+                        raise ValueError(f"CSV row {line_number} must contain a non-empty artist name and artist genre")
+
+                    if artist_name in artist_genres:
+                        raise ValueError(f"CSV row {line_number} has duplicate artist name: {artist_name}")
+
+                    if previous_artist_name is not None and artist_name < previous_artist_name:
+                        raise ValueError(f"CSV artist names must be alphabetical; row {line_number} is out of order")
+
+                    artist_genres[artist_name] = artist_genre
+                    previous_artist_name = artist_name
+
+            if not artist_genres:
+                raise ValueError("CSV file must contain at least one artist genre mapping")
+
+        except OSError as os_error:
+            logger.error(f"OSError reading artist genre CSV {csv_path}: {os_error}", exc_info=True)
+            raise os_error
+        else:
+            return artist_genres
+
+
+    def __set_genre(self, file_path: str, artist_genre: str) -> None:
+        '''
+        @brief Replaces an audio file genre tag.
+
+        @details Sets exactly one format-appropriate genre value and saves the file with its existing metadata format.
+
+        @param file_path {str} The full path to the supported audio file.
+        @param artist_genre {str} The replacement genre value.
+
+        @exception MetadataTypeError Indicates the loaded file type is not supported.
+        @exception ValueError Indicates the file could not be loaded or tagged.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            audio_file = self.load_any_file(file_path)
+
+            if audio_file.tags is None:
+                audio_file.add_tags()
+
+            if audio_file.tags is None:
+                raise ValueError(f"ValueError creating metadata tags for file: {file_path}")
+
+            if isinstance(audio_file, FLAC):
+                audio_file.tags[FLAC_KEYS["genre"]] = [artist_genre]
+                audio_file.save()
+            elif isinstance(audio_file, MP3):
+                audio_file.tags[MP3_KEYS["genre"]] = TCON(encoding=3, text=[artist_genre])
+                audio_file.save(v2_version=3)
+            elif isinstance(audio_file, MP4):
+                audio_file.tags[M4A_KEYS["genre"]] = [artist_genre]
+                audio_file.save()
+            elif isinstance(audio_file, ASF):
+                audio_file.tags[WMA_KEYS["genre"]] = [ASFUnicodeAttribute(artist_genre)]
+                audio_file.save()
+            else:
+                raise MetadataTypeError(f"MetadataTypeError unsupported metadata type for file: {file_path}")
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} setting genre metadata for file: {file_path}", stack_info=True)
+            raise e_error
 
 
     def __update_id3(self, date_values: set[str], id3_tags: dict) -> dict:
@@ -1754,3 +1852,69 @@ class AudioMetadata():
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} walking {start_path} to normalize WMA files", stack_info=True)
             raise e_error
+
+
+    def update_genres_from_csv(self, start_path: str, csv_path: str) -> dict[str, list[str]]:
+        '''
+        @brief Updates supported audio genre metadata using artist directory mappings from a CSV file.
+
+        @details Matches immediate artist directories exactly, updates their supported descendant audio files, and reports skipped or failed files.
+
+        @param start_path {str} The top-level directory containing artist directories.
+        @param csv_path {str} The full path to the artist genre CSV file.
+        @return summary {dict[str, list[str]]} Updated files, skipped artists, unsupported files, and failures.
+
+        @exception ValueError Indicates the supplied directory or CSV file is invalid.
+        @exception OSError A system related error occurred.
+        '''
+
+        try:
+            if not os.path.isdir(start_path):
+                raise ValueError(f"Top-level directory not found: {start_path}")
+
+            if not os.path.isfile(csv_path):
+                raise ValueError(f"Artist genre CSV file not found: {csv_path}")
+
+            artist_genres = self.__read_artist_genres(csv_path)
+            summary = {
+                "updated_files": [],
+                "skipped_artists": [],
+                "unsupported_files": [],
+                "failures": []
+            }
+            artist_directories = sorted(
+                (entry for entry in os.scandir(start_path) if entry.is_dir()), key=lambda entry: entry.name
+            )
+
+            for artist_directory in artist_directories:
+                artist_name = artist_directory.name
+                artist_genre = artist_genres.get(artist_name)
+
+                if artist_genre is None:
+                    logger.warning(f"Skipping artist directory without CSV genre mapping: {artist_name}")
+                    summary["skipped_artists"].append(artist_name)
+                    continue
+
+                for dir_path, _, file_names in os.walk(artist_directory.path):
+                    for file_name in file_names:
+                        file_path = os.path.join(dir_path, file_name)
+                        _, file_extension = os.path.splitext(file_name)
+
+                        if file_extension.lower() not in AUDIO_EXTS:
+                            summary["unsupported_files"].append(file_path)
+                            continue
+
+                        try:
+                            self.__set_genre(file_path, artist_genre)
+                        except Exception as e_error:
+                            failure = f"{file_path}: {type(e_error).__name__}: {e_error}"
+                            logger.error(f"Unable to update genre metadata for {failure}", exc_info=True)
+                            summary["failures"].append(failure)
+                        else:
+                            summary["updated_files"].append(file_path)
+
+        except (OSError, ValueError) as input_error:
+            logger.error(f"Exception {type(input_error).__name__} updating genres from CSV", exc_info=True)
+            raise input_error
+        else:
+            return summary
