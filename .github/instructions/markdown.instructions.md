@@ -26,16 +26,23 @@ description: "Use when creating or editing repository documentation outside GitH
 
 ## Line Length Rules
 
+- The column limit is designed to enhance readability and maintain a clean document structure.
 - Keep every Markdown line at or below 150 columns; shorten wording if necessary.
   - Does not apply to:
     1. tables
     2. code fences
     4. links
     5. lists
+- Use multiple lines to explain concepts if necessary to stay within the column limit.
+- The 2nd to n - 1 lines that are less than 150 columns are terminated with a period have a trailing `<br>` after the period.
+- the nth (final) line does not get a trailing `<br>` after the period.
+- Standalone lines (blank lines before and after) get a terminating period but do not get a trailing `<br>`.
 - If the shortest clear wording still exceeds column 150, break the line after, in this order of preference:
   1. a comma
   2. a semicolon
   3. a coordinating conjunction: "for", "and", "nor", "but", "or", "yet", or "so"
   4. a preposition: "in", "on", "at", "to", "from", "by", "with", "about", "as", "of", or "for"
-- If a line is broken, do not append a `<br>` to the end of the line
-  - instead start the next line with a lowercase letter
+  - If a line is broken, start the next line with a lowercase letter
+  - If a broken line is a 2nd to n - 1 line, it should have a trailing `<br>` after the period.
+  - If it is the final line of a block of text, do not append a `<br>` to the end of the line.
+

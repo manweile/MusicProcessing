@@ -1,10 +1,26 @@
 <!-- markdownlint-disable MD033 -->
 
-# Doxygen
+# Documentation
+
+API documentation provides a single source of truth and can give you rick extraction & visualization features.
 
 ## Purpose
 
-I started using Doxygen in university, found I like it and continue to use it privately.
+I started using Doxygen in university, found I like it and continue to use it privately.<br>
+I don't have as much experience with GraphViz, but really like it for complex projects.
+
+## Doxygen
+
+Doxygen is a free, open-source tool that builds organized project documentation straight from comments written inside source code.<br>
+Source and documentation: [Doxygen](https://www.doxygen.nl)
+
+## Graphviz
+
+Graphviz is open source graph visualization software.<br>
+Graph visualization is a way of representing structural information as diagrams of abstract graphs and networks.<br>
+It has important applications in networking, bioinformatics, software engineering, database and web design, machine learning,
+and in visual interfaces for other technical domains.<br>
+Source and documentation: [Graphviz](https://graphviz.org/)
 
 ## Download
 
@@ -31,8 +47,13 @@ PS D:/MusicProcessing> doxygen --version
 PS D:/MusicProcessing> dot -V
 ```
 
+## GraphViz Configuration
+
+Nothing really, just add the executable to your PATH variable.
+
 ## Doxygen Configuration
 
+First of all, add the executable to your PATH variable.<br>
 Create a template configuration file from the repository root by running `doxygen -g`.<br>
 Note that values that contain spaces should be placed between quotes (" ").<br>
 Note that pathing uses `/`, since it will work on both Windows and Linux, and on Windows, you will not have to escape backslashes.

@@ -133,11 +133,11 @@ GEN_KEYS = {
     'genre',                # using, must have              ID3v2.3 mapping: TCON
     'language',             # not interested                ID3v2.3 mapping: TLAN
     'lyrics',               # not interested                ID3v2.3 mapping: USLT
-    'originalyear',         # using, nice to have           ID3v2.3 mapping: TORY
+    'originalyear',         # using, date backup            ID3v2.3 mapping: TORY
     'performer',            # not interested                ID3v2.3 mapping: TPE3
     'publisher',            # using, nice to have           ID3v2.3 mapping: TPUB
     'title',                # using, must have              ID3v2.3 mapping: TIT2
-    'track'                 # using, nice to have           ID3v2.3 mapping: TRCK
+    'track'                 # using, must have              ID3v2.3 mapping: TRCK
 }
 
 ## @var FLAC_KEYS

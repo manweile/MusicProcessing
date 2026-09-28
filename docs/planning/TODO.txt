@@ -9,20 +9,17 @@ NOT DISPOSED:
     2) find if can have parameters on same line instead of multiple lines
     TODO
 
-    3) look into adding GENERATE_REQUIREMENTS tag
-    TODO
+    3) Incorporate markdown files as doxygen landing page content source
+    IN PROGRESS
 
   Markdown related:
 
-    1) markdown files
-      a) consolidate the "directory" markdowns into a workflow.md
-      b) finish testing markdown                                  COMPLETED
-      c) clean up markdown errors in doxygen_usage.md             COMPLETED
-        i) pattern it after esp scale doxygen markdown            COMPLETED
-      d) update doxygen_usage.md                                  COMPLETED
-      e) if keeping templating, complete template md file         IN PROGRESS
-      f) minor clarification updates to scripting md              TODO
+    1) add an environment markdown
+      a) refer to esp32 scale project's environment markdown
     IN PROGRESS
+
+    2) document external library launch json - why & how to use it
+    TODO
 
   Logic related:
 
@@ -56,21 +53,6 @@ NOT DISPOSED:
 
     9) consolidate normalize-*-filename-walk functions to 1 function
     TODO
-
-  Environment related:
-
-    1) determine if I even need templating if I have a python.instructions.md
-      a) if yes, determine how they can work together
-    TODO
-
-    2) think about moving generated_files from /src to root
-    TODO
-
-    3) document external library launch json - why & how to use it
-    TODO
-
-    4) add an environment markdown
-      a) refer to esp32 scale project's environment markdown
 
 DISPOSED:
 
@@ -191,4 +173,24 @@ DISPOSED:
           5) at least one of 4 files needs genre tag with single value
       ii) test files will be copied to test\Music\?? in test_audio_metadata.setUpClass
       iii) will need a test.csv
+  COMPLETED
+
+  11) determine if I even need templating if I have a python.instructions.md
+    a) if yes, determine how they can work together
+  COMPLETED, removing templating
+
+  12) think about moving generated_files from /src to root
+  DECLINED - too much refactoring & bug introduction risk
+
+  13) look into adding GENERATE_REQUIREMENTS tag
+  DECLINED - not worth the effort
+
+  1) markdown files
+    a) consolidate the "directory" markdowns into a workflow.md
+    b) finish testing markdown                                  COMPLETED
+    c) clean up markdown errors in doxygen_usage.md             COMPLETED
+      i) pattern it after esp scale doxygen markdown            COMPLETED
+    d) update doxygen_usage.md                                  COMPLETED
+    e) if keeping templating, complete template md file         COMPLETED
+    f) minor clarification updates to scripting md              COMPLETED
   COMPLETED
