@@ -88,9 +88,9 @@ class AudioUtilities():
         '''
         @brief Checks maximum volume and clipping for MP3 files.
 
-        @details Walks the top-level directory and records volume-normalization information for each MP3 file.
+        @details Walks the top level directory and records volume-normalization information for each MP3 file.
 
-        @param tld_path {str} The top-level directory containing music files.
+        @param tld_path {str} The top level directory containing music files.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -169,7 +169,7 @@ class AudioUtilities():
         '''
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
-        @details Normalizes only MP3 files within the specified top-level directory.
+        @details Normalizes only MP3 files within the specified top level directory.
 
         @param tld_path {str} The top level directory path that contains all the music files.
         @param norm_type {str} The type of normalization to perform.
@@ -314,7 +314,7 @@ class AudioUtilities():
         '''
         @brief Updates playlists relative pathing.
 
-        @details Finds playlists under the top-level directory and updates their relative paths.
+        @details Finds playlists under the top level directory and updates their relative paths.
 
         @param tld_path {str} The top level directory where playlist and music files are located.
 
@@ -332,7 +332,7 @@ class AudioUtilities():
         '''
         @brief Generates a csv containing full path for all audio files.
 
-        @details Requires the music top-level directory when no start path is provided.<br>
+        @details Requires the music top level directory when no start path is provided.<br>
         @details Creates the CSV file in the generated-files directory.<br>
         @details Includes full audio-file paths and file extensions.
 
@@ -349,7 +349,7 @@ class AudioUtilities():
         '''
         @brief Wrapper for function that generates a csv containing full file path for an extension.
 
-        @details Requires the music top-level directory when no start path is provided.<br>
+        @details Requires the music top level directory when no start path is provided.<br>
         @details Uses the preset audio-type list when no file extension is supplied.
 
         @param file_ext {str} Optional file extension without a period prefix.
@@ -367,7 +367,7 @@ class AudioUtilities():
         @brief Removes empty album directories.
 
         @details Removes empty second-level album directories within artist directories.<br>
-        @details Requires the music top-level directory when no start path is provided.
+        @details Requires the music top level directory when no start path is provided.
 
         @param start_path {str} The starting point of the directory walk.
 
@@ -383,8 +383,8 @@ class AudioUtilities():
         '''
         @brief Removes file matching specified pattern.
 
-        @details Removes files matching the specified pattern beneath the top-level directory.<br>
-        @details Requires the music top-level directory when no start path is provided.
+        @details Removes files matching the specified pattern beneath the top level directory.<br>
+        @details Requires the music top level directory when no start path is provided.
 
         @param start_path {str} Optional, the starting point of the directory walk.
         @param file_pattern {str} The file pattern we want to delete.

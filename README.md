@@ -1,6 +1,14 @@
+<!-- @mainpage Music Processing Project -->
 <!-- markdownlint-disable MD033 -->
 
-# README
+# Music Processing Project
+
+## Documentation Index
+
+1. [Project Environment](docs/md_files/Environment.md) <!-- @subpage project_environment -->
+2. [Example Scripts](docs/md_files/Examples.md) <!-- @subpage example_scripts -->
+3. [API Documentation](docs/md_files/Documentation.md) <!-- @subpage api_documentation -->
+4. [Unit Testing](docs\md_files\Testing.md) <!-- @subpage unit_testing -->
 
 ## Purpose
 
@@ -13,16 +21,9 @@ A large Python project to normalize my files the standards I want for my collect
 There are many things I need to do:
 
 - Organize folders per my standard
-  - top level dir
-    - artist sub dir
-      - album sub dirs
-        - songs in album sub dirs
-- Rename files per my format
-  - artist-title
+- Rename songs files per my format
 - Convert all non-mp3 audio files to mp3
-- Update metadata tags
-  - map all metadata to ID3v2.3
-    - remove all metadata tags that are NOT ID3v2.3
+- Map all metadata to ID3v2.3 solely
   - ensure all songs have this minimum metadata:
     - album
     - album artist
@@ -31,12 +32,13 @@ There are many things I need to do:
     - disc number
     - genre
     - title
+    - track number
     - front cover album art
   - if possible, populate these "nice to have" metadata:
     - composer
     - copyright
     - publisher
-    - track number
+
 - Normalize volume levels
   - I get truly annoyed when a playlist moves to a next song and you are suddenly lowering or increasing the volume.
 
@@ -162,9 +164,12 @@ All songs will have a "disc number" field.
 - multi-disc albums will have correct value
 - as a corollary, the track numbers for songs on disc 2 and up of multi-disc albums will be adjusted sequentially.
 
-## Audio Filename & Playlist Name Format
+## Audio Filename Name Format
 
 My preferred audio filename format is "artist name"-"song title", or "artist name" - "song title".<br>
+
+## Playlist Name Format
+
 Playlist files (m3u) generally are named descriptively - "Favourites", "Symphonic Rock", "Romantic", etc.
 
 ## Audio File Types
@@ -176,7 +181,7 @@ And of course, some audio files may have no embedded metadata (text or image).
   - these are contributed by friends
   - come with Vorbis metadata encoding
 - mp3
-  - this is the majority file type, and my preferred final file type
+  - this is the majority file type, and my preferred final file type - decent compromise between file size and quality
   - can have APEv2, ID3v1, ID3v1.1, ID3v2.3, ID3v2.4 metadata encoding
 - m4a
   - these are iTunes purchase & downloads
@@ -190,8 +195,14 @@ And of course, some audio files may have no embedded metadata (text or image).
 
 ## Playlist File Types
 
+There are different playlist type formats; m3u, wpl, etc.<br>
+I have used m3u and wpl. Both can be created by Windows Media Player (WMP).<br>
+Since WMP is no longer viable for Windows 10 and greater, I use m3u now.
+
 - m3u
-  - a text based general playlist file that uses relative pathing
+  - a text based general playlist file format that uses relative pathing
+- wpl
+  - Windows Media Player native format, uses absolute pathing
 
 ## Tools
 
@@ -361,16 +372,36 @@ VLC is a multimedia player and framework that plays most multimedia files as wel
 
 ## Processing Workflow
 
-- Copy source music
-- Prepare directory structure
-- Normalize file names
-- Prepare metadata (text and art)
+- Copy source music to `Source` directory
+- Create `Prepped/Music` directory
+- Copy all of an artist's files from `Source/Artist` directory to `Prepped/Artist` directory
+- Prepare textual metadata
+  - this is where compilation albums will be handled
+    - ascertain the correct artist for each song in compilation album
+    - ensure song(s) are in correct `Prepped/artist/` where artist is correct artist for song
+  - verify required textual metadata
+  - try to verify optional textual metadata
+  - Prepare each `Prepped/Artist` directory structure
+    - Move each artist's album songs and artwork to appropriate `Prepped/Artists/Album` directory
+    - If a an artist has songs NOT in an album directory, leave them in `Prepped/Artist`
+      - run create-albums to create the album directories
+  - normalize file names, run normalize-`type`->-filename or normalize-`type`-filename-walk where `type` is file ext of audio file
+  - run update-genres-from-csv to bulk update an artist(s) genre; requires appropriate csv file
+- Prepare art metadata
+  - run extract-file or extract-walk to get embedded artwork into a usable jpg file
+  - run set-album-art if needed
+    - this is primarily for songs from compilation albums and looks in src/generated_files/AlbumArt for appropriate Folder.jpgs
+    - but can also work for song files that are not part of compilations
 - Convert music files to mp3 with embedded art
+  - run convert-file or convert-walk; album art MUST be present in every album directory
 - Normalize music
-  - EBU R128 standard for most files
-  - Peak normalization when required
-  - RMS normalization when required
-- Finalize music with updated playlists.
+  - run ebu-file, single file EBU R128 standard for most files
+  - run peak-file, single file Peak normalization when required
+  - run rms-file, single file RMS normalization when required
+  - run level-normalize-walk with normalization type to walk all files
+- Finalize music with updated playlists
+  - run update-paths for single playlists
+  - run update-walk for all playlist in top level directory
 
 ### External Tool Processing
 
@@ -383,30 +414,4 @@ I will use MP3Tag/MusicBrainz Picard/puddletag to:
   - remove all non ID3v2.3 tags from mp3 files
   - verify all mp3 files have only ID2v2.3 tags
 - find accurate metadata for preferred tags
-- find cover art for all albums
-
-### Python Processing
-
-I will use the music processing python code to:
-
-1. Gather information
-   - create csv lists
-     - all audio files and their extension
-2. Normalize directories
-   - create album sub-dirs for artist directories
-3. Normalize filenames
-   - rename audio files that have incorrect filename format
-   - verify all albums have file system acceptable names for directory creation
-4. Ensure cover art exists
-   - extract embedded cover art if it exists
-   - set cover art for compilation albums
-   - find cover art if necessary
-5. Convert audio to mp3 file type
-   - convert flac files to mp3 files with my preferred ID3v2.3 tags
-   - convert wma files to mp3 files with my preferred ID3v2.3 tags
-   - convert m4a files to mp3 files with my preferred ID3v2.3 tags
-   - convert mp3 file to mp3 files with my preferred ID3v2.3 tags
-6. Level normalize mp3 files
-   - level normalize mp3 files to EBU R128 standard
-   - use peak or rms normalization if required
-7. Update playlist files
+- find cover art for albums if necessary

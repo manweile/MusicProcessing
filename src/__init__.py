@@ -115,7 +115,7 @@ MP3_TYPE = "MP3"
 MP4_TYPE = "MP4"
 
 ## @var MUSIC_TLD
-# @brief Music top-level directory name.
+# @brief Music top level directory name.
 # @details Identifies the directory containing the source music collection.
 MUSIC_TLD = "Music"
 

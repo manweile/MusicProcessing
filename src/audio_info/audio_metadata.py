@@ -25,6 +25,7 @@ import re                                                   # for regular expres
 import shutil                                               # for high-level file operations
 import sys                                                  # for system-specific parameters and functions
 from json import JSONDecodeError                            # for handling JSON decode errors
+from os import strerror                                     # for operating-system error messages
 from pathlib import Path                                    # for object-oriented filesystem paths
 from shutil import ExecError                                # for handling shutil execution errors
 
@@ -281,8 +282,9 @@ class AudioMetadata():
         @param csv_path {str} The full path to the artist genre CSV file.
         @return artist_genres {dict[str, str]} Artist directory names mapped to their replacement genres.
 
-        @exception ValueError Indicates the CSV file does not conform to the required mapping format.
         @exception OSError A system related error occurred.
+        @exception ValueError Indicates the CSV file does not conform to the required mapping format.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -293,33 +295,44 @@ class AudioMetadata():
                 reader = csv.DictReader(csv_file)
 
                 if reader.fieldnames != ["artist name", "artist genre"]:
-                    raise ValueError("CSV header must be: artist name,artist genre")
+                    logger.error(f"CSV header invalid in file {csv_path}: {reader.fieldnames}", exc_info=True)
+                    raise ValueError(f"CSV header invalid in file {csv_path}: {reader.fieldnames}")
 
                 for line_number, row in enumerate(reader, start=2):
                     if len(row) != 2 or None in row:
-                        raise ValueError(f"CSV row {line_number} must contain artist name and artist genre")
+                        logger.error(f"CSV row {line_number} invalid in file {csv_path}: {row}", exc_info=True)
+                        raise ValueError(f"CSV row {line_number} invalid in file {csv_path}: {row}")
 
                     artist_name = row["artist name"]
                     artist_genre = row["artist genre"]
 
                     if artist_name is None or not artist_name.strip() or artist_genre is None or not artist_genre.strip():
-                        raise ValueError(f"CSV row {line_number} must contain a non-empty artist name and artist genre")
+                        logger.error(f"CSV row {line_number} must contain a non-empty artist name and genre in file {csv_path}", exc_info=True)
+                        raise ValueError(f"CSV row {line_number} must contain a non-empty artist name and genre in file {csv_path}")
 
                     if artist_name in artist_genres:
-                        raise ValueError(f"CSV row {line_number} has duplicate artist name: {artist_name}")
+                        logger.error(f"CSV row {line_number} has duplicate artist name: {artist_name} in file {csv_path}", exc_info=True)
+                        raise ValueError(f"CSV row {line_number} has duplicate artist name: {artist_name} in file {csv_path}")
 
                     if previous_artist_name is not None and artist_name < previous_artist_name:
-                        raise ValueError(f"CSV artist names must be alphabetical; row {line_number} is out of order")
+                        logger.error(f"CSV artist names must be alphabetical; row {line_number} is out of order in file {csv_path}", exc_info=True)
+                        raise ValueError(f"CSV artist names must be alphabetical; row {line_number} is out of order in file {csv_path}")
 
                     artist_genres[artist_name] = artist_genre
                     previous_artist_name = artist_name
 
             if not artist_genres:
-                raise ValueError("CSV file must contain at least one artist genre mapping")
+                logger.error(f"CSV file {csv_path} must contain at least one artist genre mapping", exc_info=True)
+                raise ValueError(f"CSV file {csv_path} must contain at least one artist genre mapping")
 
         except OSError as os_error:
-            logger.error(f"OSError reading artist genre CSV {csv_path}: {os_error}", exc_info=True)
+            logger.error(f"OSError {(strerror(os_error.errno))} reading artist genre CSV {csv_path}", exc_info=True)
             raise os_error
+        except ValueError as value_error:
+            raise value_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} reading artist genre CSV: {csv_path}", stack_info=True)
+            raise e_error
         else:
             return artist_genres
 
@@ -345,6 +358,7 @@ class AudioMetadata():
                 audio_file.add_tags()
 
             if audio_file.tags is None:
+                logger.error(f"ValueError creating metadata tags for file: {file_path}", exc_info=True)
                 raise ValueError(f"ValueError creating metadata tags for file: {file_path}")
 
             if isinstance(audio_file, FLAC):
@@ -360,10 +374,15 @@ class AudioMetadata():
                 audio_file.tags[WMA_KEYS["genre"]] = [ASFUnicodeAttribute(artist_genre)]
                 audio_file.save()
             else:
+                logger.error(f"Unsupported metadata type for file: {os.path.basename(file_path)}", exc_info=True)
                 raise MetadataTypeError(f"MetadataTypeError unsupported metadata type for file: {file_path}")
 
+        except MetadataTypeError as mt_error:
+            raise mt_error
+        except ValueError as v_error:
+            raise v_error
         except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} setting genre metadata for file: {file_path}", stack_info=True)
+            logger.exception(f"Exception {type(e_error).__name__} setting file: {file_path} with genre: {artist_genre}", stack_info=True)
             raise e_error
 
 
@@ -597,14 +616,17 @@ class AudioMetadata():
 
         @details Creates the album sub directory for the artist if needed.<br>
         Calling functions MUST verify valid start path.<br>
-        The album name for the directory is drawn from the album metadata field, and will be sanitized to Windows OS values.<br>
-        Using Windows because it is more restrictive (therefore os universal). The characters \, :, *, ?, ", <, >, | will be replaced by "-".<br>
-        Refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename<br>
+        The album name for the directory is drawn from the album metadata field.<br>
+        Album names will be sanitized to Windows OS values.<br>
         Audio files will be moved into their respective album directories.<br>
         A csv report named after the function (`create_album_dirs`) containing all audio file paths,
         album metadata values and sanitized album directory names will be created.<br>
 
-        @param start_path {str} The tld holding music files.
+        @note Using the Windows invalid character set because it is more restrictive (therefore OS universal).<br>
+        The characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` will be replaced by `-`.<br>
+        Refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename<br>
+
+        @param start_path {str} The top level directory holding music files.
 
         @exception ValidationError A pathlib module validation error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -662,16 +684,26 @@ class AudioMetadata():
                         # we found a non audio file
                         continue
 
-                    if file_media_tags and 'album' in file_media_tags.keys():
-                        # the album metadata should have had all / removed manually,
-                        # but do replace anyways, it would wreak havoc by creating nested dirs
-                        album = file_media_tags['album'].replace("/", "-")
+                    # Returns False if file_media_tags is missing/empty
+                    album_exists = bool(file_media_tags) and any(k.lower() == "album" for k in file_media_tags)
+                    if album_exists:
+                        value_album = None
+                        # looking for exact word match for "album" key, handles album or ALBUM etc
+                        for key, value in file_media_tags.items():
+                            if key.lower() == "album":
+                                value_album = value
+                                # need the actual key for logging
+                                key_album = key
+                                break
+
+                        # replace any slashes, they would wreak havoc by creating nested dirs
+                        album = value_album.replace("/", "-")
 
                         # sanitize because the metadata might have characters invalid for directory names
                         sanitized_album_name = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows",
                                                                               validate_after_sanitize=True)
 
-                        data.append([audio_file, file_media_tags['album'], sanitized_album_name])
+                        data.append([audio_file, file_media_tags[key_album], sanitized_album_name])
 
                         # make the album sub directory is REQUIRED before moving the audio file
                         album_path = os.path.join(tld_item_path, sanitized_album_name)
@@ -1860,19 +1892,45 @@ class AudioMetadata():
 
         @details Matches immediate artist directories exactly, updates their supported descendant audio files, and reports skipped or failed files.
 
-        @param start_path {str} The top-level directory containing artist directories.
+        @note The start path should be the top level directory containing artist directories. Eg; C:/Music<br>
+        C:/Music will contain the artist directories. Eg; C:/Music/ArtistNameA, C:/Music/ArtistNameB<br>
+        <br>
+        The csv file will contain artist names and their corresponding genres.<br>
+        The csv file header MUST be "artist name,artist genre".<br>
+        The artist names must be sorted alphabetically in the CSV file.<br>
+        Each artist directory name should match the artist name in the CSV file exactly.<br>
+        The artist directory will be relative to the top level directory specified in start_path.<br>
+        <br>
+        The artist genre will be applied to all supported audio files within the corresponding artist directory.<br>
+        There can only be 1 genre per artist in the CSV file, but the genre can be multiple words separated a space.<br>
+        The genre will be applied to all supported audio files within the corresponding artist directory.<br>
+        CSV Example:<br>
+        artist name,artist genre<br>
+        ArtistNameA,Rock<br>
+        ArtistName B,Jazz<br>
+        Artist Name C,Progressive Rock<br>
+        <br>
+        If an artist directory does not have a corresponding entry in the CSV file, it will be reported in the summary under "skipped_artists".<br>
+        Unsupported files within the artist directory will be reported in the summary under "unsupported_files".<br>
+        Failures encountered during the update process will be reported in the summary under "failures".<br>
+        The summary dictionary will be returned after processing all artist directories.<br>
+
+        @param start_path {str} The top level directory containing artist directories.
         @param csv_path {str} The full path to the artist genre CSV file.
         @return summary {dict[str, list[str]]} Updated files, skipped artists, unsupported files, and failures.
 
         @exception ValueError Indicates the supplied directory or CSV file is invalid.
         @exception OSError A system related error occurred.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
             if not os.path.isdir(start_path):
+                logger.error(f"Top-level directory not found: {start_path}")
                 raise ValueError(f"Top-level directory not found: {start_path}")
 
             if not os.path.isfile(csv_path):
+                logger.error(f"Artist genre CSV file not found: {csv_path}")
                 raise ValueError(f"Artist genre CSV file not found: {csv_path}")
 
             artist_genres = self.__read_artist_genres(csv_path)
@@ -1904,17 +1962,22 @@ class AudioMetadata():
                             summary["unsupported_files"].append(file_path)
                             continue
 
+                        # set genre handles it own logging, just need to catch the failures for summary purposes
                         try:
                             self.__set_genre(file_path, artist_genre)
                         except Exception as e_error:
                             failure = f"{file_path}: {type(e_error).__name__}: {e_error}"
-                            logger.error(f"Unable to update genre metadata for {failure}", exc_info=True)
                             summary["failures"].append(failure)
                         else:
                             summary["updated_files"].append(file_path)
 
-        except (OSError, ValueError) as input_error:
-            logger.error(f"Exception {type(input_error).__name__} updating genres from CSV", exc_info=True)
-            raise input_error
+        except OSError as os_error:
+            logger.error(f"Exception {type(os_error).__name__} updating genres from CSV", exc_info=True)
+            raise os_error
+        except ValueError as v_error:
+            raise v_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} updating songs in {start_path} with genres from CSV {csv_path}", stack_info=True)
+            raise e_error
         else:
             return summary

@@ -148,7 +148,7 @@ def create_albums(tld_path):
     '''
     @brief Create album 2nd level directories under artist first level directories in top level directory.
 
-    @details Creates album directories under first-level artist directories in the specified top-level directory.
+    @details Creates album directories under first-level artist directories in the specified top level directory.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
@@ -507,7 +507,7 @@ def update_genres_from_csv(tld_path, csv_path):
 
     @details Updates supported descendant audio files for artist directories that exactly match CSV artist names.
 
-    @param tld_path {str} The top-level directory containing artist directories.
+    @param tld_path {str} The top level directory containing artist directories.
     @param csv_path {str} The full path to the artist genre CSV file.
     @return summary {dict[str, list[str]]} Updated files, skipped artists, unsupported files, and failures.
     '''
@@ -1055,7 +1055,7 @@ if __name__ == "__main__":
 
         # update genre metadata from artist directory mappings in a CSV file
         # 2 mandatory args, the tld path and artist genre CSV path
-        # update-genres-from-csv F:/Rick/RickNormalized D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
+        # update-genres-from-csv F:/Rick/RickFinalized D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
         update_genres_parser = subparsers.add_parser(
             "update-genres-from-csv", help="Updates genre metadata from artist genre CSV mappings"
         )

@@ -523,7 +523,7 @@ class AudioNormalization():
         '''
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
-        @details Normalizes only MP3 files beneath the specified top-level directory.
+        @details Normalizes only MP3 files beneath the specified top level directory.
 
         @param tld_path {str} The top level directory path that contains all the music files.
         @param norm_type {str} The type of normalization to perform.

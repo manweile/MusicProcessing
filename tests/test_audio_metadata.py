@@ -44,7 +44,7 @@ from src import FLAC_EXT                                    # file extension for
 from src import FOLDER_ART                                  # directory containing folder art images
 from src import M4A_EXT                                     # file extension for M4A audio files
 from src import MP3_EXT                                     # file extension for MP3 audio files
-from src import MUSIC_TLD                                   # top-level directory for music files
+from src import MUSIC_TLD                                   # top level directory for music files
 from src import PLAYLIST_EXTS                               # supported playlist file extensions
 from src import RESULT_DIR                                  # directory for storing test results
 from src import RESULT_EXT                                  # file extension for result files
@@ -69,7 +69,7 @@ from tests import TEST_MP3_GENESIS                          # test data for MP3 
 from tests import TEST_MP3_NO_TAG                           # test data for MP3 with no tag
 from tests import TEST_MP3_NO_METADATA                      # test data for MP3 with no metadata
 from tests import TESTS_PATH                                # path directory for tests
-from tests import TESTS_TLD                                 # top-level directory for tests
+from tests import TESTS_TLD                                 # top level directory for tests
 from tests import TEST_WAV_NONE                             # test data for WAV with no metadata
 from tests import TEST_WMA_CCR                              # test data for WMA CCR audio file
 from tests import TEST_WMA_JOHN                             # test data for WMA John audio file
@@ -394,7 +394,7 @@ class TestAudioMetadata(TestCase):
 
     def test_convert_walk(self):
         '''
-        @brief Test converting all valid audio files in a top-level directory to MP3 format.
+        @brief Test converting all valid audio files in a top level directory to MP3 format.
 
         @details The audio files must have a co-located Folder.jpg file.
 
@@ -1741,6 +1741,32 @@ class TestAudioMetadata(TestCase):
 
         # Verify that the unmatched genre tag remains unchanged
         self.assertEqual(metadata.get_mutagen_tags(self.genre_files["unmatched_mp3"])["TCON"].text, ["Rock"])
+
+
+    @patch("src.audio_info.audio_metadata.logger.error")
+    @patch.object(AudioMetadata, "_AudioMetadata__set_genre")
+    def test_update_genres_from_csv_records_set_genre_failure(self, mock_set_genre, mock_logger_error):
+        '''
+        @brief Tests recording a genre update failure.
+
+        @details Verifies setter errors are recorded in the summary without duplicate caller-level error logging.
+
+        @param mock_set_genre {Mock} Mocked private genre setter.
+        @param mock_logger_error {Mock} Mocked module error logger.
+
+        @test Error case.
+        '''
+
+        failed_file_path = self.genre_files["empty_mp3"]
+        mock_set_genre.side_effect = lambda file_path, artist_genre: (
+            (_ for _ in ()).throw(OSError("test error")) if file_path == failed_file_path else None
+        )
+
+        summary = metadata.update_genres_from_csv(self.genre, self.genre_csv)
+
+        self.assertEqual(summary["failures"], [f"{failed_file_path}: OSError: test error"])
+        self.assertNotIn(failed_file_path, summary["updated_files"])
+        mock_logger_error.assert_not_called()
 
 
     def test_update_genres_from_csv_invalid_input(self):

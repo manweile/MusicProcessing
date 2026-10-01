@@ -612,13 +612,13 @@ class AudioArt():
                 album_jpg = album_dir_name + ".jpg"
 
                 # get the album art directory, per the project hierarchy
-                # eg: D:\MusicProcessing\src\generated_files\ALbumArt
+                # eg: D:\MusicProcessing\src\generated_files\AlbumArt
                 album_art_dir = os.path.join(GENERATED_PATH, ALBUM_ART)
                 album_art_dir_content = os.listdir(album_art_dir)
 
                 if album_jpg in album_art_dir_content:
                     album_art_jpg = os.path.join(album_art_dir, album_jpg)
-                    # eg: D:\MusicProcessing\src\generated_files\ALbumArt\Best Of The Blues, Vol. 1.jpg
+                    # eg: D:\MusicProcessing\src\generated_files\AlbumArt\Best Of The Blues, Vol. 1.jpg
                     # eg: C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Folder.jpg
                     folder_jpg = os.path.join(album_path, FOLDER_ART)
                     shutil.copy(album_art_jpg, folder_jpg)

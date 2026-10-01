@@ -1,3 +1,4 @@
+<!-- @page unit_testing Unit Testing -->
 <!-- markdownlint-disable MD033 -->
 
 # Unit Testing
@@ -8,7 +9,7 @@ Incorporate them into your CI/CD on your repo too.
 
 ## Documentation
 
-Build and review Doxygen to see test suite details.<br>
+Build and review Doxygen HTML documentation to see test suite details.<br>
 I know it's not always industry standard to have Doxygen for test suites, but I like the idea.
 
 ## Execution
@@ -24,66 +25,75 @@ cd D:/MusicProcessing/tests
 python test_name.py
 ```
 
-## Music Files
+## Test Fixtures & Test Cases
 
-Music files are audio files (flac, mp3, m4a, wma) and m3u playlist files<b>
-The music files in `tests/Music` are test fixtures.<br>
-Root-level fixtures in `tests/` are also listed when referenced by a test.<br>
-`test_audio_utilities` and `test_directory_processing` walk the complete fixture directory.
+Music files are audio files (flac, mp3, m4a, wma) and m3u playlist files.<br>
+The music files in `/tests` & `/tests/Music` are test fixtures.<br>
 
-| Artist | Album Dir | Song | Test Suite | Notes |
+Given the large number of test cases, having a unique test fixture for every test case would be very onerous.<br>
+So I went the multi-use route, which does create it's own issues in regards to intra-case compatibility.<br>
+That's the point of the table, a summary overview of what audio file is used for what test case.<br>
+
+Some test cases are destructive or permanently altering, requiring temporary deep copies of the test fixtures being manipulated.<br>
+The deep copies are located in the `/tests/Music/` directory, and are cleaned up after test suite execution.<br>
+
+**NOTE:** class level teardown functions sometimes run into transient file permission denial, especially on all suite runs.<br>
+It is very hard to replicate for debugging, so not worth the coding effort to fix.<br>
+Re-run the failing test(s) individually, empirically they succeed on 2nd try.
+
+| Artist | Album Dir | Song | Test Suite | Test Case |
 | --- | --- | --- | --- | --- |
 | 10cc | 10cc | 04 - Donna.mp3 | test_audio_metadata | MP3 filename normalization |
 | 10cc | 10cc | 04 - Donna.mp3 | test_audio_metadata | Already-normalized filename |
 | 10cc | 10cc | 04 - Donna.mp3 | test_audio_metadata | Windows filename-character sanitization |
 | 10cc | 10cc | 04 - Donna.mp3 | test_audio_metadata | Directory-walk filename normalization |
+| 38 Special | Teachers | 38 Special-Teacher Teacher.mp3 | test_audio_metadata | Whitespace-only MP3 genre replacement |
 | 38 Special | Teachers | 38 Special-Teacher Teacher.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | 38 Special | Teachers | 38 Special-Teacher Teacher.mp3 | test_directory_processing | Directory-walk file listing |
-| 38 Special | Teachers | 38 Special-Teacher Teacher.mp3 | test_audio_metadata | Whitespace-only MP3 genre replacement |
-| Abba | Waterloo | ABBA-Waterloo.mp3 | test_audio_art | Existing folder art |
+| Abba | Waterloo | ABBA-Waterloo.mp3 | test_audio_art | Has existing folder art |
 | Abba | Waterloo | ABBA-Waterloo.mp3 | test_audio_metadata | ID3v2.3 Metadata Mapping |
 | Abba | Waterloo | ABBA-Waterloo.mp3 | test_audio_metadata | ID3v2.3 Tag retrieval |
-| Abba | Waterloo | ABBA-Waterloo.mp3 | test_audio_normalization | Dynamic normalization |
+| Abba | Waterloo | ABBA-Waterloo.mp3 | test_audio_normalization | EBU R128 Dynamic level normalization |
 | Abba | Waterloo | ABBA-Waterloo.mp3 | test_audio_playlist | Fictional m4a file ext resolved to MP3 |
 | Aerosmith | Devil's Got a New Disguise-The Very Best of Aerosmith | Aerosmith-Dream On.mp3 | test_audio_playlist | Playlist album-path correction |
 | Alannah Myles | A-Lan-Nah | Alannah Myles-Do You Really Wanna Know Me.flac | test_audio_art | Embedded FLAC artwork extraction |
-| Albert Collins | Best Of The Blues, Vol. 1 | Albert Collins - Trash Talkin'.mp3 | test_audio_art | Missing album art creation |
+| Albert Collins | Best Of The Blues, Vol. 1 | Albert Collins - Trash Talkin'.mp3 | test_audio_art | Missing compilation album art creation |
 | Albert Collins | Best Of The Blues, Vol. 1 | Albert Collins - Trash Talkin'.mp3 | test_audio_metadata | Directory-walk metadata keys |
 | Albert Collins | Best Of The Blues, Vol. 1 | Albert Collins - Trash Talkin'.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | Albert Collins | Best Of The Blues, Vol. 1 | Albert Collins - Trash Talkin'.mp3 | test_directory_processing | Directory-walk file listing |
 | Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_audio_art | Directory-walk album-art processing |
 | Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_audio_metadata | Directory-walk metadata keys |
+| Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_audio_metadata | Missing MP3 genre replacement |
 | Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_directory_processing | Directory-walk file listing |
-| Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_audio_metadata | Missing MP3 genre replacement |
 | Billie Holiday | Georgia On My Mind | Billie Holiday-Georgia On My Mind.wma | test_audio_art | WM/Picture artwork without a video stream |
 | Cream | Goodbye | 02. Politician.flac | test_audio_metadata | FLAC filename normalization |
-| Cream | Goodbye | Cream-Badge.flac | test_audio_metadata | Vorbis Metadata Mapping |
-| Cream | Goodbye | Cream-Badge.flac | test_audio_metadata | Vorbis Tag retrieval |
 | Cream | Goodbye | 02. Politician.flac | test_audio_metadata | Recursive FLAC genre replacement |
 | Cream | Goodbye | Cream-Badge.flac | test_audio_metadata | Multi-value FLAC genre replacement |
+| Cream | Goodbye | Cream-Badge.flac | test_audio_metadata | Vorbis Metadata Mapping |
+| Cream | Goodbye | Cream-Badge.flac | test_audio_metadata | Vorbis Tag retrieval |
 | CCR | Chronicle, Vol. 1 | Creedence Clearwater Revival-Fortunate Son.wma | test_audio_metadata | Co-located folder art |
+| CCR | Chronicle, Vol. 1 | Creedence Clearwater Revival-Fortunate Son.wma | test_audio_metadata | WMA genre replacement |
 | CCR | Chronicle, Vol. 1 | Creedence Clearwater Revival-Fortunate Son.wma | test_audio_metadata | WMA Metadata Mapping |
 | CCR | Chronicle, Vol. 1 | Creedence Clearwater Revival-Fortunate Son.wma | test_audio_metadata | WMA Tag retrieval |
-| CCR | Chronicle, Vol. 1 | Creedence Clearwater Revival-Fortunate Son.wma | test_audio_metadata | WMA genre replacement |
 | CCR | Chronicle, Vol. 1 | Creedence Clearwater Revival-Fortunate Son.wma | test_audio_playlist | Playlist WMA entry resolved to MP3 |
 | Crush | Here | Crush-Live.mp3 | test_audio_art | ID3 APIC artwork fixture |
-| Crush | Here | Crush-Live.mp3 | test_audio_metadata | Media-information retrieval |
 | Crush | Here | Crush-Live.mp3 | test_audio_metadata | ID3v2.3 Tag retrieval |
-| Crush | Here | Crush-Live.mp3 | test_audio_normalization | Linear normalization |
+| Crush | Here | Crush-Live.mp3 | test_audio_metadata | Media-information retrieval |
+| Crush | Here | Crush-Live.mp3 | test_audio_normalization | EBU R128 Linear level normalization |
 | Crush | Here | Crush-Live.mp3 | test_audio_normalization | Volume analysis |
 | Crush | Here | Crush-Live.mp3 | test_audio_playlist | Invalid playlist input |
 | Crush | Here | Crush-Live.mp3 | test_subprocess_utilities | Valid media command |
 | Crush | Here | No_tag_Crush-Live.mp3 | test_audio_art | Absent artwork |
-| Crush | Here | No_tag_Crush-Live.mp3 | test_audio_metadata | Mutagen tag retrieval returns None |
-| Crush | Here | No_tag_Crush-Live.mp3 | test_audio_metadata | FFprobe tag retrieval returns None |
 | Crush | Here | No_tag_Crush-Live.mp3 | test_audio_metadata | Absent embedded artwork tag |
+| Crush | Here | No_tag_Crush-Live.mp3 | test_audio_metadata | FFprobe tag retrieval returns None |
+| Crush | Here | No_tag_Crush-Live.mp3 | test_audio_metadata | Mutagen tag retrieval returns None |
 | Crush | /tests | No_audio_Crush-Live.mp3 | test_subprocess_utilities | Malformed audio data |
 | Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_audio_art | Directory-walk album-art processing |
 | Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_audio_metadata | Directory-walk metadata keys |
+| Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_audio_metadata | Unmapped artist directory is skipped |
 | Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_directory_processing | Directory-walk file listing |
-| Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_audio_metadata | Unmapped artist directory is skipped |
 | Diamond Rio | Diamond Rio | Diamond Rio-Lyin' Eyes.mp3 | test_audio_art | Directory-walk album-art processing |
 | Diamond Rio | Diamond Rio | Diamond Rio-Lyin' Eyes.mp3 | test_audio_metadata | Directory-walk metadata keys |
 | Diamond Rio | Diamond Rio | Diamond Rio-Lyin' Eyes.mp3 | test_audio_utilities | Directory-walk volume analysis |
@@ -92,20 +102,20 @@ Root-level fixtures in `tests/` are also listed when referenced by a test.<br>
 | Elton John | Goodbye Yellow Brick Road | Elton John-Saturday Night's Alright for Fighting.wma | test_directory_processing | File path information |
 | Genesis | In Too Deep-I’d Rather Be You | Genesis-In Too Deep.mp3 | test_audio_metadata | Album-directory creation |
 | Joshua Davis | The Voice Peformance | Joshua Davis-The Workingman's Hymn.m4a | test_audio_art | MP4 cover-art fixture |
-| Joshua Davis | The Voice Peformance | Joshua Davis-The Workingman's Hymn.m4a | test_audio_metadata | MP4 filename normalization |
 | Joshua Davis | The Voice Peformance | Joshua Davis-The Workingman's Hymn.m4a | test_audio_metadata | Directory-walk MP4 filename normalization |
+| Joshua Davis | The Voice Peformance | Joshua Davis-The Workingman's Hymn.m4a | test_audio_metadata | MP4 filename normalization |
 | Joshua Davis | The Voice Peformance | Joshua Davis-The Workingman's Hymn.m4a | test_directory_processing | File path information |
 | Sawyer Fredericks | A Good Storm | Sawyer Fredricks - Shots Fired.mp3 | test_audio_playlist | Playlist path lookup |
 | Sawyer Fredericks | A Good Storm | Sawyer Fredricks - Shots Fired.mp3 | test_directory_processing | File-directory lookup |
 | The Eagles | Desperado | The Eagles-Desperado.m4a | test_audio_metadata | Co-located folder art |
-| The Eagles | Desperado | The Eagles-Desperado.m4a | test_audio_metadata | M4A Metadata Mapping |
 | The Eagles | Desperado | The Eagles-Desperado.m4a | test_audio_metadata | Exact artist-directory M4A genre replacement |
+| The Eagles | Desperado | The Eagles-Desperado.m4a | test_audio_metadata | M4A Metadata Mapping |
 | The Eagles | Desperado | The Eagles-Desperado.m4a | test_audio_playlist | Playlist M4A parsing |
 | The Lord of the Rings | The Return of the King | Annie Lennox - Into the West.mp3 | test_audio_playlist | Playlist artist-path correction |
-| The Lord of the Rings | The Two Towers | Howard Shore-The Taming Of Smeagol.mp3 | test_audio_normalization | RMS normalization |
+| The Lord of the Rings | The Two Towers | Howard Shore-The Taming Of Smeagol.mp3 | test_audio_normalization | RMS level normalization |
 | X Ambassadors | VHS | X Ambassadors-Renegades.mp3 | test_audio_normalization | Max-volume check |
-| N/A | /tests | expected.m3u | test_audio_playlist | Expected playlist output |
 | N/A | /tests | artist_genre_test.csv | test_audio_metadata | Valid artist-genre update mapping |
+| N/A | /tests | expected.m3u | test_audio_playlist | Expected playlist output |
 | N/A | /tests/Music | test.m3u | test_audio_art | Rejects non-audio album-art input |
 | N/A | /tests/Music | test.m3u | test_audio_metadata | Mutagen metadata type returns None |
 | N/A | /tests/Music | test.m3u | test_audio_metadata | Rejects invalid embedded-art extension |
@@ -113,5 +123,5 @@ Root-level fixtures in `tests/` are also listed when referenced by a test.<br>
 | N/A | /tests/Music | test.m3u | test_audio_playlist | Playlist path updates |
 | N/A | /tests/Music | test.m3u | test_directory_processing | Preserves playlist during album cleanup |
 | N/A | /tests/Music | test.m3u | test_directory_processing | Removes matching playlist file |
-| N/A | /tests/Music | test.m3u | test_subprocess_utilities | FFprobe rejects playlist input |
 | N/A | /tests/Music | test.m3u | test_subprocess_utilities | FFmpeg rejects playlist input |
+| N/A | /tests/Music | test.m3u | test_subprocess_utilities | FFprobe rejects playlist input |

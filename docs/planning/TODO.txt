@@ -6,19 +6,9 @@ NOT DISPOSED:
       a) get detailed description to show immediately underneath brief description instead of linked by "More..."
     TODO
 
-    2) find if can have parameters on same line instead of multiple lines
-    TODO
-
-    3) Incorporate markdown files as doxygen landing page content source
-    IN PROGRESS
-
   Markdown related:
 
-    1) add an environment markdown
-      a) refer to esp32 scale project's environment markdown
-    IN PROGRESS
-
-    2) document external library launch json - why & how to use it
+    1) document external library launch json - why & how to use it
     TODO
 
   Logic related:
@@ -52,6 +42,18 @@ NOT DISPOSED:
     TODO
 
     9) consolidate normalize-*-filename-walk functions to 1 function
+    TODO
+
+    10) I don't like how main errors with absolutely no indication of cause
+      a) I still want logging, but fail to see what the purpose return 1 and return 0 at end of main.main(args) does
+    TODO
+
+    11) function that uses output of 7
+      a) all file type must have 1 metadata encoding format
+      b) if an mp3 file has ID3v2.3, the ID3v2.3 is untouched
+        i) any other ID3 version is wiped out
+      c) non mp3 files keep their native format
+        i) non mp3 without native format are left alone
     TODO
 
 DISPOSED:
@@ -185,7 +187,7 @@ DISPOSED:
   13) look into adding GENERATE_REQUIREMENTS tag
   DECLINED - not worth the effort
 
-  1) markdown files
+  14) markdown files
     a) consolidate the "directory" markdowns into a workflow.md
     b) finish testing markdown                                  COMPLETED
     c) clean up markdown errors in doxygen_usage.md             COMPLETED
@@ -193,4 +195,14 @@ DISPOSED:
     d) update doxygen_usage.md                                  COMPLETED
     e) if keeping templating, complete template md file         COMPLETED
     f) minor clarification updates to scripting md              COMPLETED
+  COMPLETED
+
+  15) find if can have parameters on same line instead of multiple lines
+  COMPLETED
+
+  16) Incorporate markdown files as doxygen landing page content source
+  COMPLETED
+
+  17) add an environment markdown
+    a) refer to esp32 scale project's environment markdown
   COMPLETED

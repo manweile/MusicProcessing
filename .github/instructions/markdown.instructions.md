@@ -1,5 +1,5 @@
 ---
-applyTo: "README.md,documents/**/*.md"
+applyTo: "README.md,docs/md_files/*.md"
 description: "Use when creating or editing repository documentation outside GitHub customization files."
 ---
 

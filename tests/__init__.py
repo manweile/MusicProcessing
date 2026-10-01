@@ -17,7 +17,7 @@
 import os                                                   # for operating-system path operations
 
 # Local Module Constants
-from src import MUSIC_TLD                                   # for the test music top-level directory
+from src import MUSIC_TLD                                   # for the test music top level directory
 
 ## @var TESTS_PATH
 # @brief Test-fixture directory path.
@@ -25,7 +25,7 @@ from src import MUSIC_TLD                                   # for the test music
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 
 ## @var TESTS_TLD
-# @brief Test music top-level directory path.
+# @brief Test music top level directory path.
 # @details Provides the root directory for audio test fixtures.
 TESTS_TLD = os.path.join(TESTS_PATH, MUSIC_TLD)
 

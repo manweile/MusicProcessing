@@ -1,43 +1,123 @@
+<!-- @page project_environment Project Environment -->
 <!-- markdownlint-disable MD033 MD041 -->
 
-# Environment
+# Project Environment
 
 ## Purpose
 
-This project will use VS Code and ESP-IDF toolchain.
+This project will use VS Code and Python, Ffmpeg and Mutagen.
 
-I use VS Code because it's the devil I know and like. I have used it professionally and privately for 10 years and counting.
+I use VS Code because it's the devil I know and like. I have used it professionally and privately for 10 years and counting.<br>
+Python is a great compromise between ease of use and capability. I have also used it professionally and privately for 10 years and counting.<br>
+Ffmpeg/Ffprobe/Mutagen are the troika this project uses for the heavy lifting.
 
-- Visual Studio is overkill, extensions not as good
-- Eclipse GUI is all around too finicky (set up, usage, etc.)
+## Git For Windows
 
-## Python Install
+[Git for Windows](https://gitforwindows.org/) offers a lightweight, native set of tools, bringing the full feature set of the Git SCM to Windows.<br>
+Provides appropriate user interfaces for experienced Git users and novices alike.
 
-### Install System Prerequisites
+## Python
 
-- [Python](https://www.python.org/downloads/windows/)
-- [Git for Windows](https://github.com/git-for-windows/git/releases/latest)
+[Python](https://www.python.org/) a high-level, general-purpose, interpreted programming language.<br>
+Renowned for its clear English like syntax and strict reliance on readability.<br>
+You can find full documentation at the link.
+
+### Required Python Modules
+
+This project **requires**  the following Python Modules:
+
+#### external library dependencies
+
+- colorama==0.4.6                                           # dependency of tqdm
+- termcolor===2.3.0                                         # dependency of yaspin
+
+##### required project external libraries
+
+- mutagen==1.47.0                                           # to read, write, and manipulate audio metadata across many file formats
+- pathvalidate==3.2.3                                       # to sanitize and validate filenames and file paths across different operating systems
+- tqdm==4.67.1                                              # to add customizable progress bars to loops, iterables, and long-running tasks
+- yaspin==3.1.0                                             # to create animated loading spinners in the terminal
+
+Install all of them via pip, eg:
+
+```powershell
+pip install mutagen==1.47.0
+```
+
+or
+
+```powershell
+python -m pip install mutagen==1.47.0
+```
+
+Save the required modules in `requirements.txt` at root level. The Github CI will need them.
+
+## FFMPEG & FFPROBE
+
+[FFmpeg](https://www.ffmpeg.org/about.html) is the leading free & open source multimedia framework.<br>
+It is able to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.<br>
+It supports the most obscure ancient formats up to the cutting edge.<br>
+FFmpeg compiles and runs across Linux, Mac OS X, Microsoft Windows, the BSDs, Solaris, etc.
+
+### FFMPEG
+
+The "Engine" — used to manipulate, edit, and convert media files.
+
+### FFPROBE
+
+The "Inspector" — used to look inside media files and gather technical data.
 
 ## VS Code Setup
 
-### Required Extensions
+[VS Code](https://code.visualstudio.com/). Follow the links.
 
-- ipsum lorem
+### Extensions
+
+To export a list of extensions in use:
+
+```powershell
+code --list-extensions --show-versions > D:\MusicProcessing\docs\extensions\extensions.txt
+```
+
+The ones I regard as required or essential:
+
+- pretty much anything Python related by Microsoft
+- pretty much anything Github related from Github
+- Doxygen & GraphViz related
+- various file type viewers/support
+  - Word doc/ODT
+  - Markdown
+  - Pdf's
+  - Spreadsheets
+  - YAML
+- Test Adapters & Explorer UI's
+
+The heuristic I use for selection is:
+
+- does it meet my needs
+- how many downloads does it have
+- is it currently supported
 
 ### LAUNCH json
 
-launch.json ipsum lorem
+Launch.json is a configuration file used to set up and customize debugging and execution environment details for your applications.<br>
+It is located in the `.vscode`folder at the root of your project workspace.<br>
+Configures how to run, debug, or interact with your code when you press the F5 key or hit the "Run and Debug" button.<br>
+By default, VS Code tries to automatically run the file you currently have open.<br>
+However, many projects require specific parameters to execute correctly. You use launch.json when your application needs:
+
+- A specific entry point (e.g., always starting from a main.py, no matter which file you are currently editing).
+  - with or without command-line arguments passed into the program.
+- A currently open file
 
 ### TASKS json
 
-tasks.json is a configuration file used to automate repetitive development workflows and integrate external tools directly into the editor.
+Tasks.json is a configuration file used to automate repetitive development workflows and integrate external tools directly into the editor.<br>
+It is located in the `.vscode`folder at the root of your project workspace.<br>
+Instead of manually opening a terminal and re-typing commands, you can trigger them with a single keyboard shortcut or from drop down menus.
 
-- Documenting
-  - Create Doxygen Documentation: runs the Doxygen command to generate documentation based on the configuration specified in the Doxyfile
-  - Open Doxygen Documentation: opens the generated Doxygen documentation in Firefox
-  - Generate Program Flow Image: runs Graphviz 'dot' command on repository's flow.dot file, writes program_flow.png into same dot_files directory.
-- Terminal
-  - Open Windows Terminal PowerShell: opens a new instance of Windows Terminal (wt.exe) with a PowerShell session, starting in the workspace folder.
+- Running Tests: Executing test suites like pytest and automatically updating local coverage reports.
+- Debugging Glue: paired with launch.json (via the preLaunchTask setting) to automatically build your app right before the debugger launches.
 
 ### Github Instructions
 
@@ -57,21 +137,16 @@ They act as the "instruction manuals" for GitHub Actions, telling GitHub exactly
 how to automatically build, test, package, or deploy your project.<br>
 These files must be saved in the `.github/workflows/` directory of your repository to work.
 
-## External Tools
+### Github Local Actions
 
-### FFMPEG
+I regard  Github local Actions as an essential external tool.<br>
+It allows you to quickly and efficiently run your workflows locally,
+bypassing the hassle of committing and pushing changes every time you need to test a workflow<br>
 
-ffmpeg and ffprobe ipsum lorem
+#### Requirements
 
-### Doxygen
+- [Github Local Actions](https://marketplace.visualstudio.com/items?itemName=SanjulaGanepola.github-local-actions)
+- [nektos/act](https://github.com/nektos/act)
+- [Docker](https://docs.docker.com/engine/)
 
-Doxygen is a free, open-source tool that builds organized project documentation straight from comments written inside source code.<br>
-Source and documentation: [Doxygen](https://www.doxygen.nl)
-
-### Graphviz
-
-Graphviz is open source graph visualization software.<br>
-Graph visualization is a way of representing structural information as diagrams of abstract graphs and networks.<br>
-It has important applications in networking, bioinformatics, software engineering, database and web design, machine learning,
-and in visual interfaces for other technical domains.<br>
-Source and documentation: [Graphviz](https://graphviz.org/)
+I'm not going to go into the ins and out of installing nektos/act and Docker here; you can find the documentation by following the links.

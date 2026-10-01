@@ -1,6 +1,11 @@
+<!-- @page example_scripts Example Scripts -->
 <!-- markdownlint-disable MD033 -->
 
-# Run Scripts in docs/scripts
+# Example Scripts
+
+Example scripts are research into how to code something.
+
+## Run Scripts in docs/scripts
 
 This guide describes three ways to make project modules importable when running a script in `docs/scripts`.<br>
 Scripts with an `if __name__ == "__main__":` guard can be run directly or with `python -m`.<br>
@@ -8,7 +13,7 @@ The guard controls execution, while these approaches control whether project imp
 
 Scripts without the guard can also be run directly or with `python -m`, but their top-level statements run when imported.<br>
 
-## Run script as a module
+### Run script as a module
 
 Use this method when the script can be addressed as a Python module.<br>
 Running from the project root adds that directory to Python's import lookup for the current process,
@@ -31,7 +36,7 @@ so no code changes or `PYTHONPATH` configuration are needed.
 
 3. Add `-i` after `python` only when an interactive Python prompt should remain open after the script finishes.
 
-## Add project root to sys.path
+### Add project root to sys.path
 
 Useful for a one-off script that must be run directly, when running it as a module is not practical.<br>
 This changes the import path only for the current Python process and also works when launching the script through the VS Code debugger.
@@ -50,14 +55,14 @@ This changes the import path only for the current Python process and also works 
 
     The code searches upward through the repository tree until it finds the project directory containing `src`.
 
-## Modify PYTHONPATH
+### Modify PYTHONPATH
 
 Modifying the PYTHONPATH adds source directories to import lookup,
 allowing Python to import modules and packages from those directories regardless of the script’s working directory.<br>
 This is convenient for running scripts from nested or sibling directories that need to import project modules,
 such as src without changing each script or its working directory.
 
-### Ubuntu
+#### Ubuntu
 
 1. Open ~/.bashrc for editing
 2. Add to **bottom** of ~/.bashrc:
@@ -73,7 +78,7 @@ such as src without changing each script or its working directory.
     echo "$PYTHONPATH"
     ```
 
-### Windows
+#### Windows
 
 1. Press `Windows+R`, enter `sysdm.cpl`, and press Enter.
 2. Select **Advanced** > **Environment Variables**.

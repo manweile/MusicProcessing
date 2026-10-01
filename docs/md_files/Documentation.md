@@ -1,6 +1,7 @@
+<!-- @page api_documentation API Documentation -->
 <!-- markdownlint-disable MD033 -->
 
-# Documentation
+# API Documentation
 
 API documentation provides a single source of truth and can give you rick extraction & visualization features.
 
@@ -180,11 +181,15 @@ WARN_LOGFILE           = D:/MusicProcessing/doxygen.log
 ```text
 # Specifies the files and/or directories that contain documented source files, and if the input contains directories, can use FILE_PATTERNS.
 # Need src & tests directories for API documentation, md files to supply html content and links to work, and the dox file for custom landing page.
-# This project displays documented py files, and uses md files via the dox file.
+# This project displays documented py files, and uses md files.
 INPUT                  = D:/MusicProcessing/src \
                          D:/MusicProcessing/tests \
                          D:/MusicProcessing/main.py \
-                         D:/MusicProcessing/index.dox
+                         D:/MusicProcessing/README.md \
+                         D:/MusicProcessing/docs/md_files/Environment.md \
+                         D:/MusicProcessing/docs/md_files/Examples.md \
+                         D:/MusicProcessing/docs/md_files/Documentation.md \
+                         D:/MusicProcessing/docs/md_files/Testing.md
 
 # Specify whether or not subdirectories should be searched for input files as well, oF course we want everything
 RECURSIVE              = YES
@@ -334,30 +339,251 @@ Run `doxygen -x Doxyfile` to list the configuration changes from Doxygen default
 
 The easiest way to have a main page is to create a separate file for [custom pages](https://www.doxygen.nl/manual/additional.html#custom_pages).
 
-Doxygen requires this custom page source file type to be:
+Doxygen requires this custom page source file type to be one of dox, txt (files to have comments in C/C++ style),
+and md (files to have comments files as Markdown)
 
-- .dox
-- .txt
-  - files to have comments in C/C++ style
-- .md
-  - files to have comments files as Markdown
+This is NOT what I want.<br>
+What I do want is:
+
+- have my markdown files supply content for the Doxygen landing page
+- have my markdown files still readable as markdown on Github
+
+The secret, according to Google, is using invisible HTML comments or standard Markdown headers that both systems process elegantly.
+
+### Steps
+
+1. in root README.md, as first line, `<!-- @mainpage Music Processing Project -->`. Lets Doxygen know this is the homepage.
+2. to link the sub-pages, add `* [MD Title](relpath/to/markdown.md) <!-- @subpage md_title -->` to create a list.
+   1. add as many as you have sub-pages you want in Doxygen output.
+   2. the `* [MD Title](path/to/markdown.md)` is standard markdown hyperlink to enable native file navigation on GitHub
+   3. the `<!-- @subpage md_title -->` is embedded Doxygen `@subpage` command enclosed in HTML comment to structure the hosted sidebar tree hierarchy.
+   4. GitHub renders the visible link text while ignoring the HTML comment,
+   whereas the Doxygen compiler parses the comment tags to nest the target page hierarchically
+3. For every sub-page markdown, as the first line, add matching Doxygen ID: `<!-- @page md_title MD Title -->`
+   1. where `md_title` matches the `@subpage` ID and `MD Title` matches the `[MD Title]` hyperlink title from the sub-page link in README.md footer.
+4. Finalize Doxyfile Settings
+   1. Include README.md and sub-page markdown files in INPUT TAG
+   2. Point Doxygen to your README as the base index: `USE_MDFILE_AS_MAINPAGE = PATH/TO/README.md`
+   3. Ensure native markdown layout parsing is on: `MARKDOWN_SUPPORT       = YES`
+5.
 
 ## Documenting the Code
 
 I prefer using [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonblocks) &<br>
 doxygen [javadoc style](https://en.wikipedia.org/wiki/Javadoc) `@` [special commands](https://doxygen.nl/manual/commands.html).<br>
-Eg.
+
+### Package File Example
 
 ```python
 '''
-@brief Wrapper for function that generates a csv containing full file path for an extension
+@package src.audio_info
+@file src/audio_info/__init__.py
+@author Gerald Manweiler
 
-@details If start_path is not supplied, uses the class top level directory path.<br>
-If file extension is not supplied, uses the preset audio types module list.
+@brief Package for audio information processing.
 
-@param file_ext {str} The file extension want file paths for.
-@param start_path {str} The starting point of the directory walk.
+@details Exposes audio-information classes through a single package interface.
+
+@version 1.0.0
+@date 2026-09-21
+
+@copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
+
+# Local Module Classes
+from src.audio_info.audio_art import AudioArt               # Exposes audio artwork operations.
+from src.audio_info.audio_metadata import AudioMetadata     # Exposes audio metadata operations.
+from src.audio_info.audio_playlist import AudioPlaylist     # Exposes audio playlist operations.
+from src.audio_info.audio_utilities import AudioUtilities   # Exposes audio utility operations.
+
+## @var __all__
+# @brief Exposes class for importing by other modules.
+# @details  In modules needing the class, add `from src.audio_info.audio_art import AudioArt`
+# @details  In modules needing the class, add `from src.audio_info.audio_metadata import AudioMetadata`
+# @details  In modules needing the class, add `from src.audio_info.audio_playlist import AudioPlaylist`
+# @details  In modules needing the class, add `from src.audio_info.audio_utilities import AudioUtilities`
+__all__ = [
+    "AudioArt",
+    "AudioMetadata",
+    "AudioPlaylist",
+    "AudioUtilities"
+]
 ```
 
-See the [Python Instructions markdown](../../.github/instructions/python.instructions.md) for more details.
+### Module File Example
+
+```python
+'''
+@module errors
+@file errors.py
+@author Gerald Manweiler
+
+@brief Defines the errors module
+
+@details Defines the custom exceptions used in the MusicProcessing module.
+
+@note This implementation does not require garbage collection or logging functionality.
+
+@version 1.0.0
+@date 2024-06-05
+
+@copyright @showdate "%Y" GWN Software. All rights reserved.
+'''
+
+
+class MusicProcessingException(Exception):
+    '''
+    @brief Base class for any MusicProcessing Exception
+
+    @details Base class for all custom exceptions in the MusicProcessing module.
+    '''
+
+    def __init__(self, message="A MusicProcessingException occurred"):
+        '''
+        @brief Initializes the MusicProcessingException class.
+
+        @details Initializes the MusicProcessingException with the provided error message.
+
+        @param message {str} The error message.
+        '''
+
+        # logic ...
+```
+
+### Class File Example
+
+```python
+'''
+@class AudioPlaylist
+@file audio_playlist.py
+@author Gerald Manweiler
+
+@brief Defines the audio playlist class.
+
+@details Defines methods for reading and updating M3U playlists for the MusicProcessing project.
+
+@version 1.0.0
+@date 2026-09-22
+
+@copyright @showdate "%Y" GWN Software. All rights reserved.
+'''
+
+# import statements ...
+
+# module level variables & constants
+
+## @var logger
+# @brief Logger instance for the module.
+# @details Sets the logger name to the current module name.
+logger = logging.getLogger(__name__)
+
+# ...
+
+## @var directory
+# @brief Directory processing instance.
+# @details Provides directory processing functionality.
+directory = DirectoryProcessing()
+
+## @var DELIMITER
+# @brief M3U field delimiter.
+# @details Separates duration and file name values in EXTINF playlist entries.
+DELIMITER = ","
+
+
+class AudioPlaylist():
+    '''
+    @brief Defines the audio playlist processing class.
+
+    @details Provides methods that update M3U playlist entries for the project's music collection.
+    '''
+
+    def __init__(self) -> None:
+        '''
+        @brief Initializes the AudioPlaylist class.
+
+        @details Initializes an AudioPlaylist instance without instance-specific state.
+        '''
+
+        pass
+
+
+    def get_audio_name(self, line: str) -> str:
+        '''
+        @brief Gets an audio file name from an EXTINF line.
+
+        @details Converts WMA and M4A file extensions to MP3.<br>
+        @details Parses EXTINF entries in the form `#EXTINF:N,<name>.<ext>`, where N is a song duration, -1, or 0.<br>
+        @details Supports MP3, M4A, and WMA file extensions.
+
+        @param line {str} Line of text read from an M3U file containing an EXTINF tag.
+        @return audio {str} Audio file name with extension.
+
+        @exception PlaylistError Indicates an error occurred in playlist class.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        # logic ...
+```
+
+### Main File Example
+
+```python
+#!/usr/bin/env python3
+'''
+@file main.py
+@author Gerald Manweiler
+
+@brief Music Processing project executable script.
+
+@details Run this script with appropriate input arguments to process audio files.
+
+@version 1.0.0
+@date 2024-06-05
+
+@copyright @showdate "%Y" GWN Software. All rights reserved.
+'''
+
+# imports ...
+
+# module level variables & constants ...
+
+# custom class(s) ...
+
+# standalone defs ...
+
+## @name Application Entry Point
+# @{
+def main(args) -> int:
+    '''
+    @brief Module entry point.
+
+    @details Takes command line arguments and executes per arguments.
+
+    @dotfile flow.dot "Application startup and task flow"
+
+    @param args {argparse.Namespace} Arguments for execution.
+
+    @return exit_code {int} Process exit code for the requested subcommand.
+
+    @exception {NotImplementedError} Indicates a subcommand has not been implemented.
+    @exception {Exception} Handles unforeseen errors.
+    '''
+
+    # logic ...
+
+  ## @}
+
+
+  if __name__ == "__main__":
+    '''
+    @brief Top level script environment entry point.
+
+    @details Sets up argument parsing and subcommand handling.
+
+    @note Any input file paths that contain spaces must be enclosed in quotes.
+
+    @exception {Exception} Handles unforeseen errors.
+    '''
+
+    # logic ...
+```

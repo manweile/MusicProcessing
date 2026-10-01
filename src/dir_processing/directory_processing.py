@@ -34,7 +34,7 @@ from src import CSV_DIR                                     # for CSV output dir
 from src import CSV_EXT                                     # for CSV file extension
 from src import M4A_EXT                                     # for M4A file extension
 from src import MP3_EXT                                     # for MP3 file extension
-from src import MUSIC_TLD                                   # for music top-level directory name
+from src import MUSIC_TLD                                   # for music top level directory name
 from src import PLAYLIST_EXTS                               # for supported playlist extensions
 from src import RESULT_DIR                                  # for text result directory name
 from src import RESULT_EXT                                  # for text result extension
@@ -499,7 +499,7 @@ class DirectoryProcessing():
         '''
         @brief Removes file matching specified pattern.
 
-        @details Removes files matching the specified pattern beneath the top-level directory.<br>
+        @details Removes files matching the specified pattern beneath the top level directory.<br>
         Refuses to delete from a file-system root or mount point.<br>
         Refuses the broad *.* wildcard pattern.
 

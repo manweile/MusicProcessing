@@ -126,7 +126,7 @@ class AudioPlaylist():
 
         @details Updates relative paths in an M3U playlist.<br>
         Creates the updated playlist in the generated-files directory.<br>
-        Expects the updated playlist to be moved to the music top-level directory.
+        Expects the updated playlist to be moved to the music top level directory.
 
         @note see https://en.wikipedia.org/wiki/M3U<br>
         My playlists are relative pathed (unlike windows pls files, which are absolute pathed).<br>
@@ -200,7 +200,7 @@ class AudioPlaylist():
         '''
         @brief Updates playlists relative pathing.
 
-        @details Finds M3U playlists beneath the top-level directory and updates their relative paths.
+        @details Finds M3U playlists beneath the top level directory and updates their relative paths.
 
         @param tld_path {str} The top level directory where playlist and music files are located.
 
