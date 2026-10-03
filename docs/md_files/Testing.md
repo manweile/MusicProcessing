@@ -1,7 +1,6 @@
-<!-- @page unit_testing Unit Testing -->
 <!-- markdownlint-disable MD033 -->
 
-# Unit Testing
+# Unit Testing {#unit_testing}
 
 Unit tests are what keep you sane!<br>
 Develop them early, and run them often.<br>

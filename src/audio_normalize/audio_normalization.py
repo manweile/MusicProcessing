@@ -203,6 +203,7 @@ class AudioNormalization():
 
         @param file_path {str} The full file path for mp3 audio file.
         @param show_spinner {bool} Whether to display a progress spinner.
+        @return {None} This function does not return any value.
 
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -528,6 +529,7 @@ class AudioNormalization():
         @param tld_path {str} The top level directory path that contains all the music files.
         @param norm_type {str} The type of normalization to perform.
         @param show_spinner {bool} Whether to display a progress spinner.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -587,6 +589,7 @@ class AudioNormalization():
 
         @param file_path {str} The full file path for mp3 audio file.
         @param show_spinner {bool} Whether to display a progress spinner.
+        @return {None} This function does not return any value.
 
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -705,6 +708,7 @@ class AudioNormalization():
 
         @param file_path {str} The full file path for mp3 audio file.
         @param show_spinner {bool} Whether to display a progress spinner.
+        @return {None} This function does not return any value.
 
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.

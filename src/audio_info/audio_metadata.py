@@ -345,6 +345,7 @@ class AudioMetadata():
 
         @param file_path {str} The full path to the supported audio file.
         @param artist_genre {str} The replacement genre value.
+        @return {None} This function does not return any value.
 
         @exception MetadataTypeError Indicates the loaded file type is not supported.
         @exception MutagenError A custom exception in Mutagen occurred
@@ -455,6 +456,7 @@ class AudioMetadata():
 
         @param file_path {str} The path for audio file to be converted.
         @param show_spinner {bool} Show spinner flag.
+        @return {None} This function does not return any value.
 
         @exception MetadataTypeError Indicates a non-standard metadata type was encountered.
         @exception MusicProcessingError A generic music processing error occurred.
@@ -580,6 +582,7 @@ class AudioMetadata():
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
         @param show_spinner {bool} Optional, whether to display a spinner during conversion. Defaults to True.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -620,7 +623,7 @@ class AudioMetadata():
 
     def create_album_dirs(self, start_path: str) -> None:
         r'''
-        @brief Creates album sub-directories in artist directories.
+        @brief Creates 2nd level album sub-directories in 1st level artist directories.
 
         @details Creates the album sub directory for the artist if needed.<br>
         Calling functions MUST verify valid start path.<br>
@@ -635,6 +638,7 @@ class AudioMetadata():
         Refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename<br>
 
         @param start_path {str} The top level directory holding music files.
+        @return {None} This function does not return any value.
 
         @exception ValidationError A pathlib module validation error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -900,6 +904,7 @@ class AudioMetadata():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} The audio file pattern we want to get tags from.
+        @return {None} This function does not return any value.
 
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -1047,6 +1052,7 @@ class AudioMetadata():
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
         @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1106,6 +1112,7 @@ class AudioMetadata():
         @details Walks from starting path and saves set of unique metadata keys found by ffprobe.
 
         @param file_path {str} The starting point of the directory walk.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1476,6 +1483,7 @@ class AudioMetadata():
         A csv report named after the function (normalize_flac_filename.csv) is created after the file is renamed.
 
         @param file_path {str} The path for the FLAC file to rename.
+        @return {None} This function does not return any value.
 
         @exception ValueError Indicates invalid input or missing required metadata.
         @exception ValidationError Indicates the created filename is invalid.
@@ -1551,6 +1559,7 @@ class AudioMetadata():
         A CSV report named after the function (normalize_mp3_filename.csv) is created after the file is renamed.
 
         @param file_path {str} The path for the MP3 file to rename.
+        @return {None} This function does not return any value.
 
         @exception ValueError Indicates invalid input or missing required metadata.
         @exception ValidationError Indicates the created filename is invalid.
@@ -1628,6 +1637,7 @@ class AudioMetadata():
         A CSV report named after the function (normalize_mp4_filename.csv) is created after the file is renamed.
 
         @param file_path {str} The path for the M4A file to rename.
+        @return {None} This function does not return any value.
 
         @exception ValueError Indicates invalid input or missing required metadata.
         @exception ValidationError Indicates the created filename is invalid.
@@ -1701,6 +1711,7 @@ class AudioMetadata():
         A CSV report named after the function (normalize_wma_filename.csv) is created after the file is renamed.
 
         @param file_path {str} The path for the WMA file to rename.
+        @return {None} This function does not return any value.
 
         @exception ValueError Indicates invalid input or missing required metadata.
         @exception ValidationError Indicates the created filename is invalid.
@@ -1773,6 +1784,7 @@ class AudioMetadata():
         @details Calling functions MUST verify valid start path.
 
         @param start_path {str} The starting point of the directory walk.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1805,6 +1817,7 @@ class AudioMetadata():
         @details Calling functions MUST verify valid start path.
 
         @param start_path {str} The starting point of the directory walk.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1837,6 +1850,7 @@ class AudioMetadata():
         @details Calling functions MUST verify valid start path.
 
         @param start_path {str} The starting point of the directory walk.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1869,6 +1883,7 @@ class AudioMetadata():
         @details Calling functions MUST verify valid start path.
 
         @param start_path {str} The starting point of the directory walk.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''

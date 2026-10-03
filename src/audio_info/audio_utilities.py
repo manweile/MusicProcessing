@@ -91,6 +91,7 @@ class AudioUtilities():
         @details Walks the top level directory and records volume-normalization information for each MP3 file.
 
         @param tld_path {str} The top level directory containing music files.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -174,6 +175,7 @@ class AudioUtilities():
         @param tld_path {str} The top level directory path that contains all the music files.
         @param norm_type {str} The type of normalization to perform.
         @param show_spinner {bool} Whether to display a progress spinner.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -193,6 +195,7 @@ class AudioUtilities():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -209,6 +212,7 @@ class AudioUtilities():
         @details Copies a matching generated AlbumArt JPEG into the album directory when it is available.
 
         @param input_path {str} The full path to album directory.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -230,6 +234,7 @@ class AudioUtilities():
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
         @param show_spinner {bool} Whether to display a progress spinner.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -248,6 +253,7 @@ class AudioUtilities():
         @details Creates a CSV file of audio paths, album metadata values, and sanitized album directory names.
 
         @param start_path {str} The tld holding music files.
+        @return {None} This function does not return any value.
 
         @exception ValidationError A pathlib module validation error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -265,6 +271,7 @@ class AudioUtilities():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
+        @return {None} This function does not return any value.
 
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -284,6 +291,7 @@ class AudioUtilities():
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
         @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -299,6 +307,7 @@ class AudioUtilities():
         @details Walks from starting path and saves set of unique metadata keys found by ffprobe.
 
         @param file_path {str} The starting point of the directory walk.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -317,6 +326,7 @@ class AudioUtilities():
         @details Finds playlists under the top level directory and updates their relative paths.
 
         @param tld_path {str} The top level directory where playlist and music files are located.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -337,6 +347,7 @@ class AudioUtilities():
         @details Includes full audio-file paths and file extensions.
 
         @param start_path {str} Optional, the starting point of the directory walk.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -354,6 +365,7 @@ class AudioUtilities():
 
         @param file_ext {str} Optional file extension without a period prefix.
         @param start_path {str} Optional starting point of the directory walk.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -370,6 +382,7 @@ class AudioUtilities():
         @details Requires the music top level directory when no start path is provided.
 
         @param start_path {str} The starting point of the directory walk.
+        @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -388,6 +401,7 @@ class AudioUtilities():
 
         @param start_path {str} Optional, the starting point of the directory walk.
         @param file_pattern {str} The file pattern we want to delete.
+        @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.

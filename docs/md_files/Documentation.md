@@ -1,7 +1,6 @@
-<!-- @page api_documentation API Documentation -->
 <!-- markdownlint-disable MD033 -->
 
-# API Documentation
+# API Documentation {#api_documentation}
 
 API documentation provides a single source of truth and can give you rick extraction & visualization features.
 
@@ -121,10 +120,6 @@ MARKDOWN_ID_STYLE      = GITHUB
 ### Build Related Configuration Options
 
 ```text
-# Doxygen will assume all entities in documentation are documented, even if no documentation was available.
-# This will also disable the warnings about undocumented members that are normally produced when WARNINGS is set to YES.
-EXTRACT_ALL            = YES
-
 # All private members of a class will be included in the documentation.
 EXTRACT_PRIVATE        = YES
 
@@ -141,6 +136,10 @@ EXTRACT_STATIC         = YES
 # Anonymous namespaces will be called 'anonymous_namespace{file}', where file is base name of script containing the anonymous namespace.
 EXTRACT_ANON_NSPACES   = YES
 
+# Doxygen will hide all undocumented members inside documented classes or files.
+# This option requires EXTRACT_ALL to be NO (the default value) to have effect.
+HIDE_UNDOC_MEMBERS     = YES
+
 # Doxygen will sort the brief descriptions of file, namespace and class members alphabetically by member name.
 SORT_BRIEF_DOCS        = YES
 
@@ -152,6 +151,10 @@ SORT_MEMBERS_CTORS_1ST = YES
 # This will also cause duplicate entries when yes, as @test is present in the test files;
 # Possibly a bug?
 GENERATE_TESTLIST      = NO
+
+# Set tag to NO to disable the list of files generated at the bottom of the documentation of classes and structs.
+# Because we are using md files for sub-pages, need this to be NO, else get get an empty md_file directory page in html output.
+SHOW_USED_FILES        = NO
 ```
 
 ### Warning and Progress Message Configuration Options
@@ -180,7 +183,7 @@ WARN_LOGFILE           = D:/MusicProcessing/doxygen.log
 
 ```text
 # Specifies the files and/or directories that contain documented source files, and if the input contains directories, can use FILE_PATTERNS.
-# Need src & tests directories for API documentation, md files to supply html content and links to work, and the dox file for custom landing page.
+# Need src and tests directories & main.py for API documentation, md files to supply landing page content.
 # This project displays documented py files, and uses md files.
 INPUT                  = D:/MusicProcessing/src \
                          D:/MusicProcessing/tests \
@@ -189,7 +192,12 @@ INPUT                  = D:/MusicProcessing/src \
                          D:/MusicProcessing/docs/md_files/Environment.md \
                          D:/MusicProcessing/docs/md_files/Examples.md \
                          D:/MusicProcessing/docs/md_files/Documentation.md \
-                         D:/MusicProcessing/docs/md_files/Testing.md
+                         D:/MusicProcessing/docs/md_files/Testing.md \
+                         D:/MusicProcessing/docs/md_files/Workflow.md
+
+# The default file patterns list is much longer, just trimming it down to what the project actually uses so there is no oops.
+FILE_PATTERNS          = *.py \
+                         *.md
 
 # Specify whether or not subdirectories should be searched for input files as well, oF course we want everything
 RECURSIVE              = YES
@@ -216,7 +224,7 @@ Create the css file in the repository root. Specify the css file location in `Do
 
 ```text
 # Specify additional user-defined cascading style sheets that are included after the standard style sheets created by Doxygen.
-# Requires that the tag GENERATE_HTML is set to YES (default).
+# Requires that the tag GENERATE_HTML is set to YES (the default value).
 HTML_EXTRA_STYLESHEET  = D:/MusicProcessing/doxygen-custom.css
 
 # Full control over the layout of the generated HTML pages may require disabling the index.

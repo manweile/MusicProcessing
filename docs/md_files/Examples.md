@@ -1,7 +1,6 @@
-<!-- @page example_scripts Example Scripts -->
 <!-- markdownlint-disable MD033 -->
 
-# Example Scripts
+# Example Scripts {#example_scripts}
 
 Example scripts are research into how to code something.
 

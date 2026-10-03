@@ -91,6 +91,7 @@ class DirectoryProcessing():
         @param text_mode {str} Optional file opening mode.
         @param header_row {list} Optional row naming the CSV fields.
         @param sort_col {int} Optional, the column to sort data on.
+        @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -140,6 +141,7 @@ class DirectoryProcessing():
         @param txt_filename {str} Base filename without the text-file extension.
         @param data {list} Items to write as individual text-file lines.
         @param txt_dir {str} Optional path for txt file.
+        @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -175,6 +177,7 @@ class DirectoryProcessing():
         Includes each audio file's full path and extension.
 
         @param start_path {str} The starting point of the directory walk.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -285,6 +288,7 @@ class DirectoryProcessing():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional file extension pattern for matching file paths.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -362,6 +366,7 @@ class DirectoryProcessing():
         @details Creates the directory and any missing parent directories when needed.
 
         @param dir_path {str} The path to create.
+        @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -448,6 +453,7 @@ class DirectoryProcessing():
         @details Removes empty second-level album directories within artist directories.
 
         @param start_path {str} The starting point of the directory walk.
+        @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -505,6 +511,7 @@ class DirectoryProcessing():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} The file pattern we want to delete.
+        @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -559,6 +566,7 @@ class DirectoryProcessing():
         @details Removes files matching the items in hard-coded list of files from the top level directory.<br>
 
         @param start_path {str} The starting point of the directory walk.
+        @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.

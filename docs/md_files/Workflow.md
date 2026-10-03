@@ -1,35 +1,186 @@
-<!-- @page project_workflow API Documentation -->
 <!-- markdownlint-disable MD033 -->
 
-# Project Workflow
+# Project Workflow {#project_workflow}
 
-The whole point of this project is normalizing an audio collection.
+The whole point of this project is normalizing an audio collection.<br>
+That means a workflow, using the external tools and project functions.
 
-## Project Tools
+I use these 5 working directories for the processing workflow.
 
-The project has a whole raft of scripts - the tools needed for the workflow.
+## Source
 
-### Art Tools
+The original audio, playlist, and occasionally artwork files.<br>
+These are the source of truth that start the workflow, and as such, they **DO NOT GET MODIFIED**.
+
+The audio files are in flac, mp3, m4a, wma, and m3u formats.<br>
+The audio metadata (text and art) are in APE, ASF, ID3v1, ID3v2.2, ID3v2.3, ID3v2.4, MP4, and Vorbis formats.<br>
+The audio metadata is NOT guaranteed complete or accurate.
+
+Copy the originals, directory structure intact, to `Source`.<br>
+Use whatever floats your boat to move the files - but be careful to **NOT** set read-only permissions.
+
+## Prepped
+
+This where the real work begins.<br>
+I like to work alphabetically - I start with the lowest artist, eg. 3 Doors Down, followed by Abba, BTO, etc.<br>
+For each artist, copy ALL of that artists albums & files to `Prepped`
+
+A word about metadata:<br>
+At this point, you absolutely *could* ensure all of your metadata is accurate.<br>
+But bear in mind how much work than could be.<br>
+For right now, I would suggest only 3 fields need to be accurate: artist, album name and song title.
+
+### Directory Tree
+
+Now your are looking at normalizing the artist album directory structure.<br>
+Depending on the organization of your sources, you could be doing a little, or a lot.<br>
+The directory tree can be a real pain, dependent on your source quality.
+
+Presuming your sources have good artist names is a big chunk of the work.<br>
+Album directories is the next hurdle.
+
+Album directories should almost always match album metadata - the exception being when the metadata has invalid for the OS characters.<br>
+I use the Windows invalid character set - it's more restrictive and therefore OS agnostic; you can use them on Linux & Mac.<br>
+Bottom line, your album name metadata needs to be valid. You may need a metadata editor like MP3Tag/puddleTag or MusicBrainz Picard.
+
+#### Manual creation
+
+You can use a file explorer to manually create album directories.
+
+#### create-albums
+
+create-albums is for songs standing alone in a 1st level artist directory.
+
+1. ensure that all the songs that need a album directory are sitting by themselves in the **artist f1st level directory**
+2. at least one song has viable album name metadata
+   1. the function will sanitize the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` to `-`.
+3. all songs with matching album name metadata are moved into the new album directory
+4. command line: `python main.py create-albums "Drive:/path/to/tld"`
+
+before/after execution:
+
+```text
+tld
+|_ artist 1
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_song 1
+|    |_song i
+|    |_song n
+
+tld
+|_ artist 1
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album 2
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+```
+
+#### rename_album_directories.py
+
+album_directory_rename is for bulk renaming **EXISTING BUT INCORRECT ALBUM DIRECTORIES**.<br>
+This means the audio files will not move, but the album directory name will change.
+
+1. modify `TOP_LEVEL_DIR = "F:/path/to/tld"` appropriately
+2. ensure that that at least one song has viable album name metadata **AND** the rest either have none or matching
+   1. the script will only create an album directory based on unique viable album name metadata
+   2. the script will remove the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` - a subtle difference from create-albums
+3. command line: `python D:\MusicProcessing\docs\scripts\google\album_directory_rename.py`
+
+before/after execution:
+
+```text
+tld
+|_ artist 1
+|    |_album 1 wrong name
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album 2: something
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+
+tld
+|_ artist 1
+|    |_album metadata value
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album 2 metadata value
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+```
+
+### Audio File Names
 
 ipsum lorem
 
-### Metadata Tools
+ipsum lorem functions to use
+
+### Album Art
 
 ipsum lorem
 
-### Playlist Tools
+ipsum lorem functions to use
+
+### Bulk Genre Setting
 
 ipsum lorem
 
-### Directory Tools
+ipsum lorem functions to use
+
+### Extraneous File Cleanup
 
 ipsum lorem
 
-## Processing Workflow
+ipsum lorem functions to use
 
-- Copy source music to `Source` directory
-- Create `Prepped/Music` directory
-- Copy all of an artist's files from `Source/Artist` directory to `Prepped/Artist` directory
+## Converted
+
+Congratulations! The hard work is now over. Now comes the waiting game - conversion to mp3 format.<br>
+Average time to convert a song from any format is ~ 6 seconds. So the more you have, the longer it takes.<br>
+
+ipsum lorem
+
+ipsum lorem functions to use
+
+## Normalized
+
+ipsum lorem
+
+ipsum lorem functions to use
+
+## Finalized
+
+Finish Line in sight!<br>
+Move everything from `Normalized` to `Finalized`
+
+Remember those m3u files mentioned way back? Here's where they get updated.<br>
+A reminder about m3u playlists - they are *relative* pathed. They **must** sit in the top level directory that contains all audio files!<br>
+Heres a snapshot of the guts of an m3u file:
+
+```text
+#EXTINF:0,Sawyer Fredricks - Shots Fired.mp3
+Sawyer Fredericks\A Good Storm\Sawyer Fredricks - Shots Fired.mp3
+
+#EXTINF:0,Crush-Live.mp3
+Crush\Here\Crush-Live.mp3
+```
+
+The first line: `#EXTINF:0,Sawyer Fredricks - Shots Fired.mp3` is the song displayed by the playing software.<br>
+The second line: `Sawyer Fredericks\A Good Storm\Sawyer Fredricks - Shots Fired.mp3` is the relative path to the audio file.<br>
+The blank line is just to much the file readable. And yes, an m3u file is a text file, and editable by any text editor.
+
+ipsum lorem functions to use
+
 - Prepare textual metadata
   - this is where compilation albums will be handled
     - ascertain the correct artist for each song in compilation album
@@ -70,3 +221,46 @@ I will use MP3Tag/MusicBrainz Picard/puddletag to:
   - verify all mp3 files have only ID2v2.3 tags
 - find accurate metadata for preferred tags
 - find cover art for albums if necessary
+
+python main.py --help
+usage: main.py [-h]
+{convert-file,convert-walk,create-albums,ebu-file,extract-file,extract-walk,get-ffprobe-media-info,get-ffprobe-media-info-walk,get-ffprobe-media-tags,get-mutagen-tags,get-tags-walk,get-unique-media,level-normalize-walk,list-audio,list-type,normalize-flac-filename,normalize-mp3-filename,normalize-mp4-filename,normalize-wma-filename,normalize-flac-filename-walk,normalize-mp3-filename-walk,normalize-mp4-filename-walk,normalize-wma-filename-walk,remove-albums,remove-pattern,remove-set-list,peak-file,rms-file,set-album-art,update-m3u,update-genres-from-csv,update-walk}
+
+Music Processing
+
+options:
+  -h, --help                        show this help message and exit
+
+subcommands:
+    convert-file                    Converts an audio file to mp3
+    convert-walk                    Converts all audio files to mp3
+    create-albums                   Create album sub-directories
+    ebu-file                        EBU R128 normalizes a mp3 audio file level
+    extract-file                    Extracts embedded art from audio file
+    extract-walk                    Extracts embedded art from all audio files
+    get-ffprobe-media-info          Gets ffprobe media info for audio file
+    get-ffprobe-media-info-walk     Gets ffprobe media info for audio files
+    get-ffprobe-media-tags          Gets ffprobe media tags for audio file
+    get-mutagen-tags                Gets metadata tags from audio file
+    get-tags-walk                   Gets metadata tags from audio files
+    get-unique-media                Gets set of unique ffprobe tags from collection
+    level-normalize-walk            Normalizes files with specified pattern
+    list-audio                      Generates a csv containing full path for all audio files
+    list-type                       Generates a csv containing full file path for an audio file type
+    normalize-flac-filename         Renames a FLAC from its metadata
+    normalize-mp3-filename          Renames an MP3 from its metadata
+    normalize-mp4-filename          Renames an M4A from its metadata
+    normalize-wma-filename          Renames a WMA from its metadata
+    normalize-flac-filename-walk    Renames FLAC files from metadata
+    normalize-mp3-filename-walk     Renames MP3 files from metadata
+    normalize-mp4-filename-walk     Renames M4A files from metadata
+    normalize-wma-filename-walk     Renames WMA files from metadata
+    remove-albums                   Remove empty album sub-directories
+    remove-pattern                  Removes files with specified pattern
+    remove-set-list                 Removes files matching a hard-coded set of patterns
+    peak-file                       Peak normalizes a mp3 audio file level
+    rms-file                        Rms normalizes a mp3 audio file level
+    set-album-art                   Set album art file
+    update-m3u                      Update playlist paths
+    update-genres-from-csv          Updates genre metadata from artist genre CSV mappings
+    update-walk                     Update playlist paths

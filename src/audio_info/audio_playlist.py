@@ -135,6 +135,7 @@ class AudioPlaylist():
 
         @param tld_path {str} The top level directory where playlist and music files are located.
         @param input_m3u {str} The full file path to playlist needing conversion.
+        @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -203,6 +204,7 @@ class AudioPlaylist():
         @details Finds M3U playlists beneath the top level directory and updates their relative paths.
 
         @param tld_path {str} The top level directory where playlist and music files are located.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''

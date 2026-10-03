@@ -1,4 +1,3 @@
-<!-- @mainpage Music Processing Project -->
 <!-- markdownlint-disable MD033 -->
 
 # Music Processing Project
@@ -8,8 +7,8 @@
 1. [Project Environment](docs/md_files/Environment.md) <!-- @subpage project_environment -->
 2. [Example Scripts](docs/md_files/Examples.md) <!-- @subpage example_scripts -->
 3. [API Documentation](docs/md_files/Documentation.md) <!-- @subpage api_documentation -->
-4. [Unit Testing](docs\md_files\Testing.md) <!-- @subpage unit_testing -->
-5. [workflow](docs\md_files\Workflow.md) <!-- @subpage project_workflow -->
+4. [Unit Testing](docs/md_files/Testing.md) <!-- @subpage unit_testing -->
+5. [Project Workflow](docs/md_files/Workflow.md) <!-- @subpage project_workflow -->
 
 ## Purpose
 

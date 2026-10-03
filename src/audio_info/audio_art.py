@@ -238,6 +238,7 @@ class AudioArt():
         Attempts video-stream extraction first, then format-specific metadata-tag extraction.
 
         @param file_path {str} The full path to audio file.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -293,6 +294,7 @@ class AudioArt():
         @details Input file is expected to have embedded cover art.
 
         @param file_path {str} The full path to audio file.
+        @return {None} This function does not return any value.
 
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -339,6 +341,7 @@ class AudioArt():
         @endcode
 
         @param file_path {str} The full path to audio file.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -374,6 +377,7 @@ class AudioArt():
         @details Input file is expected to have cover art.
 
         @param file_path {str} The full path to audio file.
+        @return {None} This function does not return any value.
 
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -410,6 +414,7 @@ class AudioArt():
         @details Extracts the front-cover picture when present; otherwise extracts the first embedded picture.
 
         @param file_path {str} The full path to FLAC file.
+        @return {None} This function does not return any value.
 
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -441,6 +446,7 @@ class AudioArt():
         @details Input file is expected to have cover art.
 
         @param file_path {str} The full path to audio file.
+        @return {None} This function does not return any value.
 
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -473,6 +479,7 @@ class AudioArt():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -583,6 +590,7 @@ class AudioArt():
         Copies a matching generated AlbumArt JPEG into the album directory when it is available.
 
         @param input_path {str} The full path to album directory.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''

@@ -1,7 +1,6 @@
-<!-- @page project_environment Project Environment -->
 <!-- markdownlint-disable MD033 MD041 -->
 
-# Project Environment
+# Project Environment {#project_environment}
 
 ## Purpose
 
