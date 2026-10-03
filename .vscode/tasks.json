@@ -65,6 +65,37 @@
           }
       },
 
+      // Generate Program Flow Image
+      // This task runs the Graphviz 'dot' command on the repository's flow.dot file and writes program_flow.png into the same dot_files directory.
+      {
+        "label": "Generate Program Flow Image",
+        "type": "process",
+        "command": "dot",
+        "args": [
+          "-Tpng",
+          "${workspaceFolder}/docs/dot_files/flow.dot",
+          "-o",
+          "${workspaceFolder}/docs/dot_files/program_flow.png"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/docs/dot_files"
+        },
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": [],
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared",
+          "showReuseMessage": true,
+          "clear": false,
+          "close": false
+        }
+      },
+
       /** Native Standalone Terminal */
       // Open Windows Terminal PowerShell
       // this task opens a new instance of Windows Terminal (wt.exe) with a PowerShell session, starting in the workspace folder.

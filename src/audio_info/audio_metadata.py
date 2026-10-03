@@ -347,6 +347,8 @@ class AudioMetadata():
         @param artist_genre {str} The replacement genre value.
 
         @exception MetadataTypeError Indicates the loaded file type is not supported.
+        @exception MutagenError A custom exception in Mutagen occurred
+        @exception OSError A system related error occurred.
         @exception ValueError Indicates the file could not be loaded or tagged.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -379,6 +381,12 @@ class AudioMetadata():
 
         except MetadataTypeError as mt_error:
             raise mt_error
+        except MutagenError as m_error:
+            logger.error(f"MutagenError {m_error} setting {artist_genre} for {file_path}", exc_info=True)
+            raise m_error
+        except OSError as os_error:
+            logger.error(f"OSError {(strerror(os_error.errno))} setting {artist_genre} for {file_path}", exc_info=True)
+            raise os_error
         except ValueError as v_error:
             raise v_error
         except Exception as e_error:
@@ -1714,8 +1722,8 @@ class AudioMetadata():
                 logger.error(f"ValueError loading WMA metadata from {file_path}", exc_info=True)
                 raise ValueError(f"ValueError loading WMA metadata from {file_path}")
 
-            album_artist_tag = audio_file.tags.get('albumartist')
-            title_tag = audio_file.tags.get('title')
+            album_artist_tag = audio_file.tags.get('WM/AlbumArtist')
+            title_tag = audio_file.tags.get('Title')
 
             if album_artist_tag is None or not album_artist_tag:
                 logger.error(f"ValueError with file: {file_path} missing album artist metadata", exc_info=True)
@@ -1725,8 +1733,8 @@ class AudioMetadata():
                 logger.error(f"ValueError with file: {file_path} missing title metadata", exc_info=True)
                 raise ValueError(f"ValueError with file: {file_path} missing title metadata")
 
-            album_artist = album_artist_tag[0]
-            title = title_tag[0]
+            album_artist = album_artist_tag[0].value
+            title = title_tag[0].value
 
             file_stem = os.path.splitext(os.path.basename(file_path))[0]
             if re.fullmatch(rf"{re.escape(album_artist)}\s*-\s*{re.escape(title)}", file_stem):

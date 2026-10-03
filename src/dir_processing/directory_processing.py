@@ -550,3 +550,43 @@ class DirectoryProcessing():
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} deleting {file_path}", stack_info=True)
             raise e_error
+
+
+    def remove_set_list(self, start_path) -> None:
+        '''
+        @brief Removes files matching hard coded list.
+
+        @details Removes files matching the items in hard-coded list of files from the top level directory.<br>
+
+        @param start_path {str} The starting point of the directory walk.
+
+        @exception OSError A system related error occurred.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        file_list = ["AlbumArt_*_*.jpg", "AlbumArt*.jpg", "Thumbs.db", "desktop.ini"]
+        try:
+            # don't care about the sub-directory names at all
+            for dir_path, dir_names, file_names in os.walk(start_path):
+                for file in file_names:
+                    match = False
+                    for pattern in file_list:
+                        if fnmatch.fnmatch(file, pattern):
+                            match = True
+                            break
+
+                    if match:
+                        file_path = os.path.join(dir_path, file)
+                        os.remove(file_path)
+                        logger.info(f"Deleted: {file_path}")
+
+        except OSError as os_error:
+            if os_error.errno == errno.EACCES:
+                logger.error(f"OSError permission denied for  deleting {file_path}", exc_info=True)
+                raise OSError(f"OSError permission denied for  deleting {file_path}")
+            else:
+                logger.error(f"OSError {(strerror(os_error.errno))} deleting {file_path}", exc_info=True)
+                raise os_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} deleting {file_path}", stack_info=True)
+            raise e_error

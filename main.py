@@ -331,17 +331,17 @@ def list_audio(tld_path):
     directory.get_audio_file_list(tld_path)
 
 
-def list_type(tld_path, file_ext=None):
+def list_type(tld_path, file_pattern=None):
     '''
     @brief List files from specified top level directory by specified extension.
 
     @details Retrieves a list of all files with the specified extension from the specified top level directory.
 
     @param tld_path {str} The top level directory path that contains all the music files.
-    @param file_ext {str} The specified extension to get list of.
+    @param file_pattern {str} The file pattern of extension to get list of.
     '''
 
-    directory.get_ext_file_list(tld_path, file_ext)
+    directory.get_ext_file_list(tld_path, file_pattern)
 
 
 def normalize_flac_filename(file_path):
@@ -487,6 +487,19 @@ def remove_pattern(tld_path, file_pattern):
     '''
 
     directory.remove_pattern(tld_path, file_pattern)
+
+
+def remove_set_list(tld_path):
+    '''
+    @brief Remove files matching a hard-coded set of patterns from the specified top level directory.
+
+    @details Recursively scans the specified top level directory and removes any files that match the hard-coded set of patterns.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+
+    '''
+
+    directory.remove_set_list(tld_path)
 
 
 def set_album_art(tld_path):
@@ -639,8 +652,8 @@ def main(args) -> int:
 
         if args.subcommand == "list-type":
             tld_path = getattr(args, "tld")
-            file_ext = getattr(args, "ext")
-            list_type(tld_path, file_ext)
+            file_pattern = getattr(args, "pattern")
+            list_type(tld_path, file_pattern)
 
         if args.subcommand == "normalize-mp3-filename":
             file_path = getattr(args, "file")
@@ -690,6 +703,10 @@ def main(args) -> int:
             tld_path = getattr(args, "tld")
             file_pattern = getattr(args, "pattern")
             remove_pattern(tld_path, file_pattern)
+
+        if args.subcommand == "remove-set-list":
+            tld_path = getattr(args, "tld")
+            remove_set_list(tld_path)
 
         if args.subcommand == "set-album-art":
             tld_path = getattr(args, "tld")
@@ -741,6 +758,7 @@ if __name__ == "__main__":
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-file',
         # '/home/gerald/Music/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.m4a']
         # convert-file "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"
+        # convert-file "F:\Rick\RickPrepped\Bee Gees\Tales from the Brothers Gibb A History in Song 1967-1990\Bee Gees-Sir Geoffrey Saved The World.mp3"
         convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
         convert_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
         convert_file_parser.set_defaults(func=convert_file)
@@ -752,7 +770,6 @@ if __name__ == "__main__":
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'convert-walk', '/home/gerald/Music',
         # '--pattern', { '.flac' | '.mp3' | '.m4a' | '.wma' } ]
         # convert-walk C:\Music --pattern .m4a
-        # convert-walk F:\RickPrepped
         convert_walk_parser = subparsers.add_parser("convert-walk", help="Converts all audio files to mp3")
         convert_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         convert_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
@@ -825,7 +842,7 @@ if __name__ == "__main__":
         # sys.argv = ['D:\MusicProcessing\main.py', 'get-ffprobe-media-info-walk', 'C:\Music', '--pattern', { '.flac' | `'.mp3' | '.m4a' | '.wma' } ]
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'get-ffprobe-media-info-walk', '/home/gerald/Music',
         # '--pattern', {  '.flac' | '.mp3' | '.m4a' | '.wma' } ]
-        # get-ffprobe-media-info-walk C:\Music --pattern .mp3
+        # get-ffprobe-media-info-walk C:\Music --pattern .mp3``
         # get-ffprobe-media-info-walk C:\Music --pattern .m4a
         # get-ffprobe-media-info-walk C:\Music --pattern .wma
         # get-ffprobe-media-info-walk C:\Music --pattern .flac
@@ -909,18 +926,18 @@ if __name__ == "__main__":
         # list files by extension
         # 1 mandatory arg, the tld path
         # 1 optional arg, the file extension
-        # sys.argv = ['D:\MusicProcessing\main.py', 'list-type', 'C:\Music', '--ext', { '.flac' | '.mp3' | '.m4a' | '.wma' } ]
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'list-type', '/home/gerald/Music', '--ext', { '.flac' | '.mp3' | '.m4a' | '.wma' } ]
-        # list-type C:\Music --ext .flac
-        # list-type C:\Music --ext .mp3
-        # list-type C:\Music --ext .m4a
-        # list-type C:\Music --ext .wma
+        # sys.argv = ['D:\MusicProcessing\main.py', 'list-type', 'C:\Music', '--pattern', { '.flac' | '.mp3' | '.m4a' | '.wma' } ]
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'list-type', '/home/gerald/Music', '--pattern', { '.flac' | '.mp3' | '.m4a' | '.wma' } ]
+        # list-type C:\Music --pattern .flac
+        # list-type C:\Music --pattern .mp3
+        # list-type C:\Music --pattern .m4a
+        # list-type C:\Music --pattern .wma
         # list-type C:\Music
         list_type_parser = subparsers.add_parser(
             "list-type", help="Generates a csv containing full file path for an audio file type"
         )
         list_type_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        list_type_parser.add_argument("--ext", type=str, help='optional file extension')
+        list_type_parser.add_argument("--pattern", type=str, help="optional file pattern")
         list_type_parser.set_defaults(func=list_type)
 
         # normalize a FLAC filename from its metadata
@@ -958,7 +975,7 @@ if __name__ == "__main__":
         # normalize FLAC filenames from metadata for files in top level directory
         # 1 mandatory arg, the tld path
         # sys.argv = ['D:\MusicProcessing\main.py', 'normalize-flac-filename-walk', 'C:\Music']
-        # normalize-flac-filename-walk F:\RickPrepped
+        # normalize-flac-filename-walk "F:\Rick\RickPrepped"
         normalize_flac_filename_walk_parser = subparsers.add_parser("normalize-flac-filename-walk", help="Renames FLAC files from metadata")
         normalize_flac_filename_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         normalize_flac_filename_walk_parser.set_defaults(func=normalize_flac_filename_walk)
@@ -967,21 +984,21 @@ if __name__ == "__main__":
         # 1 mandatory arg, the tld path
         # sys.argv = ['D:\MusicProcessing\main.py', 'normalize-mp3-filename-walk', 'C:\Music']
         # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'normalize-mp3-filename-walk', '/home/gerald/Music']
-        # normalize-mp3-filename-walk F:\RickPrepped
+        # normalize-mp3-filename-walk F:\Rick\RickPrepped
         normalize_mp3_filename_walk_parser = subparsers.add_parser("normalize-mp3-filename-walk", help="Renames MP3 files from metadata")
         normalize_mp3_filename_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         normalize_mp3_filename_walk_parser.set_defaults(func=normalize_mp3_filename_walk)
 
         # normalize M4A filenames from metadata for files in top level directory
         # 1 mandatory arg, the tld path
-        # normalize-mp4-filename-walk F:\RickPrepped
+        # normalize-mp4-filename-walk F:\Rick\RickPrepped
         normalize_mp4_filename_walk_parser = subparsers.add_parser("normalize-mp4-filename-walk", help="Renames M4A files from metadata")
         normalize_mp4_filename_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         normalize_mp4_filename_walk_parser.set_defaults(func=normalize_mp4_filename_walk)
 
         # normalize WMA filenames from metadata for files in top level directory
         # 1 mandatory arg, the tld path
-        # normalize-wma-filename-walk F:\RickPrepped
+        # normalize-wma-filename-walk F:\Rick\RickPrepped
         # normalize-wma-filename-walk C:\Music
         normalize_wma_filename_walk_parser = subparsers.add_parser("normalize-wma-filename-walk", help="Renames WMA files from metadata")
         normalize_wma_filename_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
@@ -1010,6 +1027,15 @@ if __name__ == "__main__":
         remove_pattern_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         remove_pattern_parser.add_argument("pattern", type=str, help="mandatory file pattern")
         remove_pattern_parser.set_defaults(func=remove_pattern)
+
+        # remove files matching a hard-coded set of patterns
+        # 1 mandatory arg, the tld path
+        # sys.argv = ['D:\MusicProcessing\main.py', 'remove-set-list', 'C:\Music']
+        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'remove-set-list', '/home/gerald/Music']
+        # remove-set-list "F:\Rick\RickPrepped\Huey Lewis & The News"
+        remove_set_list_parser = subparsers.add_parser("remove-set-list", help="Removes files matching a hard-coded set of patterns")
+        remove_set_list_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        remove_set_list_parser.set_defaults(func=remove_set_list)
 
         # peak normalize an audio file (destructive)
         # 1 mandatory arg, the path to audio file
@@ -1055,7 +1081,7 @@ if __name__ == "__main__":
 
         # update genre metadata from artist directory mappings in a CSV file
         # 2 mandatory args, the tld path and artist genre CSV path
-        # update-genres-from-csv F:/Rick/RickFinalized D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
+        # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
         update_genres_parser = subparsers.add_parser(
             "update-genres-from-csv", help="Updates genre metadata from artist genre CSV mappings"
         )
