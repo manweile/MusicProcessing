@@ -54,7 +54,7 @@ I *think* you can also use MP3tag/puddleTag, just haven't tried.
 
 create-albums function is for songs standing alone in a 1st level artist directory.
 
-1. ensure that all the songs that need a album directory are sitting by themselves in the **artist 1st level directory**
+1. ensure that all the songs that need an album directory are sitting by themselves in the **artist 1st level directory**
 2. at least one song has viable album name metadata
    1. the function will sanitize the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` to `-`.
 3. all songs with matching album name metadata are moved into the new album directory
@@ -84,6 +84,12 @@ tld
 |    |    |_song i
 |    |    |_song n
 ```
+
+**Compilation Albums**<br>
+ipsum lorem
+
+**Multi Disc Albums**<br>
+ipsum lorem
 
 #### rename_album_directories.py
 
@@ -136,7 +142,7 @@ Two variants; single file & directory walk.
 1. `type` is one of `flac`, `mp3`, `mp4`, or `wma`
 2. `filename` is for single files
 3. `walk` is for a directory walk
-   1. The directory can be the top level directory or a first level artist directory
+   1. The directory can be the top level, 1st level artist, or 2nd level album directory
 4. The artist and title metadata have to be accurate
    1. The artist and title metadata will be sanitized for validity
 6. command line: `python main.py normalize-flac-filename "Drive:/path/to/file"`
@@ -152,7 +158,10 @@ Lindsey Buckinham-Trouble.flac
 
 ### Album Art
 
-ipsum lorem
+Audio file conversion requires an album art file named Folder.jpg co-located with the audio file.<br>
+If an audio file has embedded art *and* was played by Windows Media Player at some point,
+WMP will create a copy of it called Folder.jpg in the audio file directoty.<br>
+So there's a good chance your source files include the external art file.
 
 ipsum lorem functions to use
 
