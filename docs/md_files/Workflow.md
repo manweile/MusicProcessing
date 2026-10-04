@@ -137,9 +137,18 @@ Two variants; single file & directory walk.
 2. `filename` is for single files
 3. `walk` is for a directory walk
    1. The directory can be the top level directory or a first level artist directory
-4. The artist and title metadata have to be accurate & valid characters
-5. command line: `python main.py normalize-flac-filename "Drive:/path/to/file"`
-6. command line: `python main.py normalize-flac-filename-walk "Drive:/path/to/dir"`
+4. The artist and title metadata have to be accurate
+   1. The artist and title metadata will be sanitized for validity
+6. command line: `python main.py normalize-flac-filename "Drive:/path/to/file"`
+7. command line: `python main.py normalize-flac-filename-walk "Drive:/path/to/dir"`
+
+before/after execution:
+
+```text
+01 Buckingham Trubl.flac
+
+Lindsey Buckinham-Trouble.flac
+```
 
 ### Album Art
 
