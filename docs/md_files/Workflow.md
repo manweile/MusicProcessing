@@ -23,11 +23,11 @@ Use whatever floats your boat to move the files - but be careful to **NOT** set 
 
 This where the real work begins.<br>
 I like to work alphabetically - I start with the lowest artist, eg. 3 Doors Down, followed by Abba, BTO, etc.<br>
-For each artist, copy ALL of that artists albums & files to `Prepped`
+For each artist, copy ALL of that artist's albums & files to `Prepped`
 
 A word about metadata:<br>
-At this point, you absolutely *could* ensure all of your metadata is accurate.<br>
-But bear in mind how much work than could be.<br>
+At this point, you *could* ensure all of your metadata is accurate.<br>
+But bear in mind how much work that could be.<br>
 For right now, I would suggest only 3 fields need to be accurate: artist, album name and song title.
 
 ### Directory Tree
@@ -36,22 +36,25 @@ Now your are looking at normalizing the artist album directory structure.<br>
 Depending on the organization of your sources, you could be doing a little, or a lot.<br>
 The directory tree can be a real pain, dependent on your source quality.
 
-Presuming your sources have good artist names is a big chunk of the work.<br>
-Album directories is the next hurdle.
+Presuming your sources have good artist names, then a big chunk of the work is done.<br>
+Artist names need to follow the valid characters for your OS rules.<br>
 
+Album directories are the next hurdle.
 Album directories should almost always match album metadata - the exception being when the metadata has invalid for the OS characters.<br>
 I use the Windows invalid character set - it's more restrictive and therefore OS agnostic; you can use them on Linux & Mac.<br>
-Bottom line, your album name metadata needs to be valid. You may need a metadata editor like MP3Tag/puddleTag or MusicBrainz Picard.
+Bottom line, your album name metadata needs to be valid. You may need a metadata editor like MP3Tag/puddleTag or MusicBrainz Picard.<br>
+Nice thing about MP3tag/puddleTag is you can bulk change metadata values.
 
-#### Manual creation
+#### Manual Album creation
 
-You can use a file explorer to manually create album directories.
+You can use a file explorer to manually create album directories.<br>
+I *think* you can also use MP3tag/puddleTag, just haven't tried.
 
 #### create-albums
 
-create-albums is for songs standing alone in a 1st level artist directory.
+create-albums function is for songs standing alone in a 1st level artist directory.
 
-1. ensure that all the songs that need a album directory are sitting by themselves in the **artist f1st level directory**
+1. ensure that all the songs that need a album directory are sitting by themselves in the **artist 1st level directory**
 2. at least one song has viable album name metadata
    1. the function will sanitize the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` to `-`.
 3. all songs with matching album name metadata are moved into the new album directory
@@ -88,8 +91,8 @@ album_directory_rename is for bulk renaming **EXISTING BUT INCORRECT ALBUM DIREC
 This means the audio files will not move, but the album directory name will change.
 
 1. modify `TOP_LEVEL_DIR = "F:/path/to/tld"` appropriately
-2. ensure that that at least one song has viable album name metadata **AND** the rest either have none or matching
-   1. the script will only create an album directory based on unique viable album name metadata
+2. ensure that that at least one song has viable album name metadata **AND** the rest either have none or matching metadata
+   1. the script will create an album directory based on unique viable album name metadata
    2. the script will remove the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` - a subtle difference from create-albums
 3. command line: `python D:\MusicProcessing\docs\scripts\google\album_directory_rename.py`
 
@@ -98,22 +101,22 @@ before/after execution:
 ```text
 tld
 |_ artist 1
-|    |_album 1 wrong name
+|    |_album 1 wrong name    # where wrong name is not appropriate or equal to album name metadata
 |    |    |_song 1
 |    |    |_song i
 |    |    |_song n
-|    |_album 2: something
+|    |_album 2: something    # where the colon is invalid character from metadata
 |    |    |_song 1
 |    |    |_song i
 |    |    |_song n
 
 tld
 |_ artist 1
-|    |_album metadata value
+|    |_album 1 metadata value
 |    |    |_song 1
 |    |    |_song i
 |    |    |_song n
-|    |_album 2 metadata value
+|    |_album 2 sanitized metadata value
 |    |    |_song 1
 |    |    |_song i
 |    |    |_song n
@@ -121,9 +124,22 @@ tld
 
 ### Audio File Names
 
-ipsum lorem
+I prefer the `artist` - `title` or `artist`-`title` format.<br>
+Why? Artists can have songs with same title.<br>
+Eg: Lindsey Buckingham-Trouble vs Pink-Trouble. `artist`-`title` makes it clear.<br>
+If an artist has different versions of same song, that's what album name metadata is for.
 
-ipsum lorem functions to use
+#### normalize-`type`-filename and normalize-`type`-filename-walk
+
+Two variants; single file & directory walk.
+
+1. `type` is one of `flac`, `mp3`, `mp4`, or `wma`
+2. `filename` is for single files
+3. `walk` is for a directory walk
+   1. The directory can be the top level directory or a first level artist directory
+4. The artist and title metadata have to be accurate & valid characters
+5. command line: `python main.py normalize-flac-filename "Drive:/path/to/file"`
+6. command line: `python main.py normalize-flac-filename-walk "Drive:/path/to/dir"`
 
 ### Album Art
 
