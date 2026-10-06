@@ -23,24 +23,11 @@ There are many things I need to do:
 - Organize folders per my standard
 - Rename songs files per my format
 - Convert all non-mp3 audio files to mp3
-- Map all metadata to ID3v2.3 solely
-  - ensure all songs have this minimum metadata:
-    - album
-    - album artist
-    - artist
-    - date
-    - disc number
-    - genre
-    - title
-    - track number
-    - front cover album art
-  - if possible, populate these "nice to have" metadata:
-    - composer
-    - copyright
-    - publisher
-
+- Map all metadata to ID3v2.3
+  - Remove any other metadata encoding
+- Ensure all songs have required metadata
+- If possible, populate optional metadata
 - Normalize volume levels
-  - I get truly annoyed when a playlist moves to a next song and you are suddenly lowering or increasing the volume.
 
 ## Sources
 
@@ -49,8 +36,7 @@ I have these primary sources:
 - Digital files from my HTPC (home theatre personal computer)
   - These files have all been metadata edited with Windows Media Player
   - Almost all have album art
-  - Almost all song files are in my preferred filename format
-  - The majority are mp3 files (my preferred format)
+  - Almost all song files are in my preferred filename format (mp3)
   - Most have my preferred directory structure
 - Digital purchases from iTunes
   - they have great metadata & quality
@@ -58,7 +44,7 @@ I have these primary sources:
   - will need proper directory structure
 - Digital acquisitions from friends
   - wildly varying in metadata quality
-  - MusicBrainz Picard, Discogs, MP3Tag all get used as necessary to complete the metadata
+  - MusicBrainz Picard, Discogs, MP3Tag all get used as necessary to complete the metadata (textual and art)
   - may need conversion to mp3 format
   - will need proper directory structure
 - Compact Discs I have personally ripped
@@ -68,153 +54,58 @@ I have these primary sources:
   - will need proper directory structure
 - Vinyl LPS I have digitized
   - they do need conversion from wav to mp3
-  - metadata has to added post export
+  - metadata has to be added post export
   - this means getting all the metadata from sources like MusicBrainz Picard & Discogs, and packaging it for addition to files
     - not absolutely guaranteed accurate, but I have the LP sleeve, so I can hand bomb in the metadata
   - will need proper directory structure
 
-## Directory Structure
+## Audio Files
 
-My preferred directory structure is:
-
-```text
-tld
-|_ artist 1
-|    |_album 1
-|    |    |_song 1
-|    |    |_song i
-|    |    |_song n
-|    |_album i
-|    |    |_song 1
-|    |    |_song i
-|    |    |_song n
-|    |_album n
-|    |    |_song 1
-|    |    |_song i
-|    |    |_song n
-|_ artist i
-|    |_album 1
-|    |    |_song 1
-|    |    |_song i
-|    |    |_song n
-|    |_album i
-|    |    |_song 1
-|    |    |_song i
-|    |    |_song n
-|    |_album n
-|    |    |_song 1
-|    |    |_song i
-|    |    |_song n
-|_ artist n
-|    |_album 1
-|    |    |_song 1
-|    |    |_song i
-|    |    |_song n
-|    |_album i
-|    |    |_song 1
-|    |    |_song i
-|    |    |_song n
-|    |_album n
-|         |_song 1
-|         |_song i
-|         |_song n
-|_ playlist 1
-|_ playlist i
-|_ playlist n
-```
-
-### Compilation Albums
-
-Compilation metadata tags are a gong show with respect to how various metadata formats implement them.<br>
-I found it just wasn't worth the coding effort to deal with them, so there will *never be a directory* for a compilation album.<br>
-Instead, all songs that an artist participated/contributed on/for a compilation album will be **solely under the artist's name**.<br>
-Furthermore, songs from compilation albums will ***NOT*** have "compilation" metadata.<br>
-
-Eg.
-
-```text
-tld
-|_ artist
-|    |_album
-|    |    |_song
-|    |    |_song i
-|    |    |_song n
-|    |_compilation album
-|    |    |_song-by-artist
-|    |    |_song-by-artist i
-|    |    |_song-by-artist n
-|    |_album i
-|    |    |_song 1
-|    |    |_song i
-|    |    |_song n
-|    |_album n
-|         |_song 1
-|         |_song i
-|         |_song n
-```
-
-### Multi-Disc Albums
-
-Multi-disc albums are also a bit of gong show in regards to how the metadata is implemented across various encoding formats.<br>
-However, it was reasonably straight forward coding the mapping from various encoding formats and handling missing disc number data.<br>
-Songs from multi-disc albums will be consolidated under "album name", here will never be a "album name disc 1", "album name disc 2" etc.<br>
-All songs will have a "disc number" field.
-
-- single disc albums will have value "1"
-- multi-disc albums will have correct value
-- as a corollary, the track numbers for songs on disc 2 and up of multi-disc albums will be adjusted sequentially.
-
-## Audio Filename Name Format
-
-My preferred audio filename format is "artist name"-"song title", or "artist name" - "song title".<br>
-
-## Playlist Name Format
-
-Playlist files (m3u) generally are named descriptively - "Favourites", "Symphonic Rock", "Romantic", etc.
-
-## Audio File Types
-
-There are different audio file types, that come with different metadata encoding formats.<br>
+There are different audio file types, and they come with different metadata encoding formats.<br>
 And of course, some audio files may have no embedded metadata (text or image).
 
-- flac
+- flac (Free Lossless Audio Codec)
   - these are contributed by friends
+  - great audio quality, but larger file size
   - come with Vorbis metadata encoding
-- mp3
-  - this is the majority file type, and my preferred final file type - decent compromise between file size and quality
+  - not 100% supported by playback software, especially on older hardware
+- mp3 (MPEG-1 Audio Layer III)
+  - this is the majority of my own files
+  - my preferred final file type - decent compromise between file size and quality
   - can have APEv2, ID3v1, ID3v1.1, ID3v2.3, ID3v2.4 metadata encoding
-- m4a
+    - ID3v2.3 is my preferred metadata encoding
+  - almost universally supported by playback software (both the mp3 audio format and ID3v2.3 metadata encoding)
+- m4a (MPEG-4 Audio)
   - these are iTunes purchase & downloads
-  - come with MP4 metadata encoding
-- wma
-  - not near as many as mp3, but 2nd most likely file type
-  - come with ASF metadata encoding
-- wav
-  - don't have any yet, but I do anticipate needing them
-  - an come with APEv2, ID3v1, ID3v1.1, ID3v2.3, ID3v2.4, RIFF metadata encoding
+  - come with MP4 metadata encoding (which applies to both .m4a and .mp4 extensions)
+  - not 100% supported by playback software, especially on older hardware
+- wma (Windows Media Audio)
+  - designed to store compressed digital audio music files, similar to an MP3
+    - often played back through Windows Media Player, which is no longer reliable/available Windows 10 & up
+  - come with ASF metadata encoding (Microsoft - just gotta make things *confusing* and not keeping similar naming)
+  - not 100% supported by playback software, especially on older hardware
+- wav (Waveform Audio File Format)
+  - don't have any yet, but I do anticipate needing them - best format for digitizing vinyl LPS
+  - very large size but high quality
+  - can come with APEv2/ID3v1/ID3v1.1/ID3v2.3/ID3v2.4 metadata encoding, also BWF/iXML/RIFF INFO chunks
+  - not 100% supported by playback software, especially on older hardware
 
-## Playlist File Types
+## Playlist Files
 
-There are different playlist type formats; m3u, wpl, etc.<br>
-I have used m3u and wpl. Both can be created by Windows Media Player (WMP).<br>
-Since WMP is no longer viable for Windows 10 and greater, I use m3u now.
+I prefer m3u playlist format. Originally designed for mp3 files, they are the de facto standard playlist format.<br>
+They are relative pathed to the songs they list (they *must* reside in the top level directory).<br>
+They are text editor editable, and almost universally supported by player software.<br>
 
-- m3u
-  - a text based general playlist file format that uses relative pathing
-- wpl
-  - Windows Media Player native format, uses absolute pathing
+I prefer to name playlist files descriptively - "Favourites", "Symphonic Rock", "Romantic", etc.
 
-## Tools
-
-There are several different tools I can use.
-
-### Tag Editors & Databases
+## Metadata Tag Editors & Databases
 
 ### [Mp3Tag](https://www.mp3tag.de/en/)
 
-Mp3Tag is a multi-format (audio files & metadata schemas) tag editor.<br>
+Mp3Tag is a multi-format (audio files & metadata encoding schemas) tag editor.<br>
 It supports uses Discogs, MusicBrainz picard and freedb for information sources.<br>
-Basic paradigm is batch editing of single audio files.
+Basic paradigm is batch editing of single audio files.<br>
+It's my go to.
 
 #### MP3Tag Pros
 
@@ -230,7 +121,7 @@ Basic paradigm is batch editing of single audio files.
 
 ### [puddletag](https://docs.puddletag.net/)
 
-puddletag is essentially the Ubuntu equivalent of MP3Tag
+puddletag is essentially the Ubuntu equivalent of MP3Tag. My go to on Ubuntu.
 
 #### puddletag Cons
 
@@ -238,14 +129,15 @@ puddletag is essentially the Ubuntu equivalent of MP3Tag
 
 ### [MusicBrainz Picard](https://picard-docs.musicbrainz.org/v2.13/en/index.html)
 
-MusicBrainz is both a tag editor (Picard) & database (MusicBrainz).<br>
-Basic paradigm is processing one album at a time.
+MusicBrainz is both a multiple metadata encoding schema tag editor (Picard) & database (MusicBrainz).<br>
+Basic paradigm is processing one album at a time.<br>
+It's the pro from Dover when MP3tag/puddleTag don't cut the mustard.
 
 #### MusicBrainz Picard Pros
 
 - can add a significant amount of metadata (more than  I really need)
 - better metadata browser search and retrieval
-- good metadata accuracy
+- more likely to have officially released metadata
 
 #### MusicBrainz Picard Cons
 
@@ -255,7 +147,8 @@ Basic paradigm is processing one album at a time.
 
 ### [Discogs](https://www.discogs.com/)
 
-Discogs is a music info database.
+Discogs is a music info database. MP3tag/puddleTag use it under the hood, but you can use it directly.<br>
+It's really good for album art, often succeeding when MusicBrainz Picard fails.
 
 #### Discogs Pros
 
@@ -263,9 +156,25 @@ Discogs is a music info database.
 
 #### Discogs Cons
 
-- metadata is mostly user uploaded and not as accurate as official release images
+- metadata is mostly user uploaded and not as accurate as official released
 
-## Audio File Processing
+## Audio & Playlist File Processing
+
+### [Audacious](https://audacious-media-player.org/)
+
+Open source audio player. Alternative playlist editor and WMP alternative.
+
+#### Audacious Pros
+
+- Free, open source
+- Runs on Windows and Linux
+- Native support for flac, mp3, m4a, wav, m3u
+- can use FFMPEG for more file type support
+
+#### Audacious Cons
+
+- No integral help
+- No online help
 
 ### [Audacity](https://www.audacityteam.org/)
 
@@ -282,7 +191,8 @@ Open source, free software for recording and editing audio.
 - Destructive editing
 - limited mixing capabilities
 - plugin stability issues
-- requires ffmpeg for some transcoding
+- requires ffmpeg install for some transcoding
+- Audacity configuration to use ffmpeg is challenging
 - no official direct support
 
 ### [Exact Audio Copy](https://www.exactaudiocopy.de/)
@@ -307,18 +217,19 @@ Best replacement I have found for playlist generation & editing now that WMP is 
 
 ### [ffmpeg](https://www.ffmpeg.org/)
 
-FFMPEG is a universal media converter.
+FFMPEG is a universal media converter. Comes with ffprobe, which is information tool.
 
 #### FFMPEG Pros
 
 - fast & versatile
 - It can read a wide variety of inputs, and transcode them into a plethora of output formats
-- The python sub-process module can directly run ffmpeg & ffprobe command lines scripting use.
+- The python sub-process module can directly run ffmpeg & ffprobe command lines scripting use
 
 #### FFMPEG Cons
 
 - documentation is difficult to use
 - very complex command line only interface
+- Not for metadata
 
 ### [Goldwave](https://goldwave.com/)
 
@@ -336,6 +247,8 @@ Goldwave is a professional, full featured, digital audio editor.
 - paid version required for full functionality
 
 ## Audio File Players
+
+Technically, Audacity/EAC/FFmpeg/Goldwave are also media file players, but that's not their primary function.
 
 ### [Windows Media Player](https://support.microsoft.com/en-us/windows/windows-media-player-12-e8f84f54-cd64-865c-2e83-1d8ec121b5b8)
 
@@ -361,7 +274,7 @@ WMP is a full-featured music library that allows you to quickly browse and play 
 
 VLC is a multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols.
 
-#### VLS Pros
+#### VLC Pros
 
 - can so some tag editing, but is really a media player at heart
 - can rip mp3's from cd's, but Audacity/EAC/Goldwave are probably better

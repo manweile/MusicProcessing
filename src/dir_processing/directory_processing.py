@@ -446,11 +446,12 @@ class DirectoryProcessing():
             return export_path
 
 
-    def remove_empty_album_dir(self, start_path: str) -> None:
+    def remove_empty_albums(self, start_path: str) -> None:
         '''
         @brief Removes empty album directories.
 
-        @details Removes empty second-level album directories within artist directories.
+        @details Removes empty second-level album directories within artist directories.<br>
+        The starting path can be tld OR artist fld, but NOT album sld.
 
         @param start_path {str} The starting point of the directory walk.
         @return {None} This function does not return any value.
@@ -529,8 +530,8 @@ class DirectoryProcessing():
                 logger.error(f"{start_path} is a mount point")
                 raise MusicProcessingError(f"{start_path} is a mount point")
 
-            # guard against full wildcard pattern
-            if file_pattern == "*.*":
+            # guard against full wildcard patterns
+            if file_pattern == "*.*" or file_pattern == "*":
                 logger.error(f"{file_pattern} is too broad")
                 raise MusicProcessingError(f"{file_pattern} is too broad")
 

@@ -479,7 +479,7 @@ class TestDirectoryProcessing(TestCase):
         mock_warning.assert_called_once_with(f"File {input_path} is not in {AUDIO_EXTS}")
 
 
-    def test_remove_album_dir(self):
+    def test_remove_albums(self):
         '''
         @brief Test removal of empty album directories.
 
@@ -547,7 +547,7 @@ class TestDirectoryProcessing(TestCase):
                 /Goodbye Yellow Brick Road
                     Elton John-Saturday Night's Alright for Fighting.wma
         '''
-        directory.remove_empty_album_dir(self.generated_tld)
+        directory.remove_empty_albums(self.generated_tld)
 
         m3u_exists = os.path.exists(m3u_file)
         empty_album_exists = os.path.exists(empty_album_dir)
@@ -561,7 +561,7 @@ class TestDirectoryProcessing(TestCase):
         self.assertTrue(full_album_exists)
 
 
-    def test_remove_album_dir_fail(self):
+    def test_remove_albums_fail(self):
         '''
         @brief Test album-directory removal with an operating-system error.
 
@@ -579,10 +579,10 @@ class TestDirectoryProcessing(TestCase):
         mock_remove_album_dir = Mock(spec=remove_album_dir_directory)
         mock_remove_album_dir.side_effect = OSError(errno.EINVAL, "Invalid argument")
 
-        remove_album_dir_directory.remove_empty_album_dir = mock_remove_album_dir
+        remove_album_dir_directory.remove_empty_albums = mock_remove_album_dir
 
         with self.assertRaises(OSError) as cm:
-            remove_album_dir_directory.remove_empty_album_dir(self.generated_tld)
+            remove_album_dir_directory.remove_empty_albums(self.generated_tld)
 
         self.assertEqual("OSError", cm.exception.__class__.__name__)
         self.assertEqual(cm.exception.errno, 22)
@@ -590,7 +590,7 @@ class TestDirectoryProcessing(TestCase):
         mock_remove_album_dir.reset_mock(return_value=True, side_effect=True)
 
 
-    def test_remove_album_dir_permission(self):
+    def test_remove_albums_permission(self):
         '''
         @brief Test album-directory removal with a permission error.
 
@@ -608,10 +608,10 @@ class TestDirectoryProcessing(TestCase):
         mock_remove_album_dir = Mock(spec=remove_album_dir_directory)
         mock_remove_album_dir.side_effect = OSError(errno.EACCES, "Permission denied")
 
-        remove_album_dir_directory.remove_empty_album_dir = mock_remove_album_dir
+        remove_album_dir_directory.remove_empty_albums = mock_remove_album_dir
 
         with self.assertRaises(OSError) as cm:
-            remove_album_dir_directory.remove_empty_album_dir(self.generated_tld)
+            remove_album_dir_directory.remove_empty_albums(self.generated_tld)
 
         self.assertEqual(cm.exception.errno, errno.EACCES)
 

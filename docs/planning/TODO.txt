@@ -8,8 +8,14 @@ NOT DISPOSED:
 
   Markdown related:
 
-    1) document external library launch json - why & how to use it
+    1) document external library launch json - why & how to use it in environment markdown
     TODO
+
+    2) document tqdm and yaspin changes in environment markdown
+    TODO
+
+    3) finish workflow md
+    IN PROGRESS
 
   Logic related:
 
@@ -23,10 +29,12 @@ NOT DISPOSED:
     TODO
 
     4) think about changing ebu normalization
-      a) to use hybrid loudnorm stats then volume adjust per google session
+      a) use hybrid loudnorm stats then volume adjust per google session
+        i) could be faster
+        ii) prob better way to handle files that can't be linear ebu
     TODO
 
-    5) add mode select option to create_txt function
+    5) add write/append mode select option to create_txt function
     TODO
 
     6) rethink has_art_tag logic
@@ -38,22 +46,89 @@ NOT DISPOSED:
       b) need something that can handle audio with multiple metadata encoding formats WO inferring
     IN PROGRESS, see docs\scripts\google\metadata_encoding_format_detection\metadata_encoding_detection.py
 
-    8) Write function that returns list of songs with invalid for Windows album names
-    TODO
-
-    9) consolidate normalize-*-filename-walk functions to 1 function
-    TODO
-
-    10) I don't like how main errors with absolutely no indication of cause
-      a) I still want logging, but fail to see what the purpose return 1 and return 0 at end of main.main(args) does
-    TODO
-
-    11) function that uses output of 7
+    8) function that uses output of 7
       a) all file type must have 1 metadata encoding format
       b) if an mp3 file has ID3v2.3, the ID3v2.3 is untouched
         i) any other ID3 version is wiped out
       c) non mp3 files keep their native format
         i) non mp3 without native format are left alone
+    TODO
+
+    9) think about get_mutagen_metadata_type
+      ties into 7 an 8
+      need to accommodate APE - an mp3 will solely APEv2 (don't have any yet) will return NONE in tags attribute
+      mutagen.File(file_path, easy=true) will NOT work on mp3 with APEv2 alone.
+      This means any function relying on load_any_file for tags has a subtle error wrt files w only APEv2
+      __set_genre
+      get_mutagen_tags
+      get_mutagen_metadata_type
+      has_art_tag
+      normalize_*_filename
+      many places in test_audio_metadata
+    TODO
+
+    9) Write function that returns list of songs with invalid for Windows album names
+    TODO
+
+    10) consolidate normalize-*-filename & normalize-*-filename-walk functions to 1 function each type
+    TODO
+
+    11) I don't like how main errors with absolutely no indication of cause
+      a) I still want logging, but fail to see what the purpose return 1 and return 0 at end of main.main(args) does
+      b) if I typo entering cli, I want to know it!
+    TODO
+
+    12) look at audio_normalization.py wrt ebu_normalize_file error on Colin james song that had no metadata
+    TODO
+      2026-10-05 20:03:51,051 — src.audio_normalize.audio_normalization — ERROR — ebu_normalize_file:342 — Exception TypeError while ebu normalizing audio file: F:\Rick\RickConverted\Colin James\Rooftops and Satellites\Colin James-If You've Gotta Go Go Now.mp3
+      Traceback (most recent call last):
+        File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 243, in ebu_normalize_file
+          target_bitrate = min(original_bitrate, 192000)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      TypeError: '<' not supported between instances of 'int' and 'NoneType'
+      Stack (most recent call last):
+        File "D:\MusicProcessing\main.py", line 1102, in <module>
+          sys.exit(main(args))
+        File "D:\MusicProcessing\main.py", line 647, in main
+          level_normalize_walk(tld_path, norm_type)
+        File "D:\MusicProcessing\main.py", line 319, in level_normalize_walk
+          normalization.level_normalize_walk(tld_path, norm_type)
+        File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 552, in level_normalize_walk
+          self.ebu_normalize_file(input_file_path, show_spinner)
+        File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 342, in ebu_normalize_file
+          logger.exception(f"Exception {type(e_error).__name__} while ebu normalizing audio file: {file_path}", stack_info=True)
+
+      2026-10-05 20:03:51,082 — src.audio_normalize.audio_normalization — ERROR — level_normalize_walk:559 — Exception TypeError on F:\Rick\RickConverted\Colin James\Rooftops and Satellites\Colin James-If You've Gotta Go Go Now.mp3 while walking F:\Rick\RickConverted to ebu normalize audio files
+      Traceback (most recent call last):
+        File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 552, in level_normalize_walk
+          self.ebu_normalize_file(input_file_path, show_spinner)
+        File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 343, in ebu_normalize_file
+          raise e_error
+        File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 243, in ebu_normalize_file
+          target_bitrate = min(original_bitrate, 192000)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      TypeError: '<' not supported between instances of 'int' and 'NoneType'
+      Stack (most recent call last):
+        File "D:\MusicProcessing\main.py", line 1102, in <module>
+          sys.exit(main(args))
+        File "D:\MusicProcessing\main.py", line 647, in main
+          level_normalize_walk(tld_path, norm_type)
+        File "D:\MusicProcessing\main.py", line 319, in level_normalize_walk
+          normalization.level_normalize_walk(tld_path, norm_type)
+        File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 559, in level_normalize_walk
+          logger.exception(
+
+    13) think hard about removing reliance on src/generated_files/Music for conversion and leveling
+      a) still need for testing purposes, but change leveling and converting functions to accept a target directory
+    TODO
+
+    14) think hard about removing reliance on src/generated_files/Music/AlbumArt for setting album art
+      a) still need for testing purposes, but change setting album art function to accept an art source directory
+    TODO
+
+    15) add D:/MusicProcessing/docs/scripts/google/album_directory_rename.py to main.py and audio metadata class; using it enough
+      a) update workflow markdown when complete
+      b) add unit test for it
     TODO
 
 DISPOSED:

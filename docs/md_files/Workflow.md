@@ -5,7 +5,13 @@
 The whole point of this project is normalizing an audio collection.<br>
 That means a workflow, using the external tools and project functions.
 
-I use these 5 working directories for the processing workflow.
+I use these 5 working directories for the processing workflow:
+
+- source
+- prepped
+- converted
+- leveled
+- finalized
 
 ## Source
 
@@ -25,42 +31,64 @@ This where the real work begins.<br>
 I like to work alphabetically - I start with the lowest artist, eg. 3 Doors Down, followed by Abba, BTO, etc.<br>
 For each artist, copy ALL of that artist's albums & files to `Prepped`
 
-A word about metadata:<br>
-At this point, you *could* ensure all of your metadata is accurate.<br>
-But bear in mind how much work that could be.<br>
-For right now, I would suggest only 3 fields need to be accurate: artist, album name and song title.
+### Metadata
 
-### Directory Tree
+This the required metadata:
 
-Now your are looking at normalizing the artist album directory structure.<br>
-Depending on the organization of your sources, you could be doing a little, or a lot.<br>
-The directory tree can be a real pain, dependent on your source quality.
+- album
+- album artist
+- artist
+- date
+- disc number
+- genre
+- title
+- track number
+- front cover album art
 
-Presuming your sources have good artist names, then a big chunk of the work is done.<br>
-Artist names need to follow the valid characters for your OS rules.<br>
+this is the optional metadata:
 
-Album directories are the next hurdle.
-Album directories should almost always match album metadata - the exception being when the metadata has invalid for the OS characters.<br>
-I use the Windows invalid character set - it's more restrictive and therefore OS agnostic; you can use them on Linux & Mac.<br>
+- composer
+- copyright
+- publisher
+
+**A word about metadata:**<br>
+At this point, you *could* ensure all of your metadata is accurate, but bear in mind how much work that could be.<br>
+For right now, directory structure only needs 3 fields to be accurate: artist, album name and song title.
+
+### Directory Structure
+
+Now your are looking at organizing the collections directory structure.<br>
+Depending on the existing directory organization & metadata accuracy of your sources, you could be doing a little, or a lot.<br>
+I am using file explorer/file manager for the transfers - don't have a function or script, and not sure if I will write one.
+
+*Naming* I use the Windows invalid character set ( `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|`).<br>
+It's more restrictive and therefore OS agnostic; you can use it on Linux & Mac.
+
+The directory structure is important; the project function logic **requires** this set structure.<br>
+There are three directory levels:
+
+#### top level directory
+
+The music top level directory (*tld*) is where all music related files live.<br>
+The tld can be nested as deep as you want (with respect to your OS depth rules); it could as short as drive:\tld.<br>
+You can name the tld whatever you want. I personally prefer to call it "Music", which follows Windows OS practice.
+
+Playlist files (m3u) **must** exist here; they use *relative pathing* to the artists/albums/songs they play, and playlist functions reflect that.
+
+#### artist level directories
+
+The artist level directories are the first level directories (*fld*) under the tld.<br>
+Artist directories **must** be unique; OS'es don't allow duplicate sibling directories.<br>
+Therefore, at least one and preferably all artist metadata in each artist's song has to be what you want for the artist directory.<br>
+
+#### album level directories
+
+The album level directories are the second level directories (*sld*) under the fld's.<br>
+Album directories **must be unique for that artist directory**; OS'es don't allow duplicate sibling directories.
+
+Album directories should almost always match album metadata.<br>
+The exception being when the metadata has invalid for the OS characters.<br>
 Bottom line, your album name metadata needs to be valid. You may need a metadata editor like MP3Tag/puddleTag or MusicBrainz Picard.<br>
-Nice thing about MP3tag/puddleTag is you can bulk change metadata values.
-
-#### Manual Album creation
-
-You can use a file explorer to manually create album directories.<br>
-I *think* you can also use MP3tag/puddleTag, just haven't tried.
-
-#### create-albums
-
-create-albums function is for songs standing alone in a 1st level artist directory.
-
-1. ensure that all the songs that need an album directory are sitting by themselves in the **artist 1st level directory**
-2. at least one song has viable album name metadata
-   1. the function will sanitize the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` to `-`.
-3. all songs with matching album name metadata are moved into the new album directory
-4. command line: `python main.py create-albums "Drive:/path/to/tld"`
-
-before/after execution:
 
 ```text
 tld
@@ -69,12 +97,78 @@ tld
 |    |    |_song 1
 |    |    |_song i
 |    |    |_song n
-|    |_song 1
-|    |_song i
-|    |_song n
+|    |_album i
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album n
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|_ artist i
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album i
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album n
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|_ artist n
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album i
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album n
+|         |_song 1
+|         |_song i
+|         |_song n
+|_ playlist 1
+|_ playlist i
+|_ playlist n
+```
+
+### Manual Album directory creation
+
+You can use a file explorer/file manager to manually create album directories.<br>
+I *think* you can also use MP3tag/puddleTag, just haven't tried.
+
+### create-albums
+
+create-albums function is used to create the album for *songs* standing alone in a first level artist directory.<br>
+It's a top level directory walking function, so you **must** supply the tld, and **only** the tld. Does not work with fld & sld.
+
+1. ensure that all the songs that need an album directory are sitting by themselves in the **artist 1st level directory**
+2. at least one song has viable album name metadata
+   1. the function will sanitize the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` to `-`.
+   2. the function does **not** handle attempted creation of duplicate directories
+      1. ensure album metadata for songs from *different albums* will not clash
+3. all songs with matching album metadata are moved into the new album directory
+4. command line: `python main.py create-albums "Drive:/path/to/tld"`
+
+before/after execution:
+
+```text
+tld
+|_artist 1
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_album 2 song 1
+|    |_album 2 song i
+|    |_album 2 song n
 
 tld
-|_ artist 1
+|_artist 1
 |    |_album 1
 |    |    |_song 1
 |    |    |_song i
@@ -85,33 +179,126 @@ tld
 |    |    |_song n
 ```
 
-**Compilation Albums**<br>
-ipsum lorem
+**Handling Compilation Album Directories**<br>
+Compilation metadata tags are a gong show with respect to how various metadata formats implement them, it wasn't worth the effort to map them.<br>
+Most compilation albums use a variant of "various artists" for artist/album artist metadata, which invariably conflicts with "contributing artist".<br>
+This is antithetical to the concept of unique 1st level artist directories, and OS'es don't allow sibling duplicate directories in any case.
 
-**Multi Disc Albums**<br>
-ipsum lorem
+Instead, all songs from an artist who contributed to a compilation album will be **solely under the artist's name**.<br>
+Eg: The "Back to the Future" soundtrack has "Johnny B. Goode" by Huey Lewis & The News.<br>
 
-#### rename_album_directories.py
+Best Practice: copy the song(s) from the compilation to an *artist's 1st level directory* (create if needed),<br>
+then run create-albums, and cleanup empty compilation album manually or with remove-empty-albums.<br>
+before/after:
 
-album_directory_rename is for bulk renaming **EXISTING BUT INCORRECT ALBUM DIRECTORIES**.<br>
-This means the audio files will not move, but the album directory name will change.
+```text
+tld
+|_artist 1
+|    |_album 1
+|         |_song 1
+|         |_song i
+|         |_song n
+|_compilation album
+|         |_song 1 by artist 1
+|         |_song i by artist i
+|         |_song n by artist 1
+|         |_song 1 by artist 2
 
-1. modify `TOP_LEVEL_DIR = "F:/path/to/tld"` appropriately
-2. ensure that that at least one song has viable album name metadata **AND** the rest either have none or matching metadata
+tld
+|_artist 1
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_song 1 by artist 1
+|    |_song i by artist i
+|    |_song n by artist 1
+|_artist 2
+|    |_song 1 by artist 2
+
+tld
+|_artist 1
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |_compilation album
+|    |    |_song 1 by artist 1
+|    |    |_song i by artist 1
+|    |    |_song n by artist 1
+|_artist 2
+|    |_compilation album
+|    |    |_song 1 by artist 2
+```
+
+**Handling Multi Disc Albums**<br>
+Multi-disc albums directory structure introduces a 3rd level `disc number` directory. Not necessary, that's what track & disc metadata are for.
+
+Best Practice: ensure the track/disc metadata is accurate, and album metadata does *NOT* include something like "CD N".<br>
+Move all the songs from each "disc" directory to the *artist's 1st level directory* and run create-albums.<br>
+Delete the multi-disc album directories manually, or *ensure* they are empty and run remove-empty-albums.<br>
+before/after:
+
+```text
+tld
+|_artist 1
+|    |_source multi disc album
+|    |    |_CD 1
+|    |    |   |_song 1/disc 1
+|    |    |   |_song i/disc 1
+|    |    |   |_song n/disc 1
+|    |    |_CD i
+|    |    |   |_song 1/disc i
+|    |    |   |_song i/disc i
+|    |    |   |_song n/disc i
+
+tld
+|_artist 1
+|    |_song 1/disc 1
+|    |_song i/disc 1
+|    |_song n/disc 1
+|    |_song 1/disc i
+|    |_song i/disc i
+|    |_song n/disc i
+|    |_source multi disc album
+|    |    |_CD 1
+|    |    |_CD i
+
+tld
+|_artist 1
+|    |_multi disc album
+|    |    |_song 1/disc 1
+|    |    |_song i/disc 1
+|    |    |_song n/disc 1
+|    |    |_song 1/disc i
+|    |    |_song i/disc i
+|    |    |_song n/disc i
+```
+
+### rename_album_directories.py
+
+album_directory_rename is for bulk renaming *EXISTING BUT INCORRECTLY NAMED ALBUM DIRECTORIES*.<br>
+This means the album directory name will change, and the audio files will stay put.<br>
+It's a top level directory only walking function, so you **must** supply the tld, and **only** the tld. Does not work with fld & sld.
+
+1. modify `TOP_LEVEL_DIR = "F:/path/to/tld"` appropriately & save the script
+2. ensure that at least one song has accurate & viable album name metadata **AND** the rest either have none or matching metadata
    1. the script will create an album directory based on unique viable album name metadata
-   2. the script will remove the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` - a subtle difference from create-albums
-3. command line: `python D:\MusicProcessing\docs\scripts\google\album_directory_rename.py`
+   2. the script will sanitize new name, *removing* the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` - a subtle difference from create-albums
+   3. unlike create-albums, attempted duplicate directory creation **is handled**
+      1. duplicates will be appended with an ordinal number
+3. command line: `python D:/MusicProcessing/docs/scripts/google/album_directory_rename.py`
 
 before/after execution:
 
 ```text
 tld
 |_ artist 1
-|    |_album 1 wrong name    # where wrong name is not appropriate or equal to album name metadata
+|    |_album 1 wrong name    # wrong name is not appropriate or equal to album name metadata
 |    |    |_song 1
 |    |    |_song i
 |    |    |_song n
-|    |_album 2: something    # where the colon is invalid character from metadata
+|    |_album 2: something    # the colon is invalid character, might be in metadata too
 |    |    |_song 1
 |    |    |_song i
 |    |    |_song n
@@ -122,75 +309,221 @@ tld
 |    |    |_song 1
 |    |    |_song i
 |    |    |_song n
-|    |_album 2 sanitized metadata value
+|    |_album 2 sanitized value
 |    |    |_song 1
 |    |    |_song i
 |    |    |_song n
 ```
 
-### Audio File Names
+## Audio File Names
 
 I prefer the `artist` - `title` or `artist`-`title` format.<br>
-Why? Artists can have songs with same title.<br>
+Why? Different artists can have songs with same title.<br>
 Eg: Lindsey Buckingham-Trouble vs Pink-Trouble. `artist`-`title` makes it clear.<br>
-If an artist has different versions of same song, that's what album name metadata is for.
+If an artist has different versions of the same song, that's what the second level album directories & album name metadata are for.<br>
+Quite often the other versions will have a slightly different title, in which case, no worries.
 
-#### normalize-`type`-filename and normalize-`type`-filename-walk
+Best Practice: ensure the artist/title metadata for each song is accurate, then run a filename changing function.<br>
+For the directory walk versions, directory input can be the tld, fld artist, or sld album directory.
 
-Two variants; single file & directory walk.
+### normalize-`type`-filename and normalize-`type`-filename-walk
+
+Two variants: single file & directory walk.
 
 1. `type` is one of `flac`, `mp3`, `mp4`, or `wma`
 2. `filename` is for single files
 3. `walk` is for a directory walk
-   1. The directory can be the top level, 1st level artist, or 2nd level album directory
 4. The artist and title metadata have to be accurate
    1. The artist and title metadata will be sanitized for validity
-6. command line: `python main.py normalize-flac-filename "Drive:/path/to/file"`
-7. command line: `python main.py normalize-flac-filename-walk "Drive:/path/to/dir"`
+5. command line: `python main.py normalize-flac-filename "Drive:/path/to/file"`
+6. command line: `python main.py normalize-flac-filename-walk "Drive:/path/to/tld/or fld/or sld"`
 
 before/after execution:
 
 ```text
 01 Buckingham Trubl.flac
 
-Lindsey Buckinham-Trouble.flac
+Lindsey Buckingham-Trouble.flac
 ```
 
-### Album Art
+## Album Art
 
-Audio file conversion requires an album art file named Folder.jpg co-located with the audio file.<br>
-If an audio file has embedded art *and* was played by Windows Media Player at some point,
-WMP will create a copy of it called Folder.jpg in the audio file directoty.<br>
-So there's a good chance your source files include the external art file.
+Audio file conversion **requires** an album art file named Folder.jpg co-located with the audio file.
 
-ipsum lorem functions to use
+If an audio file has embedded art *and* was played by Windows Media Player, WMP will create a copy of it called Folder.jpg in that directory.<br>
+So there's a good chance your source files include the external art Folder.jpg file, which you can just copy over.<br>
+Use MP3tag/puddleTag/Discogs/MusicBrainz Picard to find acceptable art if there is no art at all.
 
-### Bulk Genre Setting
+The extract function extracts embedded art from the first audio file it finds with embedded art.<br>
+The extracted art is saved as Folder.jpg in the same directory as the audio source file.<br>
+The embedded art is NOT removed from the audio source file.<br>
+Directories with a Folder.jpg will be skipped.
+
+Best Practice: ensure the lowest alphabetically named song in an album has the correct embedded art.<br>
+Run one of the extract functions.
+
+### extract-file
+
+Extracts embedded art from a single audio file.<br>
+command line: `python main.py extract-file "Drive:/path/to/file"`
+
+### extract-walk
+
+Extracts embedded art from all audio files supplied path.<br>
+Works with tld (top) & fld (artist) input, but *not* sld (album) input.<br>
+command line: `python main.py extract-walk "Drive:/path/to/tld/or fld"`
+
+before/after execution:
+
+```text
+tld
+|_artist 1
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i with embedded art
+|    |    |_song n
+|_artist 2
+|    |_song 1
+|    |_song i with embedded art
+|    |_song n
+
+tld
+|_artist 1
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i with embedded art
+|    |    |_song n
+|    |    |_Folder.jpg
+|_artist 2
+|    |_song 1
+|    |_song i with embedded art
+|    |_song n
+|    |_Folder.jpg
+
+```
+
+**Handling Compilation Album Art**<br>
+Compilation album art can be re-used!<br>
+
+Best Practice: extract album art from a compilation album if there is any, or find accurate art.<br>
+Rename to `compilation album name`.jpg file.<br>
+Eg. for the album `Best Of The Blues, Vol. 1`: `Best Of The Blues, Vol. 1.jpg`.<br>
+Copy it to to the special `/MusicProcessing/src/generated_files/AlbumArt` folder.
+
+### set-album-art
+
+Sets album art file for an compilation album folder. Looks for `compilation album name`.jpg file in special `AlbumArt` folder.<br>
+Found matches get copied & renamed to `compilation album name/Folder.jpg`.<br>
+It won't overwrite an existing Folder.jpg in fld or sld directories.<br>
+The match does not get consumed, it stays in `AlbumArt` folder.
+
+Works with tld (top) & fld (artist) input, but *not* sld (album) input.<br>
+command line: `python main.py set-album-art "Drive:/path/to/tld/or fld"`<br>
+before/after execution:
+
+```text
+tld
+|_artist 1
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+
+AlbumArt
+|_album 1.jpg
+
+tld
+|_artist 1
+|    |_album 1
+|    |    |_song 1
+|    |    |_song i
+|    |    |_song n
+|    |    |_Folder.jpg
+```
+
+## Bulk Genre Setting
+
+Many songs are going to have multiple genres, or incorrect genres.<br>
+You could leave them be and/or you could manually edit them. Your preference.<br>
+My preference is to do quick search for the single genre most commonly associated with the artist, and set all of their songs to that genre.
+
+Best Practice: This requires a *sorted* csv file in the tld; the function uses relative pathing.<br>
+ipsum lorem csv example
+
+### update-genres-from-csv
+
+Updates genre metadata from artist genre CSV mappings<br>
+ipsum lorem command line
+
+## Extraneous File & Directory Cleanup
+
+Windows File Explorer and Windows Media Player are sloppy actors.<br>
+They both can add extraneous files like Thumbs.db, ini files, Art*.jpg, etc.
 
 ipsum lorem
 
-ipsum lorem functions to use
+### remove-pattern
 
-### Extraneous File Cleanup
+Removes files with specified pattern.<br>
+Works for tld, fld, and sld as path input.<br>
+Will throw an error if start path is a file system root or mount point, or if file pattern is full wildcard.
 
 ipsum lorem
 
-ipsum lorem functions to use
+### remove-set-list
+
+Removes files matching a hard-coded set of patterns. Works for tld, fld, and sld as path input.<br>
+***MODIFY THE HARD CODED LIST AT YOUR OWN RISK, THE FUNCTION DOES NOT GUARD AGAINST YOUR OWN STUPIDITY***<br>
+Current hard coded list is `["AlbumArt_*_*.jpg", "AlbumArt*.jpg", "Thumbs.db", "desktop.ini"]`
+
+ipsum lorem
+
+### remove-empty-albums
+
+Removes empty album sub-directories. The start path can be tld or fld, but not sld.
+
+ipsum lorem
 
 ## Converted
 
 Congratulations! The hard work is now over. Now comes the waiting game - conversion to mp3 format.<br>
 Average time to convert a song from any format is ~ 6 seconds. So the more you have, the longer it takes.<br>
 
+ipsum lorem about conversion<br>
+
+### convert-file
+
+Converts an audio file to mp3
+
+**NOTE**<br>
+The mapping functions called by convert file function do NOT deal with audio files only containing APEv2 metadata encoding.<br>
+That is a whole other kettle of fish. I currently do not have any files like that, and unsure if I even going to code for it. Lot of work.<br>
+I do have many mp3 files with APEv2 and one ore more ID3 versions - those aren't a problem, Mutagen default with mp3 files is the ID3 versions.
+
 ipsum lorem
 
-ipsum lorem functions to use
+### convert-walk
+
+Converts all acceptable audio files (flac, mp3, m4a, wma) in path to mp3. Works with tld (top), fld (artist) and sld (album) path input.<br>
+Bonus functionality: since the logic maps any existing metadata before wiping it out, you can use it delete extra metadata encoding formats!<br>
+Mp3 files are the usual culprit. So if you ensure your metadata is accurate (one of the ID3 versions), no worries.<br>
+
+ipsum lorem
 
 ## Normalized
 
-ipsum lorem
+I get truly annoyed when a playlist moves to a next song and you are suddenly lowering or increasing the volume.<br>
+ipsum lorem about leveling with EBU R128<br>
+
+ipsum lorem when to use peak leveling<br>
+
+ipsum lorem when to use rms leveling.<br>
 
 ipsum lorem functions to use
+ebu-file                        EBU R128 normalizes a single mp3 audio file level
+peak-file                       Peak normalizes a single mp3 audio file level
+rms-file                        Rms normalizes a single  mp3 audio file level
+level-normalize-walk            Normalizes files with specified pattern. works with tld and fld input.
 
 ## Finalized
 
@@ -214,36 +547,10 @@ The second line: `Sawyer Fredericks\A Good Storm\Sawyer Fredricks - Shots Fired.
 The blank line is just to much the file readable. And yes, an m3u file is a text file, and editable by any text editor.
 
 ipsum lorem functions to use
+update-m3u                      Update playlist paths
+update-walk                     Update playlist paths
 
-- Prepare textual metadata
-  - this is where compilation albums will be handled
-    - ascertain the correct artist for each song in compilation album
-    - ensure song(s) are in correct `Prepped/artist/` where artist is correct artist for song
-  - verify required textual metadata
-  - try to verify optional textual metadata
-  - Prepare each `Prepped/Artist` directory structure
-    - Move each artist's album songs and artwork to appropriate `Prepped/Artists/Album` directory
-    - If a an artist has songs NOT in an album directory, leave them in `Prepped/Artist`
-      - run create-albums to create the album directories
-  - normalize file names, run normalize-`type`->-filename or normalize-`type`-filename-walk where `type` is file ext of audio file
-  - run update-genres-from-csv to bulk update an artist(s) genre; requires appropriate csv file
-- Prepare art metadata
-  - run extract-file or extract-walk to get embedded artwork into a usable jpg file
-  - run set-album-art if needed
-    - this is primarily for songs from compilation albums and looks in src/generated_files/AlbumArt for appropriate Folder.jpgs
-    - but can also work for song files that are not part of compilations
-- Convert music files to mp3 with embedded art
-  - run convert-file or convert-walk; album art MUST be present in every album directory
-- Normalize music
-  - run ebu-file, single file EBU R128 standard for most files
-  - run peak-file, single file Peak normalization when required
-  - run rms-file, single file RMS normalization when required
-  - run level-normalize-walk with normalization type to walk all files
-- Finalize music with updated playlists
-  - run update-paths for single playlists
-  - run update-walk for all playlist in top level directory
-
-### External Tool Processing
+## External Tool Processing
 
 I will use MP3Tag/MusicBrainz Picard/puddletag to:
 
@@ -257,44 +564,12 @@ I will use MP3Tag/MusicBrainz Picard/puddletag to:
 - find cover art for albums if necessary
 
 python main.py --help
-usage: main.py [-h]
-{convert-file,convert-walk,create-albums,ebu-file,extract-file,extract-walk,get-ffprobe-media-info,get-ffprobe-media-info-walk,get-ffprobe-media-tags,get-mutagen-tags,get-tags-walk,get-unique-media,level-normalize-walk,list-audio,list-type,normalize-flac-filename,normalize-mp3-filename,normalize-mp4-filename,normalize-wma-filename,normalize-flac-filename-walk,normalize-mp3-filename-walk,normalize-mp4-filename-walk,normalize-wma-filename-walk,remove-albums,remove-pattern,remove-set-list,peak-file,rms-file,set-album-art,update-m3u,update-genres-from-csv,update-walk}
-
-Music Processing
-
-options:
-  -h, --help                        show this help message and exit
-
 subcommands:
-    convert-file                    Converts an audio file to mp3
-    convert-walk                    Converts all audio files to mp3
-    create-albums                   Create album sub-directories
-    ebu-file                        EBU R128 normalizes a mp3 audio file level
-    extract-file                    Extracts embedded art from audio file
-    extract-walk                    Extracts embedded art from all audio files
-    get-ffprobe-media-info          Gets ffprobe media info for audio file
+    get-ffprobe-media-info          Gets ffprobe media info for an audio file
     get-ffprobe-media-info-walk     Gets ffprobe media info for audio files
-    get-ffprobe-media-tags          Gets ffprobe media tags for audio file
-    get-mutagen-tags                Gets metadata tags from audio file
-    get-tags-walk                   Gets metadata tags from audio files
+    get-ffprobe-tags                Gets ffprobe metadata tags for audio file
+    get-mutagen-tags                Gets Mutagen metadata tags from audio file
+    get-tags-walk                   Gets Mutagen metadata tags from audio files
     get-unique-media                Gets set of unique ffprobe tags from collection
-    level-normalize-walk            Normalizes files with specified pattern
     list-audio                      Generates a csv containing full path for all audio files
     list-type                       Generates a csv containing full file path for an audio file type
-    normalize-flac-filename         Renames a FLAC from its metadata
-    normalize-mp3-filename          Renames an MP3 from its metadata
-    normalize-mp4-filename          Renames an M4A from its metadata
-    normalize-wma-filename          Renames a WMA from its metadata
-    normalize-flac-filename-walk    Renames FLAC files from metadata
-    normalize-mp3-filename-walk     Renames MP3 files from metadata
-    normalize-mp4-filename-walk     Renames M4A files from metadata
-    normalize-wma-filename-walk     Renames WMA files from metadata
-    remove-albums                   Remove empty album sub-directories
-    remove-pattern                  Removes files with specified pattern
-    remove-set-list                 Removes files matching a hard-coded set of patterns
-    peak-file                       Peak normalizes a mp3 audio file level
-    rms-file                        Rms normalizes a mp3 audio file level
-    set-album-art                   Set album art file
-    update-m3u                      Update playlist paths
-    update-genres-from-csv          Updates genre metadata from artist genre CSV mappings
-    update-walk                     Update playlist paths

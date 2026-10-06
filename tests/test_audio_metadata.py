@@ -729,7 +729,7 @@ class TestAudioMetadata(TestCase):
             'MusicBrainz Release Group Id': 'a7927f70-2431-3a58-b7ae-48576808cec1', 'date': '2002'
         }
 
-        media_tags = metadata.get_ffprobe_media_tags(TEST_MP3_CRUSH)
+        media_tags = metadata.get_ffprobe_tags(TEST_MP3_CRUSH)
 
         self.assertDictEqual(media_tags, tag_dict)
 
@@ -785,7 +785,7 @@ class TestAudioMetadata(TestCase):
         media_tags = None
 
         with self.assertRaises(JSONDecodeError) as cm:
-            media_tags = metadata.get_ffprobe_media_tags(TEST_MP3_CRUSH)
+            media_tags = metadata.get_ffprobe_tags(TEST_MP3_CRUSH)
 
         self.assertIsNone(media_tags)
         self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
@@ -803,7 +803,7 @@ class TestAudioMetadata(TestCase):
 
         media_tags = None
 
-        media_tags = metadata.get_ffprobe_media_tags(TEST_MP3_NO_TAG)
+        media_tags = metadata.get_ffprobe_tags(TEST_MP3_NO_TAG)
 
         self.assertIsNone(media_tags)
 

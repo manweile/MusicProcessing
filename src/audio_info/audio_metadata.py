@@ -623,21 +623,20 @@ class AudioMetadata():
 
     def create_album_dirs(self, start_path: str) -> None:
         r'''
-        @brief Creates 2nd level album sub-directories in 1st level artist directories.
+        @brief Creates second level (sld) album sub-directories in first level (fld) artist directories.
 
-        @details Creates the album sub directory for the artist if needed.<br>
-        Calling functions MUST verify valid start path.<br>
-        The album name for the directory is drawn from the album metadata field.<br>
-        Album names will be sanitized to Windows OS values.<br>
+        @details Creates the album sub directory for the artist from album metadata if needed.<br>
+        Calling functions MUST verify valid start path, which MUST be the tld (top level directory).<br>
         Audio files will be moved into their respective album directories.<br>
-        A csv report named after the function (`create_album_dirs`) containing all audio file paths,
-        album metadata values and sanitized album directory names will be created.<br>
 
         @note Using the Windows invalid character set because it is more restrictive (therefore OS universal).<br>
         The characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` will be replaced by `-`.<br>
         Refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename<br>
+        <br>
+        A csv report named after the function (`create_album_dirs`) will be created in csv folder.<br>
+        It will contain all audio file paths, album metadata values and sanitized album directory names.
 
-        @param start_path {str} The top level directory holding music files.
+        @param start_path {str} The top level directory holding artist directories and music files.
         @return {None} This function does not return any value.
 
         @exception ValidationError A pathlib module validation error occurred.
@@ -691,7 +690,7 @@ class AudioMetadata():
                     if file_ext.lower() in AUDIO_EXTS:
                         audio_file = artist_item_path
                         # using ffprobe function cause it is audio file type agnostic
-                        file_media_tags = self.get_ffprobe_media_tags(audio_file)
+                        file_media_tags = self.get_ffprobe_tags(audio_file)
                     else:
                         # we found a non audio file
                         continue
@@ -953,7 +952,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def get_ffprobe_media_tags(self, file_path: str) -> dict:
+    def get_ffprobe_tags(self, file_path: str) -> dict:
         '''
         @brief Gets media tags.
 
@@ -1080,7 +1079,7 @@ class AudioMetadata():
                         tag_file_path = os.path.join(dir_path, file)
 
                         if ffprobe:
-                            input_tags = self.get_ffprobe_media_tags(tag_file_path)
+                            input_tags = self.get_ffprobe_tags(tag_file_path)
                         else:
                             metadata_type = self.get_mutagen_metadata_type(tag_file_path)
                             if metadata_type in AUDIO_FILES:
@@ -1136,7 +1135,7 @@ class AudioMetadata():
                         continue
 
                     tag_file_path = os.path.join(dir_path, file)
-                    input_tags = self.get_ffprobe_media_tags(tag_file_path)
+                    input_tags = self.get_ffprobe_tags(tag_file_path)
 
                     if input_tags:
                         file_keys = input_tags.keys()

@@ -7,15 +7,29 @@ AUDIO_EXTS = [".mp3", ".m4a", ".wma", ".flac"]
 
 
 def _get_album_metadata(song_path):
-    """
-    Helper function to parse a single file's metadata.
-    Returns the stripped album name string if found, otherwise None.
-    """
+    '''
+    @brief Helper function to extract the album metadata from a given audio file.
+
+    @details This function attempts to read the album metadata from the provided audio file.
+    Uses Mutagen File with easy=True to map the metadata to case-insensitive ASCII-friendly strings.
+
+    @param song_path The path to the audio file from which to extract album metadata.
+    @return The album name as a string if found, otherwise None.
+
+    @exception Silently skips unreadable or corrupted files.
+    '''
+
     # Using a single level try-except here isolates the error handling per file
     try:
+        # Attempt to read the audio file's metadata using Mutagen's easy interface
         audio = File(song_path, easy=True)
+
+        # If the file couldn't be read, audio will be None
         if audio and 'album' in audio and audio['album']:
+            # Extract the first value from the album metadata list if it exists
             first_val = audio['album']
+
+            # Ensure we have a list or a single value to work with
             if isinstance(first_val, list) and first_val:
                 return first_val[0].strip()
             return str(first_val).strip()
@@ -35,7 +49,7 @@ def rename_album_directories(tld_path):
             print(f"Error: {tld_path} is not a valid directory.")
             return
 
-        # 1. Iterate through the Artist directories
+        # Iterate through the Artist directories
         for artist_name in os.listdir(tld_path):
             artist_path = os.path.join(tld_path, artist_name)
 
@@ -45,7 +59,7 @@ def rename_album_directories(tld_path):
 
             print(f"Checking artist folder: {artist_name}")
 
-            # 2. Iterate through the Album directories inside the Artist folder
+            # Iterate through the Album directories inside the Artist folder
             for album_dir_name in os.listdir(artist_path):
                 album_path = os.path.join(artist_path, album_dir_name)
 
@@ -54,7 +68,7 @@ def rename_album_directories(tld_path):
 
                 metadata_album_name = None
 
-                # 3. Scan songs inside the album folder to find metadata
+                # Scan songs inside the album folder to find metadata
                 for song_file in os.listdir(album_path):
                     _, ext = os.path.splitext(song_file.lower())
                     if ext in AUDIO_EXTS:
@@ -65,7 +79,7 @@ def rename_album_directories(tld_path):
                         if metadata_album_name:
                             break  # Found a valid title, stop scanning this folder
 
-                # 4. If metadata was found, evaluate if a rename is needed
+                # If metadata was found, evaluate if a rename is needed
                 if metadata_album_name:
                     # Sanitize the metadata to remove illegal filesystem characters
                     safe_album_name = re.sub(r'[\\/*?:"<>|]', "", metadata_album_name).strip()
