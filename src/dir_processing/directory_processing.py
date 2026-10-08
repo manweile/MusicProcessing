@@ -44,6 +44,7 @@ from src.generated_files import GENERATED_PATH              # for generated file
 
 # Local Module Errors
 from src import MusicProcessingError                        # for directory processing failures
+from src import PathInfoError                                # for path info related errors
 
 gc.enable()
 
@@ -390,7 +391,7 @@ class DirectoryProcessing():
             raise e_error
 
 
-    def path_info(self, file_path: str) -> str | None:
+    def path_info(self, file_path: str, target: str | None = None) -> str | None:
         '''
         @brief Creates export path for audio file conversions and normalizations.
 
@@ -398,8 +399,10 @@ class DirectoryProcessing():
         Requires the input file to have a supported audio extension.
 
         @param file_path {str} The full file path for exported mp3 audio file.
+        @param target {str | None} Optional target directory in place of default fixed project target.
         @return export_path {str | None} The export path, or None for unsupported audio files.
 
+        @exception PathInfoError Indicates an error with the export root path or directory structure.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -421,8 +424,22 @@ class DirectoryProcessing():
             # remove the anchor (ie. / or H:\), have no use for it
             input_path_parts = input_path_parent.parts[1:]
 
-            # using fixed storage path because will always know project structure
-            export_dir = os.path.join(GENERATED_PATH, MUSIC_TLD)
+            # determine base export directory
+            if target:
+                # if target exists and is not a directory we have a problem
+                if os.path.exists(target) and not os.path.isdir(target):
+                    logger.error(f"PathInfoError target {target} is not a directory", exc_info=True)
+                    raise PathInfoError(f"PathInfoError target {target} is not a directory")
+
+                # likewise if the target is the same as the input file's parent directory
+                if Path(target) == input_path_parent:
+                    logger.error(f"PathInfoError target {target} is the same as the input file's parent directory", exc_info=True)
+                    raise PathInfoError(f"PathInfoError target {target} is the same as the input file's parent directory")
+
+                export_dir = target
+            else:
+                # using fixed storage path because will always know project structure
+                export_dir = os.path.join(GENERATED_PATH, MUSIC_TLD)
 
             full_len = len(input_path_parts)
             artist_len = full_len - 2
@@ -439,6 +456,8 @@ class DirectoryProcessing():
             export_name = input_name + export_ext
             export_path = os.path.join(export_dir, export_name)
 
+        except PathInfoError as pi_error:
+            raise pi_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting export path {file_path}", stack_info=True)
             raise e_error

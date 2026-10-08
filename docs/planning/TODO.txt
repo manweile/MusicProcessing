@@ -6,6 +6,11 @@ NOT DISPOSED:
       a) get detailed description to show immediately underneath brief description instead of linked by "More..."
     TODO
 
+    2) think about retaining flow dot
+      a) its a PITA to maintain
+      b) update it if decide to keep
+    TODO
+
   Markdown related:
 
     1) document external library launch json - why & how to use it in environment markdown
@@ -120,15 +125,27 @@ NOT DISPOSED:
 
     13) think hard about removing reliance on src/generated_files/Music for conversion and leveling
       a) still need for testing purposes, but change leveling and converting functions to accept a target directory
-    TODO
+      b) change unit tests        COMPLETE
+      c) update workflow markdown IN PROGRESS
+    IN PROGRESS
 
     14) think hard about removing reliance on src/generated_files/Music/AlbumArt for setting album art
       a) still need for testing purposes, but change setting album art function to accept an art source directory
     TODO
 
-    15) add D:/MusicProcessing/docs/scripts/google/album_directory_rename.py to main.py and audio metadata class; using it enough
-      a) update workflow markdown when complete
-      b) add unit test for it
+    15) add D:/MusicProcessing/docs/scripts/google/album_directory_rename.py to project
+      a) main.py and audio metadata class       COMPLETE
+      a) update workflow markdown               COMPLETE
+      b) add unit test for it                   TODO
+    IN PROGRESS
+
+    16) modify update-genres-from-csv to log instead of previous_artist_name
+      a) don't need the printing in main.py either
+      b) don't need the return 0 or 1 logic in main.py
+      c) update unit test
+    TODO
+
+    7) think about playlist updating writing to input directory or a target directory instead of generated_files
     TODO
 
 DISPOSED:

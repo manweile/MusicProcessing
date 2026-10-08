@@ -151,9 +151,9 @@ class AudioNormalization():
             return output_data
 
 
-    def ebu_normalize_file(self, file_path: str, show_spinner: bool = True) -> None:
+    def ebu_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True) -> None:
         '''
-        @brief Normalizes an audio file to the EBU R128 standard.
+        @brief Normalizes an audio file to the EBU R128 standard, optionally specifying a target directory.
 
         @details Uses two-pass loudnorm normalization with FFmpeg.<br>
         The first pass checks audio properties of source file, which are then used as inputs in 2nd pass to apply the loudnorm normalization.<br>
@@ -202,6 +202,7 @@ class AudioNormalization():
         @endcode
 
         @param file_path {str} The full file path for mp3 audio file.
+        @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
         @return {None} This function does not return any value.
 
@@ -218,7 +219,7 @@ class AudioNormalization():
                 logger.warning(f"{file_path} is not an mp3")
                 return
 
-            export_path = directory.path_info(file_path)
+            export_path = directory.path_info(file_path, target)
 
             if export_path is None:
                 logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
@@ -520,7 +521,7 @@ class AudioNormalization():
             return volumes
 
 
-    def level_normalize_walk(self, tld_path: str, norm_type: str, show_spinner: bool = True) -> None:
+    def level_normalize_walk(self, tld_path: str, norm_type: str, target: str = None, show_spinner: bool = True) -> None:
         '''
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
@@ -528,6 +529,7 @@ class AudioNormalization():
 
         @param tld_path {str} The top level directory path that contains all the music files.
         @param norm_type {str} The type of normalization to perform.
+        @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
         @return {None} This function does not return any value.
 
@@ -549,11 +551,11 @@ class AudioNormalization():
                     input_file_path = os.path.join(dir_path, file)
 
                     if norm_type == "ebu":
-                        self.ebu_normalize_file(input_file_path, show_spinner)
+                        self.ebu_normalize_file(input_file_path, target, show_spinner)
                     elif norm_type == "peak":
-                        self.peak_normalize_file(input_file_path, show_spinner)
+                        self.peak_normalize_file(input_file_path, target, show_spinner)
                     elif norm_type == "rms":
-                        self.rms_normalize_file(input_file_path, show_spinner)
+                        self.rms_normalize_file(input_file_path, target, show_spinner)
 
         except Exception as e_error:
             logger.exception(
@@ -564,7 +566,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def peak_normalize_file(self, file_path: str, show_spinner: bool = True) -> None:
+    def peak_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True) -> None:
         '''
         @brief Peak normalizes audio file level.
 
@@ -588,6 +590,7 @@ class AudioNormalization():
         @endcode
 
         @param file_path {str} The full file path for mp3 audio file.
+        @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
         @return {None} This function does not return any value.
 
@@ -604,7 +607,7 @@ class AudioNormalization():
                 logger.warning(f"{file_path} is not an mp3")
                 return
 
-            export_path = directory.path_info(file_path)
+            export_path = directory.path_info(file_path, target)
 
             if export_path is None:
                 logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
@@ -683,7 +686,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def rms_normalize_file(self, file_path: str, show_spinner: bool = True) -> None:
+    def rms_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True) -> None:
         '''
         @brief RMS normalizes audio file level.
 
@@ -707,6 +710,7 @@ class AudioNormalization():
         @endcode
 
         @param file_path {str} The full file path for mp3 audio file.
+        @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
         @return {None} This function does not return any value.
 
@@ -723,7 +727,7 @@ class AudioNormalization():
                 logger.warning(f"{file_path} is not an mp3")
                 return
 
-            export_path = directory.path_info(file_path)
+            export_path = directory.path_info(file_path, target)
 
             if export_path is None:
                 logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)

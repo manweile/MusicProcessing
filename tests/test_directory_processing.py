@@ -45,6 +45,7 @@ from tests import TESTS_TLD                                 # for test music dir
 
 # Local Module Errors
 from src import MusicProcessingError                        # for safe-removal error assertions
+from src.errors import PathInfoError                        # for path-info target conflict assertions
 
 # Local Module Classes
 from src.dir_processing import DirectoryProcessing          # for directory functionality under test
@@ -451,11 +452,39 @@ class TestDirectoryProcessing(TestCase):
         @param self {TestDirectoryProcessing} Test instance containing audio fixture paths.
         '''
 
-        path_info = directory.path_info(TEST_M4A_DAVIS)
-
-        # successful path_info returns a mp3 file name in generated_files/Music
+        # successful path_info returns a mp3 file name in generated_files/Music/Joshua Davis/The Voice Peformance
         expected_info = os.path.join(GENERATED_PATH, MUSIC_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
-        self.assertEqual(path_info, expected_info)
+
+        default_path_info = directory.path_info(TEST_M4A_DAVIS, None)
+
+        target_path = os.path.join(GENERATED_PATH, MUSIC_TLD)
+        target_path_info = directory.path_info(TEST_M4A_DAVIS, target_path)
+
+        self.assertEqual(default_path_info, expected_info)
+        self.assertEqual(target_path_info, expected_info)
+
+
+    @patch('src.dir_processing.directory_processing.logger.error')
+    def test_path_info_target_same(self, mock_error):
+        '''
+        @brief Test path information when the target path is the same as the input path.
+
+        @details Verifies that path resolution rejects an output target matching the input file's parent directory.
+
+        @test Error case.
+
+        @param self {TestDirectoryProcessing} Test instance containing audio fixture paths.
+        @param mock_error {Mock} Patched error logger for target path conflicts.
+        '''
+
+        target = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance")
+        expected_error = f"PathInfoError target {target} is the same as the input file's parent directory"
+
+        with self.assertRaises(PathInfoError) as context:
+            directory.path_info(TEST_M4A_DAVIS, target)
+
+        self.assertEqual(str(context.exception), expected_error)
+        mock_error.assert_called_once_with(expected_error, exc_info=True)
 
 
     @patch('src.dir_processing.directory_processing.logger.warning')
@@ -473,7 +502,7 @@ class TestDirectoryProcessing(TestCase):
 
         input_path = os.path.join(TESTS_TLD, "expected.m3u")
 
-        path_info = directory.path_info(input_path)
+        path_info = directory.path_info(input_path, None)
 
         self.assertIsNone(path_info)
         mock_warning.assert_called_once_with(f"File {input_path} is not in {AUDIO_EXTS}")

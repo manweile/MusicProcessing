@@ -350,7 +350,7 @@ class TestAudioMetadata(TestCase):
         '''
 
         for src_file in self.converted_file_paths:
-            metadata.convert_file(src_file, show_spinner=False)
+            metadata.convert_file(src_file, None, show_spinner=False)
 
         for audio_file in self.converted_results:
             audio_exists = os.path.exists(audio_file)
@@ -370,7 +370,7 @@ class TestAudioMetadata(TestCase):
         err_msg = f"album directory {input_path_parent} does not contain a {FOLDER_ART} file."
 
         with self.assertRaises(MusicProcessingError) as cm:
-            metadata.convert_file(TEST_MP3_CRUSH)
+            metadata.convert_file(TEST_MP3_CRUSH, None)
 
         self.assertEqual(cm.exception.message, err_msg)
 
@@ -385,7 +385,7 @@ class TestAudioMetadata(TestCase):
         '''
 
         no_metadata = TEST_MP3_NO_METADATA
-        metadata.convert_file(no_metadata, show_spinner=False)
+        metadata.convert_file(no_metadata, None, show_spinner=False)
 
         audio_file = os.path.join(self.test_tld, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
         audio_exists = os.path.exists(audio_file)
@@ -401,7 +401,7 @@ class TestAudioMetadata(TestCase):
         @test Happy path.
         '''
 
-        metadata.convert_walk(self.converted, None, show_spinner=False)
+        metadata.convert_walk(self.converted, None, None, show_spinner=False)
 
         for audio_file in self.converted_results:
             audio_exists = os.path.exists(audio_file)
@@ -417,7 +417,7 @@ class TestAudioMetadata(TestCase):
         @test Happy path.
         '''
 
-        metadata.convert_walk(self.converted, MP3_EXT, show_spinner=False)
+        metadata.convert_walk(self.converted, MP3_EXT, None, show_spinner=False)
 
         audio_exists = os.path.exists(self.mp3_result)
         self.assertTrue(audio_exists)
@@ -435,7 +435,7 @@ class TestAudioMetadata(TestCase):
         log_msg = f"Pattern {PLAYLIST_EXTS[0]} is not for a valid audio file"
 
         with self.assertLogs() as captured:
-            metadata.convert_walk(self.converted, PLAYLIST_EXTS[0], show_spinner=False)
+            metadata.convert_walk(self.converted, PLAYLIST_EXTS[0], None, show_spinner=False)
 
         self.assertEqual(len(captured.records), 1)
         self.assertEqual(captured.records[0].getMessage(), log_msg)

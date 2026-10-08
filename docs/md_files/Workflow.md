@@ -52,7 +52,8 @@ this is the optional metadata:
 - publisher
 
 **A word about metadata:**<br>
-At this point, you *could* ensure all of your metadata is accurate, but bear in mind how much work that could be.<br>
+Ensuring all of your metadata is accurate is entirely dependent on your source's quality.
+There is good argument for doing it in the `Prepped` stage; but bear in mind how much work that could be.<br>
 For right now, directory structure only needs 3 fields to be accurate: artist, album name and song title.
 
 ### Directory Structure
@@ -67,7 +68,7 @@ It's more restrictive and therefore OS agnostic; you can use it on Linux & Mac.
 The directory structure is important; the project function logic **requires** this set structure.<br>
 There are three directory levels:
 
-#### top level directory
+#### Top Level Directory
 
 The music top level directory (*tld*) is where all music related files live.<br>
 The tld can be nested as deep as you want (with respect to your OS depth rules); it could as short as drive:\tld.<br>
@@ -75,13 +76,16 @@ You can name the tld whatever you want. I personally prefer to call it "Music", 
 
 Playlist files (m3u) **must** exist here; they use *relative pathing* to the artists/albums/songs they play, and playlist functions reflect that.
 
-#### artist level directories
+#### Artist Level Directories
 
 The artist level directories are the first level directories (*fld*) under the tld.<br>
 Artist directories **must** be unique; OS'es don't allow duplicate sibling directories.<br>
-Therefore, at least one and preferably all artist metadata in each artist's song has to be what you want for the artist directory.<br>
+Of course, the artist directory must also comply with allowable OS character set.
 
-#### album level directories
+Therefore, at least one song has to have what you want for that artist; the rest can be blank.<br>
+Preferably all songs have the artist name you want for the artist directory.<br>
+
+#### Album Level Directories
 
 The album level directories are the second level directories (*sld*) under the fld's.<br>
 Album directories **must be unique for that artist directory**; OS'es don't allow duplicate sibling directories.
@@ -136,7 +140,7 @@ tld
 |_ playlist n
 ```
 
-### Manual Album directory creation
+### manual album directory creation
 
 You can use a file explorer/file manager to manually create album directories.<br>
 I *think* you can also use MP3tag/puddleTag, just haven't tried.
@@ -181,7 +185,7 @@ tld
 
 **Handling Compilation Album Directories**<br>
 Compilation metadata tags are a gong show with respect to how various metadata formats implement them, it wasn't worth the effort to map them.<br>
-Most compilation albums use a variant of "various artists" for artist/album artist metadata, which invariably conflicts with "contributing artist".<br>
+Most compilation albums use a variant of "various artists" for artist/album artist metadata, this invariably conflicts with "contributing artist".<br>
 This is antithetical to the concept of unique 1st level artist directories, and OS'es don't allow sibling duplicate directories in any case.
 
 Instead, all songs from an artist who contributed to a compilation album will be **solely under the artist's name**.<br>
@@ -200,7 +204,7 @@ tld
 |         |_song n
 |_compilation album
 |         |_song 1 by artist 1
-|         |_song i by artist i
+|         |_song i by artist 1
 |         |_song n by artist 1
 |         |_song 1 by artist 2
 
@@ -210,11 +214,11 @@ tld
 |    |    |_song 1
 |    |    |_song i
 |    |    |_song n
-|    |_song 1 by artist 1
-|    |_song i by artist i
-|    |_song n by artist 1
+|    |_song 1 by artist 1 from compilation album
+|    |_song i by artist 1 from compilation album
+|    |_song n by artist 1 from compilation album
 |_artist 2
-|    |_song 1 by artist 2
+|    |_song 1 by artist 2 from compilation album
 
 tld
 |_artist 1
@@ -275,19 +279,18 @@ tld
 |    |    |_song n/disc i
 ```
 
-### rename_album_directories.py
+### rename-album-directories
 
-album_directory_rename is for bulk renaming *EXISTING BUT INCORRECTLY NAMED ALBUM DIRECTORIES*.<br>
+rename-album-directories is for bulk renaming *EXISTING BUT INCORRECTLY NAMED ALBUM DIRECTORIES*.<br>
 This means the album directory name will change, and the audio files will stay put.<br>
 It's a top level directory only walking function, so you **must** supply the tld, and **only** the tld. Does not work with fld & sld.
 
-1. modify `TOP_LEVEL_DIR = "F:/path/to/tld"` appropriately & save the script
-2. ensure that at least one song has accurate & viable album name metadata **AND** the rest either have none or matching metadata
-   1. the script will create an album directory based on unique viable album name metadata
-   2. the script will sanitize new name, *removing* the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` - a subtle difference from create-albums
+1. ensure that at least one song in an album has accurate & viable album name metadata **AND** the rest either have none or matching metadata
+   1. the function will create an album directory based on unique viable album name metadata
+   2. the function will sanitize the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` to `-`.
    3. unlike create-albums, attempted duplicate directory creation **is handled**
       1. duplicates will be appended with an ordinal number
-3. command line: `python D:/MusicProcessing/docs/scripts/google/album_directory_rename.py`
+2. command line: `python main.py rename-album-directories "Drive:/path/to/tld"`
 
 before/after execution:
 
@@ -447,20 +450,43 @@ Many songs are going to have multiple genres, or incorrect genres.<br>
 You could leave them be and/or you could manually edit them. Your preference.<br>
 My preference is to do quick search for the single genre most commonly associated with the artist, and set all of their songs to that genre.
 
-Best Practice: This requires a *sorted* csv file in the tld; the function uses relative pathing.<br>
-ipsum lorem csv example
+### manual genre setting
+
+MP3Tag really shines here. From File Explorer, or MP3Tag, highlight the directory(s) with the songs you want to update.<br>
+Can be tld, fld, or sld; what level you use determines how many songs you want to deal with.<br>
+Select the songs you want to set genre for, open the the tag view side bar, put the genre in the input field, click save icon.<br>
 
 ### update-genres-from-csv
 
 Updates genre metadata from artist genre CSV mappings<br>
-ipsum lorem command line
+Best Practice: This function *requires a sorted* csv file in the tld; the function uses relative pathing.
+
+CSV File Example:<br>
+artist name,artist genre
+Bachman-Turner Overdrive,Classic Rock
+Bad Company,Classic Rock
+Barenaked Ladies,Alternative Rock
+Beach Boys,Pop Rock
+Bee Gees, Pop Rock
+Beth Hart and Joe Bonamassa,Blues
+Blondie,New Wave
+Blu Cantrell,Pop
+Blue Rodeo,Folk Rock
+Bonnie Raitt,Blues Rock
+Bonnie Tyler,Pop Rock
+Boston,Rock
+Brad Paisley,Country
+Brandi Carlile,Indie
+Bruce Springsteen,Rock
+Huey Lewis & The News,Movie Soundtrack
+Stephen Page,Alternative Rock
+
+command line: `python main.py update-genres-from csv "Drive:/path/to/tld/"`
 
 ## Extraneous File & Directory Cleanup
 
 Windows File Explorer and Windows Media Player are sloppy actors.<br>
 They both can add extraneous files like Thumbs.db, ini files, Art*.jpg, etc.
-
-ipsum lorem
 
 ### remove-pattern
 
@@ -489,7 +515,13 @@ ipsum lorem
 Congratulations! The hard work is now over. Now comes the waiting game - conversion to mp3 format.<br>
 Average time to convert a song from any format is ~ 6 seconds. So the more you have, the longer it takes.<br>
 
-ipsum lorem about conversion<br>
+Conversion logic is essentially a destructive three stage process.<br>
+First, map the existing metadata from original audio file to ID3v2.3 encoding.<br>
+Second, convert the original audio file with ffmpeg to mp3 format with the mapped to ID3v2.3 metadata in a different save location.<br>
+Third, embed the co-located album art in the newly converted mp3 file.
+
+Therefore, you **must** have co-located album art; you did run extract-file/extract-walk/set-album-art right?<br>
+This is also a good place to have all of your song metadata up to snuff.
 
 ### convert-file
 
@@ -500,15 +532,20 @@ The mapping functions called by convert file function do NOT deal with audio fil
 That is a whole other kettle of fish. I currently do not have any files like that, and unsure if I even going to code for it. Lot of work.<br>
 I do have many mp3 files with APEv2 and one ore more ID3 versions - those aren't a problem, Mutagen default with mp3 files is the ID3 versions.
 
-ipsum lorem
+Bonus functionality: since the logic maps any existing metadata before wiping it out, you can use it delete extra metadata encoding formats!<br>
+Mp3 files are the usual culprit. So if you ensure your metadata is accurate (one of the ID3 versions), no worries.
+
+ipsum lorem command line with target
+
+ipsum lorem command line without target
 
 ### convert-walk
 
 Converts all acceptable audio files (flac, mp3, m4a, wma) in path to mp3. Works with tld (top), fld (artist) and sld (album) path input.<br>
-Bonus functionality: since the logic maps any existing metadata before wiping it out, you can use it delete extra metadata encoding formats!<br>
-Mp3 files are the usual culprit. So if you ensure your metadata is accurate (one of the ID3 versions), no worries.<br>
 
-ipsum lorem
+ipsum lorem command line with target
+
+ipsum lorem command line without target
 
 ## Normalized
 
@@ -532,19 +569,6 @@ Move everything from `Normalized` to `Finalized`
 
 Remember those m3u files mentioned way back? Here's where they get updated.<br>
 A reminder about m3u playlists - they are *relative* pathed. They **must** sit in the top level directory that contains all audio files!<br>
-Heres a snapshot of the guts of an m3u file:
-
-```text
-#EXTINF:0,Sawyer Fredricks - Shots Fired.mp3
-Sawyer Fredericks\A Good Storm\Sawyer Fredricks - Shots Fired.mp3
-
-#EXTINF:0,Crush-Live.mp3
-Crush\Here\Crush-Live.mp3
-```
-
-The first line: `#EXTINF:0,Sawyer Fredricks - Shots Fired.mp3` is the song displayed by the playing software.<br>
-The second line: `Sawyer Fredericks\A Good Storm\Sawyer Fredricks - Shots Fired.mp3` is the relative path to the audio file.<br>
-The blank line is just to much the file readable. And yes, an m3u file is a text file, and editable by any text editor.
 
 ipsum lorem functions to use
 update-m3u                      Update playlist paths

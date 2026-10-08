@@ -424,7 +424,7 @@ class AudioMetadata():
             return id3_tags
 
 
-    def convert_file(self, file_path: str, show_spinner: bool = True) -> None:
+    def convert_file(self, file_path: str, target: str = None, show_spinner: bool = True) -> None:
         '''
         @brief Converts an acceptable audio file to mp3 audio file, using ffmpeg directly.
 
@@ -455,6 +455,7 @@ class AudioMetadata():
         @endcode
 
         @param file_path {str} The path for audio file to be converted.
+        @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Show spinner flag.
         @return {None} This function does not return any value.
 
@@ -469,7 +470,7 @@ class AudioMetadata():
 
         try:
             # get export path for converted files, will return None for an invalid audio extension
-            export_path = directory.path_info(file_path)
+            export_path = directory.path_info(file_path, target)
 
             if export_path is None:
                 logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
@@ -571,7 +572,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def convert_walk(self, start_path: str, file_pattern: str, show_spinner: bool = True) -> None:
+    def convert_walk(self, start_path: str, file_pattern: str, target: str = None, show_spinner: bool = True) -> None:
         '''
         @brief Converts all audio files found in specified path to mp3 format.
 
@@ -581,6 +582,7 @@ class AudioMetadata():
 
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
+        @param target {str} Optional, the target directory for exported files. Defaults to None.
         @param show_spinner {bool} Optional, whether to display a spinner during conversion. Defaults to True.
         @return {None} This function does not return any value.
 
@@ -609,7 +611,7 @@ class AudioMetadata():
                             continue
 
                     input_file_path = os.path.join(dir_path, file)
-                    self.convert_file(input_file_path, show_spinner)
+                    self.convert_file(input_file_path, target, show_spinner)
 
         except Exception as e_error:
             if file_pattern:
@@ -1237,6 +1239,7 @@ class AudioMetadata():
             raise e_error
         else:
             return audio_file
+
 
     def map_flac_tags(self, input_tags: VCFLACDict) -> dict:
         '''
@@ -1905,6 +1908,86 @@ class AudioMetadata():
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} walking {start_path} to normalize WMA files", stack_info=True)
+            raise e_error
+
+
+    def rename_album_directories(self, start_path: str) -> None:
+        r'''
+        @brief Renames second level (sld) album directories in first level (fld) artist directories.
+
+        @details Renames the album sub directory for the artist from album metadata.<br>
+        Calling functions MUST verify valid start path, which MUST be the tld (top level directory).
+
+        @note Using the Windows invalid character set because it is more restrictive (therefore OS universal).<br>
+        The characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` will be replaced by `-`.<br>
+        Refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename<br>
+
+        @param start_path {str} The top-level directory containing artist folders.
+        @return {None} This function does not return any value.
+
+        @exception ValidationError Raised when the start path is invalid or does not meet the required criteria.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            for artist_name in os.listdir(start_path):
+                artist_path = os.path.join(start_path, artist_name)
+
+                if not os.path.isdir(artist_path):
+                    continue
+
+                for album_dir_name in os.listdir(artist_path):
+                    album_path = os.path.join(artist_path, album_dir_name)
+
+                    if not os.path.isdir(album_path):
+                        continue
+
+                    value_album = None
+                    for song_file in os.listdir(album_path):
+                        song_path = os.path.join(album_path, song_file)
+                        _, file_ext = os.path.splitext(song_file)
+
+                        if not os.path.isfile(song_path) or file_ext.lower() not in AUDIO_EXTS:
+                            continue
+
+                        file_media_tags = self.get_ffprobe_tags(song_path)
+                        if not file_media_tags:
+                            continue
+
+                        for key, value in file_media_tags.items():
+                            if key.lower() == "album" and value:
+                                value_album = value
+                                break
+
+                        if value_album:
+                            break
+
+                    if not value_album:
+                        logger.warning(f"{album_path} is missing album metadata")
+                        continue
+
+                    album = str(value_album).replace("/", "-")
+                    sanitized_album_name = pathvalidate.sanitize_filepath(
+                        album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
+
+                    if album_dir_name == sanitized_album_name:
+                        continue
+
+                    destination_path = os.path.join(artist_path, sanitized_album_name)
+                    original_destination_path = destination_path
+                    counter = 1
+                    while os.path.exists(destination_path):
+                        destination_path = f"{original_destination_path} ({counter})"
+                        counter += 1
+
+                    os.rename(album_path, destination_path)
+                    logger.info(f"Renamed {album_path} to {destination_path}")
+
+        except ValidationError as v_error:
+            logger.exception(f"ValidationError sanitizing album metadata {album}", stack_info=True)
+            raise v_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} renaming album directories for {start_path}", stack_info=True)
             raise e_error
 
 

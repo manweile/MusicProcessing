@@ -119,19 +119,20 @@ class CustomArgumentParser(argparse.ArgumentParser):
                 super()._print_message(message, file)
 
 
-def convert_file(file_path):
+def convert_file(file_path, target):
     '''
-    @brief Converts specified audio file to mp3 format.
+    @brief Converts specified audio file to mp3 format, optionally specifying a target directory.
 
     @details Converts the specified audio file to mp3 format using the metadata conversion functionality.
 
     @param file_path {str} The full path to audio file.
+    @param target {str} The optional target directory for exported files.
     '''
 
-    metadata.convert_file(file_path)
+    metadata.convert_file(file_path, target)
 
 
-def convert_walk(tld_path, file_pattern):
+def convert_walk(tld_path, file_pattern, target):
     '''
     @brief Converts all audio files in specified top level directory to mp3 format.
 
@@ -139,9 +140,10 @@ def convert_walk(tld_path, file_pattern):
 
     @param tld_path {str} The top level directory path that contains all the music files.
     @param file_pattern {str} The file pattern we want to convert.
+    @param target {str} The optional target directory for exported files.
     '''
 
-    metadata.convert_walk(tld_path, file_pattern)
+    metadata.convert_walk(tld_path, file_pattern, target)
 
 
 def create_albums(tld_path):
@@ -156,16 +158,17 @@ def create_albums(tld_path):
     metadata.create_album_dirs(tld_path)
 
 
-def ebu_file(file_path):
+def ebu_file(file_path, target):
     '''
     @brief EBU R128 normalize the specified audio file.
 
     @details Normalizes the audio file to the EBU R128 loudness standard.
 
     @param file_path {str} The full path to audio file.
+    @param target {str} The optional target directory for exported files.
     '''
 
-    normalization.ebu_normalize_file(file_path)
+    normalization.ebu_normalize_file(file_path, target)
 
 
 def existing_file(file):
@@ -306,7 +309,7 @@ def get_unique_media(tld_path):
     metadata.get_unique_media_keys(tld_path)
 
 
-def level_normalize_walk(tld_path, norm_type):
+def level_normalize_walk(tld_path, norm_type, target):
     '''
     @brief Normalizes all audio files in specified top level directory per input normalization type.
 
@@ -314,9 +317,10 @@ def level_normalize_walk(tld_path, norm_type):
 
     @param tld_path {str} The top level directory path that contains all the music files.
     @param norm_type {str} The type of normalization to perform.
+    @param target {str} The optional target directory for exported files.
     '''
 
-    normalization.level_normalize_walk(tld_path, norm_type)
+    normalization.level_normalize_walk(tld_path, norm_type, target)
 
 
 def list_audio(tld_path):
@@ -440,28 +444,30 @@ def normalize_wma_filename_walk(tld_path):
     metadata.normalize_wma_filename_walk(tld_path)
 
 
-def peak_file(file_path):
+def peak_file(file_path, target):
     '''
     @brief Peak normalize the specified audio file.
 
     @details Peak normalizes the specified audio file.
 
     @param file_path {str} The full path to audio file.
+    @param target {str} The optional target directory for exported files.
     '''
 
-    normalization.peak_normalize_file(file_path)
+    normalization.peak_normalize_file(file_path, target)
 
 
-def rms_file(file_path):
+def rms_file(file_path, target):
     '''
     @brief RMS normalize the specified audio file.
 
     @details RMS normalizes the specified audio file.
 
     @param file_path {str} The full path to audio file.
+    @param target {str} The optional target directory for exported files.
     '''
 
-    normalization.rms_normalize_file(file_path)
+    normalization.rms_normalize_file(file_path, target)
 
 
 def remove_empty_albums(tld_path):
@@ -500,6 +506,18 @@ def remove_set_list(tld_path):
     '''
 
     directory.remove_set_list(tld_path)
+
+
+def rename_album_directories(tld_path):
+    '''
+    @brief Renames album directories based on metadata.
+
+    @details Traverses the top level directory, reads album metadata, and renames album directories accordingly.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    '''
+
+    metadata.rename_album_directories(tld_path)
 
 
 def set_album_art(tld_path):
@@ -586,12 +604,14 @@ def main(args) -> int:
     try:
         if args.subcommand == "convert-file":
             file_path = getattr(args, "file")
-            convert_file(file_path)
+            target = getattr(args, "target")
+            convert_file(file_path, target)
 
         if args.subcommand == "convert-walk":
             tld_path = getattr(args, "tld")
             file_pattern = getattr(args, "pattern")
-            convert_walk(tld_path, file_pattern)
+            target = getattr(args, "target")
+            convert_walk(tld_path, file_pattern, target)
 
         if args.subcommand == "create-albums":
             tld_path = getattr(args, "tld")
@@ -599,7 +619,8 @@ def main(args) -> int:
 
         if args.subcommand == "ebu-file":
             file_path = getattr(args, "file")
-            ebu_file(file_path)
+            target = getattr(args, "target")
+            ebu_file(file_path, target)
 
         if args.subcommand == "extract-file":
             file_path = getattr(args, "file")
@@ -644,7 +665,8 @@ def main(args) -> int:
         if args.subcommand == "level-normalize-walk":
             tld_path = getattr(args, "tld")
             norm_type = getattr(args, "type")
-            level_normalize_walk(tld_path, norm_type)
+            target = getattr(args, "target")
+            level_normalize_walk(tld_path, norm_type, target)
 
         if args.subcommand == "list-audio":
             tld_path = getattr(args, "tld")
@@ -689,11 +711,13 @@ def main(args) -> int:
 
         if args.subcommand == "peak-file":
             file_path = getattr(args, "file")
-            peak_file(file_path)
+            target = getattr(args, "target")
+            peak_file(file_path, target)
 
         if args.subcommand == "rms-file":
             file_path = getattr(args, "file")
-            rms_file(file_path)
+            target = getattr(args, "target")
+            rms_file(file_path, target)
 
         if args.subcommand == "remove-empty-albums":
             tld_path = getattr(args, "tld")
@@ -707,6 +731,10 @@ def main(args) -> int:
         if args.subcommand == "remove-set-list":
             tld_path = getattr(args, "tld")
             remove_set_list(tld_path)
+
+        if args.subcommand == "rename-album-directories":
+            tld_path = getattr(args, "tld")
+            rename_album_directories(tld_path)
 
         if args.subcommand == "set-album-art":
             tld_path = getattr(args, "tld")
@@ -753,15 +781,18 @@ if __name__ == "__main__":
 
         # convert audio file specified to mp3 format
         # 1 mandatory arg, the audio file path
+        # 1 optional arg, the target directory for exported files
         # convert-file "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"
         # convert-file "F:\Rick\RickPrepped\Bee Gees\Tales from the Brothers Gibb A History in Song 1967-1990\Bee Gees-Sir Geoffrey Saved The World.mp3"
         convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
         convert_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        convert_file_parser.add_argument("--target", type=str, help="optional target directory for exported files")
         convert_file_parser.set_defaults(func=convert_file)
 
         # convert all audio files found in top level directory
         # 1 mandatory arg, the start path (can be tld, fld, or sld)
         # 1 optional arg, the file pattern to match (.flac, .mp3, .m4a .wma)
+        # 1 optional arg, the target directory for exported files
         # convert-walk C:\Music --pattern .m4a
         # convert-walk C:\Music
         # convert-walk C:\Music\Abba
@@ -769,6 +800,7 @@ if __name__ == "__main__":
         convert_walk_parser = subparsers.add_parser("convert-walk", help="Converts all audio files to mp3")
         convert_walk_parser.add_argument("tld", type=existing_path, help="mandatory starting directory")
         convert_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
+        convert_walk_parser.add_argument("--target", type=str, help="optional target directory for exported files")
         convert_walk_parser.set_defaults(func=convert_walk)
 
         # create album directories
@@ -780,9 +812,11 @@ if __name__ == "__main__":
 
         # ebu normalize an audio file (destructive)
         # 1 mandatory arg, the path to audio file
+        # 1 optional arg, the target directory for exported files
         # ebu-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
         ebu_file_parser = subparsers.add_parser("ebu-file", help="EBU R128 normalizes a mp3 audio file level")
         ebu_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        ebu_file_parser.add_argument("--target", type=str, help="optional target directory for exported files")
         ebu_file_parser.set_defaults(func=ebu_file)
 
         # extract album art from specified audio file
@@ -870,12 +904,14 @@ if __name__ == "__main__":
 
         # level normalize mp3 files from tld
         # 2 mandatory arg, the tld path and the normalization type (ebu, peak, rms)
+        # 1 optional arg, the target directory for exported files
         # level-normalize-walk C:\Music ebu
         # level-normalize-walk C:\Music peak
         # level-normalize-walk C:\Music rms
         level_normalize_walk_parser = subparsers.add_parser("level-normalize-walk", help="Normalizes files with specified pattern")
         level_normalize_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         level_normalize_walk_parser.add_argument("type", type=str, help="mandatory normalization type")
+        level_normalize_walk_parser.add_argument("--target", type=str, help="optional target directory for exported files")
         level_normalize_walk_parser.set_defaults(func=level_normalize_walk)
 
         # list all audio files
@@ -983,32 +1019,33 @@ if __name__ == "__main__":
         remove_set_list_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         remove_set_list_parser.set_defaults(func=remove_set_list)
 
+        # rename album directories based on metadata
+        # 1 mandatory arg, the tld path
+        # rename-album-directories "F:\Rick\RickPrepped"
+        rename_album_directories_parser = subparsers.add_parser("rename-album-directories", help="Renames album directories based on metadata")
+        rename_album_directories_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        rename_album_directories_parser.set_defaults(func=rename_album_directories)
+
         # peak normalize an audio file (destructive)
         # 1 mandatory arg, the path to audio file
-        # sys.argv = ['D:\MusicProcessing\main.py', 'peak-file',
-        # "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'peak-file',
-        # "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp3"]
+        # 1 optional arg, the target directory for exported files
         # peak-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
         peak_file_parser = subparsers.add_parser("peak-file", help="Peak normalizes a mp3 audio file level")
         peak_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        peak_file_parser.add_argument("--target", type=str, help="optional target directory for exported files")
         peak_file_parser.set_defaults(func=peak_file)
 
         # rms normalize an audio file (destructive)
         # 1 mandatory arg, the path to audio file
-        # sys.argv = ['D:\MusicProcessing\main.py', 'rms-file',
-        # "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"]
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'rms-file',
-        # "/home/gerald/ConvertedMusic/Joshua Davis/The Voice Peformance/Joshua Davis-The Workingman's Hymn.mp3"]
+        # 1 optional arg, the target directory for exported files
         # rms-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
         rms_file_parser = subparsers.add_parser("rms-file", help="Rms normalizes a mp3 audio file level")
         rms_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        rms_file_parser.add_argument("--target", type=str, help="optional target directory for exported files")
         rms_file_parser.set_defaults(func=rms_file)
 
         # set album art file
         # 1 mandatory arg, the tld path
-        # sys.argv = ['D:\MusicProcessing\main.py', 'set-album-art', 'C:\Music']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'set-art', '/home/gerald/Music']
         # set-album-art C:\Music
         set_album_art_parser = subparsers.add_parser("set-album-art", help="Set album art file")
         set_album_art_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
@@ -1017,8 +1054,6 @@ if __name__ == "__main__":
         # update m3u playlist
         # 2 mandatory args, the tld path and the m3u path
         # update-m3u D:\MusicProcessing\tests\Music D:\MusicProcessing\tests\Music\test.m3u
-        # sys.argv = ['D:\MusicProcessing\main.py'', 'update-m3u', 'D:\MusicProcessing\tests\Music', 'D:\MusicProcessing\tests/Music\test.m3u']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'update-m3u', '~/MusicProcessing/tests/Music', '~/MusicProcessing/tests/Music/test.m3u']
         # update-walk C:\Music
         update_m3u_parsers = subparsers.add_parser("update-m3u", help="Update playlist paths")
         update_m3u_parsers.add_argument("tld", type=existing_path, help="mandatory top level directory")
@@ -1037,8 +1072,6 @@ if __name__ == "__main__":
 
         # update m3u playlist walk
         # 1 mandatory arg, the tld path
-        # sys.argv = ['D:\MusicProcessing\main.py'', 'update-walk', 'D:\MusicProcessing\tests\Music']
-        # sys.argv = ['/home/gerald/MusicProcessing/main.py', 'update-walk', '~/MusicProcessing/tests/Music']
         # update-walk C:\Music
         update_walk_parsers = subparsers.add_parser("update-walk", help="Update playlist paths")
         update_walk_parsers.add_argument("tld", type=existing_path, help="mandatory top level directory")

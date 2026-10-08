@@ -218,7 +218,7 @@ class TestAudioNormalization(TestCase):
         @param self {TestAudioNormalization} Test instance containing expected output paths.
         '''
 
-        normalization.ebu_normalize_file(self.ebu_dynamic_src, show_spinner=False)
+        normalization.ebu_normalize_file(self.ebu_dynamic_src, None, show_spinner=False)
         self.assertTrue(os.path.exists(self.ebu_dynamic_res))
 
 
@@ -233,7 +233,7 @@ class TestAudioNormalization(TestCase):
         @param self {TestAudioNormalization} Test instance containing expected output paths.
         '''
 
-        normalization.ebu_normalize_file(self.ebu_linear_src, show_spinner=False)
+        normalization.ebu_normalize_file(self.ebu_linear_src, None, show_spinner=False)
         self.assertTrue(os.path.exists(self.ebu_linear_res))
 
 
@@ -580,7 +580,7 @@ class TestAudioNormalization(TestCase):
         @param self {TestAudioNormalization} Test instance containing normalized output paths.
         '''
 
-        normalization.level_normalize_walk(self.normalized, "ebu", show_spinner=False)
+        normalization.level_normalize_walk(self.normalized, "ebu", None, show_spinner=False)
 
         for audio_file in self.normalized_results:
             audio_exists = os.path.exists(audio_file)
@@ -598,7 +598,7 @@ class TestAudioNormalization(TestCase):
         @param self {TestAudioNormalization} Test instance containing normalized output paths.
         '''
 
-        normalization.level_normalize_walk(self.normalized, "peak", show_spinner=False)
+        normalization.level_normalize_walk(self.normalized, "peak", None, show_spinner=False)
 
         audio_exists = os.path.exists(self.peak_res)
         self.assertTrue(audio_exists)
@@ -615,7 +615,7 @@ class TestAudioNormalization(TestCase):
         @param self {TestAudioNormalization} Test instance containing normalized output paths.
         '''
 
-        normalization.level_normalize_walk(self.normalized, "rms", show_spinner=False)
+        normalization.level_normalize_walk(self.normalized, "rms", None, show_spinner=False)
 
         audio_exists = os.path.exists(self.rms_res)
         self.assertTrue(audio_exists)
@@ -632,7 +632,7 @@ class TestAudioNormalization(TestCase):
         @param self {TestAudioNormalization} Test instance containing normalized output paths.
         '''
 
-        normalization.peak_normalize_file(self.peak_src, show_spinner=False)
+        normalization.peak_normalize_file(self.peak_src, None, show_spinner=False)
         self.assertTrue(os.path.exists(self.peak_res))
 
 
@@ -651,7 +651,7 @@ class TestAudioNormalization(TestCase):
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(self.max_vol_src, show_spinner=False)
+            normalization.peak_normalize_file(self.max_vol_src, None, show_spinner=False)
 
         self.assertIn(self.max_vol_res, cm.output[0])
 
@@ -667,7 +667,7 @@ class TestAudioNormalization(TestCase):
         @param self {TestAudioNormalization} Test instance containing normalized output paths.
         '''
 
-        normalization.rms_normalize_file(self.rms_src, show_spinner=False)
+        normalization.rms_normalize_file(self.rms_src, None, show_spinner=False)
         self.assertTrue(os.path.exists(self.rms_res))
 
 
@@ -686,7 +686,7 @@ class TestAudioNormalization(TestCase):
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.rms_normalize_file(self.rms_clipping_src, show_spinner=False)
+            normalization.rms_normalize_file(self.rms_clipping_src, None, show_spinner=False)
 
         self.assertIn(self.rms_clipping_res, cm.output[0])
 
@@ -706,7 +706,7 @@ class TestAudioNormalization(TestCase):
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(self.max_vol_src, show_spinner=False)
+            normalization.peak_normalize_file(self.max_vol_src, None, show_spinner=False)
 
         self.assertIn(self.max_vol_res, cm.output[0])
 
