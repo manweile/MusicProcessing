@@ -51,8 +51,17 @@ this is the optional metadata:
 - copyright
 - publisher
 
+I will use MP3Tag/MusicBrainz Picard/puddletag to:
+
+- verify all wma files have WMA tags
+- verify all m4a files have MP4 tags
+- verify all flac files have Vorbis tags
+- verify all mp3 files have at least one ID3 version tags
+- find accurate metadata for preferred tags
+- find cover art for albums if necessary
+
 **A word about metadata:**<br>
-Ensuring all of your metadata is accurate is entirely dependent on your source's quality.
+Ensuring all of your metadata is accurate is entirely dependent on your source's quality.<br>
 There is good argument for doing it in the `Prepped` stage; but bear in mind how much work that could be.<br>
 For right now, directory structure only needs 3 fields to be accurate: artist, album name and song title.
 
@@ -62,16 +71,16 @@ Now your are looking at organizing the collections directory structure.<br>
 Depending on the existing directory organization & metadata accuracy of your sources, you could be doing a little, or a lot.<br>
 I am using file explorer/file manager for the transfers - don't have a function or script, and not sure if I will write one.
 
-*Naming* I use the Windows invalid character set ( `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|`).<br>
-It's more restrictive and therefore OS agnostic; you can use it on Linux & Mac.
+#### Naming
 
+I use the Windows invalid character set, it's more restrictive and therefore OS agnostic; you can use it on Linux & Mac.<br>
 The directory structure is important; the project function logic **requires** this set structure.<br>
 There are three directory levels:
 
 #### Top Level Directory
 
 The music top level directory (*tld*) is where all music related files live.<br>
-The tld can be nested as deep as you want (with respect to your OS depth rules); it could as short as drive:\tld.<br>
+The tld can be nested as deep as you want (with respect to your OS depth rules); it could as short as `drive:\tld`.<br>
 You can name the tld whatever you want. I personally prefer to call it "Music", which follows Windows OS practice.
 
 Playlist files (m3u) **must** exist here; they use *relative pathing* to the artists/albums/songs they play, and playlist functions reflect that.
@@ -152,11 +161,11 @@ It's a top level directory walking function, so you **must** supply the tld, and
 
 1. ensure that all the songs that need an album directory are sitting by themselves in the **artist 1st level directory**
 2. at least one song has viable album name metadata
-   1. the function will sanitize the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` to `-`.
-   2. the function does **not** handle attempted creation of duplicate directories
-      1. ensure album metadata for songs from *different albums* will not clash
-3. all songs with matching album metadata are moved into the new album directory
-4. command line: `python main.py create-albums "Drive:/path/to/tld"`
+   1. the function will sanitize the invalid Windows characters to a dash.
+3. the function does **not** handle attempted creation of duplicate directories
+   1. ensure album metadata for songs from *different albums* will not clash
+4. all songs with matching album metadata are moved into the new album directory
+5. command line: `python main.py create-albums "Drive:/path/to/tld"`
 
 before/after execution:
 
@@ -287,7 +296,7 @@ It's a top level directory only walking function, so you **must** supply the tld
 
 1. ensure that at least one song in an album has accurate & viable album name metadata **AND** the rest either have none or matching metadata
    1. the function will create an album directory based on unique viable album name metadata
-   2. the function will sanitize the characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` to `-`.
+   2. the function will sanitize the invalid Windows characters to a dash.
    3. unlike create-albums, attempted duplicate directory creation **is handled**
       1. duplicates will be appended with an ordinal number
 2. command line: `python main.py rename-album-directories "Drive:/path/to/tld"`
@@ -462,23 +471,23 @@ Updates genre metadata from artist genre CSV mappings<br>
 Best Practice: This function *requires a sorted* csv file in the tld; the function uses relative pathing.
 
 CSV File Example:<br>
-artist name,artist genre
-Bachman-Turner Overdrive,Classic Rock
-Bad Company,Classic Rock
-Barenaked Ladies,Alternative Rock
-Beach Boys,Pop Rock
-Bee Gees, Pop Rock
-Beth Hart and Joe Bonamassa,Blues
-Blondie,New Wave
-Blu Cantrell,Pop
-Blue Rodeo,Folk Rock
-Bonnie Raitt,Blues Rock
-Bonnie Tyler,Pop Rock
-Boston,Rock
-Brad Paisley,Country
-Brandi Carlile,Indie
-Bruce Springsteen,Rock
-Huey Lewis & The News,Movie Soundtrack
+artist name,artist genre<br>
+Bachman-Turner Overdrive,Classic Rock<br>
+Bad Company,Classic Rock<br>
+Barenaked Ladies,Alternative Rock<br>
+Beach Boys,Pop Rock<br>
+Bee Gees, Pop Rock<br>
+Beth Hart and Joe Bonamassa,Blues<br>
+Blondie,New Wave<br>
+Blu Cantrell,Pop<br>
+Blue Rodeo,Folk Rock<br>
+Bonnie Raitt,Blues Rock<br>
+Bonnie Tyler,Pop Rock<br>
+Boston,Rock<br>
+Brad Paisley,Country<br>
+Brandi Carlile,Indie<br>
+Bruce Springsteen,Rock<br>
+Huey Lewis & The News,Movie Soundtrack<br>
 Stephen Page,Alternative Rock
 
 command line: `python main.py update-genres-from csv "Drive:/path/to/tld/"`
@@ -490,8 +499,7 @@ They both can add extraneous files like Thumbs.db, ini files, Art*.jpg, etc.
 
 ### remove-pattern
 
-Removes files with specified pattern.<br>
-Works for tld, fld, and sld as path input.<br>
+Removes files with specified pattern. Works for tld, fld, and sld as path input.<br>
 Will throw an error if start path is a file system root or mount point, or if file pattern is full wildcard.
 
 ipsum lorem
@@ -574,26 +582,13 @@ ipsum lorem functions to use
 update-m3u                      Update playlist paths
 update-walk                     Update playlist paths
 
-## External Tool Processing
+### Other functions
 
-I will use MP3Tag/MusicBrainz Picard/puddletag to:
-
-- verify all wma files have only WMA tags
-- verify all m4a files have only MP4 tags
-- verify all flac files only have Vorbis tags
-- remove all APEv2 tags from mp3 files
-  - remove all non ID3v2.3 tags from mp3 files
-  - verify all mp3 files have only ID2v2.3 tags
-- find accurate metadata for preferred tags
-- find cover art for albums if necessary
-
-python main.py --help
-subcommands:
-    get-ffprobe-media-info          Gets ffprobe media info for an audio file
-    get-ffprobe-media-info-walk     Gets ffprobe media info for audio files
-    get-ffprobe-tags                Gets ffprobe metadata tags for audio file
-    get-mutagen-tags                Gets Mutagen metadata tags from audio file
-    get-tags-walk                   Gets Mutagen metadata tags from audio files
-    get-unique-media                Gets set of unique ffprobe tags from collection
-    list-audio                      Generates a csv containing full path for all audio files
-    list-type                       Generates a csv containing full file path for an audio file type
+get-ffprobe-media-info          Gets ffprobe media info for an audio file<br>
+get-ffprobe-media-info-walk     Gets ffprobe media info for audio files<br>
+get-ffprobe-tags                Gets ffprobe metadata tags for audio file<br>
+get-mutagen-tags                Gets Mutagen metadata tags from audio file<br>
+get-tags-walk                   Gets Mutagen metadata tags from audio files<br>
+get-unique-media                Gets set of unique ffprobe tags from collection<br>
+list-audio                      Generates a csv containing full path for all audio files<br>
+list-type                       Generates a csv containing full file path for an audio file type

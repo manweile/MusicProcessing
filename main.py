@@ -121,9 +121,10 @@ class CustomArgumentParser(argparse.ArgumentParser):
 
 def convert_file(file_path, target):
     '''
-    @brief Converts specified audio file to mp3 format, optionally specifying a target directory.
+    @brief Converts specified audio file to mp3 format.
 
-    @details Converts the specified audio file to mp3 format using the metadata conversion functionality.
+    @details Converts the specified audio file to mp3 format using the metadata conversion functionality.<br>
+    Can accept optional optional target directory for the exported file.
 
     @param file_path {str} The full path to audio file.
     @param target {str} The optional target directory for exported files.
@@ -136,10 +137,12 @@ def convert_walk(tld_path, file_pattern, target):
     '''
     @brief Converts all audio files in specified top level directory to mp3 format.
 
-    @details Converts all audio files matching the specified file pattern in the top level directory to mp3 format.
+    @details Walks through the top level directory and converts all audio files to mp3 format.<br>
+    Can accept an optional file pattern to filter which files to convert.<br>
+    Can accept an optional target directory for the exported files.
 
     @param tld_path {str} The top level directory path that contains all the music files.
-    @param file_pattern {str} The file pattern we want to convert.
+    @param file_pattern {str} The optional file pattern we want to convert.
     @param target {str} The optional target directory for exported files.
     '''
 
@@ -160,9 +163,9 @@ def create_albums(tld_path):
 
 def ebu_file(file_path, target):
     '''
-    @brief EBU R128 normalize the specified audio file.
+    @brief EBU R128 normalize the specified mp3 audio file.
 
-    @details Normalizes the audio file to the EBU R128 loudness standard.
+    @details Normalizes the mp3 audio file to the EBU R128 loudness standard.
 
     @param file_path {str} The full path to audio file.
     @param target {str} The optional target directory for exported files.
@@ -211,7 +214,7 @@ def extract_file(file_path):
     '''
     @brief Extracts and saves embedded album art from specified audio file.
 
-    @details Extracts and saves the embedded album art from the specified audio file.
+    @details Saves the embedded album art from the specified audio file, co-locates the art with the audio file in the same directory.
 
     @param file_path {str} The full path to audio file.
     '''
@@ -223,7 +226,8 @@ def extract_walk(tld_path, file_pattern):
     '''
     @brief Extracts and saves embedded album art from all audio files in specified top level directory with specified pattern.
 
-    @details Extracts and saves the embedded album art from all audio files in the specified top level directory that match the given file pattern.
+    @details Extracts & saves the embedded album art from all audio files in the specified top level directory that match the given file pattern.<br>
+    The extracted album art is co-located with the corresponding audio files in the same directory.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     @param file_pattern {str} The file pattern we want to extract album art from.
@@ -236,7 +240,7 @@ def get_ffprobe_media_info(file_path):
     '''
     @brief Gets media info.
 
-    @details Retrieves detailed media information for the specified audio file.
+    @details Retrieves detailed media information for the specified audio file with ffprobe.
 
     @param file_path {str} The full path to audio file.
     '''
@@ -248,7 +252,8 @@ def get_ffprobe_media_info_walk(start_path, file_pattern):
     '''
     @brief Gets media info.
 
-    @details Retrieves detailed media information for all audio files in the specified top level directory that match the given file pattern.
+    @details Retrieves detailed media information for all audio files in the specified top level directory that match the given file pattern.<br>
+    Uses ffprobe to gather the media information.
 
     @param start_path {str} The full path to the top level directory containing audio files.
     @param file_pattern {str} The file pattern we want to get media info for.
@@ -273,7 +278,7 @@ def get_mutagen_tags(file_path):
     '''
     @brief Gets metadata from specified audio file.
 
-    @details Retrieves all available metadata tags from the specified audio file.
+    @details Retrieves all available metadata tags from the specified audio file using mutagen.
 
     @param file_path {str} The full path to audio file.
     @return tags {mutagen.FileType} The metadata tags retrieved from the audio file.
@@ -287,7 +292,8 @@ def get_tags_walk(tld_path, file_pattern, ffprobe):
     '''
     @brief Gets metadata from all audio files in specified top level directory with specified pattern.
 
-    @details Retrieves all available metadata tags from all audio files in the specified top level directory that match the given file pattern.
+    @details Retrieves all available metadata tags from all audio files in the specified top level directory that match the given file pattern.<br>
+    Defaults to mutagen if ffprobe is not specified.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     @param file_pattern {str} The file pattern we want to get tags for.
@@ -311,9 +317,9 @@ def get_unique_media(tld_path):
 
 def level_normalize_walk(tld_path, norm_type, target):
     '''
-    @brief Normalizes all audio files in specified top level directory per input normalization type.
+    @brief Level normalizes all audio files in specified top level directory per input normalization type.
 
-    @details Normalizes all audio files in the specified top level directory according to the specified normalization type.
+    @details Level normalizes all mp3 audio files in the specified top level directory according to the specified normalization type.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     @param norm_type {str} The type of normalization to perform.
@@ -352,7 +358,7 @@ def normalize_flac_filename(file_path):
     '''
     @brief Renames a FLAC using its album artist and title metadata.
 
-    @details Renames the specified FLAC file using its album artist and title metadata.
+    @details Renames the specified FLAC file using its VORBIS album artist and title metadata.
 
     @param file_path {str} The full path to the FLAC file.
     '''
@@ -364,7 +370,7 @@ def normalize_mp3_filename(file_path):
     '''
     @brief Renames an MP3 using its album artist and title metadata.
 
-    @details Renames the specified MP3 file using its album artist and title metadata.
+    @details Renames the specified MP3 file using its ID3 album artist and title metadata.
 
     @param file_path {str} The full path to the MP3 file.
     '''
@@ -376,7 +382,7 @@ def normalize_mp4_filename(file_path):
     '''
     @brief Renames an M4A using its album artist and title metadata.
 
-    @details Renames the specified M4A file using its album artist and title metadata.
+    @details Renames the specified M4A file using its MP4 album artist and title metadata.
 
     @param file_path {str} The full path to the M4A file.
     '''
@@ -388,7 +394,7 @@ def normalize_wma_filename(file_path):
     '''
     @brief Renames a WMA using its album artist and title metadata.
 
-    @details Renames the specified WMA file using its album artist and title metadata.
+    @details Renames the specified WMA file using its ASF album artist and title metadata.
 
     @param file_path {str} The full path to the WMA file.
     '''
@@ -448,7 +454,7 @@ def peak_file(file_path, target):
     '''
     @brief Peak normalize the specified audio file.
 
-    @details Peak normalizes the specified audio file.
+    @details Peak normalizes the specified audio file with ffmpeg.
 
     @param file_path {str} The full path to audio file.
     @param target {str} The optional target directory for exported files.
@@ -461,7 +467,7 @@ def rms_file(file_path, target):
     '''
     @brief RMS normalize the specified audio file.
 
-    @details RMS normalizes the specified audio file.
+    @details RMS normalizes the specified audio file with ffmpeg.
 
     @param file_path {str} The full path to audio file.
     @param target {str} The optional target directory for exported files.
@@ -524,7 +530,7 @@ def set_album_art(tld_path):
     '''
     @brief Sets album art file for an album directory.
 
-    @details Sets the album art for all album directories within the specified top level directory.
+    @details Sets the album art for all album directories matching stored art files.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
