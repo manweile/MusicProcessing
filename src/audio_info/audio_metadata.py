@@ -424,7 +424,7 @@ class AudioMetadata():
             return id3_tags
 
 
-    def convert_file(self, file_path: str, target: str = None, show_spinner: bool = True) -> None:
+    def convert_file(self, file_path: str = None, target: str = None, show_spinner: bool = True) -> None:
         '''
         @brief Converts an acceptable audio file to mp3 audio file, using ffmpeg directly.
 
@@ -1476,6 +1476,50 @@ class AudioMetadata():
             return id3_tags
 
 
+    def normalize_filename_walk(self, start_path: str) -> None:
+        '''
+        @brief Walks through a directory and calls appropriate functions to rename audio files.
+
+        @details Calling function MUST supply a valid path to a directory.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
+        The function will recursively walk through the directory and rename files of only the supported audio file types.
+
+        @param start_path {str} The path to the directory to start walking from.
+        @return {None} This function does not return any value.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        input_file_ext = None
+
+        try:
+            input_path = Path(start_path)
+
+            # need to go down to audio files, and we don't care about artist folder names
+            for dir_path, _, file_names in os.walk(input_path):
+                for file in file_names:
+                    _, input_file_ext = os.path.splitext(file)
+
+                    # only care about accepted audio file types
+                    if input_file_ext.lower() not in AUDIO_EXTS:
+                        continue
+
+                    file_path = os.path.join(dir_path, file)
+
+                    if input_file_ext.lower() == MP3_EXT:
+                        self.normalize_mp3_filename(file_path)
+                    elif input_file_ext.lower() == M4A_EXT:
+                        self.normalize_mp4_filename(file_path)
+                    elif input_file_ext.lower() == WMA_EXT:
+                        self.normalize_wma_filename(file_path)
+                    elif input_file_ext.lower() == FLAC_EXT:
+                        self.normalize_flac_filename(file_path)
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} normalizing filenames from: {start_path}", stack_info=True)
+            raise e_error
+
+
     def normalize_flac_filename(self, file_path: str) -> None:
         '''
         @brief Renames a FLAC using its album artist and title metadata.
@@ -1776,138 +1820,6 @@ class AudioMetadata():
             raise v_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} normalizing filename for {file_path}", stack_info=True)
-            raise e_error
-
-
-    def normalize_flac_filename_walk(self, start_path: str) -> None:
-        '''
-        @brief Renames FLAC files found in specified path using album artist and title metadata.
-
-        @details Calling functions MUST verify valid start path.
-
-        @param start_path {str} The starting point of the directory walk.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        input_file_ext = None
-
-        try:
-            input_path = Path(start_path)
-
-            for dir_path, _, file_names in os.walk(input_path):
-                for file in file_names:
-                    _, input_file_ext = os.path.splitext(file)
-
-                    # only process FLAC files
-                    if input_file_ext.lower() != FLAC_EXT:
-                        continue
-
-                    input_file_path = os.path.join(dir_path, file)
-                    self.normalize_flac_filename(input_file_path)
-
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} walking {start_path} to normalize FLAC files", stack_info=True)
-            raise e_error
-
-
-    def normalize_mp3_filename_walk(self, start_path: str) -> None:
-        '''
-        @brief Renames ID3v2.3 MP3 files found in specified path using album artist and title metadata.
-
-        @details Calling functions MUST verify valid start path.
-
-        @param start_path {str} The starting point of the directory walk.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        input_file_ext = None
-
-        try:
-            input_path = Path(start_path)
-
-            for dir_path, _, file_names in os.walk(input_path):
-                for file in file_names:
-                    _, input_file_ext = os.path.splitext(file)
-
-                    # only process MP3 files
-                    if input_file_ext.lower() != MP3_EXT:
-                        continue
-
-                    input_file_path = os.path.join(dir_path, file)
-                    self.normalize_mp3_filename(input_file_path)
-
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} walking {start_path} to normalize audio files", stack_info=True)
-            raise e_error
-
-
-    def normalize_mp4_filename_walk(self, start_path: str) -> None:
-        '''
-        @brief Renames M4A files found in specified path using album artist and title metadata.
-
-        @details Calling functions MUST verify valid start path.
-
-        @param start_path {str} The starting point of the directory walk.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        input_file_ext = None
-
-        try:
-            input_path = Path(start_path)
-
-            for dir_path, _, file_names in os.walk(input_path):
-                for file in file_names:
-                    _, input_file_ext = os.path.splitext(file)
-
-                    # only process M4A files
-                    if input_file_ext.lower() != M4A_EXT:
-                        continue
-
-                    input_file_path = os.path.join(dir_path, file)
-                    self.normalize_mp4_filename(input_file_path)
-
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} walking {start_path} to normalize MP4 files", stack_info=True)
-            raise e_error
-
-
-    def normalize_wma_filename_walk(self, start_path: str) -> None:
-        '''
-        @brief Renames WMA files found in specified path using album artist and title metadata.
-
-        @details Calling functions MUST verify valid start path.
-
-        @param start_path {str} The starting point of the directory walk.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        input_file_ext = None
-
-        try:
-            input_path = Path(start_path)
-
-            for dir_path, _, file_names in os.walk(input_path):
-                for file in file_names:
-                    _, input_file_ext = os.path.splitext(file)
-
-                    # only process WMA files
-                    if input_file_ext.lower() != WMA_EXT:
-                        continue
-
-                    input_file_path = os.path.join(dir_path, file)
-                    self.normalize_wma_filename(input_file_path)
-
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} walking {start_path} to normalize WMA files", stack_info=True)
             raise e_error
 
 
