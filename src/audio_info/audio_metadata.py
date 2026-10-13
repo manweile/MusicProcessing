@@ -1578,8 +1578,14 @@ class AudioMetadata():
             )
 
             normalized_path = os.path.join(os.path.dirname(file_path), normalized_name)
-            del audio_file
-            os.rename(file_path, normalized_path)
+
+            # check if the renamed file exists, log warning and return if it does
+            if os.path.exists(normalized_path):
+                logger.warning(f"File already exists: {normalized_path}")
+                return
+            else:
+                del audio_file
+                os.rename(file_path, normalized_path)
 
             data.append([file_path, album_artist, title, normalized_path])
             header_row = ["original file path", "album artist", "title", "normalized file path"]
@@ -1658,7 +1664,12 @@ class AudioMetadata():
             )
 
             normalized_path = os.path.join(os.path.dirname(file_path), normalized_name)
-            os.rename(file_path, normalized_path)
+            # check if the renamed file exists, log warning and return if it does
+            if os.path.exists(normalized_path):
+                logger.warning(f"File already exists: {normalized_path}")
+                return
+            else:
+                os.rename(file_path, normalized_path)
 
             data.append([file_path, album_artist, title, normalized_path])
             header_row = ["original file path", "album artist", "title", "normalized file path"]
@@ -1732,7 +1743,12 @@ class AudioMetadata():
             )
 
             normalized_path = os.path.join(os.path.dirname(file_path), normalized_name)
-            os.rename(file_path, normalized_path)
+            # check if the renamed file exists, log warning and return if it does
+            if os.path.exists(normalized_path):
+                logger.warning(f"File already exists: {normalized_path}")
+                return
+            else:
+                os.rename(file_path, normalized_path)
 
             data.append([file_path, album_artist, title, normalized_path])
             header_row = ["original file path", "album artist", "title", "normalized file path"]
@@ -1806,8 +1822,13 @@ class AudioMetadata():
             )
 
             normalized_path = os.path.join(os.path.dirname(file_path), normalized_name)
-            del audio_file
-            os.rename(file_path, normalized_path)
+            # check if the renamed file exists, log warning and return if it does
+            if os.path.exists(normalized_path):
+                logger.warning(f"File already exists: {normalized_path}")
+                return
+            else:
+                del audio_file
+                os.rename(file_path, normalized_path)
 
             data.append([file_path, album_artist, title, normalized_path])
             header_row = ["original file path", "album artist", "title", "normalized file path"]

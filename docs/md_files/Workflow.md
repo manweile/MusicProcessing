@@ -548,6 +548,7 @@ command line: `python main.py remove-empty-albums "Drive:/path/to/tld/or fld"`
 
 Congratulations! The hard work is now over. Now comes the waiting game - conversion to mp3 format.<br>
 Average time to convert a song from any format is ~ 6 seconds. So the more you have, the longer it takes.<br>
+Conversion handles flac, mp3, m4a, and wma audio files.
 
 Conversion logic is essentially a destructive three stage process.<br>
 First, map the existing metadata from original audio file to ID3v2.3 encoding.<br>
@@ -557,24 +558,32 @@ Third, embed the co-located album art in the newly converted mp3 file.
 Therefore, you **must** have co-located album art; you did run extract-file/extract-walk/set-album-art right?<br>
 This is also a good place to have all of your song metadata up to snuff.
 
+Bonus functionality: since the logic maps any existing metadata before wiping it out, you can use it delete extra metadata encoding formats!<br>
+So if you ensure your metadata is accurate (one of the ID3 versions), no worries, go ahead and convert.<br>
+Mp3 files are the usual multiple encoding culprit.
+
+*Note*<br>
+Converting is destructive - the co-located Folder.jpg will be consumed and the original audio file will be consumed as well.<br>
+Ffmpeg also requires the converted file be created in a different directory.<br>
+
+Both convert file and convert walk have optional/default target invocations.<br>
+Whichever you use, it's up to you to move the converted files if you are processing them any further with level normalization.
+
+The default save location is `/MusicProcessing/src/generated_files/Music`.
+
 ### convert-file
 
-Converts an audio file to mp3
+Converts an acceptable audio file to mp3.
 
-Bonus functionality: since the logic maps any existing metadata before wiping it out, you can use it delete extra metadata encoding formats!<br>
-Mp3 files are the usual culprit. So if you ensure your metadata is accurate (one of the ID3 versions), no worries.
-
-ipsum lorem command line with target
-
-ipsum lorem command line without target
+command line with target:  `python main.py convert-file "Drive:/path/to/audio file" --target "Drive:\path\to\target"`<br>
+command line without target:  `python main.py convert-file "Drive:/path/to/audio file"`
 
 ### convert-walk
 
-Converts all acceptable audio files (flac, mp3, m4a, wma) in path to mp3. Works with tld (top), fld (artist) and sld (album) path input.<br>
+Converts all acceptable audio files in path to mp3. Works with tld (top), fld (artist) and sld (album) path input.<br>
 
-ipsum lorem command line with target
-
-ipsum lorem command line without target
+command line with target:  `python main.py convert-walk "Drive:/path/to/tld/or fld/or sld" --target "Drive:\path\to\target"`<br>
+command line without target:  `python main.py convert-walk "Drive:/path/to/tld/or fld/or sld"`
 
 ## Normalized
 

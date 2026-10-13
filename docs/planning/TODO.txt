@@ -75,8 +75,9 @@ NOT DISPOSED:
     9) Write function that returns list of songs with invalid for Windows album names
     TODO
 
-    10) consolidate normalize-*-filename & normalize-*-filename-walk functions to 1 function each type
-    TODO
+    10) consolidate normalize-*-filename & normalize-*-filename-walk functions
+      a) consolidate & update the "walk" unit tests IN PROGRESS
+    IN PROGRESS
 
     11) I don't like how main errors with absolutely no indication of cause
       a) I still want logging, but fail to see what the purpose return 1 and return 0 at end of main.main(args) does
@@ -145,7 +146,18 @@ NOT DISPOSED:
       c) update unit test
     TODO
 
-    7) think about playlist updating writing to input directory or a target directory instead of generated_files
+    17) think about playlist updating writing to input directory or a target directory instead of generated_files
+    TODO
+
+    18) think about moving the "one-offs" ack into standalone scripts
+      get-ffprobe-media-info          Gets ffprobe media info for an audio file<br>
+      get-ffprobe-media-info-walk     Gets ffprobe media info for audio files<br>
+      get-ffprobe-tags                Gets ffprobe metadata tags for audio file<br>
+      get-mutagen-tags                Gets Mutagen metadata tags from audio file<br>
+      get-tags-walk                   Gets Mutagen metadata tags from audio files<br>
+      get-unique-media                Gets set of unique ffprobe tags from collection<br>
+      list-audio                      Generates a csv containing full path for all audio files<br>
+      list-type                       Generates a csv containing full file path for an audio file type
     TODO
 
 DISPOSED:
