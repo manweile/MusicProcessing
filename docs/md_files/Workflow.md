@@ -65,22 +65,40 @@ Ensuring all of your metadata is accurate is entirely dependent on your source's
 There is good argument for doing it in the `Prepped` stage; but bear in mind how much work that could be.<br>
 For right now, directory structure only needs 3 fields to be accurate: artist, album name and song title.
 
+**A note about APEv2 metadata**<br>
+The mapping functions called by the convert file function do NOT deal with audio files containing *only* APEv2 metadata encoding.<br>
+That is a whole other kettle of fish. I currently do not have any files like that, and unsure if I even going to code for it. Lot of work.<br>
+I do have many mp3 files with APEv2 and one or more ID3 versions; not a problem, the Mutagen default with mp3 files is use the newest ID3 version.
+
 ### Directory Structure
 
 Now your are looking at organizing the collections directory structure.<br>
-Depending on the existing directory organization & metadata accuracy of your sources, you could be doing a little, or a lot.<br>
+Workload depends on the existing directory organization & metadata accuracy of your sources.<br>
 I am using file explorer/file manager for the transfers - don't have a function or script, and not sure if I will write one.
 
 #### Naming
 
 I use the Windows invalid character set, it's more restrictive and therefore OS agnostic; you can use it on Linux & Mac.<br>
+
+1. less than
+2. greater than
+3. colon
+4. double quote
+5. forward slash
+6. backslash
+7. pipe
+8. question mark
+9. asterisk
+
+#### Directory Levels
+
 The directory structure is important; the project function logic **requires** this set structure.<br>
 There are three directory levels:
 
 #### Top Level Directory
 
 The music top level directory (*tld*) is where all music related files live.<br>
-The tld can be nested as deep as you want (with respect to your OS depth rules); it could as short as `drive:\tld`.<br>
+The tld can be nested as deep as you want (with respect to OS depth rules); it could as short as `drive:\tld`.<br>
 You can name the tld whatever you want. I personally prefer to call it "Music", which follows Windows OS practice.
 
 Playlist files (m3u) **must** exist here; they use *relative pathing* to the artists/albums/songs they play, and playlist functions reflect that.
@@ -88,11 +106,9 @@ Playlist files (m3u) **must** exist here; they use *relative pathing* to the art
 #### Artist Level Directories
 
 The artist level directories are the first level directories (*fld*) under the tld.<br>
-Artist directories **must** be unique; OS'es don't allow duplicate sibling directories.<br>
-Of course, the artist directory must also comply with allowable OS character set.
+Artist directories **must** be unique; OS'es don't allow duplicate sibling directories, and must comply with allowable OS character set.
 
-Therefore, at least one song has to have what you want for that artist; the rest can be blank.<br>
-Preferably all songs have the artist name you want for the artist directory.<br>
+At least one song needs your preferred artist name; the rest can be blank. Preferably all songs have the same artist name.
 
 #### Album Level Directories
 
@@ -193,7 +209,7 @@ tld
 ```
 
 **Handling Compilation Album Directories**<br>
-Compilation metadata tags are a gong show with respect to how various metadata formats implement them, it wasn't worth the effort to map them.<br>
+Compilation metadata tags are a gong show with respect to how various metadata formats implement them, not worth the effort to map them.<br>
 Most compilation albums use a variant of "various artists" for artist/album artist metadata, this invariably conflicts with "contributing artist".<br>
 This is antithetical to the concept of unique 1st level artist directories, and OS'es don't allow sibling duplicate directories in any case.
 
@@ -329,16 +345,18 @@ tld
 
 ## Audio File Names
 
-I prefer the `artist` - `title` or `artist`-`title` format.<br>
+I prefer the `artist` - `title` or `artist`-`title` format.
+
 Why? Different artists can have songs with same title.<br>
-Eg: Lindsey Buckingham-Trouble vs Pink-Trouble. `artist`-`title` makes it clear.<br>
+Eg: Lindsey Buckingham-Trouble vs Pink-Trouble. `artist`-`title` makes it clear.
+
 If an artist has different versions of the same song, that's what the second level album directories & album name metadata are for.<br>
 Quite often the other versions will have a slightly different title, in which case, no worries.
 
 Best Practice: ensure the artist/title metadata for each song is accurate, then run a filename changing function.<br>
 For the directory walk versions, directory input can be the tld, fld artist, or sld album directory.
 
-### normalize-`type`-filename and normalize-`type`-filename-walk
+### normalize-`type`-filename and normalize-filename-walk
 
 Two variants: single file & directory walk.
 
@@ -348,7 +366,10 @@ Two variants: single file & directory walk.
 4. The artist and title metadata have to be accurate
    1. The artist and title metadata will be sanitized for validity
 5. command line: `python main.py normalize-flac-filename "Drive:/path/to/file"`
-6. command line: `python main.py normalize-flac-filename-walk "Drive:/path/to/tld/or fld/or sld"`
+6. command line: `python main.py normalize-mp3-filename "Drive:/path/to/file"`
+7. command line: `python main.py normalize-mp4-filename "Drive:/path/to/file"`
+8. command line: `python main.py normalize-wma-filename "Drive:/path/to/file"`
+9. command line: `python main.py normalize-filename-walk "Drive:/path/to/tld/or fld/or sld"`
 
 before/after execution:
 
@@ -362,17 +383,17 @@ Lindsey Buckingham-Trouble.flac
 
 Audio file conversion **requires** an album art file named Folder.jpg co-located with the audio file.
 
-If an audio file has embedded art *and* was played by Windows Media Player, WMP will create a copy of it called Folder.jpg in that directory.<br>
+If an audio file has embedded art *and* was played by Windows Media Player, WMP will create a copy called Folder.jpg, in that directory.<br>
 So there's a good chance your source files include the external art Folder.jpg file, which you can just copy over.<br>
 Use MP3tag/puddleTag/Discogs/MusicBrainz Picard to find acceptable art if there is no art at all.
 
-The extract function extracts embedded art from the first audio file it finds with embedded art.<br>
+The extract function extracts the first embedded art from the first audio file it finds with embedded art.<br>
 The extracted art is saved as Folder.jpg in the same directory as the audio source file.<br>
 The embedded art is NOT removed from the audio source file.<br>
-Directories with a Folder.jpg will be skipped.
+Directories with a existing Folder.jpg will be skipped.
 
-Best Practice: ensure the lowest alphabetically named song in an album has the correct embedded art.<br>
-Run one of the extract functions.
+Best Practice: ensure at least one song in an album has the correct embedded art as the first embedded art file.<br>
+Where multiple files have embedded art, the lowest alphabetically named file should be your source.
 
 ### extract-file
 
@@ -418,13 +439,16 @@ tld
 Compilation album art can be re-used!<br>
 
 Best Practice: extract album art from a compilation album if there is any, or find accurate art.<br>
-Rename to `compilation album name`.jpg file.<br>
+Rename it to `compilation album name`.jpg file.<br>
 Eg. for the album `Best Of The Blues, Vol. 1`: `Best Of The Blues, Vol. 1.jpg`.<br>
-Copy it to to the special `/MusicProcessing/src/generated_files/AlbumArt` folder.
+Copy it to the special `/MusicProcessing/src/generated_files/AlbumArt` folder, or a folder of your choice.
 
 ### set-album-art
 
-Sets album art file for an compilation album folder. Looks for `compilation album name`.jpg file in special `AlbumArt` folder.<br>
+Sets album art file for an compilation album folder.<br>
+By default, looks for `compilation album name`.jpg file in special `AlbumArt` folder.<br>
+You can optionally supply the folder of your choice.
+
 Found matches get copied & renamed to `compilation album name/Folder.jpg`.<br>
 It won't overwrite an existing Folder.jpg in fld or sld directories.<br>
 The match does not get consumed, it stays in `AlbumArt` folder.
@@ -467,10 +491,12 @@ Select the songs you want to set genre for, open the the tag view side bar, put 
 
 ### update-genres-from-csv
 
-Updates genre metadata from artist genre CSV mappings<br>
-Best Practice: This function *requires a sorted* csv file in the tld; the function uses relative pathing.
+Updates genre metadata from artist & genre CSV mappings, one artist to one genre mapping.<br>
+The artist name and genre datums can be a compound term where the constituent values are space separated.<br>
+This function *requires an ascending sorted by artist name* csv file in the tld; the function uses relative pathing.
 
-CSV File Example:<br>
+Example artist_genre.csv:
+
 artist name,artist genre<br>
 Bachman-Turner Overdrive,Classic Rock<br>
 Bad Company,Classic Rock<br>
@@ -502,7 +528,7 @@ They both can add extraneous files like Thumbs.db, ini files, Art*.jpg, etc.
 Removes files with specified pattern. Works for tld, fld, and sld as path input.<br>
 Will throw an error if start path is a file system root or mount point, or if file pattern is full wildcard.
 
-ipsum lorem
+command line: `python main.py remove-pattern "Drive:/path/to/tld/or fld/or sld" AlbumArtSmall.jpg`
 
 ### remove-set-list
 
@@ -510,13 +536,13 @@ Removes files matching a hard-coded set of patterns. Works for tld, fld, and sld
 ***MODIFY THE HARD CODED LIST AT YOUR OWN RISK, THE FUNCTION DOES NOT GUARD AGAINST YOUR OWN STUPIDITY***<br>
 Current hard coded list is `["AlbumArt_*_*.jpg", "AlbumArt*.jpg", "Thumbs.db", "desktop.ini"]`
 
-ipsum lorem
+command line: `python main.py remove-set-list "Drive:/path/to/tld/or fld/or sld"`
 
 ### remove-empty-albums
 
 Removes empty album sub-directories. The start path can be tld or fld, but not sld.
 
-ipsum lorem
+command line: `python main.py remove-empty-albums "Drive:/path/to/tld/or fld"`
 
 ## Converted
 
@@ -534,11 +560,6 @@ This is also a good place to have all of your song metadata up to snuff.
 ### convert-file
 
 Converts an audio file to mp3
-
-**NOTE**<br>
-The mapping functions called by convert file function do NOT deal with audio files only containing APEv2 metadata encoding.<br>
-That is a whole other kettle of fish. I currently do not have any files like that, and unsure if I even going to code for it. Lot of work.<br>
-I do have many mp3 files with APEv2 and one ore more ID3 versions - those aren't a problem, Mutagen default with mp3 files is the ID3 versions.
 
 Bonus functionality: since the logic maps any existing metadata before wiping it out, you can use it delete extra metadata encoding formats!<br>
 Mp3 files are the usual culprit. So if you ensure your metadata is accurate (one of the ID3 versions), no worries.
