@@ -13,12 +13,6 @@ NOT DISPOSED:
 
   Markdown related:
 
-    1) document external library launch json - why & how to use it in environment markdown
-    TODO
-
-    2) document tqdm and yaspin changes in environment markdown
-    TODO
-
     3) finish workflow md
     IN PROGRESS
 
@@ -130,7 +124,7 @@ NOT DISPOSED:
       b) add unit test for it                   TODO
     IN PROGRESS
 
-    14) modify update-genres-from-csv to log instead of previous_artist_name
+    14) modify update-genres-from-csv to log instead of previous_artist_name (WTF is this??)
       a) don't need the printing in main.py either
       b) don't need the return 0 or 1 logic in main.py
       c) update unit test
@@ -311,3 +305,9 @@ DISPOSED:
     b) change unit tests        COMPLETED
     c) update workflow markdown COMPLETED
   COMPLETED
+
+  20) document tqdm and yaspin changes in environment markdown
+  NA
+
+  21) document external library launch json - why & how to use it in environment markdown
+  NA

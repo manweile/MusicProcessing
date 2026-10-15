@@ -67,7 +67,7 @@ For right now, directory structure only needs 3 fields to be accurate: artist, a
 
 **A note about APEv2 metadata**<br>
 The mapping functions called by the convert file function do NOT deal with audio files containing *only* APEv2 metadata encoding.<br>
-That is a whole other kettle of fish. I currently do not have any files like that, and unsure if I even going to code for it. Lot of work.<br>
+That is a whole other kettle of fish. I currently do not have any files like that, and unsure if I am even going to code for it. Lot of work.<br>
 I do have many mp3 files with APEv2 and one or more ID3 versions; not a problem, the Mutagen default with mp3 files is use the newest ID3 version.
 
 ### Directory Structure
@@ -173,7 +173,8 @@ I *think* you can also use MP3tag/puddleTag, just haven't tried.
 ### create-albums
 
 create-albums function is used to create the album for *songs* standing alone in a first level artist directory.<br>
-It's a top level directory walking function, so you **must** supply the tld, and **only** the tld. Does not work with fld & sld.
+It's a top level directory walking function, so you **must** supply the tld, and **only** the tld.<br>
+Does not work with fld & sld.
 
 1. ensure that all the songs that need an album directory are sitting by themselves in the **artist 1st level directory**
 2. at least one song has viable album name metadata
@@ -181,7 +182,8 @@ It's a top level directory walking function, so you **must** supply the tld, and
 3. the function does **not** handle attempted creation of duplicate directories
    1. ensure album metadata for songs from *different albums* will not clash
 4. all songs with matching album metadata are moved into the new album directory
-5. command line: `python main.py create-albums "Drive:/path/to/tld"`
+
+command line: `python main.py create-albums "Drive:/path/to/tld"`
 
 before/after execution:
 
@@ -217,7 +219,8 @@ Instead, all songs from an artist who contributed to a compilation album will be
 Eg: The "Back to the Future" soundtrack has "Johnny B. Goode" by Huey Lewis & The News.<br>
 
 Best Practice: copy the song(s) from the compilation to an *artist's 1st level directory* (create if needed),<br>
-then run create-albums, and cleanup empty compilation album manually or with remove-empty-albums.<br>
+then run create-albums, and cleanup empty compilation album manually or with remove-empty-albums.
+
 before/after:
 
 ```text
@@ -266,6 +269,8 @@ Multi-disc albums directory structure introduces a 3rd level `disc number` direc
 Best Practice: ensure the track/disc metadata is accurate, and album metadata does *NOT* include something like "CD N".<br>
 Move all the songs from each "disc" directory to the *artist's 1st level directory* and run create-albums.<br>
 Delete the multi-disc album directories manually, or *ensure* they are empty and run remove-empty-albums.<br>
+BTW, "disc" really mean "lp", or "cd", or even "cassette".
+
 before/after:
 
 ```text
@@ -308,14 +313,16 @@ tld
 
 rename-album-directories is for bulk renaming *EXISTING BUT INCORRECTLY NAMED ALBUM DIRECTORIES*.<br>
 This means the album directory name will change, and the audio files will stay put.<br>
-It's a top level directory only walking function, so you **must** supply the tld, and **only** the tld. Does not work with fld & sld.
+It's a top level directory only walking function, so you **must** supply the tld, and **only** the tld.<br>
+Does not work with fld & sld.
 
 1. ensure that at least one song in an album has accurate & viable album name metadata **AND** the rest either have none or matching metadata
    1. the function will create an album directory based on unique viable album name metadata
    2. the function will sanitize the invalid Windows characters to a dash.
    3. unlike create-albums, attempted duplicate directory creation **is handled**
       1. duplicates will be appended with an ordinal number
-2. command line: `python main.py rename-album-directories "Drive:/path/to/tld"`
+
+command line: `python main.py rename-album-directories "Drive:/path/to/tld"`
 
 before/after execution:
 
@@ -345,15 +352,15 @@ tld
 
 ## Audio File Names
 
-I prefer the `artist` - `title` or `artist`-`title` format.
+I prefer the `artist`-`title` format, and can live with `artist` - `title`.
 
 Why? Different artists can have songs with same title.<br>
 Eg: Lindsey Buckingham-Trouble vs Pink-Trouble. `artist`-`title` makes it clear.
 
 If an artist has different versions of the same song, that's what the second level album directories & album name metadata are for.<br>
-Quite often the other versions will have a slightly different title, in which case, no worries.
+Quite often the other versions will have a slightly different title, in which case, no worries. Or just change the title yourself.
 
-Best Practice: ensure the artist/title metadata for each song is accurate, then run a filename changing function.<br>
+Best Practice: ensure the artist/title metadata for each song is accurate & unique, then run a filename changing function.<br>
 For the directory walk versions, directory input can be the tld, fld artist, or sld album directory.
 
 ### normalize-`type`-filename and normalize-filename-walk
@@ -361,15 +368,18 @@ For the directory walk versions, directory input can be the tld, fld artist, or 
 Two variants: single file & directory walk.
 
 1. `type` is one of `flac`, `mp3`, `mp4`, or `wma`
-2. `filename` is for single files
-3. `walk` is for a directory walk
-4. The artist and title metadata have to be accurate
-   1. The artist and title metadata will be sanitized for validity
-5. command line: `python main.py normalize-flac-filename "Drive:/path/to/file"`
-6. command line: `python main.py normalize-mp3-filename "Drive:/path/to/file"`
-7. command line: `python main.py normalize-mp4-filename "Drive:/path/to/file"`
-8. command line: `python main.py normalize-wma-filename "Drive:/path/to/file"`
-9. command line: `python main.py normalize-filename-walk "Drive:/path/to/tld/or fld/or sld"`
+2. `normalize-type-filename` is for single files
+3. `normalize-filename-walk` is for a directory walk
+4. The artist and title metadata will be sanitized for validity
+
+single file:<br>
+command line: `python main.py normalize-flac-filename "Drive:/path/to/file"`<br>
+command line: `python main.py normalize-mp3-filename "Drive:/path/to/file"`<br>
+command line: `python main.py normalize-mp4-filename "Drive:/path/to/file"`<br>
+command line: `python main.py normalize-wma-filename "Drive:/path/to/file"`
+
+multi-file:<br>
+command line: `python main.py normalize-filename-walk "Drive:/path/to/tld/or fld/or sld"`
 
 before/after execution:
 
@@ -385,7 +395,7 @@ Audio file conversion **requires** an album art file named Folder.jpg co-located
 
 If an audio file has embedded art *and* was played by Windows Media Player, WMP will create a copy called Folder.jpg, in that directory.<br>
 So there's a good chance your source files include the external art Folder.jpg file, which you can just copy over.<br>
-Use MP3tag/puddleTag/Discogs/MusicBrainz Picard to find acceptable art if there is no art at all.
+Note that WMP also creates several "junk" art files; that's why remove-pattern & remove-set-list functions exist.
 
 The extract function extracts the first embedded art from the first audio file it finds with embedded art.<br>
 The extracted art is saved as Folder.jpg in the same directory as the audio source file.<br>
@@ -393,17 +403,20 @@ The embedded art is NOT removed from the audio source file.<br>
 Directories with a existing Folder.jpg will be skipped.
 
 Best Practice: ensure at least one song in an album has the correct embedded art as the first embedded art file.<br>
+Use MP3tag/puddleTag/Discogs/MusicBrainz Picard to find acceptable art if there is no art at all.<br>
 Where multiple files have embedded art, the lowest alphabetically named file should be your source.
 
 ### extract-file
 
-Extracts embedded art from a single audio file.<br>
+Extracts embedded art from a single audio file.
+
 command line: `python main.py extract-file "Drive:/path/to/file"`
 
 ### extract-walk
 
 Extracts embedded art from all audio files supplied path.<br>
-Works with tld (top) & fld (artist) input, but *not* sld (album) input.<br>
+Works with tld (top) & fld (artist) input, but not sld (album) input.
+
 command line: `python main.py extract-walk "Drive:/path/to/tld/or fld"`
 
 before/after execution:
@@ -453,8 +466,10 @@ Found matches get copied & renamed to `compilation album name/Folder.jpg`.<br>
 It won't overwrite an existing Folder.jpg in fld or sld directories.<br>
 The match does not get consumed, it stays in `AlbumArt` folder.
 
-Works with tld (top) & fld (artist) input, but *not* sld (album) input.<br>
-command line: `python main.py set-album-art "Drive:/path/to/tld/or fld"`<br>
+Works with tld (top) & fld (artist) input, but not sld (album) input.
+
+command line: `python main.py set-album-art "Drive:/path/to/tld/or fld"`
+
 before/after execution:
 
 ```text
@@ -485,7 +500,8 @@ My preference is to do quick search for the single genre most commonly associate
 
 ### manual genre setting
 
-MP3Tag really shines here. From File Explorer, or MP3Tag, highlight the directory(s) with the songs you want to update.<br>
+MP3Tag really shines here.<br>
+From File Explorer, or MP3Tag, highlight the directory(s) with the songs you want to update.<br>
 Can be tld, fld, or sld; what level you use determines how many songs you want to deal with.<br>
 Select the songs you want to set genre for, open the the tag view side bar, put the genre in the input field, click save icon.<br>
 
@@ -493,7 +509,7 @@ Select the songs you want to set genre for, open the the tag view side bar, put 
 
 Updates genre metadata from artist & genre CSV mappings, one artist to one genre mapping.<br>
 The artist name and genre datums can be a compound term where the constituent values are space separated.<br>
-This function *requires an ascending sorted by artist name* csv file in the tld; the function uses relative pathing.
+This function *requires an ascending sorted by artist name csv file in the tld*; the function uses relative pathing.
 
 Example artist_genre.csv:
 
@@ -516,7 +532,7 @@ Bruce Springsteen,Rock<br>
 Huey Lewis & The News,Movie Soundtrack<br>
 Stephen Page,Alternative Rock
 
-command line: `python main.py update-genres-from csv "Drive:/path/to/tld/"`
+command line: `python main.py update-genres-from csv "Drive:/path/to/tld/artist_genre.csv"`
 
 ## Extraneous File & Directory Cleanup
 
@@ -525,14 +541,17 @@ They both can add extraneous files like Thumbs.db, ini files, Art*.jpg, etc.
 
 ### remove-pattern
 
-Removes files with specified pattern. Works for tld, fld, and sld as path input.<br>
+Removes files with specified pattern.<br>
+Works for tld, fld, and sld as path input.<br>
 Will throw an error if start path is a file system root or mount point, or if file pattern is full wildcard.
 
 command line: `python main.py remove-pattern "Drive:/path/to/tld/or fld/or sld" AlbumArtSmall.jpg`
 
 ### remove-set-list
 
-Removes files matching a hard-coded set of patterns. Works for tld, fld, and sld as path input.<br>
+Removes files matching a hard-coded set of patterns.<br>
+Works for tld, fld, and sld as path input.
+
 ***MODIFY THE HARD CODED LIST AT YOUR OWN RISK, THE FUNCTION DOES NOT GUARD AGAINST YOUR OWN STUPIDITY***<br>
 Current hard coded list is `["AlbumArt_*_*.jpg", "AlbumArt*.jpg", "Thumbs.db", "desktop.ini"]`
 
@@ -540,32 +559,35 @@ command line: `python main.py remove-set-list "Drive:/path/to/tld/or fld/or sld"
 
 ### remove-empty-albums
 
-Removes empty album sub-directories. The start path can be tld or fld, but not sld.
+Removes empty album sub-directories.<br>
+Works for tld, fld, but not sld as path input.
 
 command line: `python main.py remove-empty-albums "Drive:/path/to/tld/or fld"`
 
+### Metadata redux
+
+If you don't have all of your metadata (textual & visual) up to snuff, now is the time.
+
 ## Converted
 
-Congratulations! The hard work is now over. Now comes the first waiting game - conversion to mp3 format.<br>
+Congratulations! The hard work is now over.<br>
+Now comes the first waiting game - conversion to mp3 format, from flac, mp3, m4a, and wma audio files.<br>
 Average time to convert a song from any format is ~ 6 seconds. So the more you have, the longer it takes.<br>
-Conversion handles flac, mp3, m4a, and wma audio files.
+
+Bonus functionality: since the logic maps any existing metadata before wiping it out, you can use it delete extra metadata encoding formats!<br>
+So if you ensure your metadata is accurate (one of the ID3 versions), no worries, go ahead and convert.<br>
+Mp3 files are the usual multiple encoding culprit.
 
 Ffmpeg is the conversion engine behind the scenes.<br>
-It has one hard requirement: the output filepath cannot be exactly the same as the input filepath.<br>
+It has one hard requirement: *the output filepath cannot be exactly the same as the input filepath.*
+
 FFmpeg is a streaming data pipeline. It opens an input file to read a few frames, processes them, and then writes them to the output file.<br>
 If the input and output are the same file, the writer will wipe out or overwrite the data blocks that the reader hasn't even reached yet.
 
 Conversion logic is essentially a three stage process.<br>
 First, map the existing metadata from original audio file to ID3v2.3 encoding.<br>
-Second, convert the original audio file with ffmpeg to mp3 format with the mapped to ID3v2.3 metadata in a different save location.<br>
-Third, embed the co-located album art in the newly converted mp3 file.
-
-Therefore, you **must** have co-located album art; you did run extract-file/extract-walk/set-album-art, *right?*<br>
-This is also a good place to have all of your song metadata up to snuff.
-
-Bonus functionality: since the logic maps any existing metadata before wiping it out, you can use it delete extra metadata encoding formats!<br>
-So if you ensure your metadata is accurate (one of the ID3 versions), no worries, go ahead and convert.<br>
-Mp3 files are the usual multiple encoding culprit.
+Second, convert the original audio file to mp3 format with the ID3v2.3 metadata & in a different save location.<br>
+Third, embed the co-located album art in the mp3 file.
 
 Both convert file and convert walk have optional/default target invocations.<br>
 Whichever you use, it's up to you to move the converted files if you are processing them any further with level normalization.
@@ -574,14 +596,15 @@ The default save location is `/MusicProcessing/src/generated_files/Music`.
 
 ### convert-file
 
-Converts an acceptable audio file to mp3.
+Converts an acceptable audio file (flac, mp3, m4a, wma) to mp3.
 
 command line with target:  `python main.py convert-file "Drive:/path/to/audio file" --target "Drive:/path/to/target"`<br>
 command line without target:  `python main.py convert-file "Drive:/path/to/audio file"`
 
 ### convert-walk
 
-Converts all acceptable audio files in path to mp3. Works with tld (top), fld (artist) and sld (album) path input.<br>
+Converts all acceptable audio files (flac, mp3, m4a, wma) in path to mp3.<br>
+Works with tld (top), fld (artist) and sld (album) path input.
 
 command line with target:  `python main.py convert-walk "Drive:/path/to/tld/or fld/or sld" --target "Drive:/path/to/target"`<br>
 command line without target:  `python main.py convert-walk "Drive:/path/to/tld/or fld/or sld"`
@@ -622,7 +645,7 @@ command line without target:  `python main.py ebu-file "Drive:/path/to/audio fil
 Peak volume normalization is accomplished by using the ffmpeg volumedetect filter.<br>
 The adjustment value is computed from true peak constant and the *maximum* volume of a song.
 
-Use peak leveling when you want to preserve the original dynamic range of a song.
+Use peak leveling when you want to *preserve the original dynamic range of a song.*
 
 command line with target:  `python main.py peak-file "Drive:/path/to/audio file" --target "Drive:/path/to/target"`<br>
 command line without target:  `python main.py peak-file "Drive:/path/to/audio file"`
@@ -632,18 +655,18 @@ command line without target:  `python main.py peak-file "Drive:/path/to/audio fi
 RMS (root mean square) normalization is accomplished by using the ffmpeg volumedetect filter.<br>
 The adjustment value is computed from the true peak constant value and *mean* volume of a song.
 
-Use RMS leveling when you want to preserve the original artist-intended relative differences between songs.
+Use RMS leveling when you want to *preserve the original artist-intended relative differences between songs.*
 
 command line with target:  `python main.py rms-file "Drive:/path/to/audio file" --target "Drive:/path/to/target"`<br>
 command line without target:  `python main.py rms-file "Drive:/path/to/audio file"`
 
 ### level-normalize-walk
 
-Normalizes files with specified normalization pattern (ebu, peak, or rms).<br>
+Normalizes files with specified normalization type (ebu, peak, or rms).<br>
 Works with tld (top) and fld (artist), but not sld (album) path input.<br>
 
-command line with target:  `python main.py level-normalize-walk "Drive:/path/to/tld/or fld" --target "Drive:/path/to/target"`<br>
-command line without target:  `python main.py rms-file "Drive:/path/to/tld/or fld"`
+command line with target:  `python main.py level-normalize-walk "norm type" "Drive:/path/to/tld/or fld" --target "Drive:/path/to/target"`<br>
+command line without target:  `python main.py level-normalize-walk  "norm type" "Drive:/path/to/tld/or fld"`
 
 ## Finalized
 
@@ -653,17 +676,67 @@ Move everything from `Leveled` to `Finalized`
 Remember those m3u files mentioned way back? Here's where they get updated.<br>
 A reminder about m3u playlists - they are *relative* pathed. They **must** sit in the top level directory that contains all audio files!<br>
 
+Best practice: wait to run the playlist updating until you have everything converted & leveled - why run multiple times?
+
 ipsum lorem functions to use
 update-m3u                      Update playlist paths
 update-walk                     Update playlist paths
 
 ### Information functions
 
-get-ffprobe-media-info          Gets ffprobe media info for an audio file<br>
-get-ffprobe-media-info-walk     Gets ffprobe media info for audio files<br>
-get-ffprobe-tags                Gets ffprobe metadata tags for audio file<br>
-get-mutagen-tags                Gets Mutagen metadata tags from audio file<br>
-get-tags-walk                   Gets Mutagen metadata tags from audio files<br>
-get-unique-media                Gets set of unique ffprobe tags from collection<br>
-list-audio                      Generates a csv containing full path for all audio files<br>
-list-type                       Generates a csv containing full file path for an audio file type
+These information functions generate a file (csv and/or txt).<br>
+The files are in the special `/MusicProcessing/src/generated_files/` directory, under `csv_file/`s and/or `result_files/`.<br>
+Any previous output files are overwritten, so save previous versions if you want to preserve history *before* running an information function.
+
+#### get-ffprobe-media-info-walk
+
+Generates get-ffprobe-media-info-walk.txt containing ffprobe media info for audio files.<br>
+Media info is codec, duration, size, bitrate, ..., etc, *not* album, artist, album_artist, ..., etc.<br>
+Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. No pattern retrieves from all file types.
+
+Works with tld (top) and fld (artist), but not sld (album) path input.
+
+command lines:<br>
+`python main.py get-ffprobe-media-info-walk "Drive:/path/to/tld/or fld"`<br>
+`python main.py get-ffprobe-media-info-walk "Drive:/path/to/tld/or fld" --pattern .flac`<br>
+
+#### get-tags-walk
+
+Generates get-tags-walk.txt containing all metadata tags from audio files.<br>
+Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. No pattern retrieves from all file types.<br>
+Has optional flag `--ffprobe True` to get ffprobe metadata instead of Mutagen.<br>
+Defaults to getting Mutagen metadata tags.
+
+Works with tld (top) and fld (artist), but not sld (album) path input.
+
+command lines:<br>
+`python main.py get-tags-walk "Drive:/path/to/tld/or fld"`<br>
+`python main.py get-tags-walk "Drive:/path/to/tld/or fld" --pattern .flac`<br>
+`python main.py get-tags-walk "Drive:/path/to/tld/or fld" --pattern .flac --ffprobe True`<br>
+`python main.py get-tags-walk "Drive:/path/to/tld/or fld" --ffprobe True`
+
+#### get-unique-media-keys
+
+Generates get-unique-media-keys.txt containing all unique ffprobe metadata tags from audio files.
+
+Works with tld (top) and fld (artist), but not sld (album) path input.<br>
+
+command line: `python main.py get-unique-media-keys "Drive:/path/to/tld/or fld"`
+
+#### get-audio-file-list
+
+Generates get-audio-file-list.csv containing full path for all audio files, and get-audio-file-list.txt listing the types of files found.<br>
+
+Works with tld (top) but not fld (artist) or sld (album) path input.
+
+command line: `python main.py get-audio-file-list "Drive:/path/to/tld"`
+
+#### get-ext-file-list
+
+Generates get-ext-file-list.csv containing full file path for audio files by type.<br>
+Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. <br>
+No pattern retrieves from all file types.
+
+Works with tld (top) and fld (artist), and sld (album) path input.
+
+command line: command line: `python main.py get-ext-file-list "Drive:/path/to/tld/or fld/or sld"`
