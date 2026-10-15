@@ -94,6 +94,11 @@ LOG_EXT = ".log"
 # @details Defines an EBU R128 range wider than the AES default of seven.
 LRA = "11.0"
 
+## @var M3U_EXT
+# @brief M3U file extension.
+# @details Identifies M3U playlist files independently of the supported-extension list.
+M3U_EXT = ".m3u"
+
 ## @var M4A_EXT
 # @brief M4A file extension.
 # @details Identifies M4A files independently of the supported-extension list.
@@ -185,6 +190,7 @@ src_logger = configure_package_logging(
 # @details In modules needing the constant, add: `from src import LOG_DIR`.
 # @details In modules needing the constant, add: `from src import LOG_EXT`.
 # @details In modules needing the constant, add: `from src import LRA`.
+# @details In modules needing the constant, add: `from src import M3U_EXT`.
 # @details In modules needing the constant, add: `from src import M4A_EXT`.
 # @details In modules needing the class, add: `from src.errors import MetadataTypeError`.
 # @details In modules needing the constant, add: `from src import MP3_EXT`.
@@ -219,6 +225,7 @@ __all__ = [
     "LOG_DIR",
     "LOG_EXT",
     "LRA",
+    "M3U_EXT",
     "M4A_EXT",
     "MetadataTypeError",
     "MP3_EXT",

@@ -212,6 +212,28 @@ class TestDirectoryProcessing(TestCase):
         self.assertTrue(txt_exists)
 
 
+    def test_get_audio_file_rejects_lower_level_paths(self):
+        '''
+        @brief Test audio-file listing rejects artist and album paths.
+
+        @details Verifies reporting requires a top-level directory with artist and album directory levels.
+
+        @test Error case.
+
+        @param self {TestDirectoryProcessing} Test instance containing audio fixture paths.
+
+        @exception MusicProcessingError The input path is an artist or album directory.
+        '''
+
+        artist_path = os.path.join(TESTS_TLD, "Abba")
+        album_path = os.path.join(artist_path, "Waterloo")
+
+        for start_path in [artist_path, album_path]:
+            with self.subTest(start_path=start_path):
+                with self.assertRaises(MusicProcessingError):
+                    directory.get_audio_file_list(start_path)
+
+
     def test_get_ext_file_list_all(self):
         '''
         @brief Test file-list generation for all extensions.

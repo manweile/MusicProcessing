@@ -18,7 +18,6 @@ import argparse                                             # argument parsing m
 import gc                                                   # garbage collection module
 import logging                                              # logging module
 import os                                                   # operating system module
-import pprint                                               # pretty-print module
 import sys                                                  # system-specific parameters and functions module
 
 # Local Module Constants
@@ -236,16 +235,29 @@ def extract_walk(tld_path, file_pattern):
     art.extract_walk(tld_path, file_pattern)
 
 
-def get_ffprobe_media_info(file_path):
+def get_audio_file_list(tld_path):
     '''
-    @brief Gets media info.
+    @brief Gets lists of all audio files from specified top level directory.
 
-    @details Retrieves detailed media information for the specified audio file with ffprobe.
+    @details Retrieves a list of all audio files from the specified top level directory.
 
-    @param file_path {str} The full path to audio file.
+    @param tld_path {str} The top level directory path that contains all the music files.
     '''
 
-    metadata.get_ffprobe_media_info(file_path)
+    directory.get_audio_file_list(tld_path)
+
+
+def get_ext_file_list(tld_path, file_pattern=None):
+    '''
+    @brief Gets lists of all files from specified top level directory by specified extension.
+
+    @details Retrieves a list of all files with the specified extension from the specified top level directory.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    @param file_pattern {str} The file pattern of extension to get list of.
+    '''
+
+    directory.get_ext_file_list(tld_path, file_pattern)
 
 
 def get_ffprobe_media_info_walk(start_path, file_pattern):
@@ -260,32 +272,6 @@ def get_ffprobe_media_info_walk(start_path, file_pattern):
     '''
 
     metadata.get_ffprobe_media_info_walk(start_path, file_pattern)
-
-
-def get_ffprobe_tags(file_path):
-    '''
-    @brief Gets media tags.
-
-    @details Uses ffprobe to retrieve the metadata tags for the specified audio file.
-
-    @param file_path {str} The full path to audio file.
-    '''
-
-    metadata.get_ffprobe_tags(file_path)
-
-
-def get_mutagen_tags(file_path):
-    '''
-    @brief Gets metadata from specified audio file.
-
-    @details Retrieves all available metadata tags from the specified audio file using mutagen.
-
-    @param file_path {str} The full path to audio file.
-    @return tags {mutagen.FileType} The metadata tags retrieved from the audio file.
-    '''
-
-    tags = metadata.get_mutagen_tags(file_path)
-    return tags
 
 
 def get_tags_walk(tld_path, file_pattern, ffprobe):
@@ -303,7 +289,7 @@ def get_tags_walk(tld_path, file_pattern, ffprobe):
     metadata.get_tags_walk(tld_path, file_pattern, ffprobe)
 
 
-def get_unique_media(tld_path):
+def get_unique_media_keys(tld_path):
     '''
     @brief Gets set of unique keys for entire collection found by ffprobe.
 
@@ -327,31 +313,6 @@ def level_normalize_walk(tld_path, norm_type, target):
     '''
 
     normalization.level_normalize_walk(tld_path, norm_type, target)
-
-
-def list_audio(tld_path):
-    '''
-    @brief List all audio files from specified top level directory.
-
-    @details Retrieves a list of all audio files from the specified top level directory.
-
-    @param tld_path {str} The top level directory path that contains all the music files.
-    '''
-
-    directory.get_audio_file_list(tld_path)
-
-
-def list_type(tld_path, file_pattern=None):
-    '''
-    @brief List files from specified top level directory by specified extension.
-
-    @details Retrieves a list of all files with the specified extension from the specified top level directory.
-
-    @param tld_path {str} The top level directory path that contains all the music files.
-    @param file_pattern {str} The file pattern of extension to get list of.
-    '''
-
-    directory.get_ext_file_list(tld_path, file_pattern)
 
 
 def normalize_flac_filename(file_path):
@@ -601,26 +562,19 @@ def main(args) -> int:
             file_pattern = getattr(args, "pattern")
             extract_walk(tld_path, file_pattern)
 
-        if args.subcommand == "get-ffprobe-media-info":
-            file_path = getattr(args, "file")
-            get_ffprobe_media_info(file_path)
+        if args.subcommand == "get-audio-file-list":
+            tld_path = getattr(args, "tld")
+            get_audio_file_list(tld_path)
+
+        if args.subcommand == "get-ext-file-list":
+            tld_path = getattr(args, "tld")
+            file_pattern = getattr(args, "pattern")
+            get_ext_file_list(tld_path, file_pattern)
 
         if args.subcommand == "get-ffprobe-media-info-walk":
             tld_path = getattr(args, "tld")
             file_pattern = getattr(args, "pattern")
             get_ffprobe_media_info_walk(tld_path, file_pattern)
-
-        if args.subcommand == "get-ffprobe-media-tags":
-            file_path = getattr(args, "file")
-            get_ffprobe_tags(file_path)
-
-        if args.subcommand == "get-mutagen-tags":
-            file_path = getattr(args, "file")
-            tags = get_mutagen_tags(file_path)
-            # mutagen returns tags as ASFTags, ID3Tags, MP4Tags objects, Vorbis objects
-            # not as a simple dict of string key/value
-            # so need mutagen pprint and splitlines to "format" into simple dict
-            pprint.pprint(tags.pprint().splitlines())
 
         if args.subcommand == "get-tags-walk":
             tld_path = getattr(args, "tld")
@@ -628,24 +582,15 @@ def main(args) -> int:
             ffprobe = getattr(args, "ffprobe")
             get_tags_walk(tld_path, file_pattern, ffprobe)
 
-        if args.subcommand == "get-unique-media":
+        if args.subcommand == "get-unique-media-keys":
             tld_path = getattr(args, "tld")
-            get_unique_media(tld_path)
+            get_unique_media_keys(tld_path)
 
         if args.subcommand == "level-normalize-walk":
             tld_path = getattr(args, "tld")
             norm_type = getattr(args, "type")
             target = getattr(args, "target")
             level_normalize_walk(tld_path, norm_type, target)
-
-        if args.subcommand == "list-audio":
-            tld_path = getattr(args, "tld")
-            list_audio(tld_path)
-
-        if args.subcommand == "list-type":
-            tld_path = getattr(args, "tld")
-            file_pattern = getattr(args, "pattern")
-            list_type(tld_path, file_pattern)
 
         if args.subcommand == "normalize-mp3-filename":
             file_path = getattr(args, "file")
@@ -798,15 +743,27 @@ if __name__ == "__main__":
         extract_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
         extract_walk_parser.set_defaults(func=extract_walk)
 
-        # get ffprobe media information for a file
-        # 1 mandatory arg, the path to audio file
-        # get-ffprobe-media-info "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
-        # get-ffprobe-media-info D:\MusicProcessing\tests\Music\Cream\Goodbye\Cream-Goodbye.flac
-        get_ffprobe_media_info_parser = subparsers.add_parser(
-            "get-ffprobe-media-info", help="Gets ffprobe media info for audio file"
+        # list all audio files
+        # 1 mandatory arg, the tld path
+        # get-audio-file-list D:\MusicProcessing\tests\Music
+        get_audio_file_list_audio_parser = subparsers.add_parser("get-audio-file-list", help="Generates a csv containing full path for all audio files")
+        get_audio_file_list_audio_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        get_audio_file_list_audio_parser.set_defaults(func=get_audio_file_list)
+
+        # list files by extension
+        # 1 mandatory arg, the tld path
+        # 1 optional arg, the file extension (.flac, .mp3, .m4a .wma)
+        # get-ext-file-list C:\Music --pattern .flac
+        # get-ext-file-list C:\Music --pattern .mp3
+        # get-ext-file-list C:\Music --pattern .m4a
+        # get-ext-file-list C:\Music --pattern .wma
+        # get-ext-file-list D:\MusicProcessing\tests\Music
+        get_ext_file_list_parser = subparsers.add_parser(
+            "get-ext-file-list", help="Generates a csv containing full file path for an audio file type"
         )
-        get_ffprobe_media_info_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
-        get_ffprobe_media_info_parser.set_defaults(func=get_ffprobe_media_info)
+        get_ext_file_list_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        get_ext_file_list_parser.add_argument("--pattern", type=str, help="optional file pattern")
+        get_ext_file_list_parser.set_defaults(func=get_ext_file_list)
 
         # get ffprobe media information for files
         # 1 mandatory arg, the tld path
@@ -815,7 +772,7 @@ if __name__ == "__main__":
         # get-ffprobe-media-info-walk C:\Music --pattern .m4a
         # get-ffprobe-media-info-walk C:\Music --pattern .wma
         # get-ffprobe-media-info-walk C:\Music --pattern .flac
-        # get-ffprobe-media-info-walk C:\Music
+        # get-ffprobe-media-info-walk D:\MusicProcessing\tests\Music
         get_ffprobe_media_info_walk_parser = subparsers.add_parser(
             "get-ffprobe-media-info-walk", help="Gets ffprobe media info for audio files"
         )
@@ -823,42 +780,28 @@ if __name__ == "__main__":
         get_ffprobe_media_info_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
         get_ffprobe_media_info_walk_parser.set_defaults(func=get_ffprobe_media_info_walk)
 
-        # get ffprobe media tags for a file or files
-        # 1 mandatory arg, the path to audio file
-        # get-ffprobe-tags "C:\Music\The Eagles\Desperado\The Eagles-Desperado.m4a"
-        get_ffprobe_tags_parser = subparsers.add_parser("get-ffprobe-tags", help="Gets ffprobe metadata tags for audio file")
-        get_ffprobe_tags_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
-        get_ffprobe_tags_parser.set_defaults(func=get_ffprobe_tags)
-
-        # get mutagen metadata tags for file
-        # 1 mandatory arg, the path to audio file
-        # get-mutagen-tags F:\RickPrepped\Cream\Goodbye\Cream-Badge.flac
-        get_mutagen_tags_parser = subparsers.add_parser("get-mutagen-tags", help="Gets metadata tags from audio file")
-        get_mutagen_tags_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
-        get_mutagen_tags_parser.set_defaults(func=get_mutagen_tags)
-
         # get metadata tags from all audio files found in top level directory
-        # 1 mandatory arg, the tld path
+        # 1 mandatory arg, the tld or fld path
         # 1 optional arg, the file pattern to match (.flac, .mp3, .m4a .wma)
         # 1 optional arg, use ffprobe boolean
+        # get-tags-walk C:\Music
         # get-tags-walk C:\Music --pattern .mp3 --ffprobe True
         # get-tags-walk C:\Music --pattern .m4a --ffprobe True
         # get-tags-walk C:\Music --pattern .wma --ffprobe True
         # get-tags-walk C:\Music --pattern .flac --ffprobe True
-        # @todo need to test this
         # get-tags-walk D:\MusicProcessing\tests\Music --ffprobe True
         get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Gets metadata tags from audio files")
-        get_tags_walk_parser.add_argument("tld", type=existing_path, help="mandatory full path to audio file")
+        get_tags_walk_parser.add_argument("tld", type=existing_path, help="mandatory full path to audio files")
         get_tags_walk_parser.add_argument("--pattern", type=str, help="optional file pattern")
         get_tags_walk_parser.add_argument("--ffprobe", type=bool, help="optional ffprobe tags")
         get_tags_walk_parser.set_defaults(func=get_tags_walk)
 
         # gets set of unique ffprobe metadata tag keys for entire collection
         # 1 mandatory arg, the tld path
-        # get-unique-media C:\Music
-        get_unique_media_parser = subparsers.add_parser("get-unique-media", help="Gets set of unique ffprobe tags from collection")
-        get_unique_media_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        get_unique_media_parser.set_defaults(func=get_unique_media)
+        # get-unique-media-keys D:\MusicProcessing\tests\Music
+        get_unique_media_keys_parser = subparsers.add_parser("get-unique-media-keys", help="Gets set of unique ffprobe tags from collection")
+        get_unique_media_keys_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        get_unique_media_keys_parser.set_defaults(func=get_unique_media_keys)
 
         # level normalize mp3 files from tld
         # 2 mandatory arg, the tld path and the normalization type (ebu, peak, rms)
@@ -872,28 +815,6 @@ if __name__ == "__main__":
         level_normalize_walk_parser.add_argument("type", type=str, help="mandatory normalization type")
         level_normalize_walk_parser.add_argument("--target", type=str, help="optional target directory for exported files")
         level_normalize_walk_parser.set_defaults(func=level_normalize_walk)
-
-        # list all audio files
-        # 1 mandatory arg, the tld path
-        # list-audio C:\Music
-        list_audio_parser = subparsers.add_parser("list-audio", help="Generates a csv containing full path for all audio files")
-        list_audio_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        list_audio_parser.set_defaults(func=list_audio)
-
-        # list files by extension
-        # 1 mandatory arg, the tld path
-        # 1 optional arg, the file extension (.flac, .mp3, .m4a .wma)
-        # list-type C:\Music --pattern .flac
-        # list-type C:\Music --pattern .mp3
-        # list-type C:\Music --pattern .m4a
-        # list-type C:\Music --pattern .wma
-        # list-type C:\Music
-        list_type_parser = subparsers.add_parser(
-            "list-type", help="Generates a csv containing full file path for an audio file type"
-        )
-        list_type_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        list_type_parser.add_argument("--pattern", type=str, help="optional file pattern")
-        list_type_parser.set_defaults(func=list_type)
 
         # normalize a FLAC filename from its metadata
         # 1 mandatory arg, the audio file path

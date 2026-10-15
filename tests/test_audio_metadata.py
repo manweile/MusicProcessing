@@ -608,7 +608,7 @@ class TestAudioMetadata(TestCase):
         elif os_name == "Windows":
             media_dict["filename"] = local_win
 
-        results_dict = metadata.get_ffrobe_media_info(TEST_MP3_CRUSH)
+        results_dict = metadata.get_ffprobe_media_info(TEST_MP3_CRUSH)
 
         self.assertDictEqual(media_dict, results_dict)
 
@@ -628,7 +628,7 @@ class TestAudioMetadata(TestCase):
 
         results_dict = None
         mock_popen_pipe.return_value = f"[STREAM]\nindex=0\n[/STREAM]\n[FORMAT]\nfilename={TEST_MP3_ABBA}\n[/FORMAT]\n"
-        results_dict = metadata.get_ffrobe_media_info(TEST_MP3_ABBA)
+        results_dict = metadata.get_ffprobe_media_info(TEST_MP3_ABBA)
         expected_dict = {"index": "0", "filename": f"{TEST_MP3_ABBA}"}
         self.assertDictEqual(results_dict, expected_dict)
 

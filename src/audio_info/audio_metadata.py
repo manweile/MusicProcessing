@@ -514,7 +514,7 @@ class AudioMetadata():
                 tags = None
 
             # get the input file info - want bitrate so can preserve the quality in exported file
-            media_info = self.get_ffrobe_media_info(file_path)
+            media_info = self.get_ffprobe_media_info(file_path)
             bitrate = media_info['bit_rate']
 
             command = [
@@ -780,7 +780,7 @@ class AudioMetadata():
             return tags
 
 
-    def get_ffrobe_media_info(self, file_path: str) -> dict:
+    def get_ffprobe_media_info(self, file_path: str) -> dict:
         r'''
         @brief Returns dictionary with media info.
 
@@ -899,8 +899,7 @@ class AudioMetadata():
         '''
         @brief Gets media info (codec, duration, size, bitrate...) for audio files and saves to file.
 
-        @details Wrapper function that uses ffprobe call in `get_ffrobe_media_info` to walk through the directory tree
-        and get media information for audio files.<br>
+        @details Wrapper function for `get_ffprobe_media_info` to walk through the directory tree and get media information for audio files.<br>
         The collected information is stored in a list and can be saved to a file.
 
         @param start_path {str} The starting point of the directory walk.
@@ -932,7 +931,7 @@ class AudioMetadata():
 
                     input_file_path = os.path.join(dir_path, file)
 
-                    media_info = self.get_ffrobe_media_info(input_file_path)
+                    media_info = self.get_ffprobe_media_info(input_file_path)
                     if media_info:
                         file_msg = f"\n{input_file_path} has {len(media_info)} keys"
                         data.append(file_msg)
@@ -1566,6 +1565,7 @@ class AudioMetadata():
             title = title_tag[0]
 
             file_stem = os.path.splitext(os.path.basename(file_path))[0]
+            # regex looks for a filename that matches the pattern "album_artist - title"
             if re.fullmatch(rf"{re.escape(album_artist)}\s*-\s*{re.escape(title)}", file_stem):
                 return
 

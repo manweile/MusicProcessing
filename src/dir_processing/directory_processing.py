@@ -32,10 +32,11 @@ from src import add_module_handler                          # for module-specifi
 from src import AUDIO_EXTS                                  # for supported audio file extensions
 from src import CSV_DIR                                     # for CSV output directory name
 from src import CSV_EXT                                     # for CSV file extension
+from src import FLAC_EXT                                    # for FLAC file extension
+from src import M3U_EXT                                     # for M3U file extension
 from src import M4A_EXT                                     # for M4A file extension
 from src import MP3_EXT                                     # for MP3 file extension
 from src import MUSIC_TLD                                   # for music top level directory name
-from src import PLAYLIST_EXTS                               # for supported playlist extensions
 from src import RESULT_DIR                                  # for text result directory name
 from src import RESULT_EXT                                  # for text result extension
 from src import UTF8                                        # for UTF-8 text encoding
@@ -44,7 +45,7 @@ from src.generated_files import GENERATED_PATH              # for generated file
 
 # Local Module Errors
 from src import MusicProcessingError                        # for directory processing failures
-from src import PathInfoError                                # for path info related errors
+from src import PathInfoError                               # for path info related errors
 
 gc.enable()
 
@@ -171,15 +172,16 @@ class DirectoryProcessing():
 
     def get_audio_file_list(self, start_path: str) -> None:
         '''
-        @brief Generates a csv containing full path for all audio files.
+        @brief Generates a csv containing full path for all audio files and a txt listing the types of files found.
 
-        @details Requires a start path for the directory walk.<br>
-        Creates CSV and text files in the generated-files directory.<br>
-        Includes each audio file's full path and extension.
+        @details Requires a top-level directory path for the directory walk.<br>
+        Creates csv and text files in the generated files directory.<br>
+        Rejects artist-level and album-level start paths.
 
-        @param start_path {str} The starting point of the directory walk.
+        @param start_path {str} The starting point of the directory walk; must be top-level directory (tld).
         @return {None} This function does not return any value.
 
+        @exception MusicProcessingError Indicates the start path does not contain artist and album directory levels.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -201,6 +203,7 @@ class DirectoryProcessing():
         header_row = ["file path", "audio file type"]
         jpg_count = 0
         m4a_count = 0
+        flac_count = 0
         mp3_count = 0
         m3u_count = 0
         other_count = 0
@@ -229,7 +232,9 @@ class DirectoryProcessing():
                         csv_data.append([audio_file_path, file_extension])
                         audio_count += 1
 
-                        if file_extension == MP3_EXT:
+                        if file_extension == FLAC_EXT:
+                            flac_count += 1
+                        elif file_extension == MP3_EXT:
                             mp3_count += 1
                         elif file_extension == M4A_EXT:
                             m4a_count += 1
@@ -238,7 +243,7 @@ class DirectoryProcessing():
                     else:
                         if file_extension == CSV_EXT:
                             csv_count += 1
-                        elif file_extension == PLAYLIST_EXTS[0]:
+                        if file_extension == M3U_EXT:
                             m3u_count += 1
                         elif file_extension == RESULT_EXT:
                             txt_count += 1
@@ -248,6 +253,10 @@ class DirectoryProcessing():
                             not_count += 1
 
                     tot_count += 1
+
+            if 0 not in directory_counts or 1 not in directory_counts:
+                logger.error(f"MusicProcessingError {start_path} must contain artist and album directory levels")
+                raise MusicProcessingError(f"{start_path} must contain artist and album directory levels")
 
             self.create_csv(csv_filename, csv_data, None, None, header_row, 1)
 
@@ -260,6 +269,7 @@ class DirectoryProcessing():
             txt_data.append(f"Found {album_count} album directories")
             txt_data.append(f"Found {dir_count} total directories")
 
+            txt_data.append(f"Found {flac_count} {FLAC_EXT.removeprefix(".")} files")
             txt_data.append(f"Found {mp3_count} {MP3_EXT.removeprefix(".")} files")
             txt_data.append(f"Found {m4a_count} {M4A_EXT.removeprefix(".")} files")
             txt_data.append(f"Found {wma_count} {WMA_EXT.removeprefix(".")} files")
@@ -275,6 +285,8 @@ class DirectoryProcessing():
             txt_data.append(f"Found {tot_count} total files")
             self.create_txt(txt_filename, txt_data, None)
 
+        except MusicProcessingError as mp_error:
+            raise mp_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting files for {start_path}", stack_info=True)
             raise e_error
@@ -285,9 +297,9 @@ class DirectoryProcessing():
         @brief Generates a csv containing full file path for audio file extension.
 
         @details Returns all valid audio files when no file pattern is specified.<br>
-        Requires a valid extension such as '.mp3', '.m4a', '.wma', or '.flac' when a pattern is specified.
+        Requires a valid extension such as '.mp3', '.m4a', '.wma', or '.flac' when a pattern is specified.<br>
 
-        @param start_path {str} The starting point of the directory walk.
+        @param start_path {str} The starting point of the directory walk; tld, fld, and sld all supported.
         @param file_pattern {str} Optional file extension pattern for matching file paths.
         @return {None} This function does not return any value.
 
