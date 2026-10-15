@@ -571,9 +571,9 @@ class AudioNormalization():
         @brief Peak normalizes audio file level.
 
         @details Finds peak amplitude and scales audio to maximize the peak without clipping.<br>
-        Peak normalization (aka volume normalization) is a single pass process.
+        Peak normalization (aka volume normalization) is a single pass process.<br>
         Peak normalization does not take into account the perceived loudness of the audio.<br>
-        It only ensures that the highest peak reaches the target level.
+        It only ensures that the highest peak reaches the target level.<br>
         Requires an MP3 file.
 
         @code{.text}
@@ -632,25 +632,32 @@ class AudioNormalization():
             max_volume = math.floor(volume_info['max_volume'])
             data.append(f"floor max volume: {max_volume:.2f}")
 
-            if max_volume >= 0.0:
-                max_text = f"{input_path_basename} has max volume: {max_volume:.2f} dB, peak normalization not needed"
+            # Apply an implicit 1.0 dB buffer pad to TP target to counter mp3 lossy compression overshoots
+            target_tp = float(TP) - 1.0
+            TOLERANCE = 0.2
+
+            # Check if file is already at your optimized target volume level
+            if math.isclose(max_volume, target_tp, abs_tol=TOLERANCE):
+                max_text = f"{input_path_basename} is already at target peak: {max_volume:.2f} dB, peak normalization not needed"
                 logger.warning(max_text)
                 return
             else:
                 data.append(f"max volume: {max_volume:.2f} dB")
 
-            adjustment = 0.0 + float(TP) - float(max_volume)
+            # Corrected delta logic math
+            adjustment = target_tp - float(max_volume)
             clip_amount = float(max_volume) + adjustment
 
-            if clip_amount > 0:
+            # Check if processing will break digital full scale (0.0 dBFS)
+            if clip_amount > 0.0:
                 clip_text = (
-                    f"peak normalizing by {TP} minus {max_volume:.2f} equals {adjustment:.2f}; "
+                    f"peak normalizing by {target_tp} minus {max_volume:.2f} equals {adjustment:.2f}; "
                     f"max volume {max_volume} plus {adjustment} clips by {clip_amount} dB in {export_path}"
                 )
                 logger.warning(clip_text)
                 return
             else:
-                data.append(f"adjustment: {adjustment:.2f} dB")
+                data.append(f"adjustment: {adjustment:+.2f} dB")
 
             command = [
                 "ffmpeg",
@@ -669,7 +676,6 @@ class AudioNormalization():
             data.append(command)
 
             if show_spinner:
-                # _, spinner = subprocess_utils.spinner_subprocess_run(text, command)
                 _, spinner = subprocess_utils.spinner_subprocess_run(command, text)
                 success_text = f"Successful peak normalization on {input_path_basename} in {spinner.elapsed_time:.2f} secs\n"
             else:
@@ -754,25 +760,33 @@ class AudioNormalization():
             data.append(f"floor mean volume: {mean_volume:.2f}")
             data.append(f"floor max volume: {max_volume:.2f}")
 
-            if mean_volume >= 0.0:
-                mean_text = f"{input_path_basename} has mean volume: {mean_volume:.2f}, rms normalization not needed"
+            # Define your global target RMS baseline (typically between -16.0 and -20.0 for mixed content)
+            TARGET_RMS = float(TP)
+            TOLERANCE = 0.2
+
+            # Skip processing if the average root mean square is already hitting the target window
+            if math.isclose(mean_volume, TARGET_RMS, abs_tol=TOLERANCE):
+                mean_text = f"{input_path_basename} is already at target rms: {mean_volume:.2f} dB, rms normalization not needed."
                 logger.warning(mean_text)
                 return
             else:
                 data.append(f"mean volume: {mean_volume:.2f} dB")
 
-            adjustment = float(TP) - float(mean_volume)
-            clip_amount = float(max_volume) + adjustment
+            # Calculate adjustment required to map current average up to your target average
+            adjustment = TARGET_RMS - float(mean_volume)
 
-            if clip_amount > 0:
+            # Predict the final peak location to block digital ceiling clipping (0.0 dBFS)
+            expected_peak = float(max_volume) + adjustment
+
+            if expected_peak > 0.0:
                 clip_text = (
-                    f"rms normalizing by {TP} minus {mean_volume:.2f} equals {adjustment:.2f}; "
-                    f"max volume {max_volume} plus {adjustment} clips by {clip_amount} dB in {export_path}"
+                    f"rms normalizing by {TARGET_RMS} minus {mean_volume:.2f} equals {adjustment:+.2f}dB; "
+                    f"max peak {max_volume:.2f} plus {adjustment:+.2f} clips by {expected_peak:.2f} dB in {export_path}"
                 )
                 logger.warning(clip_text)
                 return
             else:
-                data.append(f"adjustment: {adjustment:.2f} dB")
+                data.append(f"adjustment: {adjustment:+.2f} dB")
 
             command = [
                 "ffmpeg",
@@ -801,7 +815,7 @@ class AudioNormalization():
             directory.create_txt(txt_filename, data)
 
         except PathInfoError as pi_error:
-            return pi_error
+            raise pi_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} while rms normalizing audio file: {file_path}", stack_info=True)
             raise e_error

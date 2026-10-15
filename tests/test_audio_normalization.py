@@ -145,13 +145,16 @@ class TestAudioNormalization(TestCase):
         cls.json_decode_msg = "Expecting ',' delimiter"
 
         cls.max_vol_src = TEST_MP3_X
-        cls.max_vol_res = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
+        cls.peak_max_vol_res = "X Ambassadors-Renegades.mp3 is already at target peak: -3.00 dB, peak normalization not needed"
+        cls.rms_max_vol_res = f"X Ambassadors-Renegades.mp3 is already at target rms: {float(TP):.2f} dB, rms normalization not needed"
 
         cls.peak_src = TEST_MP3_CRUSH
         cls.peak_res = os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3")
+        cls.peak_clipping_res = f"clips by 1.0 dB in {cls.peak_res}"
 
         cls.rms_clipping_src = TEST_MP3_CRUSH
-        cls.rms_clipping_res = os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3")
+        rms_clipping_path = os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3")
+        cls.rms_clipping_res = f"clips by 11.00 dB in {rms_clipping_path}"
 
         cls.rms_src = TEST_MP3_SMEAGOL
         cls.rms_res = os.path.join(cls.norm_path, "The Lord of the Rings", "The Two Towers", "Howard Shore-The Taming Of Smeagol.mp3")
@@ -636,11 +639,12 @@ class TestAudioNormalization(TestCase):
         self.assertTrue(os.path.exists(self.peak_res))
 
 
-    def test_peak_normalize_file_max_volume(self):
+    @patch("src.audio_normalize.audio_normalization.TP", "2.0")
+    def test_peak_normalize_file_clipping(self):
         '''
-        @brief Test peak normalization when maximum volume is already reached.
+        @brief Test peak normalization when an unsafe target would clip.
 
-        @details Verifies peak normalization logs that no further adjustment is needed.
+        @details Verifies peak normalization logs a clipping warning.
 
         @test Edge case.
 
@@ -651,9 +655,32 @@ class TestAudioNormalization(TestCase):
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
+            normalization.peak_normalize_file(self.peak_src, None, show_spinner=False)
+
+        self.assertIn(self.peak_clipping_res, cm.output[0])
+
+
+    @patch.object(AudioNormalization, "get_volume_info", return_value={"max_volume": float(TP) - 1.0})
+    def test_peak_normalize_file_max_volume(self, mock_get_volume_info):
+        '''
+        @brief Test peak normalization when maximum volume is already reached.
+
+        @details Verifies a mocked target peak causes peak normalization to log that no adjustment is needed.
+
+        @test Edge case.
+
+        @param self {TestAudioNormalization} Test instance containing volume fixtures.
+        @param mock_get_volume_info {Mock} Mocked volume-information provider returning the target peak.
+        '''
+
+        module = f"{normalization.__module__}"
+        logger = logging.getLogger(module)
+
+        with self.assertLogs(logger, level=logging.WARNING) as cm:
             normalization.peak_normalize_file(self.max_vol_src, None, show_spinner=False)
 
-        self.assertIn(self.max_vol_res, cm.output[0])
+        mock_get_volume_info.assert_called_once_with(self.max_vol_src)
+        self.assertIn(self.peak_max_vol_res, cm.output[0])
 
 
     def test_rms_normalize_file(self):
@@ -691,24 +718,27 @@ class TestAudioNormalization(TestCase):
         self.assertIn(self.rms_clipping_res, cm.output[0])
 
 
-    def test_rms_normalize_max_volume(self):
+    @patch.object(AudioNormalization, "get_volume_info", return_value={"mean_volume": float(TP), "max_volume": float(TP) - 1.0})
+    def test_rms_normalize_max_volume(self, mock_get_volume_info):
         '''
         @brief Test RMS normalization when maximum volume is already reached.
 
-        @details Verifies normalization logs that no further peak adjustment is needed.
+        @details Verifies mocked RMS and peak levels cause normalization to log a clipping warning.
 
         @test Edge case.
 
         @param self {TestAudioNormalization} Test instance containing volume fixtures.
+        @param mock_get_volume_info {Mock} Mocked volume-information provider.
         '''
 
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(self.max_vol_src, None, show_spinner=False)
+            normalization.rms_normalize_file(self.max_vol_src, None, show_spinner=False)
 
-        self.assertIn(self.max_vol_res, cm.output[0])
+        mock_get_volume_info.assert_called_once_with(self.max_vol_src)
+        self.assertIn(self.rms_max_vol_res, cm.output[0])
 
 
 def get_method_names(cls):

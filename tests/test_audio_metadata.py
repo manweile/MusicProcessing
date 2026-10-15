@@ -1165,6 +1165,46 @@ class TestAudioMetadata(TestCase):
         self.assertDictEqual(id3_tags, wma_mapped)
 
 
+    def test_normalize_filename_walk(self):
+        '''
+        @brief Tests normalizing filenames during a directory walk.
+
+        @details Verifies all supported audio files are routed to their normalizers while unsupported files are skipped.
+
+        @test Happy path.
+        '''
+
+        test_dir = os.path.join(self.test_tld, "normalize_filename_walk")
+        os.makedirs(test_dir, exist_ok=True)
+
+        mp3_file = os.path.join(test_dir, os.path.basename(TEST_MP3_10CC))
+        flac_file = os.path.join(test_dir, os.path.basename(TEST_FLAC_CREAM))
+        m4a_files = [
+            os.path.join(test_dir, os.path.basename(TEST_M4A_DAVIS)),
+            os.path.join(test_dir, os.path.basename(TEST_M4A_EAGLES))
+        ]
+        wma_files = [
+            os.path.join(test_dir, os.path.basename(TEST_WMA_CCR)),
+            os.path.join(test_dir, os.path.basename(TEST_WMA_JOHN))
+        ]
+
+        for file_path in [mp3_file, flac_file, *m4a_files, *wma_files, os.path.join(test_dir, "notes.txt")]:
+            Path(file_path).touch()
+
+        with (
+            patch.object(metadata, "normalize_mp3_filename") as mock_normalize_mp3,
+            patch.object(metadata, "normalize_flac_filename") as mock_normalize_flac,
+            patch.object(metadata, "normalize_mp4_filename") as mock_normalize_mp4,
+            patch.object(metadata, "normalize_wma_filename") as mock_normalize_wma,
+        ):
+            metadata.normalize_filename_walk(test_dir)
+
+        mock_normalize_mp3.assert_called_once_with(mp3_file)
+        mock_normalize_flac.assert_called_once_with(flac_file)
+        self.assertCountEqual(mock_normalize_mp4.call_args_list, [call(file_path) for file_path in m4a_files])
+        self.assertCountEqual(mock_normalize_wma.call_args_list, [call(file_path) for file_path in wma_files])
+
+
     def test_normalize_mp3_filename(self):
         '''
         @brief Tests renaming an ID3v2.3 MP3.
@@ -1358,34 +1398,6 @@ class TestAudioMetadata(TestCase):
         self.assertEqual(str(cm.exception), err_msg)
 
 
-    def test_normalize_mp3_filename_walk(self):
-        '''
-        @brief Tests dispatching MP3 files during a filename-normalization walk.
-
-        @details Verifies MP3 files are routed to their normalizer while unsupported files are skipped.
-
-        @test Happy path.
-        '''
-
-        # Set up the test directory and files for the filename-normalization walk
-        test_dir = os.path.join(self.test_tld, "10cc", "10cc")
-        os.makedirs(test_dir, exist_ok=True)
-
-        # Define the MP3 and unsupported files within the test directory
-        mp3_file = os.path.join(test_dir, "04 - Donna.mp3")
-        unsupported_file = os.path.join(test_dir, "notes.txt")
-
-        # Create empty files to simulate the presence of the audio and unsupported files
-        Path(mp3_file).touch()
-        Path(unsupported_file).touch()
-
-        # Mock the normalize_mp3_filename method to track its calls without actually performing any renaming
-        with patch.object(metadata, "normalize_mp3_filename") as mock_normalize:
-            metadata.normalize_filename_walk(test_dir)
-
-        mock_normalize.assert_called_once_with(mp3_file)
-
-
     def test_normalize_flac_filename(self):
         '''
         @brief Tests renaming a FLAC using its album artist and title metadata.
@@ -1550,28 +1562,6 @@ class TestAudioMetadata(TestCase):
         self.assertEqual(str(cm.exception), err_msg)
 
 
-    def test_normalize_flac_filename_walk(self):
-        '''
-        @brief Tests dispatching FLAC files during a filename-normalization walk.
-
-        @details Verifies FLAC files are routed to their normalizer while unsupported files are skipped.
-
-        @test Happy path.
-        '''
-
-        test_dir = os.path.join(self.test_tld, TEST_FLAC_CREAM_ALBUM_ARTIST, os.path.basename(os.path.dirname(TEST_FLAC_CREAM)))
-        os.makedirs(test_dir, exist_ok=True)
-        flac_file = os.path.join(test_dir, os.path.basename(TEST_FLAC_CREAM))
-        unsupported_file = os.path.join(test_dir, "notes.txt")
-        Path(flac_file).touch()
-        Path(unsupported_file).touch()
-
-        with patch.object(metadata, "normalize_flac_filename") as mock_normalize:
-            metadata.normalize_filename_walk(test_dir)
-
-        mock_normalize.assert_called_once_with(flac_file)
-
-
     def test_normalize_mp4_filename(self):
         '''
         @brief Tests renaming an M4A using its album artist and title metadata.
@@ -1626,56 +1616,6 @@ class TestAudioMetadata(TestCase):
         file_ext = os.path.splitext(TEST_WMA_JOHN)[1]
         err_msg = f"ValueError with file: {TEST_WMA_JOHN} has invalid extension: {file_ext}"
         self.assertEqual(str(cm.exception), err_msg)
-
-
-    def test_normalize_mp4_filename_walk(self):
-        '''
-        @brief Tests dispatching M4A files during a filename-normalization walk.
-
-        @details Verifies M4A files are routed to their normalizer while unsupported files are skipped.
-
-        @test Happy path.
-        '''
-
-        test_dir = os.path.join(self.test_tld, "M4A")
-        os.makedirs(test_dir, exist_ok=True)
-        davis_file = os.path.join(test_dir, os.path.basename(TEST_M4A_DAVIS))
-        eagles_file = os.path.join(test_dir, os.path.basename(TEST_M4A_EAGLES))
-        unsupported_file = os.path.join(test_dir, "notes.txt")
-
-        Path(davis_file).touch()
-        Path(eagles_file).touch()
-        Path(unsupported_file).touch()
-
-        with patch.object(metadata, "normalize_mp4_filename") as mock_normalize:
-            metadata.normalize_filename_walk(test_dir)
-
-        self.assertCountEqual(mock_normalize.call_args_list, [call(davis_file), call(eagles_file)])
-
-
-    def test_normalize_wma_filename_walk(self):
-        '''
-        @brief Tests dispatching WMA files during a filename-normalization walk.
-
-        @details Verifies WMA files are routed to their normalizer while unsupported files are skipped.
-
-        @test Happy path.
-        '''
-
-        test_dir = os.path.join(self.test_tld, "WMA")
-        os.makedirs(test_dir, exist_ok=True)
-        ccr_file = os.path.join(test_dir, os.path.basename(TEST_WMA_CCR))
-        john_file = os.path.join(test_dir, os.path.basename(TEST_WMA_JOHN))
-        unsupported_file = os.path.join(test_dir, "notes.txt")
-
-        Path(ccr_file).touch()
-        Path(john_file).touch()
-        Path(unsupported_file).touch()
-
-        with patch.object(metadata, "normalize_wma_filename") as mock_normalize:
-            metadata.normalize_filename_walk(test_dir)
-
-        self.assertCountEqual(mock_normalize.call_args_list, [call(ccr_file), call(john_file)])
 
 
     def test_update_genres_from_csv(self):

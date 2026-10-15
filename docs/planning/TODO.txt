@@ -75,16 +75,12 @@ NOT DISPOSED:
     9) Write function that returns list of songs with invalid for Windows album names
     TODO
 
-    10) consolidate normalize-*-filename & normalize-*-filename-walk functions
-      a) consolidate & update the "walk" unit tests IN PROGRESS
-    IN PROGRESS
-
-    11) I don't like how main errors with absolutely no indication of cause
+    10) I don't like how main errors with absolutely no indication of cause
       a) I still want logging, but fail to see what the purpose return 1 and return 0 at end of main.main(args) does
       b) if I typo entering cli, I want to know it!
     TODO
 
-    12) look at audio_normalization.py wrt ebu_normalize_file error on Colin james song that had no metadata
+    11) look at audio_normalization.py wrt ebu_normalize_file error on Colin james song that had no metadata
     TODO
       2026-10-05 20:03:51,051 — src.audio_normalize.audio_normalization — ERROR — ebu_normalize_file:342 — Exception TypeError while ebu normalizing audio file: F:\Rick\RickConverted\Colin James\Rooftops and Satellites\Colin James-If You've Gotta Go Go Now.mp3
       Traceback (most recent call last):
@@ -124,32 +120,26 @@ NOT DISPOSED:
         File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 559, in level_normalize_walk
           logger.exception(
 
-    13) think hard about removing reliance on src/generated_files/Music for conversion and leveling
-      a) still need for testing purposes, but change leveling and converting functions to accept a target directory
-      b) change unit tests        COMPLETE
-      c) update workflow markdown IN PROGRESS
-    IN PROGRESS
-
-    14) think hard about removing reliance on src/generated_files/Music/AlbumArt for setting album art
+    12) think hard about removing reliance on src/generated_files/Music/AlbumArt for setting album art
       a) still need for testing purposes, but change setting album art function to accept an art source directory
     TODO
 
-    15) add D:/MusicProcessing/docs/scripts/google/album_directory_rename.py to project
+    13) add D:/MusicProcessing/docs/scripts/google/album_directory_rename.py to project
       a) main.py and audio metadata class       COMPLETE
       a) update workflow markdown               COMPLETE
       b) add unit test for it                   TODO
     IN PROGRESS
 
-    16) modify update-genres-from-csv to log instead of previous_artist_name
+    14) modify update-genres-from-csv to log instead of previous_artist_name
       a) don't need the printing in main.py either
       b) don't need the return 0 or 1 logic in main.py
       c) update unit test
     TODO
 
-    17) think about playlist updating writing to input directory or a target directory instead of generated_files
+    15) think about playlist updating writing to input directory or a target directory instead of generated_files
     TODO
 
-    18) think about moving the "one-offs" ack into standalone scripts
+    16) think about moving the "one-offs" ack into standalone scripts
       get-ffprobe-media-info          Gets ffprobe media info for an audio file<br>
       get-ffprobe-media-info-walk     Gets ffprobe media info for audio files<br>
       get-ffprobe-tags                Gets ffprobe metadata tags for audio file<br>
@@ -309,4 +299,15 @@ DISPOSED:
 
   17) add an environment markdown
     a) refer to esp32 scale project's environment markdown
+  COMPLETED
+
+  18) consolidate normalize-*-filename-walk functions
+    a) consolidate & update the normalize-*-filename-walk functions COMPLETED
+    b) consolidate & update the "walk" unit tests COMPLETED
+  COMPLETED
+
+  19) think hard about removing reliance on src/generated_files/Music for conversion and leveling
+    a) change leveling and converting functions to accept a target directory COMPLETED
+    b) change unit tests        COMPLETED
+    c) update workflow markdown COMPLETED
   COMPLETED

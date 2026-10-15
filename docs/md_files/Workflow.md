@@ -98,7 +98,7 @@ There are three directory levels:
 #### Top Level Directory
 
 The music top level directory (*tld*) is where all music related files live.<br>
-The tld can be nested as deep as you want (with respect to OS depth rules); it could as short as `drive:\tld`.<br>
+The tld can be nested as deep as you want (with respect to OS depth rules); it could as short as `Drive:/tld`.<br>
 You can name the tld whatever you want. I personally prefer to call it "Music", which follows Windows OS practice.
 
 Playlist files (m3u) **must** exist here; they use *relative pathing* to the artists/albums/songs they play, and playlist functions reflect that.
@@ -546,25 +546,26 @@ command line: `python main.py remove-empty-albums "Drive:/path/to/tld/or fld"`
 
 ## Converted
 
-Congratulations! The hard work is now over. Now comes the waiting game - conversion to mp3 format.<br>
+Congratulations! The hard work is now over. Now comes the first waiting game - conversion to mp3 format.<br>
 Average time to convert a song from any format is ~ 6 seconds. So the more you have, the longer it takes.<br>
 Conversion handles flac, mp3, m4a, and wma audio files.
 
-Conversion logic is essentially a destructive three stage process.<br>
+Ffmpeg is the conversion engine behind the scenes.<br>
+It has one hard requirement: the output filepath cannot be exactly the same as the input filepath.<br>
+FFmpeg is a streaming data pipeline. It opens an input file to read a few frames, processes them, and then writes them to the output file.<br>
+If the input and output are the same file, the writer will wipe out or overwrite the data blocks that the reader hasn't even reached yet.
+
+Conversion logic is essentially a three stage process.<br>
 First, map the existing metadata from original audio file to ID3v2.3 encoding.<br>
 Second, convert the original audio file with ffmpeg to mp3 format with the mapped to ID3v2.3 metadata in a different save location.<br>
 Third, embed the co-located album art in the newly converted mp3 file.
 
-Therefore, you **must** have co-located album art; you did run extract-file/extract-walk/set-album-art right?<br>
+Therefore, you **must** have co-located album art; you did run extract-file/extract-walk/set-album-art, *right?*<br>
 This is also a good place to have all of your song metadata up to snuff.
 
 Bonus functionality: since the logic maps any existing metadata before wiping it out, you can use it delete extra metadata encoding formats!<br>
 So if you ensure your metadata is accurate (one of the ID3 versions), no worries, go ahead and convert.<br>
 Mp3 files are the usual multiple encoding culprit.
-
-*Note*<br>
-Converting is destructive - the co-located Folder.jpg will be consumed and the original audio file will be consumed as well.<br>
-Ffmpeg also requires the converted file be created in a different directory.<br>
 
 Both convert file and convert walk have optional/default target invocations.<br>
 Whichever you use, it's up to you to move the converted files if you are processing them any further with level normalization.
@@ -575,35 +576,79 @@ The default save location is `/MusicProcessing/src/generated_files/Music`.
 
 Converts an acceptable audio file to mp3.
 
-command line with target:  `python main.py convert-file "Drive:/path/to/audio file" --target "Drive:\path\to\target"`<br>
+command line with target:  `python main.py convert-file "Drive:/path/to/audio file" --target "Drive:/path/to/target"`<br>
 command line without target:  `python main.py convert-file "Drive:/path/to/audio file"`
 
 ### convert-walk
 
 Converts all acceptable audio files in path to mp3. Works with tld (top), fld (artist) and sld (album) path input.<br>
 
-command line with target:  `python main.py convert-walk "Drive:/path/to/tld/or fld/or sld" --target "Drive:\path\to\target"`<br>
+command line with target:  `python main.py convert-walk "Drive:/path/to/tld/or fld/or sld" --target "Drive:/path/to/target"`<br>
 command line without target:  `python main.py convert-walk "Drive:/path/to/tld/or fld/or sld"`
 
-## Normalized
+## Leveled
 
 I get truly annoyed when a playlist moves to a next song and you are suddenly lowering or increasing the volume.<br>
-ipsum lorem about leveling with EBU R128<br>
+Leveling normalization decreases that perceived volume change. The caveat: **you must apply leveling to all of your collection**.
 
-ipsum lorem when to use peak leveling<br>
+All of the distinct single file level normalization functions and the leveling walk function have optional/default target invocations.<br>
+Whichever you use, it's up to you to move the leveled files if you are processing them any further.
 
-ipsum lorem when to use rms leveling.<br>
+There are 3 level normalization types:
 
-ipsum lorem functions to use
-ebu-file                        EBU R128 normalizes a single mp3 audio file level
-peak-file                       Peak normalizes a single mp3 audio file level
-rms-file                        Rms normalizes a single  mp3 audio file level
-level-normalize-walk            Normalizes files with specified pattern. works with tld and fld input.
+### EBU R128
+
+I am using the the ffmpeg loudnorm filter, which is the EBU R128 international broadcast audio standard.<br>
+It replaces traditional peak normalization with perceived loudness normalization to create a consistent listening experience.
+
+The loudnorm algorithm goes like this:<br>
+Measure the integrated loudness of the source file, calculate an appropriate offset gain, and then apply makeup gain.<br>
+I settled on:
+
+- integrated loudness target (ILT): -16.0, to avoid excessive peak limiting, and allow a higher dynamic range in a program stream
+- loudness range target (LRA): 11.0, preserves micro-dynamics, performance nuances, and natural instrumentation
+- true peak (TP): -2.0, to prevent clipping when using lossy encoders
+
+Refer to:<br>
+[Loudness Normalization](https://k.ylo.ph/2016/04/04/loudnorm.html),<br>
+[FFMPEG Loudnorm Filter](https://ffmpeg.org/ffmpeg-filters.html#loudnorm), and<br>
+AESTD1004_1_15_10.pdf, official document from [Audio Engineering Society]( https://aes.org/community/technical-council/)
+
+command line with target:  `python main.py ebu-file "Drive:/path/to/audio file" --target "Drive:/path/to/target"`<br>
+command line without target:  `python main.py ebu-file "Drive:/path/to/audio file"`
+
+### Peak
+
+Peak volume normalization is accomplished by using the ffmpeg volumedetect filter.<br>
+The adjustment value is computed from true peak constant and the *maximum* volume of a song.
+
+Use peak leveling when you want to preserve the original dynamic range of a song.
+
+command line with target:  `python main.py peak-file "Drive:/path/to/audio file" --target "Drive:/path/to/target"`<br>
+command line without target:  `python main.py peak-file "Drive:/path/to/audio file"`
+
+### RMS
+
+RMS (root mean square) normalization is accomplished by using the ffmpeg volumedetect filter.<br>
+The adjustment value is computed from the true peak constant value and *mean* volume of a song.
+
+Use RMS leveling when you want to preserve the original artist-intended relative differences between songs.
+
+command line with target:  `python main.py rms-file "Drive:/path/to/audio file" --target "Drive:/path/to/target"`<br>
+command line without target:  `python main.py rms-file "Drive:/path/to/audio file"`
+
+### level-normalize-walk
+
+Normalizes files with specified normalization pattern (ebu, peak, or rms).<br>
+Works with tld (top) and fld (artist), but not sld (album) path input.<br>
+
+command line with target:  `python main.py level-normalize-walk "Drive:/path/to/tld/or fld" --target "Drive:/path/to/target"`<br>
+command line without target:  `python main.py rms-file "Drive:/path/to/tld/or fld"`
 
 ## Finalized
 
 Finish Line in sight!<br>
-Move everything from `Normalized` to `Finalized`
+Move everything from `Leveled` to `Finalized`
 
 Remember those m3u files mentioned way back? Here's where they get updated.<br>
 A reminder about m3u playlists - they are *relative* pathed. They **must** sit in the top level directory that contains all audio files!<br>
@@ -612,7 +657,7 @@ ipsum lorem functions to use
 update-m3u                      Update playlist paths
 update-walk                     Update playlist paths
 
-### Other functions
+### Information functions
 
 get-ffprobe-media-info          Gets ffprobe media info for an audio file<br>
 get-ffprobe-media-info-walk     Gets ffprobe media info for audio files<br>

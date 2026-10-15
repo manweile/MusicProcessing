@@ -866,6 +866,7 @@ if __name__ == "__main__":
         # level-normalize-walk C:\Music ebu
         # level-normalize-walk C:\Music peak
         # level-normalize-walk C:\Music rms
+        # level-normalize-walk "F:\Rick\RickConverted\Elton John" ebu --target "F:\Rick\RickLeveled"
         level_normalize_walk_parser = subparsers.add_parser("level-normalize-walk", help="Normalizes files with specified pattern")
         level_normalize_walk_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         level_normalize_walk_parser.add_argument("type", type=str, help="mandatory normalization type")
