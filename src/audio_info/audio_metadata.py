@@ -1475,6 +1475,122 @@ class AudioMetadata():
             return id3_tags
 
 
+    def normalize_filename(self, file_path: str) -> None:
+        '''
+        @brief Normalizes the filename of a single audio file based on its metadata.
+
+        @details The function determines the file type and calls the appropriate normalization function.
+
+        @param file_path {str} The path to the audio file to be have it's filename normalized.<br>
+        The input file must be a valid audio file with a supported extension.
+        @return {None} This function does not return any value.
+
+        @exception MetadataTypeError Indicates a non-standard metadata type or missing metadata was encountered.
+        @exception MusicProcessingError Indicates attempting to process audio file with invalid extension.
+        @exception OSError A system related error occurred.
+        @exception ValidationError Indicates an error occurred while sanitizing the filename based on metadata.
+        @exception ValueError Indicates an error loading metadata from the audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        csv_filename = inspect.currentframe().f_code.co_name
+
+        try:
+            _, input_file_ext = os.path.splitext(file_path)
+
+            file_ext = input_file_ext.lower()
+            if file_ext not in AUDIO_EXTS:
+                logger.error(f"MusicProcessingError with file: {file_path} has invalid extension: {input_file_ext}", exc_info=True)
+                raise MusicProcessingError(f"MusicProcessingError with file: {file_path} has invalid extension: {input_file_ext}")
+
+            audio_file = self.load_any_file(file_path)
+
+            if audio_file.tags is None:
+                logger.error(f"ValueError loading metadata from {file_path}", exc_info=True)
+                raise ValueError(f"ValueError loading metadata from {file_path}")
+
+            if isinstance(audio_file, FLAC):
+                album_artist_tag = audio_file.tags.get('albumartist')
+                title_tag = audio_file.tags.get('title')
+            elif isinstance(audio_file, MP3):
+                album_artist_tag = audio_file.tags.get('TPE2')
+                title_tag = audio_file.tags.get('TIT2')
+            elif isinstance(audio_file, MP4):
+                album_artist_tag = audio_file.tags.get('aART')
+                title_tag = audio_file.tags.get('\xa9nam')
+            elif isinstance(audio_file, ASF):
+                album_artist_tag = audio_file.tags.get('WM/AlbumArtist')
+                title_tag = audio_file.tags.get('Title')
+            else:
+                logger.error(f"MetadataTypeError with file: {file_path} unsupported metadata type", exc_info=True)
+                raise MetadataTypeError(f"MetadataTypeError with file: {file_path} unsupported metadata type")
+
+            if album_artist_tag is None or not album_artist_tag:
+                logger.error(f"MetadataTypeError with file: {file_path} missing album artist metadata", exc_info=True)
+                raise MetadataTypeError(f"MetadataTypeError with file: {file_path} missing album artist metadata")
+
+            if title_tag is None or not title_tag:
+                logger.error(f"MetadataTypeError with file: {file_path} missing title metadata", exc_info=True)
+                raise MetadataTypeError(f"MetadataTypeError with file: {file_path} missing title metadata")
+
+            if isinstance(audio_file, FLAC):
+                album_artist = album_artist_tag[0]
+                title = title_tag[0]
+            elif isinstance(audio_file, MP3):
+                album_artist = album_artist_tag.text[0]
+                title = title_tag.text[0]
+            elif isinstance(audio_file, MP4):
+                album_artist = album_artist_tag[0]
+                title = title_tag[0]
+            elif isinstance(audio_file, ASF):
+                album_artist = album_artist_tag[0]
+                title = title_tag[0]
+
+            # "album_artist - title" is acceptable
+            file_stem = os.path.splitext(os.path.basename(file_path))[0]
+            if re.fullmatch(rf"{re.escape(album_artist)}\s*-\s*{re.escape(title)}", file_stem):
+                return
+
+            normalized_name = f"{album_artist}-{title}{file_ext}"
+            sanitized_name = pathvalidate.sanitize_filename(
+                normalized_name,
+                replacement_text="",
+                platform="Windows",
+                validate_after_sanitize=True,
+            )
+
+            sanitized_path = os.path.join(os.path.dirname(file_path), sanitized_name)
+
+            if os.path.exists(sanitized_path):
+                logger.warning(f"File already exists: {sanitized_path}")
+                return
+            else:
+                # delete the audio_file object to release any file handles before renaming
+                del audio_file
+                os.rename(file_path, sanitized_path)
+
+            data.append([file_path, album_artist, title, sanitized_path])
+            header_row = ["original file path", "album artist", "title", "normalized file path"]
+            directory.create_csv(csv_filename, data, None, None, header_row, 0)
+
+        except MetadataTypeError as mt_error:
+            raise mt_error
+        except MusicProcessingError as mp_error:
+            raise mp_error
+        except OSError as os_error:
+            logger.error(f"OSError {(strerror(os_error.errno))} renaming file {file_path} to {sanitized_path}", exc_info=True)
+            raise os_error
+        except ValidationError as valid_error:
+            logger.exception(f"ValidationError sanitizing artist album {album_artist} and/or title {title} for file: {file_path}", stack_info=True)
+            raise valid_error
+        except ValueError as val_error:
+            raise val_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} normalizing filename: {file_path}", stack_info=True)
+            raise e_error
+
+
     def normalize_filename_walk(self, start_path: str) -> None:
         '''
         @brief Walks through a directory and calls appropriate functions to rename audio files.
@@ -1505,342 +1621,10 @@ class AudioMetadata():
 
                     file_path = os.path.join(dir_path, file)
 
-                    if input_file_ext.lower() == MP3_EXT:
-                        self.normalize_mp3_filename(file_path)
-                    elif input_file_ext.lower() == M4A_EXT:
-                        self.normalize_mp4_filename(file_path)
-                    elif input_file_ext.lower() == WMA_EXT:
-                        self.normalize_wma_filename(file_path)
-                    elif input_file_ext.lower() == FLAC_EXT:
-                        self.normalize_flac_filename(file_path)
+                    self.normalize_filename(file_path)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} normalizing filenames from: {start_path}", stack_info=True)
-            raise e_error
-
-
-    def normalize_flac_filename(self, file_path: str) -> None:
-        '''
-        @brief Renames a FLAC using its album artist and title metadata.
-
-        @details Calling function MUST supply path to an existing FLAC file.<br>
-        The FLAC MUST contain ALBUMARTIST and TITLE Vorbis comment tags.<br>
-        A csv report named after the function (normalize_flac_filename.csv) is created after the file is renamed.
-
-        @param file_path {str} The path for the FLAC file to rename.
-        @return {None} This function does not return any value.
-
-        @exception ValueError Indicates invalid input or missing required metadata.
-        @exception ValidationError Indicates the created filename is invalid.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        data = []
-        csv_filename = inspect.currentframe().f_code.co_name
-
-        try:
-            _, file_ext = os.path.splitext(file_path)
-            if file_ext.lower() != FLAC_EXT:
-                logger.error(f"ValueError with file: {file_path} has invalid extension: {file_ext}", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} has invalid extension: {file_ext}")
-
-            audio_file = self.load_any_file(file_path)
-
-            if not isinstance(audio_file, FLAC) or audio_file.tags is None:
-                logger.error(f"ValueError loading FLAC metadata from {file_path}", exc_info=True)
-                raise ValueError(f"ValueError loading FLAC metadata from {file_path}")
-
-            album_artist_tag = audio_file.tags.get('albumartist')
-            title_tag = audio_file.tags.get('title')
-
-            if album_artist_tag is None or not album_artist_tag:
-                logger.error(f"ValueError with file: {file_path} missing album artist metadata", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} missing album artist metadata")
-
-            if title_tag is None or not title_tag:
-                logger.error(f"ValueError with file: {file_path} missing title metadata", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} missing title metadata")
-
-            album_artist = album_artist_tag[0]
-            title = title_tag[0]
-
-            file_stem = os.path.splitext(os.path.basename(file_path))[0]
-            # regex looks for a filename that matches the pattern "album_artist - title"
-            if re.fullmatch(rf"{re.escape(album_artist)}\s*-\s*{re.escape(title)}", file_stem):
-                return
-
-            normalized_name = f"{album_artist}-{title}{FLAC_EXT}"
-            normalized_name = pathvalidate.sanitize_filename(
-                normalized_name,
-                replacement_text="",
-                platform="Windows",
-                validate_after_sanitize=True,
-            )
-
-            normalized_path = os.path.join(os.path.dirname(file_path), normalized_name)
-
-            # check if the renamed file exists, log warning and return if it does
-            if os.path.exists(normalized_path):
-                logger.warning(f"File already exists: {normalized_path}")
-                return
-            else:
-                del audio_file
-                os.rename(file_path, normalized_path)
-
-            data.append([file_path, album_artist, title, normalized_path])
-            header_row = ["original file path", "album artist", "title", "normalized file path"]
-            directory.create_csv(csv_filename, data, None, None, header_row, 0)
-
-        except ValidationError as validation_error:
-            logger.exception(f"ValidationError creating normalized filename for {file_path}", stack_info=True)
-            raise validation_error
-        except ValueError as v_error:
-            raise v_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} normalizing filename for {file_path}", stack_info=True)
-            raise e_error
-
-
-    def normalize_mp3_filename(self, file_path: str) -> None:
-        '''
-        @brief Renames an ID3v2.3 MP3 using its album artist and title metadata.
-
-        @details Calling function MUST supply path to an existing valid MP3 file.<br>
-        The MP3 MUST contain ID3v2.3 metadata with TPE2 and TIT2 frames.<br>
-        The metadata values are assumed to be sanitized already.<br>
-        A CSV report named after the function (normalize_mp3_filename.csv) is created after the file is renamed.
-
-        @param file_path {str} The path for the MP3 file to rename.
-        @return {None} This function does not return any value.
-
-        @exception ValueError Indicates invalid input or missing required metadata.
-        @exception ValidationError Indicates the created filename is invalid.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        data = []
-        csv_filename = inspect.currentframe().f_code.co_name
-
-        try:
-            _, file_ext = os.path.splitext(file_path)
-            if file_ext.lower() != MP3_EXT:
-                logger.error(f"ValueError with file: {file_path} has invalid extension: {file_ext}", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} has invalid extension: {file_ext}")
-
-            audio_file = self.load_any_file(file_path)
-
-            if not isinstance(audio_file, MP3) or audio_file.tags is None:
-                logger.error(f"ValueError loading ID3v2.3 metadata from {file_path}", exc_info=True)
-                raise ValueError(f"ValueError loading ID3v2.3 metadata from {file_path}")
-
-            if audio_file.tags.version != (2, 3, 0):
-                logger.error(f"ValueError with file: {file_path} metadata is not ID3v2.3", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} metadata is not ID3v2.3")
-
-            album_artist_tag = audio_file.tags.get('TPE2')
-            title_tag = audio_file.tags.get('TIT2')
-
-            if album_artist_tag is None or not album_artist_tag.text:
-                logger.error(f"ValueError with file: {file_path} missing album artist metadata", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} missing album artist metadata")
-
-            if title_tag is None or not title_tag.text:
-                logger.error(f"ValueError with file: {file_path} missing title metadata", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} missing title metadata")
-
-            album_artist = album_artist_tag.text[0]
-            title = title_tag.text[0]
-
-            file_stem = os.path.splitext(os.path.basename(file_path))[0]
-            if re.fullmatch(rf"{re.escape(album_artist)}\s*-\s*{re.escape(title)}", file_stem):
-                return
-
-            normalized_name = f"{album_artist}-{title}{MP3_EXT}"
-            normalized_name = pathvalidate.sanitize_filename(
-                normalized_name,
-                replacement_text="",
-                platform="Windows",
-                validate_after_sanitize=True,
-            )
-
-            normalized_path = os.path.join(os.path.dirname(file_path), normalized_name)
-            # check if the renamed file exists, log warning and return if it does
-            if os.path.exists(normalized_path):
-                logger.warning(f"File already exists: {normalized_path}")
-                return
-            else:
-                os.rename(file_path, normalized_path)
-
-            data.append([file_path, album_artist, title, normalized_path])
-            header_row = ["original file path", "album artist", "title", "normalized file path"]
-            directory.create_csv(csv_filename, data, None, None, header_row, 0)
-
-        except ValidationError as validation_error:
-            logger.exception(f"ValidationError creating normalized filename for {file_path}", stack_info=True)
-            raise validation_error
-        except ValueError as v_error:
-            raise v_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} normalizing filename for {file_path}", stack_info=True)
-            raise e_error
-
-
-    def normalize_mp4_filename(self, file_path: str) -> None:
-        '''
-        @brief Renames an M4A using its album artist and title metadata.
-
-        @details Calling function MUST supply path to an existing M4A file.<br>
-        The M4A MUST contain aART and title MP4 tags.<br>
-        A CSV report named after the function (normalize_mp4_filename.csv) is created after the file is renamed.
-
-        @param file_path {str} The path for the M4A file to rename.
-        @return {None} This function does not return any value.
-
-        @exception ValueError Indicates invalid input or missing required metadata.
-        @exception ValidationError Indicates the created filename is invalid.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        data = []
-        csv_filename = inspect.currentframe().f_code.co_name
-
-        try:
-            _, file_ext = os.path.splitext(file_path)
-            if file_ext.lower() != M4A_EXT:
-                logger.error(f"ValueError with file: {file_path} has invalid extension: {file_ext}", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} has invalid extension: {file_ext}")
-
-            audio_file = self.load_any_file(file_path)
-
-            if not isinstance(audio_file, MP4) or audio_file.tags is None:
-                logger.error(f"ValueError loading MP4 metadata from {file_path}", exc_info=True)
-                raise ValueError(f"ValueError loading MP4 metadata from {file_path}")
-
-            album_artist_tag = audio_file.tags.get('aART')
-            title_tag = audio_file.tags.get('\xa9nam')
-
-            if album_artist_tag is None or not album_artist_tag:
-                logger.error(f"ValueError with file: {file_path} missing album artist metadata", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} missing album artist metadata")
-
-            if title_tag is None or not title_tag:
-                logger.error(f"ValueError with file: {file_path} missing title metadata", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} missing title metadata")
-
-            album_artist = album_artist_tag[0]
-            title = title_tag[0]
-
-            file_stem = os.path.splitext(os.path.basename(file_path))[0]
-            if re.fullmatch(rf"{re.escape(album_artist)}\s*-\s*{re.escape(title)}", file_stem):
-                return
-
-            normalized_name = f"{album_artist}-{title}{M4A_EXT}"
-            normalized_name = pathvalidate.sanitize_filename(
-                normalized_name,
-                replacement_text="",
-                platform="Windows",
-                validate_after_sanitize=True,
-            )
-
-            normalized_path = os.path.join(os.path.dirname(file_path), normalized_name)
-            # check if the renamed file exists, log warning and return if it does
-            if os.path.exists(normalized_path):
-                logger.warning(f"File already exists: {normalized_path}")
-                return
-            else:
-                os.rename(file_path, normalized_path)
-
-            data.append([file_path, album_artist, title, normalized_path])
-            header_row = ["original file path", "album artist", "title", "normalized file path"]
-            directory.create_csv(csv_filename, data, None, None, header_row, 0)
-
-        except ValidationError as validation_error:
-            logger.exception(f"ValidationError creating normalized filename for {file_path}", stack_info=True)
-            raise validation_error
-        except ValueError as v_error:
-            raise v_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} normalizing filename for {file_path}", stack_info=True)
-            raise e_error
-
-
-    def normalize_wma_filename(self, file_path: str) -> None:
-        '''
-        @brief Renames a WMA file using album artist and title metadata.
-
-        @details Calling function MUST supply path to an existing WMA file.<br>
-        The WMA MUST contain 'WM/AlbumArtist' and 'Title' tags.<br>
-        A CSV report named after the function (normalize_wma_filename.csv) is created after the file is renamed.
-
-        @param file_path {str} The path for the WMA file to rename.
-        @return {None} This function does not return any value.
-
-        @exception ValueError Indicates invalid input or missing required metadata.
-        @exception ValidationError Indicates the created filename is invalid.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        data = []
-        csv_filename = inspect.currentframe().f_code.co_name
-
-        try:
-            _, file_ext = os.path.splitext(file_path)
-            if file_ext.lower() != WMA_EXT:
-                logger.error(f"ValueError with file: {file_path} has invalid extension: {file_ext}", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} has invalid extension: {file_ext}")
-
-            audio_file = self.load_any_file(file_path)
-
-            if not isinstance(audio_file, ASF) or audio_file.tags is None:
-                logger.error(f"ValueError loading WMA metadata from {file_path}", exc_info=True)
-                raise ValueError(f"ValueError loading WMA metadata from {file_path}")
-
-            album_artist_tag = audio_file.tags.get('WM/AlbumArtist')
-            title_tag = audio_file.tags.get('Title')
-
-            if album_artist_tag is None or not album_artist_tag:
-                logger.error(f"ValueError with file: {file_path} missing album artist metadata", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} missing album artist metadata")
-
-            if title_tag is None or not title_tag:
-                logger.error(f"ValueError with file: {file_path} missing title metadata", exc_info=True)
-                raise ValueError(f"ValueError with file: {file_path} missing title metadata")
-
-            album_artist = album_artist_tag[0].value
-            title = title_tag[0].value
-
-            file_stem = os.path.splitext(os.path.basename(file_path))[0]
-            if re.fullmatch(rf"{re.escape(album_artist)}\s*-\s*{re.escape(title)}", file_stem):
-                return
-
-            normalized_name = f"{album_artist}-{title}{WMA_EXT}"
-            normalized_name = pathvalidate.sanitize_filename(
-                normalized_name,
-                replacement_text="",
-                platform="Windows",
-                validate_after_sanitize=True,
-            )
-
-            normalized_path = os.path.join(os.path.dirname(file_path), normalized_name)
-            # check if the renamed file exists, log warning and return if it does
-            if os.path.exists(normalized_path):
-                logger.warning(f"File already exists: {normalized_path}")
-                return
-            else:
-                del audio_file
-                os.rename(file_path, normalized_path)
-
-            data.append([file_path, album_artist, title, normalized_path])
-            header_row = ["original file path", "album artist", "title", "normalized file path"]
-            directory.create_csv(csv_filename, data, None, None, header_row, 0)
-
-        except ValidationError as validation_error:
-            logger.exception(f"ValidationError creating normalized filename for {file_path}", stack_info=True)
-            raise validation_error
-        except ValueError as v_error:
-            raise v_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} normalizing filename for {file_path}", stack_info=True)
             raise e_error
 
 

@@ -98,6 +98,7 @@ Re-run the failing test(s) individually, empirically they succeed on 2nd try.
 | Diamond Rio | Diamond Rio | Diamond Rio-Lyin' Eyes.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | Diamond Rio | Diamond Rio | Diamond Rio-Lyin' Eyes.mp3 | test_directory_processing | Directory-walk file listing |
 | Elton John | Goodbye Yellow Brick Road | Elton John-Saturday Night's Alright for Fighting.wma | test_audio_art | WM/Picture artwork fixture |
+| Elton John | Goodbye Yellow Brick Road | Elton John-Saturday Night's Alright for Fighting.wma | test_audio_metadata | WMA filename normalization |
 | Elton John | Goodbye Yellow Brick Road | Elton John-Saturday Night's Alright for Fighting.wma | test_directory_processing | File path information |
 | Genesis | In Too Deep-I’d Rather Be You | Genesis-In Too Deep.mp3 | test_audio_metadata | Album-directory creation |
 | Joshua Davis | The Voice Peformance | Joshua Davis-The Workingman's Hymn.m4a | test_audio_art | MP4 cover-art fixture |
