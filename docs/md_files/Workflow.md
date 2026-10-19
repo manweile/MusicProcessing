@@ -363,20 +363,19 @@ Quite often the other versions will have a slightly different title, in which ca
 Best Practice: ensure the artist/title metadata for each song is accurate & unique, then run a filename changing function.<br>
 For the directory walk versions, directory input can be the tld, fld artist, or sld album directory.
 
-### normalize-`type`-filename and normalize-filename-walk
+### normalize-filename and normalize-filename-walk
 
 Two variants: single file & directory walk.
 
-1. `type` is one of `flac`, `mp3`, `mp4`, or `wma`
-2. `normalize-type-filename` is for single files
-3. `normalize-filename-walk` is for a directory walk
-4. The artist and title metadata will be sanitized for validity
+1. `normalize-filename` is for single files
+2. `normalize-filename-walk` is for a directory walk
+3. The artist and title metadata will be sanitized for validity
 
 single file:<br>
-command line: `python main.py normalize-flac-filename "Drive:/path/to/file"`<br>
-command line: `python main.py normalize-mp3-filename "Drive:/path/to/file"`<br>
-command line: `python main.py normalize-mp4-filename "Drive:/path/to/file"`<br>
-command line: `python main.py normalize-wma-filename "Drive:/path/to/file"`
+command line: `python main.py normalize-filename "Drive:/path/to/flac file"`<br>
+command line: `python main.py normalize-mp3-filename "Drive:/path/to/mp3 file"`<br>
+command line: `python main.py normalize-mp4-filename "Drive:/path/to/m4a file"`<br>
+command line: `python main.py normalize-wma-filename "Drive:/path/to/wma file"`
 
 multi-file:<br>
 command line: `python main.py normalize-filename-walk "Drive:/path/to/tld/or fld/or sld"`
@@ -406,11 +405,11 @@ Best Practice: ensure at least one song in an album has the correct embedded art
 Use MP3tag/puddleTag/Discogs/MusicBrainz Picard to find acceptable art if there is no art at all.<br>
 Where multiple files have embedded art, the lowest alphabetically named file should be your source.
 
-### extract-file
+### extract-album-art
 
 Extracts embedded art from a single audio file.
 
-command line: `python main.py extract-file "Drive:/path/to/file"`
+command line: `python main.py extract-album-art "Drive:/path/to/file"`
 
 ### extract-walk
 
@@ -532,7 +531,7 @@ Bruce Springsteen,Rock<br>
 Huey Lewis & The News,Movie Soundtrack<br>
 Stephen Page,Alternative Rock
 
-command line: `python main.py update-genres-from csv "Drive:/path/to/tld/artist_genre.csv"`
+command line: `python main.py update-genres "Drive:/path/to/tld" "Drive:/path/to/artist_genre.csv"`
 
 ## Extraneous File & Directory Cleanup
 
@@ -679,8 +678,8 @@ A reminder about m3u playlists - they are *relative* pathed. They **must** sit i
 Best practice: wait to run the playlist updating until you have everything converted & leveled - why run multiple times?
 
 ipsum lorem functions to use
-update-m3u                      Update playlist paths
-update-walk                     Update playlist paths
+update-m3u                      Update playlist paths in a single playlist file
+update-walk                     Update playlist paths for all playlist files in directory
 
 ### Information functions
 

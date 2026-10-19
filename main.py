@@ -101,7 +101,7 @@ class CustomArgumentParser(argparse.ArgumentParser):
 
     def _print_message(self, message, file=None):
         '''
-        @brief Override argparse.ArgumentParser._print_message so stderr gets logged instead of output to console.
+        @brief Override argparse.ArgumentParser._print_message so stderr gets logged and output to console.
 
         @details Logs standard-error messages while preserving default handling for all other output.
 
@@ -109,15 +109,16 @@ class CustomArgumentParser(argparse.ArgumentParser):
         @param file {TextIOWrapper} A file-like object for stderr.
         '''
 
-        # want to log errors if the message is intended for stderr,
-        # unlike the super method which writes to console
+        # want to log errors if the message is intended for stderr and print to console
         if message:
             if file is sys.stderr:
                 logger.error(f"Argparse Error: {message.strip()}")
-            else:
-                super()._print_message(message, file)
+
+            super()._print_message(message, file)
 
 
+## @name Subcommand Handlers
+# @{
 def convert_file(file_path, target):
     '''
     @brief Converts specified audio file to mp3 format.
@@ -173,43 +174,7 @@ def ebu_file(file_path, target):
     normalization.ebu_normalize_file(file_path, target)
 
 
-def existing_file(file):
-    '''
-    @brief Checks if file exists.
-
-    @details Checks if the specified file exists and raises an ArgumentTypeError if it does not.
-
-    @param file {str} The file path.
-    @return file {str} The file path.
-
-    @exception {ArgumentTypeError} Indicates the file was not found.
-    '''
-
-    if not os.path.isfile(file):
-        raise argparse.ArgumentTypeError(f"File not found: {file}")
-
-    return file
-
-
-def existing_path(path):
-    '''
-    @brief Checks if directory exists.
-
-    @details Checks if the specified directory exists and raises an ArgumentTypeError if it does not.
-
-    @param path {str} The directory path.
-    @return path {str} The directory path.
-
-    @exception {ArgumentTypeError} Indicates the directory was not found.
-    '''
-
-    if not os.path.isdir(path):
-        raise argparse.ArgumentTypeError(f"Directory not found: {path}")
-
-    return path
-
-
-def extract_file(file_path):
+def extract_album_art(file_path):
     '''
     @brief Extracts and saves embedded album art from specified audio file.
 
@@ -315,52 +280,16 @@ def level_normalize_walk(tld_path, norm_type, target):
     normalization.level_normalize_walk(tld_path, norm_type, target)
 
 
-def normalize_flac_filename(file_path):
+def normalize_filename(file_path):
     '''
-    @brief Renames a FLAC using its album artist and title metadata.
+    @brief Renames an audio file using its album artist and title metadata.
 
-    @details Renames the specified FLAC file using its VORBIS album artist and title metadata.
+    @details Renames any valid audio file using its album artist and title metadata.
 
-    @param file_path {str} The full path to the FLAC file.
-    '''
-
-    metadata.normalize_flac_filename(file_path)
-
-
-def normalize_mp3_filename(file_path):
-    '''
-    @brief Renames an MP3 using its album artist and title metadata.
-
-    @details Renames the specified MP3 file using its ID3 album artist and title metadata.
-
-    @param file_path {str} The full path to the MP3 file.
+    @param file_path {str} The full path to the audio file.
     '''
 
-    metadata.normalize_mp3_filename(file_path)
-
-
-def normalize_mp4_filename(file_path):
-    '''
-    @brief Renames an M4A using its album artist and title metadata.
-
-    @details Renames the specified M4A file using its MP4 album artist and title metadata.
-
-    @param file_path {str} The full path to the M4A file.
-    '''
-
-    metadata.normalize_mp4_filename(file_path)
-
-
-def normalize_wma_filename(file_path):
-    '''
-    @brief Renames a WMA using its album artist and title metadata.
-
-    @details Renames the specified WMA file using its ASF album artist and title metadata.
-
-    @param file_path {str} The full path to the WMA file.
-    '''
-
-    metadata.normalize_wma_filename(file_path)
+    metadata.normalize_filename(file_path)
 
 
 def normalize_filename_walk(tld_path):
@@ -463,7 +392,7 @@ def set_album_art(tld_path):
     art.set_album_art(tld_path)
 
 
-def update_genres_from_csv(tld_path, csv_path):
+def update_genres(tld_path, csv_path):
     '''
     @brief Updates genre metadata using artist genre mappings from a CSV file.
 
@@ -471,25 +400,12 @@ def update_genres_from_csv(tld_path, csv_path):
 
     @param tld_path {str} The top level directory containing artist directories.
     @param csv_path {str} The full path to the artist genre CSV file.
-    @return summary {dict[str, list[str]]} Updated files, skipped artists, unsupported files, and failures.
     '''
 
-    summary = metadata.update_genres_from_csv(tld_path, csv_path)
-    print(f"Updated files: {len(summary['updated_files'])}")
-    print(f"Skipped artists: {len(summary['skipped_artists'])}")
-    print(f"Unsupported files: {len(summary['unsupported_files'])}")
-    print(f"Failures: {len(summary['failures'])}")
-
-    for artist_name in summary["skipped_artists"]:
-        print(f"Skipped artist: {artist_name}")
-
-    for failure in summary["failures"]:
-        print(f"Failure: {failure}")
-
-    return summary
+    metadata.update_genres(tld_path, csv_path)
 
 
-def update_paths(tld_path, input_m3u):
+def update_playlist(tld_path, input_m3u):
     '''
     @brief Updates an old playlist relative pathing.
 
@@ -499,7 +415,7 @@ def update_paths(tld_path, input_m3u):
     @param input_m3u {str} The full file path to playlist needing conversion.
     '''
 
-    playlist.update_paths(tld_path, input_m3u)
+    playlist.update_playlist(tld_path, input_m3u)
 
 
 def update_walk(tld_path):
@@ -512,11 +428,12 @@ def update_walk(tld_path):
     '''
 
     playlist.update_walk(tld_path)
+## @}
 
 
 ## @name Application Entry Point
 # @{
-def main(args) -> int:
+def main(args) -> None:
     '''
     @brief Module entry point.
 
@@ -553,9 +470,9 @@ def main(args) -> int:
             target = getattr(args, "target")
             ebu_file(file_path, target)
 
-        if args.subcommand == "extract-file":
+        if args.subcommand == "extract-album-art":
             file_path = getattr(args, "file")
-            extract_file(file_path)
+            extract_album_art(file_path)
 
         if args.subcommand == "extract-walk":
             tld_path = getattr(args, "tld")
@@ -592,21 +509,9 @@ def main(args) -> int:
             target = getattr(args, "target")
             level_normalize_walk(tld_path, norm_type, target)
 
-        if args.subcommand == "normalize-mp3-filename":
+        if args.subcommand == "normalize-filename":
             file_path = getattr(args, "file")
-            normalize_mp3_filename(file_path)
-
-        if args.subcommand == "normalize-flac-filename":
-            file_path = getattr(args, "file")
-            normalize_flac_filename(file_path)
-
-        if args.subcommand == "normalize-mp4-filename":
-            file_path = getattr(args, "file")
-            normalize_mp4_filename(file_path)
-
-        if args.subcommand == "normalize-wma-filename":
-            file_path = getattr(args, "file")
-            normalize_wma_filename(file_path)
+            normalize_filename(file_path)
 
         if args.subcommand == "normalize-filename-walk":
             tld_path = getattr(args, "tld")
@@ -643,17 +548,15 @@ def main(args) -> int:
             tld_path = getattr(args, "tld")
             set_album_art(tld_path)
 
-        if args.subcommand == "update-genres-from-csv":
+        if args.subcommand == "update-genres":
             tld_path = getattr(args, "tld")
             csv_path = getattr(args, "csv")
-            summary = update_genres_from_csv(tld_path, csv_path)
-            if summary["failures"]:
-                return 1
+            update_genres(tld_path, csv_path)
 
-        if args.subcommand == "update-m3u":
+        if args.subcommand == "update-playlist":
             tld_path = getattr(args, "tld")
             input_m3u = getattr(args, "m3u")
-            update_paths(tld_path, input_m3u)
+            update_playlist(tld_path, input_m3u)
 
         if args.subcommand == "update-walk":
             tld_path = getattr(args, "tld")
@@ -661,9 +564,48 @@ def main(args) -> int:
 
     except Exception as e:
         logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
-        return 1
-    else:
-        return 0
+        print(f"Error in subcommand '{args.subcommand}': {type(e).__name__}: {e}")
+## @}
+
+
+## @name Argument Validation Helpers
+# @{
+def existing_file(file):
+    '''
+    @brief Checks if file exists.
+
+    @details Checks if the specified file exists and raises an ArgumentTypeError if it does not.<br>
+    Helper function for ArgumentParser to validate file paths.
+
+    @param file {str} The file path.
+    @return file {str} The file path.
+
+    @exception {ArgumentTypeError} Indicates the file was not found.
+    '''
+
+    if not os.path.isfile(file):
+        raise argparse.ArgumentTypeError(f"File not found: {file}")
+
+    return file
+
+
+def existing_path(path):
+    '''
+    @brief Checks if directory exists.
+
+    @details Checks if the specified directory exists and raises an ArgumentTypeError if it does not.<br>
+    Helper function for ArgumentParser to validate directory paths.
+
+    @param path {str} The directory path.
+    @return path {str} The directory path.
+
+    @exception {ArgumentTypeError} Indicates the directory was not found.
+    '''
+
+    if not os.path.isdir(path):
+        raise argparse.ArgumentTypeError(f"Directory not found: {path}")
+
+    return path
 ## @}
 
 
@@ -686,7 +628,6 @@ if __name__ == "__main__":
         # 1 mandatory arg, the audio file path
         # 1 optional arg, the target directory for exported files
         # convert-file "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"
-        # convert-file "F:\Rick\RickPrepped\Bee Gees\Tales from the Brothers Gibb A History in Song 1967-1990\Bee Gees-Sir Geoffrey Saved The World.mp3"
         convert_file_parser = subparsers.add_parser("convert-file", help="Converts an audio file to mp3")
         convert_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
         convert_file_parser.add_argument("--target", type=str, help="optional target directory for exported files")
@@ -725,9 +666,9 @@ if __name__ == "__main__":
         # extract album art from specified audio file
         # 1 mandatory arg, the path to audio file
         # extract-file "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"
-        extract_file_parser = subparsers.add_parser("extract-file", help="Extracts embedded art from audio file")
-        extract_file_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
-        extract_file_parser.set_defaults(func=extract_file)
+        extract_album_art_parser = subparsers.add_parser("extract-album-art", help="Extracts embedded art from audio file")
+        extract_album_art_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        extract_album_art_parser.set_defaults(func=extract_album_art)
 
         # extract album art from all audio files found in top level directory
         # 1 mandatory arg, the start path (can be tld or fld, but not sld)
@@ -818,31 +759,13 @@ if __name__ == "__main__":
 
         # normalize a FLAC filename from its metadata
         # 1 mandatory arg, the audio file path
-        # normalize-flac-filename C:\Music\song.flac
-        normalize_flac_filename_parser = subparsers.add_parser("normalize-flac-filename", help="Renames a FLAC from its metadata")
-        normalize_flac_filename_parser.add_argument("file", type=existing_file, help="mandatory full path to FLAC file")
-        normalize_flac_filename_parser.set_defaults(func=normalize_flac_filename)
-
-        # normalize an mp3 filename from its metadata
-        # 1 mandatory arg, the audio file path
-        # normalize-mp3-filename "C:\Music\song.mp3"
-        normalize_mp3_filename_parser = subparsers.add_parser("normalize-mp3-filename", help="Renames an MP3 from its metadata")
-        normalize_mp3_filename_parser.add_argument("file", type=existing_file, help="mandatory full path to MP3 file")
-        normalize_mp3_filename_parser.set_defaults(func=normalize_mp3_filename)
-
-        # normalize an M4A filename from its metadata
-        # 1 mandatory arg, the audio file path
-        # normalize-mp4-filename C:\Music\song.m4a
-        normalize_mp4_filename_parser = subparsers.add_parser("normalize-mp4-filename", help="Renames an M4A from its metadata")
-        normalize_mp4_filename_parser.add_argument("file", type=existing_file, help="mandatory full path to M4A file")
-        normalize_mp4_filename_parser.set_defaults(func=normalize_mp4_filename)
-
-        # normalize an WMA filename from its metadata
-        # 1 mandatory arg, the audio file path
-        # normalize-wma-filename C:\Music\song.wma
-        normalize_wma_filename_parser = subparsers.add_parser("normalize-wma-filename", help="Renames a WMA from its metadata")
-        normalize_wma_filename_parser.add_argument("file", type=existing_file, help="mandatory full path to WMA file")
-        normalize_wma_filename_parser.set_defaults(func=normalize_wma_filename)
+        # normalize-filename "C:\Music\song.flac"
+        # normalize-filename "C:\Music\song.mp3"
+        # normalize-filename "C:\Music\song.m4a"
+        # normalize-filename "C:\Music\song.wma"
+        normalize_filename_parser = subparsers.add_parser("normalize-filename", help="Renames an audio file from its metadata")
+        normalize_filename_parser.add_argument("file", type=existing_file, help="mandatory full path to audio file")
+        normalize_filename_parser.set_defaults(func=normalize_filename)
 
         # normalize audio filenames from metadata for all acceptable audio file types in directory
         # 1 mandatory arg, the start path (can be tld, fld, or sld)
@@ -912,24 +835,24 @@ if __name__ == "__main__":
         set_album_art_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         set_album_art_parser.set_defaults(func=set_album_art)
 
-        # update m3u playlist
-        # 2 mandatory args, the tld path and the m3u path
-        # update-m3u D:\MusicProcessing\tests\Music D:\MusicProcessing\tests\Music\test.m3u
-        # update-walk C:\Music
-        update_m3u_parsers = subparsers.add_parser("update-m3u", help="Update playlist paths")
-        update_m3u_parsers.add_argument("tld", type=existing_path, help="mandatory top level directory")
-        update_m3u_parsers.add_argument("m3u", type=existing_file, help="mandatory m3u file path")
-        update_m3u_parsers.set_defaults(func=update_paths)
-
         # update genre metadata from artist directory mappings in a CSV file
         # 2 mandatory args, the tld path and artist genre CSV path
         # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
         update_genres_parser = subparsers.add_parser(
-            "update-genres-from-csv", help="Updates genre metadata from artist genre CSV mappings"
+            "update-genres", help="Updates genre metadata from artist genre CSV mappings"
         )
         update_genres_parser.add_argument("tld", type=existing_path, help="mandatory top level directory")
         update_genres_parser.add_argument("csv", type=existing_file, help="mandatory artist genre CSV file")
-        update_genres_parser.set_defaults(func=update_genres_from_csv)
+        update_genres_parser.set_defaults(func=update_genres)
+
+        # update m3u playlist
+        # 2 mandatory args, the tld path and the m3u path
+        # update-playlist D:\MusicProcessing\tests\Music D:\MusicProcessing\tests\Music\test.m3u
+        # update-walk C:\Music
+        update_playlist_parsers = subparsers.add_parser("update-playlist", help="Update playlist paths")
+        update_playlist_parsers.add_argument("tld", type=existing_path, help="mandatory top level directory")
+        update_playlist_parsers.add_argument("m3u", type=existing_file, help="mandatory m3u file path")
+        update_playlist_parsers.set_defaults(func=update_playlist)
 
         # update m3u playlist walk
         # 1 mandatory arg, the tld path
@@ -943,3 +866,4 @@ if __name__ == "__main__":
 
     except Exception as e:
         logger.exception(f"Exception propagated to entry point: {type(e).__name__}: {e}", stack_info=True)
+        print(f"Error in entry point: {type(e).__name__}: {e}")

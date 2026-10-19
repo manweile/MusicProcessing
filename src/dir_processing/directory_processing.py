@@ -178,7 +178,8 @@ class DirectoryProcessing():
         Creates csv and text files in the generated files directory.<br>
         Rejects artist-level and album-level start paths.
 
-        @param start_path {str} The starting point of the directory walk; must be top-level directory (tld).
+        @param start_path {str} The starting point of the directory walk.<br>
+        The starting path can be the top level directory (tld), but not an artist folder (fld), and not an album folder (sld).
         @return {None} This function does not return any value.
 
         @exception MusicProcessingError Indicates the start path does not contain artist and album directory levels.
@@ -299,7 +300,8 @@ class DirectoryProcessing():
         @details Returns all valid audio files when no file pattern is specified.<br>
         Requires a valid extension such as '.mp3', '.m4a', '.wma', or '.flac' when a pattern is specified.<br>
 
-        @param start_path {str} The starting point of the directory walk; tld, fld, and sld all supported.
+        @param start_path {str} The starting point of the directory walk; tld, fld, and sld all supported.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).s
         @param file_pattern {str} Optional file extension pattern for matching file paths.
         @return {None} This function does not return any value.
 
@@ -481,10 +483,10 @@ class DirectoryProcessing():
         '''
         @brief Removes empty album directories.
 
-        @details Removes empty second-level album directories within artist directories.<br>
-        The starting path can be tld OR artist fld, but NOT album sld.
+        @details Removes empty second-level album directories within artist directories.
 
-        @param start_path {str} The starting point of the directory walk.
+        @param start_path {str} The starting point of the directory walk.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).<br>
         @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
@@ -541,7 +543,8 @@ class DirectoryProcessing():
         Refuses to delete from a file-system root or mount point.<br>
         Refuses the broad *.* wildcard pattern.
 
-        @param start_path {str} The starting point of the directory walk.
+        @param start_path {str} The starting point of the directory walk.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
         @param file_pattern {str} The file pattern we want to delete.
         @return {None} This function does not return any value.
 
@@ -597,7 +600,8 @@ class DirectoryProcessing():
 
         @details Removes files matching the items in hard-coded list of files from the top level directory.<br>
 
-        @param start_path {str} The starting point of the directory walk.
+        @param start_path {str} The starting point of the directory walk.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
         @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.

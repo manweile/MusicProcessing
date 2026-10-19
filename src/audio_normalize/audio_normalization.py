@@ -527,7 +527,8 @@ class AudioNormalization():
 
         @details Normalizes only MP3 files beneath the specified top level directory.
 
-        @param tld_path {str} The top level directory path that contains all the music files.
+        @param tld_path {str} The top level directory path that contains all the music files.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param norm_type {str} The type of normalization to perform.
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.

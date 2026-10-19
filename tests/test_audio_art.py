@@ -599,9 +599,11 @@ class TestAudioArt(TestCase):
         mock_open.assert_called_once()
 
 
+## @name Helper Functions
+# @{
 def get_method_names(cls):
     '''
-    @brief Get names of test methods defined by a class.
+    @brief Get names of test met  hods defined by a class.
 
     @details Filters class methods to names that begin with the test prefix.
 
@@ -616,6 +618,7 @@ def get_method_names(cls):
             if name.startswith('test_'):
                 method_names.append(name)
     return method_names
+## @}
 
 
 if __name__ == "__main__":

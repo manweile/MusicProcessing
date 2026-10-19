@@ -36,6 +36,9 @@ from unittest.mock import patch                             # for patching objec
 import mutagen                                              # for handling various audio metadata formats
 from mutagen._util import MutagenError                      # for handling mutagen-specific errors
 
+# Local Modules
+import main                                                 # application command wrappers
+
 # Local Module Constants
 from src import AUDIO_FILES                                 # directory containing audio files
 from src import CSV_DIR                                     # directory containing CSV files
@@ -109,6 +112,7 @@ class TestAudioMetadata(TestCase):
         cls.test_tld = os.path.join(GENERATED_PATH, MUSIC_TLD)
         # directory for text result files - D:\MusicProcessing\src\generated_files\Result
         cls.txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
+        cls.genre_report = os.path.join(cls.txt_dir, "update_genres" + RESULT_EXT)
 
         # Conversion & Metadata Walk Tests Setup
         # The conversion tests are DESTRUCTIVE, therefore need exact copies of the original files
@@ -1546,6 +1550,7 @@ class TestAudioMetadata(TestCase):
         file_path = self.genre_files["empty_mp3"]
         tags = metadata.get_mutagen_tags(file_path)
         empty_genre = tags.get("TCON")
+
         # Verify that the empty genre tag is initially present but empty
         self.assertIsNotNone(empty_genre)
         self.assertFalse(empty_genre.text[0].strip())
@@ -1554,6 +1559,7 @@ class TestAudioMetadata(TestCase):
         file_path = self.genre_files["missing_mp3"]
         tags = metadata.get_mutagen_tags(file_path)
         empty_genre = tags.get("TCON")
+
         # Verify that the genre tag for the missing MP3 file is initially absent
         self.assertIsNone(empty_genre)
 
@@ -1564,11 +1570,15 @@ class TestAudioMetadata(TestCase):
         multi_file.save()
 
         # Set up a multi-value genre tag for testing
-        summary = metadata.update_genres_from_csv(self.genre, self.genre_csv)
+        self.assertIsNone(metadata.update_genres(self.genre, self.genre_csv))
 
-        # Update genres from the CSV file
+        with open(self.genre_report, "r", encoding=UTF8) as report_file:
+            report = report_file.read().splitlines()
+
+        # Verify the report header for updated files
+        self.assertEqual(report[0], "Updated files (6):")
         self.assertCountEqual(
-            summary["updated_files"],
+            report[1:7],
             [
                 self.genre_files["empty_mp3"],
                 self.genre_files["missing_mp3"],
@@ -1579,16 +1589,17 @@ class TestAudioMetadata(TestCase):
             ]
         )
 
-        # Verify the summary of updated, skipped, unsupported, and failed files
-        self.assertEqual(summary["skipped_artists"], ["Daughtry"])
-        self.assertEqual(summary["unsupported_files"], [])
-        self.assertEqual(summary["failures"], [])
+        # Verify the report section for skipped artists
+        self.assertEqual(report[7:], ["Skipped artists (1):", "Daughtry"])
+        self.assertNotIn("Failures", report)
+        self.assertNotIn("Unsupported files", report)
 
         # Verify that the genre tags have been correctly updated according to the CSV file
         self.assertEqual(metadata.get_mutagen_tags(self.genre_files["empty_mp3"])["TCON"].text, ["Southern Rock"])
         self.assertEqual(
             metadata.get_mutagen_tags(self.genre_files["missing_mp3"])["TCON"].text, ["Television/Film Score"]
         )
+
         # Verify that the multi-value genre tag has been correctly updated
         self.assertEqual(metadata.get_mutagen_tags(self.genre_files["multi_flac"])["genre"], ["Classic Rock"])
 
@@ -1607,11 +1618,11 @@ class TestAudioMetadata(TestCase):
 
     @patch("src.audio_info.audio_metadata.logger.error")
     @patch.object(AudioMetadata, "_AudioMetadata__set_genre")
-    def test_update_genres_from_csv_records_set_genre_failure(self, mock_set_genre, mock_logger_error):
+    def test_update_genres_from_csv_propagates_set_genre_failure(self, mock_set_genre, mock_logger_error):
         '''
-        @brief Tests recording a genre update failure.
+        @brief Tests propagating a genre update failure.
 
-        @details Verifies setter errors are recorded in the summary without duplicate caller-level error logging.
+        @details Verifies setter errors propagate instead of being collected in the report.
 
         @param mock_set_genre {Mock} Mocked private genre setter.
         @param mock_logger_error {Mock} Mocked module error logger.
@@ -1619,16 +1630,16 @@ class TestAudioMetadata(TestCase):
         @test Error case.
         '''
 
+        # Define the file path that will simulate a failure during genre update
         failed_file_path = self.genre_files["empty_mp3"]
         mock_set_genre.side_effect = lambda file_path, artist_genre: (
             (_ for _ in ()).throw(OSError("test error")) if file_path == failed_file_path else None
         )
 
-        summary = metadata.update_genres_from_csv(self.genre, self.genre_csv)
+        with self.assertRaisesRegex(OSError, "test error"):
+            metadata.update_genres(self.genre, self.genre_csv)
 
-        self.assertEqual(summary["failures"], [f"{failed_file_path}: OSError: test error"])
-        self.assertNotIn(failed_file_path, summary["updated_files"])
-        mock_logger_error.assert_not_called()
+        mock_logger_error.assert_called_once_with("Exception OSError updating genres from CSV", exc_info=True)
 
 
     def test_update_genres_from_csv_invalid_input(self):
@@ -1640,6 +1651,7 @@ class TestAudioMetadata(TestCase):
         @test Error case.
         '''
 
+        # Prepare a valid CSV file for testing invalid input scenarios
         valid_csv_path = os.path.join(TESTS_PATH, "artist_genre_test.csv")
         self.addCleanup(shutil.copy, valid_csv_path, self.genre_csv)
 
@@ -1669,21 +1681,22 @@ class TestAudioMetadata(TestCase):
                     csv_file.write(csv_contents)
 
                 with self.assertRaises(ValueError):
-                    metadata.update_genres_from_csv(self.genre, self.genre_csv)
+                    metadata.update_genres(self.genre, self.genre_csv)
 
         # Verify that a missing music directory raises a ValueError
         with self.assertRaises(ValueError):
-            metadata.update_genres_from_csv(os.path.join(self.test_tld, "missing_music"), self.genre_csv)
+            metadata.update_genres(os.path.join(self.test_tld, "missing_music"), self.genre_csv)
 
         # Verify that a missing CSV file raises a ValueError
         with self.assertRaises(ValueError):
-            metadata.update_genres_from_csv(self.genre, os.path.join(self.test_tld, "missing.csv"))
+            metadata.update_genres(self.genre, os.path.join(self.test_tld, "missing.csv"))
 
         # Verify that the audio files remain unchanged by comparing their hashes
         for fixture_file, file_hash in file_hashes.items():
             with open(fixture_file, "rb") as audio_file:
                 self.assertEqual(hashlib.file_digest(audio_file, "sha256").hexdigest(), file_hash)
 
+        # Force garbage collection to ensure all file handles are released before test teardown
         gc.collect()
 
 

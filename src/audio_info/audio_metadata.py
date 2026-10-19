@@ -580,7 +580,8 @@ class AudioMetadata():
         If file pattern not specified, processes all valid audio files.<br>
         Otherwise must be a valid audio file extension like '.mp3', '.m4a', '.wma', or '.flac'.
 
-        @param start_path {str} The starting point of the directory walk.
+        @param start_path {str} The starting point of the directory walk.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
         @param target {str} Optional, the target directory for exported files. Defaults to None.
         @param show_spinner {bool} Optional, whether to display a spinner during conversion. Defaults to True.
@@ -628,8 +629,7 @@ class AudioMetadata():
         @brief Creates second level (sld) album sub-directories in first level (fld) artist directories.
 
         @details Creates the album sub directory for the artist from album metadata if needed.<br>
-        Calling functions MUST verify valid start path, which MUST be the tld (top level directory).<br>
-        Audio files will be moved into their respective album directories.<br>
+        Calling functions MUST verify valid start path. Audio files will be moved into their respective album directories.<br>
 
         @note Using the Windows invalid character set because it is more restrictive (therefore OS universal).<br>
         The characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` will be replaced by `-`.<br>
@@ -638,7 +638,8 @@ class AudioMetadata():
         A csv report named after the function (`create_album_dirs`) will be created in csv folder.<br>
         It will contain all audio file paths, album metadata values and sanitized album directory names.
 
-        @param start_path {str} The top level directory holding artist directories and music files.
+        @param start_path {str} The top level directory holding artist directories and music files.<br>
+        The start path must be a valid top-level directory containing artist folders, and only a tld.<br>
         @return {None} This function does not return any value.
 
         @exception ValidationError A pathlib module validation error occurred.
@@ -902,7 +903,8 @@ class AudioMetadata():
         @details Wrapper function for `get_ffprobe_media_info` to walk through the directory tree and get media information for audio files.<br>
         The collected information is stored in a list and can be saved to a file.
 
-        @param start_path {str} The starting point of the directory walk.
+        @param start_path {str} The starting point of the directory walk.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} The audio file pattern we want to get tags from.
         @return {None} This function does not return any value.
 
@@ -1049,7 +1051,8 @@ class AudioMetadata():
         This function defaults to using Mutagen for tag extraction unless ffprobe is specified.<br>
         The lowest allowable directory in `file_path` is an artist directory.<br>
 
-        @param file_path {str} The starting point of the directory walk.
+        @param file_path {str} The starting point of the directory walk.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
         @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
         @return {None} This function does not return any value.
@@ -1111,7 +1114,8 @@ class AudioMetadata():
 
         @details Walks from starting path and saves set of unique metadata keys found by ffprobe.
 
-        @param file_path {str} The starting point of the directory walk.
+        @param file_path {str} The starting point of the directory walk.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -1596,10 +1600,10 @@ class AudioMetadata():
         @brief Walks through a directory and calls appropriate functions to rename audio files.
 
         @details Calling function MUST supply a valid path to a directory.<br>
-        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
         The function will recursively walk through the directory and rename files of only the supported audio file types.
 
-        @param start_path {str} The path to the directory to start walking from.
+        @param start_path {str} The path to the directory to start walking from.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
         @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -1633,13 +1637,14 @@ class AudioMetadata():
         @brief Renames second level (sld) album directories in first level (fld) artist directories.
 
         @details Renames the album sub directory for the artist from album metadata.<br>
-        Calling functions MUST verify valid start path, which MUST be the tld (top level directory).
+        Calling functions MUST verify valid start path.
 
         @note Using the Windows invalid character set because it is more restrictive (therefore OS universal).<br>
         The characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` will be replaced by `-`.<br>
         Refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename<br>
 
-        @param start_path {str} The top-level directory containing artist folders.
+        @param start_path {str} The top-level directory containing artist folders.<br>
+        The start path must be a valid top-level directory containing artist folders, and only a tld.
         @return {None} This function does not return any value.
 
         @exception ValidationError Raised when the start path is invalid or does not meet the required criteria.
@@ -1708,7 +1713,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def update_genres_from_csv(self, start_path: str, csv_path: str) -> dict[str, list[str]]:
+    def update_genres(self, start_path: str, csv_path: str) -> None:
         '''
         @brief Updates supported audio genre metadata using artist directory mappings from a CSV file.
 
@@ -1732,19 +1737,21 @@ class AudioMetadata():
         ArtistName B,Jazz<br>
         Artist Name C,Progressive Rock<br>
         <br>
-        If an artist directory does not have a corresponding entry in the CSV file, it will be reported in the summary under "skipped_artists".<br>
-        Unsupported files within the artist directory will be reported in the summary under "unsupported_files".<br>
-        Failures encountered during the update process will be reported in the summary under "failures".<br>
-        The summary dictionary will be returned after processing all artist directories.<br>
+        If an artist directory does not have a corresponding entry in the CSV file, it will be listed under skipped artists.<br>
+        A text report of updated files and skipped artists will be written to the generated result directory after processing.
 
         @param start_path {str} The top level directory containing artist directories.
+        The start path must be a valid top-level directory containing artist folders, and only a tld.
         @param csv_path {str} The full path to the artist genre CSV file.
-        @return summary {dict[str, list[str]]} Updated files, skipped artists, unsupported files, and failures.
+        @return {None} This function does not return any value.
 
         @exception ValueError Indicates the supplied directory or CSV file is invalid.
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
+
+        data = []
+        txt_filename = inspect.currentframe().f_code.co_name
 
         try:
             if not os.path.isdir(start_path):
@@ -1756,11 +1763,9 @@ class AudioMetadata():
                 raise ValueError(f"Artist genre CSV file not found: {csv_path}")
 
             artist_genres = self.__read_artist_genres(csv_path)
-            summary = {
+            results = {
                 "updated_files": [],
-                "skipped_artists": [],
-                "unsupported_files": [],
-                "failures": []
+                "skipped_artists": []
             }
             artist_directories = sorted(
                 (entry for entry in os.scandir(start_path) if entry.is_dir()), key=lambda entry: entry.name
@@ -1772,7 +1777,7 @@ class AudioMetadata():
 
                 if artist_genre is None:
                     logger.warning(f"Skipping artist directory without CSV genre mapping: {artist_name}")
-                    summary["skipped_artists"].append(artist_name)
+                    results["skipped_artists"].append(artist_name)
                     continue
 
                 for dir_path, _, file_names in os.walk(artist_directory.path):
@@ -1781,17 +1786,19 @@ class AudioMetadata():
                         _, file_extension = os.path.splitext(file_name)
 
                         if file_extension.lower() not in AUDIO_EXTS:
-                            summary["unsupported_files"].append(file_path)
                             continue
 
-                        # set genre handles it own logging, just need to catch the failures for summary purposes
-                        try:
-                            self.__set_genre(file_path, artist_genre)
-                        except Exception as e_error:
-                            failure = f"{file_path}: {type(e_error).__name__}: {e_error}"
-                            summary["failures"].append(failure)
-                        else:
-                            summary["updated_files"].append(file_path)
+                        self.__set_genre(file_path, artist_genre)
+                        results["updated_files"].append(file_path)
+
+            data = [
+                f"Updated files ({len(results['updated_files'])}):",
+                *sorted(results["updated_files"]),
+                f"Skipped artists ({len(results['skipped_artists'])}):",
+                *sorted(results["skipped_artists"])
+            ]
+
+            directory.create_txt(txt_filename, data)
 
         except OSError as os_error:
             logger.error(f"Exception {type(os_error).__name__} updating genres from CSV", exc_info=True)
@@ -1801,5 +1808,3 @@ class AudioMetadata():
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} updating songs in {start_path} with genres from CSV {csv_path}", stack_info=True)
             raise e_error
-        else:
-            return summary

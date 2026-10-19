@@ -120,7 +120,7 @@ class AudioPlaylist():
             return audio
 
 
-    def update_paths(self, tld_path: str, input_m3u: str) -> None:
+    def update_playlist(self, tld_path: str, input_m3u: str) -> None:
         '''
         @brief Updates an old playlist relative pathing.
 
@@ -221,7 +221,7 @@ class AudioPlaylist():
                         continue
 
                     input_file_path = os.path.join(dir_path, file)
-                    self.update_paths(dir_path, input_file_path)
+                    self.update_playlist(dir_path, input_file_path)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} updating m3u files in tld_path: {tld_path}", stack_info=True)

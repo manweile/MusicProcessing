@@ -1,0 +1,40 @@
+Directory Structure Functions
+create-albums
+rename-album-directories
+remove-empty-albums
+
+File Conversion Functions
+convert-file
+convert-walk
+
+Filename Functions
+normalize-filename
+normalize-filename-walk
+remove-pattern
+remove-set-list
+
+Art Functions
+extract-album-art
+extract-walk
+set-album-art
+
+Information Functions
+get-audio-file-list
+get-ext-file-list
+get-ffprobe-media-info-walk
+get-tags-walk
+get-unique-media-keys
+
+Levelling Functions
+ebu-file
+peak-file
+rms-file
+level-normalize-walk
+
+Metadata Editing Functions
+update-genres
+
+Playlist Functions
+update-playlist
+update-walk
+
