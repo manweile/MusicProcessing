@@ -649,9 +649,9 @@ class TestAudioMetadata(TestCase):
         '''
 
         # use the ConvertedMusic dir
-        metadata.get_ffprobe_media_info_walk(self.converted, None)
+        metadata.get_media_info_walk(self.converted, None)
 
-        txt_filename = "get_ffprobe_media_info_walk" + RESULT_EXT
+        txt_filename = "get_media_info_walk" + RESULT_EXT
         txt_path = os.path.join(self.txt_dir, txt_filename)
 
         output_exists = os.path.exists(txt_path)
@@ -677,9 +677,9 @@ class TestAudioMetadata(TestCase):
         '''
 
         # use the ConvertedMusic dir
-        metadata.get_ffprobe_media_info_walk(self.converted, PLAYLIST_EXTS[0])
+        metadata.get_media_info_walk(self.converted, PLAYLIST_EXTS[0])
 
-        txt_filename = "get_ffprobe_media_info_walk" + RESULT_EXT
+        txt_filename = "get_media_info_walk" + RESULT_EXT
         txt_path = os.path.join(self.txt_dir, txt_filename)
         output_exists = os.path.exists(txt_path)
         file_size = os.path.getsize(txt_path)
@@ -699,9 +699,9 @@ class TestAudioMetadata(TestCase):
         '''
 
         # use the ConvertedMusic dir
-        metadata.get_ffprobe_media_info_walk(self.converted, MP3_EXT)
+        metadata.get_media_info_walk(self.converted, MP3_EXT)
 
-        txt_filename = "get_ffprobe_media_info_walk" + RESULT_EXT
+        txt_filename = "get_media_info_walk" + RESULT_EXT
         txt_path = os.path.join(self.txt_dir, txt_filename)
         output_exists = os.path.exists(txt_path)
 

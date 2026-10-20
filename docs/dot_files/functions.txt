@@ -21,7 +21,7 @@ set-album-art
 Information Functions
 get-audio-file-list
 get-ext-file-list
-get-ffprobe-media-info-walk
+get-media-info-walk
 get-tags-walk
 get-unique-media-keys
 

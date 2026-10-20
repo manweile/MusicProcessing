@@ -263,7 +263,7 @@ class AudioUtilities():
         pass
 
 
-    def get_ffprobe_media_info_walk(self, start_path: str, file_pattern: str) -> None:
+    def get_media_info_walk(self, start_path: str, file_pattern: str) -> None:
         '''
         @brief Saves FFprobe media information for audio files.
 

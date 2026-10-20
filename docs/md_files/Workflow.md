@@ -453,13 +453,12 @@ Compilation album art can be re-used!<br>
 Best Practice: extract album art from a compilation album if there is any, or find accurate art.<br>
 Rename it to `compilation album name`.jpg file.<br>
 Eg. for the album `Best Of The Blues, Vol. 1`: `Best Of The Blues, Vol. 1.jpg`.<br>
-Copy it to the special `/MusicProcessing/src/generated_files/AlbumArt` folder, or a folder of your choice.
+Copy it to the special `/MusicProcessing/src/generated_files/AlbumArt` folder.
 
 ### set-album-art
 
 Sets album art file for an compilation album folder.<br>
-By default, looks for `compilation album name`.jpg file in special `AlbumArt` folder.<br>
-You can optionally supply the folder of your choice.
+By default, looks for `compilation album name`.jpg file in special `AlbumArt` folder.
 
 Found matches get copied & renamed to `compilation album name/Folder.jpg`.<br>
 It won't overwrite an existing Folder.jpg in fld or sld directories.<br>
@@ -508,7 +507,8 @@ Select the songs you want to set genre for, open the the tag view side bar, put 
 
 Updates genre metadata from artist & genre CSV mappings, one artist to one genre mapping.<br>
 The artist name and genre datums can be a compound term where the constituent values are space separated.<br>
-This function *requires an ascending sorted by artist name csv file in the tld*; the function uses relative pathing.
+This function *requires an ascending sorted by artist name csv file in the tld*; the function uses relative pathing.<br>
+It's a top level directory only function, so you **must** supply the tld, and **only** the tld. Does not work with fld & sld.
 
 Example artist_genre.csv:
 
@@ -677,9 +677,17 @@ A reminder about m3u playlists - they are *relative* pathed. They **must** sit i
 
 Best practice: wait to run the playlist updating until you have everything converted & leveled - why run multiple times?
 
-ipsum lorem functions to use
-update-m3u                      Update playlist paths in a single playlist file
-update-walk                     Update playlist paths for all playlist files in directory
+### update-playlist
+
+Update playlist paths in a single playlist file, works with tld input only.
+
+command line: `python main.py update-playlist "Drive:/path/to/tld" "Drive/path/to/tld/playlist.m3u`
+
+### update-walk
+
+Update playlist paths for all playlist files in directory, works with tld input only.
+
+command line: `python main.py update-walk "Drive:/path/to/tld"`
 
 ### Information functions
 
@@ -687,17 +695,17 @@ These information functions generate a file (csv and/or txt).<br>
 The files are in the special `/MusicProcessing/src/generated_files/` directory, under `csv_file/`s and/or `result_files/`.<br>
 Any previous output files are overwritten, so save previous versions if you want to preserve history *before* running an information function.
 
-#### get-ffprobe-media-info-walk
+#### get-media-info-walk
 
-Generates get-ffprobe-media-info-walk.txt containing ffprobe media info for audio files.<br>
+Generates get-media-info-walk.txt containing ffprobe media info for audio files.<br>
 Media info is codec, duration, size, bitrate, ..., etc, *not* album, artist, album_artist, ..., etc.<br>
 Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. No pattern retrieves from all file types.
 
 Works with tld (top) and fld (artist), but not sld (album) path input.
 
 command lines:<br>
-`python main.py get-ffprobe-media-info-walk "Drive:/path/to/tld/or fld"`<br>
-`python main.py get-ffprobe-media-info-walk "Drive:/path/to/tld/or fld" --pattern .flac`<br>
+`python main.py get-media-info-walk "Drive:/path/to/tld/or fld"`<br>
+`python main.py get-media-info-walk "Drive:/path/to/tld/or fld" --pattern .flac`<br>
 
 #### get-tags-walk
 

@@ -29,6 +29,105 @@ There are many things I need to do:
 - If possible, populate optional metadata
 - Normalize volume levels
 
+## Usage
+
+**Note**<br>
+Any file paths with spaces must be be encapsulated in quotation marks; it's really best practice to do it all the time.
+
+```text
+PS D:\MusicProcessing> python main.py --help
+usage: main.py [-h] command ...
+
+Music Processing
+
+options:
+  -h, --help                                                show this help message and exit
+
+subcommands:
+  command
+    convert-file file --target target                       Convert audio file to mp3;
+                                                            mandatory: audio file path;
+                                                            optional: converted file target path
+
+    convert-walk tld --pattern pattern --target target      Convert audio files to mp3;
+                                                            mandatory: start path tld/fld/sld;
+                                                            optional: file ext {.flac|.mp3|.m4a|.wma}; optional: converted files target path
+
+    create-albums tld                                       Create album sub-directories;
+                                                            mandatory: start path tld only
+
+    ebu-file file --target target                           EBU R128 level audio file;
+                                                            mandatory: audio file path;
+                                                            optional: leveled file target path
+
+    extract-album-art file                                  Extract audio file embedded art;
+                                                            mandatory: audio file path
+
+    extract-walk tld --pattern pattern                      Extract audio files embedded art;
+                                                            mandatory: start path tld/fld;
+                                                            optional: file ext {.flac|.mp3|.m4a|.wma}
+
+    get-audio-file-list tld                                 Get CSV list of audio file paths;
+                                                            mandatory: start path tld only
+
+    get-ext-file-list tld --pattern pattern                 Get CSV list of audio file extensions;
+                                                            mandatory: start path tld/fld/sld;
+                                                            optional: file ext {.flac|.mp3|.m4a|.wma}
+
+    get-media-info-walk tld --pattern pattern               Get text list of audio files media info;
+                                                            mandatory: start path tld/fld;
+                                                            optional: file ext {.flac|.mp3|.m4a|.wma}
+
+    get-tags-walk tld --pattern pattern --ffprobe ffprobe   Get text list of audio files metadata tags;
+                                                            mandatory: start path tld/fld;
+                                                            optional: file ext {.flac|.mp3|.m4a|.wma}; optional: use ffprobe True
+
+    get-unique-media-keys tld                               Get text list of audio files unique ffprobe keys;
+                                                            mandatory: start path tld/fld
+
+    level-normalize-walk tld type --target target           Level normalize files per type;
+                                                            mandatory: start path tld/fld; mandatory: level type {ebu|peak|rms};
+                                                            optional: leveled files target path
+
+    normalize-filename file                                 Normalize audio file from its metadata;
+                                                            mandatory: audio file path
+
+    normalize-filename-walk tld                             Normalize audio files from their metadata;
+                                                            mandatory: start path tld/fld/sld
+
+    remove-empty-albums tld                                 Remove empty album sub-directories;
+                                                            mandatory: start path tld/fld
+
+    remove-pattern tld pattern                              Remove files with specified pattern;
+                                                            mandatory: top level directory; mandatory: file pattern
+
+    remove-set-list tld                                     Remove files matching hard-coded pattern set;
+                                                            mandatory: starting path tld/fld/sld
+
+    rename-album-directories tld                            Rename album paths from metadata;
+                                                            mandatory: start path tld only
+
+    peak-file file --target target                          Peak level audio file;
+                                                            mandatory: audio file path;
+                                                            optional: leveled file target path
+
+    rms-file file --target target                           RMS level audio file;
+                                                            mandatory: audio file path;
+                                                            optional: leveled file target path
+
+    set-album-art tld                                       Set albums art file;
+                                                            mandatory: starting path tld/fld
+
+    update-genres tld csv                                   Update songs genre from CSV;
+                                                            mandatory: start path tld only; mandatory: artist genre CSV file path
+
+    update-playlist tld m3u                                 Update playlist file songs path;
+                                                            mandatory: start path tld only; mandatory: playlist file in tld path
+
+    update-walk tld                                         Update playlist files songs path;
+                                                            mandatory: start path tld only
+```
+
 ## Sources
 
 I have these primary sources:

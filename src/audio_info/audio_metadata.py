@@ -896,7 +896,7 @@ class AudioMetadata():
             return media_info
 
 
-    def get_ffprobe_media_info_walk(self, start_path: str, file_pattern: str) -> None:
+    def get_media_info_walk(self, start_path: str, file_pattern: str) -> None:
         '''
         @brief Gets media info (codec, duration, size, bitrate...) for audio files and saves to file.
 

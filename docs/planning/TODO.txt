@@ -7,11 +7,6 @@ Doxygen related:
   b) update it if decide to keep
 TODO
 
-Markdown related:
-
-3) finish workflow md
-IN PROGRESS
-
 Logic related:
 
 1) using gc.enable()
@@ -95,10 +90,6 @@ TODO
       normalization.level_normalize_walk(tld_path, norm_type)
     File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 559, in level_normalize_walk
       logger.exception(
-
-12) think hard about removing reliance on src/generated_files/Music/AlbumArt for setting album art
-  a) still need for testing purposes, but change setting album art function to accept an art source directory
-TODO
 
 13) add D:/MusicProcessing/docs/scripts/google/album_directory_rename.py to project
   a) main.py and audio metadata class       COMPLETE
@@ -303,7 +294,7 @@ DISPOSED:
 
   27) think about moving the "one-offs" ack into standalone scripts
     get-ffprobe-media-info          Gets ffprobe media info for an audio file<br>
-    get-ffprobe-media-info-walk     Gets ffprobe media info for audio files<br>
+    get-media-info-walk             Gets media info for audio files<br>
     get-ffprobe-tags                Gets ffprobe metadata tags for audio file<br>
     get-mutagen-tags                Gets Mutagen metadata tags from audio file<br>
     get-tags-walk                   Gets Mutagen metadata tags from audio files<br>
@@ -311,3 +302,10 @@ DISPOSED:
     list-audio                      Generates a csv containing full path for all audio files<br>
     list-type                       Generates a csv containing full file path for an audio file type
   PASS, TOO MUCH WORK BOTH IN CODING AND DOC'ING
+
+  28) finish workflow md
+  COMPLETED
+
+  29) think hard about removing reliance on src/generated_files/Music/AlbumArt for setting album art
+    a) still need for testing purposes, but change setting album art function to accept an art source directory
+  PASS, PITA
