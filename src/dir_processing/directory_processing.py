@@ -74,6 +74,8 @@ class DirectoryProcessing():
         @brief Initializes the DirectoryProcessing class.
 
         @details Initializes a DirectoryProcessing instance without instance-specific state.
+
+        @param self {DirectoryProcessing} The instance of the class.
         '''
 
         pass
@@ -87,6 +89,7 @@ class DirectoryProcessing():
         @details Creates a CSV file in the specified or default directory.<br>
         Supports an optional file mode, header row, and sort column.
 
+        @param self {DirectoryProcessing} The instance of the class.
         @param csv_filename {str} Base filename without the CSV extension.
         @param data {list} Rows to write into the CSV file.
         @param csv_dir {str} Optional, path for csv file.
@@ -140,6 +143,7 @@ class DirectoryProcessing():
 
         @details Creates a text file in the user-specified or default directory.
 
+        @param self {DirectoryProcessing} The instance of the class.
         @param txt_filename {str} Base filename without the text-file extension.
         @param data {list} Items to write as individual text-file lines.
         @param txt_dir {str} Optional path for txt file.
@@ -178,6 +182,7 @@ class DirectoryProcessing():
         Creates csv and text files in the generated files directory.<br>
         Rejects artist-level and album-level start paths.
 
+        @param self {DirectoryProcessing} The instance of the class.
         @param start_path {str} The starting point of the directory walk.<br>
         The starting path can be the top level directory (tld), but not an artist folder (fld), and not an album folder (sld).
         @return {None} This function does not return any value.
@@ -300,6 +305,7 @@ class DirectoryProcessing():
         @details Returns all valid audio files when no file pattern is specified.<br>
         Requires a valid extension such as '.mp3', '.m4a', '.wma', or '.flac' when a pattern is specified.<br>
 
+        @param self {DirectoryProcessing} The instance of the class.
         @param start_path {str} The starting point of the directory walk; tld, fld, and sld all supported.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).s
         @param file_pattern {str} Optional file extension pattern for matching file paths.
@@ -349,6 +355,7 @@ class DirectoryProcessing():
 
         @details Searches the directory tree for a file with the specified name.
 
+        @param self {DirectoryProcessing} The instance of the class.
         @param start_path {str} The root directory to start from.
         @param file_name {str} The name of the file to find.
         @return dir_path {str | None} The directory path for the file, or None if not found.
@@ -380,6 +387,7 @@ class DirectoryProcessing():
 
         @details Creates the directory and any missing parent directories when needed.
 
+        @param self {DirectoryProcessing} The instance of the class.
         @param dir_path {str} The path to create.
         @return {None} This function does not return any value.
 
@@ -412,6 +420,7 @@ class DirectoryProcessing():
         @details Requires the caller to create the export directory when needed.<br>
         Requires the input file to have a supported audio extension.
 
+        @param self {DirectoryProcessing} The instance of the class.
         @param file_path {str} The full file path for exported mp3 audio file.
         @param target {str | None} Optional target directory in place of default fixed project target.
         @return export_path {str | None} The export path, or None for unsupported audio files.
@@ -485,6 +494,7 @@ class DirectoryProcessing():
 
         @details Removes empty second-level album directories within artist directories.
 
+        @param self {DirectoryProcessing} The instance of the class.
         @param start_path {str} The starting point of the directory walk.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).<br>
         @return {None} This function does not return any value.
@@ -543,6 +553,7 @@ class DirectoryProcessing():
         Refuses to delete from a file-system root or mount point.<br>
         Refuses the broad *.* wildcard pattern.
 
+        @param self {DirectoryProcessing} The instance of the class.
         @param start_path {str} The starting point of the directory walk.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
         @param file_pattern {str} The file pattern we want to delete.
@@ -600,6 +611,7 @@ class DirectoryProcessing():
 
         @details Removes files matching the items in hard-coded list of files from the top level directory.<br>
 
+        @param self {DirectoryProcessing} The instance of the class.
         @param start_path {str} The starting point of the directory walk.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
         @return {None} This function does not return any value.

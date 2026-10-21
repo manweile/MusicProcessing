@@ -97,6 +97,8 @@ class AudioArt():
         @brief Initializes the AudioArt class.
 
         @details Initializes an AudioArt instance without instance-specific state.
+
+        @param self {AudioArt} The instance of the class.
         '''
 
         pass
@@ -136,6 +138,7 @@ class AudioArt():
         Bytes 29 through 29 + image size: image data, beginning b'\xff\xd8\xff\xe0'.
         @endcode
 
+        @param self {AudioArt} The instance of the class.
         @param data {bytearray} The byte attribute data from asf audio WM/Picture tag.
         @return unpacked {tuple} Contains the MIME type, raw image data, type indicator, and image description.
 
@@ -202,6 +205,7 @@ class AudioArt():
 
         @details Writes the extracted image data to the Folder.jpg file in the audio file's album directory.
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
         @param image_data {bytearray} The image bytes extracted from audio file.
 
@@ -237,6 +241,7 @@ class AudioArt():
         @details Extracts album art as Folder.jpg in the input audio file's album directory.<br>
         Attempts video-stream extraction first, then format-specific metadata-tag extraction.
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return {None} This function does not return any value.
 
@@ -293,6 +298,7 @@ class AudioArt():
 
         @details Input file is expected to have embedded cover art.
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return {None} This function does not return any value.
 
@@ -340,6 +346,7 @@ class AudioArt():
         -y: to overwrite output file if needed
         @endcode
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return {None} This function does not return any value.
 
@@ -376,6 +383,7 @@ class AudioArt():
 
         @details Input file is expected to have cover art.
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return {None} This function does not return any value.
 
@@ -413,6 +421,7 @@ class AudioArt():
 
         @details Extracts the front-cover picture when present; otherwise extracts the first embedded picture.
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to FLAC file.
         @return {None} This function does not return any value.
 
@@ -445,6 +454,7 @@ class AudioArt():
 
         @details Input file is expected to have cover art.
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return {None} This function does not return any value.
 
@@ -477,6 +487,7 @@ class AudioArt():
         @details Processes all valid audio files when no file pattern is specified.<br>
         Requires a valid audio extension such as '.mp3', '.m4a', '.wma', or '.flac' when a pattern is specified.
 
+        @param self {AudioArt} The instance of the class.
         @param start_path {str} The starting point of the directory walk.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
@@ -545,6 +556,7 @@ class AudioArt():
         file_path: the path to the media file to be analyzed by ffprobe
         @endcode
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return has_stream {bool} True when a video stream is present; otherwise False.
 
@@ -590,6 +602,7 @@ class AudioArt():
         @details Skips album directories that already contain a folder-art file.<br>
         Copies a matching generated AlbumArt JPEG into the album directory when it is available.
 
+        @param self {AudioArt} The instance of the class.
         @param input_path {str} The full path to album directory.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @return {None} This function does not return any value.

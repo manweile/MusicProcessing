@@ -33,6 +33,7 @@ from src.generated_files import GENERATED_PATH              # generated files pa
 from src.audio_info import AudioArt                         # audio art handling class
 from src.audio_info import AudioMetadata                    # audio metadata handling class
 from src.audio_info import AudioPlaylist                    # audio playlist handling class
+from src.audio_info.audio_utilities import AudioUtilities   # audio utility functions class
 from src.audio_normalize import AudioNormalization          # audio normalization handling class
 from src.dir_processing import DirectoryProcessing          # directory processing handling class
 
@@ -92,6 +93,11 @@ normalization = AudioNormalization()
 # @details Provides audio playlist handling functionality.
 playlist = AudioPlaylist()
 
+## @var utilities
+# @brief Utility functions instance.
+# @details Provides various utility functions for the application.
+utilities = AudioUtilities()
+
 
 class CustomHelpFormatter(argparse.HelpFormatter):
     '''
@@ -107,6 +113,7 @@ class CustomHelpFormatter(argparse.HelpFormatter):
 
         @details Sets the description column far enough right for long commands.
 
+        @param self {CustomHelpFormatter} The instance of the custom help formatter.
         @param prog {str} The program name displayed in usage.
         '''
 
@@ -125,6 +132,7 @@ class CustomHelpFormatter(argparse.HelpFormatter):
 
         @details Aligns help options and subcommand descriptions.
 
+        @param self {CustomHelpFormatter} The instance of the custom help formatter.
         @param action {argparse.Action} The action being formatted.
         @return {str} Formatted help string for the action.
         '''
@@ -160,11 +168,16 @@ class CustomArgumentParser(argparse.ArgumentParser):
     @details Logs argparse error messages that would otherwise be written to standard error.
     '''
 
+
     def __init__(self, *args, **kwargs):
         '''
         @brief Initializes the argument parser with the custom help formatter.
 
         @details Applies consistent command help formatting to the parser and its subparsers.
+
+        @param self {CustomArgumentParser} The instance of the custom argument parser.
+        @param args {*args} Positional arguments for the argument parser.
+        @param kwargs {**kwargs} Keyword arguments for the argument parser.
         '''
 
         # Set the custom help formatter as the default for this parser
@@ -178,6 +191,7 @@ class CustomArgumentParser(argparse.ArgumentParser):
 
         @details Logs standard-error messages while preserving default handling for all other output.
 
+        @param self {CustomArgumentParser} The instance of the custom argument parser.
         @param message {str} The error message to log.
         @param file {TextIOWrapper} A file-like object for stderr.
         '''
@@ -192,6 +206,18 @@ class CustomArgumentParser(argparse.ArgumentParser):
 
 ## @name Subcommand Handlers
 # @{
+def clip_check_walk(tld_path):
+    '''
+    @brief Checks all audio files in specified top level directory for clipping.
+
+    @details Walks through the top level directory and checks all audio files for clipping.
+
+    @param tld_path {str} The top level directory path that contains all the music files.
+    '''
+
+    utilities.clip_check_walk(tld_path)
+
+
 def convert_file(file_path, target):
     '''
     @brief Converts specified audio file to mp3 format.
@@ -523,6 +549,10 @@ def main(args) -> None:
     '''
 
     try:
+        if args.subcommand == "clip-check-walk":
+            tld_path = getattr(args, "tld")
+            clip_check_walk(tld_path)
+
         if args.subcommand == "convert-file":
             file_path = getattr(args, "file")
             target = getattr(args, "target")
@@ -696,6 +726,15 @@ if __name__ == "__main__":
     try:
         parser = CustomArgumentParser(description='Music Processing')
         subparsers = parser.add_subparsers(title="subcommands", dest="subcommand", metavar="command")
+
+        # check max volume and clip level of audio files
+        # 1 mandatory arg, the start path (can be tld, fld, or sld)
+        # clip-check-walk "D:\MusicProcessing\tests\Music"
+        # clip-check-walk "D:\MusicProcessing\tests\Music\Abba"
+        # clip-check-walk "D:\MusicProcessing\tests\Music\Abba\Waterloo"
+        clip_check_walk_parser = subparsers.add_parser("clip-check-walk", help="Check max volume and clip level of audio files")
+        clip_check_walk_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld/sld")
+        clip_check_walk_parser.set_defaults(func=clip_check_walk)
 
         # convert audio file specified to mp3 format
         # 1 mandatory arg, the audio file path

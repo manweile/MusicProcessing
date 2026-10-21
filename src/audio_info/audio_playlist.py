@@ -72,6 +72,8 @@ class AudioPlaylist():
         @brief Initializes the AudioPlaylist class.
 
         @details Initializes an AudioPlaylist instance without instance-specific state.
+
+        @param self {AudioPlaylist} The instance of the class.
         '''
 
         pass
@@ -85,6 +87,7 @@ class AudioPlaylist():
         @details Parses EXTINF entries in the form `#EXTINF:N,<name>.<ext>`, where N is a song duration, -1, or 0.<br>
         @details Supports MP3, M4A, and WMA file extensions.
 
+        @param self {AudioPlaylist} The instance of the class.
         @param line {str} Line of text read from an M3U file containing an EXTINF tag.
         @return audio {str} Audio file name with extension.
 
@@ -133,6 +136,7 @@ class AudioPlaylist():
         Because I use relative pathing, m3u files MUST live in the top level directory ie in Music<br>
         So a proper relative path will be artist/album/title.mp3
 
+        @param self {AudioPlaylist} The instance of the class.
         @param tld_path {str} The top level directory where playlist and music files are located.
         @param input_m3u {str} The full file path to playlist needing conversion.
         @return {None} This function does not return any value.
@@ -203,6 +207,7 @@ class AudioPlaylist():
 
         @details Finds M3U playlists beneath the top level directory and updates their relative paths.
 
+        @param self {AudioPlaylist} The instance of the class.
         @param tld_path {str} The top level directory where playlist and music files are located.
         @return {None} This function does not return any value.
 

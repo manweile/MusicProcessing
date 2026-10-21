@@ -14,7 +14,6 @@
 '''
 
 # Standard Modules
-import inspect                                              # for test method discovery
 import os                                                   # for test fixture path construction
 import shlex                                                # for expected command formatting
 import unittest                                             # for direct test-suite execution
@@ -22,6 +21,9 @@ from subprocess import CalledProcessError                   # for expected comma
 from unittest import TestCase                               # for test-case assertions and lifecycle hooks
 from unittest.mock import Mock                              # for subprocess process doubles
 from unittest.mock import patch                             # for patched subprocess functions
+
+# Local Module Methods
+from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
 from src import UTF8                                        # for decoding error fixture encoding
@@ -143,7 +145,7 @@ class TestSubprocessUtilities(TestCase):
 
         @test Error case.
 
-        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+        @param self {TestSubprocessUtilities} The instance of the test class.
 
         @exception RuntimeError ffmpeg fails to process the invalid input file.
         '''
@@ -167,7 +169,7 @@ class TestSubprocessUtilities(TestCase):
 
         @test Error case.
 
-        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+        @param self {TestSubprocessUtilities} The instance of the test class.
 
         @exception FfmpegProcessError ffmpeg reports a command execution failure.
         '''
@@ -191,7 +193,7 @@ class TestSubprocessUtilities(TestCase):
 
         @test Error case.
 
-        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+        @param self {TestSubprocessUtilities} The instance of the test class.
 
         @exception RuntimeError ffprobe cannot process malformed MP3 data.
         '''
@@ -218,7 +220,7 @@ class TestSubprocessUtilities(TestCase):
 
         @test Error case.
 
-        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+        @param self {TestSubprocessUtilities} The instance of the test class.
 
         @exception RuntimeError ffprobe cannot process the playlist input.
         '''
@@ -242,11 +244,12 @@ class TestSubprocessUtilities(TestCase):
         '''
         @brief Test pipe execution with undecodable communicate output.
 
-        @details Verifies undecodable mocked output raises a Unicode decode error.
+        @details Verifies undecodable mocked output raises a Unicode decode error.<br>
+        Patching the Popen constructor to simulate undecodable output.
 
         @test Error case.
 
-        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+        @param self {TestSubprocessUtilities} The instance of the test class.
         @param mock_popen {Mock} Patched Popen constructor returning undecodable output.
 
         @exception UnicodeDecodeError Mocked communicate output is not valid UTF-8.
@@ -282,7 +285,7 @@ class TestSubprocessUtilities(TestCase):
 
         @test Error case.
 
-        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+        @param self {TestSubprocessUtilities} The instance of the test class.
 
         @exception CalledProcessError ffmpeg cannot process the playlist input.
         '''
@@ -324,7 +327,7 @@ class TestSubprocessUtilities(TestCase):
 
         @test Error case.
 
-        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+        @param self {TestSubprocessUtilities} The instance of the test class.
 
         @exception CalledProcessError ffprobe cannot locate the input file.
         '''
@@ -356,11 +359,12 @@ class TestSubprocessUtilities(TestCase):
         '''
         @brief Test subprocess execution with undecodable output.
 
-        @details Verifies an undecodable mocked subprocess result raises a Unicode decode error.
+        @details Verifies an undecodable mocked subprocess result raises a Unicode decode error.<br>
+        Patching the Popen constructor to simulate undecodable output.
 
         @test Error case.
 
-        @param self {TestSubprocessUtilities} Test instance containing command fixtures.
+        @param self {TestSubprocessUtilities} The instance of the test class.
         @param mock_subprocess_run {Mock} Patched subprocess runner raising a decoding error.
 
         @exception UnicodeDecodeError Mocked subprocess output is not valid UTF-8.
@@ -385,25 +389,6 @@ class TestSubprocessUtilities(TestCase):
         self.assertEqual("invalid start byte", cm.exception.reason)
 
         mock_subprocess_run.reset_mock(return_value=True, side_effect=True)
-
-
-def get_method_names(cls):
-    '''
-    @brief Get names of test methods defined by a class.
-
-    @details Filters class methods to names that begin with the test prefix.
-
-    @param cls {type} Class containing test methods.
-
-    @return method_names {list[str]} Names of test methods defined by the class.
-    '''
-
-    method_names = []
-    for name, obj in inspect.getmembers(cls):
-        if inspect.isfunction(obj) or inspect.ismethod(obj):
-            if name.startswith('test_'):
-                method_names.append(name)
-    return method_names
 
 
 if __name__ == "__main__":

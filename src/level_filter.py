@@ -35,6 +35,7 @@ class LevelFilter(Filter):
 
         @details Initializes the LevelFilter with the specified low and high log levels.
 
+        @param self {LevelFilter} The instance of the class.
         @param low {int} The lowest log level.
         @param high {int} The highest log level.
         '''
@@ -50,6 +51,7 @@ class LevelFilter(Filter):
 
         @details Checks if the log record's level is within the instance's specified low and high level range.
 
+        @param self {LevelFilter} The instance of the class.
         @param record {LogRecord} The log record instance emitted when an event is logged.
         @returns {bool} True if record level is in specified level range, False otherwise.
         '''

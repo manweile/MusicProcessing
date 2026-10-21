@@ -17,7 +17,6 @@
 import copy                                                 # for creating deep copies of objects
 import gc                                                   # for releasing transient metadata objects
 import hashlib                                              # for validating fixture files remain unchanged
-import inspect                                              # for inspecting live objects
 import os                                                   # for operating-system path operations
 import platform                                             # for platform-specific fixture paths
 import shutil                                               # for test-fixture copying and removal
@@ -36,8 +35,8 @@ from unittest.mock import patch                             # for patching objec
 import mutagen                                              # for handling various audio metadata formats
 from mutagen._util import MutagenError                      # for handling mutagen-specific errors
 
-# Local Modules
-import main                                                 # application command wrappers
+# Local Module Methods
+from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
 from src import AUDIO_FILES                                 # directory containing audio files
@@ -353,6 +352,8 @@ class TestAudioMetadata(TestCase):
         @details The audio files must have a co-located Folder.jpg file.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         for src_file in self.converted_file_paths:
@@ -370,6 +371,8 @@ class TestAudioMetadata(TestCase):
         @details The audio file does not have a co-located Folder.jpg file, which should trigger an error.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         input_path_parent = os.path.dirname(TEST_MP3_CRUSH)
@@ -388,6 +391,8 @@ class TestAudioMetadata(TestCase):
         @details The audio file lacks metadata, which should be handled gracefully.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         no_metadata = TEST_MP3_NO_METADATA
@@ -405,6 +410,8 @@ class TestAudioMetadata(TestCase):
         @details The audio files must have a co-located Folder.jpg file.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         metadata.convert_walk(self.converted, None, None, show_spinner=False)
@@ -421,6 +428,8 @@ class TestAudioMetadata(TestCase):
         @details The audio files must have a co-located Folder.jpg file.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         metadata.convert_walk(self.converted, MP3_EXT, None, show_spinner=False)
@@ -436,6 +445,8 @@ class TestAudioMetadata(TestCase):
         @details The file pattern does not correspond to a valid audio file, which should trigger an error.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         log_msg = f"Pattern {PLAYLIST_EXTS[0]} is not for a valid audio file"
@@ -454,6 +465,8 @@ class TestAudioMetadata(TestCase):
         @details The album sub-directory should be created for each album within the artist directory.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         metadata.create_album_dirs(self.prepped)
@@ -474,6 +487,8 @@ class TestAudioMetadata(TestCase):
         @details Attempting to create an album sub-directory should raise an ExecError.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         prepped_path = self.prepped
@@ -500,6 +515,8 @@ class TestAudioMetadata(TestCase):
         @details Attempting to create an album sub-directory should raise a ValueError.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         create_album_metadata = AudioMetadata()
@@ -524,6 +541,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly retrieve metadata tags for various audio file formats.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         for src_file in self.converted_file_paths:
@@ -544,6 +563,8 @@ class TestAudioMetadata(TestCase):
         @details The audio file specified does not contain any metadata tags, so the function is expected to return None.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         tags = None
@@ -560,6 +581,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly retrieve media information such as codec, duration, size, and bitrate for the given audio file.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         # the Windows ffprobe media information return for the given test audio file,
@@ -624,11 +647,12 @@ class TestAudioMetadata(TestCase):
         '''
         @brief Test media-info parsing when nested dictionaries are absent.
 
-        @details Verifies parsing retains values when mocked ffprobe output has no nested dictionaries.
+        @details Verifies parsing retains values when mocked ffprobe output has no nested dictionaries.<br>
+        Patching popen_pipe to return simplified ffprobe output without nested dictionaries.
 
         @test Edge case.
 
-        @param self {TestAudioMetadata} Test instance containing shared fixtures.
+        @param self {TestAudioMetadata} The instance of the test class.
         @param mock_popen_pipe {Mock} Patched ffprobe pipe returning simplified output.
         '''
 
@@ -646,6 +670,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly retrieve media information for all audio files located in top level directory of the specified path.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         # use the ConvertedMusic dir
@@ -674,6 +700,8 @@ class TestAudioMetadata(TestCase):
         @details The function should handle cases where the specified file pattern does not match any audio files.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         # use the ConvertedMusic dir
@@ -696,6 +724,8 @@ class TestAudioMetadata(TestCase):
         within the top level directory of the specified path.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         # use the ConvertedMusic dir
@@ -721,6 +751,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly retrieve all metadata tags from the specified audio file.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         # no matter the os/environment, inner dict TAG is always same
@@ -745,7 +777,8 @@ class TestAudioMetadata(TestCase):
         '''
         @brief Test media-tag parsing with invalid JSON output.
 
-        @details Verifies invalid mocked ffprobe JSON raises a JSON decode error.
+        @details Verifies invalid mocked ffprobe JSON raises a JSON decode error.<br>
+        Patching SubprocessUtilities.subprocess_run to return invalid JSON.
 
         @code{.text}
         get
@@ -754,7 +787,7 @@ class TestAudioMetadata(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioMetadata} Test instance containing shared fixtures.
+        @param self {TestAudioMetadata} The instance of the test class.
         @param mock_subprocess_run {Mock} Patched subprocess runner returning invalid JSON.
 
         @exception JSONDecodeError Mocked ffprobe output is not valid JSON.
@@ -805,6 +838,8 @@ class TestAudioMetadata(TestCase):
         @details The function should return None when the audio file has no metadata tags.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         media_tags = None
@@ -821,6 +856,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly identify the metadata type of the given audio file.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         # walk through ConvertedMusic files
@@ -837,6 +874,8 @@ class TestAudioMetadata(TestCase):
         @details The function should return "NoneType" when attempting to get the metadata type of an invalid file.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         audio_file = mutagen.File(TEST_M3U)
@@ -851,6 +890,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly retrieve all metadata tags for audio files matching the specified input pattern.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         txt_filename = "get_tags_walk" + RESULT_EXT
@@ -871,6 +912,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly retrieve all ffprobe metadata tags for audio files in the specified path.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         txt_filename = "get_tags_walk" + RESULT_EXT
@@ -894,6 +937,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly retrieve all mutagen metadata tags for audio files in the specified path.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         txt_filename = "get_tags_walk" + RESULT_EXT
@@ -917,6 +962,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly retrieve a unique set of metadata keys for all audio files in the specified path.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         txt_filename = "get_unique_media_keys" + RESULT_EXT
@@ -938,6 +985,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly identify if the specified audio file contains an embedded album art tag.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         has_art = metadata.has_art_tag(TEST_MP3_CRUSH)
@@ -951,6 +1000,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly identify if the specified audio file contains an embedded album art tag.
 
         @test Edge case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         has_art = metadata.has_art_tag(TEST_MP3_NO_TAG)
@@ -964,6 +1015,8 @@ class TestAudioMetadata(TestCase):
         @details The function should raise a MusicProcessingError when the specified audio file has an invalid extension.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         has_art = None
@@ -985,6 +1038,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly load valid audio files using mutagen.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         for src_file in self.converted_file_paths:
@@ -1000,6 +1055,8 @@ class TestAudioMetadata(TestCase):
         @details The function should raise a ValueError when attempting to load a non-audio file.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         audio_file = None
@@ -1020,6 +1077,8 @@ class TestAudioMetadata(TestCase):
         @details The function should raise a MutagenError when attempting to load a nonextant audio file.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         audio_file = None
@@ -1045,6 +1104,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly map all relevant m4a tags to their corresponding ID3 tags.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         m4a_mapped = {
@@ -1073,6 +1134,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly map all relevant FLAC tags to their corresponding ID3 tags.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         flac_mapped = {
@@ -1102,6 +1165,8 @@ class TestAudioMetadata(TestCase):
         @details The function should add a default DISCNUMBER tag with a value of '1' if it is not present in the input FLAC tags.
 
         @test Edge case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         input_tags = {
@@ -1122,6 +1187,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly map all relevant MP3 tags to their corresponding ID3 tags.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         mp3_mapped = {
@@ -1150,6 +1217,8 @@ class TestAudioMetadata(TestCase):
         @details The function should correctly map all relevant WMA tags to their corresponding ID3 tags.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         wma_mapped = {
@@ -1178,6 +1247,8 @@ class TestAudioMetadata(TestCase):
         @details Verifies all supported audio files are routed to the normalizer while unsupported files are skipped.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         test_dir = os.path.join(self.test_tld, "normalize_filename_walk")
@@ -1211,6 +1282,8 @@ class TestAudioMetadata(TestCase):
         @details Verifies that a FLAC file is renamed according to its album artist and title metadata.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         # Set up the test directory for the FLAC file
@@ -1270,6 +1343,8 @@ class TestAudioMetadata(TestCase):
         @details Requires nested classes to simulate the behavior of the actual MP3 file and its tags.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         test_dir = os.path.join(self.test_tld, TEST_MP3_10CC_ALBUM_ARTIST, TEST_MP3_10CC_ALBUM_ARTIST)
@@ -1342,6 +1417,8 @@ class TestAudioMetadata(TestCase):
         @details Verifies that an M4A file is renamed according to its album artist and title metadata.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         test_dir = os.path.join(self.test_tld, TEST_M4A_DAVIS_ALBUM_ARTIST, os.path.basename(os.path.dirname(TEST_M4A_DAVIS)))
@@ -1381,6 +1458,8 @@ class TestAudioMetadata(TestCase):
         @details Verifies that a WMA file is renamed according to its album artist and title metadata.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         test_dir = os.path.join(self.test_tld, TEST_WMA_JOHN_ALBUM_ARTIST, os.path.basename(os.path.dirname(TEST_WMA_JOHN)))
@@ -1420,6 +1499,8 @@ class TestAudioMetadata(TestCase):
         @details Verifies that a MusicProcessingError is raised when attempting to filename normalize a file with an invalid extension.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         with self.assertRaises(MusicProcessingError) as cm:
@@ -1437,6 +1518,8 @@ class TestAudioMetadata(TestCase):
         @details The function should leave the filename unchanged if it already follows the correct pattern.
 
         @test Edge case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         test_dir = os.path.join(self.test_tld, "10cc", "10cc")
@@ -1465,6 +1548,8 @@ class TestAudioMetadata(TestCase):
         Requires nested classes to simulate the behavior of the actual MP3 file and its tags.
 
         @test Edge case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         test_dir = os.path.join(self.test_tld, "10cc", "10cc")
@@ -1528,6 +1613,8 @@ class TestAudioMetadata(TestCase):
         @details The function should raise a MusicProcessingError when attempting to normalize an MP3 file that lacks ID3v2.3 metadata.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         with self.assertRaises(ValueError) as cm:
@@ -1544,6 +1631,8 @@ class TestAudioMetadata(TestCase):
         @details Verifies whitespace-only, missing, single-value, and multi-value genres become one mapped value.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         # Get tags from the empty MP3 file
@@ -1622,8 +1711,11 @@ class TestAudioMetadata(TestCase):
         '''
         @brief Tests propagating a genre update failure.
 
-        @details Verifies setter errors propagate instead of being collected in the report.
+        @details Verifies setter errors propagate instead of being collected in the report.<br>
+        Patching AudioMetadata.__set_genre to simulate a failure.<br>
+        Patching AudioMetadata.update_genres to trigger the genre update process.
 
+        @param self {TestAudioMetadata} The instance of the test class.
         @param mock_set_genre {Mock} Mocked private genre setter.
         @param mock_logger_error {Mock} Mocked module error logger.
 
@@ -1649,6 +1741,8 @@ class TestAudioMetadata(TestCase):
         @details Verifies invalid CSV content and missing paths do not modify copied audio files.
 
         @test Error case.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         # Prepare a valid CSV file for testing invalid input scenarios
@@ -1707,6 +1801,8 @@ class TestAudioMetadata(TestCase):
         @details Verifies that the ID3 tags dictionary is correctly updated with the newest year and disc value.
 
         @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
         '''
 
         id3_input_tags = {
@@ -1736,27 +1832,6 @@ class TestAudioMetadata(TestCase):
         id3_output_tags["TPOS"] = "2/3"
         id3_tags = metadata._AudioMetadata__update_id3(id3_date_values, id3_input_tags)
         self.assertDictEqual(id3_tags, id3_output_tags)
-
-
-def get_method_names(cls):
-    '''
-    @brief Get names of test methods defined by a class.
-
-    @details Filters class methods to names that begin with the test prefix.
-
-    @param cls {type} Class containing test methods.
-
-    @return method_names {list[str]} Names of test methods defined by the class.
-    '''
-
-    method_names = []
-
-    for name, obj in inspect.getmembers(cls):
-        if inspect.isfunction(obj) or inspect.ismethod(obj):
-            if name.startswith('test_'):
-                method_names.append(name)
-
-    return method_names
 
 
 if __name__ == "__main__":

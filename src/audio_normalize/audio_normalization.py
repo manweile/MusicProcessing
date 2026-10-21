@@ -79,6 +79,8 @@ class AudioNormalization():
         @brief Initializes the AudioNormalization class.
 
         @details Initializes an AudioNormalization instance without instance-specific state.
+
+        @param self {AudioNormalization} The instance of the class.
         '''
 
         pass
@@ -107,6 +109,7 @@ class AudioNormalization():
         }
         @endcode
 
+        @param self {AudioNormalization} The instance of the class.
         @param input_process A subprocess.CompletedProcess instance containing the stderr data.
         @return A dictionary containing the following FFmpeg loudnorm statistics:
         - **input_i** *(str)*: Input integrated loudness (numeric string).
@@ -201,6 +204,7 @@ class AudioNormalization():
         -y; overwrite the output file if it exists
         @endcode
 
+        @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The full file path for mp3 audio file.
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
@@ -360,6 +364,7 @@ class AudioNormalization():
         file_path; the path to the media file to be analyzed.
         @endcode
 
+        @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The path to the media file.
         @return bit_rate {int | None} The bitrate in bits per second, or None if not found.
 
@@ -416,6 +421,7 @@ class AudioNormalization():
         file_path; the path to the audio file to be analyzed.
         @endcode
 
+        @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return sample_rate {int | None} The sample rate in Hz, or None if not found.
 
@@ -473,6 +479,7 @@ class AudioNormalization():
         -f null -; sends the output to null to avoid creating an actual output file
         @endcode
 
+        @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return volumes {dict} The mean and max volumes of audio file in decibels relative to max PCM value.
         @code{.text}
@@ -527,6 +534,7 @@ class AudioNormalization():
 
         @details Normalizes only MP3 files beneath the specified top level directory.
 
+        @param self {AudioNormalization} The instance of the class.
         @param tld_path {str} The top level directory path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param norm_type {str} The type of normalization to perform.
@@ -590,6 +598,7 @@ class AudioNormalization():
         export_path-y; force an overwrite on the output file if needed
         @endcode
 
+        @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The full file path for mp3 audio file.
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
@@ -637,6 +646,15 @@ class AudioNormalization():
             target_tp = float(TP) - 1.0
             TOLERANCE = 0.2
 
+            # Peak normalization lands the peak on the target, so only a target above 0.0 dBFS can clip
+            if target_tp > 0.0:
+                clip_text = (
+                    f"peak normalizing to target peak {target_tp:.2f} dB "
+                    f"clips by {target_tp:.1f} dB in {export_path}"
+                )
+                logger.warning(clip_text)
+                return
+
             # Check if file is already at your optimized target volume level
             if math.isclose(max_volume, target_tp, abs_tol=TOLERANCE):
                 max_text = f"{input_path_basename} is already at target peak: {max_volume:.2f} dB, peak normalization not needed"
@@ -645,20 +663,8 @@ class AudioNormalization():
             else:
                 data.append(f"max volume: {max_volume:.2f} dB")
 
-            # Corrected delta logic math
             adjustment = target_tp - float(max_volume)
-            clip_amount = float(max_volume) + adjustment
-
-            # Check if processing will break digital full scale (0.0 dBFS)
-            if clip_amount > 0.0:
-                clip_text = (
-                    f"peak normalizing by {target_tp} minus {max_volume:.2f} equals {adjustment:.2f}; "
-                    f"max volume {max_volume} plus {adjustment} clips by {clip_amount} dB in {export_path}"
-                )
-                logger.warning(clip_text)
-                return
-            else:
-                data.append(f"adjustment: {adjustment:+.2f} dB")
+            data.append(f"adjustment: {adjustment:+.2f} dB")
 
             command = [
                 "ffmpeg",
@@ -716,6 +722,7 @@ class AudioNormalization():
         export_path-y; force an overwrite on the output file if needed
         @endcode
 
+        @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The full file path for mp3 audio file.
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.

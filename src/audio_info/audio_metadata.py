@@ -268,6 +268,8 @@ class AudioMetadata():
         @brief Initializes the AudioMetadata class.
 
         @details Initializes an AudioMetadata instance without instance-specific state.
+
+        @param self {AudioMetadata} The instance of the class.
         '''
 
         pass
@@ -279,6 +281,7 @@ class AudioMetadata():
 
         @details Validates the required comma-delimited CSV header, artist names, and alphabetical row order.
 
+        @param self {AudioMetadata} The instance of the class.
         @param csv_path {str} The full path to the artist genre CSV file.
         @return artist_genres {dict[str, str]} Artist directory names mapped to their replacement genres.
 
@@ -343,6 +346,7 @@ class AudioMetadata():
 
         @details Sets exactly one format-appropriate genre value and saves the file with its existing metadata format.
 
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to the supported audio file.
         @param artist_genre {str} The replacement genre value.
         @return {None} This function does not return any value.
@@ -401,6 +405,7 @@ class AudioMetadata():
 
         @details Updates the ID3 tags dictionary with the newest year value from the set of date strings.
 
+        @param self {AudioMetadata} The instance of the class.
         @param date_values ({str}) Set of unique YYYY date strings.
         @param id3_tags {dict} Source ID3 tags.
         @return id3_tags {dict} Updated ID3 tags.
@@ -454,6 +459,7 @@ class AudioMetadata():
         Cover art is added directly via Mutagen MP3 module - it's easier with Mutagen than ffmpeg.
         @endcode
 
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The path for audio file to be converted.
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Show spinner flag.
@@ -580,6 +586,7 @@ class AudioMetadata():
         If file pattern not specified, processes all valid audio files.<br>
         Otherwise must be a valid audio file extension like '.mp3', '.m4a', '.wma', or '.flac'.
 
+        @param self {AudioMetadata} The instance of the class.
         @param start_path {str} The starting point of the directory walk.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
@@ -638,6 +645,7 @@ class AudioMetadata():
         A csv report named after the function (`create_album_dirs`) will be created in csv folder.<br>
         It will contain all audio file paths, album metadata values and sanitized album directory names.
 
+        @param self {AudioMetadata} The instance of the class.
         @param start_path {str} The top level directory holding artist directories and music files.<br>
         The start path must be a valid top-level directory containing artist folders, and only a tld.<br>
         @return {None} This function does not return any value.
@@ -760,6 +768,7 @@ class AudioMetadata():
         This ensures consistent date handling across different ID3 versions.<br>
         The audio file's metadata remains IDv2.3, it does not get automatically upgraded to ID3v2.4 version.
 
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return tags {object} Tag object holding audio file tags, or None when the file has no tags.
 
@@ -842,6 +851,7 @@ class AudioMetadata():
         Dollar anchors a match to end of search string
         @endcode
 
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
 
@@ -903,6 +913,7 @@ class AudioMetadata():
         @details Wrapper function for `get_ffprobe_media_info` to walk through the directory tree and get media information for audio files.<br>
         The collected information is stored in a list and can be saved to a file.
 
+        @param self {AudioMetadata} The instance of the class.
         @param start_path {str} The starting point of the directory walk.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} The audio file pattern we want to get tags from.
@@ -974,6 +985,7 @@ class AudioMetadata():
         file_path; the path to the audio file
         @endcode
 
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return media_tags {dict} Media tags from filepath.
 
@@ -1014,6 +1026,7 @@ class AudioMetadata():
         @details It is responsibility of calling function to verify the metadata type returned by this function is valid for project usage.<br>
         Eg FLAC files will return 'FLAC', MP3 files will return 'MP3', M4A files will return 'MP4', WMA files will return 'ASF'.
 
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return metadata_type {str} The type of the audio file class.
 
@@ -1051,6 +1064,7 @@ class AudioMetadata():
         This function defaults to using Mutagen for tag extraction unless ffprobe is specified.<br>
         The lowest allowable directory in `file_path` is an artist directory.<br>
 
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The starting point of the directory walk.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
@@ -1114,6 +1128,7 @@ class AudioMetadata():
 
         @details Walks from starting path and saves set of unique metadata keys found by ffprobe.
 
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The starting point of the directory walk.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @return {None} This function does not return any value.
@@ -1167,6 +1182,7 @@ class AudioMetadata():
         @details Checks for the presence of an embedded album art tag in the audio file.<br>
         This function only uses Mutagen for tag extraction.
 
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return has_art {boolean} Returns true if art tag is present, false otherwise.
 
@@ -1215,6 +1231,7 @@ class AudioMetadata():
 
         @details Expects a valid filepath to an acceptable audio file.<br>
 
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full file path for audio file.
         @return audio_file {FileType} Mutagen instance for the input audio file type.
 
@@ -1254,6 +1271,7 @@ class AudioMetadata():
         `'YEAR'` and `'ORIGINALYEAR'` are alternative tags for the year in FLAC files, and they will probably be in the format "YYYY".<br>
         Only unique dates will be considered when updating the ID3 tags.
 
+        @param self {AudioMetadata} The instance of the class.
         @param input_tags {VCFLACDict} The FLAC tags source.
         @return id3_tags {dict} The tags converted from FLAC tags.
 
@@ -1307,6 +1325,7 @@ class AudioMetadata():
         It requires different handling to extract the year correctly because it is a MP4FreeForm type.<br>
         Only unique dates will be considered when updating the ID3 tags.
 
+        @param self {AudioMetadata} The instance of the class.
         @param input_tags {MP4Tags} The m4a tags source.
         @return id3_tags {dict} The tags converted from m4a (MP4) tags.
 
@@ -1385,6 +1404,7 @@ class AudioMetadata():
         The preferred tag is 'TYER', alternative tags are 'TORY', 'TDRC', 'TDOR' or 'TXXX=originalyear'.<br>
         Only unique dates will be considered when updating the ID3 tags.
 
+        @param self {AudioMetadata} The instance of the class.
         @param input_tags {ID3} The mp3 tags source.
         @return id3_tags {dict} The tags converted from mp3 tags.
 
@@ -1436,6 +1456,7 @@ class AudioMetadata():
         Alternative tag is 'WM/OriginalReleaseYear'.<br>
         Only unique dates will be considered when updating the ID3 tags.
 
+        @param self {AudioMetadata} The instance of the class.
         @param input_tags {ASFTags} The wma tags source.
         @return tags {dict} The tags converted from wma tags.
 
@@ -1485,6 +1506,7 @@ class AudioMetadata():
 
         @details The function determines the file type and calls the appropriate normalization function.
 
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The path to the audio file to be have it's filename normalized.<br>
         The input file must be a valid audio file with a supported extension.
         @return {None} This function does not return any value.
@@ -1602,6 +1624,7 @@ class AudioMetadata():
         @details Calling function MUST supply a valid path to a directory.<br>
         The function will recursively walk through the directory and rename files of only the supported audio file types.
 
+        @param self {AudioMetadata} The instance of the class.
         @param start_path {str} The path to the directory to start walking from.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
         @return {None} This function does not return any value.
@@ -1643,6 +1666,7 @@ class AudioMetadata():
         The characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` will be replaced by `-`.<br>
         Refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename<br>
 
+        @param self {AudioMetadata} The instance of the class.
         @param start_path {str} The top-level directory containing artist folders.<br>
         The start path must be a valid top-level directory containing artist folders, and only a tld.
         @return {None} This function does not return any value.
@@ -1740,6 +1764,7 @@ class AudioMetadata():
         If an artist directory does not have a corresponding entry in the CSV file, it will be listed under skipped artists.<br>
         A text report of updated files and skipped artists will be written to the generated result directory after processing.
 
+        @param self {AudioMetadata} The instance of the class.
         @param start_path {str} The top level directory containing artist directories.
         The start path must be a valid top-level directory containing artist folders, and only a tld.
         @param csv_path {str} The full path to the artist genre CSV file.

@@ -84,12 +84,13 @@ class AudioUtilities():
     # Normalization utilities
 
 
-    def clip_vol_check_walk(self, tld_path: str) -> None:
+    def clip_check_walk(self, tld_path: str) -> None:
         '''
         @brief Checks maximum volume and clipping for MP3 files.
 
         @details Walks the top level directory and records volume-normalization information for each MP3 file.
 
+        @param self {AudioUtilities} The instance of the class.
         @param tld_path {str} The top level directory containing music files.
         @return {None} This function does not return any value.
 
@@ -97,12 +98,14 @@ class AudioUtilities():
         '''
 
         data = []
+
         true_peak = float(TP)
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:
             input_file_ext = None
             input_path = Path(tld_path)
+            file_path = None
 
             for root, dirs, file_names in os.walk(input_path):
                 for file in file_names:
@@ -116,53 +119,59 @@ class AudioUtilities():
                     data.append(f"\n{file_path}")
 
                     volume_info = normalization.get_volume_info(file_path)
+
+                    if 'mean_volume' not in volume_info or 'max_volume' not in volume_info:
+                        data.append("volume information unavailable")
+                        continue
+
                     # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
                     mean_volume = float(math.floor(volume_info['mean_volume']))
                     max_volume = float(math.floor(volume_info['max_volume']))
 
-                    vol_text = ""
-
                     if max_volume >= 0.0:
-                        vol_text = f"normalizing impossible, max volume: {max_volume:.2f} db"
+                        vol_text = f"no headroom (already clipping), max volume: {max_volume:.2f} dB"
                     else:
-                        vol_text = f"normalizing possible, max volume: {max_volume:.2f} dB"
+                        vol_text = f"headroom available, max volume: {max_volume:.2f} dB"
 
                     data.append(vol_text)
 
-                    peak_adjustment = true_peak - max_volume
-                    peak_clip_amount = max_volume + peak_adjustment
-                    peak_clip_text = ""
+                    # Apply an implicit 1.0 dB buffer pad to TP target to counter mp3 lossy compression overshoots
+                    target_tp = true_peak - 1.0
+                    TOLERANCE = 0.2
 
-                    if peak_clip_amount > 0:
-                        peak_clip_text = (
-                            f"peak clipping amount: {peak_clip_amount:.2f} dB "
-                            f"with max volume: {max_volume:.2f} db "
-                            f"and peak adjustment: {peak_adjustment:.2f} db"
-                        )
+                    # peak normalization lands on the target peak, so only a target above 0.0 dBFS can clip
+                    if target_tp > 0.0:
+                        peak_text = f"peak clipping amount: {target_tp:.2f} dB with target peak above digital full scale"
+                    elif math.isclose(max_volume, target_tp, abs_tol=TOLERANCE):
+                        peak_text = f"already at target peak: {max_volume:.2f} dB, peak normalization not needed"
                     else:
-                        peak_clip_text = f"peak normalizing adjustment: {peak_adjustment:.2f} dB"
+                        peak_adjustment = target_tp - max_volume
+                        peak_text = f"peak leveling adjustment: {peak_adjustment:+.2f} dB to target peak: {target_tp:.2f} dB"
 
-                    data.append(peak_clip_text)
+                    data.append(peak_text)
 
-                    rms_adjustment = true_peak - mean_volume
-                    rms_clip_amount = max_volume + rms_adjustment
-                    rms_clip_text = ""
-
-                    if rms_clip_amount > 0:
-                        rms_clip_text = (
-                            f"rms clipping amount: {rms_clip_amount:.2f} dB "
-                            f"with mean volume: {mean_volume:.2f} db, max volume: {max_volume:.2f} db "
-                            f"and rms adjustment: {rms_adjustment:.2f} db"
-                        )
+                    # Skip processing if the average root mean square is already hitting the target window
+                    if math.isclose(mean_volume, true_peak, abs_tol=TOLERANCE):
+                        rms_text = f"already at target rms: {mean_volume:.2f} dB, rms normalization not needed"
                     else:
-                        rms_clip_text = f"rms normalizing adjustment: {rms_adjustment:.2f} dB"
+                        rms_adjustment = true_peak - mean_volume
+                        rms_clip_amount = max_volume + rms_adjustment
 
-                    data.append(rms_clip_text)
+                        if rms_clip_amount > 0.0:
+                            rms_text = (
+                                f"rms clipping amount: {rms_clip_amount:.2f} dB "
+                                f"with mean volume: {mean_volume:.2f} dB, max volume: {max_volume:.2f} dB "
+                                f"and rms adjustment: {rms_adjustment:+.2f} dB"
+                            )
+                        else:
+                            rms_text = f"rms leveling adjustment: {rms_adjustment:+.2f} dB"
+
+                    data.append(rms_text)
 
             directory.create_txt(txt_filename, data)
 
         except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} while clip and max volume checking audio file: {file}", stack_info=True)
+            logger.exception(f"Exception {type(e_error).__name__} while clip and max volume checking audio file: {file_path}", stack_info=True)
             raise e_error
 
 
@@ -172,6 +181,7 @@ class AudioUtilities():
 
         @details Normalizes only MP3 files within the specified top level directory.
 
+        @param self {AudioUtilities} The instance of the class.
         @param tld_path {str} The top level directory path that contains all the music files.
         @param norm_type {str} The type of normalization to perform.
         @param show_spinner {bool} Whether to display a progress spinner.
@@ -193,6 +203,7 @@ class AudioUtilities():
 
         @details Extracts embedded art from m4a, mp3, and wma files.
 
+        @param self {AudioUtilities} The instance of the class.
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
         @return {None} This function does not return any value.
@@ -211,6 +222,7 @@ class AudioUtilities():
         @details Skips album directories that already contain a folder-art file.<br>
         @details Copies a matching generated AlbumArt JPEG into the album directory when it is available.
 
+        @param self {AudioUtilities} The instance of the class.
         @param input_path {str} The full path to album directory.
         @return {None} This function does not return any value.
 
@@ -231,6 +243,7 @@ class AudioUtilities():
         @details Converts matching audio files after the caller verifies the start path.<br>
         Uses a progress spinner when requested.
 
+        @param self {AudioUtilities} The instance of the class.
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
         @param show_spinner {bool} Whether to display a progress spinner.
@@ -252,6 +265,7 @@ class AudioUtilities():
         @details Derives each directory name from album metadata.<br>
         @details Creates a CSV file of audio paths, album metadata values, and sanitized album directory names.
 
+        @param self {AudioUtilities} The instance of the class.
         @param start_path {str} The tld holding music files.
         @return {None} This function does not return any value.
 
@@ -269,6 +283,7 @@ class AudioUtilities():
 
         @details Walks the input path and saves codec, duration, size, and bitrate information for matching audio files.
 
+        @param self {AudioUtilities} The instance of the class.
         @param start_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
         @return {None} This function does not return any value.
@@ -288,6 +303,7 @@ class AudioUtilities():
         @details Skips non-audio files such as playlists and JPEGs.<br>
         @details Does not match a non-audio extension pattern.
 
+        @param self {AudioUtilities} The instance of the class.
         @param file_path {str} The starting point of the directory walk.
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
         @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
@@ -306,6 +322,7 @@ class AudioUtilities():
 
         @details Walks from starting path and saves set of unique metadata keys found by ffprobe.
 
+        @param self {AudioUtilities} The instance of the class.
         @param file_path {str} The starting point of the directory walk.
         @return {None} This function does not return any value.
 
@@ -325,6 +342,7 @@ class AudioUtilities():
 
         @details Finds playlists under the top level directory and updates their relative paths.
 
+        @param self {AudioUtilities} The instance of the class.
         @param tld_path {str} The top level directory where playlist and music files are located.
         @return {None} This function does not return any value.
 
@@ -346,6 +364,7 @@ class AudioUtilities():
         @details Creates the CSV file in the generated-files directory.<br>
         @details Includes full audio-file paths and file extensions.
 
+        @param self {AudioUtilities} The instance of the class.
         @param start_path {str} Optional, the starting point of the directory walk.
         @return {None} This function does not return any value.
 
@@ -363,6 +382,7 @@ class AudioUtilities():
         @details Requires the music top level directory when no start path is provided.<br>
         @details Uses the preset audio-type list when no file extension is supplied.
 
+        @param self {AudioUtilities} The instance of the class.
         @param file_ext {str} Optional file extension without a period prefix.
         @param start_path {str} Optional starting point of the directory walk.
         @return {None} This function does not return any value.
@@ -381,6 +401,7 @@ class AudioUtilities():
         @details Removes empty second-level album directories within artist directories.<br>
         @details Requires the music top level directory when no start path is provided.
 
+        @param self {AudioUtilities} The instance of the class.
         @param start_path {str} The starting point of the directory walk.
         @return {None} This function does not return any value.
 
@@ -399,6 +420,7 @@ class AudioUtilities():
         @details Removes files matching the specified pattern beneath the top level directory.<br>
         @details Requires the music top level directory when no start path is provided.
 
+        @param self {AudioUtilities} The instance of the class.
         @param start_path {str} Optional, the starting point of the directory walk.
         @param file_pattern {str} The file pattern we want to delete.
         @return {None} This function does not return any value.
