@@ -152,7 +152,7 @@ class TestAudioPlaylist(TestCase):
 
 
     @patch('src.audio_info.audio_playlist.logger.warning')
-    def test_update_paths(self, mock_warning):
+    def test_update_playlist(self, mock_warning):
         '''
         @brief Test playlist path updates against expected output.
 
@@ -186,7 +186,7 @@ class TestAudioPlaylist(TestCase):
         self.assertEqual(generated_inf, expected_inf, "List contents should be equal")
 
 
-    def test_update_paths_fail(self):
+    def test_update_playlist_fail(self):
         '''
         @brief Test playlist path updates with a non-playlist file.
 
