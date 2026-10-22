@@ -46,23 +46,30 @@ class TestAudioUtilities(TestCase):
     '''
 
 
-    def _run_clip_check(self, volume_info):
+    def _run_clip_check(self, volume_info, ebu_info=None):
         '''
-        @brief Run clip_check_walk on one fake mp3 with mocked volume info.
+        @brief Run clip_check_walk on one fake mp3 with mocked loudness information.
 
         @details Creates a temporary directory with a single fake MP3 file and runs the clip check on it.
 
         @param self {TestAudioUtilities} The instance of the test class.
         @param volume_info {dict} Mocked volume information returned for the file.
+        @param ebu_info {dict} Mocked EBU loudness information returned for the file.
         @return report {str} The report lines joined by newlines.
         '''
+
+        if ebu_info is None:
+            ebu_info = {'input_i': -20.0, 'input_tp': -10.0, 'input_lra': 5.0}
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             open(os.path.join(tmp_dir, "song.mp3"), "w").close()
 
             get_volume_info_path = "src.audio_info.audio_utilities.normalization.get_volume_info"
+            get_ebu_info_path = "src.audio_info.audio_utilities.normalization.get_ebu_loudness_info"
             create_txt_path = "src.audio_info.audio_utilities.directory.create_txt"
-            with patch(get_volume_info_path, return_value=volume_info), patch(create_txt_path) as create_txt:
+            with patch(get_volume_info_path, return_value=volume_info), \
+                    patch(get_ebu_info_path, return_value=ebu_info), \
+                    patch(create_txt_path) as create_txt:
                 utilities.clip_check_walk(tmp_dir)
 
         return "\n".join(create_txt.call_args[0][1])
@@ -95,6 +102,7 @@ class TestAudioUtilities(TestCase):
         self.assertIn("max volume", content)
         self.assertIn("peak", content)
         self.assertIn("rms", content)
+        self.assertIn("ebu", content)
 
 
     def test_clip_check_leveling(self):
@@ -116,6 +124,7 @@ class TestAudioUtilities(TestCase):
         # rms +18 dB would push the -10 dB peak to +8 dB
         self.assertIn("rms clipping amount: 8.00 dB", report)
         self.assertNotIn("peak clipping amount", report)
+        self.assertIn("ebu linear leveling adjustment: +4.00 dB", report)
 
 
     def test_clip_check_no_headroom(self):
@@ -147,6 +156,42 @@ class TestAudioUtilities(TestCase):
 
         self.assertIn("already at target peak", report)
         self.assertIn("already at target rms", report)
+
+
+    def test_clip_check_ebu_dynamic_required(self):
+        '''
+        @brief Test EBU leveling reports when dynamic normalization is required.
+
+        @details Verifies projected true-peak or loudness-range limits prevent linear normalization.
+
+        @test Edge case.
+
+        @param self {TestAudioUtilities} The instance of the test class.
+        '''
+
+        report = self._run_clip_check(
+            {'mean_volume': -20.0, 'max_volume': -10.0},
+            {'input_i': -20.0, 'input_tp': -8.0, 'input_lra': 12.0}
+        )
+
+        self.assertIn("ebu dynamic leveling required", report)
+
+
+    def test_clip_check_ebu_already_at_target(self):
+        '''
+        @brief Test EBU leveling reports when all EBU targets are already met.
+
+        @test Edge case.
+
+        @param self {TestAudioUtilities} The instance of the test class.
+        '''
+
+        report = self._run_clip_check(
+            {'mean_volume': -2.0, 'max_volume': -3.0},
+            {'input_i': -16.0, 'input_tp': -3.0, 'input_lra': 8.0}
+        )
+
+        self.assertIn("already at target ebu loudness", report)
 
 
     @patch("src.audio_info.audio_utilities.TP", "2.0")

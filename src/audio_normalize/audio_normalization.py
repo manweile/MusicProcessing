@@ -90,9 +90,11 @@ class AudioNormalization():
         '''
         @brief Parses JSON from FFmpeg loudnorm standard-error output.
 
-        @details Expects the subprocess standard-error output to contain exactly one JSON object embedded within the log stream.
+        @details Parses the FFmpeg loudnorm statistics object embedded within the log stream.
 
-        @note A typical FFmpeg stderr payload contains text logs followed by the loudnorm statistics block.
+        @note A typical FFmpeg stderr payload contains text logs followed by the loudnorm statistics block.<br>
+        However, an audio file can have metadata containing brace characters before FFmpeg's loudnorm stats.<br>
+        Therefore, the parser searches for the first occurrence of the "input_i" key to locate the loudnorm JSON block accurately.
 
         @code{.json}
         {
@@ -125,22 +127,25 @@ class AudioNormalization():
 
         @exception JSONOutputError Indicates an error occurred finding the JSON structure.
         @exception json.JSONDecodeError A native JSON decoding error occurred if the block is malformed.
+        @exception Exception A generic exception if an unexpected error occurs during parsing.
         '''
 
         try:
-            output_data = None
             json_input = input_process.stderr
+            json_match = re.search(r'\{\s*"input_i"\s*:', json_input)
 
-            json_start = json_input.find('{')
-            json_end = json_input.rfind('}')
-
-            if json_start != -1 and json_end != -1:
-                json_string = json_input[json_start: json_end + 1]
-            else:
+            if json_match is None:
                 logger.error(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_input}", exc_info=True)
                 raise JSONOutputError(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_input}")
 
-            output_data = json.loads(json_string)
+            json_start = json_match.start()
+            json_end = json_input.rfind('}')
+
+            if json_end < json_start:
+                logger.error(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_input}", exc_info=True)
+                raise JSONOutputError(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_input}")
+
+            output_data = json.loads(json_input[json_start:json_end + 1])
 
         except JSONDecodeError as jd_error:
             logger.error(f"JSONDecodeError parsing \n{json_input}", exc_info=True)
@@ -152,6 +157,62 @@ class AudioNormalization():
             raise e_error
         else:
             return output_data
+
+
+
+    def get_ebu_loudness_info(self, file_path: str) -> dict:
+        '''
+        @brief Gets EBU loudness statistics from an audio file.
+
+        @details Gets FFmpeg loudnorm analysis without modifying or exporting the audio file.
+
+        @note Uses the loudnorm algorithm documented at https://k.ylo.ph/2016/04/04/loudnorm.html.<br>
+        Uses the FFmpeg workflow described at https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg.<br>
+        Refer to https://ffmpeg.org/ffmpeg-filters.html#loudnorm for filter documentation.<br>
+        Refer to AESTD1004_1_15_10.pdf, official document from Audio Engineering Society https://aes.org/community/technical-council/<br>
+        ffmpeg loudnorm integrated loudness target EBU R128 default: -24.0, using -16.0, which is the AES recommendation for streamed files<br>
+        ffmpeg loudnorm loudness range target EBU R128 default: 7, using 11.0 for  wider range<br>
+        ffmpeg loudnorm maximum true peak EBU R128 default: -2.0, using default for the extra headroom space vs -1.0 or 0.0<br>
+
+        @code{.text}
+        1st pass stats command to get loudnorm statistics
+        ffmpeg -hide_banner -i file_path -vn -af loudnorm=I={ILT}:TP={TP}:LRA={LRA}:print_format=json -f null -
+
+        -hide_banner; to reduce output clutter
+        -i; input file path
+        -vn; to save cycles by not dealing with video stream
+        -af loudnorm=I={ILT}:TP={TP}:LRA={LRA}:; apply loudnorm filter with constants for ILT, TP and LRA
+        print_format=json; output in json format
+        -f null -; Output to null to avoid creating an actual output file
+        @endcode
+
+        @param self {AudioNormalization} The instance of the class.
+        @param file_path {str} The path to the audio file.
+        @return {dict} FFmpeg's input integrated loudness, true peak, loudness range, and threshold.
+
+        @exception Exception A generic exception if an unexpected error occurs during the retrieval of loudnorm statistics.
+        '''
+
+        try:
+            stats_command = [
+                "ffmpeg",
+                "-hide_banner",
+                "-i", file_path,
+                "-vn",
+                "-af", (f"loudnorm=I={ILT}:TP={TP}:LRA={LRA}:"
+                        f"print_format=json"
+                        ),
+                "-f", "null", "-"
+            ]
+
+            process = subprocess_utils.subprocess_run(stats_command)
+
+            stats_data = self.__loudnorm_json_parse(process)
+            return stats_data
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting loudnorm stats for file {file_path}", stack_info=True)
+            raise e_error
 
 
     def ebu_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True) -> None:
@@ -261,13 +322,11 @@ class AudioNormalization():
                         ),
                 "-f", "null", "-"
             ]
-            data.append(stats_command)
 
             stats_pre_text = "Pre-normalization stats:"
             data.append(stats_pre_text)
 
             if show_spinner:
-                # stats_process, stats_spinner = subprocess_utils.spinner_subprocess_run(stats_text, stats_command)
                 stats_process, stats_spinner = subprocess_utils.spinner_subprocess_run(stats_command, stats_text)
                 stats_time = stats_spinner.elapsed_time
                 stats_post_text = f"Analyzed loudnorm stats in {stats_time:.2f} secs"
@@ -306,7 +365,6 @@ class AudioNormalization():
                 "-ar", str(sample_rate),
                 export_path, "-y"
             ]
-            data.append(normalize_command)
 
             post_text = "Post normalization stats:"
             data.append(post_text)
@@ -339,7 +397,7 @@ class AudioNormalization():
             results_text = result_type_text + total_time_text
 
             data.append(results_text)
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except PathInfoError as pi_error:
             raise pi_error
@@ -690,7 +748,7 @@ class AudioNormalization():
                 success_text = f"Successful peak normalization on {input_path_basename}"
 
             data.append(success_text)
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except PathInfoError as pi_error:
             raise pi_error
@@ -820,7 +878,7 @@ class AudioNormalization():
                 success_text = f"Successful rms normalization on {input_path_basename}"
 
             data.append(success_text)
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except PathInfoError as pi_error:
             raise pi_error

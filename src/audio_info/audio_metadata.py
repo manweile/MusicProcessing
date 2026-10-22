@@ -565,7 +565,7 @@ class AudioMetadata():
                 )
             mp3_file.save(v2_version=3)
 
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except MetadataTypeError as mt_error:
             raise mt_error
@@ -957,7 +957,7 @@ class AudioMetadata():
                         logger.error(f"ValueError getting info for audio file: {input_file_path} returned None", exc_info=True)
                         raise ValueError(f"ValueError getting info for audio file: {input_file_path} returned None")
 
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except ValueError as v_error:
             raise v_error
@@ -1115,7 +1115,7 @@ class AudioMetadata():
                         else:
                             data.append(f"\n{tag_file_path} has no metadata")
 
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
@@ -1168,7 +1168,7 @@ class AudioMetadata():
                 for key in sorted_list:
                     data.append(key)
 
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
@@ -1823,7 +1823,7 @@ class AudioMetadata():
                 *sorted(results["skipped_artists"])
             ]
 
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except OSError as os_error:
             logger.error(f"Exception {type(os_error).__name__} updating genres from CSV", exc_info=True)

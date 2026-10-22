@@ -464,6 +464,7 @@ class TestAudioNormalization(TestCase):
 
         test_process = self.input_process
         test_process.stderr = (
+            'metadata with braces {in tag}\n'
             '{\n'
             '\t"input_i" : "-16.52",\n'
             '\t"input_tp" : "-3.42",\n'

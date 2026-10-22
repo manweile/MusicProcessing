@@ -15,10 +15,16 @@ Logic related:
   c) Real leaks often come from references, caches, cycles with finalizes, external resources, or native extensions.
 TODO
 
-2) determine why audio_utilities.py exists
-TODO
-
-5) add write/append mode select option to create_txt function
+2) think about moving helper functionality from all classes into audio_utilities
+  a) currently have many helper functions that are really private to their classes
+    i) mostly they were because I was sanity testing via main subcommand invocation; no longer needed with unit test framework
+  b) what I want exposed as public & invocable from main are the core functions:
+    conversion, art extraction, file & dir rename & cleanup utilities, genre setting, leveling, playlists updating, some info functions
+    i) get audio files list & get file ext list are still useful
+    ii) get media info walk & get tags walk I see much less use for.
+    iii) get unique media keys I really don't see using again
+        it was a one off for development purposes
+        get tags walk with ffprobe flag gives me superset of all ffprobe tags, just not unique set
 TODO
 
 6) rethink has_art_tag logic
@@ -41,13 +47,13 @@ TODO
 9) think about get_mutagen_metadata_type
   ties into 7 an 8
   need to accommodate APE - an mp3 will solely APEv2 (don't have any yet) will return NONE in tags attribute
-  mutagen.File(file_path, easy=true) will NOT work on mp3 with APEv2 alone.
+  mutagen.File(file_path, easy=true) will NOT work on mp3 with APEv2 alone (of which I have none).
   This means any function relying on load_any_file for tags has a subtle error wrt files w only APEv2
   __set_genre
   get_mutagen_tags
   get_mutagen_metadata_type
   has_art_tag
-  normalize_*_filename
+  normalize_filename
   many places in test_audio_metadata
 TODO
 
@@ -309,3 +315,9 @@ DISPOSED:
   29) think hard about removing reliance on src/generated_files/Music/AlbumArt for setting album art
     a) still need for testing purposes, but change setting album art function to accept an art source directory
   PASS, PITA
+
+  30) determine why audio_utilities.py exists
+  COMPLETED
+
+  31) add write/append mode select option to create_txt function
+  COMPLETED

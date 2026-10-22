@@ -173,7 +173,7 @@ class TestDirectoryProcessing(TestCase):
         data.append("second text line")
         data.append("third text line")
 
-        directory.create_txt(result_filename, data, result_dir)
+        directory.create_txt(result_filename, data, result_dir, None)
 
         created_txt = os.path.join(self.result_files, result_filename + RESULT_EXT)
         created_exists = os.path.exists(created_txt)

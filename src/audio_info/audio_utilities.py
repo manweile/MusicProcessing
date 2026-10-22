@@ -26,6 +26,8 @@ from pathlib import Path                                    # for object-oriente
 from src import add_module_handler                          # for module-specific logging handlers
 
 # Local Module Constants
+from src import ILT                                         # for integrated loudness target
+from src import LRA                                         # for loudness range target
 from src import MP3_EXT                                     # for MP3 file extension
 from src import TP                                          # for true-peak normalization target
 
@@ -84,23 +86,168 @@ class AudioUtilities():
     # Normalization utilities
 
 
-    def clip_check_walk(self, tld_path: str) -> None:
+    def clip_check_file(self, file_path: str) -> None:
         '''
-        @brief Checks maximum volume and clipping for MP3 files.
+        @brief Checks for potential clipping and headroom in a single MP3 file.
 
-        @details Walks the top level directory and records volume-normalization information for each MP3 file.
+        @details Analyzes the specified MP3 file and records volume-normalization information.
 
         @param self {AudioUtilities} The instance of the class.
-        @param tld_path {str} The top level directory containing music files.
+        @param file_path {str} The path to the audio file.
         @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         data = []
+        txt_filename = inspect.currentframe().f_code.co_name
 
         true_peak = float(TP)
+
+        try:
+            _, input_file_ext = os.path.splitext(file_path)
+            if input_file_ext.lower() != MP3_EXT:
+                logger.warning(f"{file_path} is not an mp3")
+                return
+
+            data.append(f"\n{file_path}")
+
+            # Retrieve volume and loudness information for the audio file
+            volume_info = normalization.get_volume_info(file_path)
+            ebu_info = normalization.get_ebu_loudness_info(file_path)
+
+            # Check if volume information is available before proceeding with peak/rms analysis
+            if 'mean_volume' not in volume_info or 'max_volume' not in volume_info:
+                data.append("volume information unavailable")
+            else:
+                # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
+                mean_volume = float(math.floor(volume_info['mean_volume']))
+                max_volume = float(math.floor(volume_info['max_volume']))
+
+                if max_volume >= 0.0:
+                    vol_text = f"no headroom (already clipping), max volume: {max_volume:.2f} dB"
+                else:
+                    vol_text = f"headroom available, max volume: {max_volume:.2f} dB"
+
+                data.append(vol_text)
+
+                # Apply an implicit 1.0 dB buffer pad to TP target to counter mp3 lossy compression overshoots
+                target_tp = true_peak - 1.0
+                TOLERANCE = 0.2
+
+                # peak normalization lands on the target peak, so only a target above 0.0 dBFS can clip
+                if target_tp > 0.0:
+                    peak_text = f"peak clipping amount: {target_tp:.2f} dB with target peak above digital full scale"
+                elif math.isclose(max_volume, target_tp, abs_tol=TOLERANCE):
+                    peak_text = f"already at target peak: {max_volume:.2f} dB, peak normalization not needed"
+                else:
+                    peak_adjustment = target_tp - max_volume
+                    peak_text = f"peak leveling adjustment: {peak_adjustment:+.2f} dB to target peak: {target_tp:.2f} dB"
+
+                data.append(peak_text)
+
+                # Apply an implicit 1.0 dB buffer pad to TP target to counter mp3 lossy compression overshoots
+                target_tp = true_peak - 1.0
+                TOLERANCE = 0.2
+
+                # peak normalization lands on the target peak, so only a target above 0.0 dBFS can clip
+                if target_tp > 0.0:
+                    peak_text = f"peak clipping amount: {target_tp:.2f} dB with target peak above digital full scale"
+                elif math.isclose(max_volume, target_tp, abs_tol=TOLERANCE):
+                    peak_text = f"already at target peak: {max_volume:.2f} dB, peak normalization not needed"
+                else:
+                    peak_adjustment = target_tp - max_volume
+                    peak_text = f"peak leveling adjustment: {peak_adjustment:+.2f} dB to target peak: {target_tp:.2f} dB"
+
+                data.append(peak_text)
+
+                # Skip processing if the average root mean square is already hitting the target window
+                if math.isclose(mean_volume, true_peak, abs_tol=TOLERANCE):
+                    rms_text = f"already at target rms: {mean_volume:.2f} dB, rms normalization not needed"
+                else:
+                    rms_adjustment = true_peak - mean_volume
+                    rms_clip_amount = max_volume + rms_adjustment
+
+                    if rms_clip_amount > 0.0:
+                        rms_text = (
+                            f"rms clipping amount: {rms_clip_amount:.2f} dB "
+                            f"with mean volume: {mean_volume:.2f} dB, max volume: {max_volume:.2f} dB "
+                            f"and rms adjustment: {rms_adjustment:+.2f} dB"
+                        )
+                    else:
+                        rms_text = f"rms leveling adjustment: {rms_adjustment:+.2f} dB"
+
+                data.append(rms_text)
+
+            # Check if EBU loudness information is available before proceeding with ebu analysis
+            required_ebu_values = ('input_i', 'input_tp', 'input_lra')
+            if not all(value in ebu_info for value in required_ebu_values):
+                data.append("ebu loudness information unavailable")
+            else:
+                integrated_loudness = float(ebu_info['input_i'])
+                ebu_true_peak = float(ebu_info['input_tp'])
+                loudness_range = float(ebu_info['input_lra'])
+
+                if not all(math.isfinite(value) for value in (integrated_loudness, ebu_true_peak, loudness_range)):
+                    data.append("ebu loudness information unavailable")
+
+                    target_loudness = float(ILT)
+                    target_true_peak = float(TP)
+                    target_loudness_range = float(LRA)
+                    ebu_adjustment = target_loudness - integrated_loudness
+                    projected_true_peak = ebu_true_peak + ebu_adjustment
+
+                    # Determine if dynamic leveling is required based on projected true peak and loudness range
+                    dynamic_reasons = []
+                    if projected_true_peak > target_true_peak:
+                        true_peak_excess = projected_true_peak - target_true_peak
+                        dynamic_reasons.append(f"linear gain would exceed the true-peak target by {true_peak_excess:.2f} dB")
+
+                    if loudness_range > target_loudness_range:
+                        dynamic_reasons.append(
+                            f"input loudness range {loudness_range:.2f} LU exceeds the {target_loudness_range:.2f} LU target"
+                        )
+
+                    if dynamic_reasons:
+                        ebu_text = (
+                            f"ebu dynamic leveling required for {ebu_adjustment:+.2f} dB adjustment: "
+                            f"{'; '.join(dynamic_reasons)}"
+                        )
+                    elif math.isclose(ebu_adjustment, 0.0, abs_tol=0.2):
+                        ebu_text = f"already at target ebu loudness: {integrated_loudness:.2f} LUFS"
+                    else:
+                        ebu_text = (
+                            f"ebu linear leveling adjustment: {ebu_adjustment:+.2f} dB "
+                            f"to target integrated loudness: {target_loudness:.2f} LUFS"
+                        )
+
+                data.append(ebu_text)
+
+            directory.create_txt(txt_filename, data, None, None)
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} checking clipping and headroom for file {file_path}", stack_info=True)
+            raise e_error
+
+
+    def clip_check_walk(self, tld_path: str) -> None:
+        '''
+        @brief Analyzes volume and ebu loudness for MP3 files.
+
+        @details Walks the top level directory, determines what leveling techniques can be used, and records the analysis results for each MP3 file.
+
+        @param self {AudioUtilities} The instance of the class.
+        @param tld_path {str} The top level directory path that contains all the music files.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
+        @return {None} This function does not return any value.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
         txt_filename = inspect.currentframe().f_code.co_name
+
+        true_peak = float(TP)
 
         try:
             input_file_ext = None
@@ -119,315 +266,102 @@ class AudioUtilities():
                     data.append(f"\n{file_path}")
 
                     volume_info = normalization.get_volume_info(file_path)
+                    ebu_info = normalization.get_ebu_loudness_info(file_path)
 
+                    # Check if volume information is available before proceeding with analysis
                     if 'mean_volume' not in volume_info or 'max_volume' not in volume_info:
                         data.append("volume information unavailable")
-                        continue
-
-                    # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
-                    mean_volume = float(math.floor(volume_info['mean_volume']))
-                    max_volume = float(math.floor(volume_info['max_volume']))
-
-                    if max_volume >= 0.0:
-                        vol_text = f"no headroom (already clipping), max volume: {max_volume:.2f} dB"
                     else:
-                        vol_text = f"headroom available, max volume: {max_volume:.2f} dB"
+                        # want the floor so don't inadvertently cause clipping (more negative dbs are quieter)
+                        mean_volume = float(math.floor(volume_info['mean_volume']))
+                        max_volume = float(math.floor(volume_info['max_volume']))
 
-                    data.append(vol_text)
-
-                    # Apply an implicit 1.0 dB buffer pad to TP target to counter mp3 lossy compression overshoots
-                    target_tp = true_peak - 1.0
-                    TOLERANCE = 0.2
-
-                    # peak normalization lands on the target peak, so only a target above 0.0 dBFS can clip
-                    if target_tp > 0.0:
-                        peak_text = f"peak clipping amount: {target_tp:.2f} dB with target peak above digital full scale"
-                    elif math.isclose(max_volume, target_tp, abs_tol=TOLERANCE):
-                        peak_text = f"already at target peak: {max_volume:.2f} dB, peak normalization not needed"
-                    else:
-                        peak_adjustment = target_tp - max_volume
-                        peak_text = f"peak leveling adjustment: {peak_adjustment:+.2f} dB to target peak: {target_tp:.2f} dB"
-
-                    data.append(peak_text)
-
-                    # Skip processing if the average root mean square is already hitting the target window
-                    if math.isclose(mean_volume, true_peak, abs_tol=TOLERANCE):
-                        rms_text = f"already at target rms: {mean_volume:.2f} dB, rms normalization not needed"
-                    else:
-                        rms_adjustment = true_peak - mean_volume
-                        rms_clip_amount = max_volume + rms_adjustment
-
-                        if rms_clip_amount > 0.0:
-                            rms_text = (
-                                f"rms clipping amount: {rms_clip_amount:.2f} dB "
-                                f"with mean volume: {mean_volume:.2f} dB, max volume: {max_volume:.2f} dB "
-                                f"and rms adjustment: {rms_adjustment:+.2f} dB"
-                            )
+                        if max_volume >= 0.0:
+                            vol_text = f"no headroom (already clipping), max volume: {max_volume:.2f} dB"
                         else:
-                            rms_text = f"rms leveling adjustment: {rms_adjustment:+.2f} dB"
+                            vol_text = f"headroom available, max volume: {max_volume:.2f} dB"
 
-                    data.append(rms_text)
+                        data.append(vol_text)
 
-            directory.create_txt(txt_filename, data)
+                        # Apply an implicit 1.0 dB buffer pad to TP target to counter mp3 lossy compression overshoots
+                        target_tp = true_peak - 1.0
+                        TOLERANCE = 0.2
+
+                        # peak normalization lands on the target peak, so only a target above 0.0 dBFS can clip
+                        if target_tp > 0.0:
+                            peak_text = f"peak clipping amount: {target_tp:.2f} dB with target peak above digital full scale"
+                        elif math.isclose(max_volume, target_tp, abs_tol=TOLERANCE):
+                            peak_text = f"already at target peak: {max_volume:.2f} dB, peak normalization not needed"
+                        else:
+                            peak_adjustment = target_tp - max_volume
+                            peak_text = f"peak leveling adjustment: {peak_adjustment:+.2f} dB to target peak: {target_tp:.2f} dB"
+
+                        data.append(peak_text)
+
+                        # Skip processing if the average root mean square is already hitting the target window
+                        if math.isclose(mean_volume, true_peak, abs_tol=TOLERANCE):
+                            rms_text = f"already at target rms: {mean_volume:.2f} dB, rms normalization not needed"
+                        else:
+                            rms_adjustment = true_peak - mean_volume
+                            rms_clip_amount = max_volume + rms_adjustment
+
+                            if rms_clip_amount > 0.0:
+                                rms_text = (
+                                    f"rms clipping amount: {rms_clip_amount:.2f} dB "
+                                    f"with mean volume: {mean_volume:.2f} dB, max volume: {max_volume:.2f} dB "
+                                    f"and rms adjustment: {rms_adjustment:+.2f} dB"
+                                )
+                            else:
+                                rms_text = f"rms leveling adjustment: {rms_adjustment:+.2f} dB"
+
+                        data.append(rms_text)
+
+                    # Check for EBU loudness information is available before proceeding with analysis
+                    required_ebu_values = ('input_i', 'input_tp', 'input_lra')
+                    if not all(value in ebu_info for value in required_ebu_values):
+                        data.append("ebu loudness information unavailable")
+                    else:
+                        integrated_loudness = float(ebu_info['input_i'])
+                        ebu_true_peak = float(ebu_info['input_tp'])
+                        loudness_range = float(ebu_info['input_lra'])
+
+                        if not all(math.isfinite(value) for value in (integrated_loudness, ebu_true_peak, loudness_range)):
+                            data.append("ebu loudness information unavailable")
+                            continue
+
+                        target_loudness = float(ILT)
+                        target_true_peak = float(TP)
+                        target_loudness_range = float(LRA)
+                        ebu_adjustment = target_loudness - integrated_loudness
+                        projected_true_peak = ebu_true_peak + ebu_adjustment
+
+                        dynamic_reasons = []
+                        if projected_true_peak > target_true_peak:
+                            true_peak_excess = projected_true_peak - target_true_peak
+                            dynamic_reasons.append(f"linear gain would exceed the true-peak target by {true_peak_excess:.2f} dB")
+
+                        if loudness_range > target_loudness_range:
+                            dynamic_reasons.append(
+                                f"input loudness range {loudness_range:.2f} LU exceeds the {target_loudness_range:.2f} LU target"
+                            )
+
+                        if dynamic_reasons:
+                            ebu_text = (
+                                f"ebu dynamic leveling required for {ebu_adjustment:+.2f} dB adjustment: "
+                                f"{'; '.join(dynamic_reasons)}"
+                            )
+                        elif math.isclose(ebu_adjustment, 0.0, abs_tol=0.2):
+                            ebu_text = f"already at target ebu loudness: {integrated_loudness:.2f} LUFS"
+                        else:
+                            ebu_text = (
+                                f"ebu linear leveling adjustment: {ebu_adjustment:+.2f} dB "
+                                f"to target integrated loudness: {target_loudness:.2f} LUFS"
+                            )
+
+                        data.append(ebu_text)
+
+            directory.create_txt(txt_filename, data, None, None)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} while clip and max volume checking audio file: {file_path}", stack_info=True)
             raise e_error
-
-
-    def level_normalize_walk(self, tld_path: str, norm_type: str, show_spinner: bool = True) -> None:
-        '''
-        @brief Normalizes all audio files in specified top level directory per input normalization type.
-
-        @details Normalizes only MP3 files within the specified top level directory.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param tld_path {str} The top level directory path that contains all the music files.
-        @param norm_type {str} The type of normalization to perform.
-        @param show_spinner {bool} Whether to display a progress spinner.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\audio_normalize\audio_normalization.py
-        pass
-
-
-    # Art utilities
-
-
-    def extract_walk(self, start_path: str, file_pattern: str) -> None:
-        '''
-        @brief Extracts all embedded album art from audio files.
-
-        @details Extracts embedded art from m4a, mp3, and wma files.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param start_path {str} The starting point of the directory walk.
-        @param file_pattern {str} Optional, the audio file pattern we want to transform.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\audio_info\audio_art.py
-        pass
-
-
-    def set_album_art(self, input_path: str) -> None:
-        '''
-        @brief Sets album art file for an album directory.
-
-        @details Skips album directories that already contain a folder-art file.<br>
-        @details Copies a matching generated AlbumArt JPEG into the album directory when it is available.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param input_path {str} The full path to album directory.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\audio_info\audio_art.py
-        pass
-
-
-    # Metadata utilities
-
-
-    def convert_walk(self, start_path: str, file_pattern: str, show_spinner: bool = True) -> None:
-        '''
-        @brief Converts all audio files found in specified path to mp3 format.
-
-        @details Converts matching audio files after the caller verifies the start path.<br>
-        Uses a progress spinner when requested.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param start_path {str} The starting point of the directory walk.
-        @param file_pattern {str} Optional, the audio file pattern we want to transform.
-        @param show_spinner {bool} Whether to display a progress spinner.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\audio_info\audio_metadata.py
-        pass
-
-
-    def create_album_dirs(self, start_path: str) -> None:
-        '''
-        @brief Creates an album sub-directory in an artist directory.
-
-        @details Requires the caller to verify the start path.<br>
-        @details Creates an album subdirectory for each artist when needed.<br>
-        @details Derives each directory name from album metadata.<br>
-        @details Creates a CSV file of audio paths, album metadata values, and sanitized album directory names.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param start_path {str} The tld holding music files.
-        @return {None} This function does not return any value.
-
-        @exception ValidationError A pathlib module validation error occurred.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\audio_info\audio_metadata.py
-        pass
-
-
-    def get_media_info_walk(self, start_path: str, file_pattern: str) -> None:
-        '''
-        @brief Saves FFprobe media information for audio files.
-
-        @details Walks the input path and saves codec, duration, size, and bitrate information for matching audio files.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param start_path {str} The starting point of the directory walk.
-        @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
-        @return {None} This function does not return any value.
-
-        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\audio_info\audio_metadata.py
-        pass
-
-
-    def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe: bool = False) -> None:
-        '''
-        @brief Gets tags for audio files and saves to file.
-
-        @details Skips non-audio files such as playlists and JPEGs.<br>
-        @details Does not match a non-audio extension pattern.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param file_path {str} The starting point of the directory walk.
-        @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
-        @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\audio_info\audio_metadata.py
-        pass
-
-
-    def get_unique_media_keys(self, file_path: str) -> None:
-        '''
-        @brief Gets set of ffprobe keys and saves to file.
-
-        @details Walks from starting path and saves set of unique metadata keys found by ffprobe.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param file_path {str} The starting point of the directory walk.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\audio_info\audio_metadata.py
-        pass
-
-
-    # Playlist utilities
-
-
-    def update_walk(self, tld_path: str) -> None:
-        '''
-        @brief Updates playlists relative pathing.
-
-        @details Finds playlists under the top level directory and updates their relative paths.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param tld_path {str} The top level directory where playlist and music files are located.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\audio_info\audio_playlist.py
-        pass
-
-
-    # Directory utilities
-
-
-    def get_audio_file_list(self, start_path: str) -> None:
-        '''
-        @brief Generates a csv containing full path for all audio files.
-
-        @details Requires the music top level directory when no start path is provided.<br>
-        @details Creates the CSV file in the generated-files directory.<br>
-        @details Includes full audio-file paths and file extensions.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param start_path {str} Optional, the starting point of the directory walk.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\dir_processing\directory_processing.py
-        pass
-
-
-    def get_ext_file_list(self, file_ext: str, start_path: str) -> None:
-        '''
-        @brief Wrapper for function that generates a csv containing full file path for an extension.
-
-        @details Requires the music top level directory when no start path is provided.<br>
-        @details Uses the preset audio-type list when no file extension is supplied.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param file_ext {str} Optional file extension without a period prefix.
-        @param start_path {str} Optional starting point of the directory walk.
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\dir_processing\directory_processing.py
-        pass
-
-
-    def remove_empty_albums(self, start_path: str) -> None:
-        '''
-        @brief Removes empty album directories.
-
-        @details Removes empty second-level album directories within artist directories.<br>
-        @details Requires the music top level directory when no start path is provided.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param start_path {str} The starting point of the directory walk.
-        @return {None} This function does not return any value.
-
-        @exception OSError A system related error occurred.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\dir_processing\directory_processing.py
-        pass
-
-
-    def remove_pattern(self, start_path: str, file_pattern: str) -> None:
-        '''
-        @brief Removes file matching specified pattern.
-
-        @details Removes files matching the specified pattern beneath the top level directory.<br>
-        @details Requires the music top level directory when no start path is provided.
-
-        @param self {AudioUtilities} The instance of the class.
-        @param start_path {str} Optional, the starting point of the directory walk.
-        @param file_pattern {str} The file pattern we want to delete.
-        @return {None} This function does not return any value.
-
-        @exception OSError A system related error occurred.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        # D:\MusicProcessing\src\dir_processing\directory_processing.py
-        pass

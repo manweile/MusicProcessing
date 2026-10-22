@@ -208,9 +208,9 @@ class CustomArgumentParser(argparse.ArgumentParser):
 # @{
 def clip_check_walk(tld_path):
     '''
-    @brief Checks all audio files in specified top level directory for clipping.
+    @brief Checks peak, RMS, and EBU R128 leveling for audio files in a directory.
 
-    @details Walks through the top level directory and checks all audio files for clipping.
+    @details Reports peak and RMS clipping estimates and whether EBU leveling can use linear normalization.
 
     @param tld_path {str} The top level directory path that contains all the music files.
     '''
@@ -732,7 +732,7 @@ if __name__ == "__main__":
         # clip-check-walk "D:\MusicProcessing\tests\Music"
         # clip-check-walk "D:\MusicProcessing\tests\Music\Abba"
         # clip-check-walk "D:\MusicProcessing\tests\Music\Abba\Waterloo"
-        clip_check_walk_parser = subparsers.add_parser("clip-check-walk", help="Check max volume and clip level of audio files")
+        clip_check_walk_parser = subparsers.add_parser("clip-check-walk", help="Check peak, RMS, and EBU R128 leveling options for audio files")
         clip_check_walk_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld/sld")
         clip_check_walk_parser.set_defaults(func=clip_check_walk)
 

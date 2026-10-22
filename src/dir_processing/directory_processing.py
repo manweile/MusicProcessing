@@ -137,7 +137,7 @@ class DirectoryProcessing():
             raise e_error
 
 
-    def create_txt(self, txt_filename: str, data: list, txt_dir: str | None = None) -> None:
+    def create_txt(self, txt_filename: str, data: list, txt_dir: str | None = None, text_mode: str | None = None) -> None:
         '''
         @brief Creates a text file.
 
@@ -160,7 +160,10 @@ class DirectoryProcessing():
             txt_path = os.path.join(txt_dir, txt_filename + RESULT_EXT)
 
             # need to overwrite cause expecting many runs
-            txt_outfile = open(txt_path, mode='w', encoding=UTF8, newline='')
+            if text_mode is None:
+                text_mode = 'w'
+
+            txt_outfile = open(txt_path, mode=text_mode, encoding=UTF8, newline='')
             for item in data:
                 txt_outfile.write(f"{item}\n")
 
@@ -289,7 +292,7 @@ class DirectoryProcessing():
             txt_data.append(f"Found {other_count} non-audio files")
 
             txt_data.append(f"Found {tot_count} total files")
-            self.create_txt(txt_filename, txt_data, None)
+            self.create_txt(txt_filename, txt_data, None, None)
 
         except MusicProcessingError as mp_error:
             raise mp_error
