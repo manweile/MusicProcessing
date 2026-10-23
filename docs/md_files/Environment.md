@@ -6,13 +6,14 @@
 
 This project will use VS Code and Python, Ffmpeg and Mutagen.
 
-I use VS Code because it's the devil I know and like. I have used it professionally and privately for 10 years and counting.<br>
-Python is a great compromise between ease of use and capability. I have also used it professionally and privately for 10 years and counting.<br>
+I use VS Code because it's the devil I know and like.<br>
+I have used it professionally and privately since 2016.<br>
+Python is a great compromise between ease of use and capability.<br>
 Ffmpeg/Ffprobe/Mutagen are the troika this project uses for the heavy lifting.
 
 ## Git For Windows
 
-[Git for Windows](https://gitforwindows.org/) offers a lightweight, native set of tools, bringing the full feature set of the Git SCM to Windows.<br>
+[Git for Windows](https://gitforwindows.org/) offers a lightweight set of tools, bringing the full feature set of the Git SCM to Windows.<br>
 Provides appropriate user interfaces for experienced Git users and novices alike.
 
 ## Python
@@ -65,6 +66,12 @@ The "Engine" — used to manipulate, edit, and convert media files.
 ### FFPROBE
 
 The "Inspector" — used to look inside media files and gather technical data.
+
+## Mutagen
+
+[Mutagen](https://mutagen.readthedocs.io/en/latest/) Mutagen is a Python module to handle audio metadata.<br>
+It supports ASF (wma), FLAC, MP4 (m4a), and MP3 audio files. All versions of ID3v2 are supported.<br>
+It works with Python 3.10+ on Linux, Windows and macOS, and has no dependencies outside the Python standard library.
 
 ## VS Code Setup
 

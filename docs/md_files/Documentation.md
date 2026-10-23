@@ -18,15 +18,12 @@ Source and documentation: [Doxygen](https://www.doxygen.nl)
 
 Graphviz is open source graph visualization software.<br>
 Graph visualization is a way of representing structural information as diagrams of abstract graphs and networks.<br>
-It has important applications in networking, bioinformatics, software engineering, database and web design, machine learning,
-and in visual interfaces for other technical domains.<br>
 Source and documentation: [Graphviz](https://graphviz.org/)
 
 ## Download
 
 Windows installer: [Doxygen Download Page](https://www.doxygen.nl/download.html) to install Doxygen on your system.<br>
-Windows installer: [Graphviz](https://graphviz.org/download/) if you want Doxygen to generate class hierarchy
-and collaboration diagrams using the HAVE_DOT option.
+Windows installer: [Graphviz](https://graphviz.org/download/) if you want Doxygen to generate diagrams using the HAVE_DOT option.
 
 ## Install Steps
 
@@ -360,15 +357,16 @@ The secret, according to Google, is using invisible HTML comments or standard Ma
 
 ### Steps
 
-1. in root README.md, as first line, `<!-- @mainpage Music Processing Project -->`. Lets Doxygen know this is the homepage.
-2. to link the sub-pages, add `* [MD Title](relpath/to/markdown.md) <!-- @subpage md_title -->` to create a list.
+1. in root README.md, as your first 2nd level heading, add something like `## Documentation Index`.
+2. to link the sub-pages, add `[MD Title](relpath/to/markdown.md) <!-- @subpage md_title -->` to create a list.
    1. add as many as you have sub-pages you want in Doxygen output.
-   2. the `* [MD Title](path/to/markdown.md)` is standard markdown hyperlink to enable native file navigation on GitHub
+   2. the `[MD Title](path/to/markdown.md)` is standard markdown hyperlink to enable native file navigation on GitHub
    3. the `<!-- @subpage md_title -->` is embedded Doxygen `@subpage` command enclosed in HTML comment to structure the hosted sidebar tree hierarchy.
    4. GitHub renders the visible link text while ignoring the HTML comment,
    whereas the Doxygen compiler parses the comment tags to nest the target page hierarchically
-3. For every sub-page markdown, as the first line, add matching Doxygen ID: `<!-- @page md_title MD Title -->`
-   1. where `md_title` matches the `@subpage` ID and `MD Title` matches the `[MD Title]` hyperlink title from the sub-page link in README.md footer.
+3. For every sub-page markdown, as the top level heading, add a custom anchor ID `# MD Title {#md_title}`
+   1. where `md_title` matches the `@subpage` ID from the sub-page link in README.md list.
+   2. where `MD Title` matches the `[MD Title]` hyperlink title from the sub-page link in README.md list.
 4. Finalize Doxyfile Settings
    1. Include README.md and sub-page markdown files in INPUT TAG
    2. Point Doxygen to your README as the base index: `USE_MDFILE_AS_MAINPAGE = PATH/TO/README.md`

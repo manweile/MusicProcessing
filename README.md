@@ -6,9 +6,10 @@
 
 1. [Project Environment](docs/md_files/Environment.md) <!-- @subpage project_environment -->
 2. [Example Scripts](docs/md_files/Examples.md) <!-- @subpage example_scripts -->
-3. [API Documentation](docs/md_files/Documentation.md) <!-- @subpage api_documentation -->
-4. [Unit Testing](docs/md_files/Testing.md) <!-- @subpage unit_testing -->
-5. [Project Workflow](docs/md_files/Workflow.md) <!-- @subpage project_workflow -->
+3. [Command Lines](docs/md_files/Commands.md) <!-- @subpage command_lines -->
+4. [API Documentation](docs/md_files/Documentation.md) <!-- @subpage api_documentation -->
+5. [Unit Testing](docs/md_files/Testing.md) <!-- @subpage unit_testing -->
+6. [Project Workflow](docs/md_files/Workflow.md) <!-- @subpage project_workflow -->
 
 ## Purpose
 
@@ -81,9 +82,6 @@ subcommands:
     get-tags-walk tld --pattern pattern --ffprobe ffprobe   Get text list of audio files metadata tags;
                                                             mandatory: start path tld/fld;
                                                             optional: file ext {.flac|.mp3|.m4a|.wma}; optional: use ffprobe True
-
-    get-unique-media-keys tld                               Get text list of audio files unique ffprobe keys;
-                                                            mandatory: start path tld/fld
 
     level-normalize-walk tld type --target target           Level normalize files per type;
                                                             mandatory: start path tld/fld; mandatory: level type {ebu|peak|rms};

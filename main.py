@@ -206,6 +206,18 @@ class CustomArgumentParser(argparse.ArgumentParser):
 
 ## @name Subcommand Handlers
 # @{
+def clip_check_file(file_path):
+    '''
+    @brief Checks peak, RMS, and EBU R128 leveling for a single audio file.
+
+    @details Reports peak and RMS clipping estimates and whether EBU leveling can use linear normalization.
+
+    @param file_path {str} The full path to the audio file.
+    '''
+
+    utilities.clip_check_file(file_path)
+
+
 def clip_check_walk(tld_path):
     '''
     @brief Checks peak, RMS, and EBU R128 leveling for audio files in a directory.
@@ -549,6 +561,10 @@ def main(args) -> None:
     '''
 
     try:
+        if args.subcommand == "clip-check-file":
+            file_path = getattr(args, "file")
+            clip_check_file(file_path)
+
         if args.subcommand == "clip-check-walk":
             tld_path = getattr(args, "tld")
             clip_check_walk(tld_path)
@@ -727,11 +743,19 @@ if __name__ == "__main__":
         parser = CustomArgumentParser(description='Music Processing')
         subparsers = parser.add_subparsers(title="subcommands", dest="subcommand", metavar="command")
 
+        # check peak, RMS, and EBU R128 leveling for a single audio file
+        # 1 mandatory arg, the audio file path
+        # clip-check-file "D:\MusicProcessing\tests\Music\Abba\Waterloo\Abba-Waterloo.mp3"
+        clip_check_file_parser = subparsers.add_parser("clip-check-file", help="Check peak, RMS, and EBU R128 leveling for a single audio file")
+        clip_check_file_parser.add_argument("file", type=existing_file, help="mandatory audio file path")
+        clip_check_file_parser.set_defaults(func=clip_check_file)
+
         # check max volume and clip level of audio files
         # 1 mandatory arg, the start path (can be tld, fld, or sld)
         # clip-check-walk "D:\MusicProcessing\tests\Music"
         # clip-check-walk "D:\MusicProcessing\tests\Music\Abba"
         # clip-check-walk "D:\MusicProcessing\tests\Music\Abba\Waterloo"
+        # clip-check-walk "D:\MusicProcessing\tests\Music\The Lord of the Rings"
         clip_check_walk_parser = subparsers.add_parser("clip-check-walk", help="Check peak, RMS, and EBU R128 leveling options for audio files")
         clip_check_walk_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld/sld")
         clip_check_walk_parser.set_defaults(func=clip_check_walk)

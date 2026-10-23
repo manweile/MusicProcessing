@@ -60,11 +60,9 @@ from src import ASF_TYPE                                    # for ASF audio file
 from src import FLAC_TYPE                                   # for FLAC audio file type
 from src import FOLDER_ART                                  # for folder artwork paths
 from src import FLAC_EXT                                    # for FLAC file extension
-from src import M4A_EXT                                     # for M4A file extension
 from src import MP3_EXT                                     # for MP3 file extension
 from src import MP3_TYPE                                    # for MP3 audio file type
 from src import MP4_TYPE                                    # for MP4 audio file type
-from src import WMA_EXT                                     # for WMA file extension
 
 # Local Module Errors
 from src import MetadataTypeError                           # for handling metadata type errors
@@ -520,7 +518,7 @@ class AudioMetadata():
                 tags = None
 
             # get the input file info - want bitrate so can preserve the quality in exported file
-            media_info = self.get_ffprobe_media_info(file_path)
+            media_info = self.get_media_info(file_path)
             bitrate = media_info['bit_rate']
 
             command = [
@@ -588,7 +586,7 @@ class AudioMetadata():
 
         @param self {AudioMetadata} The instance of the class.
         @param start_path {str} The starting point of the directory walk.<br>
-        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
         @param target {str} Optional, the target directory for exported files. Defaults to None.
         @param show_spinner {bool} Optional, whether to display a spinner during conversion. Defaults to True.
@@ -790,7 +788,7 @@ class AudioMetadata():
             return tags
 
 
-    def get_ffprobe_media_info(self, file_path: str) -> dict:
+    def get_media_info(self, file_path: str) -> dict:
         r'''
         @brief Returns dictionary with media info.
 
@@ -910,7 +908,7 @@ class AudioMetadata():
         '''
         @brief Gets media info (codec, duration, size, bitrate...) for audio files and saves to file.
 
-        @details Wrapper function for `get_ffprobe_media_info` to walk through the directory tree and get media information for audio files.<br>
+        @details Wrapper function for `get_media_info` to walk through the directory tree and get media information for audio files.<br>
         The collected information is stored in a list and can be saved to a file.
 
         @param self {AudioMetadata} The instance of the class.
@@ -944,7 +942,7 @@ class AudioMetadata():
 
                     input_file_path = os.path.join(dir_path, file)
 
-                    media_info = self.get_ffprobe_media_info(input_file_path)
+                    media_info = self.get_media_info(input_file_path)
                     if media_info:
                         file_msg = f"\n{input_file_path} has {len(media_info)} keys"
                         data.append(file_msg)
@@ -1626,7 +1624,7 @@ class AudioMetadata():
 
         @param self {AudioMetadata} The instance of the class.
         @param start_path {str} The path to the directory to start walking from.<br>
-        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
         @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.

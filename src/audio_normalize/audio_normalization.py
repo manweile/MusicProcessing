@@ -160,7 +160,7 @@ class AudioNormalization():
 
 
 
-    def get_ebu_loudness_info(self, file_path: str) -> dict:
+    def get_ebu_loudness_info(self, file_path: str, show_spinner: bool = True) -> dict:
         '''
         @brief Gets EBU loudness statistics from an audio file.
 
@@ -188,6 +188,7 @@ class AudioNormalization():
 
         @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The path to the audio file.
+        @param show_spinner {bool} Whether to display a spinner while retrieving statistics.
         @return {dict} FFmpeg's input integrated loudness, true peak, loudness range, and threshold.
 
         @exception Exception A generic exception if an unexpected error occurs during the retrieval of loudnorm statistics.
@@ -205,9 +206,13 @@ class AudioNormalization():
                 "-f", "null", "-"
             ]
 
-            process = subprocess_utils.subprocess_run(stats_command)
+            if show_spinner:
+                stats_text = "Retrieving loudnorm statistics"
+                stats_process, _ = subprocess_utils.spinner_subprocess_run(stats_command, stats_text)
+            else:
+                stats_process = subprocess_utils.subprocess_run(stats_command)
 
-            stats_data = self.__loudnorm_json_parse(process)
+            stats_data = self.__loudnorm_json_parse(stats_process)
             return stats_data
 
         except Exception as e_error:
@@ -441,6 +446,7 @@ class AudioNormalization():
                 file_path
             ]
 
+            # ffprobe runs command fast enough that a spinner toast is not needed
             result = subprocess_utils.subprocess_run(command)
 
             # unlike ffmpeg, ffprobe does use stdout
@@ -500,6 +506,7 @@ class AudioNormalization():
                 file_path
             ]
 
+            # ffprobe runs command fast enough that a spinner toast is not needed
             result = subprocess_utils.subprocess_run(command)
 
             # unlike ffmpeg, ffprobe does use stdout
@@ -562,6 +569,7 @@ class AudioNormalization():
                 '-f', 'null', '-'
             ]
 
+            # ffmpeg runs the volumedetect command fast enough that spinner toast not needed
             process = subprocess_utils.subprocess_run(command)
 
             # ffmpeg sends its output to stderr, not stdout

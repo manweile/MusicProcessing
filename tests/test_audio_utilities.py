@@ -31,6 +31,7 @@ from tests import TESTS_TLD                                 # for audio utility 
 
 # Local Module Classes
 from src.audio_info import AudioUtilities                   # for utility functionality under test
+from src.audio_info.audio_utilities import normalization    # for test-specific loudness configuration
 
 ## @var utilities
 # @brief AudioUtilities instance under test.
@@ -50,7 +51,8 @@ class TestAudioUtilities(TestCase):
         '''
         @brief Run clip_check_walk on one fake mp3 with mocked loudness information.
 
-        @details Creates a temporary directory with a single fake MP3 file and runs the clip check on it.
+        @details Creates a temporary directory with a single fake MP3 file and runs the clip check on it.<br>
+        Using mocked volume and EBU loudness information is easier than creating actual audio with specific characteristics.
 
         @param self {TestAudioUtilities} The instance of the test class.
         @param volume_info {dict} Mocked volume information returned for the file.
@@ -58,26 +60,39 @@ class TestAudioUtilities(TestCase):
         @return report {str} The report lines joined by newlines.
         '''
 
+        # Ensure EBU info is set to default if not provided
         if ebu_info is None:
             ebu_info = {'input_i': -20.0, 'input_tp': -10.0, 'input_lra': 5.0}
 
         with tempfile.TemporaryDirectory() as tmp_dir:
-            open(os.path.join(tmp_dir, "song.mp3"), "w").close()
+            # Create an empty fake MP3 file for testing
+            fake_mp3 = os.path.join(tmp_dir, "song.mp3")
+            open(fake_mp3, "w").close()
 
+            # Define the paths to the functions that will be mocked during the test
             get_volume_info_path = "src.audio_info.audio_utilities.normalization.get_volume_info"
             get_ebu_info_path = "src.audio_info.audio_utilities.normalization.get_ebu_loudness_info"
             create_txt_path = "src.audio_info.audio_utilities.directory.create_txt"
-            with patch(get_volume_info_path, return_value=volume_info), \
-                    patch(get_ebu_info_path, return_value=ebu_info), \
-                    patch(create_txt_path) as create_txt:
+
+            # Prepare the patch objects for mocking the utility functions
+            patch_volume_info = patch(get_volume_info_path, return_value=volume_info)
+            patch_ebu_info = patch(get_ebu_info_path, return_value=ebu_info)
+            patch_create_txt = patch(create_txt_path)
+
+            # Patch the volume info, EBU info, and create_txt functions to control their behavior during the test
+            with patch_volume_info, patch_ebu_info, patch_create_txt as create_txt:
                 utilities.clip_check_walk(tmp_dir)
 
-        return "\n".join(create_txt.call_args[0][1])
+        # Retrieve the mock report content from the create_txt call arguments
+        mock_report = create_txt.call_args[0][1]
+        format_report = "\n".join(mock_report)
+
+        return format_report
 
 
     def test_clip_check_walk(self):
         '''
-        @brief Test clipping and maximum-volume analysis over a directory walk.
+        @brief Test for potential clipping and headroom analysis over a directory walk.
 
         @details Verifies the utility processes all audio fixtures in the top-level music directory.
 
@@ -88,10 +103,18 @@ class TestAudioUtilities(TestCase):
 
         # walk through audio test fixtures in the top-level music directory
         converted_tld = TESTS_TLD
-        utilities.clip_check_walk(converted_tld)
+        get_ebu_loudness_info = normalization.get_ebu_loudness_info
+
+        # Patch the get_ebu_loudness_info function to control its behavior during the test
+        with patch.object(
+            normalization,
+            "get_ebu_loudness_info",
+            side_effect=lambda file_path: get_ebu_loudness_info(file_path, show_spinner=False)
+        ):
+            utilities.clip_check_walk(converted_tld)
 
         #  verify output txt file exists
-        txt_filename = "clip_check_walk"
+        txt_filename = "clip_check_file"
         output_path = os.path.join(GENERATED_PATH, RESULT_DIR, f"{txt_filename}{RESULT_EXT}")
         self.assertTrue(os.path.exists(output_path))
 
@@ -99,10 +122,17 @@ class TestAudioUtilities(TestCase):
         with open(output_path, "r") as f:
             content = f.read()
 
-        self.assertIn("max volume", content)
-        self.assertIn("peak", content)
-        self.assertIn("rms", content)
-        self.assertIn("ebu", content)
+        self.assertIn("headroom available", content)
+        self.assertIn("no headroom", content)
+
+        self.assertIn("peak leveling adjustment", content)
+        self.assertIn("already at target peak", content)
+
+        self.assertIn("rms leveling adjustment", content)
+        self.assertIn("rms clipping amount", content)
+
+        self.assertIn("ebu dynamic leveling required", content)
+        self.assertIn("ebu linear leveling adjustment", content)
 
 
     def test_clip_check_leveling(self):
@@ -131,6 +161,8 @@ class TestAudioUtilities(TestCase):
         '''
         @brief Test a file already clipping is reported as having no headroom.
 
+        @details Verifies that when a file is already clipping, the function reports no headroom and indicates the necessary adjustments.
+
         @test Edge case.
 
         @param self {TestAudioUtilities} The instance of the test class.
@@ -146,6 +178,8 @@ class TestAudioUtilities(TestCase):
     def test_clip_check_already_at_target(self):
         '''
         @brief Test files within tolerance of the targets are reported as not needing normalization.
+
+        @details Verifies when the file is already at target levels, function reports it correctly without suggesting further normalization.
 
         @test Edge case.
 
@@ -181,6 +215,8 @@ class TestAudioUtilities(TestCase):
         '''
         @brief Test EBU leveling reports when all EBU targets are already met.
 
+        @details Verifies that when all EBU targets are already met, the function reports it correctly without suggesting further normalization.
+
         @test Edge case.
 
         @param self {TestAudioUtilities} The instance of the test class.
@@ -215,6 +251,8 @@ class TestAudioUtilities(TestCase):
     def test_clip_check_missing_volume_info(self):
         '''
         @brief Test a file with no volume information is reported and skipped without error.
+
+        @details Verifies that when no volume information is available, the function reports it and skips processing without raising an error.
 
         @test Edge case.
 

@@ -79,6 +79,7 @@ I am using file explorer/file manager for the transfers - don't have a function 
 #### Naming
 
 I use the Windows invalid character set, it's more restrictive and therefore OS agnostic; you can use it on Linux & Mac.<br>
+Any of these characters need to be replaced.
 
 1. less than
 2. greater than
@@ -616,12 +617,14 @@ Leveling normalization decreases that perceived volume change. The caveat: **you
 All of the distinct single file level normalization functions and the leveling walk function have optional/default target invocations.<br>
 Whichever you use, it's up to you to move the leveled files if you are processing them any further.
 
-There are 3 level normalization types:
+### Analyze Volume Normalization Information
+
+You may want to run the `clip-check-file` or `clip-check-walk` functions *before* running any leveling.<br>
+The functions output a list, `clip-check-file.txt` in `/MusicProcessing/src/generated_files/result_files/`.
 
 ### EBU R128
 
-I am using the the ffmpeg loudnorm filter, which is the EBU R128 international broadcast audio standard.<br>
-It replaces traditional peak normalization with perceived loudness normalization to create a consistent listening experience.
+I am using the the ffmpeg loudnorm filter, which is the EBU R128 international broadcast audio standard
 
 The loudnorm algorithm goes like this:<br>
 Measure the integrated loudness of the source file, calculate an appropriate offset gain, and then apply makeup gain.<br>
@@ -635,6 +638,8 @@ Refer to:<br>
 [Loudness Normalization](https://k.ylo.ph/2016/04/04/loudnorm.html),<br>
 [FFMPEG Loudnorm Filter](https://ffmpeg.org/ffmpeg-filters.html#loudnorm), and<br>
 AESTD1004_1_15_10.pdf, official document from [Audio Engineering Society]( https://aes.org/community/technical-council/)
+
+Use ebu volume normalization when you want perceived loudness normalization to create a consistent listening experience.
 
 command line with target:  `python main.py ebu-file "Drive:/path/to/audio file" --target "Drive:/path/to/target"`<br>
 command line without target:  `python main.py ebu-file "Drive:/path/to/audio file"`
@@ -693,7 +698,22 @@ command line: `python main.py update-walk "Drive:/path/to/tld"`
 
 These information functions generate a file (csv and/or txt).<br>
 The files are in the special `/MusicProcessing/src/generated_files/` directory, under `csv_file/`s and/or `result_files/`.<br>
-Any previous output files are overwritten, so save previous versions if you want to preserve history *before* running an information function.
+Any previous output files *may* be overwritten, so save previous versions if you want to preserve history *before* running an information function.
+
+#### clip-check-file & clip-check-walk
+
+`clip-check-file` analyzes the specified MP3 file and returns volume normalization information in a file.<br>
+The file, `clip-check-file.txt`, will be in `/MusicProcessing/src/generated_files/result_files/`.<br>
+Subsequent executions will overwrite any extant `clip-check-file.txt` file.
+
+command line: `python main.py clip-check-file "Drive:/path/to/audio file"`
+
+`clip-check-walk` is the directory walking wrapper around `clip-check-file`.<br>
+Subsequent executions will append to any extant `clip-check-file.txt` file.
+
+Works with tld (top) and fld (artist), but not sld (album) path input.
+
+command line: `python main.py clip-check-walk "Drive:/path/to/tld/or fld"`<br>
 
 #### get-media-info-walk
 
@@ -711,8 +731,7 @@ command lines:<br>
 
 Generates get-tags-walk.txt containing all metadata tags from audio files.<br>
 Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. No pattern retrieves from all file types.<br>
-Has optional flag `--ffprobe True` to get ffprobe metadata instead of Mutagen.<br>
-Defaults to getting Mutagen metadata tags.
+Defaults to getting Mutagen metadata tags first, with fallback to ffprobe tags if there are no Mutagen tags.
 
 Works with tld (top) and fld (artist), but not sld (album) path input.
 
@@ -721,14 +740,6 @@ command lines:<br>
 `python main.py get-tags-walk "Drive:/path/to/tld/or fld" --pattern .flac`<br>
 `python main.py get-tags-walk "Drive:/path/to/tld/or fld" --pattern .flac --ffprobe True`<br>
 `python main.py get-tags-walk "Drive:/path/to/tld/or fld" --ffprobe True`
-
-#### get-unique-media-keys
-
-Generates get-unique-media-keys.txt containing all unique ffprobe metadata tags from audio files.
-
-Works with tld (top) and fld (artist), but not sld (album) path input.<br>
-
-command line: `python main.py get-unique-media-keys "Drive:/path/to/tld/or fld"`
 
 #### get-audio-file-list
 

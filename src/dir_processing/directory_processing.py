@@ -147,6 +147,7 @@ class DirectoryProcessing():
         @param txt_filename {str} Base filename without the text-file extension.
         @param data {list} Items to write as individual text-file lines.
         @param txt_dir {str} Optional path for txt file.
+        @param text_mode {str} Optional text mode for writing the file.
         @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
@@ -310,7 +311,7 @@ class DirectoryProcessing():
 
         @param self {DirectoryProcessing} The instance of the class.
         @param start_path {str} The starting point of the directory walk; tld, fld, and sld all supported.<br>
-        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).s
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
         @param file_pattern {str} Optional file extension pattern for matching file paths.
         @return {None} This function does not return any value.
 
@@ -499,7 +500,7 @@ class DirectoryProcessing():
 
         @param self {DirectoryProcessing} The instance of the class.
         @param start_path {str} The starting point of the directory walk.<br>
-        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
@@ -558,7 +559,7 @@ class DirectoryProcessing():
 
         @param self {DirectoryProcessing} The instance of the class.
         @param start_path {str} The starting point of the directory walk.<br>
-        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
         @param file_pattern {str} The file pattern we want to delete.
         @return {None} This function does not return any value.
 
@@ -616,7 +617,7 @@ class DirectoryProcessing():
 
         @param self {DirectoryProcessing} The instance of the class.
         @param start_path {str} The starting point of the directory walk.<br>
-        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
         @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.

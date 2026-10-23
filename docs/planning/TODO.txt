@@ -27,6 +27,10 @@ TODO
         get tags walk with ffprobe flag gives me superset of all ffprobe tags, just not unique set
 TODO
 
+3) refactor get-tags-walk to default try mutagen tags 1st, then auto fallback to ffprobe
+  a) ie take out the ffprobe optional flag
+TODO
+
 6) rethink has_art_tag logic
   a) why call get_any_tags before checking if input file is FLAC?
 TODO
