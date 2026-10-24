@@ -554,6 +554,8 @@ class TestAudioMetadata(TestCase):
                 self.assertTrue(len(tags_list) == 9)
             elif src_file == TEST_WMA_CCR:
                 self.assertTrue(len(tags_list) == 30)
+            elif src_file == TEST_FLAC_CREAM_BADGE:
+                self.assertTrue(len(tags_list) == 22)
 
 
     def test_get_any_tags_wo_metadata(self):
@@ -955,29 +957,6 @@ class TestAudioMetadata(TestCase):
         self.assertIn(f"{self.flac_line} has 22 FLAC tags\n", lines)
 
 
-    def test_get_unique_media_keys(self):
-        '''
-        @brief Tests getting an unique set of metadata keys for audio files in specified path.
-
-        @details The function should correctly retrieve a unique set of metadata keys for all audio files in the specified path.
-
-        @test Happy path.
-
-        @param self {TestAudioMetadata} The instance of the test class.
-        '''
-
-        txt_filename = "get_unique_media_keys" + RESULT_EXT
-        txt_path = os.path.join(self.txt_dir, txt_filename)
-
-        metadata.get_unique_media_keys(TESTS_TLD)
-
-        with open(txt_path, "r") as f:
-            lines = f.readlines()
-
-        self.assertGreater(len(lines), 1)
-        self.assertIn(f"Unique keys for audio files in {TESTS_TLD}\n", lines)
-
-
     def test_has_art_tag_true(self):
         '''
         @brief Tests checking if an audio file has an embedded album art tag.
@@ -989,8 +968,15 @@ class TestAudioMetadata(TestCase):
         @param self {TestAudioMetadata} The instance of the test class.
         '''
 
-        has_art = metadata.has_art_tag(TEST_MP3_CRUSH)
-        self.assertTrue(has_art)
+        flac_has_art = metadata.has_art_tag(TEST_FLAC_CREAM)
+        mp3_has_art = metadata.has_art_tag(TEST_MP3_CRUSH)
+        m4a_has_art = metadata.has_art_tag(TEST_M4A_DAVIS)
+        wma_has_art = metadata.has_art_tag(TEST_WMA_JOHN)
+
+        self.assertTrue(flac_has_art)
+        self.assertTrue(mp3_has_art)
+        self.assertTrue(m4a_has_art)
+        self.assertTrue(wma_has_art)
 
 
     def test_has_art_tag_false(self):

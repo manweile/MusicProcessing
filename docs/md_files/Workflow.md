@@ -715,32 +715,6 @@ Works with tld (top) and fld (artist), but not sld (album) path input.
 
 command line: `python main.py clip-check-walk "Drive:/path/to/tld/or fld"`<br>
 
-#### get-media-info-walk
-
-Generates get-media-info-walk.txt containing ffprobe media info for audio files.<br>
-Media info is codec, duration, size, bitrate, ..., etc, *not* album, artist, album_artist, ..., etc.<br>
-Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. No pattern retrieves from all file types.
-
-Works with tld (top) and fld (artist), but not sld (album) path input.
-
-command lines:<br>
-`python main.py get-media-info-walk "Drive:/path/to/tld/or fld"`<br>
-`python main.py get-media-info-walk "Drive:/path/to/tld/or fld" --pattern .flac`<br>
-
-#### get-tags-walk
-
-Generates get-tags-walk.txt containing all metadata tags from audio files.<br>
-Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. No pattern retrieves from all file types.<br>
-Defaults to getting Mutagen metadata tags first, with fallback to ffprobe tags if there are no Mutagen tags.
-
-Works with tld (top) and fld (artist), but not sld (album) path input.
-
-command lines:<br>
-`python main.py get-tags-walk "Drive:/path/to/tld/or fld"`<br>
-`python main.py get-tags-walk "Drive:/path/to/tld/or fld" --pattern .flac`<br>
-`python main.py get-tags-walk "Drive:/path/to/tld/or fld" --pattern .flac --ffprobe True`<br>
-`python main.py get-tags-walk "Drive:/path/to/tld/or fld" --ffprobe True`
-
 #### get-audio-file-list
 
 Generates get-audio-file-list.csv containing full path for all audio files, and get-audio-file-list.txt listing the types of files found.<br>
@@ -758,3 +732,30 @@ No pattern retrieves from all file types.
 Works with tld (top) and fld (artist), and sld (album) path input.
 
 command line: command line: `python main.py get-ext-file-list "Drive:/path/to/tld/or fld/or sld"`
+
+#### get-media-info-walk
+
+Generates get-media-info-walk.txt containing ffprobe media info for audio files.<br>
+Media info is codec, duration, size, bitrate, ..., etc, *not* album, artist, album_artist, ..., etc.<br>
+Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. No pattern retrieves from all file types.
+
+Works with tld (top) and fld (artist), but not sld (album) path input.
+
+command lines:<br>
+`python main.py get-media-info-walk "Drive:/path/to/tld/or fld"`<br>
+`python main.py get-media-info-walk "Drive:/path/to/tld/or fld" --pattern .flac`<br>
+
+#### get-tags-walk
+
+Generates get-tags-walk.txt containing all metadata tags from audio files.<br>
+Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. No pattern retrieves from all file types.<br>
+Has optional flag `--ffprobe True` to get ffprobe metadata instead of Mutagen.<br>
+Defaults to getting Mutagen metadata tags.
+
+Works with tld (top) and fld (artist), but not sld (album) path input.
+
+command lines:<br>
+`python main.py get-tags-walk "Drive:/path/to/tld/or fld"`<br>
+`python main.py get-tags-walk "Drive:/path/to/tld/or fld" --pattern .flac`<br>
+`python main.py get-tags-walk "Drive:/path/to/tld/or fld" --pattern .flac --ffprobe True`<br>
+`python main.py get-tags-walk "Drive:/path/to/tld/or fld" --ffprobe True`

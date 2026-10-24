@@ -141,7 +141,8 @@ GEN_KEYS = {
 
 ## @var FLAC_KEYS
 # @brief Generic FLAC metadata keys.
-# @details Maps FLAC keys to Windows-compatible metadata.
+# @details Maps FLAC keys to Windows-compatible metadata.<br>
+# @details Vorbis (flac) keys are always upper case, God only knows why.
 FLAC_KEYS = {
     'album': 'ALBUM',
     'album_artist': 'ALBUMARTIST',
@@ -1120,59 +1121,6 @@ class AudioMetadata():
             raise e_error
 
 
-    def get_unique_media_keys(self, file_path: str) -> None:
-        '''
-        @brief Gets set of ffprobe keys and saves to file.
-
-        @details Walks from starting path and saves set of unique metadata keys found by ffprobe.
-
-        @param self {AudioMetadata} The instance of the class.
-        @param file_path {str} The starting point of the directory walk.<br>
-        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
-        @return {None} This function does not return any value.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        data = []
-        txt_filename = inspect.currentframe().f_code.co_name
-
-        try:
-            input_tags = None
-            unique_keys = set()
-            for dir_path, _, file_names in os.walk(file_path):
-                # the tld Music does contain files, but not audio files
-                if dir_path == file_path:
-                    continue
-
-                for file in file_names:
-                    input_file, input_file_ext = os.path.splitext(file)
-
-                    # we don't touch non-audio files like jpg's
-                    if input_file_ext.lower() not in AUDIO_EXTS:
-                        continue
-
-                    tag_file_path = os.path.join(dir_path, file)
-                    input_tags = self.get_ffprobe_tags(tag_file_path)
-
-                    if input_tags:
-                        file_keys = input_tags.keys()
-                        unique_keys.update(file_keys)
-
-            data.append(f"Unique keys for audio files in {file_path}")
-
-            if len(unique_keys) > 0:
-                sorted_list = sorted(unique_keys)
-                for key in sorted_list:
-                    data.append(key)
-
-            directory.create_txt(txt_filename, data, None, None)
-
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
-            raise e_error
-
-
     def has_art_tag(self, file_path: str) -> bool:
         '''
         @brief Checks if an audio file has the embedded album art tag.
@@ -1196,23 +1144,19 @@ class AudioMetadata():
                 logger.error(f"MusicProcessingError with file: {file_name} has invalid extension: {file_ext}", exc_info=True)
                 raise MusicProcessingError(f"MusicProcessingError with file: {file_name} has invalid extension: {file_ext}")
 
-            audio_tags = self.get_mutagen_tags(file_path)
-
             #  FLAC files store album art in the 'pictures' attribute of the FLAC object, unlike other formats where it may be stored in tags.
             if file_ext.lower() == FLAC_EXT:
                 audio_file = self.load_any_file(file_path)
                 has_art = isinstance(audio_file, FLAC) and bool(audio_file.pictures)
-            elif audio_tags is not None:
-                if 'APIC:' in audio_tags:
-                    has_art = True          # ID3/mp3
-                elif 'covr' in audio_tags:
-                    has_art = True          # MP4/m4a
-                elif 'WM/Picture' in audio_tags:
-                    has_art = True          # ASF/wma
-                else:
-                    return False
             else:
-                return False
+                audio_tags = self.get_mutagen_tags(file_path)
+                if audio_tags is not None:
+                    if 'APIC:' in audio_tags:
+                        has_art = True          # ID3/mp3
+                    elif 'covr' in audio_tags:
+                        has_art = True          # MP4/m4a
+                    elif 'WM/Picture' in audio_tags:
+                        has_art = True          # ASF/wma
 
         except MusicProcessingError as mp_error:
             raise mp_error

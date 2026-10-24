@@ -15,26 +15,6 @@ Logic related:
   c) Real leaks often come from references, caches, cycles with finalizes, external resources, or native extensions.
 TODO
 
-2) think about moving helper functionality from all classes into audio_utilities
-  a) currently have many helper functions that are really private to their classes
-    i) mostly they were because I was sanity testing via main subcommand invocation; no longer needed with unit test framework
-  b) what I want exposed as public & invocable from main are the core functions:
-    conversion, art extraction, file & dir rename & cleanup utilities, genre setting, leveling, playlists updating, some info functions
-    i) get audio files list & get file ext list are still useful
-    ii) get media info walk & get tags walk I see much less use for.
-    iii) get unique media keys I really don't see using again
-        it was a one off for development purposes
-        get tags walk with ffprobe flag gives me superset of all ffprobe tags, just not unique set
-TODO
-
-3) refactor get-tags-walk to default try mutagen tags 1st, then auto fallback to ffprobe
-  a) ie take out the ffprobe optional flag
-TODO
-
-6) rethink has_art_tag logic
-  a) why call get_any_tags before checking if input file is FLAC?
-TODO
-
 7) function that creates list of what metadata encoding format(s) an audio file has
   a) get_mutagen_metadata_type sort of does this for single file audio files, from which I infer metadata encoding format
   b) need something that can handle audio with multiple metadata encoding formats WO inferring
@@ -325,3 +305,12 @@ DISPOSED:
 
   31) add write/append mode select option to create_txt function
   COMPLETED
+
+  32) rethink has_art_tag logic
+    a) why call get_any_tags before checking if input file is FLAC?
+  COMPLETED
+
+  32) refactor get-tags-walk to default try mutagen tags 1st, then auto fallback to ffprobe
+  a) ie take out the ffprobe optional flag
+  b) update workflow
+  PASS, TOO MUCH REFACTORING FOR LITTLE GAIN

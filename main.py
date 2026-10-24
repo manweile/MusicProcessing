@@ -365,18 +365,6 @@ def get_tags_walk(tld_path, file_pattern, ffprobe):
     metadata.get_tags_walk(tld_path, file_pattern, ffprobe)
 
 
-def get_unique_media_keys(tld_path):
-    '''
-    @brief Gets set of unique keys for entire collection found by ffprobe.
-
-    @details Retrieves a set of unique metadata keys from all audio files in the specified top level directory using ffprobe.
-
-    @param tld_path {str} The top level directory path that contains all the music files.
-    '''
-
-    metadata.get_unique_media_keys(tld_path)
-
-
 def level_normalize_walk(tld_path, norm_type, target):
     '''
     @brief Level normalizes all audio files in specified top level directory per input normalization type.
@@ -617,10 +605,6 @@ def main(args) -> None:
             file_pattern = getattr(args, "pattern")
             ffprobe = getattr(args, "ffprobe")
             get_tags_walk(tld_path, file_pattern, ffprobe)
-
-        if args.subcommand == "get-unique-media-keys":
-            tld_path = getattr(args, "tld")
-            get_unique_media_keys(tld_path)
 
         if args.subcommand == "level-normalize-walk":
             tld_path = getattr(args, "tld")
@@ -868,13 +852,6 @@ if __name__ == "__main__":
         get_tags_walk_parser.add_argument("--pattern", type=str, help="optional file ext {.flac|.mp3|.m4a|.wma}")
         get_tags_walk_parser.add_argument("--ffprobe", type=bool, help="optional use ffprobe True")
         get_tags_walk_parser.set_defaults(func=get_tags_walk)
-
-        # gets set of unique ffprobe metadata tag keys for entire collection
-        # 1 mandatory arg, the tld path
-        # get-unique-media-keys D:\MusicProcessing\tests\Music
-        get_unique_media_keys_parser = subparsers.add_parser("get-unique-media-keys", help="Get text list of audio files unique ffprobe keys")
-        get_unique_media_keys_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld")
-        get_unique_media_keys_parser.set_defaults(func=get_unique_media_keys)
 
         # level normalize mp3 files from tld
         # 2 mandatory arg, the tld path and the normalization type (ebu, peak, rms)
