@@ -21,6 +21,7 @@ import os                                                   # for operating-syst
 import platform                                             # for platform-specific fixture paths
 import shutil                                               # for test-fixture copying and removal
 import stat                                                 # for modifying file permissions
+import tempfile                                             # for temporary directory structures
 import unittest                                             # for unit testing framework
 from json import JSONDecodeError                            # for handling JSON decode errors
 from pathlib import Path                                    # for object-oriented filesystem paths
@@ -1608,6 +1609,46 @@ class TestAudioMetadata(TestCase):
 
         err_msg = f"ValueError loading metadata from {TEST_MP3_NO_METADATA}"
         self.assertEqual(str(cm.exception), err_msg)
+
+
+    def test_rename_album_directories(self):
+        '''
+        @brief tests renaming album directory from album metadata.
+
+        @details Copies the Genesis fixture into a temporary artist directory.
+
+        @test Happy path, already-correct name, and name collision.
+
+        @param self {TestAudioMetadata} The instance of the test class.
+        '''
+
+        with tempfile.TemporaryDirectory() as temp_tld:
+            artist_dir = os.path.join(temp_tld, "Genesis")
+            wrong_dir = os.path.join(artist_dir, "In Too Deep-I’d Rather Be You")
+            os.makedirs(wrong_dir)
+            shutil.copy(TEST_MP3_GENESIS, os.path.join(wrong_dir, os.path.basename(TEST_MP3_GENESIS)))
+
+            # a stray file at the top level must be ignored
+            Path(temp_tld, "stray.txt").write_text("ignored", encoding=UTF8)
+
+            expected_dir = os.path.join(artist_dir, "In Too Deep - I'd Rather Be You")
+
+            metadata.rename_album_directories(temp_tld)
+            self.assertFalse(os.path.exists(wrong_dir))
+            self.assertTrue(os.path.isfile(os.path.join(expected_dir, os.path.basename(TEST_MP3_GENESIS))))
+
+            # already correctly named: unchanged
+            metadata.rename_album_directories(temp_tld)
+            self.assertTrue(os.path.isdir(expected_dir))
+
+            # collision: another wrongly named directory with the same album gets a counter suffix
+            os.makedirs(wrong_dir)
+            shutil.copy(TEST_MP3_GENESIS, os.path.join(wrong_dir, os.path.basename(TEST_MP3_GENESIS)))
+            metadata.rename_album_directories(temp_tld)
+            self.assertFalse(os.path.exists(wrong_dir))
+            self.assertTrue(os.path.isdir(f"{expected_dir} (1)"))
+
+            gc.collect()
 
 
     def test_update_genres_from_csv(self):

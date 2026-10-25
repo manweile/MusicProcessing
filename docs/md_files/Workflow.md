@@ -56,7 +56,7 @@ I will use MP3Tag/MusicBrainz Picard/puddletag to:
 - verify all wma files have WMA tags
 - verify all m4a files have MP4 tags
 - verify all flac files have Vorbis tags
-- verify all mp3 files have at least one ID3 version tags
+- verify all mp3 files have at least one ID3 version tag
 - find accurate metadata for preferred tags
 - find cover art for albums if necessary
 
@@ -65,9 +65,10 @@ Ensuring all of your metadata is accurate is entirely dependent on your source's
 There is good argument for doing it in the `Prepped` stage; but bear in mind how much work that could be.<br>
 For right now, directory structure only needs 3 fields to be accurate: artist, album name and song title.
 
-**A note about APEv2 metadata**<br>
-The mapping functions called by the convert file function do NOT deal with audio files containing *only* APEv2 metadata encoding.<br>
+**A note about APEv2 metadata and MP3 files**<br>
+The mapping function called by the convert file function will NOT deal with MP3 files containing *only* APEv2 metadata encoding.<br>
 That is a whole other kettle of fish. I currently do not have any files like that, and unsure if I am even going to code for it. Lot of work.<br>
+I currently don't have any MP3 solely with APEv2; in any case, the affected functions simply can not map any APEv2 metadata to ID3v2.3 format.<br>
 I do have many mp3 files with APEv2 and one or more ID3 versions; not a problem, the Mutagen default with mp3 files is use the newest ID3 version.
 
 ### Directory Structure
@@ -79,7 +80,7 @@ I am using file explorer/file manager for the transfers - don't have a function 
 #### Naming
 
 I use the Windows invalid character set, it's more restrictive and therefore OS agnostic; you can use it on Linux & Mac.<br>
-Any of these characters need to be replaced.
+Any of these characters need to be replaced:
 
 1. less than
 2. greater than
@@ -334,7 +335,7 @@ tld
 |    |    |_song 1
 |    |    |_song i
 |    |    |_song n
-|    |_album 2: something    # the colon is invalid character, might be in metadata too
+|    |_album 2 something     # has invalid char like colon in metadata
 |    |    |_song 1
 |    |    |_song i
 |    |    |_song n
@@ -679,6 +680,9 @@ Move everything from `Leveled` to `Finalized`
 
 Remember those m3u files mentioned way back? Here's where they get updated.<br>
 A reminder about m3u playlists - they are *relative* pathed. They **must** sit in the top level directory that contains all audio files!<br>
+Like the conversion function, if the input and output are the same file, the writer could wipe out or overwrite the data blocks.<br>
+Updated playlist files will be in the special `/MusicProcessing/src/generated_files/` directory, under `Music`.<br>
+Move them to the correct tld after running.
 
 Best practice: wait to run the playlist updating until you have everything converted & leveled - why run multiple times?
 
@@ -700,16 +704,17 @@ These information functions generate a file (csv and/or txt).<br>
 The files are in the special `/MusicProcessing/src/generated_files/` directory, under `csv_file/`s and/or `result_files/`.<br>
 Any previous output files *may* be overwritten, so save previous versions if you want to preserve history *before* running an information function.
 
-#### clip-check-file & clip-check-walk
+#### clip-check-file
 
 `clip-check-file` analyzes the specified MP3 file and returns volume normalization information in a file.<br>
-The file, `clip-check-file.txt`, will be in `/MusicProcessing/src/generated_files/result_files/`.<br>
-Subsequent executions will overwrite any extant `clip-check-file.txt` file.
+The file, `clip-check-file.txt`, will be *overwritten* by subsequent executions.
 
 command line: `python main.py clip-check-file "Drive:/path/to/audio file"`
 
+#### clip-check-walk
+
 `clip-check-walk` is the directory walking wrapper around `clip-check-file`.<br>
-Subsequent executions will append to any extant `clip-check-file.txt` file.
+The file, `clip-check-file.txt`, will be be *appended* to by subsequent executions.
 
 Works with tld (top) and fld (artist), but not sld (album) path input.
 
@@ -718,6 +723,7 @@ command line: `python main.py clip-check-walk "Drive:/path/to/tld/or fld"`<br>
 #### get-audio-file-list
 
 Generates get-audio-file-list.csv containing full path for all audio files, and get-audio-file-list.txt listing the types of files found.<br>
+Subsequent execution overwrites the files.
 
 Works with tld (top) but not fld (artist) or sld (album) path input.
 
@@ -727,7 +733,8 @@ command line: `python main.py get-audio-file-list "Drive:/path/to/tld"`
 
 Generates get-ext-file-list.csv containing full file path for audio files by type.<br>
 Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. <br>
-No pattern retrieves from all file types.
+No pattern retrieves from all valid file types.<br>
+Subsequent execution overwrites the file.
 
 Works with tld (top) and fld (artist), and sld (album) path input.
 
@@ -737,7 +744,8 @@ command line: command line: `python main.py get-ext-file-list "Drive:/path/to/tl
 
 Generates get-media-info-walk.txt containing ffprobe media info for audio files.<br>
 Media info is codec, duration, size, bitrate, ..., etc, *not* album, artist, album_artist, ..., etc.<br>
-Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. No pattern retrieves from all file types.
+Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. No pattern retrieves from all file types.<br>
+Subsequent execution overwrites the file.
 
 Works with tld (top) and fld (artist), but not sld (album) path input.
 
@@ -750,7 +758,8 @@ command lines:<br>
 Generates get-tags-walk.txt containing all metadata tags from audio files.<br>
 Has optional flag `--pattern {.flac|.mp3|.m4a|.wma}` to specify file type. No pattern retrieves from all file types.<br>
 Has optional flag `--ffprobe True` to get ffprobe metadata instead of Mutagen.<br>
-Defaults to getting Mutagen metadata tags.
+Defaults to getting Mutagen metadata tags.<br>
+Subsequent execution overwrites the file.
 
 Works with tld (top) and fld (artist), but not sld (album) path input.
 

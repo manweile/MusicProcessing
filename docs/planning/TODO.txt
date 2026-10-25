@@ -15,81 +15,6 @@ Logic related:
   c) Real leaks often come from references, caches, cycles with finalizes, external resources, or native extensions.
 TODO
 
-7) function that creates list of what metadata encoding format(s) an audio file has
-  a) get_mutagen_metadata_type sort of does this for single file audio files, from which I infer metadata encoding format
-  b) need something that can handle audio with multiple metadata encoding formats WO inferring
-IN PROGRESS, see docs\scripts\google\metadata_encoding_format_detection\metadata_encoding_detection.py
-
-8) function that uses output of 7
-  a) all file type must have 1 metadata encoding format
-  b) if an mp3 file has ID3v2.3, the ID3v2.3 is untouched
-    i) any other ID3 version is wiped out
-  c) non mp3 files keep their native format
-    i) non mp3 without native format are left alone
-TODO
-
-9) think about get_mutagen_metadata_type
-  ties into 7 an 8
-  need to accommodate APE - an mp3 will solely APEv2 (don't have any yet) will return NONE in tags attribute
-  mutagen.File(file_path, easy=true) will NOT work on mp3 with APEv2 alone (of which I have none).
-  This means any function relying on load_any_file for tags has a subtle error wrt files w only APEv2
-  __set_genre
-  get_mutagen_tags
-  get_mutagen_metadata_type
-  has_art_tag
-  normalize_filename
-  many places in test_audio_metadata
-TODO
-
-11) look at audio_normalization.py wrt ebu_normalize_file error on Colin james song that had no metadata
-TODO
-  2026-10-05 20:03:51,051 — src.audio_normalize.audio_normalization — ERROR — ebu_normalize_file:342 — Exception TypeError while ebu normalizing audio file: F:\Rick\RickConverted\Colin James\Rooftops and Satellites\Colin James-If You've Gotta Go Go Now.mp3
-  Traceback (most recent call last):
-    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 243, in ebu_normalize_file
-      target_bitrate = min(original_bitrate, 192000)
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  TypeError: '<' not supported between instances of 'int' and 'NoneType'
-  Stack (most recent call last):
-    File "D:\MusicProcessing\main.py", line 1102, in <module>
-      sys.exit(main(args))
-    File "D:\MusicProcessing\main.py", line 647, in main
-      level_normalize_walk(tld_path, norm_type)
-    File "D:\MusicProcessing\main.py", line 319, in level_normalize_walk
-      normalization.level_normalize_walk(tld_path, norm_type)
-    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 552, in level_normalize_walk
-      self.ebu_normalize_file(input_file_path, show_spinner)
-    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 342, in ebu_normalize_file
-      logger.exception(f"Exception {type(e_error).__name__} while ebu normalizing audio file: {file_path}", stack_info=True)
-
-  2026-10-05 20:03:51,082 — src.audio_normalize.audio_normalization — ERROR — level_normalize_walk:559 — Exception TypeError on F:\Rick\RickConverted\Colin James\Rooftops and Satellites\Colin James-If You've Gotta Go Go Now.mp3 while walking F:\Rick\RickConverted to ebu normalize audio files
-  Traceback (most recent call last):
-    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 552, in level_normalize_walk
-      self.ebu_normalize_file(input_file_path, show_spinner)
-    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 343, in ebu_normalize_file
-      raise e_error
-    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 243, in ebu_normalize_file
-      target_bitrate = min(original_bitrate, 192000)
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  TypeError: '<' not supported between instances of 'int' and 'NoneType'
-  Stack (most recent call last):
-    File "D:\MusicProcessing\main.py", line 1102, in <module>
-      sys.exit(main(args))
-    File "D:\MusicProcessing\main.py", line 647, in main
-      level_normalize_walk(tld_path, norm_type)
-    File "D:\MusicProcessing\main.py", line 319, in level_normalize_walk
-      normalization.level_normalize_walk(tld_path, norm_type)
-    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 559, in level_normalize_walk
-      logger.exception(
-
-13) add D:/MusicProcessing/docs/scripts/google/album_directory_rename.py to project
-  a) main.py and audio metadata class       COMPLETE
-  a) update workflow markdown               COMPLETE
-  b) add unit test for it                   TODO
-IN PROGRESS
-
-15) think about playlist updating writing to input directory or a target directory instead of generated_files
-TODO
-
 DISPOSED:
 
   1) import doxygen create from esp scale project
@@ -314,3 +239,77 @@ DISPOSED:
   a) ie take out the ffprobe optional flag
   b) update workflow
   PASS, TOO MUCH REFACTORING FOR LITTLE GAIN
+
+  33) function that creates list of what metadata encoding format(s) an audio file has
+    a) get_mutagen_metadata_type sort of does this for single file audio files, from which I infer metadata encoding format
+    b) need something that can handle audio with multiple metadata encoding formats WO inferring
+  LEAVE AS STANDALONE SCRIPT, see docs\scripts\google\metadata_encoding_format_detection\metadata_encoding_detection.py
+
+  34) function that uses output of 7
+    a) all file type must have 1 metadata encoding format
+    b) if an mp3 file has ID3v2.3, the ID3v2.3 is untouched
+      i) any other ID3 version is wiped out
+    c) non mp3 files keep their native format
+      i) non mp3 without native format are left alone
+  UNNECESSARY
+
+  35) think about get_mutagen_metadata_type
+    need to accommodate APE - an mp3 will solely APEv2 (don't have any yet) will return NONE in tags attribute
+    mutagen.File(file_path, easy=true) will NOT work on mp3 with APEv2 alone (of which I have none).
+    This means any function relying on load_any_file for tags has a subtle error wrt files w only APEv2
+    __set_genre
+    get_mutagen_tags
+    get_mutagen_metadata_type
+    has_art_tag
+    normalize_filename
+    many places in test_audio_metadata
+  ERROR NOT TRUE, THIS IS NOT AN ISSUE
+
+  36) look at audio_normalization.py wrt ebu_normalize_file error on Colin james song that had no metadata
+  UNABLE TO REPLICATE
+  2026-10-05 20:03:51,051 — src.audio_normalize.audio_normalization — ERROR — ebu_normalize_file:342 — Exception TypeError while ebu normalizing audio file: F:\Rick\RickConverted\Colin James\Rooftops and Satellites\Colin James-If You've Gotta Go Go Now.mp3
+  Traceback (most recent call last):
+    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 243, in ebu_normalize_file
+      target_bitrate = min(original_bitrate, 192000)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  TypeError: '<' not supported between instances of 'int' and 'NoneType'
+  Stack (most recent call last):
+    File "D:\MusicProcessing\main.py", line 1102, in <module>
+      sys.exit(main(args))
+    File "D:\MusicProcessing\main.py", line 647, in main
+      level_normalize_walk(tld_path, norm_type)
+    File "D:\MusicProcessing\main.py", line 319, in level_normalize_walk
+      normalization.level_normalize_walk(tld_path, norm_type)
+    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 552, in level_normalize_walk
+      self.ebu_normalize_file(input_file_path, show_spinner)
+    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 342, in ebu_normalize_file
+      logger.exception(f"Exception {type(e_error).__name__} while ebu normalizing audio file: {file_path}", stack_info=True)
+
+  2026-10-05 20:03:51,082 — src.audio_normalize.audio_normalization — ERROR — level_normalize_walk:559 — Exception TypeError on F:\Rick\RickConverted\Colin James\Rooftops and Satellites\Colin James-If You've Gotta Go Go Now.mp3 while walking F:\Rick\RickConverted to ebu normalize audio files
+  Traceback (most recent call last):
+    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 552, in level_normalize_walk
+      self.ebu_normalize_file(input_file_path, show_spinner)
+    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 343, in ebu_normalize_file
+      raise e_error
+    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 243, in ebu_normalize_file
+      target_bitrate = min(original_bitrate, 192000)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  TypeError: '<' not supported between instances of 'int' and 'NoneType'
+  Stack (most recent call last):
+    File "D:\MusicProcessing\main.py", line 1102, in <module>
+      sys.exit(main(args))
+    File "D:\MusicProcessing\main.py", line 647, in main
+      level_normalize_walk(tld_path, norm_type)
+    File "D:\MusicProcessing\main.py", line 319, in level_normalize_walk
+      normalization.level_normalize_walk(tld_path, norm_type)
+    File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 559, in level_normalize_walk
+      logger.exception(
+
+  37) think about playlist updating writing to input directory or a target directory instead of generated_files
+  PASS, CHANCE OF OVERWRITE FILE THAT IS BEING PROCESSED
+
+  38) add D:/MusicProcessing/docs/scripts/google/album_directory_rename.py to project
+  a) main.py and audio metadata class       COMPLETE
+  a) update workflow markdown               COMPLETE
+  b) add unit test for it                   COMPLETE
+COMPLETE
