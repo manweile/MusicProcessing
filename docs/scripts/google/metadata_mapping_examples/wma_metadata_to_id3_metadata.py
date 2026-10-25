@@ -1,4 +1,3 @@
-# from tinytag import TinyTag
 from pydub import AudioSegment
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, TIT2, TALB, TPE1, TYER

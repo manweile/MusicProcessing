@@ -1,6 +1,6 @@
 # main_app.py
 import logging
-import scripts.google.templating.my_module as my_module
+import my_module as my_module
 
 # Configure the root logger to log to a general file
 logging.basicConfig(filename='app.log', level=logging.DEBUG,

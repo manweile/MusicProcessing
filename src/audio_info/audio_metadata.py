@@ -765,7 +765,10 @@ class AudioMetadata():
         If an audio file metadata is ID3v2.3, and it's raw tag bytes contain a TYER frame without a TRDC frame,<br>
         Mutagen will read the TYER frame and present it through the TDRC interface.<br>
         This ensures consistent date handling across different ID3 versions.<br>
-        The audio file's metadata remains IDv2.3, it does not get automatically upgraded to ID3v2.4 version.
+        The audio file's metadata remains IDv2.3, it does not get automatically upgraded to ID3v2.4 version.<br>
+        <br>
+        In multiple ID3 encodings, Mutagen will prioritizes the newest version ID3v2 tag over all others.<br>
+        However, APEv2 tags are ignored when ID3v2 tags are present, or if only APEv2 are present.
 
         @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
@@ -984,6 +987,9 @@ class AudioMetadata():
         file_path; the path to the audio file
         @endcode
 
+        @note ffprobe/ffmpeg do not have a native metadata encoding; they only extract/report existing tags from the audio file.<br>
+        However, they are metadata encoding agnostic and will work when Mutagen cannot.
+
         @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return media_tags {dict} Media tags from filepath.
@@ -1020,10 +1026,13 @@ class AudioMetadata():
 
     def get_mutagen_metadata_type(self, file_path: str) -> str:
         '''
-        @brief Returns the Mutagen library metadata type of an audio file.
+        @brief Returns the Mutagen library metadata class type of an audio file.
 
-        @details It is responsibility of calling function to verify the metadata type returned by this function is valid for project usage.<br>
-        Eg FLAC files will return 'FLAC', MP3 files will return 'MP3', M4A files will return 'MP4', WMA files will return 'ASF'.
+        @details It is responsibility of calling function to verify the metadata type returned by this function is valid for project usage.
+
+        @note This function *infers* the metadata encoding format by returning the Mutagen library *class* type.<br>
+        This approach is far less code than explicitly checking the file's internal structure.<br>
+        This approach may not fully represent all metadata blocks present in the file.<br>
 
         @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
@@ -1344,7 +1353,11 @@ class AudioMetadata():
         time stamps take the form of: YYYY-MM-DD HH:MM:SS or some partial form (YYYY-MM-DD HH, YYYY, etc.).<br>
         Whatever the form, just the year will be extracted.<br>
         The preferred tag is 'TYER', alternative tags are 'TORY', 'TDRC', 'TDOR' or 'TXXX=originalyear'.<br>
-        Only unique dates will be considered when updating the ID3 tags.
+        Only unique dates will be considered when updating the ID3 tags.<br>
+        <br>
+        The set of MP3 metadata keys considered for conversion includes those that are relevant for Windows display and date handling.<br>
+        This set is backwards compatible with older MP3 metadata conventions.<br>
+        Therefore, ID3v1 tags are mapped properly.
 
         @param self {AudioMetadata} The instance of the class.
         @param input_tags {ID3} The mp3 tags source.
