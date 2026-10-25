@@ -16,7 +16,6 @@
 # Standard Modules
 import csv                                                  # for CSV mapping input
 import fnmatch                                              # for filename pattern matching
-import gc                                                   # for garbage collection
 import inspect                                              # for inspecting live objects
 import json                                                 # for JSON handling
 import logging                                              # for logging
@@ -73,8 +72,6 @@ from src import PathInfoError                               # for handling path 
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
 from src.dir_processing import DirectoryProcessing          # for directory processing functionality
 from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functionality
-
-gc.enable()
 
 ## @var logger
 # @brief Logger instance for the module.

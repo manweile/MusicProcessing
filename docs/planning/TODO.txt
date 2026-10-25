@@ -7,14 +7,6 @@ Doxygen related:
   b) update it if decide to keep
 TODO
 
-Logic related:
-
-1) using gc.enable()
-  a) Python GC is normally already enabled.
-  b) Explicit gc.enable() usually does not prevent ordinary leaks.
-  c) Real leaks often come from references, caches, cycles with finalizes, external resources, or native extensions.
-TODO
-
 DISPOSED:
 
   1) import doxygen create from esp scale project
@@ -313,3 +305,9 @@ DISPOSED:
   a) update workflow markdown               COMPLETE
   b) add unit test for it                   COMPLETE
 COMPLETE
+
+38) using gc.enable()
+  a) Python GC is normally already enabled.
+  b) Explicit gc.enable() usually does not prevent ordinary leaks.
+  c) Real leaks often come from references, caches, cycles with finalizes, external resources, or native extensions.
+COMPLETED

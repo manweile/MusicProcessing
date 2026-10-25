@@ -14,7 +14,6 @@
 '''
 
 # Standard Modules
-import gc                                                   # for garbage collection management
 import logging                                              # for module logging
 import os                                                   # for operating-system interfaces
 from os import strerror                                     # for operating-system error messages
@@ -34,8 +33,6 @@ from src import PlaylistError                               # for playlist proce
 
 # Local Module Classes
 from src.dir_processing import DirectoryProcessing          # for directory processing functionality
-
-gc.enable()
 
 ## @var logger
 # @brief Logger instance for the module.

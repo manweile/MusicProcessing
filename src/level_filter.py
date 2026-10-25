@@ -16,10 +16,7 @@
 '''
 
 # Standard Modules
-import gc                                                   # for garbage collection
 from logging import Filter                                  # Standard logging filter class used as base for LevelFilter
-
-gc.enable()
 
 
 class LevelFilter(Filter):

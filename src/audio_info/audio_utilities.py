@@ -15,7 +15,6 @@
 '''
 
 # Standard Modules
-import gc                                                   # for garbage collection management
 import inspect                                              # for current function inspection
 import logging                                              # for module logging
 import math                                                 # for volume calculations
@@ -35,8 +34,6 @@ from src import TP                                          # for true-peak norm
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
 from src.dir_processing import DirectoryProcessing          # for directory processing functionality
 from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functionality
-
-gc.enable()
 
 ## @var logger
 # @brief Logger instance for the module.

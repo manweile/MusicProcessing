@@ -17,7 +17,6 @@
 import csv                                                  # for CSV file creation
 import errno                                                # for operating-system error codes
 import fnmatch                                              # for file-pattern matching
-import gc                                                   # for garbage collection management
 import inspect                                              # for current function inspection
 import logging                                              # for module logging
 import os                                                   # for operating-system interfaces
@@ -46,8 +45,6 @@ from src.generated_files import GENERATED_PATH              # for generated file
 # Local Module Errors
 from src import MusicProcessingError                        # for directory processing failures
 from src import PathInfoError                               # for path info related errors
-
-gc.enable()
 
 ## @var logger
 # @brief Logger instance for the module.

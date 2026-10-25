@@ -14,7 +14,6 @@
 '''
 
 # Standard Modules
-import gc                                                   # for garbage collection management
 import logging                                              # for module logging
 import os                                                   # for operating-system interfaces
 import shlex                                                # for command formatting
@@ -36,8 +35,6 @@ from src import UTF8                                        # for UTF-8 text enc
 
 # Local Module Errors
 from src import FfmpegProcessError                          # for FFmpeg process failures
-
-gc.enable()
 
 ## @var logger
 # @brief Logger instance for the module.

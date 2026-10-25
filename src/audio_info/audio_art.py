@@ -15,7 +15,6 @@
 
 # Standard Modules
 import fnmatch                                              # for filename pattern matching
-import gc                                                   # for garbage collection management
 import json                                                 # for JSON parsing and handling
 import logging                                              # for logging messages
 import os                                                   # for operating system dependent functionality
@@ -49,8 +48,6 @@ from src.generated_files import GENERATED_PATH              # for generated file
 from src.audio_info.audio_metadata import AudioMetadata     # for audio metadata handling functionality
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
 from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functions
-
-gc.enable()
 
 ## @var logger
 # @brief Logger instance for the module.

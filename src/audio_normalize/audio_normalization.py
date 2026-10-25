@@ -14,7 +14,6 @@
 '''
 
 # Standard Modules
-import gc                                                   # for garbage collection management
 import inspect                                              # for current function inspection
 import json                                                 # for FFmpeg JSON output parsing
 import logging                                              # for module logging
@@ -41,8 +40,6 @@ from src.errors import PathInfoError                        # for missing genera
 # Local Module Classes
 from src.dir_processing import DirectoryProcessing          # for directory processing functionality
 from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functionality
-
-gc.enable()
 
 ## @var logger
 # @brief Logger instance for the module.

@@ -369,23 +369,6 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - They follow the Class File Logging Setup rules as described below.
 - They contain the class definition and its methods.
 
-### Class File Garbage Collection
-
-- All class files, excepting test files, must enable garbage collection.
-- The class file must import the standard module `gc`.
-- The garbage collection setup is placed after the import statements and before any other module-level code.
-- The garbage collection setup calls `gc.enable()`.
-- The garbage collection enable call is followed by a blank line.
-- Example:
-
-```python
-import gc                                                   # for garbage collection management
-# ... other import statements for standard, third-party, and local modules
-
-gc.enable()
-
-```
-
 ### Class File Logging Setup
 
 - All class files, excepting test files, must include a logging setup section.
