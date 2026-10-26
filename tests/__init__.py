@@ -17,7 +17,7 @@
 import os                                                   # for operating-system path operations
 
 # Local Module Constants
-from src import MUSIC_TLD                                   # for the test music top-level directory
+from src import MUSIC_TLD                                   # for the test music top level directory
 
 ## @var TESTS_PATH
 # @brief Test-fixture directory path.
@@ -25,7 +25,7 @@ from src import MUSIC_TLD                                   # for the test music
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 
 ## @var TESTS_TLD
-# @brief Test music top-level directory path.
+# @brief Test music top level directory path.
 # @details Provides the root directory for audio test fixtures.
 TESTS_TLD = os.path.join(TESTS_PATH, MUSIC_TLD)
 
@@ -60,7 +60,7 @@ TEST_M4A_EAGLES = os.path.join(TESTS_TLD, "The Eagles", "Desperado", "The Eagles
 ## @var TEST_M4A_EAGLES_ALBUM_ARTIST
 # @brief Album artist metadata in the Eagles M4A fixture.
 # @details Provides the expected album artist for metadata assertions.
-TEST_M4A_EAGLES_ALBUM_ARTIST = "Eagles"
+TEST_M4A_EAGLES_ALBUM_ARTIST = "The Eagles"
 
 ## @var TEST_M4A_EAGLES_TITLE
 # @brief Title metadata in the Eagles M4A fixture.
@@ -178,6 +178,16 @@ TEST_WMA_HOLIDAY = os.path.join(TESTS_TLD, "Billie Holiday", "Georgia On My Mind
 # @details This wma has a video stream and a WM/Picture album art tag.
 TEST_WMA_JOHN = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road", "Elton John-Saturday Night's Alright for Fighting.wma")
 
+## @var TEST_WMA_JOHN_ALBUM_ARTIST
+# @brief Album artist metadata in the Elton John WMA fixture.
+# @details Provides the expected album artist for metadata assertions.
+TEST_WMA_JOHN_ALBUM_ARTIST = "Elton John"
+
+## @var TEST_WMA_JOHN_TITLE
+# @brief Title metadata in the Elton John WMA fixture.
+# @details Provides the expected title for metadata assertions.
+TEST_WMA_JOHN_TITLE = "Saturday Night’s Alright (for Fighting)"
+
 ## @var __all__
 # @brief Exposes test fixtures for importing by test modules.
 # @details Import TEST_FLAC_ALANNAH_MYLES with `from tests import TEST_FLAC_ALANNAH_MYLES`
@@ -209,6 +219,8 @@ TEST_WMA_JOHN = os.path.join(TESTS_TLD, "Elton John", "Goodbye Yellow Brick Road
 # @details Import TEST_WMA_CCR with `from tests import TEST_WMA_CCR`
 # @details Import TEST_WMA_HOLIDAY with `from tests import TEST_WMA_HOLIDAY`
 # @details Import TEST_WMA_JOHN with `from tests import TEST_WMA_JOHN`
+# @details Import TEST_WMA_JOHN_ALBUM_ARTIST with `from tests import TEST_WMA_JOHN_ALBUM_ARTIST`
+# @details Import TEST_WMA_JOHN_TITLE with `from tests import TEST_WMA_JOHN_TITLE`
 __all__ = [
     "TEST_FLAC_ALANNAH_MYLES",
     "TEST_FLAC_CREAM",
@@ -238,5 +250,7 @@ __all__ = [
     "TEST_WAV_NONE",
     "TEST_WMA_CCR",
     "TEST_WMA_HOLIDAY",
-    "TEST_WMA_JOHN"
+    "TEST_WMA_JOHN",
+    "TEST_WMA_JOHN_ALBUM_ARTIST",
+    "TEST_WMA_JOHN_TITLE"
 ]

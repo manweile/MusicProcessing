@@ -54,12 +54,14 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
     2. The `@note` block
   - the `@endcode` tag is followed by a blank line.
 - Use:
+  - if the function has a `self` parameter, include it in the `@param` list with the type of the class it belongs to.
+    - `@param self {ClassName} The instance of the class the method belongs to.`
   - `@param name {type} description` for input parameters, terminated by a period.
   - `@return name {type} description` when the function returns a specifically named value, terminated by a period.
   - `@return {type} description` when the function returns an unnamed value or expression, terminated by a period.
+  - `@return {None} This function does not return a value.` for functions that do not return anything.
 - Leave an empty line after the final `@param` or `@return` block.
 - Omit `@param` entirely for functions with no parameters.
-- Omit `@return` entirely for functions that return `None`.
 - Use `@exception {type} description` for exceptions raised by the function, terminated by a period.
 - Omit `@exception` entirely for functions that do not raise any exceptions.
 - All Doxygen documentation blocks in class definitions are followed by 1 blank line.
@@ -367,23 +369,6 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - They follow the Class File Logging Setup rules as described below.
 - They contain the class definition and its methods.
 
-### Class File Garbage Collection
-
-- All class files, excepting test files, must enable garbage collection.
-- The class file must import the standard module `gc`.
-- The garbage collection setup is placed after the import statements and before any other module-level code.
-- The garbage collection setup calls `gc.enable()`.
-- The garbage collection enable call is followed by a blank line.
-- Example:
-
-```python
-import gc                                                   # for garbage collection management
-# ... other import statements for standard, third-party, and local modules
-
-gc.enable()
-
-```
-
 ### Class File Logging Setup
 
 - All class files, excepting test files, must include a logging setup section.
@@ -425,6 +410,8 @@ add_module_handler(logger, basename)
 - Test files are class files and should follow the same header and import rules as regular class files.
 - Follow Module Level Variables and Constants rules for placement of purpose comments.
 - Test files do not follow the Class File Logging Setup rules.
+- Test cases with a `@patch` decorator should expand the `@details` section to explain the effect of the patch.
+  - Follow the Doxygen documentation rules for the `@details` section when expanding.
 - Test cases have an additional tag `@test` in their Doxygen documentation.
   - The `@test` tag describes if this is a happy path, edge case, error case, or corner case.
   - The `@test` line is placed after the blank line following whatever is last of:

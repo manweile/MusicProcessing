@@ -1,5 +1,4 @@
 import wx
-import os
 
 
 class M3UEditor(wx.Frame):

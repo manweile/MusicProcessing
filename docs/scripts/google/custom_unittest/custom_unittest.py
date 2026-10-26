@@ -1,5 +1,6 @@
 import unittest
 
+
 class CustomTestResult(unittest.TextTestResult):
     def addSuccess(self, test):
         super().addSuccess(test)
@@ -13,9 +14,11 @@ class CustomTestResult(unittest.TextTestResult):
         super().addError(test, err)
         print(f"ERROR: {test._testMethodName} - {err[1]}")
 
+
 class CustomTestRunner(unittest.TextTestRunner):
     def _makeResult(self):
         return CustomTestResult(self.stream, self.descriptions, self.verbosity)
+
 
 # Example Usage
 class MyTests(unittest.TestCase):
@@ -27,6 +30,7 @@ class MyTests(unittest.TestCase):
 
     def test_error(self):
         raise ValueError("Something went wrong")
+
 
 if __name__ == '__main__':
     suite = unittest.TestSuite()

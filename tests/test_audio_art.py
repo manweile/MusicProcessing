@@ -15,7 +15,6 @@
 
 # Standard Modules
 import errno                                                # for operating-system error numbers
-import inspect                                              # for test method discovery
 import os                                                   # for file-system path operations
 import shutil                                               # for test-fixture copying and removal
 import struct                                               # for binary ASF image fixture construction
@@ -24,6 +23,9 @@ from pathlib import Path                                    # for test-fixture p
 from subprocess import CalledProcessError                   # for expected ffmpeg extraction failures
 from unittest import TestCase                               # for test-case assertions and lifecycle hooks
 from unittest.mock import patch                             # for write-operation error simulation
+
+# Local Module Methods
+from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
 from src import FOLDER_ART                                  # for album-art fixture filenames
@@ -155,7 +157,7 @@ class TestAudioArt(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioArt} Test instance containing expected output paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         input_audio = TEST_WMA_JOHN
@@ -172,7 +174,7 @@ class TestAudioArt(TestCase):
 
         @test Edge case.
 
-        @param self {TestAudioArt} Test instance containing test fixture paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         input_audio = TEST_MP3_ABBA
@@ -194,7 +196,7 @@ class TestAudioArt(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioArt} Test instance containing test fixture paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         input_audio = TEST_M3U
@@ -216,7 +218,7 @@ class TestAudioArt(TestCase):
 
         @test Edge case.
 
-        @param self {TestAudioArt} Test instance containing test fixture paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         input_audio = TEST_MP3_NO_TAG
@@ -243,7 +245,7 @@ class TestAudioArt(TestCase):
 
         @test Edge case.
 
-        @param self {TestAudioArt} Test instance containing expected output paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         input_audio = TEST_WMA_HOLIDAY
@@ -260,7 +262,7 @@ class TestAudioArt(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioArt} Test instance containing expected output paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         input_audio = TEST_WMA_JOHN
@@ -277,7 +279,7 @@ class TestAudioArt(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioArt} Test instance containing expected output paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         input_audio = TEST_FLAC_ALANNAH_MYLES
@@ -294,7 +296,7 @@ class TestAudioArt(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioArt} Test instance containing expected output paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         input_audio = TEST_MP3_CRUSH
@@ -311,7 +313,7 @@ class TestAudioArt(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioArt} Test instance containing expected output paths.
+        @param self {TestAudioArt} The instance of the test class.
 
         @exception CalledProcessError ffmpeg fails because the input has no video stream.
         '''
@@ -336,7 +338,7 @@ class TestAudioArt(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioArt} Test instance containing expected output paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         input_audio = TEST_M4A_DAVIS
@@ -353,7 +355,7 @@ class TestAudioArt(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioArt} Test instance containing expected output paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         input_audio = TEST_MP3_CRUSH
@@ -370,7 +372,7 @@ class TestAudioArt(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioArt} Test instance containing prepared fixture paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         art.extract_walk(self.prepped, None)
@@ -388,7 +390,7 @@ class TestAudioArt(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioArt} Test instance containing prepared fixture paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         art.extract_walk(self.prepped, MP3_EXT)
@@ -405,7 +407,7 @@ class TestAudioArt(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioArt} Test instance containing prepared fixture paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         log_msg = f"Pattern {PLAYLIST_EXTS[0]} is not for a valid audio file"
@@ -425,7 +427,7 @@ class TestAudioArt(TestCase):
 
         @test Edge case.
 
-        @param self {TestAudioArt} Test instance containing test fixture paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         input_audio = TEST_WMA_HOLIDAY
@@ -441,7 +443,7 @@ class TestAudioArt(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioArt} Test instance containing test fixture paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         input_audio = TEST_MP3_CRUSH
@@ -457,7 +459,7 @@ class TestAudioArt(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioArt} Test instance containing expected output paths.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         art.set_album_art(TESTS_TLD)
@@ -477,7 +479,7 @@ class TestAudioArt(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioArt} Test instance used for ASF image parsing.
+        @param self {TestAudioArt} The instance of the test class.
 
         @exception ValueError ASF image metadata is not valid UTF-16-LE.
         '''
@@ -496,7 +498,7 @@ class TestAudioArt(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioArt} Test instance used for ASF image parsing.
+        @param self {TestAudioArt} The instance of the test class.
 
         @exception ValueError ASF image data is malformed.
         '''
@@ -524,7 +526,7 @@ class TestAudioArt(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioArt} Test instance used for ASF image parsing.
+        @param self {TestAudioArt} The instance of the test class.
         '''
 
         image_data = b'\xff\xd8'
@@ -548,11 +550,12 @@ class TestAudioArt(TestCase):
         '''
         @brief Test write-data handling of a blocking I/O error.
 
-        @details Verifies the mocked writer preserves the blocking error number and message.
+        @details Verifies the mocked writer preserves the blocking error number and message.<br>
+        Patch the built-in open function to simulate the blocking I/O error.
 
         @test Error case.
 
-        @param self {TestAudioArt} Test instance used for write-data error handling.
+        @param self {TestAudioArt} The instance of the test class.
         @param mock_open {Mock} Patched file-opening function that raises a blocking error.
 
         @exception BlockingIOError Mocked write operation is blocked.
@@ -575,11 +578,12 @@ class TestAudioArt(TestCase):
         '''
         @brief Test write-data handling of an operating-system error.
 
-        @details Verifies the mocked writer preserves the operating-system error number and message.
+        @details Verifies the mocked writer preserves the operating-system error number and message.<br>
+        Patch the built-in open function to simulate the operating-system error.
 
         @test Error case.
 
-        @param self {TestAudioArt} Test instance used for write-data error handling.
+        @param self {TestAudioArt} The instance of the test class.
         @param mock_open {Mock} Patched file-opening function that raises an operating-system error.
 
         @exception OSError Mocked write operation is denied.
@@ -597,25 +601,6 @@ class TestAudioArt(TestCase):
         self.assertEqual(cm.exception.errno, errno.EACCES)
         self.assertEqual(cm.exception.strerror, "Permission denied")
         mock_open.assert_called_once()
-
-
-def get_method_names(cls):
-    '''
-    @brief Get names of test methods defined by a class.
-
-    @details Filters class methods to names that begin with the test prefix.
-
-    @param cls {type} Class containing test methods.
-
-    @return method_names {list[str]} Names of test methods defined by the class.
-    '''
-
-    method_names = []
-    for name, obj in inspect.getmembers(cls):
-        if inspect.isfunction(obj) or inspect.ismethod(obj):
-            if name.startswith('test_'):
-                method_names.append(name)
-    return method_names
 
 
 if __name__ == "__main__":

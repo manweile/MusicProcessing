@@ -1,3 +1,5 @@
+/* Format File Level Blocks */
+
 /* Align Doxygen metadata labels and values in compact horizontal rows. */
 dl.section.author,
 dl.section.version,
@@ -24,13 +26,59 @@ dl.section.copyright dd {
   margin-left: 0;
 }
 
-/* all images should be aligned to the left */
+/* Image Rules */
+
+/* All images should be aligned to the left */
 .image {
   text-align: left;
 }
 
-/* Hide documentation-only directories that contain no listed source files. */
-table.directory tr:has(span.iconfolder),
-#nav-tree li:has(> .item > .label > a[href^="dir_"]):not(:has(> .item > a[href="javascript:void(0)"])) {
-  display: none;
+/* Force method signature input parameters to remain inline on one line */
+
+/* Strip spacing rules from the container table */
+div.memproto table.memname {
+  border-spacing: 0 !important;
+  border-collapse: collapse !important;
+  width: auto !important;
+  white-space: normal !important; /* Forces layout code gaps to compress */
+}
+
+/* Force table rows to display inline horizontally */
+div.memproto table.memname tr {
+  display: inline !important; /* Drops flex box grid gaps entirely */
+  float: none !important;
+}
+
+/* Eliminate native padding and layout constraints from parameter cells */
+div.memproto table.memname td {
+  display: inline !important;
+  width: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Hide empty helper cells that Doxygen uses for alignment spacing */
+div.memproto table.memname td:empty,
+div.memproto table.memname td[class=""] {
+  display: none !important;
+}
+
+/* Hide cells that contain only a single whitespace/non-breaking space */
+div.memproto table.memname td.paramtype,
+div.memproto table.memname td.paramdir {
+  display: none !important;
+}
+
+/* Restrict padding values globally and rely purely on uniform right-side gaps */
+div.memproto table.memname td.paramname,
+div.memproto table.memname td.memname {
+  padding-left: 0 !important;
+  padding-right: 0.35rem !important; /* Controlled layout gap directly after commas and labels */
+}
+
+/* Target the exact trailing element cell preceding the closing bracket */
+div.memproto table.memname tr:last-child td:last-child,
+div.memproto table.memname td.paramname:last-child,
+div.memproto table.memname tr:last-child td {
+  padding-right: 0 !important;
 }

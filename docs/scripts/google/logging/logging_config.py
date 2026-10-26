@@ -1,7 +1,7 @@
 # https://betterstack.com/community/guides/logging/python/python-logging-best-practices/
 
 import logging.config
-from pythonjsonlogger import jsonlogger
+
 
 LOGGING = {
     "version": 1,

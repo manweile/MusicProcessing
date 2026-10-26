@@ -14,11 +14,13 @@
 '''
 
 # Standard Modules
-import inspect                                              # for test method discovery
 import os                                                   # for test fixture path operations
 import unittest                                             # for direct test-suite execution
 from unittest import TestCase                               # for test-case assertions and lifecycle hooks
 from unittest.mock import patch                             # for warning-log interception
+
+# Local Module Methods
+from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
 from src.generated_files import GENERATED_PATH              # for generated playlist output paths
@@ -67,7 +69,7 @@ class TestAudioPlaylist(TestCase):
 
         @details Removes the generated playlist file after each test case.
 
-        @param self {TestAudioPlaylist} Test instance containing generated playlist paths.
+        @param self {TestAudioPlaylist} The instance of the test class.
         '''
 
         if os.path.exists(self.generated_m3u):
@@ -82,7 +84,7 @@ class TestAudioPlaylist(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioPlaylist} Test instance containing playlist fixtures.
+        @param self {TestAudioPlaylist} The instance of the test class.
 
         @exception PlaylistError The EXTINF line has no filename delimiter.
         '''
@@ -106,7 +108,7 @@ class TestAudioPlaylist(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioPlaylist} Test instance containing playlist fixtures.
+        @param self {TestAudioPlaylist} The instance of the test class.
         '''
 
         line = "#EXTINF:0,The Eagles-Desperado.m4a"
@@ -123,7 +125,7 @@ class TestAudioPlaylist(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioPlaylist} Test instance containing playlist fixtures.
+        @param self {TestAudioPlaylist} The instance of the test class.
         '''
 
         line = "#EXTINF:0,Sawyer Fredricks - Shots Fired.mp3"
@@ -140,7 +142,7 @@ class TestAudioPlaylist(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioPlaylist} Test instance containing playlist fixtures.
+        @param self {TestAudioPlaylist} The instance of the test class.
         '''
 
         line = "#EXTINF:0,Creedence Clearwater Revival-Fortunate Son.wma"
@@ -150,19 +152,20 @@ class TestAudioPlaylist(TestCase):
 
 
     @patch('src.audio_info.audio_playlist.logger.warning')
-    def test_update_paths(self, mock_warning):
+    def test_update_playlist(self, mock_warning):
         '''
         @brief Test playlist path updates against expected output.
 
-        @details Verifies existing audio paths are written and missing audio paths produce warnings.
+        @details Verifies existing audio paths are written and missing audio paths produce warnings.<br>
+        Patching the warning logger to capture missing audio path warnings.
 
         @test Happy path.
 
-        @param self {TestAudioPlaylist} Test instance containing playlist fixtures.
+        @param self {TestAudioPlaylist} The instance of the test class.
         @param mock_warning {Mock} Patched warning logger for missing audio paths.
         '''
 
-        playlist.update_paths(TESTS_TLD, TEST_M3U)
+        playlist.update_playlist(TESTS_TLD, TEST_M3U)
         m3u_exists = os.path.exists(self.generated_m3u)
         self.assertTrue(m3u_exists)
 
@@ -183,7 +186,7 @@ class TestAudioPlaylist(TestCase):
         self.assertEqual(generated_inf, expected_inf, "List contents should be equal")
 
 
-    def test_update_paths_fail(self):
+    def test_update_playlist_fail(self):
         '''
         @brief Test playlist path updates with a non-playlist file.
 
@@ -191,34 +194,15 @@ class TestAudioPlaylist(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioPlaylist} Test instance containing playlist fixtures.
+        @param self {TestAudioPlaylist} The instance of the test class.
 
         @exception PlaylistError The input file is not a supported playlist.
         '''
 
         with self.assertRaises(PlaylistError) as cm:
-            playlist.update_paths(TESTS_TLD, TEST_MP3_CRUSH)
+            playlist.update_playlist(TESTS_TLD, TEST_MP3_CRUSH)
 
         self.assertEqual(cm.exception.message, f"PlaylistError input file {TEST_MP3_CRUSH} is not a playlist")
-
-
-def get_method_names(cls):
-    '''
-    @brief Get names of test methods defined by a class.
-
-    @details Filters class methods to names that begin with the test prefix.
-
-    @param cls {type} Class containing test methods.
-
-    @return method_names {list[str]} Names of test methods defined by the class.
-    '''
-
-    method_names = []
-    for name, obj in inspect.getmembers(cls):
-        if inspect.isfunction(obj) or inspect.ismethod(obj):
-            if name.startswith('test_'):
-                method_names.append(name)
-    return method_names
 
 
 if __name__ == "__main__":

@@ -15,7 +15,6 @@
 
 # Standard Modules
 import fnmatch                                              # for filename pattern matching
-import gc                                                   # for garbage collection management
 import json                                                 # for JSON parsing and handling
 import logging                                              # for logging messages
 import os                                                   # for operating system dependent functionality
@@ -49,8 +48,6 @@ from src.generated_files import GENERATED_PATH              # for generated file
 from src.audio_info.audio_metadata import AudioMetadata     # for audio metadata handling functionality
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
 from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functions
-
-gc.enable()
 
 ## @var logger
 # @brief Logger instance for the module.
@@ -97,6 +94,8 @@ class AudioArt():
         @brief Initializes the AudioArt class.
 
         @details Initializes an AudioArt instance without instance-specific state.
+
+        @param self {AudioArt} The instance of the class.
         '''
 
         pass
@@ -136,6 +135,7 @@ class AudioArt():
         Bytes 29 through 29 + image size: image data, beginning b'\xff\xd8\xff\xe0'.
         @endcode
 
+        @param self {AudioArt} The instance of the class.
         @param data {bytearray} The byte attribute data from asf audio WM/Picture tag.
         @return unpacked {tuple} Contains the MIME type, raw image data, type indicator, and image description.
 
@@ -202,6 +202,7 @@ class AudioArt():
 
         @details Writes the extracted image data to the Folder.jpg file in the audio file's album directory.
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
         @param image_data {bytearray} The image bytes extracted from audio file.
 
@@ -237,7 +238,9 @@ class AudioArt():
         @details Extracts album art as Folder.jpg in the input audio file's album directory.<br>
         Attempts video-stream extraction first, then format-specific metadata-tag extraction.
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -292,7 +295,9 @@ class AudioArt():
 
         @details Input file is expected to have embedded cover art.
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
+        @return {None} This function does not return any value.
 
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -338,7 +343,9 @@ class AudioArt():
         -y: to overwrite output file if needed
         @endcode
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -373,7 +380,9 @@ class AudioArt():
 
         @details Input file is expected to have cover art.
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
+        @return {None} This function does not return any value.
 
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -409,7 +418,9 @@ class AudioArt():
 
         @details Extracts the front-cover picture when present; otherwise extracts the first embedded picture.
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to FLAC file.
+        @return {None} This function does not return any value.
 
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -440,7 +451,9 @@ class AudioArt():
 
         @details Input file is expected to have cover art.
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
+        @return {None} This function does not return any value.
 
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -471,8 +484,11 @@ class AudioArt():
         @details Processes all valid audio files when no file pattern is specified.<br>
         Requires a valid audio extension such as '.mp3', '.m4a', '.wma', or '.flac' when a pattern is specified.
 
-        @param start_path {str} The starting point of the directory walk.
+        @param self {AudioArt} The instance of the class.
+        @param start_path {str} The starting point of the directory walk.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -537,6 +553,7 @@ class AudioArt():
         file_path: the path to the media file to be analyzed by ffprobe
         @endcode
 
+        @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return has_stream {bool} True when a video stream is present; otherwise False.
 
@@ -582,7 +599,10 @@ class AudioArt():
         @details Skips album directories that already contain a folder-art file.<br>
         Copies a matching generated AlbumArt JPEG into the album directory when it is available.
 
-        @param input_path {str} The full path to album directory.
+        @param self {AudioArt} The instance of the class.
+        @param input_path {str} The full path to album directory.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -612,13 +632,13 @@ class AudioArt():
                 album_jpg = album_dir_name + ".jpg"
 
                 # get the album art directory, per the project hierarchy
-                # eg: D:\MusicProcessing\src\generated_files\ALbumArt
+                # eg: D:\MusicProcessing\src\generated_files\AlbumArt
                 album_art_dir = os.path.join(GENERATED_PATH, ALBUM_ART)
                 album_art_dir_content = os.listdir(album_art_dir)
 
                 if album_jpg in album_art_dir_content:
                     album_art_jpg = os.path.join(album_art_dir, album_jpg)
-                    # eg: D:\MusicProcessing\src\generated_files\ALbumArt\Best Of The Blues, Vol. 1.jpg
+                    # eg: D:\MusicProcessing\src\generated_files\AlbumArt\Best Of The Blues, Vol. 1.jpg
                     # eg: C:\Music\Albert Collins\Best Of The Blues, Vol. 1\Folder.jpg
                     folder_jpg = os.path.join(album_path, FOLDER_ART)
                     shutil.copy(album_art_jpg, folder_jpg)

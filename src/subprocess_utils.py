@@ -14,7 +14,6 @@
 '''
 
 # Standard Modules
-import gc                                                   # for garbage collection management
 import logging                                              # for module logging
 import os                                                   # for operating-system interfaces
 import shlex                                                # for command formatting
@@ -37,8 +36,6 @@ from src import UTF8                                        # for UTF-8 text enc
 # Local Module Errors
 from src import FfmpegProcessError                          # for FFmpeg process failures
 
-gc.enable()
-
 ## @var logger
 # @brief Logger instance for the module.
 # @details Sets the logger name to the current module name.
@@ -59,11 +56,13 @@ class SubprocessUtilities():
     @details This class provides utility methods for running subprocess commands, including handling output and errors.
     '''
 
-    def __init__(self) -> None:
+    def __init__(self):
         '''
         @brief Initializes the SubprocessUtilities class.
 
         @details Initializes a SubprocessUtilities instance without instance-specific state.
+
+        @param self {SubprocessUtilities} The instance of the class.
         '''
 
         pass
@@ -75,6 +74,7 @@ class SubprocessUtilities():
 
         @details Runs an ffprobe command asynchronously and redirects output to standard output.
 
+        @param self {SubprocessUtilities} The instance of the class.
         @param command {list[str]} FFprobe command for Popen to run.
         @return stdout {str} The decoded subprocess output.
 
@@ -120,6 +120,7 @@ class SubprocessUtilities():
 
         @details Runs an FFmpeg command asynchronously and redirects output to standard error.
 
+        @param self {SubprocessUtilities} The instance of the class.
         @param export_path {str} Path to destination audio file.
         @param command {list[str]} FFmpeg command for Popen to run.
         @param show_spinner {bool} Flag to use spinner or not. Default True.
@@ -191,6 +192,7 @@ class SubprocessUtilities():
 
         @details Runs a subprocess command and returns the completed process with its spinner.
 
+        @param self {SubprocessUtilities} The instance of the class.
         @param command {list[str]} Command for subprocess to run.
         @param text {str} Text for spinner to display.
         @return results (process, spinner) ({CompletedProcess}, {Yaspin}) Tuple containing completed process and spinner objects.
@@ -238,6 +240,7 @@ class SubprocessUtilities():
 
         @details Runs a subprocess command and returns its completed process.
 
+        @param self {SubprocessUtilities} The instance of the class.
         @param command {list[str]} Command for subprocess to run.
         @return process {CompletedProcess} Completed process object.
 

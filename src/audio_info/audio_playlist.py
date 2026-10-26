@@ -14,7 +14,6 @@
 '''
 
 # Standard Modules
-import gc                                                   # for garbage collection management
 import logging                                              # for module logging
 import os                                                   # for operating-system interfaces
 from os import strerror                                     # for operating-system error messages
@@ -34,8 +33,6 @@ from src import PlaylistError                               # for playlist proce
 
 # Local Module Classes
 from src.dir_processing import DirectoryProcessing          # for directory processing functionality
-
-gc.enable()
 
 ## @var logger
 # @brief Logger instance for the module.
@@ -72,6 +69,8 @@ class AudioPlaylist():
         @brief Initializes the AudioPlaylist class.
 
         @details Initializes an AudioPlaylist instance without instance-specific state.
+
+        @param self {AudioPlaylist} The instance of the class.
         '''
 
         pass
@@ -85,6 +84,7 @@ class AudioPlaylist():
         @details Parses EXTINF entries in the form `#EXTINF:N,<name>.<ext>`, where N is a song duration, -1, or 0.<br>
         @details Supports MP3, M4A, and WMA file extensions.
 
+        @param self {AudioPlaylist} The instance of the class.
         @param line {str} Line of text read from an M3U file containing an EXTINF tag.
         @return audio {str} Audio file name with extension.
 
@@ -120,21 +120,23 @@ class AudioPlaylist():
             return audio
 
 
-    def update_paths(self, tld_path: str, input_m3u: str) -> None:
+    def update_playlist(self, tld_path: str, input_m3u: str) -> None:
         '''
         @brief Updates an old playlist relative pathing.
 
         @details Updates relative paths in an M3U playlist.<br>
         Creates the updated playlist in the generated-files directory.<br>
-        Expects the updated playlist to be moved to the music top-level directory.
+        Expects the updated playlist to be moved to the music top level directory.
 
         @note see https://en.wikipedia.org/wiki/M3U<br>
         My playlists are relative pathed (unlike windows pls files, which are absolute pathed).<br>
         Because I use relative pathing, m3u files MUST live in the top level directory ie in Music<br>
         So a proper relative path will be artist/album/title.mp3
 
+        @param self {AudioPlaylist} The instance of the class.
         @param tld_path {str} The top level directory where playlist and music files are located.
         @param input_m3u {str} The full file path to playlist needing conversion.
+        @return {None} This function does not return any value.
 
         @exception OSError A system related error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -200,9 +202,11 @@ class AudioPlaylist():
         '''
         @brief Updates playlists relative pathing.
 
-        @details Finds M3U playlists beneath the top-level directory and updates their relative paths.
+        @details Finds M3U playlists beneath the top level directory and updates their relative paths.
 
+        @param self {AudioPlaylist} The instance of the class.
         @param tld_path {str} The top level directory where playlist and music files are located.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -219,7 +223,7 @@ class AudioPlaylist():
                         continue
 
                     input_file_path = os.path.join(dir_path, file)
-                    self.update_paths(dir_path, input_file_path)
+                    self.update_playlist(dir_path, input_file_path)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} updating m3u files in tld_path: {tld_path}", stack_info=True)

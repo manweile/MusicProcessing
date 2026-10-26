@@ -29,6 +29,7 @@ class MusicProcessingException(Exception):
 
         @details Initializes the MusicProcessingException with the provided error message.
 
+        @param self {MusicProcessingException} The instance of the class.
         @param message {str} The error message.
         '''
 
@@ -49,6 +50,7 @@ class FfmpegProcessError(MusicProcessingException):
 
         @details Initializes the FfmpegProcessError with the provided error message.
 
+        @param self {FfmpegProcessError} The instance of the class.
         @param message {str} The error message.
         '''
 
@@ -69,6 +71,7 @@ class JSONOutputError(MusicProcessingException):
 
         @details Initializes the JSONOutputError with the provided error message.
 
+        @param self {JSONOutputError} The instance of the class.
         @param message {str} The error message.
         '''
 
@@ -89,6 +92,7 @@ class MetadataTypeError(MusicProcessingException):
 
         @details Initializes the MetadataTypeError with the provided error message.
 
+        @param self {MetadataTypeError} The instance of the class.
         @param message {str} The error message.
         '''
 
@@ -109,6 +113,7 @@ class MusicProcessingError(MusicProcessingException):
 
         @details Initializes the MusicProcessingError with the provided error message.
 
+        @param self {MusicProcessingError} The instance of the class.
         @param message {str} The error message.
         '''
 
@@ -129,6 +134,7 @@ class PathInfoError(MusicProcessingException):
 
         @details Initializes the PathInfoError with the provided error message.
 
+        @param self {PathInfoError} The instance of the class.
         @param message {str} The error message.
         '''
 
@@ -151,6 +157,7 @@ class PlaylistError(MusicProcessingException):
 
         @details Initializes the PlaylistError with the provided error message.
 
+        @param self {PlaylistError} The instance of the class.
         @param message {str} The error message.
         '''
 
@@ -171,6 +178,7 @@ class VideoStreamError(MusicProcessingException):
 
         @details Initializes the VideoStreamError with the provided error message.
 
+        @param self {VideoStreamError} The instance of the class.
         @param message {str} The error message.
         '''
 

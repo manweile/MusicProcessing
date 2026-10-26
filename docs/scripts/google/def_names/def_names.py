@@ -1,5 +1,6 @@
 import inspect
 
+
 class MyClass:
     def method_one(self):
         pass
@@ -20,6 +21,7 @@ class MyClass:
 
     my_attribute = 10
 
+
 def get_method_names(cls):
     """
     Returns a list of names of methods defined within a given class.
@@ -31,6 +33,7 @@ def get_method_names(cls):
             if not name.startswith('__'):
                 method_names.append(name)
     return method_names
+
 
 # Get method names for MyClass
 methods = get_method_names(MyClass)

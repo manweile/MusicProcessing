@@ -15,7 +15,6 @@
 
 # Standard Modules
 import errno                                                # for operating-system error number assertions
-import inspect                                              # for test method discovery
 import os                                                   # for file-system path operations
 import shutil                                               # for test-fixture copying and removal
 import sys                                                  # for file-system root-path tests
@@ -24,6 +23,9 @@ from pathlib import Path                                    # for test-fixture p
 from unittest import TestCase                               # for test-case assertions and lifecycle hooks
 from unittest.mock import Mock                              # for directory operation test doubles
 from unittest.mock import patch                             # for warning-log interception
+
+# Local Module Methods
+from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
 from src import AUDIO_EXTS                                  # for non-audio path assertions
@@ -45,6 +47,7 @@ from tests import TESTS_TLD                                 # for test music dir
 
 # Local Module Errors
 from src import MusicProcessingError                        # for safe-removal error assertions
+from src.errors import PathInfoError                        # for path-info target conflict assertions
 
 # Local Module Classes
 from src.dir_processing import DirectoryProcessing          # for directory functionality under test
@@ -107,7 +110,7 @@ class TestDirectoryProcessing(TestCase):
 
         @details Removes the generated music directory after each test case.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         if os.path.exists(self.generated_tld):
@@ -122,7 +125,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Happy path.
 
-        @param self {TestDirectoryProcessing} Test instance containing CSV fixture paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         csv_dir = self.csv_files
@@ -159,7 +162,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Happy path.
 
-        @param self {TestDirectoryProcessing} Test instance containing result fixture paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         result_dir = self.result_files
@@ -170,7 +173,7 @@ class TestDirectoryProcessing(TestCase):
         data.append("second text line")
         data.append("third text line")
 
-        directory.create_txt(result_filename, data, result_dir)
+        directory.create_txt(result_filename, data, result_dir, None)
 
         created_txt = os.path.join(self.result_files, result_filename + RESULT_EXT)
         created_exists = os.path.exists(created_txt)
@@ -192,7 +195,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Happy path.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         directory.get_audio_file_list(TESTS_TLD)
@@ -211,6 +214,28 @@ class TestDirectoryProcessing(TestCase):
         self.assertTrue(txt_exists)
 
 
+    def test_get_audio_file_rejects_lower_level_paths(self):
+        '''
+        @brief Test audio-file listing rejects artist and album paths.
+
+        @details Verifies reporting requires a top-level directory with artist and album directory levels.
+
+        @test Error case.
+
+        @param self {TestDirectoryProcessing} The instance of the test class.
+
+        @exception MusicProcessingError The input path is an artist or album directory.
+        '''
+
+        artist_path = os.path.join(TESTS_TLD, "Abba")
+        album_path = os.path.join(artist_path, "Waterloo")
+
+        for start_path in [artist_path, album_path]:
+            with self.subTest(start_path=start_path):
+                with self.assertRaises(MusicProcessingError):
+                    directory.get_audio_file_list(start_path)
+
+
     def test_get_ext_file_list_all(self):
         '''
         @brief Test file-list generation for all extensions.
@@ -219,7 +244,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Happy path.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
@@ -246,7 +271,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Happy path.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
@@ -273,7 +298,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Happy path.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
@@ -300,7 +325,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Happy path.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
@@ -327,7 +352,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Happy path.
 
-        @param self {TestDirectoryProcessing} Test instance containing audio fixture paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         file_name = "Sawyer Fredricks - Shots Fired.mp3"
@@ -347,7 +372,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Edge case.
 
-        @param self {TestDirectoryProcessing} Test instance containing audio fixture paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         file_name = "Daughtry-Home.mp3"
@@ -366,7 +391,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Happy path.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         directory.make_dir(self.dir_path)
@@ -383,7 +408,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Error case.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
 
         @exception OSError Mocked directory creation receives an invalid argument.
         '''
@@ -417,7 +442,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Error case.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
 
         @exception OSError Mocked directory creation is denied permission.
         '''
@@ -448,14 +473,43 @@ class TestDirectoryProcessing(TestCase):
 
         @test Happy path.
 
-        @param self {TestDirectoryProcessing} Test instance containing audio fixture paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
-        path_info = directory.path_info(TEST_M4A_DAVIS)
-
-        # successful path_info returns a mp3 file name in generated_files/Music
+        # successful path_info returns a mp3 file name in generated_files/Music/Joshua Davis/The Voice Peformance
         expected_info = os.path.join(GENERATED_PATH, MUSIC_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
-        self.assertEqual(path_info, expected_info)
+
+        default_path_info = directory.path_info(TEST_M4A_DAVIS, None)
+
+        target_path = os.path.join(GENERATED_PATH, MUSIC_TLD)
+        target_path_info = directory.path_info(TEST_M4A_DAVIS, target_path)
+
+        self.assertEqual(default_path_info, expected_info)
+        self.assertEqual(target_path_info, expected_info)
+
+
+    @patch('src.dir_processing.directory_processing.logger.error')
+    def test_path_info_target_same(self, mock_error):
+        '''
+        @brief Test path information when the target path is the same as the input path.
+
+        @details Verifies that path resolution rejects an output target matching the input file's parent directory.<br>
+        Patching the error logger to capture target path conflicts.
+
+        @test Error case.
+
+        @param self {TestDirectoryProcessing} The instance of the test class.
+        @param mock_error {Mock} Patched error logger for target path conflicts.
+        '''
+
+        target = os.path.join(TESTS_TLD, "Joshua Davis", "The Voice Peformance")
+        expected_error = f"PathInfoError target {target} is the same as the input file's parent directory"
+
+        with self.assertRaises(PathInfoError) as context:
+            directory.path_info(TEST_M4A_DAVIS, target)
+
+        self.assertEqual(str(context.exception), expected_error)
+        mock_error.assert_called_once_with(expected_error, exc_info=True)
 
 
     @patch('src.dir_processing.directory_processing.logger.warning')
@@ -463,23 +517,24 @@ class TestDirectoryProcessing(TestCase):
         '''
         @brief Test path information for a non-audio file.
 
-        @details Verifies a playlist input returns none and logs a warning.
+        @details Verifies a playlist input returns none and logs a warning.<br>
+        Patching the warning logger to capture non-audio input warnings.
 
         @test Error case.
 
-        @param self {TestDirectoryProcessing} Test instance containing audio fixture paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         @param mock_warning {Mock} Patched warning logger for non-audio input.
         '''
 
         input_path = os.path.join(TESTS_TLD, "expected.m3u")
 
-        path_info = directory.path_info(input_path)
+        path_info = directory.path_info(input_path, None)
 
         self.assertIsNone(path_info)
         mock_warning.assert_called_once_with(f"File {input_path} is not in {AUDIO_EXTS}")
 
 
-    def test_remove_album_dir(self):
+    def test_remove_albums(self):
         '''
         @brief Test removal of empty album directories.
 
@@ -487,7 +542,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Happy path.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         # need a non-audio file in tld
@@ -547,7 +602,7 @@ class TestDirectoryProcessing(TestCase):
                 /Goodbye Yellow Brick Road
                     Elton John-Saturday Night's Alright for Fighting.wma
         '''
-        directory.remove_empty_album_dir(self.generated_tld)
+        directory.remove_empty_albums(self.generated_tld)
 
         m3u_exists = os.path.exists(m3u_file)
         empty_album_exists = os.path.exists(empty_album_dir)
@@ -561,7 +616,7 @@ class TestDirectoryProcessing(TestCase):
         self.assertTrue(full_album_exists)
 
 
-    def test_remove_album_dir_fail(self):
+    def test_remove_albums_fail(self):
         '''
         @brief Test album-directory removal with an operating-system error.
 
@@ -569,7 +624,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Error case.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
 
         @exception OSError Mocked album-directory removal receives an invalid argument.
         '''
@@ -579,10 +634,10 @@ class TestDirectoryProcessing(TestCase):
         mock_remove_album_dir = Mock(spec=remove_album_dir_directory)
         mock_remove_album_dir.side_effect = OSError(errno.EINVAL, "Invalid argument")
 
-        remove_album_dir_directory.remove_empty_album_dir = mock_remove_album_dir
+        remove_album_dir_directory.remove_empty_albums = mock_remove_album_dir
 
         with self.assertRaises(OSError) as cm:
-            remove_album_dir_directory.remove_empty_album_dir(self.generated_tld)
+            remove_album_dir_directory.remove_empty_albums(self.generated_tld)
 
         self.assertEqual("OSError", cm.exception.__class__.__name__)
         self.assertEqual(cm.exception.errno, 22)
@@ -590,7 +645,7 @@ class TestDirectoryProcessing(TestCase):
         mock_remove_album_dir.reset_mock(return_value=True, side_effect=True)
 
 
-    def test_remove_album_dir_permission(self):
+    def test_remove_albums_permission(self):
         '''
         @brief Test album-directory removal with a permission error.
 
@@ -598,7 +653,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Error case.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
 
         @exception OSError Mocked album-directory removal is denied permission.
         '''
@@ -608,10 +663,10 @@ class TestDirectoryProcessing(TestCase):
         mock_remove_album_dir = Mock(spec=remove_album_dir_directory)
         mock_remove_album_dir.side_effect = OSError(errno.EACCES, "Permission denied")
 
-        remove_album_dir_directory.remove_empty_album_dir = mock_remove_album_dir
+        remove_album_dir_directory.remove_empty_albums = mock_remove_album_dir
 
         with self.assertRaises(OSError) as cm:
-            remove_album_dir_directory.remove_empty_album_dir(self.generated_tld)
+            remove_album_dir_directory.remove_empty_albums(self.generated_tld)
 
         self.assertEqual(cm.exception.errno, errno.EACCES)
 
@@ -626,7 +681,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Happy path.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
         '''
 
         os.makedirs(self.generated_tld)
@@ -649,7 +704,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Error case.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
 
         @exception OSError Mocked pattern removal receives an invalid argument.
         '''
@@ -678,7 +733,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Error case.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
 
         @exception OSError Mocked pattern removal is denied permission.
         '''
@@ -706,7 +761,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Error case.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
 
         @exception MusicProcessingError The requested path is a mount point.
         '''
@@ -737,7 +792,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Error case.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
 
         @exception MusicProcessingError The requested path is the file-system root.
         '''
@@ -762,7 +817,7 @@ class TestDirectoryProcessing(TestCase):
 
         @test Error case.
 
-        @param self {TestDirectoryProcessing} Test instance containing generated output paths.
+        @param self {TestDirectoryProcessing} The instance of the test class.
 
         @exception MusicProcessingError The supplied wildcard pattern is too broad.
         '''
@@ -774,25 +829,6 @@ class TestDirectoryProcessing(TestCase):
 
         self.assertEqual("MusicProcessingError", cm.exception.__class__.__name__)
         self.assertEqual(cm.exception.message, f"{pattern} is too broad")
-
-
-def get_method_names(cls):
-    '''
-    @brief Get names of test methods defined by a class.
-
-    @details Filters class methods to names that begin with the test prefix.
-
-    @param cls {type} Class containing test methods.
-
-    @return method_names {list[str]} Names of test methods defined by the class.
-    '''
-
-    method_names = []
-    for name, obj in inspect.getmembers(cls):
-        if inspect.isfunction(obj) or inspect.ismethod(obj):
-            if name.startswith('test_'):
-                method_names.append(name)
-    return method_names
 
 
 if __name__ == "__main__":

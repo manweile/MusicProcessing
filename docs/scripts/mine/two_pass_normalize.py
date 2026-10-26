@@ -1,4 +1,3 @@
-import json
 import platform
 import subprocess
 from json import JSONDecodeError

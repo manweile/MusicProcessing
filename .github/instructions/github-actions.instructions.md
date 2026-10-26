@@ -43,20 +43,20 @@ applyTo: ".github/workflows/**/*.yml, .github/workflows/**/*.yaml"
 Example:
 
 ```yaml
-# @file clean-storage.yml
+# @file artifact-cleanup.yml
 # @author Gerald Manweiler
 #
-# @brief Auto Clean Actions Storage workflow for GitHub Actions.
+# @brief Artifact Cleanup workflow for GitHub Actions.
 #
-# @details Trigger this workflow daily at midnight or through manual dispatch.
-# Delete workflow runs older than three days while retaining at least three recent runs for each workflow.
+# @details Trigger this workflow through a reusable workflow call or manual dispatch.
+# Delete artifacts older than one day from the current repository.
 #
 # @version 1.0.0
-# @date 2026-08-24
+# @date 2026-08-25
 #
 # @copyright Copyright (c) 2026 Gerald Manweiler
 
-name: Auto Clean Actions Storage
+name: Artifact Cleanup
 ```
 
 - Keep workflow changes minimal and preserve each workflow's existing purpose.

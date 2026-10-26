@@ -14,7 +14,6 @@
 '''
 
 # Standard Modules
-import inspect                                              # for test method discovery
 import logging                                              # for warning-log assertions
 import math                                                 # for bitrate comparison rounding
 import os                                                   # for file-system path operations
@@ -26,6 +25,9 @@ from subprocess import CompletedProcess                     # for subprocess res
 from unittest import TestCase                               # for test-case assertions and lifecycle hooks
 from unittest.mock import Mock                              # for mock test doubles
 from unittest.mock import patch                             # for patched subprocess calls
+
+# Local Module Methods
+from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
 from src import ILT                                         # for loudness normalization targets
@@ -145,13 +147,16 @@ class TestAudioNormalization(TestCase):
         cls.json_decode_msg = "Expecting ',' delimiter"
 
         cls.max_vol_src = TEST_MP3_X
-        cls.max_vol_res = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
+        cls.peak_max_vol_res = "X Ambassadors-Renegades.mp3 is already at target peak: -3.00 dB, peak normalization not needed"
+        cls.rms_max_vol_res = f"X Ambassadors-Renegades.mp3 is already at target rms: {float(TP):.2f} dB, rms normalization not needed"
 
         cls.peak_src = TEST_MP3_CRUSH
         cls.peak_res = os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3")
+        cls.peak_clipping_res = f"clips by 1.0 dB in {cls.peak_res}"
 
         cls.rms_clipping_src = TEST_MP3_CRUSH
-        cls.rms_clipping_res = os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3")
+        rms_clipping_path = os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3")
+        cls.rms_clipping_res = f"clips by 11.00 dB in {rms_clipping_path}"
 
         cls.rms_src = TEST_MP3_SMEAGOL
         cls.rms_res = os.path.join(cls.norm_path, "The Lord of the Rings", "The Two Towers", "Howard Shore-The Taming Of Smeagol.mp3")
@@ -200,7 +205,7 @@ class TestAudioNormalization(TestCase):
 
         @details Removes generated normalization output after each test case.
 
-        @param self {TestAudioNormalization} Test instance containing generated output paths.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         if os.path.exists(self.norm_path):
@@ -215,10 +220,10 @@ class TestAudioNormalization(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioNormalization} Test instance containing expected output paths.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.ebu_normalize_file(self.ebu_dynamic_src, show_spinner=False)
+        normalization.ebu_normalize_file(self.ebu_dynamic_src, None, show_spinner=False)
         self.assertTrue(os.path.exists(self.ebu_dynamic_res))
 
 
@@ -230,10 +235,10 @@ class TestAudioNormalization(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioNormalization} Test instance containing expected output paths.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.ebu_normalize_file(self.ebu_linear_src, show_spinner=False)
+        normalization.ebu_normalize_file(self.ebu_linear_src, None, show_spinner=False)
         self.assertTrue(os.path.exists(self.ebu_linear_res))
 
 
@@ -245,7 +250,7 @@ class TestAudioNormalization(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioNormalization} Test instance containing bitrate fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         bit_rate = normalization.get_bit_rate(self.bit_src)
@@ -261,7 +266,8 @@ class TestAudioNormalization(TestCase):
         '''
         @brief Test bitrate retrieval with invalid JSON output.
 
-        @details Verifies malformed mocked ffprobe output raises a JSON decode error.
+        @details Verifies malformed mocked ffprobe output raises a JSON decode error.<br>
+        Patching SubprocessUtilities.subprocess_run to return invalid JSON.
 
         @code{.text}
         get bit rate command
@@ -275,7 +281,7 @@ class TestAudioNormalization(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioNormalization} Test instance containing bitrate fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
         @param mock_subprocess_run {Mock} Patched subprocess runner returning invalid JSON.
 
         @exception JSONDecodeError Mocked ffprobe output is not valid JSON.
@@ -308,7 +314,7 @@ class TestAudioNormalization(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioNormalization} Test instance containing bitrate fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
 
         @exception IndexError Mocked bitrate retrieval has no indexed result.
         '''
@@ -338,7 +344,7 @@ class TestAudioNormalization(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioNormalization} Test instance containing sample-rate fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         sample_rate = normalization.get_sample_rate(self.sample_rate_src)
@@ -350,7 +356,9 @@ class TestAudioNormalization(TestCase):
         '''
         @brief Test sample-rate retrieval with invalid JSON output.
 
-        @details Verifies malformed mocked ffprobe output raises a JSON decode error.
+        @details Verifies malformed mocked ffprobe output raises a JSON decode error.<br>
+        Patching SubprocessUtilities.subprocess_run to return invalid JSON.
+
 
         @code{.text}
         get sample rate command
@@ -365,7 +373,7 @@ class TestAudioNormalization(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioNormalization} Test instance containing sample-rate fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
         @param mock_subprocess_run {Mock} Patched subprocess runner returning invalid JSON.
 
         @exception JSONDecodeError Mocked ffprobe output is not valid JSON.
@@ -405,7 +413,7 @@ class TestAudioNormalization(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioNormalization} Test instance containing sample-rate fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
 
         @exception IndexError Mocked sample-rate retrieval has no indexed result.
         '''
@@ -435,7 +443,7 @@ class TestAudioNormalization(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioNormalization} Test instance containing volume fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         volumes = normalization.get_volume_info(self.vol_info_src)
@@ -451,11 +459,12 @@ class TestAudioNormalization(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioNormalization} Test instance containing subprocess fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         test_process = self.input_process
         test_process.stderr = (
+            'metadata with braces {in tag}\n'
             '{\n'
             '\t"input_i" : "-16.52",\n'
             '\t"input_tp" : "-3.42",\n'
@@ -495,7 +504,7 @@ class TestAudioNormalization(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioNormalization} Test instance containing subprocess fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
 
         @exception JSONDecodeError Loudnorm stderr contains malformed JSON.
         '''
@@ -535,7 +544,7 @@ class TestAudioNormalization(TestCase):
 
         @test Error case.
 
-        @param self {TestAudioNormalization} Test instance containing subprocess fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
 
         @exception JSONOutputError Loudnorm stderr has no complete JSON object.
         '''
@@ -577,10 +586,10 @@ class TestAudioNormalization(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioNormalization} Test instance containing normalized output paths.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.level_normalize_walk(self.normalized, "ebu", show_spinner=False)
+        normalization.level_normalize_walk(self.normalized, "ebu", None, show_spinner=False)
 
         for audio_file in self.normalized_results:
             audio_exists = os.path.exists(audio_file)
@@ -595,10 +604,10 @@ class TestAudioNormalization(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioNormalization} Test instance containing normalized output paths.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.level_normalize_walk(self.normalized, "peak", show_spinner=False)
+        normalization.level_normalize_walk(self.normalized, "peak", None, show_spinner=False)
 
         audio_exists = os.path.exists(self.peak_res)
         self.assertTrue(audio_exists)
@@ -612,10 +621,10 @@ class TestAudioNormalization(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioNormalization} Test instance containing normalized output paths.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.level_normalize_walk(self.normalized, "rms", show_spinner=False)
+        normalization.level_normalize_walk(self.normalized, "rms", None, show_spinner=False)
 
         audio_exists = os.path.exists(self.rms_res)
         self.assertTrue(audio_exists)
@@ -629,31 +638,59 @@ class TestAudioNormalization(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioNormalization} Test instance containing normalized output paths.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.peak_normalize_file(self.peak_src, show_spinner=False)
+        normalization.peak_normalize_file(self.peak_src, None, show_spinner=False)
         self.assertTrue(os.path.exists(self.peak_res))
 
 
-    def test_peak_normalize_file_max_volume(self):
+    @patch("src.audio_normalize.audio_normalization.TP", "2.0")
+    def test_peak_normalize_file_clipping(self):
         '''
-        @brief Test peak normalization when maximum volume is already reached.
+        @brief Test peak normalization when an unsafe target would clip.
 
-        @details Verifies peak normalization logs that no further adjustment is needed.
+        @details Verifies peak normalization logs a clipping warning.<br>
+        Patching TP to simulate an unsafe target that would cause clipping.<br>
+        Ensures peak normalization refuses a target that would cause clipping, regardless of the file's volume.
 
         @test Edge case.
 
-        @param self {TestAudioNormalization} Test instance containing volume fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(self.max_vol_src, show_spinner=False)
+            normalization.peak_normalize_file(self.peak_src, None, show_spinner=False)
 
-        self.assertIn(self.max_vol_res, cm.output[0])
+        self.assertIn(self.peak_clipping_res, cm.output[0])
+
+
+    @patch.object(AudioNormalization, "get_volume_info", return_value={"max_volume": float(TP) - 1.0})
+    def test_peak_normalize_file_max_volume(self, mock_get_volume_info):
+        '''
+        @brief Test peak normalization when maximum volume is already reached.
+
+        @details Verifies a mocked target peak causes peak normalization to log that no adjustment is needed.<br>
+        Patching the volume-information provider to simulate maximum volume.<br>
+        Ensures peak normalization detects that the file is already at maximum volume and logs a warning accordingly.
+
+        @test Edge case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
+        @param mock_get_volume_info {Mock} Mocked volume-information provider returning the target peak.
+        '''
+
+        module = f"{normalization.__module__}"
+        logger = logging.getLogger(module)
+
+        with self.assertLogs(logger, level=logging.WARNING) as cm:
+            normalization.peak_normalize_file(self.max_vol_src, None, show_spinner=False)
+
+        mock_get_volume_info.assert_called_once_with(self.max_vol_src)
+        self.assertIn(self.peak_max_vol_res, cm.output[0])
 
 
     def test_rms_normalize_file(self):
@@ -664,10 +701,10 @@ class TestAudioNormalization(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioNormalization} Test instance containing normalized output paths.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.rms_normalize_file(self.rms_src, show_spinner=False)
+        normalization.rms_normalize_file(self.rms_src, None, show_spinner=False)
         self.assertTrue(os.path.exists(self.rms_res))
 
 
@@ -677,57 +714,45 @@ class TestAudioNormalization(TestCase):
 
         @details Verifies RMS normalization logs a clipping warning.
 
+        @note The fixed bugs in rms normalize function still pass the test fixture, so mocking was not necessary.
+
         @test Edge case.
 
-        @param self {TestAudioNormalization} Test instance containing RMS fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.rms_normalize_file(self.rms_clipping_src, show_spinner=False)
+            normalization.rms_normalize_file(self.rms_clipping_src, None, show_spinner=False)
 
         self.assertIn(self.rms_clipping_res, cm.output[0])
 
 
-    def test_rms_normalize_max_volume(self):
+    @patch.object(AudioNormalization, "get_volume_info", return_value={"mean_volume": float(TP), "max_volume": float(TP) - 1.0})
+    def test_rms_normalize_max_volume(self, mock_get_volume_info):
         '''
         @brief Test RMS normalization when maximum volume is already reached.
 
-        @details Verifies normalization logs that no further peak adjustment is needed.
+        @details Verifies mocked RMS and peak levels cause normalization to log a clipping warning.<br>
+        Patching the volume-information provider to simulate maximum volume.<br>
+        Ensures the RMS normalization process detects that the file is already at maximum volume and logs a warning accordingly.
 
         @test Edge case.
 
-        @param self {TestAudioNormalization} Test instance containing volume fixtures.
+        @param self {TestAudioNormalization} The instance of the test class.
+        @param mock_get_volume_info {Mock} Mocked volume-information provider.
         '''
 
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(self.max_vol_src, show_spinner=False)
+            normalization.rms_normalize_file(self.max_vol_src, None, show_spinner=False)
 
-        self.assertIn(self.max_vol_res, cm.output[0])
-
-
-def get_method_names(cls):
-    '''
-    @brief Get names of test methods defined by a class.
-
-    @details Filters class methods to names that begin with the test prefix.
-
-    @param cls {type} Class containing test methods.
-
-    @return method_names {list[str]} Names of test methods defined by the class.
-    '''
-
-    method_names = []
-    for name, obj in inspect.getmembers(cls):
-        if inspect.isfunction(obj) or inspect.ismethod(obj):
-            if name.startswith('test_'):
-                method_names.append(name)
-    return method_names
+        mock_get_volume_info.assert_called_once_with(self.max_vol_src)
+        self.assertIn(self.rms_max_vol_res, cm.output[0])
 
 
 if __name__ == "__main__":

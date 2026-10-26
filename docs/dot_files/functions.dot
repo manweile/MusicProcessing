@@ -1,0 +1,108 @@
+digraph music_processing_functions {
+    graph [
+        bgcolor="white",
+        fontname="Helvetica",
+        fontsize=18,
+        label="Music Processing Functions",
+        labelloc="t",
+        nodesep=0.4,
+        rankdir=TB,
+        ranksep=0.55,
+        splines=polyline
+    ];
+
+    node [
+        color="#334155",
+        fillcolor="#F8FAFC",
+        fontname="Helvetica",
+        fontsize=10,
+        margin="0.14,0.09",
+        penwidth=1.2,
+        shape=box,
+        style="rounded,filled"
+    ];
+
+    edge [
+        color="#475569",
+        fontname="Helvetica",
+        fontsize=9,
+        penwidth=1.1
+    ];
+
+    start [fillcolor="#DCFCE7", label="Start main.py"];
+    entry [label="Create custom parser and register subparsers"];
+    parse [label="Parse and validate selected arguments"];
+    dispatch [fillcolor="#DBEAFE", label="main(args): evaluate command inputs"];
+    exception [color="#B91C1C", fillcolor="#FEE2E2", label="Log exception"];
+    end [fillcolor="#E2E8F0", label="End", shape=oval];
+
+    start -> entry -> parse -> dispatch;
+    entry -> exception [label="exception", style=dashed];
+    parse -> exception [label="exception", style=dashed];
+    dispatch -> exception [label="exception", style=dashed];
+    exception -> end;
+
+    subgraph cluster_patterns {
+        color="#94A3B8";
+        fontname="Helvetica";
+        fontsize=13;
+        label="Unique command input patterns";
+        style="rounded";
+
+        directory_branch [fillcolor="#FEF3C7", label="Directory Structure Functions"];
+        directory_calls [label="create-albums\nrename-album-directories\nremove-empty-albums"];
+
+        filename_branch [fillcolor="#FEF3C7", label="Filename Functions"];
+        filename_calls [label="normalize-filename\nnormalize-filename-walk\nremove-pattern\nremove-set-list"];
+
+        art_branch [fillcolor="#FEF3C7", label="Art Functions"];
+        art_calls [label="extract-album-art\nextract-walk\nset-album-art"];
+
+        conversion_branch [fillcolor="#FEF3C7", label="File Conversion Functions"];
+        conversion_calls [label="convert-file\nconvert-walk"];
+
+        levelling_branch [fillcolor="#FEF3C7", label="Levelling Functions"];
+        levelling_calls [label="ebu-file\npeak-file\nrms-file\nlevel-normalize-walk"];
+
+        metadata_branch [fillcolor="#FEF3C7", label="Metadata Editing Functions"];
+        metadata_calls [label="update-genres"];
+
+        playlist_branch [fillcolor="#FEF3C7", label="Playlist Functions"];
+        playlist_calls [label="update-playlist\nupdate-walk"];
+
+        information_branch [fillcolor="#FEF3C7", label="Information Functions"];
+        information_calls [label="clip-check-file\nclip-check-walk\nget-audio-file-list\nget-ext-file-list\nget-media-info-walk\nget-tags-walk"];
+
+        { rank=same; directory_branch; conversion_branch; filename_branch; art_branch; }
+        { rank=same; information_branch; levelling_branch; metadata_branch; playlist_branch; }
+        { rank=same; directory_calls; conversion_calls; filename_calls; art_calls; }
+        { rank=same; information_calls; levelling_calls; metadata_calls; playlist_calls; }
+
+        directory_branch -> directory_calls;
+        filename_branch -> filename_calls;
+        art_branch -> art_calls;
+        conversion_branch -> conversion_calls;
+        levelling_branch -> levelling_calls;
+        metadata_branch -> metadata_calls;
+        playlist_branch -> playlist_calls;
+        information_branch -> information_calls;
+    }
+
+    dispatch -> directory_branch;
+    dispatch -> filename_branch;
+    dispatch -> art_branch;
+    dispatch -> conversion_branch;
+    dispatch -> levelling_branch;
+    dispatch -> metadata_branch;
+    dispatch -> playlist_branch;
+    dispatch -> information_branch;
+
+    directory_calls -> end;
+    filename_calls -> end;
+    art_calls -> end;
+    conversion_calls -> end;
+    levelling_calls -> end;
+    metadata_calls -> end;
+    playlist_calls -> end;
+    information_calls -> end;
+}
