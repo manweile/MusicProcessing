@@ -1,210 +1,381 @@
-# Music Processing
-These scripts process my audio files to the standards I want for my collection.
+<!-- markdownlint-disable MD033 -->
+
+# Music Processing Project
+
+## Documentation Index
+
+1. [Project Environment](docs/md_files/Environment.md) <!-- @subpage project_environment -->
+2. [Example Scripts](docs/md_files/Examples.md) <!-- @subpage example_scripts -->
+3. [Command Lines](docs/md_files/Commands.md) <!-- @subpage command_lines -->
+4. [API Documentation](docs/md_files/Documentation.md) <!-- @subpage api_documentation -->
+5. [Unit Testing](docs/md_files/Testing.md) <!-- @subpage unit_testing -->
+6. [Project Workflow](docs/md_files/Workflow.md) <!-- @subpage project_workflow -->
 
 ## Purpose
+
+A project for audio file collection metadata.
+
+My music collection is large and varies widely in metadata quality & accuracy.<br>
+I finally got very tired of the inconsistencies and inaccuracies, so here we are:<br>
+A large Python project to normalize my files the standards I want for my collection.
+
 There are many things I need to do:
+
 - Organize folders per my standard
-  - top level dir
-    - artist sub dir
-      - album sub dirs
-        - find cover art for album dirs
-- Rename files per my format
-  - artist-title
+- Rename songs files per my format
 - Convert all non-mp3 audio files to mp3
-- Update metadata tags
-  - ensure all tags are ID3v2.3
-    - up convert any ID3 < v2.3 to 2.3
-    - down convert any ID3v2.4 to 2.3
-    - convert APEv2 to ID3v2.3
-  - ensure all songs have these tags:
-    - album
-    - album artist
-    - artist
-    - date
-    - genre
-    - title
-    - front cover album art
-  - if possible, populate these "nice to have" tags:
-    - composer
-    - copyright
-    - disc
-    - publisher
-    - track
+- Map all metadata to ID3v2.3
+  - Remove any other metadata encoding
+- Ensure all songs have required metadata
+- If possible, populate optional metadata
 - Normalize volume levels
 
-## Source Files
+## Usage
 
-### Location
-The source location is on my HTPC (home theatre personal computer).
-These files have all been metadata edited with Windows Media Player.
-- Almost all have album art
-- Almost all song files are in my preferred filename format
-- The majority are mp3 files (my preferred format)
-- Most have my preferred directory structure
+**Note**<br>
+Any file paths with spaces must be be encapsulated in quotation marks; it's really best practice to do it all the time.
 
-### Working Copy
-The files on the HTPC will be copied as is to a micro-sd card.
-The files will be copied to respective hdd (ubuntu laptop and win 10 desktop).
-The project will read files from the respective hdd.
+```text
+PS D:\MusicProcessing> python main.py --help
+usage: main.py [-h] command ...
 
-### Directory Structure
-My preferred directory structure is: "drive":\"top level dir"\"artist name"\"album name"\, with the songs for the album.
-- All the songs for that artist, irregardless of what album they are from will be under the artist directory
-- There is not a directory for compilation albums
-  - songs from compilation albums are under the contributing artist
+Music Processing
 
-### Audio Filename Format & Type/Metadata
-My preferred filename format is "artist name"-"song title", or "artist name" - "song title".
-My preferred audio file type & metadata is mp3 with ID3v2.3 tags.
+options:
+  -h, --help                                                show this help message and exit
 
-## Audio File Types
-There are different audio file types
-- mp3
-  - this is the majority file type, and my preferred final file type
-- wma
-  - not near as many as mp3, but 2nd most likely file type
-- m4a
+subcommands:
+  command
+    convert-file file --target target                       Convert audio file to mp3;
+                                                            mandatory: audio file path;
+                                                            optional: converted file target path
+
+    convert-walk tld --pattern pattern --target target      Convert audio files to mp3;
+                                                            mandatory: start path tld/fld/sld;
+                                                            optional: file ext {.flac|.mp3|.m4a|.wma}; optional: converted files target path
+
+    create-albums tld                                       Create album sub-directories;
+                                                            mandatory: start path tld only
+
+    ebu-file file --target target                           EBU R128 level audio file;
+                                                            mandatory: audio file path;
+                                                            optional: leveled file target path
+
+    extract-album-art file                                  Extract audio file embedded art;
+                                                            mandatory: audio file path
+
+    extract-walk tld --pattern pattern                      Extract audio files embedded art;
+                                                            mandatory: start path tld/fld;
+                                                            optional: file ext {.flac|.mp3|.m4a|.wma}
+
+    get-audio-file-list tld                                 Get CSV list of audio file paths;
+                                                            mandatory: start path tld only
+
+    get-ext-file-list tld --pattern pattern                 Get CSV list of audio file extensions;
+                                                            mandatory: start path tld/fld/sld;
+                                                            optional: file ext {.flac|.mp3|.m4a|.wma}
+
+    get-media-info-walk tld --pattern pattern               Get text list of audio files media info;
+                                                            mandatory: start path tld/fld;
+                                                            optional: file ext {.flac|.mp3|.m4a|.wma}
+
+    get-tags-walk tld --pattern pattern --ffprobe ffprobe   Get text list of audio files metadata tags;
+                                                            mandatory: start path tld/fld;
+                                                            optional: file ext {.flac|.mp3|.m4a|.wma}; optional: use ffprobe True
+
+    level-normalize-walk tld type --target target           Level normalize files per type;
+                                                            mandatory: start path tld/fld; mandatory: level type {ebu|peak|rms};
+                                                            optional: leveled files target path
+
+    normalize-filename file                                 Normalize audio file from its metadata;
+                                                            mandatory: audio file path
+
+    normalize-filename-walk tld                             Normalize audio files from their metadata;
+                                                            mandatory: start path tld/fld/sld
+
+    remove-empty-albums tld                                 Remove empty album sub-directories;
+                                                            mandatory: start path tld/fld
+
+    remove-pattern tld pattern                              Remove files with specified pattern;
+                                                            mandatory: top level directory; mandatory: file pattern
+
+    remove-set-list tld                                     Remove files matching hard-coded pattern set;
+                                                            mandatory: starting path tld/fld/sld
+
+    rename-album-directories tld                            Rename album paths from metadata;
+                                                            mandatory: start path tld only
+
+    peak-file file --target target                          Peak level audio file;
+                                                            mandatory: audio file path;
+                                                            optional: leveled file target path
+
+    rms-file file --target target                           RMS level audio file;
+                                                            mandatory: audio file path;
+                                                            optional: leveled file target path
+
+    set-album-art tld                                       Set albums art file;
+                                                            mandatory: starting path tld/fld
+
+    update-genres tld csv                                   Update songs genre from CSV;
+                                                            mandatory: start path tld only; mandatory: artist genre CSV file path
+
+    update-playlist tld m3u                                 Update playlist file songs path;
+                                                            mandatory: start path tld only; mandatory: playlist file in tld path
+
+    update-walk tld                                         Update playlist files songs path;
+                                                            mandatory: start path tld only
+```
+
+## Sources
+
+I have these primary sources:
+
+- Digital files from my HTPC (home theatre personal computer)
+  - These files have all been metadata edited with Windows Media Player
+  - Almost all have album art
+  - Almost all song files are in my preferred filename format (mp3)
+  - Most have my preferred directory structure
+- Digital purchases from iTunes
+  - they have great metadata & quality
+  - just need to be converted from m4a to mp3
+  - will need proper directory structure
+- Digital acquisitions from friends
+  - wildly varying in metadata quality
+  - MusicBrainz Picard, Discogs, MP3Tag all get used as necessary to complete the metadata (textual and art)
+  - may need conversion to mp3 format
+  - will need proper directory structure
+- Compact Discs I have personally ripped
+  - of course the metadata is perfect ... at least for the newest CD's
+  - ripping software like Exact Audio Copy uses online databases like MusicBrainzPicard et al
+    - not absolutely guaranteed accurate, but I have the CD sleeve, so I can hand bomb in the metadata
+  - will need proper directory structure
+- Vinyl LPS I have digitized
+  - they do need conversion from wav to mp3
+  - metadata has to be added post export
+  - this means getting all the metadata from sources like MusicBrainz Picard & Discogs, and packaging it for addition to files
+    - not absolutely guaranteed accurate, but I have the LP sleeve, so I can hand bomb in the metadata
+  - will need proper directory structure
+
+## Audio Files
+
+There are different audio file types, and they come with different metadata encoding formats.<br>
+And of course, some audio files may have no embedded metadata (text or image).
+
+- flac (Free Lossless Audio Codec)
+  - these are contributed by friends
+  - great audio quality, but larger file size
+  - come with Vorbis metadata encoding
+  - not 100% supported by playback software, especially on older hardware
+- mp3 (MPEG-1 Audio Layer III)
+  - this is the majority of my own files
+  - my preferred final file type - decent compromise between file size and quality
+  - can have APEv2, ID3v1, ID3v1.1, ID3v2.3, ID3v2.4 metadata encoding
+    - ID3v2.3 is my preferred metadata encoding
+  - almost universally supported by playback software (both the mp3 audio format and ID3v2.3 metadata encoding)
+- m4a (MPEG-4 Audio)
   - these are iTunes purchase & downloads
+  - come with MP4 metadata encoding (which applies to both .m4a and .mp4 extensions)
+  - not 100% supported by playback software, especially on older hardware
+- wma (Windows Media Audio)
+  - designed to store compressed digital audio music files, similar to an MP3
+    - often played back through Windows Media Player, which is no longer reliable/available Windows 10 & up
+  - come with ASF metadata encoding (Microsoft - just gotta make things *confusing* and not keeping similar naming)
+  - not 100% supported by playback software, especially on older hardware
+- wav (Waveform Audio File Format)
+  - don't have any yet, but I do anticipate needing them - best format for digitizing vinyl LPS
+  - very large size but high quality
+  - can come with APEv2/ID3v1/ID3v1.1/ID3v2.3/ID3v2.4 metadata encoding, also BWF/iXML/RIFF INFO chunks
+  - not 100% supported by playback software, especially on older hardware
 
-## Playlist File Types
-- m3u
-  - general playlist file
+## Playlist Files
 
-# Tools
-There are several different tools I can use.
+I prefer m3u playlist format. Originally designed for mp3 files, they are the de facto standard playlist format.<br>
+They are relative pathed to the songs they list (they *must* reside in the top level directory).<br>
+They are text editor editable, and almost universally supported by player software.<br>
 
-## Tag Editors & Databases
+I prefer to name playlist files descriptively - "Favourites", "Symphonic Rock", "Romantic", etc.
+
+## Metadata Tag Editors & Databases
 
 ### [Mp3Tag](https://www.mp3tag.de/en/)
-Mp3Tag is a multi-format (audio files & metadata schemas) tag editor.
-It supports uses Discogs, MusicBrainz picard and freedb for information sources.
-Basic paradigm is batch editing of single audio files.
+
+Mp3Tag is a multi-format (audio files & metadata encoding schemas) tag editor.<br>
+It supports uses Discogs, MusicBrainz picard and freedb for information sources.<br>
+Basic paradigm is batch editing of single audio files.<br>
+It's my go to.
+
 #### MP3Tag Pros
+
 - doesn't add a lot of extraneous metadata
 - batch editing of tags & files
 - reasonably intuitive UI
 - spreadsheet style display
+
 #### MP3Tag Cons
+
 - will prefer APE tags or ID3, which can be confusing and cause saving failures
 - metadata browser search & retrieval can fail on same song that MusicBrainz succeeds with
 
 ### [puddletag](https://docs.puddletag.net/)
-puddletag is essentially the Ubuntu equivalent of MP3tag
 
-### [MusicBrainz Picard](https://picard-docs.musicbrainz.org/v2.13/en/index.html):
-MusicBrainz is both a tag editor (Picard) & database (MusicBrainz).
-Basic paradigm is processing one album at a time.
+puddletag is essentially the Ubuntu equivalent of MP3Tag. My go to on Ubuntu.
+
+#### puddletag Cons
+
+- up to date code
+
+### [MusicBrainz Picard](https://picard-docs.musicbrainz.org/v2.13/en/index.html)
+
+MusicBrainz is both a multiple metadata encoding schema tag editor (Picard) & database (MusicBrainz).<br>
+Basic paradigm is processing one album at a time.<br>
+It's the pro from Dover when MP3tag/puddleTag don't cut the mustard.
+
 #### MusicBrainz Picard Pros
+
 - can add a significant amount of metadata (more than  I really need)
 - better metadata browser search and retrieval
-- good metadata accuracy
+- more likely to have officially released metadata
+
 #### MusicBrainz Picard Cons
+
 - not as intuitive UI
 - does not have full support for .wav files
 - not a batch editor
 
 ### [Discogs](https://www.discogs.com/)
-Discogs is a music info database.
-#### Discogs Pros
-- tends to have more metadata available
-#### Discogs Cons
-- metadata is mostly user uploaded and not as accurate as official release images
 
-## Audio File Processing
+Discogs is a music info database. MP3tag/puddleTag use it under the hood, but you can use it directly.<br>
+It's really good for album art, often succeeding when MusicBrainz Picard fails.
+
+#### Discogs Pros
+
+- tends to have more metadata available
+
+#### Discogs Cons
+
+- metadata is mostly user uploaded and not as accurate as official released
+
+## Audio & Playlist File Processing
+
+### [Audacious](https://audacious-media-player.org/)
+
+Open source audio player. Alternative playlist editor and WMP alternative.
+
+#### Audacious Pros
+
+- Free, open source
+- Runs on Windows and Linux
+- Native support for flac, mp3, m4a, wav, m3u
+- can use FFMPEG for more file type support
+
+#### Audacious Cons
+
+- No integral help
+- No online help
+
+### [Audacity](https://www.audacityteam.org/)
+
+Open source, free software for recording and editing audio.
+
+#### Audacity Pros
+
+- Free, open source
+- low resource usage
+- plugin support
+
+#### Audacity Cons
+
+- Destructive editing
+- limited mixing capabilities
+- plugin stability issues
+- requires ffmpeg install for some transcoding
+- Audacity configuration to use ffmpeg is challenging
+- no official direct support
+
+### [Exact Audio Copy](https://www.exactaudiocopy.de/)
+
+Exact Audio Copy is a so called audio grabber for audio CDs using standard CD and DVD-ROM drives.<br>
+Best replacement I have found for playlist generation & editing now that WMP is belly up.
+
+#### EAC Pros
+
+- Freeware (on Windows)
+- bit perfect accuracy
+- error correction
+- comprehensive format support
+- detailed logging
+
+#### EAC Cons
+
+- Steep learning curve and setup
+- slower ripping speeds
+- outdated GUI
+- Windows only
 
 ### [ffmpeg](https://www.ffmpeg.org/)
-FFMPEG is a universal media converter.
-It can read a wide variety of inputs - including live grabbing/recording devices - filter, and transcode them into a plethora of output formats.
-The python module pydub wraps ffmpeg for scripting use.
+
+FFMPEG is a universal media converter. Comes with ffprobe, which is information tool.
+
 #### FFMPEG Pros
+
 - fast & versatile
+- It can read a wide variety of inputs, and transcode them into a plethora of output formats
+- The python sub-process module can directly run ffmpeg & ffprobe command lines scripting use
+
 #### FFMPEG Cons
+
 - documentation is difficult to use
 - very complex command line only interface
+- Not for metadata
 
 ### [Goldwave](https://goldwave.com/)
-Goldwave is a professional, full featured, digital audio editor. Use it to play, record, import, edit, restore, process, analyze, and convert audio.
+
+Goldwave is a professional, full featured, digital audio editor.
+
 #### Goldwave Pros
+
 - very good for vinyl LP recording
 - can convert file formats (m4a, wav, wma) to mp3
 - can rip mp3's from cd's
 - can play all of my audio file formats
+
 #### Goldwave Cons
+
 - paid version required for full functionality
 
 ## Audio File Players
 
+Technically, Audacity/EAC/FFmpeg/Goldwave are also media file players, but that's not their primary function.
+
 ### [Windows Media Player](https://support.microsoft.com/en-us/windows/windows-media-player-12-e8f84f54-cd64-865c-2e83-1d8ec121b5b8)
+
 WMP is a full-featured music library that allows you to quickly browse and play your music, as well as create and manage playlists.
+
 #### WMP Pros
+
 - can do some tag editing
 - adequate for ripping mp3's from cd's
 - can create m3u playlists
+- works quite well on my Windows 7 HTPC
+
 #### WMP Cons
+
 - hard coded defaults are a real PITA
   - album art displaying properly
   - playlists
     - wpl files use absolute paths, which makes them not very portable for use on other devices
     - m3u can be created, but not best ui functionality to do so
+  - is useless as of Windows 10 and greater
 
-### [VLC](https://www.videolan.org/vlc/):
+### [VLC](https://www.videolan.org/vlc/)
+
 VLC is a multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols.
-#### VLS Pros
+
+#### VLC Pros
+
 - can so some tag editing, but is really a media player at heart
-- can rip mp3's from cd's, but goldwave is probably better
+- can rip mp3's from cd's, but Audacity/EAC/Goldwave are probably better
+
 #### VLC Cons
-- ui could be more intuitive
 
-# Processing Steps
-
-## Tag Editor Preprocessing
-### Normalization
-I will use MP3Tag/puddletag to:
-- verify all wma files have only WMA tags
-- verify all m4a files have only MP4 tags
-- remove all APEv2 tags from mp3 files
-  - remove all non ID3v2.3 tags from mp3 files
-  - verify all mp3 files have only ID2v2.3 tags
-- rename the few audio files that have incorrect filename format
-- verify all albums have file system acceptable names for directory creation
-- find all metadata with missing tags
-- find cover art for all albums
-### Acquisition & Accuracy
-I will use Musicbrainz Picard and Mp3Tag/puddletag to:
-- acquire missing metadata
-- update missing or inaccurate metadata
-
-## Python Music Processing
-I will use the music processing  python code to:
-- create csv lists
-  - all audio files and their extension
-  - all mp3 files
-  - all wma files
-  - all m4a files
-- convert wma files to mp3 files with my preferred ID3v2.3 tags
-- convert m4a files to mp3 files with my preferred ID3v2.3 tags
-- normalize mp3 file to mp3 files with my preferred ID3v2.3 tags
-- create album sub-dirs for artist directories
-- set cover art for compilation albums
-- extract embedded cover art if no cover art exists for album
-
-# Processing Flow
-- Copy source music from HTPC (\\Office1\Music\). See SourceMusic.md.
-- Prepare metadata (text and art), directory structure & file names. See PreppedMusic.md.
-- Convert music files to mp3 with embedded art. See ConvertedMusic.md.
-- Normalize music to EBU R128 standard. See NormalizedMusic.md.
-- Finalize music with updated playlists. See FinalizedMusic.md.
-
-Copy from source > Prepare metadata > Convert to mp3 > Normalize to EBU R128 > Finalize updated playlists
-
-## GUI Mode (wxPython)
-
-The project now includes a `gui` subcommand using wxPython.
-
-Usage:
-- `python main.py gui`
-
-Requirements:
-- `wxPython` package installed (e.g., `pip install wxPython`).
-
-The GUI exposes convert, normalize, metadata, directory, and playlist operations in tabs.
+- GUI could be more intuitive

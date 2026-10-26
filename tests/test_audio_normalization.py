@@ -1,47 +1,64 @@
 '''
+@class TestAudioNormalization
 @file test_audio_normalization.py
+@author Gerald Manweiler
+
 @brief Defines the test audio normalization class.
 
-@author Gerald Manweiler
+@details Tests audio normalization levels, volume analysis, and loudnorm JSON parsing behavior.
+
+@version 1.0.0
+@date 2026-09-22
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import gc
-import inspect
-import logging
-import math
-import os
-import shutil
-import unittest
-from json import JSONDecodeError
-from pathlib import Path
-from subprocess import CalledProcessError, CompletedProcess
-from unittest import TestCase
-from unittest.mock import Mock
-from unittest.mock import patch
+# Standard Modules
+import logging                                              # for warning-log assertions
+import math                                                 # for bitrate comparison rounding
+import os                                                   # for file-system path operations
+import shutil                                               # for test-fixture copying and removal
+import unittest                                             # for direct test-suite execution
+from json import JSONDecodeError                            # for JSON parsing error assertions
+from pathlib import Path                                    # for test-fixture path manipulation
+from subprocess import CompletedProcess                     # for subprocess result fixtures
+from unittest import TestCase                               # for test-case assertions and lifecycle hooks
+from unittest.mock import Mock                              # for mock test doubles
+from unittest.mock import patch                             # for patched subprocess calls
 
-# local module constants
-from src import ILT, LRA, MUSIC_TLD, TP
-from src.generated_files import GENERATED_PATH
-from tests import TEST_M3U, TEST_MP3_ABBA, TEST_MP3_CRUSH, TEST_MP3_SMEAGOL, TEST_MP3_X
-from tests import TESTS_PATH
-# local module errors
-from src.errors import JSONOutputError
-# local module classes
-from src.audio_normalize import AudioNormalization
+# Local Module Methods
+from tests.support import get_method_names                  # for direct test-suite construction
 
-gc.enable()
+# Local Module Constants
+from src import ILT                                         # for loudness normalization targets
+from src import LRA                                         # for loudness-range normalization target
+from src import MUSIC_TLD                                   # for generated music directory paths
+from src import TP                                          # for true-peak normalization target
+from src.generated_files import GENERATED_PATH              # for generated output paths
+from tests import TEST_M3U                                  # for invalid audio input tests
+from tests import TEST_MP3_ABBA                             # for dynamic normalization tests
+from tests import TEST_MP3_CRUSH                            # for linear normalization tests
+from tests import TEST_MP3_SMEAGOL                          # for RMS normalization tests
+from tests import TEST_MP3_X                                # for max-volume tests
+from tests import TESTS_PATH                                # for normalized test-fixture paths
+
+# Local Module Errors
+from src.errors import JSONOutputError                      # for loudnorm output parsing errors
+
+# Local Module Classes
+from src.audio_normalize import AudioNormalization          # for normalization functionality under test
 
 ## @var normalization
-# @brief instance of AudioNormalization class
-# @details used for accessing class functionality
+# @brief AudioNormalization instance under test.
+# @details Provides access to normalization functionality.
 normalization = AudioNormalization()
 
 
 class TestAudioNormalization(TestCase):
     '''
     @brief Tests AudioNormalization class functions.
+
+    @details Verifies normalization, volume analysis, and error handling for audio fixtures.
     '''
 
     @classmethod
@@ -49,7 +66,20 @@ class TestAudioNormalization(TestCase):
         '''
         @brief Initialize data for test suite.
 
-        @details These datums are used throughout class and only need init once.
+        @details Creates shared fixture paths, expected results, and subprocess values for the test suite.
+
+        @code{.text}
+        loudnorm command line
+        ffmpeg -hide_banner -i TEST_MP3_ABBA -vn -af loudnorm=I={ILT}:TP={TP}:LRA={LRA}:print_format=json -f null -
+
+        -hide_banner; reduce output clutter
+        -i TEST_MP3_ABBA; the input audio file
+        -vn; disable video streams
+        -af loudnorm=I={ILT}:TP={TP}:LRA={LRA}:print_format=json; apply loudnorm filter with specified targets and output in json format
+        -f null -; output to null format (don't create a file)
+        @endcode
+
+        @param cls {type[TestAudioNormalization]} Test class receiving shared fixtures.
         '''
 
         # directory for "walk" type tests: D:\MusicProcessing\tests\NormalizedMusic
@@ -64,7 +94,14 @@ class TestAudioNormalization(TestCase):
         cls.normalized_results = []
         cls.normalized_results.append(os.path.join(cls.norm_path, "Abba", "Waterloo", "ABBA-Waterloo.mp3"))
         cls.normalized_results.append(os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3"))
-        cls.normalized_results.append(os.path.join(cls.norm_path, "The Lord of the Rings", "The Two Towers", "Howard Shore-The Taming Of Smeagol.mp3"))
+        cls.normalized_results.append(
+            os.path.join(
+                cls.norm_path,
+                "The Lord of the Rings",
+                "The Two Towers",
+                "Howard Shore-The Taming Of Smeagol.mp3",
+            )
+        )
 
         # copy input files to converted "walk" directory
         for src_normalized in cls.src_file_paths:
@@ -110,13 +147,16 @@ class TestAudioNormalization(TestCase):
         cls.json_decode_msg = "Expecting ',' delimiter"
 
         cls.max_vol_src = TEST_MP3_X
-        cls.max_vol_res = "X Ambassadors-Renegades.mp3 has max volume: 0.00 dB, peak normalization not needed"
+        cls.peak_max_vol_res = "X Ambassadors-Renegades.mp3 is already at target peak: -3.00 dB, peak normalization not needed"
+        cls.rms_max_vol_res = f"X Ambassadors-Renegades.mp3 is already at target rms: {float(TP):.2f} dB, rms normalization not needed"
 
         cls.peak_src = TEST_MP3_CRUSH
         cls.peak_res = os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3")
+        cls.peak_clipping_res = f"clips by 1.0 dB in {cls.peak_res}"
 
         cls.rms_clipping_src = TEST_MP3_CRUSH
-        cls.rms_clipping_res = os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3")
+        rms_clipping_path = os.path.join(cls.norm_path, "Crush", "Here", "Crush-Live.mp3")
+        cls.rms_clipping_res = f"clips by 11.00 dB in {rms_clipping_path}"
 
         cls.rms_src = TEST_MP3_SMEAGOL
         cls.rms_res = os.path.join(cls.norm_path, "The Lord of the Rings", "The Two Towers", "Howard Shore-The Taming Of Smeagol.mp3")
@@ -148,7 +188,11 @@ class TestAudioNormalization(TestCase):
     @classmethod
     def tearDownClass(cls):
         '''
-        @brief Cleans up the walk type tests source audio files and directories.
+        @brief Clean up normalized test-fixture directories.
+
+        @details Removes the prepared normalization directory after the test suite completes.
+
+        @param cls {type[TestAudioNormalization]} Test class containing shared fixture paths.
         '''
 
         if os.path.exists(cls.normalized):
@@ -157,7 +201,11 @@ class TestAudioNormalization(TestCase):
 
     def tearDown(self):
         '''
-        @brief Clean up the created audio file and directory.
+        @brief Clean up generated audio files and directories.
+
+        @details Removes generated normalization output after each test case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         if os.path.exists(self.norm_path):
@@ -166,10 +214,16 @@ class TestAudioNormalization(TestCase):
 
     def test_ebu_normalize_dynamic(self):
         '''
-        @brief Tests dynamic ebu normalize audio file level.
+        @brief Test dynamic EBU normalization for an audio file.
+
+        @details Verifies dynamic EBU normalization creates the expected output file.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.ebu_normalize_file(self.ebu_dynamic_src, show_spinner=False)
+        normalization.ebu_normalize_file(self.ebu_dynamic_src, None, show_spinner=False)
         self.assertTrue(os.path.exists(self.ebu_dynamic_res))
 
 
@@ -184,16 +238,28 @@ class TestAudioNormalization(TestCase):
 
     def test_ebu_normalize_linear(self):
         '''
-        @brief Tests linear ebu normalize audio file level.
+        @brief Test linear EBU normalization for an audio file.
+
+        @details Verifies linear EBU normalization creates the expected output file.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.ebu_normalize_file(self.ebu_linear_src, show_spinner=False)
+        normalization.ebu_normalize_file(self.ebu_linear_src, None, show_spinner=False)
         self.assertTrue(os.path.exists(self.ebu_linear_res))
 
 
     def test_get_bit_rate(self):
         '''
-        @brief Tests getting bit rate.
+        @brief Test audio bitrate retrieval.
+
+        @details Verifies the retrieved bitrate matches the expected fixture bitrate.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         bit_rate = normalization.get_bit_rate(self.bit_src)
@@ -207,7 +273,27 @@ class TestAudioNormalization(TestCase):
     @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
     def test_get_bit_rate_decode_error(self, mock_subprocess_run):
         '''
-        @brief Tests getting bit rate throws JSONDecodeError.
+        @brief Test bitrate retrieval with invalid JSON output.
+
+        @details Verifies malformed mocked ffprobe output raises a JSON decode error.<br>
+        Patching SubprocessUtilities.subprocess_run to return invalid JSON.
+
+        @code{.text}
+        get bit rate command
+        ffprobe -v quiet -print_format json -show_entries format=bit_rate self.bit_src
+
+        -v quiet; reduce clutter
+        -print_format json; output in json format
+        -show_entries format=bit_rate; get just the bit rate
+        self.bit_src; the path to the media file to be analyzed.
+        @endcode
+
+        @test Error case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
+        @param mock_subprocess_run {Mock} Patched subprocess runner returning invalid JSON.
+
+        @exception JSONDecodeError Mocked ffprobe output is not valid JSON.
         '''
 
         bit_rate = None
@@ -231,7 +317,15 @@ class TestAudioNormalization(TestCase):
 
     def test_get_bit_rate_index_error(self):
         '''
-        @brief Tests getting sample rate throws IndexError.
+        @brief Test bitrate retrieval with an index error.
+
+        @details Verifies the mocked bitrate method propagates an index error.
+
+        @test Error case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
+
+        @exception IndexError Mocked bitrate retrieval has no indexed result.
         '''
 
         bit_rate = None
@@ -253,7 +347,13 @@ class TestAudioNormalization(TestCase):
 
     def test_get_sample_rate(self):
         '''
-        @brief Tests getting sample rate.
+        @brief Test audio sample-rate retrieval.
+
+        @details Verifies the retrieved sample rate matches the expected fixture value.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         sample_rate = normalization.get_sample_rate(self.sample_rate_src)
@@ -263,7 +363,29 @@ class TestAudioNormalization(TestCase):
     @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
     def test_get_sample_rate_decode_error(self, mock_subprocess_run):
         '''
-        @brief Tests getting sample rate throws JSONDecodeError.
+        @brief Test sample-rate retrieval with invalid JSON output.
+
+        @details Verifies malformed mocked ffprobe output raises a JSON decode error.<br>
+        Patching SubprocessUtilities.subprocess_run to return invalid JSON.
+
+
+        @code{.text}
+        get sample rate command
+        ffprobe -v quiet -select_streams a:0 -show_entries stream=sample_rate -of json self.sample_rate_src
+
+        -v quiet: reduce clutter
+        -select_streams a:0; only want audio stream
+        -show_entries stream=sample_rate; we only get the one entry specified
+        -of json; to output in json format
+        self.sample_rate_src; the path to the audio file to be analyzed.
+        @endcode
+
+        @test Error case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
+        @param mock_subprocess_run {Mock} Patched subprocess runner returning invalid JSON.
+
+        @exception JSONDecodeError Mocked ffprobe output is not valid JSON.
         '''
 
         sample_rate = None
@@ -294,7 +416,15 @@ class TestAudioNormalization(TestCase):
 
     def test_get_sample_rate_index_error(self):
         '''
-        @brief Tests getting sample rate throws IndexError.
+        @brief Test sample-rate retrieval with an index error.
+
+        @details Verifies the mocked sample-rate method propagates an index error.
+
+        @test Error case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
+
+        @exception IndexError Mocked sample-rate retrieval has no indexed result.
         '''
 
         sample_rate = None
@@ -316,7 +446,13 @@ class TestAudioNormalization(TestCase):
 
     def test_get_volume_info(self):
         '''
-        @brief Tests getting volume info.
+        @brief Test audio volume information retrieval.
+
+        @details Verifies the mean and maximum volume values match the expected fixture data.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         volumes = normalization.get_volume_info(self.vol_info_src)
@@ -326,11 +462,18 @@ class TestAudioNormalization(TestCase):
 
     def test_loudnorm_json_parse(self):
         '''
-        @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output.
+        @brief Test parsing loudnorm JSON from ffmpeg stderr.
+
+        @details Verifies valid loudnorm stderr JSON is converted to the expected dictionary.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         test_process = self.input_process
         test_process.stderr = (
+            'metadata with braces {in tag}\n'
             '{\n'
             '\t"input_i" : "-16.52",\n'
             '\t"input_tp" : "-3.42",\n'
@@ -364,7 +507,15 @@ class TestAudioNormalization(TestCase):
 
     def test_loudnorm_json_parse_decode_error(self):
         '''
-        @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output with JSONDecodeError.
+        @brief Test loudnorm JSON parsing with malformed JSON.
+
+        @details Verifies malformed loudnorm stderr JSON raises a JSON decode error.
+
+        @test Error case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
+
+        @exception JSONDecodeError Loudnorm stderr contains malformed JSON.
         '''
 
         # the input_process.stderr json string has extra closing curly to trigger a JSONDecodeError
@@ -396,7 +547,15 @@ class TestAudioNormalization(TestCase):
 
     def test_loudnorm_json_parse_find_error(self):
         '''
-        @brief Tests parsing json element out of ffmpeg loudnorm subprocess stderr output with JSONOutputError.
+        @brief Test loudnorm JSON parsing without a complete JSON object.
+
+        @details Verifies incomplete loudnorm stderr output raises a JSON output error.
+
+        @test Error case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
+
+        @exception JSONOutputError Loudnorm stderr has no complete JSON object.
         '''
 
         # the input_process.stderr json string must be missing 1 of the curly braces {},
@@ -430,10 +589,16 @@ class TestAudioNormalization(TestCase):
 
     def test_normalize_walk_ebu(self):
         '''
-        @brief Tests ebu normalizes all audio files in specified top level directory.
+        @brief Test EBU normalization for all audio files in a directory.
+
+        @details Verifies directory-walk EBU normalization creates every expected output file.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.normalize_walk(self.normalized, "ebu", show_spinner=False)
+        normalization.level_normalize_walk(self.normalized, "ebu", None, show_spinner=False)
 
         for audio_file in self.normalized_results:
             audio_exists = os.path.exists(audio_file)
@@ -442,10 +607,16 @@ class TestAudioNormalization(TestCase):
 
     def test_normalize_walk_peak(self):
         '''
-        @brief Tests peak normalizes all audio files in specified top level directory.
+        @brief Test peak normalization for all audio files in a directory.
+
+        @details Verifies directory-walk peak normalization creates the expected output file.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.normalize_walk(self.normalized, "peak", show_spinner=False)
+        normalization.level_normalize_walk(self.normalized, "peak", None, show_spinner=False)
 
         audio_exists = os.path.exists(self.peak_res)
         self.assertTrue(audio_exists)
@@ -453,10 +624,16 @@ class TestAudioNormalization(TestCase):
 
     def test_normalize_walk_rms(self):
         '''
-        @brief Tests rms normalizes all audio files in specified top level directory.
+        @brief Test RMS normalization for all audio files in a directory.
+
+        @details Verifies directory-walk RMS normalization creates the expected output file.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.normalize_walk(self.normalized, "rms", show_spinner=False)
+        normalization.level_normalize_walk(self.normalized, "rms", None, show_spinner=False)
 
         audio_exists = os.path.exists(self.rms_res)
         self.assertTrue(audio_exists)
@@ -464,81 +641,141 @@ class TestAudioNormalization(TestCase):
 
     def test_peak_normalize_file(self):
         '''
-        @brief Tests peak normalize audio file level.
+        @brief Test peak normalization for an audio file.
+
+        @details Verifies peak normalization creates the expected output file.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.peak_normalize_file(self.peak_src, show_spinner=False)
+        normalization.peak_normalize_file(self.peak_src, None, show_spinner=False)
         self.assertTrue(os.path.exists(self.peak_res))
 
 
-    def test_peak_normalize_file_max_volume(self):
+    @patch("src.audio_normalize.audio_normalization.TP", "2.0")
+    def test_peak_normalize_file_clipping(self):
         '''
-        @brief Tests peak normalize audio file level would have max volume.
+        @brief Test peak normalization when an unsafe target would clip.
+
+        @details Verifies peak normalization logs a clipping warning.<br>
+        Patching TP to simulate an unsafe target that would cause clipping.<br>
+        Ensures peak normalization refuses a target that would cause clipping, regardless of the file's volume.
+
+        @test Edge case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(self.max_vol_src, show_spinner=False)
+            normalization.peak_normalize_file(self.peak_src, None, show_spinner=False)
 
-        self.assertIn(self.max_vol_res, cm.output[0])
+        self.assertIn(self.peak_clipping_res, cm.output[0])
+
+
+    @patch.object(AudioNormalization, "get_volume_info", return_value={"max_volume": float(TP) - 1.0})
+    def test_peak_normalize_file_max_volume(self, mock_get_volume_info):
+        '''
+        @brief Test peak normalization when maximum volume is already reached.
+
+        @details Verifies a mocked target peak causes peak normalization to log that no adjustment is needed.<br>
+        Patching the volume-information provider to simulate maximum volume.<br>
+        Ensures peak normalization detects that the file is already at maximum volume and logs a warning accordingly.
+
+        @test Edge case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
+        @param mock_get_volume_info {Mock} Mocked volume-information provider returning the target peak.
+        '''
+
+        module = f"{normalization.__module__}"
+        logger = logging.getLogger(module)
+
+        with self.assertLogs(logger, level=logging.WARNING) as cm:
+            normalization.peak_normalize_file(self.max_vol_src, None, show_spinner=False)
+
+        mock_get_volume_info.assert_called_once_with(self.max_vol_src)
+        self.assertIn(self.peak_max_vol_res, cm.output[0])
 
 
     def test_rms_normalize_file(self):
         '''
-        @brief Tests rms normalize audio file level.
+        @brief Test RMS normalization for an audio file.
+
+        @details Verifies RMS normalization creates the expected output file.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
-        normalization.rms_normalize_file(self.rms_src, show_spinner=False)
+        normalization.rms_normalize_file(self.rms_src, None, show_spinner=False)
         self.assertTrue(os.path.exists(self.rms_res))
 
 
     def test_rms_normalize_file_clipping(self):
         '''
-        @brief Tests rms normalize audio file level would clip.
+        @brief Test RMS normalization when output would clip.
+
+        @details Verifies RMS normalization logs a clipping warning.
+
+        @note The fixed bugs in rms normalize function still pass the test fixture, so mocking was not necessary.
+
+        @test Edge case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
         '''
 
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.rms_normalize_file(self.rms_clipping_src, show_spinner=False)
+            normalization.rms_normalize_file(self.rms_clipping_src, None, show_spinner=False)
 
         self.assertIn(self.rms_clipping_res, cm.output[0])
 
 
-    def test_rms_normalize_max_volume(self):
+    @patch.object(AudioNormalization, "get_volume_info", return_value={"mean_volume": float(TP), "max_volume": float(TP) - 1.0})
+    def test_rms_normalize_max_volume(self, mock_get_volume_info):
         '''
-        @brief Tests rms normalize audio file level would have max volume.
+        @brief Test RMS normalization when maximum volume is already reached.
+
+        @details Verifies mocked RMS and peak levels cause normalization to log a clipping warning.<br>
+        Patching the volume-information provider to simulate maximum volume.<br>
+        Ensures the RMS normalization process detects that the file is already at maximum volume and logs a warning accordingly.
+
+        @test Edge case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
+        @param mock_get_volume_info {Mock} Mocked volume-information provider.
         '''
 
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
 
         with self.assertLogs(logger, level=logging.WARNING) as cm:
-            normalization.peak_normalize_file(self.max_vol_src, show_spinner=False)
+            normalization.rms_normalize_file(self.max_vol_src, None, show_spinner=False)
 
-        self.assertIn(self.max_vol_res, cm.output[0])
-
-
-def get_method_names(cls):
-    '''
-    @brief Returns a list of names of methods defined within a given class.
-
-    @param cls {Class} The name of the class to get methods list from.
-    @return method_names [{str}] The names of the methods defined in class.
-    '''
-
-    method_names = []
-    for name, obj in inspect.getmembers(cls):
-        if inspect.isfunction(obj) or inspect.ismethod(obj):
-            if name.startswith('test_'):
-                method_names.append(name)
-    return method_names
+        mock_get_volume_info.assert_called_once_with(self.max_vol_src)
+        self.assertIn(self.rms_max_vol_res, cm.output[0])
 
 
 if __name__ == "__main__":
+    '''
+    @brief Run the AudioNormalization test suite directly.
+
+    @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
+
+    @note This test module can be run directly with `python tests/test_audio_normalization.py`.
+
+    @test Execution of the test suite.
+
+    '''
+
     methods = get_method_names(TestAudioNormalization)
 
     suite = unittest.TestSuite()

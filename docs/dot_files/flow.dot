@@ -1,0 +1,102 @@
+digraph music_processing_flow {
+    graph [
+        bgcolor="white",
+        fontname="Helvetica",
+        fontsize=18,
+        label="Music Processing CLI Patterns",
+        labelloc="t",
+        nodesep=0.4,
+        rankdir=TB,
+        ranksep=0.55,
+        splines=polyline
+    ];
+
+    node [
+        color="#334155",
+        fillcolor="#F8FAFC",
+        fontname="Helvetica",
+        fontsize=10,
+        margin="0.14,0.09",
+        penwidth=1.2,
+        shape=box,
+        style="rounded,filled"
+    ];
+
+    edge [
+        color="#475569",
+        fontname="Helvetica",
+        fontsize=9,
+        penwidth=1.1
+    ];
+
+    start [fillcolor="#DCFCE7", label="Start main.py"];
+    entry [label="Create custom parser and register subparsers"];
+    parse [label="Parse and validate selected arguments"];
+    dispatch [fillcolor="#DBEAFE", label="main(args): evaluate command inputs"];
+    exception [color="#B91C1C", fillcolor="#FEE2E2", label="Log exception"];
+    end [fillcolor="#E2E8F0", label="End", shape=oval];
+
+    start -> entry -> parse -> dispatch;
+    entry -> exception [label="exception", style=dashed];
+    parse -> exception [label="exception", style=dashed];
+    dispatch -> exception [label="exception", style=dashed];
+    exception -> end;
+
+    subgraph cluster_patterns {
+        color="#94A3B8";
+        fontname="Helvetica";
+        fontsize=13;
+        label="Unique command input patterns";
+        style="rounded";
+
+        man_file_branch [fillcolor="#FEF3C7", label="mandatory file path:\nconvert-file,\nebu-file, peak-file, rms-file,\nextract-file,\nget-ffprobe-media-info, get-ffprobe-media-tags,\nnormalize-{flac,mp3,mp4,wma}-filename"];
+        man_file_action [label="file_path = getattr(args, 'file')\nCall matching handler(file_path)"];
+
+        man_file_terminal_branch [fillcolor="#FEF3C7", label="mandatory file path\nwith terminal output:\nget-mutagen-tags"];
+        man_file_terminal_action [label="file_path = getattr(args, 'file')\nCall matching handler(file_path)\noutput: pretty print returned tags dictionary"];
+
+        man_tld_branch [fillcolor="#FEF3C7", label="mandatory top level directory:\ncreate-albums, remove-albums,,\nremove-set-list,\nset-album-art,\nget-unique-media,\nlist-audio,\nnormalize-{flac,mp3,mp4,wma}-filename-walk,\nupdate-walk"];
+        man_tld_action [label="tld_path = getattr(args, 'tld')\nCall matching handler(tld_path)"];
+
+        man_tld_opt_pattern_branch [fillcolor="#FEF3C7", label="mandatory top level directory\nwith optional file pattern:\nconvert-walk,\nextract-walk,\nget-ffprobe-media-info-walk,\nlist-type"];
+        man_tld_opt_pattern_action [label="tld_path = getattr(args, 'tld')\nfile_pattern = getattr(args, 'pattern')\nCall matching handler(tld_path, file_pattern)"];
+
+        man_tld_two_opt_branch [fillcolor="#FEF3C7", label="mandatory top level directory\nwith optional file pattern and\nwith optional ffprobe boolean:\nget-tags-walk"];
+        man_tld_two_opt_action [label="tld_path = getattr(args, 'tld')\nfile_pattern = getattr(args, 'pattern')\nffprobe = getattr(args, 'ffprobe')\nCall matching handler(tld_path, file_pattern, ffprobe)"];
+
+        man_tld_man_arg_branch [fillcolor="#FEF3C7", label="mandatory top level directory and\nmandatory second argument:\nlevel-normalize-walk,\nremove-pattern,\nupdate-m3u"];
+        man_tld_man_arg_action [label="Get tld_path,\nget command-specific required arg:\nleveling type, file pattern, or m3u path\nCall matching handler(tld_path, required_argument)"];
+
+        man_tld_man_file_branch [fillcolor="#FEF3C7", label="mandatory top level directory and\nmandatory CSV path\nwith terminal output:\nupdate-genres-from-csv"];
+        man_tld_man_file_action [label="tld_path = getattr(args, 'tld')\ncsv_path = getattr(args, 'csv')\nCall matching handler(tld_path, csv_path)\nsummary = update_genres_from_csv(tld_path, csv_path)"];
+        man_tld_man_file_result [fillcolor="#FEF3C7", label="print summary details", shape=diamond];
+
+        { rank=same; man_file_branch; man_file_terminal_branch; man_tld_branch; }
+        { rank=same; man_tld_opt_pattern_branch; man_tld_two_opt_branch; }
+
+        man_file_branch -> man_file_action;
+        man_file_terminal_branch -> man_file_terminal_action;
+        man_tld_branch -> man_tld_action;
+        man_tld_opt_pattern_branch -> man_tld_opt_pattern_action;
+        man_tld_two_opt_branch -> man_tld_two_opt_action;
+        man_tld_man_arg_branch -> man_tld_man_arg_action;
+        man_tld_man_file_branch -> man_tld_man_file_action -> man_tld_man_file_result;
+    }
+
+    dispatch -> man_file_branch;
+    dispatch -> man_file_terminal_branch;
+    dispatch -> man_tld_branch;
+    dispatch -> optional_pattern_branch;
+    dispatch -> man_tld_two_opt_branch;
+    dispatch -> man_tld_man_arg_branch;
+    dispatch -> man_tld_man_file_branch;
+
+    man_file_action -> end;
+    man_file_terminal_action -> end;
+    man_tld_action -> end;
+    man_tld_opt_pattern_action -> end;
+    man_tld_two_opt_action -> end;
+    man_tld_man_arg_action -> end;
+    man_tld_man_file_result -> end [label="yes: return 1"];
+    man_tld_man_file_result -> end [label="no: return 0"];
+}

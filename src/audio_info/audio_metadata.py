@@ -1,120 +1,173 @@
 '''
+@class AudioMetadata
 @file audio_metadata.py
+@author Gerald Manweiler
+
 @brief Defines the audio metadata class.
 
-@author Gerald Manweiler
+@details AudioMetadata class which encapsulates the functionality for handling and processing audio metadata across various audio file formats.
+
+@version 1.0.0
+@date 2024-06-05
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import fnmatch
-import gc
-import inspect
-import json
-import logging
-import os
-import re
-import shutil
-import sys
-from json import JSONDecodeError
-from pathlib import Path
-from shutil import ExecError
+# Standard Modules
+import csv                                                  # for CSV mapping input
+import fnmatch                                              # for filename pattern matching
+import inspect                                              # for inspecting live objects
+import json                                                 # for JSON handling
+import logging                                              # for logging
+import os                                                   # for operating system interfaces
+import re                                                   # for regular expressions
+import shutil                                               # for high-level file operations
+import sys                                                  # for system-specific parameters and functions
+from json import JSONDecodeError                            # for handling JSON decode errors
+from os import strerror                                     # for operating-system error messages
+from pathlib import Path                                    # for object-oriented filesystem paths
+from shutil import ExecError                                # for handling shutil execution errors
 
-# third party modules
-import mutagen
-import pathvalidate
-from mutagen import FileType
-from mutagen.asf import ASFTags
-from mutagen.id3 import APIC, ID3, ID3TimeStamp
-from mutagen.mp3 import MP3
-from mutagen.mp4 import MP4FreeForm, MP4Tags
-from mutagen._util import MutagenError
-from pathvalidate.error import ValidationError
-from tqdm import tqdm
+# Third Party Modules
+import mutagen                                              # for audio metadata handling
+import pathvalidate                                         # for validating filesystem paths
+from mutagen import FileType                                # for handling different audio file types
+from mutagen._util import MutagenError                      # for handling mutagen errors
+from mutagen.asf import ASF                                 # for handling ASF audio files
+from mutagen.asf import ASFUnicodeAttribute                 # for setting ASF Unicode metadata
+from mutagen.asf import ASFTags                             # for handling ASF tags
+from mutagen.flac import FLAC                               # for handling FLAC audio files
+from mutagen.flac import VCFLACDict                         # for handling FLAC dictionaries
+from mutagen.id3 import APIC                                # for handling ID3 APIC frames
+from mutagen.id3 import ID3                                 # for handling ID3 tags
+from mutagen.id3 import ID3TimeStamp                        # for handling ID3 timestamps
+from mutagen.id3 import TCON                                # for setting ID3 genre tags
+from mutagen.mp3 import MP3                                 # for handling MP3 audio files
+from mutagen.mp4 import MP4                                 # for handling MP4 audio files
+from mutagen.mp4 import MP4FreeForm                         # for handling MP4 freeform atoms
+from mutagen.mp4 import MP4Tags                             # for handling MP4 tags
+from pathvalidate.error import ValidationError              # for handling path validation errors
+from tqdm import tqdm                                       # for displaying progress bars
 
-# local module methods
-from src import add_module_handler
-# local module constants
-from src import ASF_TYPE, AUDIO_EXTS, AUDIO_FILES
-from src import FOLDER_ART
-from src import MP4_TYPE, MP3_EXT, MP3_TYPE
-# local module errors
-from src import MetadataTypeError
-from src import MusicProcessingError
-from src import PathInfoError
-# local module classes
-from src.audio_normalize import AudioNormalization
-from src.dir_processing import DirectoryProcessing
-from src.subprocess_utils import SubprocessUtilities
+# Local Module Methods
+from src import add_module_handler                          # for adding module-specific logging handlers
 
-gc.enable()
+# Local Module Constants
+from src import AUDIO_EXTS                                  # for audio file extensions
+from src import AUDIO_FILES                                 # for audio file paths
+from src import ASF_TYPE                                    # for ASF audio file type
+from src import FLAC_TYPE                                   # for FLAC audio file type
+from src import FOLDER_ART                                  # for folder artwork paths
+from src import FLAC_EXT                                    # for FLAC file extension
+from src import MP3_EXT                                     # for MP3 file extension
+from src import MP3_TYPE                                    # for MP3 audio file type
+from src import MP4_TYPE                                    # for MP4 audio file type
+
+# Local Module Errors
+from src import MetadataTypeError                           # for handling metadata type errors
+from src import MusicProcessingError                        # for handling music processing errors
+from src import PathInfoError                               # for handling path info errors
+
+# Local Module Classes
+from src.audio_normalize import AudioNormalization          # for audio normalization functionality
+from src.dir_processing import DirectoryProcessing          # for directory processing functionality
+from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functionality
 
 ## @var logger
-# @brief the logger instance for module
-# @details sets the logger name to module name
+# @brief Logger instance for the module.
+# @details Sets the logger name to the current module name.
 logger = logging.getLogger(__name__)
 
 ## @var basename
-# @brief name for logger file handler log file
-# @details gets the module file name
+# @brief Base name for the logger file handler.
+# @details Gets the module file name from the current file path.
 basename = os.path.basename(__file__)
 
 add_module_handler(logger, basename)
 
 ## @var directory
-# @brief instance of DirectoryProcessing class
-# @details used for accessing class functionality
+# @brief Directory processing instance.
+# @details Provides directory processing functionality.
 directory = DirectoryProcessing()
 
 ## @var normalization
-# @brief instance of AudioNormalization class
-# @details used for accessing class functionality
+# @brief Audio normalization instance.
+# @details Provides audio normalization functionality.
 normalization = AudioNormalization()
 
 ## @var subprocess_utils
-# @brief instance of SubprocessUtilities class
-# @details used for accessing class functionality
+# @brief Subprocess utilities instance.
+# @details Provides subprocess utility functionality.
 subprocess_utils = SubprocessUtilities()
 
 ## @var TPOS
-# @brief ID3 disc of set tag
-# @details used to set TPOS metadata
+# @brief ID3 disc-of-set tag.
+# @details Sets TPOS metadata.
 TPOS = "TPOS"
 
 ## @var TYER
-# @brief ID3 release year tag
-# @details used to set TYER metadata
+# @brief ID3 release-year tag.
+# @details Sets TYER metadata.
 TYER = "TYER"
 
 ## @var GEN_KEYS
-# @brief the set of ffmpeg generic metadata keys for copying to converted & normalized files
-# @details these keys correspond to what Windows displays as file information in File Explorer
-# @details included for reference but not actually used
+# @brief Generic FFmpeg metadata keys.
+# @details Corresponds to metadata displayed by Windows File Explorer.<br>
+# @details Serves as reference and is not used by the module.
 GEN_KEYS = {
-    'album',                # must have                     ffmpeg mapping: TALB
-    'album_artist',         # must have                     ffmpeg mapping: TPE2
-    'artist',               # must have                     ffmpeg mapping: TPE1
-    'comment',              # PITA, handled as ID3v2.4      ffmpeg mapping: COMM
-    'compilation',          # PITA, is ID3v2.4              ffmpeg mapping: TCMP
-    'composer',             # nice to have                  ffmpeg mapping: TCOM
-    'copyright',            # nice to have                  ffmpeg mapping: TCOP
-    'date',                 # must have                     ffmpeg mapping: TDRC    is ID3v2.4
-    'disc',                 # nice to have                  ffmpeg mapping: TPOS
-    'encoder',              # not interested                ffmpeg mapping: TSSE
-    'encoded_by',           # not interested                ffmpeg mapping: TENC
-    'genre',                # must have                     ffmpeg mapping: TCON
-    'language'              # not interested                ffmpeg mapping: TLAN
-    'lyrics',               # not interested                ffmpeg mapping: USLT
-    'originalyear',         # nice to have                  ffmpeg mapping: TORY
-    'performer',            # not interested                ffmpeg mapping: TPE3
-    'publisher',            # nice to have                  ffmpeg mapping: TPUB
-    'title',                # must have                     ffmpeg mapping: TIT2
-    'track'                 # nice to have                  ffmpeg mapping: TRCK
+    'album',                # using, must have              ID3v2.3 mapping: TALB
+    'album_artist',         # using, must have              ID3v2.3 mapping: TPE2
+    'artist',               # using, must have              ID3v2.3 mapping: TPE1
+    'comment',              # not interested                ID3v2.4 mapping: COMM   doesn't exist in ID3v2.3
+    'compilation',          # not interested                ID3v2.4 mapping: TCMP   doesn't exist in ID3v2.3
+    'composer',             # using, nice to have           ID3v2.3 mapping: TCOM
+    'copyright',            # using, nice to have           ID3v2.3 mapping: TCOP
+    'date',                 # using, must have              ID3v2.4 mapping: TDRC   doesn't exist in ID3v2.3
+    'disc',                 # using, must have              ID3v2.3 mapping: TPOS
+    'encoder',              # not interested                ID3v2.3 mapping: TSSE
+    'encoded_by',           # not interested                ID3v2.3 mapping: TENC
+    'genre',                # using, must have              ID3v2.3 mapping: TCON
+    'language',             # not interested                ID3v2.3 mapping: TLAN
+    'lyrics',               # not interested                ID3v2.3 mapping: USLT
+    'originalyear',         # using, date backup            ID3v2.3 mapping: TORY
+    'performer',            # not interested                ID3v2.3 mapping: TPE3
+    'publisher',            # using, nice to have           ID3v2.3 mapping: TPUB
+    'title',                # using, must have              ID3v2.3 mapping: TIT2
+    'track'                 # using, must have              ID3v2.3 mapping: TRCK
+}
+
+## @var FLAC_KEYS
+# @brief Generic FLAC metadata keys.
+# @details Maps FLAC keys to Windows-compatible metadata.<br>
+# @details Vorbis (flac) keys are always upper case, God only knows why.
+FLAC_KEYS = {
+    'album': 'ALBUM',
+    'album_artist': 'ALBUMARTIST',
+    'artist': 'ARTIST',
+    'composer': 'COMPOSER',
+    'copyright': 'COPYRIGHT',
+    'date': 'DATE',
+    'disc': 'DISCNUMBER',
+    'genre': 'GENRE',
+    'originalyear': 'ORIGINALYEAR',
+    'publisher': 'PUBLISHER',
+    'title': 'TITLE',
+    'track': 'TRACKNUMBER',
+    'year': 'YEAR'
+}
+
+## @var FLAC_TIME_KEYS
+# @brief FLAC time keys.
+# @details Sets TYER metadata.
+FLAC_TIME_KEYS = {
+    'DATE',                                                # preferred key
+    'YEAR',
+    'ORIGINALYEAR'
 }
 
 ## @var MP3_KEYS
-# @brief the set of generic ID3v2.3 (mp3) metadata keys
-# @details the ID3 keys used for mapping to windows display compatible metadata
+# @brief Generic ID3v2.3 metadata keys.
+# @details Maps ID3 keys to Windows-compatible metadata.
 MP3_KEYS = {
     'album': 'TALB',
     'album_artist': 'TPE2',
@@ -128,14 +181,15 @@ MP3_KEYS = {
     'publisher': 'TPUB',
     'title': 'TIT2',
     'track': 'TRCK',
+    'year': 'TYER',
     'originaldate': 'TDOR',                                 # ID3v2.4 field to ID3v2.3 TYER
     'release_date': 'TDRC',                                 # ID3v2.4 field convert YYYY portion to ID3v2.3 TYER
     'custom_original_year': 'TXXX=originalyear'             # ID3 user defined original year field convert to ID3v2.3 TYER
 }
 
 ## @var MP3_TIME_KEYS
-# @brief ID3 time keys
-# @details used to set TYER metadata
+# @brief ID3 time keys.
+# @details Sets TYER metadata.
 MP3_TIME_KEYS = {
     'TYER',                                                 # preferred key
     'TORY',
@@ -145,8 +199,8 @@ MP3_TIME_KEYS = {
 }
 
 ## @var M4A_KEYS
-# @brief the set of generic MP4 (m4a) metadata keys
-# @details the MP4 keys used for mapping to windows display compatible metadata
+# @brief Generic MP4 metadata keys.
+# @details Maps MP4 keys to Windows-compatible metadata.
 M4A_KEYS = {
     'album': '\xa9alb',
     'album_artist': 'aART',
@@ -162,17 +216,17 @@ M4A_KEYS = {
     'track': 'trkn'
 }
 
-## var M4A_TIME_KEYS
-# @brief MP4 time keys
-# @details used to set TYER metadata
+## @var M4A_TIME_KEYS
+# @brief MP4 time keys.
+# @details Sets TYER metadata.
 M4A_TIME_KEYS = {
     '\xa9day',                                              # preferred key
     '----:com.apple.iTunes:originalyear'
 }
 
 ## @var WMA_KEYS
-# @brief the set of generic ASF (wma) metadata keys
-# @details the ASF keys used for mapping to windows display compatible metadata
+# @brief Generic ASF metadata keys.
+# @details Maps ASF keys to Windows-compatible metadata.
 WMA_KEYS = {
     'album': 'WM/AlbumTitle',
     'album_artist': 'WM/AlbumArtist',
@@ -188,9 +242,9 @@ WMA_KEYS = {
     'track': 'WM/TrackNumber'
 }
 
-## var WMA_TIME_KEYS
-# @brief ASF time keys
-# @details used to set TYER metadata
+## @var WMA_TIME_KEYS
+# @brief ASF time keys.
+# @details Sets TYER metadata.
 WMA_TIME_KEYS = {
 
     'WM/Year',                                              # preferred key
@@ -200,28 +254,157 @@ WMA_TIME_KEYS = {
 
 class AudioMetadata():
     '''
-    @brief Defines the base metadata processing used by project.
+    @brief Metadata handling class.
+
+    @details Provides methods for handling and updating audio file metadata across different formats.
     '''
 
     def __init__(self) -> None:
         '''
         @brief Initializes the AudioMetadata class.
 
-        @details A basic class implementation with no instantiation parameters.
+        @details Initializes an AudioMetadata instance without instance-specific state.
 
-        @return AudioMetadata {instance} An instance of the class.
+        @param self {AudioMetadata} The instance of the class.
         '''
 
         pass
 
 
+    def __read_artist_genres(self, csv_path: str) -> dict[str, str]:
+        '''
+        @brief Reads artist genre mappings from a CSV file.
+
+        @details Validates the required comma-delimited CSV header, artist names, and alphabetical row order.
+
+        @param self {AudioMetadata} The instance of the class.
+        @param csv_path {str} The full path to the artist genre CSV file.
+        @return artist_genres {dict[str, str]} Artist directory names mapped to their replacement genres.
+
+        @exception OSError A system related error occurred.
+        @exception ValueError Indicates the CSV file does not conform to the required mapping format.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            artist_genres = {}
+            previous_artist_name = None
+
+            with open(csv_path, mode="r", encoding="utf-8", newline="") as csv_file:
+                reader = csv.DictReader(csv_file)
+
+                if reader.fieldnames != ["artist name", "artist genre"]:
+                    logger.error(f"CSV header invalid in file {csv_path}: {reader.fieldnames}", exc_info=True)
+                    raise ValueError(f"CSV header invalid in file {csv_path}: {reader.fieldnames}")
+
+                for line_number, row in enumerate(reader, start=2):
+                    if len(row) != 2 or None in row:
+                        logger.error(f"CSV row {line_number} invalid in file {csv_path}: {row}", exc_info=True)
+                        raise ValueError(f"CSV row {line_number} invalid in file {csv_path}: {row}")
+
+                    artist_name = row["artist name"]
+                    artist_genre = row["artist genre"]
+
+                    if artist_name is None or not artist_name.strip() or artist_genre is None or not artist_genre.strip():
+                        logger.error(f"CSV row {line_number} must contain a non-empty artist name and genre in file {csv_path}", exc_info=True)
+                        raise ValueError(f"CSV row {line_number} must contain a non-empty artist name and genre in file {csv_path}")
+
+                    if artist_name in artist_genres:
+                        logger.error(f"CSV row {line_number} has duplicate artist name: {artist_name} in file {csv_path}", exc_info=True)
+                        raise ValueError(f"CSV row {line_number} has duplicate artist name: {artist_name} in file {csv_path}")
+
+                    if previous_artist_name is not None and artist_name < previous_artist_name:
+                        logger.error(f"CSV artist names must be alphabetical; row {line_number} is out of order in file {csv_path}", exc_info=True)
+                        raise ValueError(f"CSV artist names must be alphabetical; row {line_number} is out of order in file {csv_path}")
+
+                    artist_genres[artist_name] = artist_genre
+                    previous_artist_name = artist_name
+
+            if not artist_genres:
+                logger.error(f"CSV file {csv_path} must contain at least one artist genre mapping", exc_info=True)
+                raise ValueError(f"CSV file {csv_path} must contain at least one artist genre mapping")
+
+        except OSError as os_error:
+            logger.error(f"OSError {(strerror(os_error.errno))} reading artist genre CSV {csv_path}", exc_info=True)
+            raise os_error
+        except ValueError as value_error:
+            raise value_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} reading artist genre CSV: {csv_path}", stack_info=True)
+            raise e_error
+        else:
+            return artist_genres
+
+
+    def __set_genre(self, file_path: str, artist_genre: str) -> None:
+        '''
+        @brief Replaces an audio file genre tag.
+
+        @details Sets exactly one format-appropriate genre value and saves the file with its existing metadata format.
+
+        @param self {AudioMetadata} The instance of the class.
+        @param file_path {str} The full path to the supported audio file.
+        @param artist_genre {str} The replacement genre value.
+        @return {None} This function does not return any value.
+
+        @exception MetadataTypeError Indicates the loaded file type is not supported.
+        @exception MutagenError A custom exception in Mutagen occurred
+        @exception OSError A system related error occurred.
+        @exception ValueError Indicates the file could not be loaded or tagged.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            audio_file = self.load_any_file(file_path)
+
+            if audio_file.tags is None:
+                audio_file.add_tags()
+
+            if audio_file.tags is None:
+                logger.error(f"ValueError creating metadata tags for file: {file_path}", exc_info=True)
+                raise ValueError(f"ValueError creating metadata tags for file: {file_path}")
+
+            if isinstance(audio_file, FLAC):
+                audio_file.tags[FLAC_KEYS["genre"]] = [artist_genre]
+                audio_file.save()
+            elif isinstance(audio_file, MP3):
+                audio_file.tags[MP3_KEYS["genre"]] = TCON(encoding=3, text=[artist_genre])
+                audio_file.save(v2_version=3)
+            elif isinstance(audio_file, MP4):
+                audio_file.tags[M4A_KEYS["genre"]] = [artist_genre]
+                audio_file.save()
+            elif isinstance(audio_file, ASF):
+                audio_file.tags[WMA_KEYS["genre"]] = [ASFUnicodeAttribute(artist_genre)]
+                audio_file.save()
+            else:
+                logger.error(f"Unsupported metadata type for file: {os.path.basename(file_path)}", exc_info=True)
+                raise MetadataTypeError(f"MetadataTypeError unsupported metadata type for file: {file_path}")
+
+        except MetadataTypeError as mt_error:
+            raise mt_error
+        except MutagenError as m_error:
+            logger.error(f"MutagenError {m_error} setting {artist_genre} for {file_path}", exc_info=True)
+            raise m_error
+        except OSError as os_error:
+            logger.error(f"OSError {(strerror(os_error.errno))} setting {artist_genre} for {file_path}", exc_info=True)
+            raise os_error
+        except ValueError as v_error:
+            raise v_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} setting file: {file_path} with genre: {artist_genre}", stack_info=True)
+            raise e_error
+
+
     def __update_id3(self, date_values: set[str], id3_tags: dict) -> dict:
         '''
-        @brief Updates tags dictionary with newest year value and ands default disc value if needed.
+        @brief Updates tags dictionary with newest year value and a default disc value if needed.
 
+        @details Updates the ID3 tags dictionary with the newest year value from the set of date strings.
+
+        @param self {AudioMetadata} The instance of the class.
         @param date_values ({str}) Set of unique YYYY date strings.
         @param id3_tags {dict} Source ID3 tags.
-        @return output_tags {dict} Updated ID3 tags.
+        @return id3_tags {dict} Updated ID3 tags.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -242,16 +425,41 @@ class AudioMetadata():
             return id3_tags
 
 
-    def convert_file(self, file_path: str, show_spinner: bool = True) -> None:
+    def convert_file(self, file_path: str = None, target: str = None, show_spinner: bool = True) -> None:
         '''
-        @brief Converts a wma, m4a or mp3 audio file to mp3 audio file, using ffmpeg directly.
+        @brief Converts an acceptable audio file to mp3 audio file, using ffmpeg directly.
 
-        @details Converts m4a, mp3 & wma files to mp3 files with ID3v2.3 tags using FFMPEG.
-        @details Calling function MUST supply path to an existing valid audio file with metadata.
-        @details The supplied audio file MUST have co-located Folder.jpg album art.
+        @details Converts flac, m4a, mp3 & wma files to mp3 files with ID3v2.3 tags, including cover art.<br>
+        Metadata is read and mapped to the ID3v2.3 tags, then appended to the conversion command line.<br>
+        The final ffmpeg conversion command line is executed to produce the mp3 file with the desired metadata.<br>
+        Once the mp3 file has been created, the co-located cover art is added via Mutagen.<br>
+        Calling function MUST supply path to an existing valid audio file with valid metadata.<br>
+        The supplied audio file MUST have co-located Folder.jpg album art.
 
+        @code{.text}
+        Initial ffmpeg command line converts audio files to mp3 format, wipes out existing metadata, enforces ID3v2.3 tags, and preserves bit rate.
+        ffmpeg -hide_banner -i file_path -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198
+
+        -hide_banner; reduce output clutter
+        -i file_path; the path to the audio file
+        -vn -map_metadata -1; -vn drops video stream and -map_metadata -1 drops all text metadata
+        -codec:a libmp3lame; sets audio codec for mp3
+        -id3v2_version 3; known bug, MUST specify id3v2 version, else will get ID3v2.4
+        -b:a 128198; ffmpeg will downgrade bitrate if you don't set it
+
+        The initial ffmpeg command line is expanded twice.
+        First expansion adds the preferred metadata once it has been mapped from original audio file to ID3v2.3 tags.
+
+        Second expansion adds the export file path.
+
+        Cover art is added directly via Mutagen MP3 module - it's easier with Mutagen than ffmpeg.
+        @endcode
+
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The path for audio file to be converted.
+        @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Show spinner flag.
+        @return {None} This function does not return any value.
 
         @exception MetadataTypeError Indicates a non-standard metadata type was encountered.
         @exception MusicProcessingError A generic music processing error occurred.
@@ -259,19 +467,12 @@ class AudioMetadata():
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        '''
-        Run create_album_dirs function to ensure there are album directories for every audio file.
-        Then manually review extant album art and create and/or move Folder.jpg, if possible, to each album directory.
-        Next run extract_art_function to extract embedded art as Folder.jpg if needed, into each album directory.
-        Finally run set_album_art function to ensure a Folder.jpg exists in each album directory.
-        '''
-
         data = []
         txt_filename = inspect.currentframe().f_code.co_name
 
         try:
             # get export path for converted files, will return None for an invalid audio extension
-            export_path = directory.path_info(file_path)
+            export_path = directory.path_info(file_path, target)
 
             if export_path is None:
                 logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
@@ -294,27 +495,18 @@ class AudioMetadata():
             data.append(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
             data.append(f"Source directory path: {input_path_parent}")
 
-            '''
-            metadata transfer
-            I dont want every possible tag, just the subset that Windows will display AND are ID3v2.3 format.
-            Comments are ASF/ID3v2.3/MP4.
-            MusicBrainz/MP3Tag/puddletag have difficulty displaying, so passing on transferring comment metadata.
-            Compilation is not ID3v2.3, so passing on transferring compilation metadata.
-            Date info is most problematic part of metadata, ASF/ID3v2.3/MP4 have multiple date type tags,
-            the data types could be a full ISO date, or could just be a 4 digit year string,
-            so I am formatting any found date values to YYYY and mapping to ID3v2.3 TYER field.
-            I have manually edited all audio files without date to have 1963 as default.
-            '''
-            metadata_type = self.get_metadata_type(file_path)
+            metadata_type = self.get_mutagen_metadata_type(file_path)
 
             if metadata_type is None:
                 logger.error(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None", exc_info=True)
                 raise MetadataTypeError(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None")
 
-            input_tags = self.get_any_tags(file_path)
+            input_tags = self.get_mutagen_tags(file_path)
 
             if input_tags:
-                if metadata_type == MP3_TYPE:
+                if metadata_type == FLAC_TYPE:
+                    tags = self.map_flac_tags(input_tags)
+                elif metadata_type == MP3_TYPE:
                     tags = self.map_mp3_tags(input_tags)
                 elif metadata_type == MP4_TYPE:
                     tags = self.map_m4a_tags(input_tags)
@@ -327,13 +519,6 @@ class AudioMetadata():
             media_info = self.get_media_info(file_path)
             bitrate = media_info['bit_rate']
 
-            # ffmpeg
-            # -hide_banner            # reduce output clutter
-            # -i file_path            # specify input file D:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3
-            # -vn -map_metadata -1    # -vn drops video stream and -map_metadata -1 drops all text metadata
-            # -codec:a libmp3lame     # -codec:a libmp3lame sets audio codec for mp3
-            # -id3v2_version 3        # known bug have to specify id3v2 version
-            # -b:a 128198             # ffmpeg will downgrade bitrate if you don't set it
             command = [
                 "ffmpeg",
                 "-hide_banner",
@@ -353,10 +538,7 @@ class AudioMetadata():
                     for key, value in tags.items():
                         command.extend(['-metadata', '{0}={1}'.format(key, value)])
 
-            # export_path -y
-            # specify the output with overwrite flag
-            # eg if D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 exists,
-            # want to replace it
+            # specify the output with overwrite flag, always want clean output
             command.extend([export_path, '-y'])
 
             success_msg = None
@@ -381,7 +563,7 @@ class AudioMetadata():
             # which are not compatible with Windows display
             mp3_file.save(v2_version=3)
 
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except MetadataTypeError as mt_error:
             raise mt_error
@@ -394,14 +576,21 @@ class AudioMetadata():
             raise e_error
 
 
-    def convert_walk(self, start_path: str, file_pattern: str, show_spinner: bool = True) -> None:
+    def convert_walk(self, start_path: str, file_pattern: str, target: str = None, show_spinner: bool = True) -> None:
         '''
         @brief Converts all audio files found in specified path to mp3 format.
 
-        @details Calling functions MUST verify valid start path.
+        @details Calling functions MUST verify valid start path.<br>
+        If file pattern not specified, processes all valid audio files.<br>
+        Otherwise must be a valid audio file extension like '.mp3', '.m4a', '.wma', or '.flac'.
 
-        @param start_path {str} The starting point of the directory walk.
+        @param self {AudioMetadata} The instance of the class.
+        @param start_path {str} The starting point of the directory walk.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
+        @param target {str} Optional, the target directory for exported files. Defaults to None.
+        @param show_spinner {bool} Optional, whether to display a spinner during conversion. Defaults to True.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -420,7 +609,7 @@ class AudioMetadata():
                 for file in file_names:
                     _, input_file_ext = os.path.splitext(file)
 
-                    # file is not mp3, m4a, or wma, so carry on to next file
+                    # file is not flac, mp3, m4a, or wma, so carry on to next file
                     if input_file_ext.lower() not in AUDIO_EXTS:
                         continue
                     elif file_pattern:
@@ -428,7 +617,7 @@ class AudioMetadata():
                             continue
 
                     input_file_path = os.path.join(dir_path, file)
-                    self.convert_file(input_file_path, show_spinner)
+                    self.convert_file(input_file_path, target, show_spinner)
 
         except Exception as e_error:
             if file_pattern:
@@ -441,15 +630,23 @@ class AudioMetadata():
 
 
     def create_album_dirs(self, start_path: str) -> None:
-        '''
-        @brief Creates a album sub-directories in artist directories.
+        r'''
+        @brief Creates second level (sld) album sub-directories in first level (fld) artist directories.
 
-        @details Calling functions MUST verify valid start path.
-        @details Creates the album sub directory for the artist if needed.
-        @details The album name for the directory is drawn from the album metadata field.
-        @details Also creates csv of all audio file paths, album metadata values and sanitized album directory names.
+        @details Creates the album sub directory for the artist from album metadata if needed.<br>
+        Calling functions MUST verify valid start path. Audio files will be moved into their respective album directories.<br>
 
-        @param start_path {str} The tld holding music files.
+        @note Using the Windows invalid character set because it is more restrictive (therefore OS universal).<br>
+        The characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` will be replaced by `-`.<br>
+        Refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename<br>
+        <br>
+        A csv report named after the function (`create_album_dirs`) will be created in csv folder.<br>
+        It will contain all audio file paths, album metadata values and sanitized album directory names.
+
+        @param self {AudioMetadata} The instance of the class.
+        @param start_path {str} The top level directory holding artist directories and music files.<br>
+        The start path must be a valid top-level directory containing artist folders, and only a tld.<br>
+        @return {None} This function does not return any value.
 
         @exception ValidationError A pathlib module validation error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -502,25 +699,31 @@ class AudioMetadata():
                     if file_ext.lower() in AUDIO_EXTS:
                         audio_file = artist_item_path
                         # using ffprobe function cause it is audio file type agnostic
-                        file_media_tags = self.get_media_tags(audio_file)
+                        file_media_tags = self.get_ffprobe_tags(audio_file)
                     else:
                         # we found a non audio file
                         continue
 
-                    if file_media_tags and 'album' in file_media_tags.keys():
-                        # the album metadata should have had all / removed manually,
-                        # but do replace anyways, it would wreak havoc by creating nested dirs
-                        album = file_media_tags['album'].replace("/", "-")
+                    # Returns False if file_media_tags is missing/empty
+                    album_exists = bool(file_media_tags) and any(k.lower() == "album" for k in file_media_tags)
+                    if album_exists:
+                        value_album = None
+                        # looking for exact word match for "album" key, handles album or ALBUM etc
+                        for key, value in file_media_tags.items():
+                            if key.lower() == "album":
+                                value_album = value
+                                # need the actual key for logging
+                                key_album = key
+                                break
+
+                        # replace any slashes, they would wreak havoc by creating nested dirs
+                        album = value_album.replace("/", "-")
 
                         # sanitize because the metadata might have characters invalid for directory names
-                        # platform is "Windows" because it is more restrictive (therefore os universal),
-                        # the characters \, :, *, ?, ", <, >, | will be replaced by "-"
-                        # refer to:
-                        # https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename
-                        sanitized_album_name = pathvalidate.sanitize_filepath(
-                            album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
+                        sanitized_album_name = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows",
+                                                                              validate_after_sanitize=True)
 
-                        data.append([audio_file, file_media_tags['album'], sanitized_album_name])
+                        data.append([audio_file, file_media_tags[key_album], sanitized_album_name])
 
                         # make the album sub directory is REQUIRED before moving the audio file
                         album_path = os.path.join(tld_item_path, sanitized_album_name)
@@ -538,7 +741,7 @@ class AudioMetadata():
                 tld_bar.update(1)
 
             tld_bar.close()
-            directory.create_csv(csv_filename, data, None, header_row, 0)
+            directory.create_csv(csv_filename, data, None, None, header_row, 0)
 
         except ExecError as exc_error:
             logger.exception(f"ExecError moving {file_path} to {destination_path}", exc_info=True)
@@ -551,14 +754,24 @@ class AudioMetadata():
             raise e_error
 
 
-    def get_any_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags:
+    def get_mutagen_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags | VCFLACDict | None:
         '''
         @brief Gets tags for any type of audio file.
 
-        @details Any type means m4a, mp3, or wma files.
+        @details Any type means metadata tags Mutagen library supports.
 
+        @note Mutagen normalizes legacy TYER date frames to its modern TDRC (ie ID3v2.4) representation when reading them.<br>
+        If an audio file metadata is ID3v2.3, and it's raw tag bytes contain a TYER frame without a TRDC frame,<br>
+        Mutagen will read the TYER frame and present it through the TDRC interface.<br>
+        This ensures consistent date handling across different ID3 versions.<br>
+        The audio file's metadata remains IDv2.3, it does not get automatically upgraded to ID3v2.4 version.<br>
+        <br>
+        In multiple ID3 encodings, Mutagen will prioritizes the newest version ID3v2 tag over all others.<br>
+        However, APEv2 tags are ignored when ID3v2 tags are present, or if only APEv2 are present.
+
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
-        @return tags {object} Tag object (one of ID3, MP4Tags, or ASFTags) holding audio file tags or None.
+        @return tags {object} Tag object holding audio file tags, or None when the file has no tags.
 
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -579,13 +792,67 @@ class AudioMetadata():
 
 
     def get_media_info(self, file_path: str) -> dict:
-        '''
+        r'''
         @brief Returns dictionary with media info.
 
-        @details Uses ffprobe to get all media info from any valid audio file.
-        @details This def replaces the native pydub mediainfo function.
-        @details The file_path MUST be for a valid audio file.
+        @details Uses ffprobe to get all media info from any valid audio file.<br>
+        This def replaces the native pydub mediainfo function.<br>
+        The file_path MUST be for a valid audio file.
 
+        @code{.text}
+        This ffprobe cli WILL include 'comment' = 'Cover (front)' if the file has embedded album art in the TAG inner dict.
+        This is because show_streams means ffprobe sees the art data as the video stream metadata instead.
+
+        ffprobe -v error -show_format -show_streams file_path
+        -v quiet; reduce output clutter
+        -show_format; get high level details of media file
+        -show_streams; gets all information about each media stream in the input
+        file_path; the path to the audio file to be analyzed by ffprobe
+
+        The output format from popen_pipe varies by operating system.
+        For Windows, the line endings are `\r\n`, whereas on Linux it is just `\n`.
+        in the output, `DISPOSITION:` and `TAG:` are inner dicts.
+        Eg:
+        [STREAM]`\r\n`key=value`\r\n`...`\r\n`DISPOSITION:key=value`\r\n`...`\r\n`DISPOSITION:key=value`\r\n`[/STREAM]\r\n
+        [FORMAT]`\r\n`key=value`\r\n`...`\r\n`TAG:key=value`\r\n`...`\r\n`TAG:key=value`\r\n`[/FORMAT]
+
+        This output requires a complex regex command to parse out data:
+        rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
+
+        r - so don't have to use escaping (`\\`)
+
+        1st RE (Regular Expression) - to get an inner dict
+        (?:(?P<inner_dict>.*?):)<br>
+        Question mark colon is a non-capturing version of regular parentheses.
+        Matches whatever regular expression is inside the parentheses - in this case, the (?P<inner_dict>.*?).
+        The substring matched by the group cannot be retrieved after performing a match or referenced later in the pattern.
+        [STREAM], [/STREAM], [FORMAT], and [/FORMAT] never match, so they get ignored.
+
+        (?P<inner_dict>.*?):
+        inner_dict is symbolic group name, must be a valid python identifier. The line parsing logic will use it.
+        Period asterisk question mark means match any char except newline, as few as possible characters will be matched.
+        The colon matches the token after a inner_dict name (as in DISPOSITION:)
+        DISPOSITION: and TAG: are inner dicts, they get returned.
+
+        2nd RE - get the key
+        ?(?P<key>.*?)<br>
+        question mark causes the resulting RE to match 0 or 1 repetitions of the preceding RE
+
+        (?P<key>.*?):
+        Question mark P <key> where key is the symbolic group name, and another valid python identifier. The line parsing logic will use it.
+        Period asterisk question mark means match any char except newline, as few as possible characters will be matched
+
+        3rd RE - get the value
+        \=(?P<value>.*?)
+        slash equal escapes the equal sign, which is the token used in key/value pairs.
+        Value is another valid python identifier. The line parsing logic will use it.
+        period asterisk question mark means match any char except newline, as few as possible characters will be matched
+
+        $
+        Dollar anchors a match to end of search string
+        @endcode
+
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return media_info {dict} Media info (codec, duration, size, bitrate...) from filepath.
 
@@ -596,14 +863,6 @@ class AudioMetadata():
         try:
             media_info = None
 
-            r'''
-            this cli WILL include 'comment' = 'Cover (front)' if the file has embedded album art in the TAG inner dict,
-            whereas ASF/ID3/MP4, would place WM\Picture, APIC, or covr AND include the byte data for the art,
-            This is because show_streams means ffprobe sees the art data as the video stream metadata instead.
-            '''
-            # -v quiet reduce output clutter
-            # -show_format get high level details of media file
-            # -show_streams gets all information about each media stream in the input
             command = [
                 "ffprobe",
                 "-v", "error",
@@ -611,57 +870,22 @@ class AudioMetadata():
                 "-show_streams",
                 file_path
             ]
-            r'''
-            output format (Windows, Linux has just \n):
-            [STREAM]\r\nkey=value\r\n...\r\nDISPOSITION:key=value\r\n...\r\nDISPOSITION:key=value\r\n[/STREAM]\r\n
-            [FORMAT]\r\nkey=value\r\n...\r\nTAG:key=value\r\n...\r\nTAG:key=value\r\n[/FORMAT]
-            DISPOSITION and TAG are inner dicts
-            '''
+
             output = subprocess_utils.popen_pipe(command)
 
-            r'''
-            regex string:
-            r
-            so don't have to use escaping (\\)
-
-            1st Regular Expression (RE) - get an inner dict
-            (?:(?P<inner_dict>.*?):)
-            Question mark colon is a non-capturing version of regular parentheses.
-            Matches whatever regular expression is inside the parentheses - the (?P<inner_dict>.*?),
-            but the substring matched by the group cannot be retrieved after performing a match or referenced later in the pattern.
-            [STREAM], [/STREAM], [FORMAT], and [/FORMAT] never match, so they get ignored.
-
-            (?P<inner_dict>.*?):
-            inner_dict is symbolic group name, must be valid python identifier.
-            Period asterisk question mark means match any char except newline, as few as possible characters will be matched.
-            The colon matches the token after a inner_dict name (as in DISPOSITION:)
-            DISPOSITION: and TAG: are inner dicts, they get returned.
-
-            2nd RE - get the key
-            ?(?P<key>.*?)
-            question mark causes the resulting RE to match 0 or 1 repetitions of the preceding RE
-            (?P<key>.*?)
-            Question mark P <key> where key is the symbolic group name.
-            Period asterisk question mark means match any char except newline, as few as possible characters will be matched
-
-            3rd RE - get the value
-            \=(?P<value>.*?)
-            slash equal escapes the equal sign, which is the token used in key/value pairs
-            period asterisk question mark means match any char except newline, as few as possible characters will be matched
-
-            $
-            Dollar anchors a match to end of search string.
-            '''
             rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
             media_info = {}
 
+            # Remove carriage return characters on Windows to normalize line endings
             if sys.platform == 'win32':
                 output = output.replace("\r", "")
 
+            # Split the output into lines and process each line individually
             for line in output.split("\n"):
                 mobj = rgx.match(line)
 
                 if mobj:
+                    # Extract the inner dictionary, key, and value tokens specified in the regex pattern from the regex match object
                     inner_dict, key, value = mobj.groups()
 
                     if inner_dict:
@@ -687,8 +911,14 @@ class AudioMetadata():
         '''
         @brief Gets media info (codec, duration, size, bitrate...) for audio files and saves to file.
 
-        @param file_path {str} The starting point of the directory walk.
-        @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
+        @details Wrapper function for `get_media_info` to walk through the directory tree and get media information for audio files.<br>
+        The collected information is stored in a list and can be saved to a file.
+
+        @param self {AudioMetadata} The instance of the class.
+        @param start_path {str} The starting point of the directory walk.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
+        @param file_pattern {str} The audio file pattern we want to get tags from.
+        @return {None} This function does not return any value.
 
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -728,7 +958,7 @@ class AudioMetadata():
                         logger.error(f"ValueError getting info for audio file: {input_file_path} returned None", exc_info=True)
                         raise ValueError(f"ValueError getting info for audio file: {input_file_path} returned None")
 
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except ValueError as v_error:
             raise v_error
@@ -737,12 +967,29 @@ class AudioMetadata():
             raise e_error
 
 
-    def get_media_tags(self, file_path: str) -> dict:
+    def get_ffprobe_tags(self, file_path: str) -> dict:
         '''
         @brief Gets media tags.
 
         @details Uses ffprobe to get tags from any valid audio file.
 
+        @code{.text}
+        The general media info command line (ffprobe -v quiet -show_format -show_streams file_path)
+        will insert 'comment' = 'Cover (front)' in the tags dictionary when the audio file has embedded art.
+
+        This cli will only return textual audio metadata.
+        ffprobe -v -of json -show_entries format_tags file_path
+
+        -v quiet; reduce console clutter
+        -of json; output in json format
+        -show_entries format_tags; we only care about tags
+        file_path; the path to the audio file
+        @endcode
+
+        @note ffprobe/ffmpeg do not have a native metadata encoding; they only extract/report existing tags from the audio file.<br>
+        However, they are metadata encoding agnostic and will work when Mutagen cannot.
+
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return media_tags {dict} Media tags from filepath.
 
@@ -753,14 +1000,6 @@ class AudioMetadata():
         try:
             media_tags = None
 
-            '''
-            Note that this cli, unlike the general media info cli: ffprobe -v quiet -show_format -show_streams file_path,
-            will NOT insert 'comment' = 'Cover (front)' in the tags dictionary if the audio file has embedded art.
-            This cli will only return textual audio metadata.
-            '''
-            # -v quiet reduce console clutter
-            # -of json output in json format
-            # -show_entries format_tags we only care about tags
             command = [
                 "ffprobe",
                 "-v", "error",
@@ -784,12 +1023,19 @@ class AudioMetadata():
             return media_tags
 
 
-    def get_metadata_type(self, file_path: str) -> str:
+    def get_mutagen_metadata_type(self, file_path: str) -> str:
         '''
-        @brief Returns the metadata type of any audio file.
+        @brief Returns the Mutagen library metadata class type of an audio file.
 
+        @details It is responsibility of calling function to verify the metadata type returned by this function is valid for project usage.
+
+        @note This function *infers* the metadata encoding format by returning the Mutagen library *class* type.<br>
+        This approach is far less code than explicitly checking the file's internal structure.<br>
+        This approach may not fully represent all metadata blocks present in the file.<br>
+
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
-        @return metadata_type {str} The type of the audio file class or None.
+        @return metadata_type {str} The type of the audio file class.
 
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -802,7 +1048,6 @@ class AudioMetadata():
 
             if audio_file is not None:
                 # the built in class name of the filetype returned shows what metadata type
-                # Eg mp3 = MP3, m4a = MP4, wma = ASF
                 metadata_type = audio_file.__class__.__name__
             else:
                 logger.error(f"ValueError getting metadata type: {file_path} returned None", exc_info=True)
@@ -821,12 +1066,17 @@ class AudioMetadata():
         '''
         @brief Gets tags for audio files and saves to file.
 
-        @details File walk will skip any non-audio files like playlists, jpgs, etc.
-        @details Therefore a non-audio ext input will never have a pattern match.
+        @details File walk will skip any non-audio files like playlists, jpgs, etc.<br>
+        Therefore a non-audio ext input will never have a pattern match.<br>
+        This function defaults to using Mutagen for tag extraction unless ffprobe is specified.<br>
+        The lowest allowable directory in `file_path` is an artist directory.<br>
 
-        @param file_path {str} The starting point of the directory walk.
+        @param self {AudioMetadata} The instance of the class.
+        @param file_path {str} The starting point of the directory walk.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
         @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -854,11 +1104,11 @@ class AudioMetadata():
                         tag_file_path = os.path.join(dir_path, file)
 
                         if ffprobe:
-                            input_tags = self.get_media_tags(tag_file_path)
+                            input_tags = self.get_ffprobe_tags(tag_file_path)
                         else:
-                            metadata_type = self.get_metadata_type(tag_file_path)
+                            metadata_type = self.get_mutagen_metadata_type(tag_file_path)
                             if metadata_type in AUDIO_FILES:
-                                input_tags = self.get_any_tags(tag_file_path)
+                                input_tags = self.get_mutagen_tags(tag_file_path)
 
                         if input_tags:
                             if ffprobe:
@@ -872,57 +1122,7 @@ class AudioMetadata():
                         else:
                             data.append(f"\n{tag_file_path} has no metadata")
 
-            directory.create_txt(txt_filename, data)
-
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
-            raise e_error
-
-
-    def get_unique_media_keys(self, file_path: str) -> None:
-        '''
-        @brief Gets set of ffprobe keys and saves to file.
-
-        @details Walks from starting path and saves set of unique metadata keys found by ffprobe.
-
-        @param file_path {str} The starting point of the directory walk.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        data = []
-        txt_filename = inspect.currentframe().f_code.co_name
-
-        try:
-            input_tags = None
-            unique_keys = set()
-            for dir_path, _, file_names in os.walk(file_path):
-                # the tld Music does contain files, but not audio files
-                if dir_path == file_path:
-                    continue
-
-                for file in file_names:
-                    input_file, input_file_ext = os.path.splitext(file)
-
-                    # we don't touch non-audio files like jpg's
-                    if input_file_ext.lower() not in AUDIO_EXTS:
-                        continue
-
-                    tag_file_path = os.path.join(dir_path, file)
-                    input_tags = self.get_media_tags(tag_file_path)
-
-                    if input_tags:
-                        file_keys = input_tags.keys()
-                        unique_keys.update(file_keys)
-
-            data.append(f"Unique keys for audio files in {file_path}")
-
-            if len(unique_keys) > 0:
-                sorted_list = sorted(unique_keys)
-                for key in sorted_list:
-                    data.append(key)
-
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
@@ -933,6 +1133,10 @@ class AudioMetadata():
         '''
         @brief Checks if an audio file has the embedded album art tag.
 
+        @details Checks for the presence of an embedded album art tag in the audio file.<br>
+        This function only uses Mutagen for tag extraction.
+
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return has_art {boolean} Returns true if art tag is present, false otherwise.
 
@@ -948,19 +1152,19 @@ class AudioMetadata():
                 logger.error(f"MusicProcessingError with file: {file_name} has invalid extension: {file_ext}", exc_info=True)
                 raise MusicProcessingError(f"MusicProcessingError with file: {file_name} has invalid extension: {file_ext}")
 
-            audio_tags = self.get_any_tags(file_path)
-
-            if audio_tags is not None:
-                if 'APIC:' in audio_tags:
-                    has_art = True          # ID3/mp3
-                elif 'covr' in audio_tags:
-                    has_art = True          # MP4/m4a
-                elif 'WM/Picture' in audio_tags:
-                    has_art = True          # ASF/wma
-                else:
-                    return False
+            #  FLAC files store album art in the 'pictures' attribute of the FLAC object, unlike other formats where it may be stored in tags.
+            if file_ext.lower() == FLAC_EXT:
+                audio_file = self.load_any_file(file_path)
+                has_art = isinstance(audio_file, FLAC) and bool(audio_file.pictures)
             else:
-                return False
+                audio_tags = self.get_mutagen_tags(file_path)
+                if audio_tags is not None:
+                    if 'APIC:' in audio_tags:
+                        has_art = True          # ID3/mp3
+                    elif 'covr' in audio_tags:
+                        has_art = True          # MP4/m4a
+                    elif 'WM/Picture' in audio_tags:
+                        has_art = True          # ASF/wma
 
         except MusicProcessingError as mp_error:
             raise mp_error
@@ -973,12 +1177,13 @@ class AudioMetadata():
 
     def load_any_file(self, file_path: str) -> FileType:
         '''
-        @brief Loads any valid audio file type.
+        @brief Loads any valid Mutagen audio file type.
 
-        @details Expects a valid filepath to an acceptable audio file.
+        @details Expects a valid filepath to an acceptable audio file.<br>
 
+        @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full file path for audio file.
-        @return audio_file {FileType} Mutagen instance for the input audio file type or None.
+        @return audio_file {FileType} Mutagen instance for the input audio file type.
 
         @exception MutagenError A custom exception in Mutagen occurred.
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
@@ -989,7 +1194,7 @@ class AudioMetadata():
             audio_file = None
             audio_file = mutagen.File(file_path)
 
-            # mutagen did not throw an exception, but didn't load file either
+            # mutagen did not throw an exception, but didn't load file either, that's a value error scenario
             if audio_file is None:
                 logger.error(f"ValueError loading {file_path} returned None", exc_info=True)
                 raise ValueError(f"ValueError loading {file_path} returned None")
@@ -1006,14 +1211,73 @@ class AudioMetadata():
             return audio_file
 
 
+    def map_flac_tags(self, input_tags: VCFLACDict) -> dict:
+        '''
+        @brief Converts FLAC metadata to preferred ID3v2.3 metadata
+
+        @details Converts subset of tags (the ones that Window will display) from FLAC.
+
+        @note `'DATE'` is the preferred tag for the date in FLAC files, and it will probably be in the format "YYYY-MM-DD".<br>
+        `'YEAR'` and `'ORIGINALYEAR'` are alternative tags for the year in FLAC files, and they will probably be in the format "YYYY".<br>
+        Only unique dates will be considered when updating the ID3 tags.
+
+        @param self {AudioMetadata} The instance of the class.
+        @param input_tags {VCFLACDict} The FLAC tags source.
+        @return id3_tags {dict} The tags converted from FLAC tags.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            id3_tags = {}
+            date_values = set()
+
+            # Ensure DISCNUMBER is present in the input tags, defaulting to '1' if missing.
+            if 'DISCNUMBER' not in input_tags:
+                input_tags['DISCNUMBER'] = ['1']
+
+            for metadata_field, flac_value in FLAC_KEYS.items():
+                flac_tag = input_tags.get(flac_value)
+
+                if flac_tag:
+                    mp3_key = MP3_KEYS[metadata_field]
+                    metadata_value = flac_tag[0]
+
+                    if isinstance(metadata_value, str) and flac_value in FLAC_TIME_KEYS:
+                        # just in case string is "YYYY-MM-DD", and if its "YYYY" only, no harm, no foul
+                        date_value = metadata_value[0:4]
+                        date_values.add(date_value)
+                        continue
+
+                    # FLAC/Vorbis metadata is string
+                    if isinstance(metadata_value, str):
+                        tag_value = metadata_value
+
+                    id3_tags[mp3_key] = tag_value
+
+            id3_tags = self.__update_id3(date_values, id3_tags)
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} mapping FLAC tags", stack_info=True)
+            raise e_error
+        else:
+            return id3_tags
+
+
     def map_m4a_tags(self, input_tags: MP4Tags) -> dict:
         '''
-        @brief Converts m4a (MP4) metadata to generic metadata
+        @brief Converts m4a (MP4) metadata to preferred ID3v2.3 metadata
 
-        @details Converts subset of tags (the ones that Window will display) from wma.
+        @details Converts subset of tags (the ones that Window will display) from m4a (MP4) files.
 
+        @note `'\\xa9day'` is the preferred tag for the date in m4a (MP4) files, and it will probably be in the format "YYYY-MM-DD".<br>
+        '----:com.apple.iTunes:originalyear' is an alternative tag for the year in m4a (MP4) files.<br>
+        It requires different handling to extract the year correctly because it is a MP4FreeForm type.<br>
+        Only unique dates will be considered when updating the ID3 tags.
+
+        @param self {AudioMetadata} The instance of the class.
         @param input_tags {MP4Tags} The m4a tags source.
-        @return id3_tags {dict} The tags converted from wma tags.
+        @return id3_tags {dict} The tags converted from m4a (MP4) tags.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1029,6 +1293,24 @@ class AudioMetadata():
                     mp3_key = MP3_KEYS[metadata_field]
                     metadata_value = input_tags[m4a_value][0]
 
+                    # for '\xa9day', ----:com.apple.iTunes:originalyear requires different handling
+                    if isinstance(metadata_value, str) and m4a_value in M4A_TIME_KEYS:
+                        # just in case string is "YYYY-MM-DD", and if its "YYYY" only, no harm, no foul
+                        date_value = metadata_value[0:4]
+                        date_values.add(date_value)
+                        continue
+
+                    # m4a doesn't have a "native" original year field like "\xa9ory",
+                    # relies on the iTunes field ----:com.apple.iTunes:originalyear,
+                    # so need additional step to decode from MP4FreeForm
+                    if isinstance(metadata_value, MP4FreeForm) and m4a_value in M4A_TIME_KEYS:
+                        decode_value = input_tags[m4a_value][0].decode()
+                        # just in case string is "YYYY-MM-DD", and if its "YYYY" only, no harm, no foul
+                        date_value = decode_value[0:4]
+                        date_values.add(date_value)
+                        continue
+
+                    # m4a tag metadata values are usually strings, except for track and disc numbers which are tuples of ints
                     if isinstance(metadata_value, tuple) and m4a_value == "trkn":
                         track_num = input_tags[m4a_value][0][0]
                         total_tracks = input_tags[m4a_value][0][1]
@@ -1039,28 +1321,12 @@ class AudioMetadata():
                         total_discs = input_tags[m4a_value][0][1]
                         tag_value = f"{disc_num}/{total_discs}"
 
-                    # for '\xa9day', ----:com.apple.iTunes:originalyear requires different handling
-                    if isinstance(metadata_value, str) and m4a_value in M4A_TIME_KEYS:
-                        # just in case string is "YYYY-MM-DD"
-                        date_value = metadata_value[0:4]
-                        date_values.add(date_value)
-                        continue
-
-                    # m4a doesn't have a "native" original year field like "\xa9ory",
-                    # relies on the iTunes field ----:com.apple.iTunes:originalyear,
-                    # so need additional step to decode from MP4FreeForm
-                    if isinstance(metadata_value, MP4FreeForm) and m4a_value in M4A_TIME_KEYS:
-                        decode_value = input_tags[m4a_value][0].decode()
-                        # just in case string is "YYYY-MM-DD"
-                        date_value = decode_value[0:4]
-                        date_values.add(date_value)
-                        continue
-
                     # m4a supposedly has native publisher "\xa9pub", but not seen in my collection
                     # I do have iTunes "----:com.apple.iTunes:LABEL" field
                     if isinstance(metadata_value, MP4FreeForm) and m4a_value == "----:com.apple.iTunes:LABEL":
                         tag_value = input_tags[m4a_value][0].decode()
 
+                    # rest of m4a/mp4 metadata I care about is string
                     if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
@@ -1077,10 +1343,22 @@ class AudioMetadata():
 
     def map_mp3_tags(self, input_tags: ID3) -> dict:
         '''
-        @brief Converts mp3 metadata to id3 metadata
+        @brief Converts mp3 metadata to preferred ID3v2.3 metadata
 
         @details Converts subset of tags (the ones that Window will display) from mp3 to id3.
 
+        @note ID3 tags are the most problematic due to number of tags used to convey date/year information.<br>
+        All of them will be in ID3TimeStamp format, which is a restricted restricted form of the ISO 8601 standard;<br>
+        time stamps take the form of: YYYY-MM-DD HH:MM:SS or some partial form (YYYY-MM-DD HH, YYYY, etc.).<br>
+        Whatever the form, just the year will be extracted.<br>
+        The preferred tag is 'TYER', alternative tags are 'TORY', 'TDRC', 'TDOR' or 'TXXX=originalyear'.<br>
+        Only unique dates will be considered when updating the ID3 tags.<br>
+        <br>
+        The set of MP3 metadata keys considered for conversion includes those that are relevant for Windows display and date handling.<br>
+        This set is backwards compatible with older MP3 metadata conventions.<br>
+        Therefore, ID3v1 tags are mapped properly.
+
+        @param self {AudioMetadata} The instance of the class.
         @param input_tags {ID3} The mp3 tags source.
         @return id3_tags {dict} The tags converted from mp3 tags.
 
@@ -1092,19 +1370,20 @@ class AudioMetadata():
             date_values = set()
 
             for metadata_field, mp3_value in MP3_KEYS.items():
-
                 mp3_tag = input_tags.get(mp3_value)
+
                 if mp3_tag:
                     mp3_key = MP3_KEYS[metadata_field]
                     metadata_value = input_tags[mp3_value].text[0]
 
                     # need to get all possible date years into set, but not add to output dict just yet
                     if isinstance(metadata_value, ID3TimeStamp) and (mp3_value in MP3_TIME_KEYS):
-                        # just in case string is "YYYY-MM-DD"
+                        # just in case string is "YYYY-MM-DD", and if its "YYYY" only, no harm, no foul
                         date_value = metadata_value.text[0:4]
                         date_values.add(date_value)
                         continue
 
+                    # ID3v2.3 tag metadata values are strings
                     if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
@@ -1121,10 +1400,17 @@ class AudioMetadata():
 
     def map_wma_tags(self, input_tags: ASFTags) -> dict:
         '''
-        @brief Converts wma (ASF) metadata to id3 metadata
+        @brief Converts wma (ASF) metadata to preferred ID3v2.3 metadata
 
         @details Converts subset of tags (the ones that Window will display) from wma to id3.
 
+        @note WMA time-related tags are expected to be in the format "YYYY-MM-DD HH:MM:SS" or some partial form (YYYY-MM-DD HH, YYYY, etc.).<br>
+        Only the year will be extracted and used.<br>
+        Preferred tag is 'WM/Year'.<br>
+        Alternative tag is 'WM/OriginalReleaseYear'.<br>
+        Only unique dates will be considered when updating the ID3 tags.
+
+        @param self {AudioMetadata} The instance of the class.
         @param input_tags {ASFTags} The wma tags source.
         @return tags {dict} The tags converted from wma tags.
 
@@ -1144,16 +1430,17 @@ class AudioMetadata():
 
                     # need to get all possible date years into set, but not add to output dict just yet
                     if isinstance(metadata_value, str) and (wma_value in WMA_TIME_KEYS):
-                        # just in case string is "YYYY-MM-DD"
+                        # just in case string is "YYYY-MM-DD", and if its "YYYY" only, no harm, no foul
                         date_value = metadata_value[0:4]
                         date_values.add(date_value)
                         continue
 
-                    if isinstance(metadata_value, str):
+                    # most tags are strings except for track num, which is int
+                    if isinstance(metadata_value, int):
                         tag_value = metadata_value
 
-                    # track num is int
-                    if isinstance(metadata_value, int):
+                    #  rest of the ASF/WMA metadata I care about is string
+                    if isinstance(metadata_value, str):
                         tag_value = metadata_value
 
                     id3_tags[mp3_key] = tag_value
@@ -1165,3 +1452,338 @@ class AudioMetadata():
             raise e_error
         else:
             return id3_tags
+
+
+    def normalize_filename(self, file_path: str) -> None:
+        '''
+        @brief Normalizes the filename of a single audio file based on its metadata.
+
+        @details The function determines the file type and calls the appropriate normalization function.
+
+        @param self {AudioMetadata} The instance of the class.
+        @param file_path {str} The path to the audio file to be have it's filename normalized.<br>
+        The input file must be a valid audio file with a supported extension.
+        @return {None} This function does not return any value.
+
+        @exception MetadataTypeError Indicates a non-standard metadata type or missing metadata was encountered.
+        @exception MusicProcessingError Indicates attempting to process audio file with invalid extension.
+        @exception OSError A system related error occurred.
+        @exception ValidationError Indicates an error occurred while sanitizing the filename based on metadata.
+        @exception ValueError Indicates an error loading metadata from the audio file.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        csv_filename = inspect.currentframe().f_code.co_name
+
+        try:
+            _, input_file_ext = os.path.splitext(file_path)
+
+            file_ext = input_file_ext.lower()
+            if file_ext not in AUDIO_EXTS:
+                logger.error(f"MusicProcessingError with file: {file_path} has invalid extension: {input_file_ext}", exc_info=True)
+                raise MusicProcessingError(f"MusicProcessingError with file: {file_path} has invalid extension: {input_file_ext}")
+
+            audio_file = self.load_any_file(file_path)
+
+            if audio_file.tags is None:
+                logger.error(f"ValueError loading metadata from {file_path}", exc_info=True)
+                raise ValueError(f"ValueError loading metadata from {file_path}")
+
+            if isinstance(audio_file, FLAC):
+                album_artist_tag = audio_file.tags.get('albumartist')
+                title_tag = audio_file.tags.get('title')
+            elif isinstance(audio_file, MP3):
+                album_artist_tag = audio_file.tags.get('TPE2')
+                title_tag = audio_file.tags.get('TIT2')
+            elif isinstance(audio_file, MP4):
+                album_artist_tag = audio_file.tags.get('aART')
+                title_tag = audio_file.tags.get('\xa9nam')
+            elif isinstance(audio_file, ASF):
+                album_artist_tag = audio_file.tags.get('WM/AlbumArtist')
+                title_tag = audio_file.tags.get('Title')
+            else:
+                logger.error(f"MetadataTypeError with file: {file_path} unsupported metadata type", exc_info=True)
+                raise MetadataTypeError(f"MetadataTypeError with file: {file_path} unsupported metadata type")
+
+            if album_artist_tag is None or not album_artist_tag:
+                logger.error(f"MetadataTypeError with file: {file_path} missing album artist metadata", exc_info=True)
+                raise MetadataTypeError(f"MetadataTypeError with file: {file_path} missing album artist metadata")
+
+            if title_tag is None or not title_tag:
+                logger.error(f"MetadataTypeError with file: {file_path} missing title metadata", exc_info=True)
+                raise MetadataTypeError(f"MetadataTypeError with file: {file_path} missing title metadata")
+
+            if isinstance(audio_file, FLAC):
+                album_artist = album_artist_tag[0]
+                title = title_tag[0]
+            elif isinstance(audio_file, MP3):
+                album_artist = album_artist_tag.text[0]
+                title = title_tag.text[0]
+            elif isinstance(audio_file, MP4):
+                album_artist = album_artist_tag[0]
+                title = title_tag[0]
+            elif isinstance(audio_file, ASF):
+                album_artist = album_artist_tag[0]
+                title = title_tag[0]
+
+            # "album_artist - title" is acceptable
+            file_stem = os.path.splitext(os.path.basename(file_path))[0]
+            if re.fullmatch(rf"{re.escape(album_artist)}\s*-\s*{re.escape(title)}", file_stem):
+                return
+
+            normalized_name = f"{album_artist}-{title}{file_ext}"
+            sanitized_name = pathvalidate.sanitize_filename(
+                normalized_name,
+                replacement_text="",
+                platform="Windows",
+                validate_after_sanitize=True,
+            )
+
+            sanitized_path = os.path.join(os.path.dirname(file_path), sanitized_name)
+
+            if os.path.exists(sanitized_path):
+                logger.warning(f"File already exists: {sanitized_path}")
+                return
+            else:
+                # delete the audio_file object to release any file handles before renaming
+                del audio_file
+                os.rename(file_path, sanitized_path)
+
+            data.append([file_path, album_artist, title, sanitized_path])
+            header_row = ["original file path", "album artist", "title", "normalized file path"]
+            directory.create_csv(csv_filename, data, None, None, header_row, 0)
+
+        except MetadataTypeError as mt_error:
+            raise mt_error
+        except MusicProcessingError as mp_error:
+            raise mp_error
+        except OSError as os_error:
+            logger.error(f"OSError {(strerror(os_error.errno))} renaming file {file_path} to {sanitized_path}", exc_info=True)
+            raise os_error
+        except ValidationError as valid_error:
+            logger.exception(f"ValidationError sanitizing artist album {album_artist} and/or title {title} for file: {file_path}", stack_info=True)
+            raise valid_error
+        except ValueError as val_error:
+            raise val_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} normalizing filename: {file_path}", stack_info=True)
+            raise e_error
+
+
+    def normalize_filename_walk(self, start_path: str) -> None:
+        '''
+        @brief Walks through a directory and calls appropriate functions to rename audio files.
+
+        @details Calling function MUST supply a valid path to a directory.<br>
+        The function will recursively walk through the directory and rename files of only the supported audio file types.
+
+        @param self {AudioMetadata} The instance of the class.
+        @param start_path {str} The path to the directory to start walking from.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
+        @return {None} This function does not return any value.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        input_file_ext = None
+
+        try:
+            input_path = Path(start_path)
+
+            # need to go down to audio files, and we don't care about artist folder names
+            for dir_path, _, file_names in os.walk(input_path):
+                for file in file_names:
+                    _, input_file_ext = os.path.splitext(file)
+
+                    # only care about accepted audio file types
+                    if input_file_ext.lower() not in AUDIO_EXTS:
+                        continue
+
+                    file_path = os.path.join(dir_path, file)
+
+                    self.normalize_filename(file_path)
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} normalizing filenames from: {start_path}", stack_info=True)
+            raise e_error
+
+
+    def rename_album_directories(self, start_path: str) -> None:
+        r'''
+        @brief Renames second level (sld) album directories in first level (fld) artist directories.
+
+        @details Renames the album sub directory for the artist from album metadata.<br>
+        Calling functions MUST verify valid start path.
+
+        @note Using the Windows invalid character set because it is more restrictive (therefore OS universal).<br>
+        The characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` will be replaced by `-`.<br>
+        Refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename<br>
+
+        @param self {AudioMetadata} The instance of the class.
+        @param start_path {str} The top-level directory containing artist folders.<br>
+        The start path must be a valid top-level directory containing artist folders, and only a tld.
+        @return {None} This function does not return any value.
+
+        @exception ValidationError Raised when the start path is invalid or does not meet the required criteria.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            for artist_name in os.listdir(start_path):
+                artist_path = os.path.join(start_path, artist_name)
+
+                if not os.path.isdir(artist_path):
+                    continue
+
+                for album_dir_name in os.listdir(artist_path):
+                    album_path = os.path.join(artist_path, album_dir_name)
+
+                    if not os.path.isdir(album_path):
+                        continue
+
+                    value_album = None
+                    for song_file in os.listdir(album_path):
+                        song_path = os.path.join(album_path, song_file)
+                        _, file_ext = os.path.splitext(song_file)
+
+                        if not os.path.isfile(song_path) or file_ext.lower() not in AUDIO_EXTS:
+                            continue
+
+                        file_media_tags = self.get_ffprobe_tags(song_path)
+                        if not file_media_tags:
+                            continue
+
+                        for key, value in file_media_tags.items():
+                            if key.lower() == "album" and value:
+                                value_album = value
+                                break
+
+                        if value_album:
+                            break
+
+                    if not value_album:
+                        logger.warning(f"{album_path} is missing album metadata")
+                        continue
+
+                    album = str(value_album).replace("/", "-")
+                    sanitized_album_name = pathvalidate.sanitize_filepath(
+                        album, replacement_text="-", platform="Windows", validate_after_sanitize=True)
+
+                    if album_dir_name == sanitized_album_name:
+                        continue
+
+                    destination_path = os.path.join(artist_path, sanitized_album_name)
+                    original_destination_path = destination_path
+                    counter = 1
+                    while os.path.exists(destination_path):
+                        destination_path = f"{original_destination_path} ({counter})"
+                        counter += 1
+
+                    os.rename(album_path, destination_path)
+                    logger.info(f"Renamed {album_path} to {destination_path}")
+
+        except ValidationError as v_error:
+            logger.exception(f"ValidationError sanitizing album metadata {album}", stack_info=True)
+            raise v_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} renaming album directories for {start_path}", stack_info=True)
+            raise e_error
+
+
+    def update_genres(self, start_path: str, csv_path: str) -> None:
+        '''
+        @brief Updates supported audio genre metadata using artist directory mappings from a CSV file.
+
+        @details Matches immediate artist directories exactly, updates their supported descendant audio files, and reports skipped or failed files.
+
+        @note The start path should be the top level directory containing artist directories. Eg; C:/Music<br>
+        C:/Music will contain the artist directories. Eg; C:/Music/ArtistNameA, C:/Music/ArtistNameB<br>
+        <br>
+        The csv file will contain artist names and their corresponding genres.<br>
+        The csv file header MUST be "artist name,artist genre".<br>
+        The artist names must be sorted alphabetically in the CSV file.<br>
+        Each artist directory name should match the artist name in the CSV file exactly.<br>
+        The artist directory will be relative to the top level directory specified in start_path.<br>
+        <br>
+        The artist genre will be applied to all supported audio files within the corresponding artist directory.<br>
+        There can only be 1 genre per artist in the CSV file, but the genre can be multiple words separated a space.<br>
+        The genre will be applied to all supported audio files within the corresponding artist directory.<br>
+        CSV Example:<br>
+        artist name,artist genre<br>
+        ArtistNameA,Rock<br>
+        ArtistName B,Jazz<br>
+        Artist Name C,Progressive Rock<br>
+        <br>
+        If an artist directory does not have a corresponding entry in the CSV file, it will be listed under skipped artists.<br>
+        A text report of updated files and skipped artists will be written to the generated result directory after processing.
+
+        @param self {AudioMetadata} The instance of the class.
+        @param start_path {str} The top level directory containing artist directories.
+        The start path must be a valid top-level directory containing artist folders, and only a tld.
+        @param csv_path {str} The full path to the artist genre CSV file.
+        @return {None} This function does not return any value.
+
+        @exception ValueError Indicates the supplied directory or CSV file is invalid.
+        @exception OSError A system related error occurred.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        txt_filename = inspect.currentframe().f_code.co_name
+
+        try:
+            if not os.path.isdir(start_path):
+                logger.error(f"Top-level directory not found: {start_path}")
+                raise ValueError(f"Top-level directory not found: {start_path}")
+
+            if not os.path.isfile(csv_path):
+                logger.error(f"Artist genre CSV file not found: {csv_path}")
+                raise ValueError(f"Artist genre CSV file not found: {csv_path}")
+
+            artist_genres = self.__read_artist_genres(csv_path)
+            results = {
+                "updated_files": [],
+                "skipped_artists": []
+            }
+            artist_directories = sorted(
+                (entry for entry in os.scandir(start_path) if entry.is_dir()), key=lambda entry: entry.name
+            )
+
+            for artist_directory in artist_directories:
+                artist_name = artist_directory.name
+                artist_genre = artist_genres.get(artist_name)
+
+                if artist_genre is None:
+                    logger.warning(f"Skipping artist directory without CSV genre mapping: {artist_name}")
+                    results["skipped_artists"].append(artist_name)
+                    continue
+
+                for dir_path, _, file_names in os.walk(artist_directory.path):
+                    for file_name in file_names:
+                        file_path = os.path.join(dir_path, file_name)
+                        _, file_extension = os.path.splitext(file_name)
+
+                        if file_extension.lower() not in AUDIO_EXTS:
+                            continue
+
+                        self.__set_genre(file_path, artist_genre)
+                        results["updated_files"].append(file_path)
+
+            data = [
+                f"Updated files ({len(results['updated_files'])}):",
+                *sorted(results["updated_files"]),
+                f"Skipped artists ({len(results['skipped_artists'])}):",
+                *sorted(results["skipped_artists"])
+            ]
+
+            directory.create_txt(txt_filename, data, None, None)
+
+        except OSError as os_error:
+            logger.error(f"Exception {type(os_error).__name__} updating genres from CSV", exc_info=True)
+            raise os_error
+        except ValueError as v_error:
+            raise v_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} updating songs in {start_path} with genres from CSV {csv_path}", stack_info=True)
+            raise e_error

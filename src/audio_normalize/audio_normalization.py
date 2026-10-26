@@ -1,71 +1,83 @@
 '''
-@file audio_metadata.py
-@brief Defines the audio metadata class.
-
+@class AudioNormalization
+@file audio_normalization.py
 @author Gerald Manweiler
+
+@brief Defines the audio normalization class.
+
+@details Defines methods for analyzing and normalizing MP3 audio levels.
+
+@version 1.0.0
+@date 2026-09-22
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import gc
-import inspect
-import json
-import logging
-import math
-import os
-import re
-from json import JSONDecodeError
-from pathlib import Path
-from subprocess import CompletedProcess
+# Standard Modules
+import inspect                                              # for current function inspection
+import json                                                 # for FFmpeg JSON output parsing
+import logging                                              # for module logging
+import math                                                 # for volume calculations
+import os                                                   # for operating-system interfaces
+import re                                                   # for volume-output pattern matching
+from json import JSONDecodeError                            # for JSON parsing errors
+from pathlib import Path                                    # for object-oriented filesystem paths
+from subprocess import CompletedProcess                     # for completed subprocess results
 
-# local module methods
-from src import add_module_handler
-# local module constants
-from src import ILT, LRA, MP3_EXT, TP
-# local module errors
-from src.errors import JSONOutputError
-from src.errors import PathInfoError
-# local module classes
-from src.dir_processing import DirectoryProcessing
-from src.subprocess_utils import SubprocessUtilities
+# Local Module Methods
+from src import add_module_handler                          # for module-specific logging handlers
 
-gc.enable()
+# Local Module Constants
+from src import ILT                                         # for integrated loudness target
+from src import LRA                                         # for loudness range target
+from src import MP3_EXT                                     # for MP3 file extension
+from src import TP                                          # for true-peak target
+
+# Local Module Errors
+from src.errors import JSONOutputError                      # for missing FFmpeg JSON output
+from src.errors import PathInfoError                        # for missing generated-file paths
+
+# Local Module Classes
+from src.dir_processing import DirectoryProcessing          # for directory processing functionality
+from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functionality
 
 ## @var logger
-# @brief the logger instance for module
-# @details sets the logger name to module name
+# @brief Logger instance for the module.
+# @details Sets the logger name to the current module name.
 logger = logging.getLogger(__name__)
 
 ## @var basename
-# @brief name for logger file handler log file
-# @details gets the module file name
+# @brief Base name for the logger file handler.
+# @details Gets the module file name from the current file path.
 basename = os.path.basename(__file__)
 
 add_module_handler(logger, basename)
 
 ## @var directory
-# @brief instance of DirectoryProcessing class
-# @details used for accessing class functionality
+# @brief Directory processing instance.
+# @details Provides directory processing functionality.
 directory = DirectoryProcessing()
 
 ## @var subprocess_utils
-# @brief instance of SubprocessUtilities class
-# @details used for accessing class functionality
+# @brief Subprocess utilities instance.
+# @details Provides subprocess utility functionality.
 subprocess_utils = SubprocessUtilities()
 
 
 class AudioNormalization():
     '''
-    @brief Defines the base normalization processing used by project.
+    @brief Defines the audio normalization processing class.
+
+    @details Provides methods to analyze audio levels and apply supported normalization strategies.
     '''
 
     def __init__(self) -> None:
         '''
         @brief Initializes the AudioNormalization class.
 
-        @details A basic class implementation with no instantiation parameters.
+        @details Initializes an AudioNormalization instance without instance-specific state.
 
-        @return AudioNormalization {instance} An instance of the class.
+        @param self {AudioNormalization} The instance of the class.
         '''
 
         pass
@@ -73,10 +85,15 @@ class AudioNormalization():
 
     def __loudnorm_json_parse(self, input_process: CompletedProcess) -> dict:
         '''
-        @brief Parse json element out of ffmpeg loudnorm subprocess stderr output.
+        @brief Parses JSON from FFmpeg loudnorm standard-error output.
 
-        @details The subprocess stderr is expected to have a single json element.
-        Expecting this in input_process.stderr, from a ffmpeg loudnorn run
+        @details Parses the FFmpeg loudnorm statistics object embedded within the log stream.
+
+        @note A typical FFmpeg stderr payload contains text logs followed by the loudnorm statistics block.<br>
+        However, an audio file can have metadata containing brace characters before FFmpeg's loudnorm stats.<br>
+        Therefore, the parser searches for the first occurrence of the "input_i" key to locate the loudnorm JSON block accurately.
+
+        @code{.json}
         {
             "input_i" : "-16.77",
             "input_tp" : "-6.66",
@@ -89,41 +106,43 @@ class AudioNormalization():
             "normalization_type" : "dynamic",
             "target_offset" : "-0.64"
         }
+        @endcode
 
-        @param input_process {CompletedProcess} A completed subprocess object.
-        @return output_data {dict} FFmpeg loudnorm statistics.
-        Key                         |Value
-        ----------------------------|----------------------------------------------------------------
-        input_i {str}               | input integrated loudness {str} (numeric)
-        input_tp {str}              | input maximum true peak {str} (numeric)
-        input_lra {str}             | input loudness range target {str} (numeric)
-        input_thresh {str}          | input threshold {str} (numeric)
-        output_i{str}               | output integrated loudness {str} (numeric)
-        output_tp {str}             | output maximum true peak {str} (numeric)
-        output_lra {str}            | output loudness range target {str} (numeric)
-        output_thresh {str}         | output threshold {str} (numeric)
-        normalization_type {str}    | scaling type to apply {str} (alphabetic)
-        target_offset {str}         | offset gain applied before true peak limiter {str} (numeric)
+        @param self {AudioNormalization} The instance of the class.
+        @param input_process A subprocess.CompletedProcess instance containing the stderr data.
+        @return A dictionary containing the following FFmpeg loudnorm statistics:
+        - **input_i** *(str)*: Input integrated loudness (numeric string).
+        - **input_tp** *(str)*: Input maximum true peak (numeric string).
+        - **input_lra** *(str)*: Input loudness range target (numeric string).
+        - **input_thresh** *(str)*: Input threshold (numeric string).
+        - **output_i** *(str)*: Output integrated loudness (numeric string).
+        - **output_tp** *(str)*: Output maximum true peak (numeric string).
+        - **output_lra** *(str)*: Output loudness range target (numeric string).
+        - **output_thresh** *(str)*: Output threshold (numeric string).
+        - **normalization_type** *(str)*: Scaling type to apply (alphabetic string).
+        - **target_offset** *(str)*: Offset gain applied before true peak limiter (numeric string).
 
-        @exception JSONDecodeError A json decoding error occurred.
-        @exception JSONOutputError Indicates error occurred finding json output.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception JSONOutputError Indicates an error occurred finding the JSON structure.
+        @exception json.JSONDecodeError A native JSON decoding error occurred if the block is malformed.
+        @exception Exception A generic exception if an unexpected error occurs during parsing.
         '''
 
         try:
-            output_data = None
             json_input = input_process.stderr
+            json_match = re.search(r'\{\s*"input_i"\s*:', json_input)
 
-            json_start = json_input.find('{')
-            json_end = json_input.rfind('}')
-
-            if json_start != -1 and json_end != -1:
-                json_string = json_input[json_start: json_end + 1]
-            else:
+            if json_match is None:
                 logger.error(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_input}", exc_info=True)
                 raise JSONOutputError(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_input}")
 
-            output_data = json.loads(json_string)
+            json_start = json_match.start()
+            json_end = json_input.rfind('}')
+
+            if json_end < json_start:
+                logger.error(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_input}", exc_info=True)
+                raise JSONOutputError(f"JSONOutputError could not find JSON output in subprocess stderr\n{json_input}")
+
+            output_data = json.loads(json_input[json_start:json_end + 1])
 
         except JSONDecodeError as jd_error:
             logger.error(f"JSONDecodeError parsing \n{json_input}", exc_info=True)
@@ -137,17 +156,122 @@ class AudioNormalization():
             return output_data
 
 
-    def ebu_normalize_file(self, file_path: str, show_spinner: bool = True) -> None:
+
+    def get_ebu_loudness_info(self, file_path: str, show_spinner: bool = True) -> dict:
         '''
-        @brief Normalizes audio file level to ebu r128 standard.
+        @brief Gets EBU loudness statistics from an audio file.
 
-        @details See https://k.ylo.ph/2016/04/04/loudnorm.html for algorithm & example.
-        @details See https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg for example
-        @details See https://ffmpeg.org/ffmpeg-filters.html#loudnorm for documentation.
-        @details Audio file must be mp3 format, and already processed by convert_file function.
+        @details Gets FFmpeg loudnorm analysis without modifying or exporting the audio file.
 
+        @note Uses the loudnorm algorithm documented at https://k.ylo.ph/2016/04/04/loudnorm.html.<br>
+        Uses the FFmpeg workflow described at https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg.<br>
+        Refer to https://ffmpeg.org/ffmpeg-filters.html#loudnorm for filter documentation.<br>
+        Refer to AESTD1004_1_15_10.pdf, official document from Audio Engineering Society https://aes.org/community/technical-council/<br>
+        ffmpeg loudnorm integrated loudness target EBU R128 default: -24.0, using -16.0, which is the AES recommendation for streamed files<br>
+        ffmpeg loudnorm loudness range target EBU R128 default: 7, using 11.0 for  wider range<br>
+        ffmpeg loudnorm maximum true peak EBU R128 default: -2.0, using default for the extra headroom space vs -1.0 or 0.0<br>
+
+        @code{.text}
+        1st pass stats command to get loudnorm statistics
+        ffmpeg -hide_banner -i file_path -vn -af loudnorm=I={ILT}:TP={TP}:LRA={LRA}:print_format=json -f null -
+
+        -hide_banner; to reduce output clutter
+        -i; input file path
+        -vn; to save cycles by not dealing with video stream
+        -af loudnorm=I={ILT}:TP={TP}:LRA={LRA}:; apply loudnorm filter with constants for ILT, TP and LRA
+        print_format=json; output in json format
+        -f null -; Output to null to avoid creating an actual output file
+        @endcode
+
+        @param self {AudioNormalization} The instance of the class.
+        @param file_path {str} The path to the audio file.
+        @param show_spinner {bool} Whether to display a spinner while retrieving statistics.
+        @return {dict} FFmpeg's input integrated loudness, true peak, loudness range, and threshold.
+
+        @exception Exception A generic exception if an unexpected error occurs during the retrieval of loudnorm statistics.
+        '''
+
+        try:
+            stats_command = [
+                "ffmpeg",
+                "-hide_banner",
+                "-i", file_path,
+                "-vn",
+                "-af", (f"loudnorm=I={ILT}:TP={TP}:LRA={LRA}:"
+                        f"print_format=json"
+                        ),
+                "-f", "null", "-"
+            ]
+
+            if show_spinner:
+                stats_text = "Retrieving loudnorm statistics"
+                stats_process, _ = subprocess_utils.spinner_subprocess_run(stats_command, stats_text)
+            else:
+                stats_process = subprocess_utils.subprocess_run(stats_command)
+
+            stats_data = self.__loudnorm_json_parse(stats_process)
+            return stats_data
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting loudnorm stats for file {file_path}", stack_info=True)
+            raise e_error
+
+
+    def ebu_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True) -> None:
+        '''
+        @brief Normalizes an audio file to the EBU R128 standard, optionally specifying a target directory.
+
+        @details Uses two-pass loudnorm normalization with FFmpeg.<br>
+        The first pass checks audio properties of source file, which are then used as inputs in 2nd pass to apply the loudnorm normalization.<br>
+        REQUIRES an MP3 file.
+
+        @note Uses the loudnorm algorithm documented at https://k.ylo.ph/2016/04/04/loudnorm.html.<br>
+        Uses the FFmpeg workflow described at https://wiki.tnonline.net/w/Blog/Audio_normalization_with_FFmpeg.<br>
+        Refer to https://ffmpeg.org/ffmpeg-filters.html#loudnorm for filter documentation.<br>
+        Refer to AESTD1004_1_15_10.pdf, official document from Audio Engineering Society https://aes.org/community/technical-council/<br>
+        ffmpeg loudnorm integrated loudness target EBU R128 default: -24.0, using -16.0, which is the AES recommendation for streamed files<br>
+        ffmpeg loudnorm loudness range target EBU R128 default: 7, using 11.0 for  wider range<br>
+        ffmpeg loudnorm maximum true peak EBU R128 default: -2.0, using default for the extra headroom space vs -1.0 or 0.0<br>
+
+        @code{.text}
+        1st pass stats command to get loudnorm statistics
+        ffmpeg -hide_banner -i file_path -vn -af loudnorm=I={ILT}:TP={TP}:LRA={LRA}:print_format=json -f null -
+
+        -hide_banner; to reduce output clutter
+        -i; input file path
+        -vn; to save cycles by not dealing with video stream
+        -af loudnorm=I={ILT}:TP={TP}:LRA={LRA}:; apply loudnorm filter with constants for ILT, TP and LRA
+        print_format=json; output in json format
+        -f null -; Output to null to avoid creating an actual output file
+
+        2nd pass normalize command to apply loudnorm statistics
+        ffmpeg -hide_banner -i file_path -id3v2_version 3
+        -af loudnorm=I={ILT}:TP={TP}:LRA={LRA}:
+          measured_I={measured_i}:measured_TP={measured_tp}:measured_LRA={measured_lra}:measured_thresh={measured_thresh}:
+          offset={offset}:
+          linear=true:
+          print_format=json
+        -b:a target_bitrate -ar sample_rate export_path -y
+
+        -hide_banner; to reduce output clutter
+        -i; input file path
+        -id3v2_version 3; to enforce ID3v2.3 tags (it's a known bug of ffmpeg that when not set will default to ID3v2.4)
+        -af loudnorm=I={ILT}:TP={TP}:LRA={LRA}:; apply loudnorm filter with constants for ILT, TP and LRA
+          measured_I=...:; apply measured parameters from 1st pass
+          offset={offset}:; apply the offset from the 1st pass
+          linear=true:; use linear scaling
+          print_format=json; output in json format
+        -b:a; set the target audio bitrate
+        -ar; set the audio sample rate
+        export_path; the output file path
+        -y; overwrite the output file if it exists
+        @endcode
+
+        @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The full file path for mp3 audio file.
-        @param show_spinner {bool} Show yaspin spinner flag.
+        @param target {str} The optional target directory for exported files.
+        @param show_spinner {bool} Whether to display a progress spinner.
+        @return {None} This function does not return any value.
 
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -162,7 +286,7 @@ class AudioNormalization():
                 logger.warning(f"{file_path} is not an mp3")
                 return
 
-            export_path = directory.path_info(file_path)
+            export_path = directory.path_info(file_path, target)
 
             if export_path is None:
                 logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
@@ -182,35 +306,24 @@ class AudioNormalization():
             sample_rate = self.get_sample_rate(file_path)
             data.append(f"Source sample rate: {sample_rate} hz")
 
+            # get original bitrate and ensure it does not exceed 192000 bps to have nice compromise between file size and audio quality
+            original_bitrate = self.get_bit_rate(file_path)
+            target_bitrate = min(original_bitrate, 192000)
+            data.append(f"Source bitrate: {original_bitrate} bps -> Target bitrate: {target_bitrate} bps")
+
             stats_text = "Getting loudnorm stats"
             data.append(stats_text)
 
-            r'''
-            AES https://www.aes.org/technical/documents/AESTD1004_1_15_10.pdf
-            ffmpeg loudnorm integrated loudness target EBU R128 default: -24.0,
-            I want -16.0, which is the AES recommendation for streamed files
-            ffmpeg loudnorm loudness range target EBU R128 default: 7,
-            I want 11.0 for  wider range because most of my collection has a wider range
-            ffmpeg loudnorm maximum true peak EBU R128 default: -2.0,
-            I will keep that cause I want the extra headroom space vs -1.0 or 0.0
-            '''
-
-            '''
-            1st pass to get loudnorm statistics
-            -hide_banner to reduce output clutter
-            -vn to save cycles by not dealing with video stream
-            -af loudnorm audio filter with my desired I integrated loudness target, LRA loudness range target, TP max true peak, output in json format
-            -f Output to null to avoid creating an actual output file
-            '''
             stats_command = [
                 "ffmpeg",
                 "-hide_banner",
                 "-i", file_path,
                 "-vn",
-                "-af", (f"loudnorm=I={ILT}:TP={TP}:LRA={LRA}:print_format=json"),
+                "-af", (f"loudnorm=I={ILT}:TP={TP}:LRA={LRA}:"
+                        f"print_format=json"
+                        ),
                 "-f", "null", "-"
             ]
-            data.append(stats_command)
 
             stats_pre_text = "Pre-normalization stats:"
             data.append(stats_pre_text)
@@ -223,9 +336,7 @@ class AudioNormalization():
                 stats_process = subprocess_utils.subprocess_run(stats_command)
                 stats_post_text = "Analyzed loudnorm stats"
 
-            # Even though hide banner & json is specified in ffmpeg cli,
-            # output will still have far more garbage than actual json,
-            # and needs parsing out
+            # Even though hide banner & json is specified in ffmpeg cli, output will still have garbage, and needs parsing
             stats_data = self.__loudnorm_json_parse(stats_process)
             data.append(json.dumps(stats_data, indent=4))
 
@@ -241,16 +352,6 @@ class AudioNormalization():
             normalizing_text = "Normalizing audio"
             data.append(normalizing_text)
 
-            # 2nd pass to apply loudnorm statistics
-            # -hide_banner to reduce output clutter
-            # do not need a -map_metadata 0 by default if flag omitted, metadata is copied globally from first input file
-            # -id3v2 3 to enforce ID3v2.3 tags, otherwise will default to ID3v2.4 and album art will NOT be copied (it's a known bug)
-            # -af loudnorm audio filter needs same I integrated loudness target, LRA loudness range target, TP max true peak,
-            # and from first pass, measured_I=input_i, measured_LRA=input_lra, measured_TP=input_tp, measured_thresh=input_thresh, offset=target_offset,
-            # linear=true to normalize by linearly scaling source audio, output in json format
-            # -ar input file sample_rate, 1st pass loudnorm filter auto up scales to 192 khz, so need to down scale to original
-            # -y on the output file to force an overwrite if needed
-
             normalize_command = [
                 "ffmpeg",
                 "-hide_banner",
@@ -262,16 +363,19 @@ class AudioNormalization():
                         f"offset={offset}:linear=true"
                         f":print_format=json"
                         ),
+                "-b:a", str(target_bitrate),
                 "-ar", str(sample_rate),
                 export_path, "-y"
             ]
-            data.append(normalize_command)
 
             post_text = "Post normalization stats:"
             data.append(post_text)
 
             if show_spinner:
-                normalize_process, normalize_spinner = subprocess_utils.spinner_subprocess_run(normalize_command, normalizing_text)
+                normalize_process, normalize_spinner = subprocess_utils.spinner_subprocess_run(
+                    normalize_command,
+                    normalizing_text,
+                )
                 normalization_time = normalize_spinner.elapsed_time
                 apply_post_text = f"Applied loudnorm stats in {normalization_time:.2f} secs"
                 total_time = normalization_time + stats_time
@@ -295,7 +399,7 @@ class AudioNormalization():
             results_text = result_type_text + total_time_text
 
             data.append(results_text)
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except PathInfoError as pi_error:
             raise pi_error
@@ -304,12 +408,25 @@ class AudioNormalization():
             raise e_error
 
 
-    def get_bit_rate(self, file_path: str) -> int:
+    def get_bit_rate(self, file_path: str) -> int | None:
         '''
         @brief Retrieves the bitrate of a media file using ffprobe.
 
-        @param file_path (str): The path to the media file.
-        @return bit_rate {int} The bitrate in bits per second, or None if not found.
+        @details Uses FFprobe to read the media container's bitrate.
+
+        @code{.text}
+        get bit rate command
+        ffprobe -v error -print_format json -show_entries format=bit_rate file_path
+
+        -v error; reduce clutter
+        -print_format json; output in json format
+        -show_entries format=bit_rate; get just the bit rate
+        file_path; the path to the media file to be analyzed.
+        @endcode
+
+        @param self {AudioNormalization} The instance of the class.
+        @param file_path {str} The path to the media file.
+        @return bit_rate {int | None} The bitrate in bits per second, or None if not found.
 
         @exception JSONDecodeError A json decoding error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -318,9 +435,6 @@ class AudioNormalization():
         try:
             bit_rate = None
 
-            # -v quiet suppress output clutter (-hide_banner works too)
-            # -print_format json for json output
-            # -show_entries format=bit_rate gets just the bit rate
             command = [
                 'ffprobe',
                 '-v', 'error',
@@ -329,6 +443,7 @@ class AudioNormalization():
                 file_path
             ]
 
+            # ffprobe runs command fast enough that a spinner toast is not needed
             result = subprocess_utils.subprocess_run(command)
 
             # unlike ffmpeg, ffprobe does use stdout
@@ -350,12 +465,26 @@ class AudioNormalization():
             return bit_rate
 
 
-    def get_sample_rate(self, file_path: str) -> int:
+    def get_sample_rate(self, file_path: str) -> int | None:
         '''
         @brief Gets the sample rate from audio file.
 
+        @details Uses FFprobe to read the first audio stream's sample rate.
+
+        @code{.text}
+        get sample rate command
+        ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of json file_path
+
+        -v error: reduce clutter
+        -select_streams a:0; only want audio stream
+        -show_entries stream=sample_rate; we only get the one entry specified
+        -of json; to output in json format
+        file_path; the path to the audio file to be analyzed.
+        @endcode
+
+        @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The full path to audio file.
-        @return sample_rate {int} The sample rate in Hz, otherwise None.
+        @return sample_rate {int | None} The sample rate in Hz, or None if not found.
 
         @exception IndexError An index error finding audio stream or sample rate information.
         @exception JSONDecodeError A json decoding error occurred.
@@ -365,10 +494,6 @@ class AudioNormalization():
         try:
             sample_rate = None
 
-            # -v error or -hide_banner, either work to reduce clutter
-            # -select_streams a:0 only want audio stream
-            # -show_entries stream=sample_rate we only get the one entry specified
-            # -of json to output in json format
             command = [
                 'ffprobe',
                 '-v', 'error',
@@ -378,6 +503,7 @@ class AudioNormalization():
                 file_path
             ]
 
+            # ffprobe runs command fast enough that a spinner toast is not needed
             result = subprocess_utils.subprocess_run(command)
 
             # unlike ffmpeg, ffprobe does use stdout
@@ -403,12 +529,27 @@ class AudioNormalization():
         '''
         @brief Gets mean and max volume from audio file using ffmpeg.
 
+        @details Uses FFmpeg's volumedetect filter to collect mean and maximum volume values.
+
+        @code{.text}
+        get volume information command
+        ffmpeg -hide_banner -i file_path -filter:a volumedetect -f null -
+
+        -hide_banner; to reduce output clutter
+        -i file_path; specifies the input audio file
+        -filter:a volumedetect; applies the volumedetect filter to the audio stream
+        -f null -; sends the output to null to avoid creating an actual output file
+        @endcode
+
+        @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The full path to audio file.
         @return volumes {dict} The mean and max volumes of audio file in decibels relative to max PCM value.
+        @code{.text}
         Key                 |Value
         --------------------|----------------------------------------
         mean_value {str}    |the root mean square volume {float}
         max_volume {str}    |the per-sample maximum volume {float}
+        @endcode
 
         @exception re.error An error occurred processing a regular expression with re module.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -417,9 +558,6 @@ class AudioNormalization():
         try:
             volumes = dict()
 
-            # -hide_banner to reduce output clutter
-            # -filter:a volumedetect so get volume stats on audio stream
-            # -f null - send output to stdout
             command = [
                 'ffmpeg',
                 '-hide_banner',
@@ -428,6 +566,7 @@ class AudioNormalization():
                 '-f', 'null', '-'
             ]
 
+            # ffmpeg runs the volumedetect command fast enough that spinner toast not needed
             process = subprocess_utils.subprocess_run(command)
 
             # ffmpeg sends its output to stderr, not stdout
@@ -452,14 +591,19 @@ class AudioNormalization():
             return volumes
 
 
-    def normalize_walk(self, tld_path: str, norm_type: str, show_spinner: bool = True) -> None:
+    def level_normalize_walk(self, tld_path: str, norm_type: str, target: str = None, show_spinner: bool = True) -> None:
         '''
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
-        @details Will only normalize mp3 files.
+        @details Normalizes only MP3 files beneath the specified top level directory.
 
-        @param tld_path {str} The top level directory path that contains all the music files.
+        @param self {AudioNormalization} The instance of the class.
+        @param tld_path {str} The top level directory path that contains all the music files.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param norm_type {str} The type of normalization to perform.
+        @param target {str} The optional target directory for exported files.
+        @param show_spinner {bool} Whether to display a progress spinner.
+        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -479,26 +623,49 @@ class AudioNormalization():
                     input_file_path = os.path.join(dir_path, file)
 
                     if norm_type == "ebu":
-                        self.ebu_normalize_file(input_file_path, show_spinner)
+                        self.ebu_normalize_file(input_file_path, target, show_spinner)
                     elif norm_type == "peak":
-                        self.peak_normalize_file(input_file_path, show_spinner)
+                        self.peak_normalize_file(input_file_path, target, show_spinner)
                     elif norm_type == "rms":
-                        self.rms_normalize_file(input_file_path, show_spinner)
+                        self.rms_normalize_file(input_file_path, target, show_spinner)
 
         except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} on {input_file_path} while walking {tld_path} to {norm_type} normalize audio files", stack_info=True)
+            logger.exception(
+                f"Exception {type(e_error).__name__} on {input_file_path} while walking {tld_path} "
+                f"to {norm_type} normalize audio files",
+                stack_info=True,
+            )
             raise e_error
 
 
-    def peak_normalize_file(self, file_path: str, show_spinner: bool = True) -> None:
+    def peak_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True) -> None:
         '''
         @brief Peak normalizes audio file level.
 
-        @details Automatically finds peak amplitude ands scales entire audio to maximize peak without clipping.
-        @details Audio file must be mp3 format, and already processed by convert_file function.
+        @details Finds peak amplitude and scales audio to maximize the peak without clipping.<br>
+        Peak normalization (aka volume normalization) is a single pass process.<br>
+        Peak normalization does not take into account the perceived loudness of the audio.<br>
+        It only ensures that the highest peak reaches the target level.<br>
+        Requires an MP3 file.
 
+        @code{.text}
+        ffmpeg -hide_banner -i file_path -filter:a volume=adjustmentdB -c:v copy -c:a libmp3lame -b:a bitrate -id3v2_version 3 export_path -y
+
+        -hide_banner; to reduce output clutter
+        -i file_path; input file path
+        -filter:a volume=adjustmentdB; where adjustment is computed dB value from volume info return and true peak constant
+        -c:v copy; to copy embedded art, since no explicit -map_metadata, the default global copy will happen on both streams
+        -c:a libmp3lame; to keep same encoding
+        -b:a bitrate; where bit rate in bps, not kbps
+        -id3v2_version 3; required to properly copy embedded art, known ffmpeg bug
+        export_path-y; force an overwrite on the output file if needed
+        @endcode
+
+        @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The full file path for mp3 audio file.
-        @param show_spinner {bool} Show yaspin spinner flag.
+        @param target {str} The optional target directory for exported files.
+        @param show_spinner {bool} Whether to display a progress spinner.
+        @return {None} This function does not return any value.
 
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -513,7 +680,7 @@ class AudioNormalization():
                 logger.warning(f"{file_path} is not an mp3")
                 return
 
-            export_path = directory.path_info(file_path)
+            export_path = directory.path_info(file_path, target)
 
             if export_path is None:
                 logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
@@ -538,31 +705,30 @@ class AudioNormalization():
             max_volume = math.floor(volume_info['max_volume'])
             data.append(f"floor max volume: {max_volume:.2f}")
 
-            if max_volume >= 0.0:
-                max_text = f"{input_path_basename} has max volume: {max_volume:.2f} dB, peak normalization not needed"
+            # Apply an implicit 1.0 dB buffer pad to TP target to counter mp3 lossy compression overshoots
+            target_tp = float(TP) - 1.0
+            TOLERANCE = 0.2
+
+            # Peak normalization lands the peak on the target, so only a target above 0.0 dBFS can clip
+            if target_tp > 0.0:
+                clip_text = (
+                    f"peak normalizing to target peak {target_tp:.2f} dB "
+                    f"clips by {target_tp:.1f} dB in {export_path}"
+                )
+                logger.warning(clip_text)
+                return
+
+            # Check if file is already at your optimized target volume level
+            if math.isclose(max_volume, target_tp, abs_tol=TOLERANCE):
+                max_text = f"{input_path_basename} is already at target peak: {max_volume:.2f} dB, peak normalization not needed"
                 logger.warning(max_text)
                 return
             else:
                 data.append(f"max volume: {max_volume:.2f} dB")
 
-            adjustment = 0.0 + float(TP) - float(max_volume)
-            clip_amount = float(max_volume) + adjustment
+            adjustment = target_tp - float(max_volume)
+            data.append(f"adjustment: {adjustment:+.2f} dB")
 
-            if clip_amount > 0:
-                clip_text = f"peak normalizing by {TP} minus {max_volume:.2f} equaling {adjustment:.2f} with max volume {max_volume} plus {adjustment} will result in clipping amount: {clip_amount} dB in {export_path}"
-                logger.warning(clip_text)
-                return
-            else:
-                data.append(f"adjustment: {adjustment:.2f} dB")
-
-            # -hide_banner to reduce output clutter
-            # -filter:a volume=6dB where dB is the adjustment value from volume stats return
-            # -c:v copy to copy embedded art
-            # since no explicit -map_metadata, the default global copy will happen,on both streams
-            # -c:a libmp3lame to keep same encoding
-            # -b:a 128k where bit rate in bps, not kbps
-            # -id3v2_version 3 required to properly copy embedded art, known ffmpeg bug
-            # -y on the output file to force an overwrite if needed
             command = [
                 "ffmpeg",
                 "-hide_banner",
@@ -587,7 +753,7 @@ class AudioNormalization():
                 success_text = f"Successful peak normalization on {input_path_basename}"
 
             data.append(success_text)
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except PathInfoError as pi_error:
             raise pi_error
@@ -596,15 +762,34 @@ class AudioNormalization():
             raise e_error
 
 
-    def rms_normalize_file(self, file_path: str, show_spinner: bool = True) -> None:
+    def rms_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True) -> None:
         '''
         @brief RMS normalizes audio file level.
 
-        @details Automatically finds mean amplitude ands scales entire audio to maximize mean without clipping.
-        @details Audio file must be mp3 format, and already processed by convert_file function.
+        @details Finds mean amplitude and scales audio to maximize the mean without clipping.<br>
+        RMS normalization (aka volume normalization) is a single pass process.
+        RMS normalization adjusts the audio level based on the root mean square (RMS) value,.<br>
+        This better represents perceived loudness compared to peak normalization.
+        Requires an MP3 file.
 
+        @code{.text}
+        ffmpeg -hide_banner -i file_path -filter:a volume=adjustmentdB -c:v copy -c:a libmp3lame -b:a bitrate -id3v2_version 3 export_path -y
+
+        -hide_banner; to reduce output clutter
+        -i file_path; input file path
+        -filter:a volume=adjustmentdB; where adjustment is computed dB value from volume info return and true peak constant
+        -c:v copy; to copy embedded art, since no explicit -map_metadata, the default global copy will happen on both streams
+        -c:a libmp3lame; to keep same encoding
+        -b:a bitrate; where bit rate in bps, not kbps
+        -id3v2_version 3; required to properly copy embedded art, known ffmpeg bug
+        export_path-y; force an overwrite on the output file if needed
+        @endcode
+
+        @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The full file path for mp3 audio file.
-        @param show_spinner {bool} Show yaspin spinner flag.
+        @param target {str} The optional target directory for exported files.
+        @param show_spinner {bool} Whether to display a progress spinner.
+        @return {None} This function does not return any value.
 
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -619,7 +804,7 @@ class AudioNormalization():
                 logger.warning(f"{file_path} is not an mp3")
                 return
 
-            export_path = directory.path_info(file_path)
+            export_path = directory.path_info(file_path, target)
 
             if export_path is None:
                 logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
@@ -646,31 +831,34 @@ class AudioNormalization():
             data.append(f"floor mean volume: {mean_volume:.2f}")
             data.append(f"floor max volume: {max_volume:.2f}")
 
-            if mean_volume >= 0.0:
-                mean_text = f"{input_path_basename} has mean volume: {mean_volume:.2f}, rms normalization not needed"
+            # Define your global target RMS baseline (typically between -16.0 and -20.0 for mixed content)
+            TARGET_RMS = float(TP)
+            TOLERANCE = 0.2
+
+            # Skip processing if the average root mean square is already hitting the target window
+            if math.isclose(mean_volume, TARGET_RMS, abs_tol=TOLERANCE):
+                mean_text = f"{input_path_basename} is already at target rms: {mean_volume:.2f} dB, rms normalization not needed."
                 logger.warning(mean_text)
                 return
             else:
                 data.append(f"mean volume: {mean_volume:.2f} dB")
 
-            adjustment = float(TP) - float(mean_volume)
-            clip_amount = float(max_volume) + adjustment
+            # Calculate adjustment required to map current average up to your target average
+            adjustment = TARGET_RMS - float(mean_volume)
 
-            if clip_amount > 0:
-                clip_text = f"rms normalizing by {TP} minus {mean_volume:.2f} equaling {adjustment:.2f} with max volume {max_volume} plus {adjustment} will result in clipping amount: {clip_amount} dB in {export_path}"
+            # Predict the final peak location to block digital ceiling clipping (0.0 dBFS)
+            expected_peak = float(max_volume) + adjustment
+
+            if expected_peak > 0.0:
+                clip_text = (
+                    f"rms normalizing by {TARGET_RMS} minus {mean_volume:.2f} equals {adjustment:+.2f}dB; "
+                    f"max peak {max_volume:.2f} plus {adjustment:+.2f} clips by {expected_peak:.2f} dB in {export_path}"
+                )
                 logger.warning(clip_text)
                 return
             else:
-                data.append(f"adjustment: {adjustment:.2f} dB")
+                data.append(f"adjustment: {adjustment:+.2f} dB")
 
-            # -hide_banner to reduce output clutter
-            # -filter:a volume=6dB where dB is the adjustment value from volume stats return
-            # -c:v copy to copy embedded art
-            # since no explicit -map_metadata, the default global copy will happen,on both streams
-            # -c:a libmp3lame to keep same encoding
-            # -b:a 128k where bit rate in bps, not kbps
-            # -id3v2_version 3 required to properly copy embedded art, known ffmpeg bug
-            # -y on the output file to force an overwrite if needed
             command = [
                 "ffmpeg",
                 "-hide_banner",
@@ -695,10 +883,10 @@ class AudioNormalization():
                 success_text = f"Successful rms normalization on {input_path_basename}"
 
             data.append(success_text)
-            directory.create_txt(txt_filename, data)
+            directory.create_txt(txt_filename, data, None, None)
 
         except PathInfoError as pi_error:
-            return pi_error
+            raise pi_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} while rms normalizing audio file: {file_path}", stack_info=True)
             raise e_error
