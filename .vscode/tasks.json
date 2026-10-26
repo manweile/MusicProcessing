@@ -66,16 +66,16 @@
       },
 
       // Generate Program Flow Image
-      // This task runs the Graphviz 'dot' command on the repository's flow.dot file and writes program_flow.png into the same dot_files directory.
+      // This task runs the Graphviz 'dot' command on the repository's functions.dot file and writes functions.svg into the same dot_files directory.
       {
         "label": "Generate Program Flow Image",
         "type": "process",
         "command": "dot",
         "args": [
-          "-Tpng",
-          "${workspaceFolder}/docs/dot_files/flow.dot",
+          "-Tsvg",
+          "${workspaceFolder}/docs/dot_files/functions.dot",
           "-o",
-          "${workspaceFolder}/docs/dot_files/program_flow.png"
+          "${workspaceFolder}/docs/dot_files/functions.svg"
         ],
         "options": {
           "cwd": "${workspaceFolder}/docs/dot_files"

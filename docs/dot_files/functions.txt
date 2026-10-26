@@ -19,11 +19,12 @@ extract-walk
 set-album-art
 
 Information Functions
+clip-check-file
+clip-check-walk
 get-audio-file-list
 get-ext-file-list
 get-media-info-walk
 get-tags-walk
-get-unique-media-keys
 
 Levelling Functions
 ebu-file

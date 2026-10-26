@@ -1,12 +1,5 @@
 NOT DISPOSED:
 
-Doxygen related:
-
-2) think about retaining flow dot
-  a) its a PITA to maintain
-  b) update it if decide to keep
-TODO
-
 DISPOSED:
 
   1) import doxygen create from esp scale project
@@ -311,3 +304,8 @@ COMPLETE
   b) Explicit gc.enable() usually does not prevent ordinary leaks.
   c) Real leaks often come from references, caches, cycles with finalizes, external resources, or native extensions.
 COMPLETED
+
+39) think about retaining flow dot
+  a) its a PITA to maintain
+  b) update it if decide to keep
+UPDATED

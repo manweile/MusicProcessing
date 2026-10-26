@@ -538,7 +538,7 @@ def main(args) -> None:
 
     @details Takes command line arguments and executes per arguments.
 
-    @dotfile flow.dot "Application startup and task flow"
+    @dotfile functions.dot "Application startup and task flow"
 
     @param args {argparse.Namespace} Arguments for execution.
 
