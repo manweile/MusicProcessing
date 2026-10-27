@@ -6,32 +6,61 @@
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import datetime
-import os
-import shutil
-import threading
+# Standard Modules
+import logging                                              # for logging
+import os                                                   # for operating system interfaces
+import shutil                                               # for high-level file operations
+import threading                                            # for multithreading support
+from datetime import datetime                               # for handling date and time
 
-# third party modules
-import wx
+# Third Party Modules
+import wx                                                   # for wxPython GUI components
 
-# local module constants
-from src.generated_files import GENERATED_PATH
-from src import MUSIC_TLD, AUDIO_EXTS, PLAYLIST_EXTS, RESULT_DIR, RESULT_EXT
-# local module classes
+# Local Module Methods
+from src import add_module_handler                          # for adding module-specific logging handlers
+
+# Local Module Constants
+from src import AUDIO_EXTS                                  # for audio file extensions
+from src import MUSIC_TLD                                   # top level directory for music files
+from src import PLAYLIST_EXTS                               # supported playlist file extensions
+from src import RESULT_DIR                                  # directory for storing test results
+from src import RESULT_EXT                                  # file extension for result files
+from src.generated_files import GENERATED_PATH              # for generated files path
+
+# Local Module Classes
 from src.gui.handlers import EventHandlers
 
+## @var logger
+# @brief Logger instance for the module.
+# @details Sets the logger name to the current module name.
+logger = logging.getLogger(__name__)
 
-def _timestamp():
+## @var basename
+# @brief Base name for the logger file handler.
+# @details Gets the module file name from the current file path.
+basename = os.path.basename(__file__)
+
+add_module_handler(logger, basename)
+
+
+## @name Helper Functions
+def _timestamp() -> str:
     '''
     @brief Get the current timestamp as a string.
 
     @details This function is used for generating unique result file names based on the current date and time.
 
-    @return A string representing the current timestamp in the format "YYYY-MM-DD HH:MM:SS".
+    @return time_stamp {str}A string representing the current timestamp in the format "YYYY-MM-DD HH:MM:SS".
     '''
 
-    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        time_stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        return time_stamp
+
+    except Exception as e_error:
+        logger.exception(f"Exception {type(e_error).__name__} getting timestamp", stack_info=True)
+        raise e_error
+## @}
 
 
 class MainFrame(wx.Frame):
@@ -41,17 +70,17 @@ class MainFrame(wx.Frame):
     @details This class defines the main window of the application, including the layout, panels, and event handlers.
     '''
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         '''
         @brief Initialize the MainFrame class.
 
         @details This constructor sets up the main window, including the layout, panels, and event handlers.
 
-        @param parent The parent window, if any.
-
-        @return None
+        @param self {MainFrame} The instance of the class.
+        @param parent {any} The parent window, if any.
         '''
 
+        # Initialize the main frame with the specified parent, title, and size
         super().__init__(parent, title="MusicProcessing GUI", size=(960, 760))
 
         # Increase font size by 2 points
@@ -59,33 +88,36 @@ class MainFrame(wx.Frame):
         font.SetPointSize(font.GetPointSize() + 2)
         self.SetFont(font)
 
+        # Create the main panel within the frame
         self.panel = wx.Panel(self)
         self.panel.SetFont(font)
 
         # Create splitter window for resizable notebook/log split
         self.splitter = wx.SplitterWindow(self.panel, style=wx.SP_LIVE_UPDATE)
 
+        # Create the notebook for tabbed panels within the splitter window
         self.notebook = wx.Notebook(self.splitter)
 
         # Initialize event handlers
         self.handlers = EventHandlers(self)
 
+        # Create the individual panels for each tab in the notebook
         self.art_panel = self._make_art_panel(self.notebook)
         self.convert_panel = self._make_convert_panel(self.notebook)
         self.normalize_panel = self._make_normalize_panel(self.notebook)
         self.playlist_panel = self._make_playlist_panel(self.notebook)
-
         self.metadata_panel = self._make_metadata_panel(self.notebook)
         self.dir_panel = self._make_directory_panel(self.notebook)
 
+        # Add the created panels to the notebook as separate tabs
         self.notebook.AddPage(self.art_panel, "Art")
         self.notebook.AddPage(self.convert_panel, "Convert")
         self.notebook.AddPage(self.normalize_panel, "Normalize")
         self.notebook.AddPage(self.playlist_panel, "Playlist")
-
         self.notebook.AddPage(self.metadata_panel, "Metadata")
         self.notebook.AddPage(self.dir_panel, "Directory")
 
+        # Create the log control for displaying log messages
         self.log_ctrl = wx.TextCtrl(
             self.splitter,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL,
@@ -96,19 +128,22 @@ class MainFrame(wx.Frame):
         self.splitter.SplitHorizontally(self.notebook, self.log_ctrl)
         self.splitter.SetSashPosition(550)  # Initial sash position in pixels from top
 
+        # Set up the main sizer for the panel and add the splitter window to it
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         main_sizer.Add(self.splitter, 1, wx.EXPAND)
         self.panel.SetSizer(main_sizer)
         self.Maximize()
 
-    def _make_art_panel(self, parent):
+
+    def _make_art_panel(self, parent) -> wx.Panel:
         '''
-        @brief This panel includes controls for both extracting and setting album art
+        @brief This panel includes controls for both extracting and setting album art.
 
         @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
 
-        @param parent The parent window for the panel.
-        @return The created art panel.
+        @param self {MainFrame} The instance of the class.
+        @param parent {any} The parent window for the panel.
+        @return panel {wx.Panel} The created art panel.
         '''
 
         panel = wx.Panel(parent)
@@ -157,7 +192,9 @@ class MainFrame(wx.Frame):
 
         # Path controls for specific file art extraction
         self.extract_file_art_path, extract_file_art_btn = self._make_path_controls(specific_subpanel)
-        extract_file_art_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.extract_file_art_path, "Audio files (*.mp3;*.m4a;*.wma)|*.mp3;*.m4a;*.wma"))
+        extract_file_art_btn.Bind(
+            wx.EVT_BUTTON,
+            lambda evt: self.handlers.on_browse_file(evt, self.extract_file_art_path, "Audio files (*.mp3;*.m4a;*.wma)|*.mp3;*.m4a;*.wma"))
 
         # execute button for specific file art extraction
         extract_file_art_exec = wx.Button(specific_subpanel, label="Extract File Art")
@@ -206,16 +243,19 @@ class MainFrame(wx.Frame):
 
         grid.AddGrowableCol(1)
         panel.SetSizer(grid)
+
         return panel
 
-    def _make_convert_panel(self, parent):
+
+    def _make_convert_panel(self, parent) -> wx.Panel:
         '''
         @brief This panel includes controls for audio file conversion
 
         @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
 
-        @param parent The parent window for the panel.
-        @return The created convert panel.
+        @param self {MainFrame} The instance of the class.
+        @param parent {any}The parent window for the panel.
+        @return panel {wx.Panel} The created convert panel.
         '''
 
         panel = wx.Panel(parent)
@@ -264,7 +304,9 @@ class MainFrame(wx.Frame):
 
         # Path controls for specific audio file conversion
         self.convert_file_path, convert_file_btn = self._make_path_controls(specific_subpanel)
-        convert_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.convert_file_path, "Audio files (*.mp3;*.m4a;*.wma)|*.mp3;*.m4a;*.wma"))
+        convert_file_btn.Bind(
+            wx.EVT_BUTTON,
+            lambda evt: self.handlers.on_browse_file(evt, self.convert_file_path, "Audio files (*.mp3;*.m4a;*.wma)|*.mp3;*.m4a;*.wma"))
 
         # execute button for specific audio file conversion
         convert_file_exec = wx.Button(specific_subpanel, label="Convert Audio File")
@@ -287,17 +329,20 @@ class MainFrame(wx.Frame):
 
         grid.AddGrowableCol(1)
         panel.SetSizer(grid)
+
         return panel
 
-    def _make_directory_panel(self, parent):
+
+    def _make_directory_panel(self, parent) -> wx.Panel:
         '''
         @brief Create the directory panel.
 
-        @details This panel provides controls for listing audio files, listing files by type, and removing empty albums or files matching a pattern.
+        @details Provides controls for listing audio files, listing files by type, and removing empty albums or files matching a pattern.<br>
         It includes options for selecting top-level directories and specifying file extensions or patterns.
 
-        @param parent The parent window for the panel.
-        @return The created directory panel.
+        @param self {MainFrame} The instance of the class.
+        @param parent {any} The parent window for the panel.
+        @return panel {wx.Panel} The created directory panel.
         '''
 
         panel = wx.Panel(parent)
@@ -349,17 +394,20 @@ class MainFrame(wx.Frame):
 
         grid.AddGrowableCol(1)
         panel.SetSizer(grid)
+
         return panel
 
-    def _make_metadata_panel(self, parent):
+
+    def _make_metadata_panel(self, parent) -> wx.Panel:
         '''
         @brief Create the metadata panel.
 
-        @details This panel provides controls for retrieving and displaying metadata from media files.
+        @details This panel provides controls for retrieving and displaying metadata from media files.<br>
         It includes options for tags walk, media info walk, and unique media extraction.
 
-        @param parent The parent window for the panel.
-        @return The created metadata panel.
+        @param self {MainFrame} The instance of the class.
+        @param parent {any} The parent window for the panel.
+        @return panel {wx.Panel} The created metadata panel.
         '''
 
         panel = wx.Panel(parent)
@@ -405,16 +453,19 @@ class MainFrame(wx.Frame):
 
         grid.AddGrowableCol(1)
         panel.SetSizer(grid)
+
         return panel
 
-    def _make_normalize_panel(self, parent):
+
+    def _make_normalize_panel(self, parent) -> wx.Panel:
         '''
         @brief This panel includes controls for audio normalization
 
         @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
 
-        @param parent The parent window for the panel.
-        @return The created normalize panel.
+        @param self {MainFrame} The instance of the class.
+        @param parent {any} The parent window for the panel.
+        @return panel {wx.Panel} The created normalize panel.
         '''
 
         panel = wx.Panel(parent)
@@ -513,33 +564,41 @@ class MainFrame(wx.Frame):
 
         grid.AddGrowableCol(1)
         panel.SetSizer(grid)
+
         return panel
 
-    def _make_path_controls(self, parent):
+
+    def _make_path_controls(self, parent) -> tuple:
         '''
         @brief Helper function to create a standard set of path controls (text box and browse button).
 
         @details This function is used to create consistent path input controls across different panels in the application.
 
-        @param parent The parent window for the controls.
-        @return A tuple containing the text control and the browse button.
+        @param self {MainFrame} The instance of the class.
+        @param parent {any} The parent window for the controls.
+        @return path_controls (textbox, button) ({wx.TextCtrl}, {wx.Button}) Tuple containing the text control and the browse button.
         '''
 
         textbox = wx.TextCtrl(parent)
         textbox.SetToolTip("Enter path or click Browse button")
         button = wx.Button(parent, label="Browse")
         button.SetToolTip("Browse for a path")
-        return textbox, button
 
-    def _make_playlist_panel(self, parent):
+        path_controls = (textbox, button)
+
+        return path_controls
+
+
+    def _make_playlist_panel(self, parent) -> wx.Panel:
         '''
         @brief Create the playlist panel.
 
-        @details This panel provides controls for updating M3U playlists and performing directory walks.
+        @details This panel provides controls for updating M3U playlists and performing directory walks.<br>
         It includes nested subpanels for updating a specific playlist file and for walking a directory tree.
 
-        @param parent The parent window for the panel.
-        @return The created playlist panel.
+        @param self {MainFrame} The instance of the class.
+        @param parent {any} The parent window for the panel.
+        @return panel {wx.Panel} The created playlist panel.
         '''
 
         panel = wx.Panel(parent)
@@ -602,15 +661,18 @@ class MainFrame(wx.Frame):
 
         grid.AddGrowableCol(1)
         panel.SetSizer(grid)
+
         return panel
+
 
     def _set_busy_state(self, busy=True):
         '''
         @brief Set the busy state of the application.
 
-        @details This method enables or disables the main window and log control based on the busy state.
+        @details This method enables or disables the main window and log control based on the busy state.<br>
         It also changes the cursor to a wait cursor when busy and back to the default cursor when not busy.
 
+        @param self {MainFrame} The instance of the class.
         @param busy {bool} True to set the application to busy state, False to set it to idle state.
         '''
 
@@ -618,11 +680,14 @@ class MainFrame(wx.Frame):
         self.log_ctrl.Enable(True)
         self.SetCursor(wx.Cursor(wx.CURSOR_WAIT if busy else wx.CURSOR_ARROW))
 
+
     def _show_generated_files_dialog(self):
         '''
         @brief Display a file dialog to select generated MP3 files for moving.
 
         @details This method opens a file dialog starting in the directory where generated MP3 files are stored.
+
+        @param self {MainFrame} The instance of the class.
         '''
 
         generated_dir = os.path.join(GENERATED_PATH, MUSIC_TLD)
@@ -653,8 +718,10 @@ class MainFrame(wx.Frame):
         '''
         @brief Display a file dialog to select generated playlist files for moving.
 
-        @details This method opens a file dialog starting in the generated files directory.
+        @details This method opens a file dialog starting in the generated files directory.<br>
         It restricts file selection to playlist file extensions only.
+
+        @param self {MainFrame} The instance of the class.
         '''
 
         generated_dir = GENERATED_PATH
@@ -682,12 +749,14 @@ class MainFrame(wx.Frame):
 
         dlg.Destroy()
 
+
     def _show_result_file(self, filename):
         '''
         @brief Display the contents of a result file in the log control.
 
         @details This method constructs the path to the result file based on the provided filename and checks if it exists.
 
+        @param self {MainFrame} The instance of the class.
         @param filename {str} The base name of the result file (without extension) to display.
         '''
 
@@ -706,13 +775,15 @@ class MainFrame(wx.Frame):
 
         wx.CallAfter(self.log_ctrl.SetValue, f"=== {filename + RESULT_EXT} ===\n{content}")
 
+
     def _validate_dir(self, path):
         '''
         @brief Validate that the provided path is a directory.
 
-        @details This method checks if the provided path is not empty and exists as a directory.
+        @details This method checks if the provided path is not empty and exists as a directory.<br>
         If the validation fails, it displays an appropriate message box to the user.
 
+        @param self {MainFrame} The instance of the class.
         @param path {str} The directory path to validate.
         @return bool True if the path is a valid directory, False otherwise.
         '''
@@ -727,13 +798,15 @@ class MainFrame(wx.Frame):
 
         return True
 
+
     def _validate_file(self, path):
         '''
         @brief Validate that the provided path is a file.
 
-        @details This method checks if the provided path is not empty and exists as a file.
+        @details This method checks if the provided path is not empty and exists as a file.<br>
         If the validation fails, it displays an appropriate message box to the user.
 
+        @param self {MainFrame} The instance of the class.
         @param path {str} The file path to validate.
         @return bool True if the path is a valid file, False otherwise.
         '''
@@ -748,12 +821,14 @@ class MainFrame(wx.Frame):
 
         return True
 
+
     def _move_files(self, file_paths, dest_dir):
         '''
         @brief Move selected files to the specified destination directory and display a summary of the operation.
 
         @details This method attempts to move each file in the provided list of file paths to the specified destination directory.
 
+        @param self {MainFrame} The instance of the class.
         @param file_paths {list} A list of file paths to move.
         @param dest_dir {str} The destination directory to move the files to.
 
@@ -782,10 +857,15 @@ class MainFrame(wx.Frame):
 
         wx.MessageBox(message, "Move Summary", wx.ICON_INFORMATION)
 
+
     def _move_files_dialog(self, file_paths):
         '''
         @brief Display a dialog to select the destination directory for moving files.
 
+        @details Displays a directory selection dialog to the user and moves the selected files to the chosen directory if confirmed.<br>
+        If the user cancels the dialog, no action is taken.
+
+        @param self {MainFrame} The instance of the class.
         @param file_paths {list} A list of file paths to move.
         '''
 
@@ -801,23 +881,29 @@ class MainFrame(wx.Frame):
 
         dest_dlg.Destroy()
 
+
     def log(self, message):
         '''
         @brief Log a message to the log control with a timestamp.
 
-        @details This method uses wx.CallAfter to ensure that log updates are thread-safe and do not cause issues with the GUI responsiveness.
+        @details This method uses wx.CallAfter to ensure that log updates are thread-safe and do not cause issues with the GUI responsiveness.<br>
         Each log entry is prefixed with a timestamp for better tracking of events.
 
+        @param self {MainFrame} The instance of the class.
         @param message {str} The message to log.
-        @return None
         '''
 
         wx.CallAfter(self.log_ctrl.AppendText, f"[{_timestamp()}] {message}\n")
+
 
     def run_task(self, func, *args, on_success=None):
         '''
         @brief Run a long-running task in a separate thread to keep the GUI responsive.
 
+        @details Runs the given function in a separate thread to keep the GUI responsive.<br>
+        Logs the start and completion of the task, and handles any exceptions that occur.
+
+        @param self {MainFrame} The instance of the class.
         @param func The function to run as the task.
         @param args {tuple} Arguments to pass to the function.
         @param on_success {callback} Optional callback to run on the main thread after successful completion of the task
@@ -828,10 +914,8 @@ class MainFrame(wx.Frame):
             '''
             @brief Worker function to run the task and handle logging and exceptions.
 
-            @details This function runs in a separate thread, executes the given task function, logs the start and completion of the task, and handles any exceptions that occur.
+            @details Runs in separate thread, executes given task function, logs start and completion of task, handles any exceptions that occur.<br>
             It also ensures that the busy state of the GUI is properly managed.
-
-            @return None
 
             @exception Exception Any exception raised by the task function is caught and logged, and an error message box is displayed to the user.
             '''

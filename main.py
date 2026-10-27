@@ -15,7 +15,6 @@
 
 # Standard Modules
 import argparse                                             # argument parsing module
-import gc                                                   # garbage collection module
 import logging                                              # logging module
 import os                                                   # operating system module
 import re                                                   # regular expression module
@@ -33,11 +32,10 @@ from src.generated_files import GENERATED_PATH              # generated files pa
 from src.audio_info import AudioArt                         # audio art handling class
 from src.audio_info import AudioMetadata                    # audio metadata handling class
 from src.audio_info import AudioPlaylist                    # audio playlist handling class
-from src.audio_info.audio_utilities import AudioUtilities   # audio utility functions class
+from src.audio_info import AudioUtilities                   # audio utility functions class
 from src.audio_normalize import AudioNormalization          # audio normalization handling class
 from src.dir_processing import DirectoryProcessing          # directory processing handling class
-
-gc.enable()
+from src.gui.wx_app import run_gui                          # GUI application runner
 
 # Configure logging
 ## @var basename
@@ -206,6 +204,16 @@ class CustomArgumentParser(argparse.ArgumentParser):
 
 ## @name Subcommand Handlers
 # @{
+def gui():
+    '''
+    @brief Launches the graphical user interface for the application.
+
+    @details Initializes and displays the main window of the GUI application.
+    '''
+
+    run_gui()
+
+
 def clip_check_file(file_path):
     '''
     @brief Checks peak, RMS, and EBU R128 leveling for a single audio file.
@@ -551,6 +559,9 @@ def main(args) -> None:
     '''
 
     try:
+        if args.subcommand == "gui":
+            gui()
+
         if args.subcommand == "clip-check-file":
             file_path = getattr(args, "file")
             clip_check_file(file_path)
@@ -728,6 +739,11 @@ if __name__ == "__main__":
     try:
         parser = CustomArgumentParser(description='Music Processing')
         subparsers = parser.add_subparsers(title="subcommands", dest="subcommand", metavar="command")
+
+        # run in gui mode instead of cli modes
+        # gui
+        gui_parser = subparsers.add_parser("gui", help="Run in GUI mode")
+        gui_parser.set_defaults(func=run_gui)
 
         # check peak, RMS, and EBU R128 leveling for a single audio file
         # 1 mandatory arg, the audio file path
