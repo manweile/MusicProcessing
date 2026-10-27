@@ -19,7 +19,7 @@ except ImportError:  # pragma: no cover
 
 class TestGuiSmoke(unittest.TestCase):
     '''
-    @briefBasic checks for GUI module.
+    @brief Basic checks for GUI module.
 
     @details These tests are not meant to be exhaustive, but rather to catch basic issues with the GUI module and its dependencies.
     '''
@@ -30,7 +30,8 @@ class TestGuiSmoke(unittest.TestCase):
 
         @details This test will fail if there are any issues with the MainFrame class or its dependencies that prevent it from being created.
 
-        @exceptions Exception, SystemExit: If the GUI environment is unavailable, the test will be skipped with a message indicating the reason.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception SystemExit If the GUI environment is unavailable, the test will be skipped with a message indicating the reason.
         '''
 
         if wx is None:
@@ -53,7 +54,8 @@ class TestGuiSmoke(unittest.TestCase):
 
         @details This test will fail if there are any issues with the run_gui function or its dependencies that prevent it from being called.
 
-        @exceptions Exception, SystemExit: If the GUI environment is unavailable, the test will be skipped with a message indicating the reason.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception SystemExit A common baseclass exception to handle unforeseen errors.
         '''
 
         if wx is None:

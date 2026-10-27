@@ -645,7 +645,8 @@ class AudioMetadata():
 
         @param self {AudioMetadata} The instance of the class.
         @param start_path {str} The top level directory that contains all the music files.<br>
-        The start path must be a valid top-level directory containing artist folders, and only a tld.<br>
+        The start path must be a valid top-level directory containing artist folders, and only a tld.
+        @param show_progress {bool} Flag indicating whether to display progress bar.
         @return {None} This function does not return any value.
 
         @exception ValidationError A pathlib module validation error occurred.

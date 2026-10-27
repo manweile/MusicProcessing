@@ -232,7 +232,7 @@ def clip_check_walk(tld_path):
 
     @details Reports peak and RMS clipping estimates and whether EBU leveling can use linear normalization.
 
-    @param start_path {str} The tld, or fld path that contains all the music files.
+    @param tld_path {str} The tld, or fld path that contains all the music files.
     '''
 
     utilities.clip_check_walk(tld_path)
@@ -260,7 +260,7 @@ def convert_walk(tld_path, file_pattern, target):
     Can accept an optional file pattern to filter which files to convert.<br>
     Can accept an optional target directory for the exported files.
 
-    @param start_path {str} The tld, fld, or sld path that contains all the music files.
+    @param tld_path {str} The tld, fld, or sld path that contains all the music files.
     @param file_pattern {str} The optional file pattern we want to convert.
     @param target {str} The optional target directory for exported files.
     '''

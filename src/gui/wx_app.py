@@ -44,6 +44,7 @@ add_module_handler(logger, basename)
 
 
 ## @name Helper Functions
+# @{
 def _timestamp() -> str:
     '''
     @brief Get the current timestamp as a string.

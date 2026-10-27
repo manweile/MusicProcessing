@@ -69,7 +69,7 @@ ARG_CLI_TLD = "tld"
 # @details use when needing mandatory type cli
 ARG_CLI_TYPE = "type"
 
-## @var ARG_HELP_PATH
+## @var ARG_HELP_AUDIO
 # @brief add argument help
 # @details use when needing mandatory file path input
 ARG_HELP_AUDIO = "mandatory full path to audio file"
