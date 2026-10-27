@@ -585,7 +585,7 @@ class AudioMetadata():
         Otherwise must be a valid audio file extension like '.mp3', '.m4a', '.wma', or '.flac'.
 
         @param self {AudioMetadata} The instance of the class.
-        @param start_path {str} The starting point of the directory walk.<br>
+        @param start_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
         @param target {str} Optional, the target directory for exported files. Defaults to None.
@@ -644,7 +644,7 @@ class AudioMetadata():
         It will contain all audio file paths, album metadata values and sanitized album directory names.
 
         @param self {AudioMetadata} The instance of the class.
-        @param start_path {str} The top level directory holding artist directories and music files.<br>
+        @param start_path {str} The top level directory that contains all the music files.<br>
         The start path must be a valid top-level directory containing artist folders, and only a tld.<br>
         @return {None} This function does not return any value.
 
@@ -915,7 +915,7 @@ class AudioMetadata():
         The collected information is stored in a list and can be saved to a file.
 
         @param self {AudioMetadata} The instance of the class.
-        @param start_path {str} The starting point of the directory walk.<br>
+        @param start_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} The audio file pattern we want to get tags from.
         @return {None} This function does not return any value.
@@ -1072,7 +1072,7 @@ class AudioMetadata():
         The lowest allowable directory in `file_path` is an artist directory.<br>
 
         @param self {AudioMetadata} The instance of the class.
-        @param file_path {str} The starting point of the directory walk.<br>
+        @param file_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
         @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
@@ -1579,7 +1579,7 @@ class AudioMetadata():
         The function will recursively walk through the directory and rename files of only the supported audio file types.
 
         @param self {AudioMetadata} The instance of the class.
-        @param start_path {str} The path to the directory to start walking from.<br>
+        @param start_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
         @return {None} This function does not return any value.
 

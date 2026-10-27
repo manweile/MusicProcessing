@@ -223,7 +223,7 @@ class AudioUtilities():
         Will append the analysis results to any extant `clip_check_file.txt` for each MP3 file encountered.
 
         @param self {AudioUtilities} The instance of the class.
-        @param tld_path {str} The top level directory path that contains all the music files.<br>
+        @param tld_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @return {None} This function does not return any value.
 
