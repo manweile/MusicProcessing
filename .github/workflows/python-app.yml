@@ -3,12 +3,12 @@
 #
 # @brief GitHub Actions workflow for building and testing the MusicProcessing project with Python and FFmpeg.
 #
-# @details This workflow sets up the Python environment, caches FFmpeg and pip dependencies, installs FFmpeg, installs Python dependencies,
-# and runs unit tests.<br>
+# @details This workflow sets up the Python environment, caches FFmpeg and pip dependencies, installs FFmpeg, installs required
+# Linux system libraries for wxPython builds, installs Python dependencies, and runs unit tests.<br>
 # for more information, see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 #
-# @version 1.0.0
-# @date 2024-06-19
+# @version 1.1.0
+# @date 2026-10-27
 #
 # @copyright Copyright (c) 2026 Gerald Manweiler
 
@@ -75,9 +75,22 @@ jobs:
           ffmpeg -version
           ffprobe -version
 
+      # Install Linux system dependencies needed to build wxPython on Ubuntu runners.
+      - name: Install wxPython system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-3-dev \
+            libglib2.0-dev \
+            libnotify-dev \
+            libsm-dev \
+            libcurl4-openssl-dev \
+            freeglut3-dev \
+            pkg-config
+
       # Cache required pip modules to speed up subsequent workflow runs
       - name: Cache pip modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-python-${{ hashFiles('**/requirements.txt') }}
