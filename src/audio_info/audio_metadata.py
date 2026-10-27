@@ -629,7 +629,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def create_album_dirs(self, start_path: str) -> None:
+    def create_album_dirs(self, start_path: str, show_progress: bool = True) -> None:
         r'''
         @brief Creates second level (sld) album sub-directories in first level (fld) artist directories.
 
@@ -661,7 +661,8 @@ class AudioMetadata():
             tld_content = os.listdir(start_path)
             len_tld_content = len(tld_content)
 
-            tld_bar = tqdm(desc=f'Processing {start_path} content', total=len_tld_content, unit=' items')
+            if show_progress:
+                tld_bar = tqdm(desc=f'Processing {start_path} content', total=len_tld_content, unit=' items')
 
             # top level directory consists of artist directories, playlist files and couple other sundry files
             for tld_item in tld_content:
@@ -670,7 +671,8 @@ class AudioMetadata():
                 # we only want artist directories, playlist/sundry files don't count
                 tld_item_path = os.path.join(start_path, tld_item)
                 if os.path.isfile(tld_item_path):
-                    tld_bar.update(1)
+                    if show_progress:
+                        tld_bar.update(1)
                     continue
 
                 # since we skip tld items that are files,
@@ -679,7 +681,8 @@ class AudioMetadata():
                 # want to know if we have any empty artist directories so we can deal with them later
                 if os.path.isdir(tld_item_path) and not artist_content:
                     logger.info(f"{tld_item_path} is an empty artist directory")
-                    tld_bar.update(1)
+                    if show_progress:
+                        tld_bar.update(1)
                     continue
 
                 # now we can look at what's in the current artist 1st level directory
@@ -738,9 +741,12 @@ class AudioMetadata():
                         logger.warning(f"{audio_file} is missing album metadata")
                         continue
 
-                tld_bar.update(1)
+                if show_progress:
+                    tld_bar.update(1)
 
-            tld_bar.close()
+            if show_progress:
+                tld_bar.close()
+
             directory.create_csv(csv_filename, data, None, None, header_row, 0)
 
         except ExecError as exc_error:
