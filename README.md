@@ -32,6 +32,23 @@ There are many things I need to do:
 
 ## Usage
 
+### GUI mode
+
+GUI mode exists for accessibility and discoverability, visual feedback, and a lower barrier to entry.
+
+- Accessibility and Discoverability: Non-technical users can see available options without memorizing text commands.
+- Visual Feedback: Complex data, live previews, progress bars, and error highlights are much easier to inspect in a visual layout.
+- Lower Barrier to Entry: Casual or occasional users can learn and operate the software quickly with minimal training or documentation.
+
+### CLI Mode
+
+CLI mode exists for automation and scripting, batch processing, remote and headless environments, and speed for power users.
+
+- Automation and Scripting: A CLI lets users plug the app into shell scripts, cron jobs, or CI/CD pipelines to run tasks without human supervision.
+- Batch Processing: Users can process dozens or hundreds of files at once using loops or wildcards instead of clicking through windows manually.
+- Remote and Headless Environments: CLI runs easily on servers, Docker containers, via SSH where display monitors and window managers do not exist.
+- Power Users: Experienced users can execute complex configurations with a few keystrokes faster than navigating multi-tab menus.
+
 **Note**<br>
 Any file paths with spaces must be be encapsulated in quotation marks; it's really best practice to do it all the time.
 
@@ -46,6 +63,14 @@ options:
 
 subcommands:
   command
+    gui                                                     Run in GUI mode
+
+    clip-check-file                                         Check peak, RMS, and EBU R128 leveling for a single audio file;
+                                                            mandatory: audio file path;
+
+    clip-check-walk                                         Check peak, RMS, and EBU R128 leveling options for audio files;
+                                                            mandatory: start path tld/fld;
+
     convert-file file --target target                       Convert audio file to mp3;
                                                             mandatory: audio file path;
                                                             optional: converted file target path
@@ -126,6 +151,184 @@ subcommands:
                                                             mandatory: start path tld only
 ```
 
+## Project Structure
+
+```text
+MusicProcessing
+|_.github
+| |_ copilot-instructions.md
+| |
+| |_instructions
+| | |_ *.instructions.md
+| |
+| |_workflows
+|   |_ *.yml
+|
+|_.vscode
+| |_ launch.json
+| |_ settings.json
+| |_ tasks.json
+|
+|_docs
+| |_command_lines
+| | |_ *.txt
+| |
+| |_dot_files
+| | |_ *.dot
+| | |_ *.png
+| | |_ *.svg
+| |
+| |_excel_files
+| | |_ *.xlsx
+| |
+| |_extensions
+| | |_ extensions.txt
+| |
+| |_ffmpeg_info
+| | |_ *.pdf
+| |
+| |_md_files
+| | |_ *.md
+| |
+| |_planning
+| | |_ *.md
+| | |_ todo.txt
+| |
+| |_scripts
+|   |_google
+|   | |_purpose 1
+|   | | |_ *.py
+|   | |_purpose i
+|   | | |_ *.py
+|   | |_purpose n
+|   |   |_ *.py
+|   |
+|   |_mine
+|     |_purpose 1
+|     | |_ *.py
+|     |_purpose i
+|     | |_ *.py
+|     |_purpose n
+|       |_ *.py
+|
+|_html
+| |_ *.html
+| |_ *js
+| |
+| |_search
+| | |_ *.js
+|
+|_src
+| |_ __init__.py
+| |_ errors.py
+| |_ level_filter.py
+| |_ logging_config.py
+| |_ subprocess_utils.py
+| |
+| |_audio_info
+| | |_ __init__.py
+| | |_ audio_art.py
+| | |_ audio_metadata.py
+| | |_ audio_playlist.py
+| | |_ audio_utilities.py
+| |
+| |_audio_normalize
+| | |_ __init__.py
+| | |_ audio_normalization.py
+| |
+| |_dir_processing
+| | |_ __init__.py
+| | |_ directory_processing.py
+| |
+| |_generated_files
+| | |_ .gitignore
+| | |_ __init__.py
+| | |_ test.m3u
+| | |
+| | |_AlbumArt
+| | | |_*.jpg
+| | |
+| | |_csv_files
+| | | | *.csv
+| | |
+| | |_icon_files
+| | | |_attributions.txt
+| | | |_*.png
+| | |
+| | |_licenses
+| | | | *.pdf
+| | |
+| | |_log_files
+| | | |_ *.log
+| | |
+| | |_result_files
+| |   |_ *.txt
+| |
+| |_gui
+|   |_ __init__.py
+|   |_ handlers.py
+|   |_ wx_app.py
+|
+|_tests
+| |_ __init__.py
+| |_ *<fixture>.csv
+| |_ <fixture>.m3u
+| |_ <fixture>.txt
+| |_ <fixture>.mp3
+| |_ support.py
+| |_ test_audio_art.py
+| |_ test_audio_metadata.py
+| |_ test_audio_normalization.py
+| |_ test_audio_playlist.py
+| |_ test_audio_utilities.py
+| |_ test_directory_processing.py
+| |_ test_gui.py
+| |_ test_subprocess_utilities.py
+| |
+| |_Music
+|   |_ test.csv
+|   |_ test.m3u
+|   |_ test.sh
+|   |
+|   |_artists with 0 album, containing 1 song, 0 art
+|   | |_ song
+|   |
+|   |_artists with 1 album, containing 1 song, 0 art
+|   | |_album
+|   |   |_ song
+|   |
+|   |_artists with 1 album, containing 1 song, 1 art
+|   | |_album
+|   |   |_ song
+|   |   |_ Folder.jpg
+|   |
+|   |_artists with 1 album, containing 2 songs, 0 art
+|   | |_album
+|   |   |_ song 1
+|   |   |_ song 2
+|   |
+|   |_artists with 1 album, containing 2 songs, 1 art
+|   | |_album
+|   |   |_ song 1
+|   |   |_ song 2
+|   |   |_ Folder.jpg
+|   |
+|   |_artists with 2 albums, each containing 1 song, 0 art
+|     |_album 1
+|     | |_ song
+|     |_album 2
+|       |_ song
+|
+|_ .gitignore
+|_ Doxyfile
+|_ doxygen-custom.css
+|_ doxygen.log
+|_ main.py
+|_ MusicProcessing.code-workspace
+|_ README.md
+|_ requirements.txt
+```
+
 ## Sources
 
 I have these primary sources:
@@ -174,7 +377,7 @@ And of course, some audio files may have no embedded metadata (text or image).
   - almost universally supported by playback software (both the mp3 audio format and ID3v2.3 metadata encoding)
 - m4a (MPEG-4 Audio)
   - these are iTunes purchase & downloads
-  - come with MP4 metadata encoding (which applies to both .m4a and .mp4 extensions)
+  - come with MP4 metadata encoding
   - not 100% supported by playback software, especially on older hardware
 - wma (Windows Media Audio)
   - designed to store compressed digital audio music files, similar to an MP3
@@ -190,7 +393,7 @@ And of course, some audio files may have no embedded metadata (text or image).
 ## Playlist Files
 
 I prefer m3u playlist format. Originally designed for mp3 files, they are the de facto standard playlist format.<br>
-They are relative pathed to the songs they list (they *must* reside in the top level directory).<br>
+They are relative pathed to the songs they list (which means the playlist *must* reside in the top level directory).<br>
 They are text editor editable, and almost universally supported by player software.<br>
 
 I prefer to name playlist files descriptively - "Favourites", "Symphonic Rock", "Romantic", etc.
