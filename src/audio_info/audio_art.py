@@ -596,8 +596,8 @@ class AudioArt():
         '''
         @brief Sets album art file for an album directory.
 
-        @details Skips album directories that already contain a folder-art file.<br>
-        Copies a matching generated AlbumArt JPEG into the album directory when it is available.
+        @details Copies a matching AlbumArt JPEG into the album directory when it is available.<br>
+        Skips album directories that already contain a folder-art file.
 
         @param self {AudioArt} The instance of the class.
         @param input_path {str} The starting path that contains all the music files.<br>

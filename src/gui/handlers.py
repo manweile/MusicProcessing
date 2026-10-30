@@ -188,7 +188,7 @@ class EventHandlers:
         if not self.frame._validate_file(path):
             return
 
-        self.frame.run_task(art.extract_album_art, path, on_success=self.frame._show_generated_files_dialog)
+        self.frame.run_task(art.extract_album_art, path)
 
 
     def on_extract_walk_art(self, event):
@@ -208,7 +208,7 @@ class EventHandlers:
 
         selection = self.frame.extract_walk_art_pattern.GetSelection()
         pattern = None if selection == 0 else self.frame.extract_walk_art_pattern.GetString(selection)
-        self.frame.run_task(art.extract_walk, tld, pattern, on_success=self.frame._show_generated_files_dialog)
+        self.frame.run_task(art.extract_walk, tld, pattern)
 
 
     def on_get_media_info_walk(self, event):
@@ -420,7 +420,7 @@ class EventHandlers:
         if not self.frame._validate_dir(tld):
             return
 
-        self.frame.run_task(art.set_album_art, tld, on_success=self.frame._show_generated_files_dialog)
+        self.frame.run_task(art.set_album_art, tld)
 
 
     def on_update_m3u(self, event):
