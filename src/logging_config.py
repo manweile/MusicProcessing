@@ -7,7 +7,7 @@
 
 @details Configure package and module file logging.
 
-@note This implementation does not require garbage collection or or logging functionality.
+@note This implementation does not require logging functionality.
 
 @version 1.0.0
 @date 2026-09-16

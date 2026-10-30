@@ -7,7 +7,7 @@
 
 @details Defines the custom exceptions used in the MusicProcessing module.
 
-@note This implementation does not require garbage collection or logging functionality.
+@note This implementation does not require logging functionality.
 
 @version 1.0.0
 @date 2024-06-05

@@ -65,20 +65,20 @@
           }
       },
 
-      // Generate Program Flow Image
-      // This task runs the Graphviz 'dot' command on the repository's functions.dot file and writes functions.svg into the same dot_files directory.
+      /** Graphviz Tasks */
+      // Generate Program Flow Images
+      // This task runs the Graphviz 'dot' command on the repository's functions.dot file and writes functions.svg & .png into dot_files directory.
       {
-        "label": "Generate Program Flow Image",
+        "label": "Generate Program Flow Images",
         "type": "process",
-        "command": "dot",
+        "command": "powershell.exe",
         "args": [
-          "-Tsvg",
-          "${workspaceFolder}/docs/dot_files/functions.dot",
-          "-o",
-          "${workspaceFolder}/docs/dot_files/functions.svg"
+          "-NoProfile",
+          "-Command",
+          "dot -Tsvg functions.dot -o functions.svg; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; dot -Tpng functions.dot -o functions.png; exit $LASTEXITCODE"
         ],
         "options": {
-          "cwd": "${workspaceFolder}/docs/dot_files"
+          "cwd": "${workspaceFolder}\\docs\\dot_files"
         },
         "group": {
           "kind": "build",
@@ -133,6 +133,31 @@
           "panel": "shared",
           "showReuseMessage": false,
           "close": true
+        }
+      },
+
+      /** GUI Tasks */
+      // This task launches the Music Processing GUI by running main.py with the 'gui' argument.
+      {
+        "label": "Launch Music Processing GUI",
+        "type": "process",
+        "command": "python",
+        "args": [
+          "main.py",
+          "gui"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "problemMatcher": [],
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared",
+          "showReuseMessage": true,
+          "clear": false,
+          "close": false
         }
       }
 

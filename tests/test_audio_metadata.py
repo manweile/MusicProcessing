@@ -470,7 +470,7 @@ class TestAudioMetadata(TestCase):
         @param self {TestAudioMetadata} The instance of the test class.
         '''
 
-        metadata.create_album_dirs(self.prepped)
+        metadata.create_album_dirs(self.prepped, False)
 
         for dir in self.prepped_results:
             dir_exists = os.path.exists(dir)
@@ -502,7 +502,7 @@ class TestAudioMetadata(TestCase):
         create_album_metadata.create_album_dirs = mock_album_metadata
 
         with self.assertRaises(ExecError) as cm:
-            create_album_metadata.create_album_dirs(prepped_path)
+            create_album_metadata.create_album_dirs(prepped_path, False)
 
         self.assertEqual("ExecError", cm.exception.__class__.__name__)
 
@@ -528,7 +528,7 @@ class TestAudioMetadata(TestCase):
         create_album_metadata.create_album_dirs = mock_album_metadata
 
         with self.assertRaises(ValueError) as cm:
-            create_album_metadata.create_album_dirs(self.prepped)
+            create_album_metadata.create_album_dirs(self.prepped, False)
 
         self.assertEqual("ValueError", cm.exception.__class__.__name__)
 

@@ -1,0 +1,10 @@
+m4a, wav, file/folder: <a href="https://www.flaticon.com/free-icons/files-and-folders" title="files and folders icons">Files and folders icons created by xnimrodx - Flaticon</a>
+mp3: <a href="https://www.flaticon.com/free-icons/mp3" title="mp3 icons">Mp3 icons created by xnimrodx - Flaticon</a>
+wma: <a href="https://www.flaticon.com/free-icons/windows-media-audio-file" title="windows media audio file icons">Windows media audio file icons created by xnimrodx - Flaticon</a>
+m3u: <a href="https://www.flaticon.com/free-icons/playlist" title="playlist icons">Playlist icons created by xnimrodx - Flaticon</a>
+music file: <a href="https://www.flaticon.com/free-icons/writing-tool" title="writing tool icons">Writing tool icons created by xnimrodx - Flaticon</a>
+normalization: <a href="https://www.flaticon.com/free-icons/music-and-multimedia" title="music-and-multimedia icons">Music-and-multimedia icons created by xnimrodx - Flaticon</a>
+file list: <a href="https://www.flaticon.com/free-icons/list" title="list icons">List icons created by xnimrodx - Flaticon</a>
+program icon: <a href="https://www.flaticon.com/free-icons/music" title="music icons">Music icons created by xnimrodx - Flaticon</a>
+
+"Icons made by xnimrodx from www.flaticon.com"

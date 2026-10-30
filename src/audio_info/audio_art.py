@@ -485,7 +485,7 @@ class AudioArt():
         Requires a valid audio extension such as '.mp3', '.m4a', '.wma', or '.flac' when a pattern is specified.
 
         @param self {AudioArt} The instance of the class.
-        @param start_path {str} The starting point of the directory walk.<br>
+        @param start_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
         @return {None} This function does not return any value.
@@ -596,11 +596,11 @@ class AudioArt():
         '''
         @brief Sets album art file for an album directory.
 
-        @details Skips album directories that already contain a folder-art file.<br>
-        Copies a matching generated AlbumArt JPEG into the album directory when it is available.
+        @details Copies a matching AlbumArt JPEG into the album directory when it is available.<br>
+        Skips album directories that already contain a folder-art file.
 
         @param self {AudioArt} The instance of the class.
-        @param input_path {str} The full path to album directory.<br>
+        @param input_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @return {None} This function does not return any value.
 

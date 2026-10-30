@@ -559,6 +559,8 @@ class AudioMetadata():
                         data=album_art_file.read()
                     )
                 )
+            # have to specify ID3v2 version to avoid defaults to v2.4
+            # which are not compatible with Windows display
             mp3_file.save(v2_version=3)
 
             directory.create_txt(txt_filename, data, None, None)
@@ -583,7 +585,7 @@ class AudioMetadata():
         Otherwise must be a valid audio file extension like '.mp3', '.m4a', '.wma', or '.flac'.
 
         @param self {AudioMetadata} The instance of the class.
-        @param start_path {str} The starting point of the directory walk.<br>
+        @param start_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
         @param target {str} Optional, the target directory for exported files. Defaults to None.
@@ -627,7 +629,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def create_album_dirs(self, start_path: str) -> None:
+    def create_album_dirs(self, start_path: str, show_progress: bool = True) -> None:
         r'''
         @brief Creates second level (sld) album sub-directories in first level (fld) artist directories.
 
@@ -642,8 +644,9 @@ class AudioMetadata():
         It will contain all audio file paths, album metadata values and sanitized album directory names.
 
         @param self {AudioMetadata} The instance of the class.
-        @param start_path {str} The top level directory holding artist directories and music files.<br>
-        The start path must be a valid top-level directory containing artist folders, and only a tld.<br>
+        @param start_path {str} The top level directory that contains all the music files.<br>
+        The start path must be a valid top-level directory containing artist folders, and only a tld.
+        @param show_progress {bool} Flag indicating whether to display progress bar.
         @return {None} This function does not return any value.
 
         @exception ValidationError A pathlib module validation error occurred.
@@ -659,7 +662,8 @@ class AudioMetadata():
             tld_content = os.listdir(start_path)
             len_tld_content = len(tld_content)
 
-            tld_bar = tqdm(desc=f'Processing {start_path} content', total=len_tld_content, unit=' items')
+            if show_progress:
+                tld_bar = tqdm(desc=f'Processing {start_path} content', total=len_tld_content, unit=' items')
 
             # top level directory consists of artist directories, playlist files and couple other sundry files
             for tld_item in tld_content:
@@ -668,7 +672,8 @@ class AudioMetadata():
                 # we only want artist directories, playlist/sundry files don't count
                 tld_item_path = os.path.join(start_path, tld_item)
                 if os.path.isfile(tld_item_path):
-                    tld_bar.update(1)
+                    if show_progress:
+                        tld_bar.update(1)
                     continue
 
                 # since we skip tld items that are files,
@@ -677,7 +682,8 @@ class AudioMetadata():
                 # want to know if we have any empty artist directories so we can deal with them later
                 if os.path.isdir(tld_item_path) and not artist_content:
                     logger.info(f"{tld_item_path} is an empty artist directory")
-                    tld_bar.update(1)
+                    if show_progress:
+                        tld_bar.update(1)
                     continue
 
                 # now we can look at what's in the current artist 1st level directory
@@ -736,9 +742,12 @@ class AudioMetadata():
                         logger.warning(f"{audio_file} is missing album metadata")
                         continue
 
-                tld_bar.update(1)
+                if show_progress:
+                    tld_bar.update(1)
 
-            tld_bar.close()
+            if show_progress:
+                tld_bar.close()
+
             directory.create_csv(csv_filename, data, None, None, header_row, 0)
 
         except ExecError as exc_error:
@@ -913,7 +922,7 @@ class AudioMetadata():
         The collected information is stored in a list and can be saved to a file.
 
         @param self {AudioMetadata} The instance of the class.
-        @param start_path {str} The starting point of the directory walk.<br>
+        @param start_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} The audio file pattern we want to get tags from.
         @return {None} This function does not return any value.
@@ -1070,7 +1079,7 @@ class AudioMetadata():
         The lowest allowable directory in `file_path` is an artist directory.<br>
 
         @param self {AudioMetadata} The instance of the class.
-        @param file_path {str} The starting point of the directory walk.<br>
+        @param file_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
         @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
@@ -1577,7 +1586,7 @@ class AudioMetadata():
         The function will recursively walk through the directory and rename files of only the supported audio file types.
 
         @param self {AudioMetadata} The instance of the class.
-        @param start_path {str} The path to the directory to start walking from.<br>
+        @param start_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
         @return {None} This function does not return any value.
 

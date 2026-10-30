@@ -134,7 +134,8 @@ class AudioPlaylist():
         So a proper relative path will be artist/album/title.mp3
 
         @param self {AudioPlaylist} The instance of the class.
-        @param tld_path {str} The top level directory where playlist and music files are located.
+        @param tld_path {str} The top level directory where playlist and music files are located.<br>
+        The start path must be a valid top-level directory containing artist folders, and only a tld.
         @param input_m3u {str} The full file path to playlist needing conversion.
         @return {None} This function does not return any value.
 
@@ -152,6 +153,8 @@ class AudioPlaylist():
             if input_file_ext.lower() not in PLAYLIST_EXTS:
                 logger.exception(f"PlaylistError input file {input_m3u} is not a playlist", stack_info=True)
                 raise PlaylistError(f"PlaylistError input file {input_m3u} is not a playlist")
+
+            tld_path = os.path.dirname(input_m3u)
 
             # new m3u file gets created in generated files directory so can later be move to correct tld
             export_path = GENERATED_PATH
@@ -205,7 +208,8 @@ class AudioPlaylist():
         @details Finds M3U playlists beneath the top level directory and updates their relative paths.
 
         @param self {AudioPlaylist} The instance of the class.
-        @param tld_path {str} The top level directory where playlist and music files are located.
+        @param tld_path {str} The top level directory where playlist and music files are located.<br>
+        The start path must be a valid top-level directory containing artist folders, and only a tld.
         @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.

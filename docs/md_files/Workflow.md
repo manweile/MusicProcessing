@@ -362,33 +362,52 @@ Eg: Lindsey Buckingham-Trouble vs Pink-Trouble. `artist`-`title` makes it clear.
 If an artist has different versions of the same song, that's what the second level album directories & album name metadata are for.<br>
 Quite often the other versions will have a slightly different title, in which case, no worries. Or just change the title yourself.
 
-Best Practice: ensure the artist/title metadata for each song is accurate & unique, then run a filename changing function.<br>
-For the directory walk versions, directory input can be the tld, fld artist, or sld album directory.
+Best Practice: ensure the album artist/title metadata for each song is accurate & unique, then run a filename changing function.<br>
+The artist album and title metadata will be sanitized for validity before change filename.
 
-### normalize-filename and normalize-filename-walk
-
-Two variants: single file & directory walk.
-
-1. `normalize-filename` is for single files
-2. `normalize-filename-walk` is for a directory walk
-3. The artist and title metadata will be sanitized for validity
-
-single file:<br>
-command line: `python main.py normalize-filename "Drive:/path/to/flac file"`<br>
-command line: `python main.py normalize-mp3-filename "Drive:/path/to/mp3 file"`<br>
-command line: `python main.py normalize-mp4-filename "Drive:/path/to/m4a file"`<br>
-command line: `python main.py normalize-wma-filename "Drive:/path/to/wma file"`
-
-multi-file:<br>
-command line: `python main.py normalize-filename-walk "Drive:/path/to/tld/or fld/or sld"`
+There are 2 variants, single file and directory walk.
 
 before/after execution:
 
 ```text
-01 Buckingham Trubl.flac
+Filename: 01 Buckingham Trubl.flac
+Album artist: Lindsey Buckingham
+Title: Trouble
 
-Lindsey Buckingham-Trouble.flac
+Filename: Trouble.mp3
+Album artist: Pink
+Title: Trouble
+
+Filename: 38 Special - Hold On Loosely.m4a
+Album Artist: 38 Special
+Title: Hold On Loosely
+
+Filename: ACDC-Thunderstruck.wma
+Album Artist: AC/DC
+Title: Thunderstruck
+
+Filename: Lindsey Buckingham-Trouble.flac
+Filename: Pink-Trouble.mp3
+Filename: 38 Special - Hold On Loosely.m4a
+Filename: AC-DC-Thunderstruck.wma
 ```
+
+### normalize-filename
+
+Renames any acceptable single audio file based on album artist and song title metadata.
+
+command lines:<br>
+flac file: `python main.py normalize-filename "Drive:/path/to/flac file"`<br>
+mp3 file: `python main.py normalize-mp3-filename "Drive:/path/to/mp3 file"`<br>
+m4a: `python main.py normalize-mp4-filename "Drive:/path/to/m4a file"`<br>
+wma: `python main.py normalize-wma-filename "Drive:/path/to/wma file"`
+
+### normalize-filename-walk
+
+Renames acceptable audio files in a directory based on album artist and song title metadata.<br>
+Works for tld, fld, and sld as path input.
+
+command line: `python main.py normalize-filename-walk "Drive:/path/to/tld/or fld/or sld"`
 
 ## Album Art
 
@@ -567,7 +586,16 @@ command line: `python main.py remove-empty-albums "Drive:/path/to/tld/or fld"`
 
 ### Metadata redux
 
-If you don't have all of your metadata (textual & visual) up to snuff, now is the time.
+If you don't have all of your metadata (textual & visual) up to snuff, now is the time.<br>
+Before running any conversion function, the album folder **must** have a Folder.jpg present.
+
+## FFMPEG
+
+Ffmpeg is the conversion/leveling engine behind the scenes.<br>
+It has one hard requirement: *the output filepath cannot be exactly the same as the input filepath.*
+
+FFmpeg is a streaming data pipeline. It opens an input file to read a few frames, processes them, and then writes them to the output file.<br>
+If the input and output are the same file, the writer will wipe out or overwrite the data blocks that the reader hasn't even reached yet.
 
 ## Converted
 
@@ -579,19 +607,13 @@ Bonus functionality: since the logic maps any existing metadata before wiping it
 So if you ensure your metadata is accurate (one of the ID3 versions), no worries, go ahead and convert.<br>
 Mp3 files are the usual multiple encoding culprit.
 
-Ffmpeg is the conversion engine behind the scenes.<br>
-It has one hard requirement: *the output filepath cannot be exactly the same as the input filepath.*
-
-FFmpeg is a streaming data pipeline. It opens an input file to read a few frames, processes them, and then writes them to the output file.<br>
-If the input and output are the same file, the writer will wipe out or overwrite the data blocks that the reader hasn't even reached yet.
-
 Conversion logic is essentially a three stage process.<br>
 First, map the existing metadata from original audio file to ID3v2.3 encoding.<br>
 Second, convert the original audio file to mp3 format with the ID3v2.3 metadata & in a different save location.<br>
 Third, embed the co-located album art in the mp3 file.
 
 Both convert file and convert walk have optional/default target invocations.<br>
-Whichever you use, it's up to you to move the converted files if you are processing them any further with level normalization.
+If you use the default target, it's up to you to move the converted files if you are processing them any further with level normalization.
 
 The default save location is `/MusicProcessing/src/generated_files/Music`.
 
@@ -616,7 +638,7 @@ I get truly annoyed when a playlist moves to a next song and you are suddenly lo
 Leveling normalization decreases that perceived volume change. The caveat: **you must apply leveling to all of your collection**.
 
 All of the distinct single file level normalization functions and the leveling walk function have optional/default target invocations.<br>
-Whichever you use, it's up to you to move the leveled files if you are processing them any further.
+If you use the default target, it's up to you to move the leveled files if you are processing them any further with playlist functions.
 
 ### Analyze Volume Normalization Information
 
@@ -680,7 +702,8 @@ Move everything from `Leveled` to `Finalized`
 
 Remember those m3u files mentioned way back? Here's where they get updated.<br>
 A reminder about m3u playlists - they are *relative* pathed. They **must** sit in the top level directory that contains all audio files!<br>
-Like the conversion function, if the input and output are the same file, the writer could wipe out or overwrite the data blocks.<br>
+Like the conversion function, if the input and output are the same file, the writer could wipe out or overwrite the data blocks.
+
 Updated playlist files will be in the special `/MusicProcessing/src/generated_files/` directory, under `Music`.<br>
 Move them to the correct tld after running.
 
@@ -688,7 +711,7 @@ Best practice: wait to run the playlist updating until you have everything conve
 
 ### update-playlist
 
-Update playlist paths in a single playlist file, works with tld input only.
+Update playlist paths in a single playlist file, works with tld input only, and requires path to playlist file.
 
 command line: `python main.py update-playlist "Drive:/path/to/tld" "Drive/path/to/tld/playlist.m3u`
 

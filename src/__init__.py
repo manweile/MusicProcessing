@@ -29,6 +29,86 @@ from src.errors import PathInfoError                        # custom error for p
 from src.errors import PlaylistError                        # custom error for playlist related issues
 from src.errors import VideoStreamError                     # custom error for video stream related issues
 
+## @var APP_NAME
+# @brief The app description
+# @details use when needing application name/description
+APP_NAME = "Music Processing"
+
+## @var ARG_CLI_EXT
+# @brief add argument cli
+# @details use when needing mandatory file extension cli
+ARG_CLI_EXT = "ext"
+
+## @var ARG_CLI_FFPROBE
+# @brief add argument cli
+# @details use when needing optional ffprobe cli
+ARG_CLI_FFPROBE = "ffprobe"
+
+## @var ARG_CLI_FILE
+# @brief add argument cli
+# @details use when needing mandatory file cli
+ARG_CLI_FILE = "file"
+
+## @var ARG_CLI_PLAYLIST
+# @brief add argument cli
+# @details use when needing optional playlist cli
+ARG_CLI_PLAYLIST = "m3u"
+
+## @var ARG_CLI_PATTERN
+# @brief add argument cli
+# @details use when needing mandatory pattern cli
+ARG_CLI_PATTERN = "pattern"
+
+## @var ARG_CLI_TLD
+# @brief add argument cli
+# @details use when needing mandatory tld cli
+ARG_CLI_TLD = "tld"
+
+## @var ARG_CLI_TYPE
+# @brief add argument cli
+# @details use when needing mandatory type cli
+ARG_CLI_TYPE = "type"
+
+## @var ARG_HELP_AUDIO
+# @brief add argument help
+# @details use when needing mandatory file path input
+ARG_HELP_AUDIO = "mandatory full path to audio file"
+
+## @var ARG_HELP_FFPROBE
+# @brief add argument help
+# @details use when needing optional ffprobe input
+ARG_HELP_FFPROBE = "optional ffprobe tags"
+
+## @var ARG_HELP_FILE
+# @brief add argument help
+# @details use when needing optional file extension
+ARG_HELP_FILE = "optional file extension"
+
+## @var ARG_HELP_NORMAL
+# @brief add argument help
+# @details use when needing mandatory normalization type
+ARG_HELP_NORMAL = "mandatory normalization type"
+
+## @var ARG_HELP_PATTERN_MAN
+# @brief add argument help
+# @details use when needing mandatory pattern input
+ARG_HELP_PATTERN_MAN = "mandatory file pattern"
+
+## @var ARG_HELP_PATTERN_OPT
+# @brief add argument help
+# @details use when needing optional pattern input
+ARG_HELP_PATTERN_OPT = "optional file pattern"
+
+## @var ARG_HELP_PLAYLIST
+# @brief add argument help
+# @details use when needing mandatory m3u file path
+ARG_HELP_PLAYLIST = "mandatory m3u file path"
+
+## @var ARG_HELP_TLD
+# @brief add argument help
+# @details use when needing mandatory directory input
+ARG_HELP_TLD = "mandatory top level directory"
+
 ## @var ASF_TYPE
 # @brief ASF Mutagen audio file type.
 # @details Identifies the Mutagen class name for ASF files.
@@ -109,11 +189,13 @@ M4A_EXT = ".m4a"
 # @details Identifies MP3 files independently of the supported-extension list.
 MP3_EXT = ".mp3"
 
+# @todo single use in audio_metadata.py
 ## @var MP3_TYPE
 # @brief MP3 Mutagen audio file type.
 # @details Identifies the Mutagen class name for MP3 files.
 MP3_TYPE = "MP3"
 
+# @todo single use in audio_metadata.py
 ## @var MP4_TYPE
 # @brief MP4 Mutagen audio file type.
 # @details Identifies the Mutagen class name for MP4 files.

@@ -7,8 +7,8 @@
 # Orchestrate workflow-run cleanup, artifact cleanup, production firmware builds, QEMU Unity tests, and doxygen documentation and deployment
 # through reusable workflows.
 #
-# @version 1.1.0
-# @date 2026-08-25
+# @version 1.2.0
+# @date 2026-10-27
 #
 # @copyright Copyright (c) 2026 Gerald Manweiler
 
@@ -29,9 +29,9 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
-# Concurrency group ensuring that only one run per branch or tag is active at a time, with in-progress runs being canceled if a new run is triggered
+# Concurrency group ensures only one run per branch or tag active at a time, with in-progress runs canceled if new run is triggered
 concurrency:
-  # github.workflow and github.ref are used to create a unique concurrency group for each workflow and branch/tag combination
+  # github.workflow and github.ref create a unique group per workflow + branch/tag
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -54,7 +54,7 @@ jobs:
       contents: read
     uses: ./.github/workflows/workflow-cleanup.yml
 
-  # execute unit tests
+  # Executes unit tests (reusable workflow)
   unit-tests:
     if: github.event_name == 'push' || github.event_name == 'pull_request'
     name: Run Unit Tests
