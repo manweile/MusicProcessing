@@ -53,9 +53,8 @@ class EventHandlers:
     '''
     @brief Defines the event handlers for the wxPython GUI application.
 
-    @details This class provides methods for handling various events triggered by user interactions with the GUI, such as browsing for files or directories, converting files, normalizing audio, extracting album art, and updating playlists.
-
-    @param main_frame The main frame of the application.
+    @details This class provides methods for handling various events triggered by user interactions with the GUI,<br>
+    such as browsing for files or directories, converting files, normalizing audio, extracting album art, and updating playlists.
     '''
 
     def __init__(self, main_frame):
@@ -65,7 +64,7 @@ class EventHandlers:
         @details A basic class implementation with no instantiation parameters.
 
         @param self {EventHandlers} The instance of the class.
-        @param main_frame The main frame of the application.
+        @param main_frame {wx.Frame} The main frame of the application.
         '''
 
         self.frame = main_frame
@@ -75,7 +74,7 @@ class EventHandlers:
         '''
         @brief Handle the event for browsing a directory.
 
-        @details Opens a directory dialog for the user to select a directory.
+        @details Opens a directory dialog for the user to select a directory.<br>
         The selected directory path is then set in the provided text control.
 
         @param self {EventHandlers} The instance of the class.
@@ -83,7 +82,9 @@ class EventHandlers:
         @param textctrl {wx.TextCtrl} The text control to update with the selected directory path.
         '''
 
+        # prevent typing or picking a non-existent path
         dlg = wx.DirDialog(self.frame, "Select directory", style=wx.DD_DIR_MUST_EXIST)
+
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
             textctrl.SetValue(path)
@@ -96,19 +97,21 @@ class EventHandlers:
         '''
         @brief Handle the event for browsing a file.
 
-        @details Opens a file dialog for the user to select a file.
+        @details Opens a file dialog for the user to select a file.<br>
         The selected file path is then set in the provided text control.
 
         @param self {EventHandlers} The instance of the class.
         @param event {object} The event object.
         @param textctrl {wx.TextCtrl} The text control to update with the selected file path.
-        @param wildcard {str} The file type filter for the dialog.
+        @param wildcard {str} Optional, the file type filter for the dialog.
         '''
 
         if wildcard is None:
             wildcard = ""
 
+        # open/select existing file; trying to type or choose a non-existent file name will trigger a warning
         dlg = wx.FileDialog(self.frame, "Select file", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, wildcard=wildcard)
+
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
             textctrl.SetValue(path)
@@ -121,7 +124,7 @@ class EventHandlers:
         '''
         @brief Handle the event for converting a single file.
 
-        @details Retrieves the file path from the GUI, validates it, and then runs the conversion task.
+        @details Retrieves the file path from the GUI, validates it, and then runs the conversion task.<br>
         The conversion task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
@@ -139,13 +142,14 @@ class EventHandlers:
         '''
         @brief Handle the event for converting files in a directory walk.
 
-        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the conversion task.
+        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the conversion task.<br>
         The conversion task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
         @param event {object} The event object.
         '''
 
+        #
         tld = self.frame.convert_walk_tld.GetValue().strip()
         if not self.frame._validate_dir(tld):
             return
@@ -159,7 +163,7 @@ class EventHandlers:
         '''
         @brief Handle the event for EBU normalization of a single file.
 
-        @details Retrieves the file path from the GUI, validates it, and then runs the EBU normalization task.
+        @details Retrieves the file path from the GUI, validates it, and then runs the EBU normalization task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the result file.
 
         @param self {EventHandlers} The instance of the class.
@@ -177,7 +181,7 @@ class EventHandlers:
         '''
         @brief Handle the event for extracting album art from a single file.
 
-        @details Retrieves the file path from the GUI, validates it, and then runs the album art extraction task.
+        @details Retrieves the file path from the GUI, validates it, and then runs the album art extraction task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
@@ -195,7 +199,7 @@ class EventHandlers:
         '''
         @brief Handle the event for extracting album art from a directory walk.
 
-        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the album art extraction task.
+        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the album art extraction task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
@@ -215,7 +219,7 @@ class EventHandlers:
         '''
         @brief Handle the event for retrieving media information from a directory walk.
 
-        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the media information retrieval task.
+        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the media information retrieval task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
@@ -234,7 +238,7 @@ class EventHandlers:
         '''
         @brief Handle the event for retrieving media tags from a directory walk.
 
-        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the media tags retrieval task.
+        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the media tags retrieval task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
@@ -254,7 +258,7 @@ class EventHandlers:
         '''
         @brief Handle the event for retrieving unique media files from a directory walk.
 
-        @details Retrieves the top-level directory from the GUI, validates it, and then runs the unique media retrieval task.
+        @details Retrieves the top-level directory from the GUI, validates it, and then runs the unique media retrieval task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
@@ -272,7 +276,7 @@ class EventHandlers:
         '''
         @brief Handle the event for listing audio files in a directory.
 
-        @details Retrieves the top-level directory from the GUI, validates it, and then runs the audio listing task.
+        @details Retrieves the top-level directory from the GUI, validates it, and then runs the audio listing task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
@@ -290,7 +294,7 @@ class EventHandlers:
         '''
         @brief Handle the event for listing files of a specific type in a directory.
 
-        @details Retrieves the top-level directory and file extension from the GUI, validates them, and then runs the file type listing task.
+        @details Retrieves the top-level directory and file extension from the GUI, validates them, and then runs the file type listing task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
@@ -313,7 +317,7 @@ class EventHandlers:
         '''
         @brief Handle the event for normalizing audio files in a directory walk.
 
-        @details Retrieves the top-level directory and normalization type from the GUI, validates them, and then runs the normalization task.
+        @details Retrieves the top-level directory and normalization type from the GUI, validates them, and then runs the normalization task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
@@ -332,7 +336,7 @@ class EventHandlers:
         '''
         @brief Handle the event for peak normalizing a single audio file.
 
-        @details Retrieves the file path from the GUI, validates it, and then runs the peak normalization task.
+        @details Retrieves the file path from the GUI, validates it, and then runs the peak normalization task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the result file.
 
         @param self {EventHandlers} The instance of the class.
@@ -350,7 +354,7 @@ class EventHandlers:
         '''
         @brief Handle the event for removing albums from a directory.
 
-        @details Retrieves the top-level directory from the GUI, validates it, and then runs the album removal task.
+        @details Retrieves the top-level directory from the GUI, validates it, and then runs the album removal task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
@@ -368,7 +372,7 @@ class EventHandlers:
         '''
         @brief Handle the event for removing files matching a pattern from a directory.
 
-        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the pattern removal task.
+        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the pattern removal task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
@@ -391,7 +395,7 @@ class EventHandlers:
         '''
         @brief Handle the event for RMS normalizing a single audio file.
 
-        @details Retrieves the file path from the GUI, validates it, and then runs the RMS normalization task.
+        @details Retrieves the file path from the GUI, validates it, and then runs the RMS normalization task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the result file.
 
         @param self {EventHandlers} The instance of the class.
@@ -409,7 +413,7 @@ class EventHandlers:
         '''
         @brief Handle the event for setting album art for audio files in a directory.
 
-        @details Retrieves the top-level directory from the GUI, validates it, and then runs the album art setting task.
+        @details Retrieves the top-level directory from the GUI, validates it, and then runs the album art setting task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
         @param self {EventHandlers} The instance of the class.
@@ -427,7 +431,7 @@ class EventHandlers:
         '''
         @brief Handle the event for updating an M3U playlist.
 
-        @details Retrieves the M3U file path from the GUI, validates it, and then runs the playlist update task.
+        @details Retrieves the M3U file path from the GUI, validates it, and then runs the playlist update task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with generated playlist files.
 
         @param self {EventHandlers} The instance of the class.
@@ -445,7 +449,7 @@ class EventHandlers:
         '''
         @brief Handle the event for updating a directory walk.
 
-        @details Retrieves the top-level directory from the GUI, validates it, and then runs the directory walk update task.
+        @details Retrieves the top-level directory from the GUI, validates it, and then runs the directory walk update task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with generated playlist files.
 
         @param self {EventHandlers} The instance of the class.

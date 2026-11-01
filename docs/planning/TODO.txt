@@ -1,7 +1,77 @@
 NOT DISPOSED:
 
-DISPOSED:
+DOXYGEN:
+1) refer to:
+      def _make_path_controls(self, parent) -> tuple:
+        '''
+        @brief Helper function to create a standard set of path controls (text box and browse button).
 
+        @details This function is used to create consistent path input controls across different panels in the application.
+
+        @param self: (MainFrame) The instance of the class.
+        @param parent: (Any) The parent window for the controls.
+
+        @retval path_controls (textbox, button) ((wx.TextCtrl), (wx.Button)) Tuple containing the text control and the browse button.
+   and python-instructions.md
+   a) rector across project
+TODO
+
+ENVIRONMENT:
+1) Update extensions.txt
+TODO
+
+2) Possibly update yaspin, tqdm, wxpython, mutagen
+TODO
+
+3) Update environment.md
+  a) wxPython install on Linux - it's a brute
+  b) ffmpeg install, win & linux, & why version n7.1.5-12
+  c) add pip install -r requirements.txt option
+  d) add vs code install fro list option
+TODO
+
+4) Think about adding wxFormBuilder info
+TODO
+
+GUI:
+1) Think about how I want to log in gui mode
+  a) this could be very big refactor, could expand
+  b) run_task writes to display in splitter, also want writing to log file
+TODO
+
+2) put magic strings into src\gui\__init__.py as constants
+  a) reference src\gui\__init__.py in handlers.py & wx_app.py
+  b) use the constants
+TODO
+
+3) Modify Convert tab UI/UX
+  a) add optional target directory input
+    i) applies to single file conversion
+    ii) applies to directory walk conversions
+  b) remove "after conversion" move dialog
+    i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
+TODO
+
+3) Modify Leveling tab UI/UX
+  a) add optional target directory input
+    i) applies to single file conversion
+    ii) applies to directory walk conversions
+  b) remove "after leveling" move dialog
+    i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
+TODO
+
+4) add icons to tabs
+  a) will need to find appropriate iconography
+  b) will need to add licenses etc
+
+DOXYGEN:
+1) verify & update existing gui code for accuracy
+  a) src\gui\handlers.py  IN PROGRESS
+  b) src\gui\wx_app.py    IN PROGRESS
+  c) src\gui\__init__.py  IN PROGRESS
+IN PROGRESS
+
+DISPOSED:
   1) import doxygen create from esp scale project
   COMPLETED
 

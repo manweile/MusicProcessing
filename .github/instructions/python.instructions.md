@@ -55,14 +55,16 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   - the `@endcode` tag is followed by a blank line.
 - Use:
   - if the function has a `self` parameter, include it in the `@param` list with the type of the class it belongs to.
-    - `@param self {ClassName} The instance of the class the method belongs to.`
-  - `@param name {type} description` for input parameters, terminated by a period.
-  - `@return name {type} description` when the function returns a specifically named value, terminated by a period.
-  - `@return {type} description` when the function returns an unnamed value or expression, terminated by a period.
-  - `@return {None} This function does not return a value.` for functions that do not return anything.
-- Leave an empty line after the final `@param` or `@return` block.
+    - `@param self: (ClassName) The instance of the class the method belongs to.`
+  - `@param name: (type) description` for input parameters, terminated by a period.
+  - If there any return values, add a blank line after the final `@param` line and before the first `@retval` or `@return` line.
+  - If there are no `@retval` or `@return` values, do not add a blank line after the final `@param` line.
+  - `@retval name (type) description` when the function returns a specifically named value, terminated by a period.
+  - `@retval (type) description` when the function returns an unnamed value, terminated by a period.
+  - `@return description` when the function returns an expression, terminated by a period.
+  - Do not leave an empty line after the final `@retval`, or `@return` line.
 - Omit `@param` entirely for functions with no parameters.
-- Use `@exception {type} description` for exceptions raised by the function, terminated by a period.
+- Use `@exception (type) description` for exceptions raised by the function, terminated by a period.
 - Omit `@exception` entirely for functions that do not raise any exceptions.
 - All Doxygen documentation blocks in class definitions are followed by 1 blank line.
 - All Doxygen documentation blocks in function definitions inside classes are followed by 1 blank line.

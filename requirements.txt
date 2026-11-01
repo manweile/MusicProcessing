@@ -3,13 +3,17 @@
 colorama==0.4.6
 ## dependency of yaspin
 termcolor===2.3.0
+
 # project external libraries
 ## gui libraries
 wxpython>=4.2.3
+
 ## audio libraries
 mutagen==1.47.0
+
 ## path validation libraries
 pathvalidate==3.2.3
-## progress bar libraries
+
+## progress bar & toast libraries
 tqdm==4.67.1
 yaspin==3.1.0
