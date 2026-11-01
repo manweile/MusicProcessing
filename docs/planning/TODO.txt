@@ -13,8 +13,8 @@ DOXYGEN:
 
         @retval path_controls (textbox, button) ((wx.TextCtrl), (wx.Button)) Tuple containing the text control and the browse button.
    and python-instructions.md
-   a) rector across project
-TODO
+   a) refactor across project
+IN PROGRESS
 
 ENVIRONMENT:
 1) Update extensions.txt
@@ -63,6 +63,9 @@ TODO
 4) add icons to tabs
   a) will need to find appropriate iconography
   b) will need to add licenses etc
+
+5) How do I log GUI errors?
+TODO
 
 DOXYGEN:
 1) verify & update existing gui code for accuracy

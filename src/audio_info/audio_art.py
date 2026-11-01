@@ -594,7 +594,7 @@ class AudioArt():
 
     def set_album_art(self, input_path: str) -> None:
         '''
-        @brief Sets album art file for an album directory.
+        @brief Sets album art file for an album directory from project source folder.
 
         @details Copies a matching AlbumArt JPEG into the album directory when it is available.<br>
         Skips album directories that already contain a folder-art file.
