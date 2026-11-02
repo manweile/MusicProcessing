@@ -117,10 +117,65 @@ COMPLETED
     `src/generated_files/__init__.py`, new `src/core/`
   - Work:
     - split constants: audio, directory, log, and encoding constants go to `core/constants.py`; `ARG_CLI_*` and
-      `ARG_HELP_*` go to `cli/constants.py` (Milestone 6)
+      `ARG_HELP_*` go to `cli/constants.py` (Milestone 5)
     - move `GENERATED_PATH` to `core/paths.py` and add `RESOURCES_PATH`
     - keep temporary re-exports in the old locations so imports continue to resolve
     - empty `src/__init__.py` last, to avoid circular imports
+
+    Step 0: Preparation
+
+    On feature/mvc-refactoring, run the full suite once to confirm the baseline.
+    Find where each name is used, so the split follows real usage: grep -rnE "from src import|import src" --include=*.py . Check ARG_* and APP_NAME especially, since main.py and the GUI may use them.
+
+    1. Confirm baseline and inventory
+
+    Use the grep results to migrate current imports in batches. The listed production and test files still import from src; those should keep working until each batch is migrated.
+    Search separately for GENERATED_PATH and src.generated_files before changing path imports; the provided grep does not show those references.
+    Keep the test files flat for now. Update their imports as needed, but don’t move them as part of this work.
+
+    2. Add the destination modules
+
+    Create src/core/ and src/cli/, with lightweight __init__.py files. Add:
+
+        src/core/constants.py for the application, audio, directory, logging, encoding, and normalization constants currently in src/__init__.py: APP_NAME, ASF_TYPE, AUDIO_EXTS, AUDIO_FILES, CSV_DIR, CSV_EXT, ERROR_LOG_FORMAT, the format/type constants, FOLDER_ART, ILT, LRA, LOG_DIR, LOG_EXT, MUSIC_TLD, playlist constants, result constants, TP, and UTF8.
+        src/cli/constants.py for all ARG_CLI_* and ARG_HELP_* constants. Keep them; they’re planned CLI API, not unused constants.
+        src/core/paths.py for GENERATED_PATH and RESOURCES_PATH. Initially, GENERATED_PATH must resolve to the existing src/generated_files directory. Set RESOURCES_PATH to the planned static-assets directory, src/resources, and use it when the assets move.
+
+    At this stage, add the new definitions without changing existing imports.
+    3. Preserve compatibility from src
+
+    Change src/__init__.py to import and re-export the new constants and paths, while preserving the existing exports for errors and logging helpers. Use explicit imports and maintain an accurate __all__; avoid wildcard imports.
+
+    This gives callers both the old paths (for example, from src import AUDIO_EXTS) and the new paths (for example, from src.core.constants import AUDIO_EXTS) during migration. Keep the existing logging initialization behavior for now.
+    4. Migrate imports in small batches
+
+    Update production imports to use the new modules:
+
+        Constants → src.core.constants
+        Logging helpers → src.core.logging_config (once that module is moved)
+        Errors → src.core.errors (once moved)
+        GENERATED_PATH → src.core.paths
+
+    Then update the corresponding test imports, including tests/__init__.py, and any string-based mock patch targets. Run the tests after each batch. The src re-exports remain in place so unmigrated code continues to work.
+    5. Wire in the CLI constants
+
+    When extracting the CLI, use ARG_CLI_* in parser argument definitions and when reading the corresponding parsed fields in main(args)—for example, getattr(args, ARG_CLI_FILE). Use ARG_HELP_* for the related help text.
+
+    These constants describe argument field names and help text, not subcommand names. Keep subcommand names such as "gui" and "convert-file" separate unless you introduce constants for them explicitly.
+    6. Move logging and error infrastructure
+
+    Move errors.py, logging_config.py, and level_filter.py into core/; update their imports and leave compatibility re-exports at their old locations until callers are migrated. Keep core/__init__.py free of logging setup side effects to avoid introducing import cycles.
+
+    Before emptying src/__init__.py, preserve its current package-level logging initialization through an explicit, one-time startup/bootstrap call from the application entry point. Verify logging still initializes for both CLI and GUI startup.
+    7. Empty src/__init__.py last
+
+    Once repository imports no longer rely on from src import ..., the old error/logging modules, or the old generated-files path export:
+
+        Remove the compatibility re-exports and old module shims.
+        Make src/__init__.py empty apart from its package docstring.
+        Run the full test suite, check CLI help, and smoke-test GUI startup and logging.
+
+    That order keeps compatibility while the imports move, and avoids breaking startup logging when the package-root side effect is removed.
   - Validation: the full suite passes with both old and new import paths.
   - Exit criteria: `core/` imports nothing else from `src`.
 

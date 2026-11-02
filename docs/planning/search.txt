@@ -1,0 +1,288 @@
+PS D:\MusicProcessing> grep -RInE --include="*.py" "from src import|from src\.generated_files|GENERATED_PATH" .
+
+./main.py:25:from src import ERROR_LOG_FORMAT                            # error log format
+./main.py:26:from src import LOG_DIR                                     # log directory
+./main.py:27:from src import LOG_EXT                                     # log file extension
+./main.py:28:from src import UTF8                                        # utf encoding for file writing
+./main.py:29:from src.generated_files import GENERATED_PATH              # generated files path
+./main.py:59:log_filename = os.path.join(GENERATED_PATH, LOG_DIR, file)
+
+./src/audio_info/audio_art.py:36:from src import add_module_handler                          # for adding a module-specific handler to the logger
+./src/audio_info/audio_art.py:39:from src import AUDIO_EXTS                                  # for supported audio file extensions
+./src/audio_info/audio_art.py:40:from src import FOLDER_ART                                  # for folder art directory
+./src/audio_info/audio_art.py:41:from src import FLAC_EXT                                    # for FLAC file extension
+./src/audio_info/audio_art.py:42:from src import M4A_EXT                                     # for M4A file extension
+./src/audio_info/audio_art.py:43:from src import MP3_EXT                                     # for MP3 file extension
+./src/audio_info/audio_art.py:44:from src import WMA_EXT                                     # for WMA file extension
+./src/audio_info/audio_art.py:45:from src.generated_files import GENERATED_PATH              # for generated files path
+./src/audio_info/audio_art.py:636:                album_art_dir = os.path.join(GENERATED_PATH, ALBUM_ART)
+
+./src/audio_info/audio_metadata.py:53:from src import add_module_handler                          # for adding module-specific logging handlers
+./src/audio_info/audio_metadata.py:56:from src import AUDIO_EXTS                                  # for audio file extensions
+./src/audio_info/audio_metadata.py:57:from src import AUDIO_FILES                                 # for audio file paths
+./src/audio_info/audio_metadata.py:58:from src import ASF_TYPE                                    # for ASF audio file type
+./src/audio_info/audio_metadata.py:59:from src import FLAC_TYPE                                   # for FLAC audio file type
+./src/audio_info/audio_metadata.py:60:from src import FOLDER_ART                                  # for folder artwork paths
+./src/audio_info/audio_metadata.py:61:from src import FLAC_EXT                                    # for FLAC file extension
+./src/audio_info/audio_metadata.py:62:from src import MP3_EXT                                     # for MP3 file extension
+./src/audio_info/audio_metadata.py:63:from src import MP3_TYPE                                    # for MP3 audio file type
+./src/audio_info/audio_metadata.py:64:from src import MP4_TYPE                                    # for MP4 audio file type
+./src/audio_info/audio_metadata.py:67:from src import MetadataTypeError                           # for handling metadata type errors
+./src/audio_info/audio_metadata.py:68:from src import MusicProcessingError                        # for handling music processing errors
+./src/audio_info/audio_metadata.py:69:from src import PathInfoError                               # for handling path info errors
+
+./src/audio_info/audio_playlist.py:23:from src import add_module_handler                          # for module-specific logging handlers
+./src/audio_info/audio_playlist.py:26:from src import AUDIO_EXTS                                  # for supported audio file extensions
+./src/audio_info/audio_playlist.py:27:from src import MP3_EXT                                     # for MP3 file extension
+./src/audio_info/audio_playlist.py:28:from src import PLAYLIST_EXTS                               # for supported playlist file extensions
+./src/audio_info/audio_playlist.py:29:from src.generated_files import GENERATED_PATH              # for generated file output paths
+./src/audio_info/audio_playlist.py:32:from src import PlaylistError                               # for playlist processing failures
+./src/audio_info/audio_playlist.py:160:            export_path = GENERATED_PATH
+
+./src/audio_info/audio_utilities.py:25:from src import add_module_handler                          # for module-specific logging handlers
+./src/audio_info/audio_utilities.py:28:from src import ILT                                         # for integrated loudness target
+./src/audio_info/audio_utilities.py:29:from src import LRA                                         # for loudness range target
+./src/audio_info/audio_utilities.py:30:from src import MP3_EXT                                     # for MP3 file extension
+./src/audio_info/audio_utilities.py:31:from src import TP                                          # for true-peak normalization target
+
+./src/audio_normalize/audio_normalization.py:28:from src import add_module_handler                          # for module-specific logging handlers
+./src/audio_normalize/audio_normalization.py:31:from src import ILT                                         # for integrated loudness target
+./src/audio_normalize/audio_normalization.py:32:from src import LRA                                         # for loudness range target
+./src/audio_normalize/audio_normalization.py:33:from src import MP3_EXT                                     # for MP3 file extension
+./src/audio_normalize/audio_normalization.py:34:from src import TP                                          # for true-peak target
+
+./src/core/constants.py:155:# @details In modules needing the constant, add: `from src import ASF_TYPE`.
+./src/core/constants.py:156:# @details In modules needing the constant, add: `from src import AUDIO_EXTS`.
+./src/core/constants.py:157:# @details In modules needing the constant, add: `from src import AUDIO_FILES`.
+./src/core/constants.py:158:# @details In modules needing the constant, add: `from src import CSV_DIR`.
+./src/core/constants.py:159:# @details In modules needing the constant, add: `from src import CSV_EXT`.
+./src/core/constants.py:160:# @details In modules needing the constant, add: `from src import ERROR_LOG_FORMAT`.
+./src/core/constants.py:161:# @details In modules needing the constant, add: `from src import FLAC_EXT`.
+./src/core/constants.py:162:# @details In modules needing the constant, add: `from src import FLAC_TYPE`.
+./src/core/constants.py:163:# @details In modules needing the constant, add: `from src import FOLDER_ART`.
+./src/core/constants.py:164:# @details In modules needing the constant, add: `from src import ILT`.
+./src/core/constants.py:165:# @details In modules needing the constant, add: `from src import LOG_DIR`.
+./src/core/constants.py:166:# @details In modules needing the constant, add: `from src import LOG_EXT`.
+./src/core/constants.py:167:# @details In modules needing the constant, add: `from src import LRA`.
+./src/core/constants.py:168:# @details In modules needing the constant, add: `from src import M3U_EXT`.
+./src/core/constants.py:169:# @details In modules needing the constant, add: `from src import M4A_EXT`.
+./src/core/constants.py:170:# @details In modules needing the constant, add: `from src import MP3_EXT`.
+./src/core/constants.py:171:# @details In modules needing the constant, add: `from src import MP3_TYPE`.
+./src/core/constants.py:172:# @details In modules needing the constant, add: `from src import MP4_TYPE`.
+./src/core/constants.py:173:# @details In modules needing the constant, add: `from src import MUSIC_TLD`.
+./src/core/constants.py:174:# @details In modules needing the constant, add: `from src import PLAYLIST_EXTS`.
+./src/core/constants.py:175:# @details In modules needing the constant, add: `from src import PLAYLIST_TYPES`.
+./src/core/constants.py:176:# @details In modules needing the constant, add: `from src import RESULT_DIR`.
+./src/core/constants.py:177:# @details In modules needing the constant, add: `from src import RESULT_EXT`.
+./src/core/constants.py:178:# @details In modules needing the constant, add: `from src import TP`.
+./src/core/constants.py:179:# @details In modules needing the constant, add: `from src import UTF8`.
+./src/core/constants.py:180:# @details In modules needing the constant, add: `from src import WMA_EXT`.
+
+./src/core/paths.py:24:## @var GENERATED_PATH
+./src/core/paths.py:27:GENERATED_PATH = os.path.join(SRC_PATH, "generated_files")  # same location as today
+
+./src/dir_processing/directory_processing.py:28:from src import add_module_handler                          # for module-specific logging handlers
+./src/dir_processing/directory_processing.py:31:from src import AUDIO_EXTS                                  # for supported audio file extensions
+./src/dir_processing/directory_processing.py:32:from src import CSV_DIR                                     # for CSV output directory name
+./src/dir_processing/directory_processing.py:33:from src import CSV_EXT                                     # for CSV file extension
+./src/dir_processing/directory_processing.py:34:from src import FLAC_EXT                                    # for FLAC file extension
+./src/dir_processing/directory_processing.py:35:from src import M3U_EXT                                     # for M3U file extension
+./src/dir_processing/directory_processing.py:36:from src import M4A_EXT                                     # for M4A file extension
+./src/dir_processing/directory_processing.py:37:from src import MP3_EXT                                     # for MP3 file extension
+./src/dir_processing/directory_processing.py:38:from src import MUSIC_TLD                                   # for music top level directory name
+./src/dir_processing/directory_processing.py:39:from src import RESULT_DIR                                  # for text result directory name
+./src/dir_processing/directory_processing.py:40:from src import RESULT_EXT                                  # for text result extension
+./src/dir_processing/directory_processing.py:41:from src import UTF8                                        # for UTF-8 text encoding
+./src/dir_processing/directory_processing.py:42:from src import WMA_EXT                                     # for WMA file extension
+./src/dir_processing/directory_processing.py:43:from src.generated_files import GENERATED_PATH              # for generated file output paths
+./src/dir_processing/directory_processing.py:46:from src import MusicProcessingError                        # for directory processing failures
+./src/dir_processing/directory_processing.py:47:from src import PathInfoError                               # for path info related errors
+./src/dir_processing/directory_processing.py:105:                csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
+./src/dir_processing/directory_processing.py:156:                txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
+./src/dir_processing/directory_processing.py:466:                export_dir = os.path.join(GENERATED_PATH, MUSIC_TLD)
+
+./src/generated_files/__init__.py:19:## @var GENERATED_PATH
+./src/generated_files/__init__.py:22:GENERATED_PATH = os.path.dirname(os.path.abspath(__file__))
+./src/generated_files/__init__.py:26:# @details In modules needing the constant, add `from src.generated_files import GENERATED_PATH`.
+./src/generated_files/__init__.py:28:    "GENERATED_PATH",
+
+./src/gui/wx_app.py:20:from src import add_module_handler                          # for adding module-specific logging handlers
+./src/gui/wx_app.py:23:from src import AUDIO_EXTS                                  # for audio file extensions
+./src/gui/wx_app.py:24:from src import MUSIC_TLD                                   # top level directory for music files
+./src/gui/wx_app.py:25:from src import PLAYLIST_EXTS                               # supported playlist file extensions
+./src/gui/wx_app.py:26:from src import RESULT_DIR                                  # directory for storing test results
+./src/gui/wx_app.py:27:from src import RESULT_EXT                                  # file extension for result files
+./src/gui/wx_app.py:28:from src.generated_files import GENERATED_PATH              # for generated files path
+./src/gui/wx_app.py:804:        generated_dir = os.path.join(GENERATED_PATH, MUSIC_TLD)
+./src/gui/wx_app.py:838:        generated_dir = GENERATED_PATH
+./src/gui/wx_app.py:874:        result_path = os.path.join(GENERATED_PATH, RESULT_DIR, filename + RESULT_EXT)
+
+./src/subprocess_utils.py:31:from src import add_module_handler                          # for module-specific logging handlers
+./src/subprocess_utils.py:34:from src import UTF8                                        # for UTF-8 text encoding
+./src/subprocess_utils.py:37:from src import FfmpegProcessError                          # for FFmpeg process failures
+
+./src/__init__.py:21:from src.generated_files import GENERATED_PATH              # path to the directory where generated files are stored
+./src/__init__.py:248:    GENERATED_PATH,
+./src/__init__.py:259:# @details In modules needing the method, add: `from src import add_module_handler`.
+./src/__init__.py:260:# @details In modules needing the constant, add: `from src import ASF_TYPE`.
+./src/__init__.py:261:# @details In modules needing the constant, add: `from src import AUDIO_EXTS`.
+./src/__init__.py:262:# @details In modules needing the constant, add: `from src import AUDIO_FILES`.
+./src/__init__.py:263:# @details In modules needing the constant, add: `from src import CSV_DIR`.
+./src/__init__.py:264:# @details In modules needing the constant, add: `from src import CSV_EXT`.
+./src/__init__.py:265:# @details In modules needing the constant, add: `from src import ERROR_LOG_FORMAT`.
+./src/__init__.py:266:# @details In modules needing the constant, add: `from src import FLAC_EXT`.
+./src/__init__.py:267:# @details In modules needing the constant, add: `from src import FLAC_TYPE`.
+./src/__init__.py:268:# @details In modules needing the constant, add: `from src import FOLDER_ART`.
+./src/__init__.py:270:# @details In modules needing the constant, add: `from src import ILT`.
+./src/__init__.py:272:# @details In modules needing the constant, add: `from src import LOG_DIR`.
+./src/__init__.py:273:# @details In modules needing the constant, add: `from src import LOG_EXT`.
+./src/__init__.py:274:# @details In modules needing the constant, add: `from src import LRA`.
+./src/__init__.py:275:# @details In modules needing the constant, add: `from src import M3U_EXT`.
+./src/__init__.py:276:# @details In modules needing the constant, add: `from src import M4A_EXT`.
+./src/__init__.py:278:# @details In modules needing the constant, add: `from src import MP3_EXT`.
+./src/__init__.py:279:# @details In modules needing the constant, add: `from src import MP3_TYPE`.
+./src/__init__.py:280:# @details In modules needing the constant, add: `from src import MP4_TYPE`.
+./src/__init__.py:281:# @details In modules needing the constant, add: `from src import MUSIC_TLD`.
+./src/__init__.py:284:# @details In modules needing the constant, add: `from src import PLAYLIST_EXTS`.
+./src/__init__.py:285:# @details In modules needing the constant, add: `from src import PLAYLIST_TYPES`.
+./src/__init__.py:287:# @details In modules needing the constant, add: `from src import RESULT_DIR`.
+./src/__init__.py:288:# @details In modules needing the constant, add: `from src import RESULT_EXT`.
+./src/__init__.py:289:# @details In modules needing the constant, add: `from src import TP`.
+./src/__init__.py:290:# @details In modules needing the constant, add: `from src import UTF8`.
+./src/__init__.py:292:# @details In modules needing the constant, add: `from src import WMA_EXT`.
+
+./tests/test_audio_art.py:31:from src import FOLDER_ART                                  # for album-art fixture filenames
+./tests/test_audio_art.py:32:from src import MP3_EXT                                     # for MP3 file-pattern extraction tests
+./tests/test_audio_art.py:33:from src import PLAYLIST_EXTS                               # for invalid file-pattern extraction tests
+
+./tests/test_audio_metadata.py:43:from src import AUDIO_FILES                                 # directory containing audio files
+./tests/test_audio_metadata.py:44:from src import CSV_DIR                                     # directory containing CSV files
+./tests/test_audio_metadata.py:45:from src import CSV_EXT                                     # file extension for CSV files
+./tests/test_audio_metadata.py:46:from src import FLAC_EXT                                    # file extension for FLAC audio files
+./tests/test_audio_metadata.py:47:from src import FOLDER_ART                                  # directory containing folder art images
+./tests/test_audio_metadata.py:48:from src import M4A_EXT                                     # file extension for M4A audio files
+./tests/test_audio_metadata.py:49:from src import MP3_EXT                                     # file extension for MP3 audio files
+./tests/test_audio_metadata.py:50:from src import MUSIC_TLD                                   # top level directory for music files
+./tests/test_audio_metadata.py:51:from src import PLAYLIST_EXTS                               # supported playlist file extensions
+./tests/test_audio_metadata.py:52:from src import RESULT_DIR                                  # directory for storing test results
+./tests/test_audio_metadata.py:53:from src import RESULT_EXT                                  # file extension for result files
+./tests/test_audio_metadata.py:54:from src import WMA_EXT                                     # file extension for WMA audio files
+./tests/test_audio_metadata.py:55:from src import UTF8                                        # UTF-8 encoding constant
+./tests/test_audio_metadata.py:56:from src.generated_files import GENERATED_PATH              # path to generated files
+./tests/test_audio_metadata.py:83:from src import MusicProcessingError                        # custom error class for music processing exceptions
+./tests/test_audio_metadata.py:112:        cls.test_tld = os.path.join(GENERATED_PATH, MUSIC_TLD)
+./tests/test_audio_metadata.py:114:        cls.txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
+./tests/test_audio_metadata.py:1314:        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
+./tests/test_audio_metadata.py:1390:        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
+./tests/test_audio_metadata.py:1431:        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
+./tests/test_audio_metadata.py:1472:        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
+
+./tests/test_audio_normalization.py:33:from src import ILT                                         # for loudness normalization targets
+./tests/test_audio_normalization.py:34:from src import LRA                                         # for loudness-range normalization target
+./tests/test_audio_normalization.py:35:from src import MUSIC_TLD                                   # for generated music directory paths
+./tests/test_audio_normalization.py:36:from src import TP                                          # for true-peak normalization target
+./tests/test_audio_normalization.py:37:from src.generated_files import GENERATED_PATH              # for generated output paths
+./tests/test_audio_normalization.py:88:        cls.norm_path = os.path.join(GENERATED_PATH, MUSIC_TLD)
+
+./tests/test_audio_playlist.py:26:from src.generated_files import GENERATED_PATH              # for generated playlist output paths
+./tests/test_audio_playlist.py:33:from src import PlaylistError                               # for expected playlist parsing errors
+./tests/test_audio_playlist.py:63:        cls.generated_m3u = os.path.join(GENERATED_PATH, "test.m3u")
+
+./tests/test_audio_utilities.py:27:from src import RESULT_DIR                                  # for result text directory
+./tests/test_audio_utilities.py:28:from src import RESULT_EXT                                  # for result text extension
+./tests/test_audio_utilities.py:29:from src.generated_files import GENERATED_PATH              # for generated output paths
+./tests/test_audio_utilities.py:118:        output_path = os.path.join(GENERATED_PATH, RESULT_DIR, f"{txt_filename}{RESULT_EXT}")
+
+./tests/test_directory_processing.py:31:from src import AUDIO_EXTS                                  # for non-audio path assertions
+./tests/test_directory_processing.py:32:from src import CSV_DIR                                     # for generated CSV fixture directories
+./tests/test_directory_processing.py:33:from src import CSV_EXT                                     # for generated CSV filename extensions
+./tests/test_directory_processing.py:34:from src import M4A_EXT                                     # for M4A file-list filtering tests
+./tests/test_directory_processing.py:35:from src import MP3_EXT                                     # for MP3 file-list filtering tests
+./tests/test_directory_processing.py:36:from src import MUSIC_TLD                                   # for generated music directory paths
+./tests/test_directory_processing.py:37:from src import RESULT_DIR                                  # for generated text fixture directories
+./tests/test_directory_processing.py:38:from src import RESULT_EXT                                  # for generated text filename extensions
+./tests/test_directory_processing.py:39:from src import WMA_EXT                                     # for WMA file-list filtering tests
+./tests/test_directory_processing.py:40:from src.generated_files import GENERATED_PATH              # for generated test output paths
+./tests/test_directory_processing.py:49:from src import MusicProcessingError                        # for safe-removal error assertions
+./tests/test_directory_processing.py:79:        cls.dir_path = os.path.join(GENERATED_PATH, MUSIC_TLD, "ArtistDir", "AlbumDir")
+./tests/test_directory_processing.py:80:        cls.generated_tld = os.path.join(GENERATED_PATH, MUSIC_TLD)
+./tests/test_directory_processing.py:203:        csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
+./tests/test_directory_processing.py:208:        txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
+./tests/test_directory_processing.py:250:        csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
+./tests/test_directory_processing.py:277:        csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
+./tests/test_directory_processing.py:304:        csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
+./tests/test_directory_processing.py:331:        csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
+./tests/test_directory_processing.py:416:        bad_path = os.path.join(GENERATED_PATH, MUSIC_TLD, "?bad_path")
+./tests/test_directory_processing.py:480:        expected_info = os.path.join(GENERATED_PATH, MUSIC_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
+./tests/test_directory_processing.py:484:        target_path = os.path.join(GENERATED_PATH, MUSIC_TLD)
+
+./tests/test_subprocess_utilities.py:29:from src import UTF8                                        # for decoding error fixture encoding
+./tests/test_subprocess_utilities.py:36:from src import FfmpegProcessError                          # for expected ffmpeg command failures
+
+./tests/__init__.py:20:from src import MUSIC_TLD                                   # for the test music top level directory
+
+PS D:\MusicProcessing> grep -RInE --exclude-dir=.git "generated_files|icon_files|licenses|RESOURCES_PATH" .
+
+./.gitignore:177:src/generated_files/csv_files/
+./.gitignore:178:src/generated_files/log_files/
+./.gitignore:179:src/generated_files/result_files/
+
+./docs/md_files/Workflow.md:477:Copy it to the special `/MusicProcessing/src/generated_files/AlbumArt` folder.
+./docs/md_files/Workflow.md:618:The default save location is `/MusicProcessing/src/generated_files/Music`.
+./docs/md_files/Workflow.md:646:The functions output a list, `clip-check-file.txt` in `/MusicProcessing/src/generated_files/result_files/`.
+./docs/md_files/Workflow.md:707:Updated playlist files will be in the special `/MusicProcessing/src/generated_files/` directory, under `Music`.<br>
+./docs/md_files/Workflow.md:727:The files are in the special `/MusicProcessing/src/generated_files/` directory, under `csv_file/`s and/or `result_files/`.<br>
+
+./main.py:29:from src.generated_files import GENERATED_PATH              # generated files path
+./main.py:969:        # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
+
+./README.md:243:| |_generated_files
+./README.md:254:| | |_icon_files
+./README.md:258:| | |_licenses
+
+./src/audio_info/audio_art.py:45:from src.generated_files import GENERATED_PATH              # for generated files path
+./src/audio_info/audio_art.py:635:                # eg: D:\MusicProcessing\src\generated_files\AlbumArt
+./src/audio_info/audio_art.py:641:                    # eg: D:\MusicProcessing\src\generated_files\AlbumArt\Best Of The Blues, Vol. 1.jpg
+
+./src/audio_info/audio_playlist.py:29:from src.generated_files import GENERATED_PATH              # for generated file output paths
+
+./src/core/paths.py:27:GENERATED_PATH = os.path.join(SRC_PATH, "generated_files")  # same location as today
+./src/core/paths.py:29:## @var RESOURCES_PATH
+./src/core/paths.py:32:RESOURCES_PATH = os.path.join(SRC_PATH, "resources")        # unused until Milestone 8
+
+./src/dir_processing/directory_processing.py:43:from src.generated_files import GENERATED_PATH              # for generated file output paths
+
+./src/generated_files/__init__.py:2:@package src.generated_files
+./src/generated_files/__init__.py:3:@file src/generated_files/__init__.py
+./src/generated_files/__init__.py:26:# @details In modules needing the constant, add `from src.generated_files import GENERATED_PATH`.
+
+./src/gui/handlers.py:145:        self.mainFrame.run_task(metadata.convert_file, path, on_success=self.mainFrame._show_generated_files_dialog)
+./src/gui/handlers.py:167:        self.mainFrame.run_task(metadata.convert_walk, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
+./src/gui/handlers.py:249:        self.mainFrame.run_task(metadata.get_media_info_walk, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
+./src/gui/handlers.py:271:        self.mainFrame.run_task(metadata.get_tags_walk, tld, pattern, ffprobe, on_success=self.mainFrame._show_generated_files_dialog)
+./src/gui/handlers.py:290:        self.mainFrame.run_task(metadata.get_unique_media, tld, on_success=self.mainFrame._show_generated_files_dialog)
+./src/gui/handlers.py:309:        self.mainFrame.run_task(directory.list_audio, tld, on_success=self.mainFrame._show_generated_files_dialog)
+./src/gui/handlers.py:334:        self.mainFrame.run_task(directory.list_type, tld, ext, on_success=self.mainFrame._show_generated_files_dialog)
+./src/gui/handlers.py:355:        self.mainFrame.run_task(normalization.normalize_walk, tld, norm_type, on_success=self.mainFrame._show_generated_files_dialog)
+./src/gui/handlers.py:393:        self.mainFrame.run_task(directory.remove_albums, tld, on_success=self.mainFrame._show_generated_files_dialog)
+./src/gui/handlers.py:418:        self.mainFrame.run_task(directory.remove_pattern, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
+
+./src/gui/wx_app.py:28:from src.generated_files import GENERATED_PATH              # for generated files path
+./src/gui/wx_app.py:795:    def _show_generated_files_dialog(self):
+
+./src/__init__.py:21:from src.generated_files import GENERATED_PATH              # path to the directory where generated files are stored
+
+./tests/test_audio_metadata.py:56:from src.generated_files import GENERATED_PATH              # path to generated files
+./tests/test_audio_metadata.py:111:        # the top level directory path where files will be created - D:\MusicProcessing\src\generated_files\Music
+./tests/test_audio_metadata.py:113:        # directory for text result files - D:\MusicProcessing\src\generated_files\Result
+
+./tests/test_audio_normalization.py:37:from src.generated_files import GENERATED_PATH              # for generated output paths
+./tests/test_audio_normalization.py:87:        # the path where converted files will be created D:\MusicProcessing\src\generated_files\Music
+
+./tests/test_audio_playlist.py:26:from src.generated_files import GENERATED_PATH              # for generated playlist output paths
+
+./tests/test_audio_utilities.py:29:from src.generated_files import GENERATED_PATH              # for generated output paths
+
+./tests/test_directory_processing.py:40:from src.generated_files import GENERATED_PATH              # for generated test output paths
+./tests/test_directory_processing.py:479:        # successful path_info returns a mp3 file name in generated_files/Music/Joshua Davis/The Voice Peformance
+./tests/test_directory_processing.py:598:        /generated_files/Music
