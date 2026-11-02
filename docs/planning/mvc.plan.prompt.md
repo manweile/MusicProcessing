@@ -106,6 +106,8 @@ MusicProcessing/
     - run ci-pipeline locally to ensure integration with GitHub Actions RESULT: pipeline passes, including all tests and checks
     - merge gui branch into development RESULT: development branch contains latest GUI changes
     - create a new branch for the upcoming core extraction work RESULT: new branch exists and is based on the latest development
+    - run the full suite and record any pre-existing failures
+    - decide whether tests stay flat or move into `tests/models/`, `tests/controllers/`, `tests/cli/`, `tests/views/`
   - Exit criteria: a known-good baseline exists, and CI runs the suite.
 
 2. Milestone 2: `core/` extraction
