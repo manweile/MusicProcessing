@@ -186,11 +186,16 @@ COMPLETED
           - Set RESOURCES_PATH to the planned static-assets directory, src/resources, and use it when the assets move.
 
     At this stage, add the new definitions without changing existing imports.
+
     3. Preserve compatibility from src
 
-    Change src/__init__.py to import and re-export the new constants and paths, while preserving the existing exports for errors and logging helpers. Use explicit imports and maintain an accurate __all__; avoid wildcard imports.
+    Change src/__init__.py to import and re-export the new constants and paths, while preserving existing exports for errors and logging helpers.<br>
+    Use explicit imports and maintain an accurate __all__; avoid wildcard imports.
 
-    This gives callers both the old paths (for example, from src import AUDIO_EXTS) and the new paths (for example, from src.core.constants import AUDIO_EXTS) during migration. Keep the existing logging initialization behavior for now.
+    This gives callers both the old paths (for example, from src import AUDIO_EXTS);<br>
+    and the new paths (for example, from src.core.constants import AUDIO_EXTS) during migration.<br>
+    Keep the existing logging initialization behavior for now.
+
     4. Migrate imports in small batches
 
     Update production imports to use the new modules:
@@ -201,16 +206,25 @@ COMPLETED
         GENERATED_PATH → src.core.paths
 
     Then update the corresponding test imports, including tests/__init__.py, and any string-based mock patch targets. Run the tests after each batch. The src re-exports remain in place so unmigrated code continues to work.
+
     5. Wire in the CLI constants
 
-    When extracting the CLI, use ARG_CLI_* in parser argument definitions and when reading the corresponding parsed fields in main(args)—for example, getattr(args, ARG_CLI_FILE). Use ARG_HELP_* for the related help text.
+    When extracting the CLI, use ARG_CLI_* in parser argument definitions and when reading the corresponding parsed fields in main(args);<br>
+    for example, getattr(args, ARG_CLI_FILE). Use ARG_HELP_* for the related help text.
 
-    These constants describe argument field names and help text, not subcommand names. Keep subcommand names such as "gui" and "convert-file" separate unless you introduce constants for them explicitly.
+    These constants describe argument field names and help text, not subcommand names.<br>
+    Keep subcommand names such as "gui" and "convert-file" separate unless you introduce constants for them explicitly.
+
     6. Move logging and error infrastructure
 
-    Move errors.py, logging_config.py, and level_filter.py into core/; update their imports and leave compatibility re-exports at their old locations until callers are migrated. Keep core/__init__.py free of logging setup side effects to avoid introducing import cycles.
+    Move errors.py, logging_config.py, and level_filter.py into core/;<br>
+    update their imports and leave compatibility re-exports at their old locations until callers are migrated.<br>
+    Keep core/__init__.py free of logging setup side effects to avoid introducing import cycles.
 
-    Before emptying src/__init__.py, preserve its current package-level logging initialization through an explicit, one-time startup/bootstrap call from the application entry point. Verify logging still initializes for both CLI and GUI startup.
+    Before emptying src/__init__.py:
+    - Preserve current package-level logging initialization through an explicit, one-time startup/bootstrap call from the application entry point.<br>
+    - Verify logging still initializes for both CLI and GUI startup.
+
     7. Empty src/__init__.py last
 
     Once repository imports no longer rely on from src import ..., the old error/logging modules, or the old generated-files path export:
@@ -224,8 +238,8 @@ COMPLETED
   - Exit criteria: `core/` imports nothing else from `src`.
 
 4. Milestone 4: Progress interface
-  - Add `core/progress.py` with `ProgressReporter` (`start(total, description)`, `advance(step)`, `finish()`) and a
-    no-op `NullProgress`. `total=None` means indeterminate (spinner).
+  - Add `core/progress.py` with `ProgressReporter` (`start(total, description)`, `advance(step)`, `finish()`) and a no-op `NullProgress`.
+  - `total=None` means indeterminate (spinner).
   - Files: `src/core/progress.py`, `tests/support.py`
   - Work:
     - add a recording `FakeProgress` to `tests/support.py`
@@ -247,8 +261,8 @@ COMPLETED
   - Move command-line code out of `main.py`.
   - Files: `main.py`, new `src/cli/`
   - Work:
-    - keep the existing `main.py` invocation operational throughout extraction; first make the new parser and command
-      layer callable alongside it, then have `main.py` delegate only after CLI parity is verified
+    - keep the existing `main.py` invocation operational throughout extraction;
+      - first make the new parser and command layer callable alongside it, then have `main.py` delegate only after CLI parity is verified
     - use the constants defined in `src/cli/constants.py`
     - move `CustomHelpFormatter`, `CustomArgumentParser`, and the parser construction to `cli/parser.py` as `build_parser()`
     - move the per-subcommand wrapper functions to `cli/commands.py`
@@ -257,10 +271,12 @@ COMPLETED
     - add `cli/progress.py` with `TqdmProgress` and `SpinnerProgress` and pass them into model calls
     - `main(args)` runs the GUI for `gui`, otherwise returns `run_cli_command(args)`
     - the `__main__` block keeps `sys.exit(main(args))`
-  - Validation: capture baseline help and behavior before extraction; compare every subcommand's `--help` output
-    and exercise each command's validation, exit behavior, and representative output against the baseline. Add
-    `tests/cli/` tests for parser construction and dispatch. Keep the old implementation available until these
-    checks pass, then switch `main.py` to the new layer and retain it as the thin entry point.
+  - Validation:
+    - capture baseline help and behavior before extraction
+    - compare every subcommand's `--help` output
+    - exercise each command's validation, exit behavior, and representative output against the baseline.
+    - Add `tests/cli/` tests for parser construction and dispatch.
+    - Keep the old implementation available until these checks pass, then switch `main.py` to the new layer and retain it as the thin entry point.
   - Exit criteria: `main.py` contains only argument parsing wiring and the dispatch entry point.
 
 7. Milestone 7: Controllers
@@ -279,19 +295,26 @@ COMPLETED
   - Split `MainFrame` into frame plus panels and replace `EventHandlers`.
   - Files: `src/gui/wx_app.py`, `src/gui/handlers.py`, new `src/views/wx/`
   - Work:
-    - keep `src/gui/` launchable while the replacement view is developed; do not remove `handlers.py` or redirect
-      `run_gui` until the replacement passes GUI parity checks
+    - keep `src/gui/` launchable while the replacement view is developed
+    - do not remove `handlers.py` or redirect `run_gui` until the replacement passes GUI parity checks
     - one panel class per notebook tab (art, convert, normalize, playlist, metadata, directory)
     - panels bind events and forward plain values to controllers; they implement the view interface
-    - add `views/wx/progress.py` with `GaugeProgress`, updating widgets only through `wx.CallAfter`, and a timer-driven `Pulse()` for indeterminate tasks
+    - add `views/wx/progress.py` with `GaugeProgress`
+      - updating widgets only through `wx.CallAfter`
+      - a timer-driven `Pulse()` for indeterminate tasks
     - keep the existing worker-thread behavior so the UI stays responsive
-    - after parity is verified, switch `run_gui` to the replacement view and retain a compatibility adapter if
-      existing callers still import `src/gui/`; remove `handlers.py` only when no callers depend on it
-  - Validation: keep the existing GUI smoke test passing during development; add/update tests for the replacement,
-    then manually verify startup and each tab's primary workflow, validation, progress, dialogs, and generated
-    outputs before cutover.
-  - Exit criteria: the replacement GUI passes parity checks; no controller or model references a widget; `run_gui`
-    is re-exported from `views/wx/__init__.py`; the old GUI implementation is retired only after cutover.
+    - after parity is verified
+      - switch `run_gui` to the replacement view and retain a compatibility adapter if existing callers still import `src/gui/`
+      - remove `handlers.py` only when no callers depend on it
+  - Validation:
+    - keep the existing GUI smoke test passing during development
+    - add/update tests for the replacement
+    - then manually verify startup and each tab's primary workflow, validation, progress, dialogs, and generated outputs before cutover.
+  - Exit criteria:
+    - the replacement GUI passes parity checks
+    - no controller or model references a widget
+    - `run_gui` is re-exported from `views/wx/__init__.py`
+    - the old GUI implementation is retired only after cutover.
 
 9. Milestone 9: Resources and generated output
   - Separate static assets from runtime output.
@@ -375,7 +398,7 @@ COMPLETED
 **Further Considerations**
 
 1. Test layout: flat `tests/` works, but mirroring `src/` (`tests/models/`, `tests/controllers/`, `tests/cli/`,
-   `tests/views/`) scales better. Decide in Milestone 1. DECISION:
+   `tests/views/`) scales better. Decide in Milestone 1. DECISION: flat for now. Will mirror later.
 2. Output location: a repo-local `output/` is simplest; a per-user data directory is better for installed use.
    Decide in Milestone 8.
 3. GUI logging (see `docs/planning/TODO.txt`) could be folded into the view interface by adding a `log` method that
