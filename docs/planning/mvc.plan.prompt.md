@@ -111,18 +111,88 @@ MusicProcessing/
   - Exit criteria: a known-good baseline exists, and CI runs the suite.
 
 2. Milestone 2: `core/` extraction
-  - Move shared infrastructure out of the `src/` root.
-  - Files: `src/__init__.py`, `src/errors.py`, `src/logging_config.py`, `src/level_filter.py`,
-    `src/generated_files/__init__.py`, new `src/core/`
-  - Work:
-    - split constants: audio, directory, log, and encoding constants go to `core/constants.py`; `ARG_CLI_*` and
-      `ARG_HELP_*` go to `cli/constants.py` (Milestone 6)
-    - move `GENERATED_PATH` to `core/paths.py` and add `RESOURCES_PATH`
-    - keep temporary re-exports in the old locations so imports continue to resolve
-    - empty `src/__init__.py` last, to avoid circular imports
-  - Validation: the full suite passes with both old and new import paths.
-  - Exit criteria: `core/` imports nothing else from `src`.
+  - Objective: move shared constants, paths, errors, and logging infrastructure into `src/core/` while preserving current imports, logging behavior, generated-output locations, and the flat test layout. This milestone does not move GUI assets or generated output and does not empty `src/__init__.py`.
+  - Files: new `src/core/__init__.py`, `src/core/constants.py`, `src/core/paths.py`, `src/core/errors.py`, `src/core/level_filter.py`, `src/core/logging_config.py`; compatibility modules `src/errors.py`, `src/level_filter.py`, `src/logging_config.py`, `src/generated_files/__init__.py`; `src/__init__.py`; production importers and existing `tests/*.py` that consume the moved symbols.
+  - Constraints:
+    - Keep all existing tests flat in `tests/`; update test imports in place. Do not create layer-specific test directories in this milestone.
+    - Preserve every constant value, exception class identity, public logging function, log filename/location, generated path value/type, output format, and current behavior.
+    - Keep `ARG_CLI_*` and `ARG_HELP_*` in their current compatibility location for this milestone. They are intentionally reserved for CLI parser/dispatch use, not dead constants; make `src/cli/constants.py` canonical and migrate them during Milestone 5 (CLI extraction), not Milestone 2.
+    - Do not move `src/generated_files/AlbumArt`, CSV/text/M3U output, `icon_files/`, or `licenses/` yet. Asset/output separation is Milestone 8.
+    - `src/core/` must not import through the `src` package root or depend on a compatibility shim. Internal core imports must be relative or point directly to another `src.core` module.
+    - Do not configure logging from `src/core/__init__.py`. Preserve the existing package-root initialization until the later explicit startup/bootstrap change, and do not install duplicate handlers.
 
+  - Atomic implementation sequence:
+
+    1. **Capture the starting state and inspect references.**
+       - Confirm the branch is based on the validated `development` baseline and run the project's full unit suite.
+       - Search all Python files for `from src import`, `import src`, `GENERATED_PATH`, and `src.generated_files`. Also search all files for `generated_files`, `icon_files`, `licenses`, and `RESOURCES_PATH` before path/asset changes. On Windows PowerShell, run each grep command on one line; do not use Bash `\\` line continuations.
+       - Record the existing generated path as the absolute directory containing `src/generated_files/__init__.py`; record that consumers currently include `main.py`, `src/audio_info/audio_art.py`, `src/audio_info/audio_playlist.py`, `src/dir_processing/directory_processing.py`, `src/gui/wx_app.py`, and existing test modules.
+       - Record that the current root package configures logging at import time and creates CSV, log, and result directories under `GENERATED_PATH`. This behavior is part of the compatibility baseline.
+       - Exit check: baseline tests pass and the import/path/logging inventory is understood before edits.
+
+    2. **Create the new core package without side effects.**
+       - Add `src/core/__init__.py` as a package marker only (or with a docstring and an explicit `__all__` only after the exports are stable). It must not import the root package, configure logging, or eagerly re-export modules in a way that creates a cycle.
+       - Add `src/core/constants.py`; copy the existing Doxygen documentation and values without behavior changes. Move these non-CLI constants:
+         - Application/audio types and extensions: `APP_NAME`, `ASF_TYPE`, `AUDIO_EXTS`, `AUDIO_FILES`, `FLAC_EXT`, `FLAC_TYPE`, `FOLDER_ART`, `M4A_EXT`, `MP3_EXT`, `MP3_TYPE`, `MP4_TYPE`, `MUSIC_TLD`, `WMA_EXT`.
+         - Playlist constants: `M3U_EXT`, `PLAYLIST_EXTS`, `PLAYLIST_TYPES`.
+         - Output-directory/file constants: `CSV_DIR`, `CSV_EXT`, `RESULT_DIR`, `RESULT_EXT`.
+         - Logging/encoding constants: `ERROR_LOG_FORMAT`, `LOG_DIR`, `LOG_EXT`, `UTF8`.
+         - Normalization targets: `ILT`, `LRA`, `TP`.
+       - Do not move `ARG_CLI_EXT`, `ARG_CLI_FFPROBE`, `ARG_CLI_FILE`, `ARG_CLI_PLAYLIST`, `ARG_CLI_PATTERN`, `ARG_CLI_TLD`, `ARG_CLI_TYPE`, or `ARG_HELP_AUDIO`, `ARG_HELP_FFPROBE`, `ARG_HELP_FILE`, `ARG_HELP_NORMAL`, `ARG_HELP_PATTERN_MAN`, `ARG_HELP_PATTERN_OPT`, `ARG_HELP_PLAYLIST`, `ARG_HELP_TLD` in this milestone. Their canonical destination is `src/cli/constants.py` in Milestone 5.
+       - Exit check: each copied constant compares equal to its current value; no caller has been changed yet.
+
+    3. **Add canonical paths while preserving the old generated location.**
+       - Add `src/core/paths.py` with `SRC_PATH`, `GENERATED_PATH`, and `RESOURCES_PATH`. Compute `SRC_PATH` from the location of `core/paths.py`; define `GENERATED_PATH` as `src/generated_files`, exactly matching the existing value. Keep its current string type unless a deliberate all-consumer migration is separately approved. Define `RESOURCES_PATH` as the future `src/resources` location, but do not use it to redirect assets in this milestone.
+       - Change `src/generated_files/__init__.py` to re-export the canonical `GENERATED_PATH` from `src.core.paths`; remove its duplicate path definition. Preserve the package docstring and `__all__` as appropriate.
+       - Keep `src/__init__.py` exporting `GENERATED_PATH` during compatibility; make it reference the canonical path.
+       - Verify equality between the old computed path and the new constant (normalized with `os.path.abspath`/`os.path.normpath`) and verify the exported value type. Do not run a test that writes or deletes files outside the existing test output scope.
+       - Exit check: imports from both `src.generated_files` and `src.core.paths` return the same path value, and all current output/asset paths remain unchanged.
+
+    4. **Move errors and logging modules with compatibility shims.**
+       - Move `src/errors.py`, `src/level_filter.py`, and `src/logging_config.py` implementations into `src/core/errors.py`, `src/core/level_filter.py`, and `src/core/logging_config.py` respectively. Use repository-standard moves (for example `git mv`) so history is retained.
+       - Change imports inside the moved core modules to use only standard-library modules or direct/relative `src.core` imports. In particular, `core/logging_config.py` must import `LevelFilter` from `src.core.level_filter` (or `.level_filter`), never through `src.level_filter`.
+       - Replace each old module with a compatibility re-export of its public names from the corresponding `src.core` module. Preserve exception class identity: `src.errors.MusicProcessingError is src.core.errors.MusicProcessingError` and equivalent for every exported exception.
+       - Keep the existing logging API and initialization call in `src/__init__.py` unchanged for now. Do not move initialization into `core/__init__.py`; do not call `configure_package_logging` a second time.
+       - Exit check: old and new import paths expose the same functions/classes, importing core modules does not recurse through old shims, and no duplicate logging handlers are added.
+
+    5. **Add root-package compatibility exports.**
+       - Update `src/__init__.py` to expose moved non-CLI constants, the canonical `GENERATED_PATH`, error classes, and logging functions from their new modules while preserving current public names and `__all__` behavior.
+       - Retain the existing `ARG_CLI_*` and `ARG_HELP_*` definitions/exports at `src` until Milestone 5. Do not copy them into `core/constants.py`.
+       - Preserve the existing `configure_package_logging(...)` call and its exact arguments/order, using the new core constants and path. Ensure it still executes once when the package initializes, creates the same three output subdirectories, and returns/configures the same package logger.
+       - Keep `src/__init__.py` as a temporary compatibility facade through this milestone and subsequent migration work. It is not emptied here: CLI constants remain to be extracted in Milestone 5, and the root initializer is removed only in Milestone 9 after explicit startup logging and all import migrations are complete.
+       - Exit check: existing `from src import NAME` imports continue to work and match the new canonical objects/values.
+
+    6. **Migrate production imports in coherent, reviewable batches.**
+       - Change constant imports in `main.py`, `src/audio_info/audio_art.py`, `src/audio_info/audio_metadata.py`, `src/audio_info/audio_playlist.py`, `src/audio_info/audio_utilities.py`, `src/audio_normalize/audio_normalization.py`, `src/dir_processing/directory_processing.py`, `src/gui/wx_app.py`, and `src/subprocess_utils.py` to `src.core.constants`.
+       - Change production `GENERATED_PATH` imports in `main.py`, `audio_art.py`, `audio_playlist.py`, `directory_processing.py`, and `wx_app.py` to `src.core.paths`.
+       - Change logging-helper imports to `src.core.logging_config` and exception imports to `src.core.errors` after confirming each destination module exists. Keep imports grouped and formatted using project conventions.
+       - Do not change CLI argument constants in `main.py` until Milestone 5; they remain in the compatibility facade at this point.
+       - After each coherent batch, run the focused relevant tests and then the full suite before proceeding. Keep the compatibility shims intact so unconverted callers remain valid.
+       - Exit check: production code uses canonical core imports for moved symbols, with behavior and output paths unchanged.
+
+    7. **Migrate tests in place and verify compatibility.**
+       - Update existing flat files, not their locations: `tests/__init__.py`, `tests/test_audio_art.py`, `tests/test_audio_metadata.py`, `tests/test_audio_normalization.py`, `tests/test_audio_playlist.py`, `tests/test_audio_utilities.py`, `tests/test_directory_processing.py`, and `tests/test_subprocess_utilities.py` wherever they import moved symbols.
+       - Use `src.core.constants`, `src.core.paths`, and `src.core.errors` for canonical imports. Preserve fixture names, contents, expected outputs, and test discovery paths.
+       - Update any string-based mock/patch targets that refer to moved implementations. Search patch strings separately; plain import search does not find every string target.
+       - Add focused compatibility assertions for old/new constant values, path identity/type, and exception class identity where they are not already covered. Do not add a test that relies on handler counts before identifying how the package logging initializer is isolated/reset in the existing test process.
+       - Run each affected test module, then the full suite and the same local CI pipeline used for Milestone 1. Confirm no failures or skips and no change to generated-file expectations.
+       - Exit check: flat tests pass using canonical imports; legacy import shims still pass compatibility checks.
+
+    8. **Audit boundaries and close the milestone.**
+       - Search again for imports from old locations and review each remaining hit. Remaining `from src import ARG_*` use is expected until Milestone 5; remaining imports of `src.errors`, `src.logging_config`, `src.level_filter`, or `src.generated_files` are allowed only as compatibility callers not yet migrated and must be listed explicitly.
+       - Check the new `src/core/` files for imports from `src` root and old shims. They may import only standard-library modules and other core modules.
+       - Confirm `GENERATED_PATH` is still the existing `src/generated_files` directory; confirm static assets and generated output have not been moved; confirm logging initializes once and writes to the existing locations.
+       - Run the full unit suite and local CI pipeline. Record results in the branch/PR notes; do not edit unrelated planning sections as part of this milestone.
+       - Exit check: core modules are independent of root exports, all compatibility behavior is preserved, and all tests/CI pass.
+
+  - Validation:
+    - Use the project's existing full test-suite and local CI commands; do not introduce a new test runner or reorganize test files.
+    - Compare each migrated constant against its previous value, including exact string/list contents.
+    - Assert `src.core.paths.GENERATED_PATH` resolves to the same existing directory and type as the prior `src.generated_files.GENERATED_PATH`.
+    - Assert legacy and canonical imports of each exception resolve to the identical class object.
+    - Verify package logging initializes once and still creates/uses the same generated CSV, log, and result directories.
+    - Run the full unit suite and local CI pipeline after the complete milestone.
+  - Exit criteria: all non-CLI shared constants, paths, errors, and logging implementations have canonical definitions in `src/core/`; `src/cli/constants.py` is deferred to Milestone 5; old imports remain compatible; core does not import from the `src` root or compatibility shims; `src/__init__.py` remains a compatibility facade and is explicitly not emptied until Milestone 9; the test suite remains flat and passes with no failures or skips; runtime outputs and static assets remain in their current locations.
 3. Milestone 3: Progress interface
   - Add `core/progress.py` with `ProgressReporter` (`start(total, description)`, `advance(step)`, `finish()`) and a
     no-op `NullProgress`. `total=None` means indeterminate (spinner).
