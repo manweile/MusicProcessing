@@ -98,17 +98,18 @@ MusicProcessing/
 **Execution Milestones**
 
 1. Milestone 1: Baseline and safety net
-  - Record the current passing state before moving anything.
+  - Record the current passing state before moving anything. COMPLETED
   - Files: `tests/`, `.github/workflows/python-app.yml`
   - Work:
     - run the full suite and record any pre-existing failures RESULT: all tests pass, no skips
     - decide whether tests stay flat or move into `tests/models/`, `tests/controllers/`, `tests/cli/`, `tests/views/` DECISION: keep flat for now
     - run ci-pipeline locally to ensure integration with GitHub Actions RESULT: pipeline passes, including all tests and checks
-    - merge gui branch into development RESULT: development branch contains latest GUI changes
-    - create a new branch for the upcoming core extraction work RESULT: new branch exists and is based on the latest development
-    - run the full suite and record any pre-existing failures
-    - decide whether tests stay flat or move into `tests/models/`, `tests/controllers/`, `tests/cli/`, `tests/views/`
+    - run the full suite COMPLETED
+    - run ci locally COMPLETED
+    - merge gui branch into development COMPLETED
+    - create a new branch for the upcoming core extraction work COMPLETED
   - Exit criteria: a known-good baseline exists, and CI runs the suite.
+COMPLETED
 
 2. Milestone 2: `core/` extraction
   - Move shared infrastructure out of the `src/` root.
