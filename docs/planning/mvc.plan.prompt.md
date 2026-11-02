@@ -226,10 +226,11 @@ COMPLETED
   - Validation: tests that patched `tqdm` or `yaspin` now assert on `FakeProgress` calls.
   - Exit criteria: `grep` finds no `wx`, `argparse`, `tqdm`, or `yaspin` import under `src/models/`.
 
-5. Milestone 5: CLI extraction
+6. Milestone 6: CLI extraction
   - Move command-line code out of `main.py`.
   - Files: `main.py`, new `src/cli/`
   - Work:
+    - use the constants defined in `src/cli/constants.py`
     - move `CustomHelpFormatter`, `CustomArgumentParser`, and the parser construction to `cli/parser.py` as `build_parser()`
     - move the per-subcommand wrapper functions to `cli/commands.py`
     - replace the `main(args)` if-chain with `run_cli_command(args)` returning an exit code (0 on success, 1 on error)
@@ -241,7 +242,7 @@ COMPLETED
     construction and dispatch.
   - Exit criteria: `main.py` contains only argument parsing wiring and the dispatch entry point.
 
-6. Milestone 6: Controllers
+7. Milestone 7: Controllers
   - Introduce controllers that own validation and model coordination.
   - Files: new `src/controllers/`
   - Work:
@@ -253,7 +254,7 @@ COMPLETED
   - Validation: controller tests use a fake view and `NullProgress`; no `wx` import is needed.
   - Exit criteria: controllers contain no widget references.
 
-7. Milestone 7: wx view split
+8. Milestone 8: wx view split
   - Split `MainFrame` into frame plus panels and replace `EventHandlers`.
   - Files: `src/gui/wx_app.py`, `src/gui/handlers.py`, new `src/views/wx/`
   - Work:
@@ -265,7 +266,7 @@ COMPLETED
   - Validation: `tests/test_gui.py` smoke tests updated to the new view classes; manual run of each tab.
   - Exit criteria: no controller or model references a widget; `run_gui` is re-exported from `views/wx/__init__.py`.
 
-8. Milestone 8: Resources and generated output
+9. Milestone 9: Resources and generated output
   - Separate static assets from runtime output.
   - Files: `src/generated_files/`, `.gitignore`, `src/core/paths.py`
   - Work:
@@ -275,7 +276,7 @@ COMPLETED
     - update every path reference, including the GUI icons and the "generated files" dialogs
   - Exit criteria: no tracked runtime output remains under `src/`.
 
-9. Milestone 9: Cleanup and documentation
+10. Milestone 10: Cleanup and documentation
   - Remove the temporary re-exports and obsolete packages.
   - Files: old package locations, `Doxyfile`, `docs/md_files/`, `docs/dot_files/`, `README.md`, `.github/instructions/python.instructions.md`
   - Work:
@@ -343,7 +344,7 @@ COMPLETED
 **Further Considerations**
 
 1. Test layout: flat `tests/` works, but mirroring `src/` (`tests/models/`, `tests/controllers/`, `tests/cli/`,
-   `tests/views/`) scales better. Decide in Milestone 1.
+   `tests/views/`) scales better. Decide in Milestone 1. DECISION:
 2. Output location: a repo-local `output/` is simplest; a per-user data directory is better for installed use.
    Decide in Milestone 8.
 3. GUI logging (see `docs/planning/TODO.txt`) could be folded into the view interface by adding a `log` method that
