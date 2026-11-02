@@ -23,6 +23,23 @@ Key goals of this plan:
 - Dependencies point inward: `views` and `cli` depend on `controllers`, `controllers` depend on `models`, and every
   layer may depend on `core`.
 
+**Incremental Migration And Compatibility**
+
+- Keep the existing `main.py` CLI and `src/gui/` GUI operational while their replacements are being built. Do not
+  remove, disable, or redirect either entry point merely because replacement modules exist.
+- Migrate in small steps behind the existing entry points. The existing CLI commands and GUI remain the usable
+  baseline while models, controllers, and replacement views are added; avoid requiring a branch switch to use them.
+- Switch an entry point only after its replacement meets the parity checks below. Until then, preserve the old path
+  and use compatibility adapters or re-exports where needed. Prefer having both paths call the same migrated
+  implementation over maintaining duplicate business logic.
+- After a successful cutover, keep the old entry point as a thin adapter for any remaining callers. Remove obsolete
+  implementation only after its callers and compatibility requirements have been checked.
+- This is a staged migration, not a requirement to keep two complete implementations indefinitely: retire old
+  implementations after their replacement is verified and the cutover is complete.
+- CLI parity means unchanged subcommand names, arguments, validation, help output, exit behavior, and observable
+  processing/output behavior. GUI parity means successful startup and manual verification of every existing tab's
+  primary workflow, validation, progress/busy behavior, dialogs, and generated outputs.
+
 **Repository Snapshot**
 
 1. Models, flat by area: `src/audio_info/` (`AudioArt`, `AudioMetadata`, `AudioPlaylist`, `AudioUtilities`),
@@ -230,6 +247,8 @@ COMPLETED
   - Move command-line code out of `main.py`.
   - Files: `main.py`, new `src/cli/`
   - Work:
+    - keep the existing `main.py` invocation operational throughout extraction; first make the new parser and command
+      layer callable alongside it, then have `main.py` delegate only after CLI parity is verified
     - use the constants defined in `src/cli/constants.py`
     - move `CustomHelpFormatter`, `CustomArgumentParser`, and the parser construction to `cli/parser.py` as `build_parser()`
     - move the per-subcommand wrapper functions to `cli/commands.py`
@@ -238,8 +257,10 @@ COMPLETED
     - add `cli/progress.py` with `TqdmProgress` and `SpinnerProgress` and pass them into model calls
     - `main(args)` runs the GUI for `gui`, otherwise returns `run_cli_command(args)`
     - the `__main__` block keeps `sys.exit(main(args))`
-  - Validation: every subcommand's `--help` output is identical before and after; add `tests/cli/` tests for parser
-    construction and dispatch.
+  - Validation: capture baseline help and behavior before extraction; compare every subcommand's `--help` output
+    and exercise each command's validation, exit behavior, and representative output against the baseline. Add
+    `tests/cli/` tests for parser construction and dispatch. Keep the old implementation available until these
+    checks pass, then switch `main.py` to the new layer and retain it as the thin entry point.
   - Exit criteria: `main.py` contains only argument parsing wiring and the dispatch entry point.
 
 7. Milestone 7: Controllers
@@ -258,13 +279,19 @@ COMPLETED
   - Split `MainFrame` into frame plus panels and replace `EventHandlers`.
   - Files: `src/gui/wx_app.py`, `src/gui/handlers.py`, new `src/views/wx/`
   - Work:
+    - keep `src/gui/` launchable while the replacement view is developed; do not remove `handlers.py` or redirect
+      `run_gui` until the replacement passes GUI parity checks
     - one panel class per notebook tab (art, convert, normalize, playlist, metadata, directory)
     - panels bind events and forward plain values to controllers; they implement the view interface
     - add `views/wx/progress.py` with `GaugeProgress`, updating widgets only through `wx.CallAfter`, and a timer-driven `Pulse()` for indeterminate tasks
     - keep the existing worker-thread behavior so the UI stays responsive
-    - remove `handlers.py`
-  - Validation: `tests/test_gui.py` smoke tests updated to the new view classes; manual run of each tab.
-  - Exit criteria: no controller or model references a widget; `run_gui` is re-exported from `views/wx/__init__.py`.
+    - after parity is verified, switch `run_gui` to the replacement view and retain a compatibility adapter if
+      existing callers still import `src/gui/`; remove `handlers.py` only when no callers depend on it
+  - Validation: keep the existing GUI smoke test passing during development; add/update tests for the replacement,
+    then manually verify startup and each tab's primary workflow, validation, progress, dialogs, and generated
+    outputs before cutover.
+  - Exit criteria: the replacement GUI passes parity checks; no controller or model references a widget; `run_gui`
+    is re-exported from `views/wx/__init__.py`; the old GUI implementation is retired only after cutover.
 
 9. Milestone 9: Resources and generated output
   - Separate static assets from runtime output.
@@ -325,10 +352,14 @@ COMPLETED
 
 1. The full test suite passes at the end of every milestone.
 2. `main.py <subcommand> --help` output matches the pre-refactor output for every subcommand.
-3. No `wx`, `argparse`, `tqdm`, or `yaspin` import exists under `src/models/` or `src/controllers/`.
-4. No controller references a widget attribute or a private view method.
-5. `src/core/` imports nothing else from `src`.
-6. `create_album_dirs` and the subprocess spinner display correctly in CLI mode and report through `ProgressReporter`
+3. Before CLI cutover, the replacement matches the baseline CLI arguments, validation, exit behavior, and
+   representative command outputs; `main.py` remains usable until then.
+4. Before GUI cutover, the replacement starts and each existing tab's primary workflow, validation, progress,
+   dialogs, and generated outputs are manually verified; `src/gui/` remains usable until then.
+5. No `wx`, `argparse`, `tqdm`, or `yaspin` import exists under `src/models/` or `src/controllers/`.
+6. No controller references a widget attribute or a private view method.
+7. `src/core/` imports nothing else from `src`.
+8. `create_album_dirs` and the subprocess spinner display correctly in CLI mode and report through `ProgressReporter`
    (verified with `FakeProgress`); the GUI gauge is verified manually once Milestone 7 is complete.
 
 **Decisions**
