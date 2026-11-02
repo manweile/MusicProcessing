@@ -50,19 +50,24 @@ Key goals of this plan:
 
 ```text
 MusicProcessing/
+├── output/                           # New, runtime-generated files (git-ignored); no __init__.py
+│   ├── csv_files/                    # Runtime-generated CSV files; no __init__.py
+│   ├── log_files/                    # Runtime-generated log files; no __init__.py
+│   └── txt_files/                    # Runtime-generated result files; no __init__.py
+│
 ├── src/
-│   ├── cli/
+│   ├── cli/                          # New, command-line interface layer
 │   │   ├── __init__.py               # Re-exports: build_parser, run_cli_command
 │   │   ├── constants.py              # ARG_CLI_*, ARG_HELP_* strings
 │   │   ├── parser.py                 # CustomArgumentParser, subparsers, existing_file/path
 │   │   ├── progress.py               # TqdmProgress, SpinnerProgress (only place tqdm/yaspin are imported)
 │   │   └── commands.py               # clip_check_file, convert_file, ... + run_cli_command
 │   │
-│   ├── controllers/                  # Coordinate view input and model calls
+│   ├── controllers/                  # New, coordinates view input and model calls
 │   │   ├── __init__.py
 │   │   └── *_controller.py           # Accept a ProgressReporter from the view and pass it to models
 │   │
-│   ├── core/                         # Shared infrastructure used by all layers
+│   ├── core/                         # New, shared infrastructure used by all layers
 │   │   ├── __init__.py               # Re-exports: logging helpers, errors, GENERATED_PATH, ProgressReporter, NullProgress
 │   │   ├── constants.py              # AUDIO_EXTS, CSV_DIR, LOG_EXT, UTF8, ... (no ARG_* or UI strings)
 │   │   ├── paths.py                  # GENERATED_PATH, RESOURCES_PATH
@@ -71,7 +76,7 @@ MusicProcessing/
 │   │   ├── logging_config.py
 │   │   └── level_filter.py
 │   │
-│   ├── models/                       # Domain logic; no wx, argparse, tqdm or yaspin imports
+│   ├── models/                       # New, domain logic; no wx, argparse, tqdm or yaspin imports
 │   │   ├── __init__.py               # Re-exports: AudioArt, AudioMetadata, AudioPlaylist, AudioUtilities,
 │   │   │                             #   AudioNormalization, DirectoryProcessing
 │   │   ├── audio_art.py
@@ -82,12 +87,12 @@ MusicProcessing/
 │   │   ├── directory_processing.py
 │   │   └── subprocess_utils.py       # run(cmd, progress=None); no yaspin import
 │   │
-│   ├── resources/                    # Static view assets (icons, licenses); no __init__.py
+│   ├── resources/                    # New, static view assets (icons, licenses); no __init__.py
 │   │   ├── AlbumArt/                 # Album Art jpegs; no __init__.py
 │   │   ├── Icons/                    # Icon files; no __init__.py`
 │   │   └── Licenses/                 # License files; no __init__.py
 │   │
-│   ├── views/
+│   ├── views/                        # New, user interface layer
 │   │   ├── __init__.py               # Empty
 │   │   └── wx/
 │   │       ├── __init__.py           # Re-exports: run_gui
@@ -99,11 +104,6 @@ MusicProcessing/
 │   │           └── *_panel.py
 │   │
 │   └── __init__.py                   # Empty (package marker only)
-│
-├── output/                           # Runtime-generated files (git-ignored); no __init__.py
-│   ├── csv_files/                    # Runtime-generated CSV files; no __init__.py
-│   ├── log_files/                    # Runtime-generated log files; no __init__.py
-│   └── result_files/                 # Runtime-generated result files; no __init__.py
 │
 ├── tests/                            # Fixture data and tests; mirrors src/ layers
 │
@@ -127,7 +127,8 @@ MusicProcessing/
 COMPLETED
 
 2. Milestone 2: update directory structure
-  - add new structure per Target Structure outlined above
+  - add new structure per Target Structure outlined above COMPLETED
+  - add empty `__init__.py` files where needed to mark packages COMPLETED
 COMPLETED
 
 3. Milestone 3: `core/` extraction
