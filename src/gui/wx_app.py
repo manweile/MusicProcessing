@@ -71,6 +71,26 @@ class MainFrame(wx.Frame):
     @details This class defines the main window of the application, including the layout, panels, and event handlers.
     '''
 
+    # Blueprint hints tell VS Code these instance variables exist and what they are
+    mainLog: wx.TextCtrl
+    mainPanel: wx.Panel
+    mainSplitter: wx.SplitterWindow
+    mainNotebook: wx.Notebook
+    mainHandlers: EventHandlers
+
+    panelArt: wx.Panel
+    panelConvert: wx.Panel
+    panelLeveling: wx.Panel
+    panelPlaylist: wx.Panel
+    panelMetadata: wx.Panel
+    panelDirectory: wx.Panel
+
+    bulkPathText: wx.TextCtrl
+    patternChoice: wx.Choice
+    filePathText: wx.TextCtrl
+    settingPathText: wx.TextCtrl
+
+
     def __init__(self, parent=None) -> None:
         '''
         @brief Initialize the MainFrame class.
@@ -90,45 +110,45 @@ class MainFrame(wx.Frame):
         self.SetFont(font)
 
         # Create the main panel within the frame
-        self.panel = wx.Panel(self)
-        self.panel.SetFont(font)
+        self.mainPanel = wx.Panel(self)
+        self.mainPanel.SetFont(font)
 
         # Create splitter window for resizable notebook/log split
-        self.splitter = wx.SplitterWindow(self.panel, style=wx.SP_LIVE_UPDATE)
+        self.mainSplitter = wx.SplitterWindow(self.mainPanel, style=wx.SP_LIVE_UPDATE)
 
         # Create the notebook for tabbed panels within the splitter window
-        self.notebook = wx.Notebook(self.splitter)
+        self.mainNotebook = wx.Notebook(self.mainSplitter)
 
         # Initialize event handlers
-        self.handlers = EventHandlers(self)
+        self.mainHandlers = EventHandlers(self)
 
         # Create the individual panels for each tab in the notebook
-        self.panelArt = self._panel_art(self.notebook)
-        self.panelConvert = self._panel_convert(self.notebook)
-        self.panelLeveling = self._panel_leveling(self.notebook)
-        self.panelPlaylist = self._panel_playlist(self.notebook)
-        self.panelMetadata = self._panel_metadata(self.notebook)
-        self.panelDirectory = self._panel_directory(self.notebook)
+        self.panelArt = self._panel_art(self.mainNotebook)
+        self.panelConvert = self._panel_convert(self.mainNotebook)
+        self.panelLeveling = self._panel_leveling(self.mainNotebook)
+        self.panelPlaylist = self._panel_playlist(self.mainNotebook)
+        self.panelMetadata = self._panel_metadata(self.mainNotebook)
+        self.panelDirectory = self._panel_directory(self.mainNotebook)
 
         # Add the created panels to the notebook as separate tabs
-        self.notebook.AddPage(self.panelArt, "Art")
-        self.notebook.AddPage(self.panelConvert, "Convert")
-        self.notebook.AddPage(self.panelLeveling, "Normalize")
-        self.notebook.AddPage(self.panelPlaylist, "Playlist")
-        self.notebook.AddPage(self.panelMetadata, "Metadata")
-        self.notebook.AddPage(self.panelDirectory, "Directory")
+        self.mainNotebook.AddPage(self.panelArt, "Art")
+        self.mainNotebook.AddPage(self.panelConvert, "Convert")
+        self.mainNotebook.AddPage(self.panelLeveling, "Normalize")
+        self.mainNotebook.AddPage(self.panelPlaylist, "Playlist")
+        self.mainNotebook.AddPage(self.panelMetadata, "Metadata")
+        self.mainNotebook.AddPage(self.panelDirectory, "Directory")
 
         # Create the log control for displaying log messages
-        self.logCtrl = wx.TextCtrl(self.splitter, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL, value="")
+        self.mainLog = wx.TextCtrl(self.mainSplitter, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL, value="")
 
         # Split horizontally: notebook on top, log on bottom
-        self.splitter.SplitHorizontally(self.notebook, self.logCtrl)
-        self.splitter.SetSashPosition(550)  # Initial sash position in pixels from top
+        self.mainSplitter.SplitHorizontally(self.mainNotebook, self.mainLog)
+        self.mainSplitter.SetSashPosition(550)  # Initial sash position in pixels from top
 
         # Set up the main sizer for the panel and add the splitter window to it
-        main_sizer = wx.BoxSizer(wx.VERTICAL)
-        main_sizer.Add(self.splitter, 1, wx.EXPAND)
-        self.panel.SetSizer(main_sizer)
+        mainSizer = wx.BoxSizer(wx.VERTICAL)
+        mainSizer.Add(self.mainSplitter, 1, wx.EXPAND)
+        self.mainPanel.SetSizer(mainSizer)
         self.Maximize()
 
 
@@ -182,7 +202,7 @@ class MainFrame(wx.Frame):
 
         # Create controls for selecting the starting path for bulk extraction
         self.bulkPathText, bulkBrowseButton = self._make_path_controls(bulkPanel)
-        bulkBrowseButton.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.bulkPathText))
+        bulkBrowseButton.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.bulkPathText))
 
         # Create controls for selecting the file type pattern for bulk extraction
         file_types = ["Any file type"] + AUDIO_EXTS
@@ -192,7 +212,7 @@ class MainFrame(wx.Frame):
 
         # Create the extraction button
         extractBulkButton = wx.Button(bulkPanel, label="Extract Directory Art")
-        extractBulkButton.Bind(wx.EVT_BUTTON, self.handlers.on_extract_walk_art)
+        extractBulkButton.Bind(wx.EVT_BUTTON, self.mainHandlers.on_extract_walk_art)
 
         # Add info text controls to the grid layout
         bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
@@ -243,11 +263,11 @@ class MainFrame(wx.Frame):
         # Create file picker controls for selecting the audio file
         file_exts = "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"
         self.filePathText, fileBrowseButton = self._make_path_controls(filePanel)
-        fileBrowseButton.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.filePathText, file_exts))
+        fileBrowseButton.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_file(evt, self.filePathText, file_exts))
 
         # Create the extract file art button
         extractFileButton = wx.Button(filePanel, label="Extract File Art")
-        extractFileButton.Bind(wx.EVT_BUTTON, self.handlers.on_extract_file_art)
+        extractFileButton.Bind(wx.EVT_BUTTON, self.mainHandlers.on_extract_file_art)
 
         # Create a horizontal sizer for the file path and extract buttons
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -301,11 +321,11 @@ class MainFrame(wx.Frame):
 
         # Create controls for selecting the starting path for setting album art
         self.settingPathText, settingBrowseButton = self._make_path_controls(setBulkPanel)
-        settingBrowseButton.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.settingPathText))
+        settingBrowseButton.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.settingPathText))
 
         # Create the set art button
         setArtButton = wx.Button(setBulkPanel, label="Set Album Art")
-        setArtButton.Bind(wx.EVT_BUTTON, self.handlers.on_set_album_art)
+        setArtButton.Bind(wx.EVT_BUTTON, self.mainHandlers.on_set_album_art)
 
         # Create a horizontal sizer for the browse and setting buttons
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -355,7 +375,7 @@ class MainFrame(wx.Frame):
 
         # Path controls for bulk directory audio conversion
         self.convert_walk_tld, convert_walk_tld_btn = self._make_path_controls(bulk_subpanel)
-        convert_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.convert_walk_tld))
+        convert_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.convert_walk_tld))
 
         # file type drop list for bulk conversion
         file_types = ["Any file type"] + AUDIO_EXTS
@@ -365,7 +385,7 @@ class MainFrame(wx.Frame):
 
         # execute button for bulk directory audio conversion
         convert_walk_exec = wx.Button(bulk_subpanel, label="Convert Directory Audio")
-        convert_walk_exec.Bind(wx.EVT_BUTTON, self.handlers.on_convert_walk)
+        convert_walk_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_convert_walk)
 
         # order the top level directory controls in the bulk directory conversion subpanel grid
         bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
@@ -392,11 +412,11 @@ class MainFrame(wx.Frame):
         self.convert_file_path, convert_file_btn = self._make_path_controls(specific_subpanel)
         convert_file_btn.Bind(
             wx.EVT_BUTTON,
-            lambda evt: self.handlers.on_browse_file(evt, self.convert_file_path, "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"))
+            lambda evt: self.mainHandlers.on_browse_file(evt, self.convert_file_path, "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"))
 
         # execute button for specific audio file conversion
         convert_file_exec = wx.Button(specific_subpanel, label="Convert Audio File")
-        convert_file_exec.Bind(wx.EVT_BUTTON, self.handlers.on_convert_file)
+        convert_file_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_convert_file)
 
         # order the controls in the specific audio file conversion subpanel grid
         specific_grid.Add(wx.StaticText(specific_subpanel, label="Audio file to convert:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
@@ -436,26 +456,26 @@ class MainFrame(wx.Frame):
         grid = wx.GridBagSizer(8, 8)
 
         self.list_audio_tld, list_audio_btn = self._make_path_controls(panel)
-        list_audio_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.list_audio_tld))
+        list_audio_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.list_audio_tld))
         list_audio_exec = wx.Button(panel, label="List Audio")
-        list_audio_exec.Bind(wx.EVT_BUTTON, self.handlers.on_list_audio)
+        list_audio_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_list_audio)
 
         self.list_type_tld, list_type_btn = self._make_path_controls(panel)
-        list_type_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.list_type_tld))
+        list_type_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.list_type_tld))
         self.list_type_ext = wx.TextCtrl(panel)
         list_type_exec = wx.Button(panel, label="List Type")
-        list_type_exec.Bind(wx.EVT_BUTTON, self.handlers.on_list_type)
+        list_type_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_list_type)
 
         self.remove_albums_tld, remove_albums_btn = self._make_path_controls(panel)
-        remove_albums_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.remove_albums_tld))
+        remove_albums_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.remove_albums_tld))
         remove_albums_exec = wx.Button(panel, label="Remove Empty Albums")
-        remove_albums_exec.Bind(wx.EVT_BUTTON, self.handlers.on_remove_albums)
+        remove_albums_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_remove_albums)
 
         self.remove_pattern_tld, remove_pattern_btn = self._make_path_controls(panel)
-        remove_pattern_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.remove_pattern_tld))
+        remove_pattern_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.remove_pattern_tld))
         self.remove_pattern_pattern = wx.TextCtrl(panel)
         remove_pattern_exec = wx.Button(panel, label="Remove Pattern")
-        remove_pattern_exec.Bind(wx.EVT_BUTTON, self.handlers.on_remove_pattern)
+        remove_pattern_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_remove_pattern)
 
         grid.Add(wx.StaticText(panel, label="Top-level dir (list audio):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         grid.Add(self.list_audio_tld, pos=(0, 1), flag=wx.EXPAND)
@@ -502,22 +522,22 @@ class MainFrame(wx.Frame):
         grid = wx.GridBagSizer(8, 8)
 
         self.tags_walk_tld, tags_walk_tld_btn = self._make_path_controls(panel)
-        tags_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.tags_walk_tld))
+        tags_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.tags_walk_tld))
         self.tags_walk_pattern = wx.TextCtrl(panel)
         self.tags_walk_ffprobe = wx.CheckBox(panel, label="Use ffprobe")
         tags_walk_exec = wx.Button(panel, label="Get Tags Walk")
-        tags_walk_exec.Bind(wx.EVT_BUTTON, self.handlers.on_get_tags_walk)
+        tags_walk_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_get_tags_walk)
 
         self.media_info_tld, media_info_btn = self._make_path_controls(panel)
-        media_info_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.media_info_tld))
+        media_info_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.media_info_tld))
         self.media_info_pattern = wx.TextCtrl(panel)
         media_info_exec = wx.Button(panel, label="Get Media Info Walk")
-        media_info_exec.Bind(wx.EVT_BUTTON, self.handlers.on_get_media_info_walk)
+        media_info_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_get_media_info_walk)
 
         self.unique_media_tld, unique_media_btn = self._make_path_controls(panel)
-        unique_media_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.unique_media_tld))
+        unique_media_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.unique_media_tld))
         unique_media_exec = wx.Button(panel, label="Get Unique Media")
-        unique_media_exec.Bind(wx.EVT_BUTTON, self.handlers.on_get_unique_media)
+        unique_media_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_get_unique_media)
 
         grid.Add(wx.StaticText(panel, label="Top-level dir (tags walk):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         grid.Add(self.tags_walk_tld, pos=(0, 1), flag=wx.EXPAND)
@@ -568,7 +588,7 @@ class MainFrame(wx.Frame):
 
         # Path controls for bulk directory audio normalization
         self.norm_walk_tld, norm_walk_tld_btn = self._make_path_controls(bulk_subpanel)
-        norm_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.norm_walk_tld))
+        norm_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.norm_walk_tld))
 
         # normalization type drop list for bulk normalization
         self.norm_type_choice = wx.Choice(bulk_subpanel, choices=["ebu", "peak", "rms"])
@@ -577,7 +597,7 @@ class MainFrame(wx.Frame):
 
         # execute button for bulk directory audio normalization
         norm_walk_exec = wx.Button(bulk_subpanel, label="Normalize Directory")
-        norm_walk_exec.Bind(wx.EVT_BUTTON, self.handlers.on_normalize_walk)
+        norm_walk_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_normalize_walk)
 
         # order the top level directory controls in the bulk directory normalization subpanel grid
         bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
@@ -603,26 +623,26 @@ class MainFrame(wx.Frame):
         # Path controls for specific file ebu normalizations
         mp3_wildcard = "MP3 files (*.mp3)|*.mp3"
         self.ebu_file_path, ebu_file_btn = self._make_path_controls(specific_subpanel)
-        ebu_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.ebu_file_path, mp3_wildcard))
+        ebu_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_file(evt, self.ebu_file_path, mp3_wildcard))
 
         # execute button for specific file EBU normalization
         ebu_file_exec = wx.Button(specific_subpanel, label="EBU Normalize File")
-        ebu_file_exec.Bind(wx.EVT_BUTTON, self.handlers.on_ebu_file)
+        ebu_file_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_ebu_file)
 
         # Path controls for specific file peak normalizations
         self.peak_file_path, peak_file_btn = self._make_path_controls(specific_subpanel)
-        peak_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.peak_file_path, mp3_wildcard))
+        peak_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_file(evt, self.peak_file_path, mp3_wildcard))
 
         peak_file_exec = wx.Button(specific_subpanel, label="Peak Normalize File")
-        peak_file_exec.Bind(wx.EVT_BUTTON, self.handlers.on_peak_file)
+        peak_file_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_peak_file)
 
         # Path controls for specific file RMS normalizations
         self.rms_file_path, rms_file_btn = self._make_path_controls(specific_subpanel)
-        rms_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.rms_file_path, mp3_wildcard))
+        rms_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_file(evt, self.rms_file_path, mp3_wildcard))
 
         # execute button for specific file RMS normalization
         rms_file_exec = wx.Button(specific_subpanel, label="RMS Normalize File")
-        rms_file_exec.Bind(wx.EVT_BUTTON, self.handlers.on_rms_file)
+        rms_file_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_rms_file)
 
         # order the specific file ebu normalization controls in the grid
         specific_grid.Add(wx.StaticText(specific_subpanel, label="File to EBU Normalize:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
@@ -703,11 +723,11 @@ class MainFrame(wx.Frame):
 
         # Path controls for updating playlist walk
         self.bulk_tld, bulk_btn = self._make_path_controls(bulk_subpanel)
-        bulk_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_dir(evt, self.bulk_tld))
+        bulk_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.bulk_tld))
 
         # execute button for updating playlist walk
         bulk_exec = wx.Button(bulk_subpanel, label="Update Directory Playlist")
-        bulk_exec.Bind(wx.EVT_BUTTON, self.handlers.on_update_walk)
+        bulk_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_update_walk)
 
         # order the controls in the update playlist walk subpanel grid
         bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
@@ -729,11 +749,11 @@ class MainFrame(wx.Frame):
         # Path controls for updating M3U playlist
         playlist_wildcard = f"Playlist files ({';'.join('*' + ext for ext in PLAYLIST_EXTS)})|{';'.join('*' + ext for ext in PLAYLIST_EXTS)}"
         self.update_m3u_file, update_m3u_file_btn = self._make_path_controls(specific_subpanel)
-        update_m3u_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.handlers.on_browse_file(evt, self.update_m3u_file, playlist_wildcard))
+        update_m3u_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_file(evt, self.update_m3u_file, playlist_wildcard))
 
         # Execute button for updating M3U playlist
         update_m3u_exec = wx.Button(specific_subpanel, label="Update Playlist File")
-        update_m3u_exec.Bind(wx.EVT_BUTTON, self.handlers.on_update_m3u)
+        update_m3u_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_update_m3u)
 
         # order the controls in the update M3U playlist subpanel grid
         specific_grid.Add(wx.StaticText(specific_subpanel, label="Playlist file to update:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
@@ -768,7 +788,7 @@ class MainFrame(wx.Frame):
         '''
 
         self.Enable(not busy)
-        self.log_ctrl.Enable(True)
+        self.mainLog.Enable(True)
         self.SetCursor(wx.Cursor(wx.CURSOR_WAIT if busy else wx.CURSOR_ARROW))
 
 
@@ -864,7 +884,7 @@ class MainFrame(wx.Frame):
         with open(result_path, "r", encoding="utf-8") as result_file:
             content = result_file.read()
 
-        wx.CallAfter(self.log_ctrl.SetValue, f"=== {filename + RESULT_EXT} ===\n{content}")
+        wx.CallAfter(self.mainLog.SetValue, f"=== {filename + RESULT_EXT} ===\n{content}")
 
 
     def _validate_dir(self, path):
@@ -982,7 +1002,7 @@ class MainFrame(wx.Frame):
         @param message: (str) The message to log.
         '''
 
-        wx.CallAfter(self.log_ctrl.AppendText, f"[{_timestamp()}] {message}\n")
+        wx.CallAfter(self.mainLog.AppendText, f"[{_timestamp()}] {message}\n")
 
 
     def run_task(self, func, *args, on_success=None):
@@ -1024,12 +1044,15 @@ class MainFrame(wx.Frame):
                 wx.CallAfter(on_success)
 
         except Exception as e:
+            logger.exception("Task %s failed", func.__name__)
             self.log(f"{func.__name__} failed: {e}")
             wx.CallAfter(wx.MessageBox, str(e), "Error", wx.ICON_ERROR)
         finally:
             wx.CallAfter(self._set_busy_state, False)
 
 
+## @name Entry Point
+# @{
 def run_gui():
     '''
     @brief Entry point to run the GUI application.
@@ -1041,3 +1064,5 @@ def run_gui():
     frame = MainFrame()
     frame.Show()
     app.MainLoop()
+
+## @}

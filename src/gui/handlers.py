@@ -14,14 +14,10 @@
 '''
 
 # Standard Modules
-import logging                                              # for logging
-import os                                                   # for file path operations
+from typing import TYPE_CHECKING                            # for type checking without circular imports
 
 # Third Party Modules
 import wx                                                   # for wxPython GUI components
-
-# Local Module Methods
-from src import add_module_handler                          # for adding module-specific logging handlers
 
 # Local Module Classes
 from src.audio_info import AudioArt                         # audio art handling class
@@ -29,18 +25,6 @@ from src.audio_info import AudioMetadata                    # audio metadata han
 from src.audio_info import AudioPlaylist                    # audio playlist handling class
 from src.audio_normalize import AudioNormalization          # audio normalization handling class
 from src.dir_processing import DirectoryProcessing          # directory processing handling class
-
-## @var logger
-# @brief Logger instance for the module.
-# @details Sets the logger name to the current module name.
-logger = logging.getLogger(__name__)
-
-## @var basename
-# @brief Base name for the logger file handler.
-# @details Gets the module file name from the current file path.
-basename = os.path.basename(__file__)
-
-add_module_handler(logger, basename)
 
 ## @var art
 # @brief instance of AudioArt class
@@ -67,6 +51,9 @@ normalization = AudioNormalization()
 # @details used for accessing class functionality
 playlist = AudioPlaylist()
 
+if TYPE_CHECKING:
+    from wx_app import MainFrame
+
 
 class EventHandlers:
     '''
@@ -76,7 +63,7 @@ class EventHandlers:
     such as browsing for files or directories, converting files, normalizing audio, extracting album art, and updating playlists.
     '''
 
-    def __init__(self, main_frame):
+    def __init__(self, main_frame: "MainFrame"):
         '''
         @brief Initialize the EventHandlers class.
 
@@ -86,7 +73,7 @@ class EventHandlers:
         @param main_frame: (wx.Frame) The main frame of the application.
         '''
 
-        self.frame = main_frame
+        self.mainFrame = main_frame
 
 
     def on_browse_dir(self, event, textctrl):
@@ -102,7 +89,7 @@ class EventHandlers:
         '''
 
         # prevent typing or picking a non-existent path
-        dlg = wx.DirDialog(self.frame, "Select directory", style=wx.DD_DIR_MUST_EXIST)
+        dlg = wx.DirDialog(self.mainFrame, "Select directory", style=wx.DD_DIR_MUST_EXIST)
 
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
@@ -129,7 +116,7 @@ class EventHandlers:
             wildcard = ""
 
         # open/select existing file; trying to type or choose a non-existent file name will trigger a warning
-        dlg = wx.FileDialog(self.frame, "Select file", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, wildcard=wildcard)
+        dlg = wx.FileDialog(self.mainFrame, "Select file", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, wildcard=wildcard)
 
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
@@ -151,11 +138,11 @@ class EventHandlers:
         '''
 
         # Get the file path from the GUI and validate it before conversion
-        path = self.frame.convert_file_path.GetValue().strip()
-        if not self.frame._validate_file(path):
+        path = self.mainFrame.convert_file_path.GetValue().strip()
+        if not self.mainFrame._validate_file(path):
             return
 
-        self.frame.run_task(metadata.convert_file, path, on_success=self.frame._show_generated_files_dialog)
+        self.mainFrame.run_task(metadata.convert_file, path, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_convert_walk(self, event):
@@ -170,14 +157,14 @@ class EventHandlers:
         '''
 
         # Get the top-level directory and validate it before conversion
-        tld = self.frame.convert_walk_tld.GetValue().strip()
-        if not self.frame._validate_dir(tld):
+        tld = self.mainFrame.convert_walk_tld.GetValue().strip()
+        if not self.mainFrame._validate_dir(tld):
             return
 
         # Get the file type pattern selection from the GUI
-        selection = self.frame.convert_walk_pattern.GetSelection()
-        pattern = None if selection == 0 else self.frame.convert_walk_pattern.GetString(selection)
-        self.frame.run_task(metadata.convert_walk, tld, pattern, on_success=self.frame._show_generated_files_dialog)
+        selection = self.mainFrame.convert_walk_pattern.GetSelection()
+        pattern = None if selection == 0 else self.mainFrame.convert_walk_pattern.GetString(selection)
+        self.mainFrame.run_task(metadata.convert_walk, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_ebu_file(self, event):
@@ -192,11 +179,11 @@ class EventHandlers:
         '''
 
         # Get the file path from the GUI and validate it before EBU normalization
-        path = self.frame.ebu_file_path.GetValue().strip()
-        if not self.frame._validate_file(path):
+        path = self.mainFrame.ebu_file_path.GetValue().strip()
+        if not self.mainFrame._validate_file(path):
             return
 
-        self.frame.run_task(normalization.ebu_normalize_file, path, on_success=lambda: self.frame._show_result_file("ebu_normalize_file"))
+        self.mainFrame.run_task(normalization.ebu_normalize_file, path, on_success=lambda: self.mainFrame._show_result_file("ebu_normalize_file"))
 
 
     def on_extract_file_art(self, event):
@@ -210,18 +197,13 @@ class EventHandlers:
         @param event: (object) The event object.
         '''
 
-        try:
-            # Get the file path from the GUI and validate it before extracting album art
-            file_path = self.frame.fileInputText.GetValue().strip()
+        # Get the file path from the GUI and validate it before extracting album art
+        file_path = self.mainFrame.filePathText.GetValue().strip()
 
-            if not self.frame._validate_file(file_path):
-                return
+        if not self.mainFrame._validate_file(file_path):
+            return
 
-            self.frame.run_task(art.extract_album_art, file_path)
-
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} extracting embedded art", stack_info=True)
-            raise e_error
+        self.mainFrame.run_task(art.extract_album_art, file_path)
 
 
     def on_extract_walk_art(self, event):
@@ -236,14 +218,14 @@ class EventHandlers:
         '''
 
         # Get the top-level directory and validate it before extracting album art from a directory walk
-        start_path = self.frame.bulkPathText.GetValue().strip()
-        if not self.frame._validate_dir(start_path):
+        start_path = self.mainFrame.bulkPathText.GetValue().strip()
+        if not self.mainFrame._validate_dir(start_path):
             return
 
         # Get the file type pattern selection from the GUI
-        selection = self.frame.patternChoice.GetSelection()
-        pattern = None if selection == 0 else self.frame.patternChoice.GetString(selection)
-        self.frame.run_task(art.extract_walk, start_path, pattern)
+        selection = self.mainFrame.patternChoice.GetSelection()
+        pattern = None if selection == 0 else self.mainFrame.patternChoice.GetString(selection)
+        self.mainFrame.run_task(art.extract_walk, start_path, pattern)
 
 
     def on_get_media_info_walk(self, event):
@@ -258,13 +240,13 @@ class EventHandlers:
         '''
 
         # Get the top-level directory and validate it before retrieving media information from a directory walk
-        tld = self.frame.media_info_tld.GetValue().strip()
-        if not self.frame._validate_dir(tld):
+        tld = self.mainFrame.media_info_tld.GetValue().strip()
+        if not self.mainFrame._validate_dir(tld):
             return
 
         # Get the file type pattern from the GUI
-        pattern = self.frame.media_info_pattern.GetValue().strip() or None
-        self.frame.run_task(metadata.get_media_info_walk, tld, pattern, on_success=self.frame._show_generated_files_dialog)
+        pattern = self.mainFrame.media_info_pattern.GetValue().strip() or None
+        self.mainFrame.run_task(metadata.get_media_info_walk, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_get_tags_walk(self, event):
@@ -279,14 +261,14 @@ class EventHandlers:
         '''
 
         # Get the top-level directory and validate it before retrieving media tags from a directory walk
-        tld = self.frame.tags_walk_tld.GetValue().strip()
-        if not self.frame._validate_dir(tld):
+        tld = self.mainFrame.tags_walk_tld.GetValue().strip()
+        if not self.mainFrame._validate_dir(tld):
             return
 
         # Get the file type pattern and ffprobe path from the GUI
-        pattern = self.frame.tags_walk_pattern.GetValue().strip() or None
-        ffprobe = self.frame.tags_walk_ffprobe.GetValue()
-        self.frame.run_task(metadata.get_tags_walk, tld, pattern, ffprobe, on_success=self.frame._show_generated_files_dialog)
+        pattern = self.mainFrame.tags_walk_pattern.GetValue().strip() or None
+        ffprobe = self.mainFrame.tags_walk_ffprobe.GetValue()
+        self.mainFrame.run_task(metadata.get_tags_walk, tld, pattern, ffprobe, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_get_unique_media(self, event):
@@ -301,11 +283,11 @@ class EventHandlers:
         '''
 
         # Get the top-level directory and validate it before retrieving unique media files
-        tld = self.frame.unique_media_tld.GetValue().strip()
-        if not self.frame._validate_dir(tld):
+        tld = self.mainFrame.unique_media_tld.GetValue().strip()
+        if not self.mainFrame._validate_dir(tld):
             return
 
-        self.frame.run_task(metadata.get_unique_media, tld, on_success=self.frame._show_generated_files_dialog)
+        self.mainFrame.run_task(metadata.get_unique_media, tld, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_list_audio(self, event):
@@ -320,11 +302,11 @@ class EventHandlers:
         '''
 
         # Get the top-level directory and validate it before listing audio files``
-        tld = self.frame.list_audio_tld.GetValue().strip()
-        if not self.frame._validate_dir(tld):
+        tld = self.mainFrame.list_audio_tld.GetValue().strip()
+        if not self.mainFrame._validate_dir(tld):
             return
 
-        self.frame.run_task(directory.list_audio, tld, on_success=self.frame._show_generated_files_dialog)
+        self.mainFrame.run_task(directory.list_audio, tld, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_list_type(self, event):
@@ -339,17 +321,17 @@ class EventHandlers:
         '''
 
         # Get the top-level directory and validate it before listing files of a specific type
-        tld = self.frame.list_type_tld.GetValue().strip()
-        if not self.frame._validate_dir(tld):
+        tld = self.mainFrame.list_type_tld.GetValue().strip()
+        if not self.mainFrame._validate_dir(tld):
             return
 
         # Get the file extension from the GUI and validate it before listing files of a specific type
-        ext = self.frame.list_type_ext.GetValue().strip()
+        ext = self.mainFrame.list_type_ext.GetValue().strip()
         if not ext:
             wx.MessageBox("Please enter a file extension", "Error", wx.ICON_ERROR)
             return
 
-        self.frame.run_task(directory.list_type, tld, ext, on_success=self.frame._show_generated_files_dialog)
+        self.mainFrame.run_task(directory.list_type, tld, ext, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_normalize_walk(self, event):
@@ -364,13 +346,13 @@ class EventHandlers:
         '''
 
         # Get the top-level directory and validate it before normalizing audio files in a directory walk
-        tld = self.frame.norm_walk_tld.GetValue().strip()
-        if not self.frame._validate_dir(tld):
+        tld = self.mainFrame.norm_walk_tld.GetValue().strip()
+        if not self.mainFrame._validate_dir(tld):
             return
 
         # Get the normalization type from the GUI
-        norm_type = self.frame.norm_type_choice.GetStringSelection().lower()
-        self.frame.run_task(normalization.normalize_walk, tld, norm_type, on_success=self.frame._show_generated_files_dialog)
+        norm_type = self.mainFrame.norm_type_choice.GetStringSelection().lower()
+        self.mainFrame.run_task(normalization.normalize_walk, tld, norm_type, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_peak_file(self, event):
@@ -385,11 +367,11 @@ class EventHandlers:
         '''
 
         # Get the file path from the GUI and validate it before peak normalizing the audio file
-        path = self.frame.peak_file_path.GetValue().strip()
-        if not self.frame._validate_file(path):
+        path = self.mainFrame.peak_file_path.GetValue().strip()
+        if not self.mainFrame._validate_file(path):
             return
 
-        self.frame.run_task(normalization.peak_normalize_file, path, on_success=lambda: self.frame._show_result_file("peak_normalize_file"))
+        self.mainFrame.run_task(normalization.peak_normalize_file, path, on_success=lambda: self.mainFrame._show_result_file("peak_normalize_file"))
 
 
     def on_remove_albums(self, event):
@@ -404,11 +386,11 @@ class EventHandlers:
         '''
 
         # Get the top-level directory and validate it before removing albums
-        tld = self.frame.remove_albums_tld.GetValue().strip()
-        if not self.frame._validate_dir(tld):
+        tld = self.mainFrame.remove_albums_tld.GetValue().strip()
+        if not self.mainFrame._validate_dir(tld):
             return
 
-        self.frame.run_task(directory.remove_albums, tld, on_success=self.frame._show_generated_files_dialog)
+        self.mainFrame.run_task(directory.remove_albums, tld, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_remove_pattern(self, event):
@@ -423,17 +405,17 @@ class EventHandlers:
         '''
 
         # Get the top-level directory and validate it before removing files matching a pattern
-        tld = self.frame.remove_pattern_tld.GetValue().strip()
-        if not self.frame._validate_dir(tld):
+        tld = self.mainFrame.remove_pattern_tld.GetValue().strip()
+        if not self.mainFrame._validate_dir(tld):
             return
 
         # Get the pattern from the GUI and validate it before removing files matching a pattern
-        pattern = self.frame.remove_pattern_pattern.GetValue().strip()
+        pattern = self.mainFrame.remove_pattern_pattern.GetValue().strip()
         if not pattern:
             wx.MessageBox("Please enter a pattern to remove", "Error", wx.ICON_ERROR)
             return
 
-        self.frame.run_task(directory.remove_pattern, tld, pattern, on_success=self.frame._show_generated_files_dialog)
+        self.mainFrame.run_task(directory.remove_pattern, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_rms_file(self, event):
@@ -448,11 +430,11 @@ class EventHandlers:
         '''
 
         # Get the file path from the GUI and validate it before RMS normalizing the audio file
-        path = self.frame.rms_file_path.GetValue().strip()
-        if not self.frame._validate_file(path):
+        path = self.mainFrame.rms_file_path.GetValue().strip()
+        if not self.mainFrame._validate_file(path):
             return
 
-        self.frame.run_task(normalization.rms_normalize_file, path, on_success=lambda: self.frame._show_result_file("rms_normalize_file"))
+        self.mainFrame.run_task(normalization.rms_normalize_file, path, on_success=lambda: self.mainFrame._show_result_file("rms_normalize_file"))
 
 
     def on_set_album_art(self, event):
@@ -467,11 +449,11 @@ class EventHandlers:
         '''
 
         # Get the top-level directory and validate it before setting album art for audio files in a directory
-        tld = self.frame.settingPathText.GetValue().strip()
-        if not self.frame._validate_dir(tld):
+        tld = self.mainFrame.settingPathText.GetValue().strip()
+        if not self.mainFrame._validate_dir(tld):
             return
 
-        self.frame.run_task(art.set_album_art, tld)
+        self.mainFrame.run_task(art.set_album_art, tld)
 
 
     def on_update_m3u(self, event):
@@ -486,11 +468,11 @@ class EventHandlers:
         '''
 
         # Get the M3U file path from the GUI and validate it before updating the playlist
-        m3u_file = self.frame.update_m3u_file.GetValue().strip()
-        if not self.frame._validate_file(m3u_file):
+        m3u_file = self.mainFrame.update_m3u_file.GetValue().strip()
+        if not self.mainFrame._validate_file(m3u_file):
             return
 
-        self.frame.run_task(playlist.update_playlist, m3u_file, on_success=self.frame._show_generated_playlist_dialog)
+        self.mainFrame.run_task(playlist.update_playlist, m3u_file, on_success=self.mainFrame._show_generated_playlist_dialog)
 
 
     def on_update_walk(self, event):
@@ -505,8 +487,8 @@ class EventHandlers:
         '''
 
         # Get the top-level directory from the GUI and validate it before updating a directory walk
-        tld = self.frame.update_walk_tld.GetValue().strip()
-        if not self.frame._validate_dir(tld):
+        tld = self.mainFrame.update_walk_tld.GetValue().strip()
+        if not self.mainFrame._validate_dir(tld):
             return
 
-        self.frame.run_task(playlist.update_walk, tld, on_success=self.frame._show_generated_playlist_dialog)
+        self.mainFrame.run_task(playlist.update_walk, tld, on_success=self.mainFrame._show_generated_playlist_dialog)

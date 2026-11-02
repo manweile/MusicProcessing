@@ -85,6 +85,14 @@ To export a list of extensions in use:
 code --list-extensions --show-versions > D:\MusicProcessing\docs\extensions\extensions.txt
 ```
 
+To install from extensions.txt:
+
+```powershell
+Get-Content -Path "D:\MusicProcessing\docs\extensions\extensions.txt" | ForEach-Object { code --install-extension $_ --force }
+```
+
+**Note** VS code needs to be in your system PATH.
+
 The ones I regard as required or essential:
 
 - pretty much anything Python related by Microsoft
