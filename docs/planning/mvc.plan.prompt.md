@@ -50,9 +50,18 @@ Key goals of this plan:
 
 ```text
 MusicProcessing/
-├── main.py                           # Entry point: parses args, runs GUI or CLI
 ├── src/
-│   ├── __init__.py                   # Empty (package marker only)
+│   ├── cli/
+│   │   ├── __init__.py               # Re-exports: build_parser, run_cli_command
+│   │   ├── constants.py              # ARG_CLI_*, ARG_HELP_* strings
+│   │   ├── parser.py                 # CustomArgumentParser, subparsers, existing_file/path
+│   │   ├── progress.py               # TqdmProgress, SpinnerProgress (only place tqdm/yaspin are imported)
+│   │   └── commands.py               # clip_check_file, convert_file, ... + run_cli_command
+│   │
+│   ├── controllers/                  # Coordinate view input and model calls
+│   │   ├── __init__.py
+│   │   └── *_controller.py           # Accept a ProgressReporter from the view and pass it to models
+│   │
 │   ├── core/                         # Shared infrastructure used by all layers
 │   │   ├── __init__.py               # Re-exports: logging helpers, errors, GENERATED_PATH, ProgressReporter, NullProgress
 │   │   ├── constants.py              # AUDIO_EXTS, CSV_DIR, LOG_EXT, UTF8, ... (no ARG_* or UI strings)
@@ -61,6 +70,7 @@ MusicProcessing/
 │   │   ├── errors.py
 │   │   ├── logging_config.py
 │   │   └── level_filter.py
+│   │
 │   ├── models/                       # Domain logic; no wx, argparse, tqdm or yaspin imports
 │   │   ├── __init__.py               # Re-exports: AudioArt, AudioMetadata, AudioPlaylist, AudioUtilities,
 │   │   │                             #   AudioNormalization, DirectoryProcessing
@@ -71,9 +81,12 @@ MusicProcessing/
 │   │   ├── audio_normalization.py
 │   │   ├── directory_processing.py
 │   │   └── subprocess_utils.py       # run(cmd, progress=None); no yaspin import
-│   ├── controllers/                  # Coordinate view input and model calls
-│   │   ├── __init__.py
-│   │   └── *_controller.py           # Accept a ProgressReporter from the view and pass it to models
+│   │
+│   ├── resources/                    # Static view assets (icons, licenses); no __init__.py
+│   │   ├── AlbumArt/                 # Album Art jpegs; no __init__.py
+│   │   ├── Icons/                    # Icon files; no __init__.py`
+│   │   └── Licenses/                 # License files; no __init__.py
+│   │
 │   ├── views/
 │   │   ├── __init__.py               # Empty
 │   │   └── wx/
@@ -84,15 +97,17 @@ MusicProcessing/
 │   │       └── panels/
 │   │           ├── __init__.py
 │   │           └── *_panel.py
-│   ├── cli/
-│   │   ├── __init__.py               # Re-exports: build_parser, run_cli_command
-│   │   ├── constants.py              # ARG_CLI_*, ARG_HELP_* strings
-│   │   ├── parser.py                 # CustomArgumentParser, subparsers, existing_file/path
-│   │   ├── progress.py               # TqdmProgress, SpinnerProgress (only place tqdm/yaspin are imported)
-│   │   └── commands.py               # clip_check_file, convert_file, ... + run_cli_command
-│   └── resources/                    # Static view assets (icons, licenses); no __init__.py
+│   │
+│   └── __init__.py                   # Empty (package marker only)
+│
 ├── output/                           # Runtime-generated files (git-ignored); no __init__.py
-└── tests/                            # Fixture data and tests; mirrors src/ layers
+│   ├── csv_files/                    # Runtime-generated CSV files; no __init__.py
+│   ├── log_files/                    # Runtime-generated log files; no __init__.py
+│   └── result_files/                 # Runtime-generated result files; no __init__.py
+│
+├── tests/                            # Fixture data and tests; mirrors src/ layers
+│
+└── main.py                           # Entry point: parses args, runs GUI or CLI
 ```
 
 **Execution Milestones**
@@ -108,38 +123,49 @@ MusicProcessing/
     - run ci locally COMPLETED
     - merge gui branch into development COMPLETED
     - create a new branch for the upcoming core extraction work COMPLETED
-  - Exit criteria: a known-good baseline exists, and CI runs the suite.
+  - Exit criteria: a known-good baseline exists, and CI runs the suite.<br>
 COMPLETED
 
-2. Milestone 2: `core/` extraction
+2. Milestone 2: update directory structure
+  - add new structure per Target Structure outlined above
+COMPLETED
+
+3. Milestone 3: `core/` extraction
   - Move shared infrastructure out of the `src/` root.
   - Files: `src/__init__.py`, `src/errors.py`, `src/logging_config.py`, `src/level_filter.py`,
     `src/generated_files/__init__.py`, new `src/core/`
   - Work:
-    - split constants: audio, directory, log, and encoding constants go to `core/constants.py`; `ARG_CLI_*` and
-      `ARG_HELP_*` go to `cli/constants.py` (Milestone 5)
+    - split constants: audio, directory, log, and encoding constants go to `core/constants.py` COMPLETED
+    - `ARG_CLI_*` and `ARG_HELP_*` go to `cli/constants.py` (Milestone 5) COMPLETED
     - move `GENERATED_PATH` to `core/paths.py` and add `RESOURCES_PATH`
     - keep temporary re-exports in the old locations so imports continue to resolve
     - empty `src/__init__.py` last, to avoid circular imports
 
     Step 0: Preparation
 
-    On feature/mvc-refactoring, run the full suite once to confirm the baseline.
-    Find where each name is used, so the split follows real usage: grep -rnE "from src import|import src" --include=*.py . Check ARG_* and APP_NAME especially, since main.py and the GUI may use them.
+    On feature/mvc-refactoring, run the full suite once to confirm the baseline. COMPLETED<br>
+    Find where each name is used, so the split follows real usage: COMPLETED<br>
+    grep -rnE "from src import|import src" --include=*.py .<br>
+    Check ARG_* and APP_NAME especially, since main.py and the GUI may use them.
 
     1. Confirm baseline and inventory
 
-    Use the grep results to migrate current imports in batches. The listed production and test files still import from src; those should keep working until each batch is migrated.
-    Search separately for GENERATED_PATH and src.generated_files before changing path imports; the provided grep does not show those references.
+    Use the grep results to migrate current imports in batches.<br>
+    The listed production and test files still import from src; those should keep working until each batch is migrated.<br>
+    Search separately for GENERATED_PATH and src.generated_files before changing path imports; the provided grep does not show those references.<br>
     Keep the test files flat for now. Update their imports as needed, but don’t move them as part of this work.
 
     2. Add the destination modules
 
     Create src/core/ and src/cli/, with lightweight __init__.py files. Add:
-
-        src/core/constants.py for the application, audio, directory, logging, encoding, and normalization constants currently in src/__init__.py: APP_NAME, ASF_TYPE, AUDIO_EXTS, AUDIO_FILES, CSV_DIR, CSV_EXT, ERROR_LOG_FORMAT, the format/type constants, FOLDER_ART, ILT, LRA, LOG_DIR, LOG_EXT, MUSIC_TLD, playlist constants, result constants, TP, and UTF8.
-        src/cli/constants.py for all ARG_CLI_* and ARG_HELP_* constants. Keep them; they’re planned CLI API, not unused constants.
-        src/core/paths.py for GENERATED_PATH and RESOURCES_PATH. Initially, GENERATED_PATH must resolve to the existing src/generated_files directory. Set RESOURCES_PATH to the planned static-assets directory, src/resources, and use it when the assets move.
+      - src/core/constants.py for the application, audio, directory, logging, encoding, and normalization constants currently in src/__init__.py:
+        - APP_NAME, ASF_TYPE, AUDIO_EXTS, AUDIO_FILES, CSV_DIR, CSV_EXT, ERROR_LOG_FORMAT
+        - the format/type constants, FOLDER_ART, ILT, LRA, LOG_DIR, LOG_EXT, MUSIC_TLD
+        - playlist constants, result constants, TP, and UTF8.
+        - src/cli/constants.py for all ARG_CLI_* and ARG_HELP_* constants. Keep them; they’re planned CLI API, not unused constants.
+        - src/core/paths.py for GENERATED_PATH and RESOURCES_PATH.
+          - Initially, GENERATED_PATH must resolve to the existing src/generated_files directory.
+          - Set RESOURCES_PATH to the planned static-assets directory, src/resources, and use it when the assets move.
 
     At this stage, add the new definitions without changing existing imports.
     3. Preserve compatibility from src
@@ -179,7 +205,7 @@ COMPLETED
   - Validation: the full suite passes with both old and new import paths.
   - Exit criteria: `core/` imports nothing else from `src`.
 
-3. Milestone 3: Progress interface
+4. Milestone 4: Progress interface
   - Add `core/progress.py` with `ProgressReporter` (`start(total, description)`, `advance(step)`, `finish()`) and a
     no-op `NullProgress`. `total=None` means indeterminate (spinner).
   - Files: `src/core/progress.py`, `tests/support.py`
@@ -188,7 +214,7 @@ COMPLETED
     - unit-test `NullProgress` and `FakeProgress` semantics
   - Exit criteria: the interface exists and has tests; nothing else depends on it yet.
 
-4. Milestone 4: Models move and decouple
+5. Milestone 5: Models move and decouple
   - Move model packages into `src/models/` and remove display dependencies.
   - Files: `src/audio_info/`, `src/audio_normalize/`, `src/dir_processing/`, `src/subprocess_utils.py`
   - Work:
