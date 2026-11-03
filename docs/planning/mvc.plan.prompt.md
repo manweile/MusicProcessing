@@ -356,6 +356,9 @@ COMPLETED
       - updating widgets only through `wx.CallAfter`
       - indeterminate (`total=None`) is the GUI replacement for the `yaspin` spinner: `start()` begins a `wx.Timer`-driven
         `Pulse()` (or shows a `wx.ActivityIndicator`), `finish()` stops it and resets the gauge
+      - optional: a `TextCtrlStream` (`write`/`flush`) lets `tqdm(file=stream)` render text progress into a `wx.TextCtrl`;
+        it must treat `\r` as "replace the last line" and post every update through `wx.CallAfter`. tqdm has no indeterminate
+        mode, so the gauge remains the primary GUI display and this is only for a text log
     - keep the existing worker-thread behavior so the UI stays responsive
     - after parity is verified
       - switch `run_gui` to the replacement view and retain a compatibility adapter if existing callers still import `src/gui/`
@@ -467,6 +470,7 @@ COMPLETED
 
 **Decisions**
 
+- `tqdm` stays out of models and controllers. In the GUI it is optional and only via `TextCtrlStream`; `GaugeProgress` is primary.
 - A single root `.gitignore` is the only ignore file; no nested `.gitignore` files.
 - `AlbumArt/*.jpg` are user-supplied resources, git-ignored and not treated as test fixtures.
 - Keep `main.py` as a thin entry point.
