@@ -18,6 +18,7 @@ import errno                                                # for operating-syst
 import os                                                   # for file-system path operations
 import shutil                                               # for test-fixture copying and removal
 import struct                                               # for binary ASF image fixture construction
+import tempfile                                             # for isolated generated-file fixtures
 import unittest                                             # for direct test-suite execution
 from pathlib import Path                                    # for test-fixture path manipulation
 from subprocess import CalledProcessError                   # for expected ffmpeg extraction failures
@@ -44,6 +45,7 @@ from tests import TESTS_TLD                                 # for test music fix
 
 # Local Module Classes
 from src.audio_info import AudioArt                         # for album-art functionality under test
+from src.audio_info import audio_art as audio_art_module    # for album-art path construction under test
 
 ## @var art
 # @brief AudioArt instance under test.
@@ -455,14 +457,29 @@ class TestAudioArt(TestCase):
         '''
         @brief Test setting album-art files in an audio directory.
 
-        @details Verifies existing artwork is retained and missing artwork is created.
+        @details Verifies existing artwork is retained and matching artwork is copied from an isolated fixture.
 
         @test Happy path.
 
         @param self {TestAudioArt} The instance of the test class.
         '''
 
-        art.set_album_art(TESTS_TLD)
+        with tempfile.TemporaryDirectory() as generated_path:
+            album_art_dir = os.path.join(generated_path, "AlbumArt")
+            os.makedirs(album_art_dir)
+            shutil.copy(
+                self.found_album_art_jpg,
+                os.path.join(album_art_dir, "Best Of The Blues, Vol. 1.jpg"),
+            )
+
+            original_join = os.path.join
+            join_side_effect = lambda *paths: (
+                album_art_dir
+                if paths == (audio_art_module.GENERATED_PATH, audio_art_module.ALBUM_ART)
+                else original_join(*paths)
+            )
+            with patch("src.audio_info.audio_art.os.path.join", side_effect=join_side_effect):
+                art.set_album_art(TESTS_TLD)
 
         found_art_exists = os.path.exists(self.found_album_art_jpg)
         set_art_exists = os.path.exists(self.set_album_art_jpg)

@@ -31,8 +31,13 @@ jobs:
       contents: read
       actions: write
     steps:
+      - name: Detect act
+        id: detect-act
+        run: echo "is-act=${ACT:-false}" >> "$GITHUB_OUTPUT"
+
       # Checkout the repository to ensure the workflow has access to the codebase
       - name: Checkout Repository
+        if: steps.detect-act.outputs.is-act != 'true'
         uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}

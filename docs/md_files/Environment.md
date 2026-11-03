@@ -163,4 +163,36 @@ bypassing the hassle of committing and pushing changes every time you need to te
 - [nektos/act](https://github.com/nektos/act)
 - [Docker](https://docs.docker.com/engine/)
 
-I'm not going to go into the ins and out of installing nektos/act and Docker here; you can find the documentation by following the links.
+I'm not going to go into *all* the ins and out of installing nektos/act and Docker here.<br>
+You can find the documentation by following the links.<br>
+While it is tedious, it is not overly complex.
+
+**Note** There are two Settings steps:
+
+#### Secrets (GITHUB_TOKEN)
+
+GitHub token for local runs: GitHub Actions automatically provides github.token to workflows.<br>
+GitHub Local Actions and act, need to provide a GITHUB_TOKEN secret if the selected workflow or action needs to authenticate with GitHub APIs.<br>
+The artifact and workflow cleanup jobs use the token for deletion requests.<br>
+Use a token with only the permissions those jobs need, store it in the extension’s Secrets settings, and do not commit it to the repository.
+
+#### Options (bind true)
+
+Enable the bind option (true) in the GitHub Local Actions settings when testing uncommitted workflow or source changes.<br>
+This tells act to bind-mount the current worktree into the job container instead of copying it.
+
+Otherwise, the `python-app.yml` unit-test workflow would replace the local files with the commit selected by github.sha hash.<br>
+On GitHub Actions, ACT is not set, so the normal checkout still runs.<br>
+This lets local runs test worktree changes without committing them.<br>
+With the bind option set, and this in the `python-app.yml`:
+
+```yml
+      - name: Detect act
+        id: detect-act
+        run: echo "is-act=${ACT:-false}" >> "$GITHUB_OUTPUT"
+
+      # Checkout the repository to ensure the workflow has access to the codebase
+      - name: Checkout Repository
+        if: steps.detect-act.outputs.is-act != 'true'
+        uses: actions/checkout@v4
+```
