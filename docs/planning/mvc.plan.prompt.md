@@ -54,7 +54,7 @@ Key goals of this plan:
 4. CLI: `main.py` holds `CustomHelpFormatter`, `CustomArgumentParser`, one wrapper function per subcommand, a
    `main(args)` if-chain dispatcher, `existing_file` and `existing_path` validators, and the parser construction under
    `if __name__ == "__main__"`. The `gui` subcommand is dispatched from the same `main`.
-5. Infrastructure at `src/` root: `errors.py`, `level_filter.py`, `logging_config.py`, `subprocess_utils.py`.
+5. Infrastructure at `src/` root: `errors.py`, `level_filter.py`, `logging_config.py`, `subprocess_utils.py` (all move to `core/`; `subprocess_utils.py` is generic infrastructure, not a model).
 6. `src/__init__.py` mixes package marker, re-exports (errors, logging helpers, `GENERATED_PATH`), and all constants
    (audio, directory, log, and `ARG_CLI_*` / `ARG_HELP_*` strings).
 7. `src/generated_files/` mixes runtime output (CSV, text results, `.m3u`) with static GUI assets
@@ -265,7 +265,8 @@ COMPLETED
 
     **Step 6** Move logging and error infrastructure
 
-    Move errors.py, logging_config.py, and level_filter.py into core/<br>
+    Move errors.py, logging_config.py, level_filter.py, and subprocess_utils.py into core/<br>
+    (`SubprocessUtilities` is generic infrastructure, not a domain model; it depends only on `core/` errors, constants and logging.)<br>
     update their imports and leave compatibility re-exports at their old locations until callers are migrated.<br>
     Keep core/__init__.py free of logging setup side effects to avoid introducing import cycles.
 
@@ -285,7 +286,7 @@ COMPLETED
     That order keeps compatibility while the imports move, and avoids breaking startup logging when the package-root side effect is removed.
 
   - Validation: the full suite passes with both old and new import paths.
-  - Exit criteria: `core/` imports nothing else from `src`.
+  - Exit criteria: `core/` imports nothing else from `src`, and nothing under `core/` imports `wx`, `tqdm` or `yaspin`.
 
 4. Milestone 4: Progress interface
   - Add `core/progress.py` with `ProgressReporter` (`start(total, description)`, `advance(step)`, `finish()`) and a no-op `NullProgress`.
@@ -294,7 +295,10 @@ COMPLETED
   - Work:
     - add a recording `FakeProgress` to `tests/support.py`
     - unit-test `NullProgress` and `FakeProgress` semantics
-  - Exit criteria: the interface exists and has tests; nothing else depends on it yet.
+    - once `core/subprocess_utils.py` exists (Milestone 3), replace its `yaspin` use (`spinner_popen_pipe`, `spinner_subprocess_run`)
+      with `ProgressReporter` calls (`start(None, ...)` and `finish()`) taking an optional `progress=None` (defaults to `NullProgress`)
+    - update `audio_normalization.py` callers to pass the reporter through
+  - Exit criteria: the interface exists and has tests; `core/` has no `yaspin` import.
 
 5. Milestone 5: Models move and decouple
   - Move model packages into `src/models/` and remove display dependencies.
