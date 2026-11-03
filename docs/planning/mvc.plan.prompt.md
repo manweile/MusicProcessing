@@ -88,11 +88,12 @@ MusicProcessing/
 │   ├── core/                         # New, shared infrastructure used by all layers
 │   │   ├── __init__.py               # Re-exports: logging helpers, errors, GENERATED_PATH, ProgressReporter, NullProgress
 │   │   ├── constants.py              # AUDIO_EXTS, CSV_DIR, LOG_EXT, UTF8, ... (no ARG_* or UI strings)
-│   │   ├── paths.py                  # GENERATED_PATH, RESOURCES_PATH
-│   │   ├── progress.py               # ProgressReporter protocol + NullProgress (default no-op)
 │   │   ├── errors.py
 │   │   ├── logging_config.py
-│   │   └── level_filter.py
+│   │   ├── level_filter.py
+│   │   ├── paths.py                  # GENERATED_PATH, RESOURCES_PATH
+│   │   ├── progress.py               # ProgressReporter protocol + NullProgress (default no-op)
+│   │   └── subprocess_utils.py       # run(cmd, progress=None); no yaspin import
 │   │
 │   ├── models/                       # New, domain logic; no wx, argparse, tqdm or yaspin imports
 │   │   ├── __init__.py               # Re-exports: AudioArt, AudioMetadata, AudioPlaylist, AudioUtilities,
@@ -103,12 +104,11 @@ MusicProcessing/
 │   │   ├── audio_utilities.py
 │   │   ├── audio_normalization.py
 │   │   ├── directory_processing.py
-│   │   └── subprocess_utils.py       # run(cmd, progress=None); no yaspin import
 │   │
 │   ├── resources/                    # New, static view assets (icons, licenses); no __init__.py
 │   │   ├── AlbumArt/                 # Album Art jpegs; no __init__.py
-│   │   ├── Icons/                    # Icon files; no __init__.py`
-│   │   └── Licenses/                 # License files; no __init__.py
+│   │   ├── icon_files/               # Icon files; no __init__.py`
+│   │   └── licenses/                 # License files; no __init__.py
 │   │
 │   ├── views/                        # New, user interface layer
 │   │   ├── __init__.py               # Empty
@@ -214,7 +214,7 @@ COMPLETED
     been distinguished from other generated-file and asset references.<br>
     The actual definition and compatibility exports come next; import migrations happen only after those are in place.
 
-    **Step 2** Add the destination modules IN PROGRESS
+    **Step 2** Add the destination modules COMPLETED
 
     Create src/core/ and src/cli/, with lightweight __init__.py files. COMPLETED<br>
     Add: src/core/constants.py COMPLETED
@@ -297,11 +297,10 @@ COMPLETED
 
 5. Milestone 5: Models move and decouple
   - Move model packages into `src/models/` and remove display dependencies.
-  - Files: `src/audio_info/`, `src/audio_normalize/`, `src/dir_processing/`, `src/subprocess_utils.py`
+  - Files: `src/audio_info/`, `src/audio_normalize/`, `src/dir_processing/`
   - Work:
     - `git mv` each module and leave temporary re-exports at the old paths
     - `AudioMetadata.create_album_dirs(tld, progress=None)` reports through `ProgressReporter` instead of `tqdm`
-    - `SubprocessUtilities` reports spinner state through `ProgressReporter` (`start(None, ...)` and `finish()`) instead of `yaspin`
     - update `mock.patch` targets in tests to the new module paths
     - re-assess models that log warnings. Some will have to become exceptions, others may be downgraded to info, or removed entirely
   - Validation: tests that patched `tqdm` or `yaspin` now assert on `FakeProgress` calls.
@@ -427,7 +426,7 @@ COMPLETED
 - `src/gui/wx_app.py` - `MainFrame`, panel construction, worker threads, dialogs.
 - `src/gui/handlers.py` - `EventHandlers` and module-level model instances.
 - `src/audio_info/audio_metadata.py` - `create_album_dirs` and its `tqdm` progress bar.
-- `src/subprocess_utils.py` - `SubprocessUtilities` and its `yaspin` spinner.
+- `src/core/subprocess_utils.py` - `SubprocessUtilities` and its `yaspin` spinner.
 - `src/errors.py`, `src/logging_config.py`, `src/level_filter.py` - shared infrastructure.
 - `src/generated_files/` - runtime output plus static GUI assets.
 - `tests/__init__.py`, `tests/support.py`, `tests/test_gui.py` - fixture paths, helpers, and GUI smoke tests.
