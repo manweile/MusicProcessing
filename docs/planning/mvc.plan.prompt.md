@@ -159,21 +159,21 @@ COMPLETED
     - keep temporary re-exports in the old locations so imports continue to resolve
     - empty `src/__init__.py` last, to avoid circular imports
 
-    Step 0: Preparation
+    **Step 0**: Preparation
 
     On feature/mvc-refactoring, run the full suite once to confirm the baseline. COMPLETED<br>
     Find where each name is used, so the split follows real usage: COMPLETED<br>
     grep -rnE "from src import|import src" --include=*.py .<br>
     Check ARG_* and APP_NAME especially, since main.py and the GUI may use them.
 
-    1. Confirm baseline and inventory
+    **Step 1** Confirm baseline and inventory
 
     Use the grep results to migrate current imports in batches.<br>
     The listed production and test files still import from src; those should keep working until each batch is migrated.<br>
     Search separately for GENERATED_PATH and src.generated_files before changing path imports; the provided grep does not show those references.<br>
     Keep the test files flat for now. Update their imports as needed, but don’t move them as part of this work.
 
-    2. Add the destination modules
+    **Step 2** Add the destination modules
 
     Create src/core/ and src/cli/, with lightweight __init__.py files. Add:
       - src/core/constants.py for the application, audio, directory, logging, encoding, and normalization constants currently in src/__init__.py:
@@ -187,7 +187,7 @@ COMPLETED
 
     At this stage, add the new definitions without changing existing imports.
 
-    3. Preserve compatibility from src
+    **Step 3** Preserve compatibility from src
 
     Change src/__init__.py to import and re-export the new constants and paths, while preserving existing exports for errors and logging helpers.<br>
     Use explicit imports and maintain an accurate __all__; avoid wildcard imports.
@@ -196,7 +196,7 @@ COMPLETED
     and the new paths (for example, from src.core.constants import AUDIO_EXTS) during migration.<br>
     Keep the existing logging initialization behavior for now.
 
-    4. Migrate imports in small batches
+    **Step 4** Migrate imports in small batches
 
     Update production imports to use the new modules:
 
@@ -205,9 +205,10 @@ COMPLETED
         Errors → src.core.errors (once moved)
         GENERATED_PATH → src.core.paths
 
-    Then update the corresponding test imports, including tests/__init__.py, and any string-based mock patch targets. Run the tests after each batch. The src re-exports remain in place so unmigrated code continues to work.
+    Then update the corresponding test imports, including tests/__init__.py, and any string-based mock patch targets.<br>
+    Run the tests after each batch. The src re-exports remain in place so unmigrated code continues to work.
 
-    5. Wire in the CLI constants
+    **Step 5** Wire in the CLI constants
 
     When extracting the CLI, use ARG_CLI_* in parser argument definitions and when reading the corresponding parsed fields in main(args);<br>
     for example, getattr(args, ARG_CLI_FILE). Use ARG_HELP_* for the related help text.
@@ -215,17 +216,18 @@ COMPLETED
     These constants describe argument field names and help text, not subcommand names.<br>
     Keep subcommand names such as "gui" and "convert-file" separate unless you introduce constants for them explicitly.
 
-    6. Move logging and error infrastructure
+    **Step 6** Move logging and error infrastructure
 
-    Move errors.py, logging_config.py, and level_filter.py into core/;<br>
+    Move errors.py, logging_config.py, and level_filter.py into core/<br>
     update their imports and leave compatibility re-exports at their old locations until callers are migrated.<br>
     Keep core/__init__.py free of logging setup side effects to avoid introducing import cycles.
 
     Before emptying src/__init__.py:
-    - Preserve current package-level logging initialization through an explicit, one-time startup/bootstrap call from the application entry point.<br>
+    - Preserve current package-level logging initialization
+      - use an explicit, one-time startup/bootstrap call from the application entry point.
     - Verify logging still initializes for both CLI and GUI startup.
 
-    7. Empty src/__init__.py last
+    **Step 7** Empty src/__init__.py last
 
     Once repository imports no longer rely on from src import ..., the old error/logging modules, or the old generated-files path export:
 
@@ -234,6 +236,7 @@ COMPLETED
         Run the full test suite, check CLI help, and smoke-test GUI startup and logging.
 
     That order keeps compatibility while the imports move, and avoids breaking startup logging when the package-root side effect is removed.
+
   - Validation: the full suite passes with both old and new import paths.
   - Exit criteria: `core/` imports nothing else from `src`.
 
@@ -254,6 +257,7 @@ COMPLETED
     - `AudioMetadata.create_album_dirs(tld, progress=None)` reports through `ProgressReporter` instead of `tqdm`
     - `SubprocessUtilities` reports spinner state through `ProgressReporter` (`start(None, ...)` and `finish()`) instead of `yaspin`
     - update `mock.patch` targets in tests to the new module paths
+    - re-assess models that log warnings. Some will have to become exceptions, others may be downgraded to info, or removed entirely
   - Validation: tests that patched `tqdm` or `yaspin` now assert on `FakeProgress` calls.
   - Exit criteria: `grep` finds no `wx`, `argparse`, `tqdm`, or `yaspin` import under `src/models/`.
 
@@ -275,7 +279,6 @@ COMPLETED
     - capture baseline help and behavior before extraction
     - compare every subcommand's `--help` output
     - exercise each command's validation, exit behavior, and representative output against the baseline.
-    - Add `tests/cli/` tests for parser construction and dispatch.
     - Keep the old implementation available until these checks pass, then switch `main.py` to the new layer and retain it as the thin entry point.
   - Exit criteria: `main.py` contains only argument parsing wiring and the dispatch entry point.
 
@@ -326,7 +329,21 @@ COMPLETED
     - update every path reference, including the GUI icons and the "generated files" dialogs
   - Exit criteria: no tracked runtime output remains under `src/`.
 
-10. Milestone 10: Cleanup and documentation
+10. Milestone 10: Test and validation
+  - take test layout from flat to mirrored folders as decided in Milestone 1
+  - Files: test modules and supporting fixtures
+  - Work:
+    - create mirrored folder structure for tests
+    - move existing test modules into the mirrored structure as needed
+    - update import paths in the test modules to reflect the new structure
+    - update any supporting fixtures or helper modules to match the mirrored layout
+    - ensure test discovery works with the new structure
+  - Validation:
+    - run the full test suite
+    - perform manual validation of the CLI and GUI workflows
+  - Exit criteria: all tests pass and manual validation confirms expected behavior.
+
+11. Milestone 11: Cleanup and documentation
   - Remove the temporary re-exports and obsolete packages.
   - Files: old package locations, `Doxyfile`, `docs/md_files/`, `docs/dot_files/`, `README.md`, `.github/instructions/python.instructions.md`
   - Work:
@@ -348,9 +365,10 @@ COMPLETED
 
 **Repo Risks And Mismatches**
 
-1. `src/__init__.py` imports from submodules that import back from `src`; moving constants and errors to `core/` removes
-   the cycle, but the order of edits matters. Empty the root `__init__.py` last.
-2. `SubprocessUtilities` spinner behavior assumes a terminal; verify output when run from a worker thread and from tests.
+1. `src/__init__.py` imports from submodules that import back from `src`
+  1. moving constants and errors to `core/` removes the cycle, but the order of edits matters. Empty the root `__init__.py` last.
+2. `SubprocessUtilities` spinner behavior assumes a terminal
+  1. verify output when run from a worker thread and from tests.
 3. `wx.Gauge` and widgets must only be touched from the main thread. All `GaugeProgress` updates go through `wx.CallAfter`.
 4. `docs/dot_files/*` and `doxygen.log` are generated artifacts; regenerate rather than hand-edit.
 5. `docs/scripts/` contains standalone experiments that may import from `src`; check them before deleting old paths.
@@ -398,7 +416,7 @@ COMPLETED
 **Further Considerations**
 
 1. Test layout: flat `tests/` works, but mirroring `src/` (`tests/models/`, `tests/controllers/`, `tests/cli/`,
-   `tests/views/`) scales better. Decide in Milestone 1. DECISION: flat for now. Will mirror later.
+   `tests/views/`) scales better. Decide in Milestone 1. DECISION: flat for now. Mirror in Milestone 10.
 2. Output location: a repo-local `output/` is simplest; a per-user data directory is better for installed use.
    Decide in Milestone 8.
 3. GUI logging (see `docs/planning/TODO.txt`) could be folded into the view interface by adding a `log` method that

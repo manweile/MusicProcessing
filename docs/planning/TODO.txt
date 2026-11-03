@@ -64,7 +64,7 @@ TODO
   a) will need to find appropriate iconography
   b) will need to add licenses etc
 
-5) How do I log info/warning/errors?
+5) How do I log warnings?
   a) test case: run extract art on D:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
     this file has no art at all, so extract_album_art will log into debug.log, info.log, warning.log, main.log, audio_art.log
     but the gui will show success!!
