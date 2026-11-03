@@ -1,13 +1,14 @@
 ## Plan: MusicProcessing MVC Refactor
 
-Update this plan against the current repository state of the `gui` branch as of 2026-11-02. Treat this file as the
-working implementation and sequencing prompt for refactoring the codebase into a Model-View-Controller layout, not as a
-historical archive of earlier planning notes.
+Update this plan against the current repository state of the `gui` branch as of 2026-11-02.<br>
+Treat this file as the working implementation and sequencing prompt for refactoring the codebase into a Model-View-Controller layout;<br>
+not as a historical archive of earlier planning notes.
 
-The refactor separates domain logic (models), user interaction (views), and coordination (controllers), and adds a
-separate CLI layer. Keep `main.py` as a thin entry point. Keep the audio-processing behavior, command-line subcommands,
-output file formats, and the Doxygen comment style already used across the project. Preserve the existing VS Code,
-Doxygen, and CI scaffolding. Each milestone must leave the existing test suite passing.
+Separate domain logic (models), user interaction (views), coordination (controllers), and add a separate CLI layer,
+keeping `main.py` as a thin entry point.<br>
+Retain audio-processing behavior, command-line subcommands, output file formats, and Doxygen comment style already in use.<br>
+Preserve the existing VS Code, Doxygen, and CI scaffolding.<br>
+Each milestone must leave the existing test suite passing.
 
 **Outline Alignment**
 
@@ -70,7 +71,7 @@ MusicProcessing/
 ├── output/                           # New, runtime-generated files (git-ignored); no __init__.py
 │   ├── csv_files/                    # Runtime-generated CSV files; no __init__.py
 │   ├── log_files/                    # Runtime-generated log files; no __init__.py
-│   └── txt_files/                    # Runtime-generated result files; no __init__.py
+│   └── result_files/                 # Runtime-generated result files; no __init__.py
 │
 ├── src/
 │   ├── cli/                          # New, command-line interface layer
@@ -140,18 +141,24 @@ MusicProcessing/
     - run ci locally COMPLETED
     - merge gui branch into development COMPLETED
     - create a new branch for the upcoming core extraction work COMPLETED
-  - Exit criteria: a known-good baseline exists, and CI runs the suite.<br>
+  - Exit criteria: a known-good baseline exists, and CI runs the suite.
+
 COMPLETED
 
 2. Milestone 2: update directory structure
   - add new structure per Target Structure outlined above COMPLETED
   - add empty `__init__.py` files where needed to mark packages COMPLETED
+
 COMPLETED
 
 3. Milestone 3: `core/` extraction
   - Move shared infrastructure out of the `src/` root.
-  - Files: `src/__init__.py`, `src/errors.py`, `src/logging_config.py`, `src/level_filter.py`,
-    `src/generated_files/__init__.py`, new `src/core/`
+  - Files:
+    - `src/__init__.py`
+    - `src/errors.py`
+    - `src/logging_config.py`
+    - `src/level_filter.py`
+    - `src/generated_files/__init__.py`
   - Work:
     - split constants: audio, directory, log, and encoding constants go to `core/constants.py` COMPLETED
     - `ARG_CLI_*` and `ARG_HELP_*` go to `cli/constants.py` (Milestone 5) COMPLETED
@@ -159,31 +166,70 @@ COMPLETED
     - keep temporary re-exports in the old locations so imports continue to resolve
     - empty `src/__init__.py` last, to avoid circular imports
 
-    **Step 0**: Preparation
+    **Step 0**: Preparation COMPLETED
 
     On feature/mvc-refactoring, run the full suite once to confirm the baseline. COMPLETED<br>
     Find where each name is used, so the split follows real usage: COMPLETED<br>
     grep -rnE "from src import|import src" --include=*.py .<br>
     Check ARG_* and APP_NAME especially, since main.py and the GUI may use them.
 
-    **Step 1** Confirm baseline and inventory
+    **Step 1** Confirm baseline and inventory COMPLETED
 
-    Use the grep results to migrate current imports in batches.<br>
-    The listed production and test files still import from src; those should keep working until each batch is migrated.<br>
-    Search separately for GENERATED_PATH and src.generated_files before changing path imports; the provided grep does not show those references.<br>
-    Keep the test files flat for now. Update their imports as needed, but don’t move them as part of this work.
+    Step 0 records a completed full-suite baseline.<br>
+    Before changing imports, confirm that result applies to the current checkout.<br>
+    If code has changed since the suite ran, or the result is uncertain,
+    run the repository's existing full-suite command and record whether it passes.<br>
+    This establishes what later migration test runs must preserve.
 
-    **Step 2** Add the destination modules
+    Treat `docs/planning/search.txt` as a snapshot, not as a live inventory.<br>
+    Refresh the searches below if the source has changed since that file was generated:
 
-    Create src/core/ and src/cli/, with lightweight __init__.py files. Add:
-      - src/core/constants.py for the application, audio, directory, logging, encoding, and normalization constants currently in src/__init__.py:
-        - APP_NAME, ASF_TYPE, AUDIO_EXTS, AUDIO_FILES, CSV_DIR, CSV_EXT, ERROR_LOG_FORMAT
-        - the format/type constants, FOLDER_ART, ILT, LRA, LOG_DIR, LOG_EXT, MUSIC_TLD
-        - playlist constants, result constants, TP, and UTF8.
-        - src/cli/constants.py for all ARG_CLI_* and ARG_HELP_* constants. Keep them; they’re planned CLI API, not unused constants.
-        - src/core/paths.py for GENERATED_PATH and RESOURCES_PATH.
-          - Initially, GENERATED_PATH must resolve to the existing src/generated_files directory.
-          - Set RESOURCES_PATH to the planned static-assets directory, src/resources, and use it when the assets move.
+    ```bash
+    grep -RInE --include="*.py" "from src import|from src\\.generated_files|GENERATED_PATH" .
+    grep -RInE --exclude-dir=.git "generated_files|icon_files|licenses|RESOURCES_PATH" .
+    ```
+
+    The first search in `search.txt` already includes `from src.generated_files` and `GENERATED_PATH`;<br>
+    it does not need to be rediscovered. Read those matches as different kinds of evidence:
+
+    - `from src import NAME` identifies callers of the current compatibility surface.
+      - Classify each `NAME` as a constant, error, or logging helper so it can later move to the correct core module.
+    - `from src.generated_files import GENERATED_PATH` identifies callers of the old path export.
+      - Record production and test callers separately, along with their uses of the path.
+      - Do not confuse these with `from src import` imports
+      - Retaining exports from `src` alone does not migrate imports from `src.generated_files`.
+    - A `GENERATED_PATH` match may be a definition or a use rather than an import.
+      - Check its surrounding code, and keep track of the definition separately from the callers.
+      - The initial `src.core.paths` definition must still resolve to the existing `src/generated_files` directory so this migration does not change output locations.
+    - The second, broader search also finds documentation, ignore rules, asset references, and comments.
+      - These are useful for distinguishing runtime-generated files from static resources, but they are not all Python imports
+      to change in this step.
+
+    Use the inventory to plan small, reviewable migration batches:<br>
+    migrate production imports by destination module, then update the related tests and any string-based mock patch targets.<br>
+    Keep each test module in `tests/`; do not reorganize or move tests as part of this work.<br>
+    Leave all imports unchanged during this inventory step.
+
+    Before proceeding, the baseline result is known, each old import has been classified, and path references have
+    been distinguished from other generated-file and asset references.<br>
+    The actual definition and compatibility exports come next; import migrations happen only after those are in place.
+
+    **Step 2** Add the destination modules IN PROGRESS
+
+    Create src/core/ and src/cli/, with lightweight __init__.py files. COMPLETED<br>
+    Add: src/core/constants.py COMPLETED
+      - for the application, audio, directory, logging, encoding, and normalization constants currently in src/__init__.py:
+        - APP_NAME, ASF_TYPE, AUDIO_EXTS, AUDIO_FILES, CSV_DIR, CSV_EXT, ERROR_LOG_FORMAT, FLAC_EXT, FLAC_TYPE
+        - FOLDER_ART, ILT, LRA, LOG_DIR, LOG_EXT, LRA, M3U_EXT, M4A_EXT, MP3_EXT, MP3_TYPE, MP4_TYPE, MUSIC_TLD
+        - PLAYLIST_EXTS, PLAYLIST_TYPES, RESULT_DIR, RESULT_EXT, TP, UTF8, WMA_EXT
+
+    Add: src/cli/constants.py COMPLETED
+      -  for all ARG_CLI_* and ARG_HELP_* constants. Keep them; they’re planned CLI API, not unused constants.
+
+    Add: src/core/paths.py COMPLETED
+      - for GENERATED_PATH and RESOURCES_PATH.
+        - Initially, GENERATED_PATH must resolve to the existing src/generated_files directory.
+        - Set RESOURCES_PATH to the planned static-assets directory, src/resources, and use it when the assets move.
 
     At this stage, add the new definitions without changing existing imports.
 
@@ -325,7 +371,6 @@ COMPLETED
   - Work:
     - move `icon_files/` and `licenses/` to `src/resources/`
     - point `GENERATED_PATH` at `output/` (or a user data directory) and git-ignore it
-    - decide whether the existing tracked `AlbumArt/*.jpg` and `test.m3u` are fixtures (move to `tests/`) or output (delete from tracking)
     - update every path reference, including the GUI icons and the "generated files" dialogs
   - Exit criteria: no tracked runtime output remains under `src/`.
 
@@ -367,7 +412,7 @@ COMPLETED
 
 1. `src/__init__.py` imports from submodules that import back from `src`
   1. moving constants and errors to `core/` removes the cycle, but the order of edits matters. Empty the root `__init__.py` last.
-2. `SubprocessUtilities` spinner behavior assumes a terminal
+2. `SubprocessUtilities` yaspin spinner behavior assumes a terminal, and does NOT work with any wxPython GUI context.
   1. verify output when run from a worker thread and from tests.
 3. `wx.Gauge` and widgets must only be touched from the main thread. All `GaugeProgress` updates go through `wx.CallAfter`.
 4. `docs/dot_files/*` and `doxygen.log` are generated artifacts; regenerate rather than hand-edit.

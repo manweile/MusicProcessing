@@ -91,3 +91,25 @@ ARG_HELP_PLAYLIST = "mandatory m3u file path"
 # @brief add argument help
 # @details use when needing mandatory directory input
 ARG_HELP_TLD = "mandatory top level directory"
+
+## @var __all__
+# @brief Exposes package members for importing by other modules.
+# @details Include all CLI argument and help constants.
+# @details In modules needing the constant, add `from src.cli.constants import <CONSTANT_NAME>`.
+__all__ = [
+    "ARG_CLI_EXT",
+    "ARG_CLI_FFPROBE",
+    "ARG_CLI_FILE",
+    "ARG_CLI_PLAYLIST",
+    "ARG_CLI_PATTERN",
+    "ARG_CLI_TLD",
+    "ARG_CLI_TYPE",
+    "ARG_HELP_AUDIO",
+    "ARG_HELP_FFPROBE",
+    "ARG_HELP_FILE",
+    "ARG_HELP_NORMAL",
+    "ARG_HELP_PATTERN_MAN",
+    "ARG_HELP_PATTERN_OPT",
+    "ARG_HELP_PLAYLIST",
+    "ARG_HELP_TLD",
+]

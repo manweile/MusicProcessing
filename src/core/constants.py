@@ -157,33 +157,9 @@ WMA_EXT = ".wma"
 
 ## @var __all__
 # @brief Exposes package members for importing by other modules.
-# @details In modules needing the constant, add: `from src import ASF_TYPE`.
-# @details In modules needing the constant, add: `from src import AUDIO_EXTS`.
-# @details In modules needing the constant, add: `from src import AUDIO_FILES`.
-# @details In modules needing the constant, add: `from src import CSV_DIR`.
-# @details In modules needing the constant, add: `from src import CSV_EXT`.
-# @details In modules needing the constant, add: `from src import ERROR_LOG_FORMAT`.
-# @details In modules needing the constant, add: `from src import FLAC_EXT`.
-# @details In modules needing the constant, add: `from src import FLAC_TYPE`.
-# @details In modules needing the constant, add: `from src import FOLDER_ART`.
-# @details In modules needing the constant, add: `from src import ILT`.
-# @details In modules needing the constant, add: `from src import LOG_DIR`.
-# @details In modules needing the constant, add: `from src import LOG_EXT`.
-# @details In modules needing the constant, add: `from src import LRA`.
-# @details In modules needing the constant, add: `from src import M3U_EXT`.
-# @details In modules needing the constant, add: `from src import M4A_EXT`.
-# @details In modules needing the constant, add: `from src import MP3_EXT`.
-# @details In modules needing the constant, add: `from src import MP3_TYPE`.
-# @details In modules needing the constant, add: `from src import MP4_TYPE`.
-# @details In modules needing the constant, add: `from src import MUSIC_TLD`.
-# @details In modules needing the constant, add: `from src import PLAYLIST_EXTS`.
-# @details In modules needing the constant, add: `from src import PLAYLIST_TYPES`.
-# @details In modules needing the constant, add: `from src import RESULT_DIR`.
-# @details In modules needing the constant, add: `from src import RESULT_EXT`.
-# @details In modules needing the constant, add: `from src import TP`.
-# @details In modules needing the constant, add: `from src import UTF8`.
-# @details In modules needing the constant, add: `from src import WMA_EXT`.
+# @details In modules needing the constant, add `from src.core.constants import <CONSTANT_NAME>`.
 __all__ = [
+    "APP_NAME",
     "ASF_TYPE",
     "AUDIO_EXTS",
     "AUDIO_FILES",
