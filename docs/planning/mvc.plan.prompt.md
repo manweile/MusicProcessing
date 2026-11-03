@@ -254,8 +254,16 @@ COMPLETED
     3.4 Replace `from src.generated_files import GENERATED_PATH` with `from src.core.paths import GENERATED_PATH`.
         Leave the `src.errors` and `src.logging_config` imports untouched (they move in Step 6).
     3.5 Do NOT import `ARG_CLI_*` / `ARG_HELP_*` into `src/__init__.py`; they live only in `src.cli.constants`.
-    3.6 Confirm `__all__` still lists every name above (add `APP_NAME`, which is missing today) and add `GENERATED_PATH`
-        and `RESOURCES_PATH` only if existing callers need them from `src`. Keep it alphabetized.
+    3.6 Update `__all__` in `src/__init__.py`:
+        - add `"APP_NAME"` (imported in 3.2 but missing from `__all__` today)
+        - add `"GENERATED_PATH"`: it is already imported into `src` and is part of the old export surface that Step 7 removes,
+          so listing it keeps `from src import *` and the "old paths" promise accurate during migration
+        - do NOT add `"RESOURCES_PATH"`: it is new, has no old callers, and must only be imported from `src.core.paths`
+          (do not import it into `src/__init__.py` at all)
+        - keep entries alphabetized, matching the existing ordering style
+        - note: today every caller imports `GENERATED_PATH` from `src.generated_files` (`main.py`, `src/gui/wx_app.py`,
+          `directory_processing.py`, `audio_art.py`, `audio_playlist.py`, tests), not from `src`; those move to
+          `src.core.paths` in Step 4, so the `src` re-export is only a safety net and is removed in Step 7
     3.7 Verify identity with a throwaway check (do not commit it):
         `python -c "import src, src.core.constants as c; assert all(getattr(src, n) is getattr(c, n) for n in src.__all__ if hasattr(c, n))"`
         and `python -c "from src import GENERATED_PATH; from src.core.paths import GENERATED_PATH as g; assert GENERATED_PATH == g"`.
