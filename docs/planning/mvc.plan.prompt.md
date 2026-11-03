@@ -56,8 +56,8 @@ Key goals of this plan:
 5. Infrastructure at `src/` root: `errors.py`, `level_filter.py`, `logging_config.py`, `subprocess_utils.py`.
 6. `src/__init__.py` mixes package marker, re-exports (errors, logging helpers, `GENERATED_PATH`), and all constants
    (audio, directory, log, and `ARG_CLI_*` / `ARG_HELP_*` strings).
-7. `src/generated_files/` mixes runtime output (`AlbumArt/*.jpg`, CSV, text results, `.m3u`) with static GUI assets
-   (`icon_files/`, `licenses/`); its `__init__.py` exports `GENERATED_PATH`.
+7. `src/generated_files/` mixes runtime output (CSV, text results, `.m3u`) with static GUI assets
+   (`icon_files/`, `licenses/`) and user-supplied `AlbumArt/*.jpg` (read by `set_album_art`); its `__init__.py` exports `GENERATED_PATH`.
 8. Progress display: `AudioMetadata.create_album_dirs` uses `tqdm` directly and `SubprocessUtilities` uses `yaspin`
    directly. Neither has a GUI equivalent yet.
 9. Tests are flat under `tests/` (one module per model plus `test_gui.py` and `test_subprocess_utilities.py`).
@@ -106,7 +106,7 @@ MusicProcessing/
 │   │   ├── directory_processing.py
 │   │
 │   ├── resources/                    # New, static view assets (icons, licenses); no __init__.py
-│   │   ├── AlbumArt/                 # Album Art jpegs; no __init__.py
+│   │   ├── AlbumArt/                 # User-supplied album art jpegs (read by set_album_art); git-ignored, not fixtures; no __init__.py
 │   │   ├── icon_files/               # Icon files; no __init__.py`
 │   │   └── licenses/                 # License files; no __init__.py
 │   │
@@ -369,9 +369,19 @@ COMPLETED
   - Files: `src/generated_files/`, `.gitignore`, `src/core/paths.py`
   - Work:
     - move `icon_files/` and `licenses/` to `src/resources/`
+    - move `AlbumArt/` to `src/resources/AlbumArt/`; these jpegs are user-supplied resources consumed by `set_album_art`, not
+      fixtures, and are NOT tracked. Update `set_album_art` and every path reference to the new location
+    - consolidate to a single master `.gitignore` at the repo root:
+      - merge the rules from `src/generated_files/.gitignore` (`Music/**/*.*`, `test.m3u`, `AlbumArt/*.*`) and
+        `docs/excel_files/.gitignore` (`~$*.xlsx`, `.~lock.*.xlsx#`) into root rules with full paths
+      - add `src/resources/AlbumArt/*.jpg` (keep the directory with a `.gitkeep` if it must exist), `output/`,
+        `doxygen.log` and the existing generated-output entries under their new paths
+      - delete the nested `.gitignore` files once their rules are in the root file
+      - run `git rm -r --cached` on anything already tracked that is now ignored, and confirm with `git status` and
+        `git check-ignore -v` on sample paths
     - point `GENERATED_PATH` at `output/` (or a user data directory) and git-ignore it
     - update every path reference, including the GUI icons and the "generated files" dialogs
-  - Exit criteria: no tracked runtime output remains under `src/`.
+  - Exit criteria: no tracked runtime output or `AlbumArt` jpegs remain under `src/`; exactly one `.gitignore` exists (at the root).
 
 10. Milestone 10: Test and validation
   - take test layout from flat to mirrored folders as decided in Milestone 1
@@ -449,6 +459,8 @@ COMPLETED
 
 **Decisions**
 
+- A single root `.gitignore` is the only ignore file; no nested `.gitignore` files.
+- `AlbumArt/*.jpg` are user-supplied resources, git-ignored and not treated as test fixtures.
 - Keep `main.py` as a thin entry point.
 - Keep CLI subcommand names, arguments, and help text unchanged.
 - Models report progress only through `ProgressReporter`; front ends supply the display.
