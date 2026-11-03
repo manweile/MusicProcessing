@@ -374,7 +374,7 @@ COMPLETED
     - consolidate to a single master `.gitignore` at the repo root:
       - merge the rules from `src/generated_files/.gitignore` (`Music/**/*.*`, `test.m3u`, `AlbumArt/*.*`) and
         `docs/excel_files/.gitignore` (`~$*.xlsx`, `.~lock.*.xlsx#`) into root rules with full paths
-      - add `src/resources/AlbumArt/*.jpg` (keep the directory with a `.gitkeep` if it must exist), `output/`,
+      - add `src/resources/AlbumArt/*.jpg` (the directory always exists and always holds at least one usable jpg, so no `.gitkeep`), `output/`,
         `doxygen.log` and the existing generated-output entries under their new paths
       - delete the nested `.gitignore` files once their rules are in the root file
       - run `git rm -r --cached` on anything already tracked that is now ignored, and confirm with `git status` and
