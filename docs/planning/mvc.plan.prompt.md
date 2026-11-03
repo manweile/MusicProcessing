@@ -236,12 +236,33 @@ COMPLETED
 
     **Step 3** Preserve compatibility from src
 
-    Change src/__init__.py to import and re-export the new constants and paths, while preserving existing exports for errors and logging helpers.<br>
-    Use explicit imports and maintain an accurate __all__; avoid wildcard imports.
+    Goal: `src/__init__.py` re-exports the constants and paths from `core/`, so `from src import AUDIO_EXTS` and
+    `from src.core.constants import AUDIO_EXTS` both work and return the same object. Errors, logging helpers and
+    package logging initialization stay exactly as they are.
 
-    This gives callers both the old paths (for example, from src import AUDIO_EXTS);<br>
-    and the new paths (for example, from src.core.constants import AUDIO_EXTS) during migration.<br>
-    Keep the existing logging initialization behavior for now.
+    Do these in order, one at a time:
+
+    3.1 Baseline: run the full test suite and record the result. Do not continue if it is not green.
+    3.2 In `src/__init__.py`, add one explicit import line per name from `src.core.constants` (no wildcard, no
+        parenthesized multi-name imports; keep the existing `from x import NAME  # comment` style):
+        APP_NAME, ASF_TYPE, AUDIO_EXTS, AUDIO_FILES, CSV_DIR, CSV_EXT, ERROR_LOG_FORMAT, FLAC_EXT, FLAC_TYPE, FOLDER_ART,
+        ILT, LOG_DIR, LOG_EXT, LRA, M3U_EXT, M4A_EXT, MP3_EXT, MP3_TYPE, MP4_TYPE, MUSIC_TLD, PLAYLIST_EXTS,
+        PLAYLIST_TYPES, RESULT_DIR, RESULT_EXT, TP, UTF8, WMA_EXT.
+    3.3 In `src/__init__.py`, delete the matching literal assignments (`APP_NAME = "Music Processing"` ... `WMA_EXT = ".wma"`)
+        and their doc comments. Place the new imports above the `configure_package_logging(...)` call, because that call
+        uses CSV_DIR, LOG_DIR, RESULT_DIR, LOG_EXT, UTF8 and ERROR_LOG_FORMAT.
+    3.4 Replace `from src.generated_files import GENERATED_PATH` with `from src.core.paths import GENERATED_PATH`.
+        Leave the `src.errors` and `src.logging_config` imports untouched (they move in Step 6).
+    3.5 Do NOT import `ARG_CLI_*` / `ARG_HELP_*` into `src/__init__.py`; they live only in `src.cli.constants`.
+    3.6 Confirm `__all__` still lists every name above (add `APP_NAME`, which is missing today) and add `GENERATED_PATH`
+        and `RESOURCES_PATH` only if existing callers need them from `src`. Keep it alphabetized.
+    3.7 Verify identity with a throwaway check (do not commit it):
+        `python -c "import src, src.core.constants as c; assert all(getattr(src, n) is getattr(c, n) for n in src.__all__ if hasattr(c, n))"`
+        and `python -c "from src import GENERATED_PATH; from src.core.paths import GENERATED_PATH as g; assert GENERATED_PATH == g"`.
+    3.8 Confirm `GENERATED_PATH` still resolves to the existing `src/generated_files` directory and that logging
+        initialization still creates the same csv/log/result directories.
+    3.9 Confirm `src/core/` and `src/cli/` import nothing from `src` (`grep -rn "^from src import\|^import src$" src/core src/cli` is empty).
+    3.10 Run the full test suite, then `python main.py --help`; both must match the 3.1 baseline. Commit as one commit.
 
     **Step 4** Migrate imports in small batches
 
