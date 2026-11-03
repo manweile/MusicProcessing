@@ -19,7 +19,8 @@ Key goals of this plan:
   receive results through a small view interface.
 - Views and the CLI are interchangeable front ends over the same models and controllers.
 - Progress and spinner display go through a `ProgressReporter` interface, so `AudioMetadata.create_album_dirs`
-  and `SubprocessUtilities` display correctly in both CLI mode (`tqdm`, `yaspin`) and the not-yet-coded GUI (`wx.Gauge`).
+  and `SubprocessUtilities` display correctly in both CLI mode (`tqdm`, `yaspin`) and the not-yet-coded GUI (`wx.Gauge` for both determinate and
+  indeterminate progress). `yaspin` is CLI-only and is never used in GUI mode.
 - Shared infrastructure (constants, paths, errors, logging) lives in `src/core/` and depends on nothing else in `src`.
 - Dependencies point inward: `views` and `cli` depend on `controllers`, `controllers` depend on `models`, and every
   layer may depend on `core`.
@@ -116,7 +117,7 @@ MusicProcessing/
 │   │       ├── __init__.py           # Re-exports: run_gui
 │   │       ├── app.py
 │   │       ├── main_frame.py
-│   │       ├── progress.py           # GaugeProgress (wx.Gauge, updates via wx.CallAfter)
+│   │       ├── progress.py           # GaugeProgress (wx.Gauge; determinate + Pulse() for indeterminate; updates via wx.CallAfter)
 │   │       └── panels/
 │   │           ├── __init__.py
 │   │           └── *_panel.py
@@ -349,7 +350,8 @@ COMPLETED
     - panels bind events and forward plain values to controllers; they implement the view interface
     - add `views/wx/progress.py` with `GaugeProgress`
       - updating widgets only through `wx.CallAfter`
-      - a timer-driven `Pulse()` for indeterminate tasks
+      - indeterminate (`total=None`) is the GUI replacement for the `yaspin` spinner: `start()` begins a `wx.Timer`-driven
+        `Pulse()` (or shows a `wx.ActivityIndicator`), `finish()` stops it and resets the gauge
     - keep the existing worker-thread behavior so the UI stays responsive
     - after parity is verified
       - switch `run_gui` to the replacement view and retain a compatibility adapter if existing callers still import `src/gui/`
@@ -421,8 +423,10 @@ COMPLETED
 
 1. `src/__init__.py` imports from submodules that import back from `src`
   1. moving constants and errors to `core/` removes the cycle, but the order of edits matters. Empty the root `__init__.py` last.
-2. `SubprocessUtilities` yaspin spinner behavior assumes a terminal, and does NOT work with any wxPython GUI context.
-  1. verify output when run from a worker thread and from tests.
+2. `yaspin` assumes a terminal and does NOT work with wxPython. It is confined to `cli/progress.py` (`SpinnerProgress`);
+   GUI mode uses `GaugeProgress` pulse mode instead.
+  1. `SubprocessUtilities` must never import `yaspin`; reporter selection (CLI vs GUI) happens in the front end.
+  2. verify the GUI spinner animates when a subprocess runs from a worker thread, and that tests use `FakeProgress`.
 3. `wx.Gauge` and widgets must only be touched from the main thread. All `GaugeProgress` updates go through `wx.CallAfter`.
 4. `docs/dot_files/*` and `doxygen.log` are generated artifacts; regenerate rather than hand-edit.
 5. `docs/scripts/` contains standalone experiments that may import from `src`; check them before deleting old paths.
@@ -455,7 +459,7 @@ COMPLETED
 6. No controller references a widget attribute or a private view method.
 7. `src/core/` imports nothing else from `src`.
 8. `create_album_dirs` and the subprocess spinner display correctly in CLI mode and report through `ProgressReporter`
-   (verified with `FakeProgress`); the GUI gauge is verified manually once Milestone 7 is complete.
+   (verified with `FakeProgress`); the GUI gauge (including pulse mode for subprocess runs) is verified manually once Milestone 7 is complete.
 
 **Decisions**
 
