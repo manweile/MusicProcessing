@@ -360,7 +360,8 @@ COMPLETED
       - `AUDIO_EXTS`, `MP3_EXT`, `PLAYLIST_EXTS`
     - 4.1f `src/audio_info/audio_art.py` + `tests/test_audio_art.py` COMPLETED ALL TESTS PASS
       - `AUDIO_EXTS`, `FOLDER_ART`, `FLAC_EXT`, `M4A_EXT`, `MP3_EXT`, `WMA_EXT`, `PLAYLIST_EXTS`
-    - 4.1g `src/audio_info/audio_metadata.py` + `tests/test_audio_metadata.py`
+    - 4.1g `src/audio_info/audio_metadata.py` + `tests/test_audio_metadata.py` COMPLETED ALL TESTS PASS
+      - many in both files
     - 4.1h `src/dir_processing/directory_processing.py` + `tests/test_directory_processing.py`
     - 4.1i `src/gui/wx_app.py` and `main.py`; run `python main.py --help`
     - Verify the migrated callers import the expected constant values.

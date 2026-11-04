@@ -53,15 +53,15 @@ from tqdm import tqdm                                       # for displaying pro
 from src import add_module_handler                          # for adding module-specific logging handlers
 
 # Local Module Constants
-from src import AUDIO_EXTS                                  # for audio file extensions
-from src import AUDIO_FILES                                 # for audio file paths
-from src import ASF_TYPE                                    # for ASF audio file type
-from src import FLAC_TYPE                                   # for FLAC audio file type
-from src import FOLDER_ART                                  # for folder artwork paths
-from src import FLAC_EXT                                    # for FLAC file extension
-from src import MP3_EXT                                     # for MP3 file extension
-from src import MP3_TYPE                                    # for MP3 audio file type
-from src import MP4_TYPE                                    # for MP4 audio file type
+from src.core.constants import AUDIO_EXTS                                  # for audio file extensions
+from src.core.constants import AUDIO_FILES                                 # for audio file paths
+from src.core.constants import ASF_TYPE                                    # for ASF audio file type
+from src.core.constants import FLAC_TYPE                                   # for FLAC audio file type
+from src.core.constants import FOLDER_ART                                  # for folder artwork paths
+from src.core.constants import FLAC_EXT                                    # for FLAC file extension
+from src.core.constants import MP3_EXT                                     # for MP3 file extension
+from src.core.constants import MP3_TYPE                                    # for MP3 audio file type
+from src.core.constants import MP4_TYPE                                    # for MP4 audio file type
 
 # Local Module Errors
 from src import MetadataTypeError                           # for handling metadata type errors
