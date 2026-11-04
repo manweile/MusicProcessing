@@ -366,22 +366,22 @@ COMPLETED
 
     **Step 6** Move logging and error infrastructure
 
-    Move errors.py, logging_config.py, level_filter.py, and subprocess_utils.py into core/<br>
+    Move `errors.py`, `logging_config.py`, `level_filter.py`, and `subprocess_utils.py` into `core/`<br>
     (`SubprocessUtilities` is generic infrastructure, not a domain model; it depends only on `core/` errors, constants and logging.)<br>
     update their imports and leave compatibility re-exports at their old locations until callers are migrated.<br>
-    Keep core/__init__.py free of logging setup side effects to avoid introducing import cycles.
+    Keep `core/__init__.py` free of logging setup side effects to avoid introducing import cycles.
 
-    Before emptying src/__init__.py:
+    Before emptying `src/__init__.py`:
     - Preserve current package-level logging initialization
       - use an explicit, one-time startup/bootstrap call from the application entry point.
     - Verify logging still initializes for both CLI and GUI startup.
 
-    **Step 7** Empty src/__init__.py last
+    **Step 7** Empty `src/__init__.py` last
 
     Once repository imports no longer rely on from src import ..., the old error/logging modules, or the old generated-files path export:
 
         Remove the compatibility re-exports and old module shims.
-        Make src/__init__.py empty apart from its package docstring.
+        Make `src/__init__.py` empty apart from its package docstring.
         Run the full test suite, check CLI help, and smoke-test GUI startup and logging.
 
     That order keeps compatibility while the imports move, and avoids breaking startup logging when the package-root side effect is removed.
