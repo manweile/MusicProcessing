@@ -320,32 +320,54 @@ COMPLETED
     - Do not move or reorganize test files, migrate `ARG_CLI_*` / `ARG_HELP_*` here, or remove compatibility shims.
 
     Each batch below is one atomic change:
-    - Change all related production imports, test imports, and string-based mock patch targets together.
+    - Each batch is one commit and touches one module plus its test file.
+    - Edit only that module's `from src import <CONSTANT>` lines (4.1) or
+      `from src.generated_files import GENERATED_PATH` line (4.2).
+      Leave `add_module_handler` and error imports for 4.3.
     - Keep behavior unchanged; do not combine unrelated destinations in one batch.
-    - Run the relevant tests and a focused import/runtime check before considering the batch complete.
+    - String-based mock patch targets in the tests are module attributes on the consuming module
+      (for example `src.audio_info.audio_art.os.path.join`), so none need changing in 4.1 or 4.2.
+      Confirm with `git grep -nE "patch.*src\." -- <test file>` before and after.
+    - Check: `git grep -nE "^from src import (<migrated names>)\b" -- <files>` is empty, run that
+      module's test file, then commit.
     - If a check fails, fix the batch or restore its pre-batch state before starting another batch.
-    - Commit each passing batch separately. Never leave a partially migrated batch as the new baseline.
+    - Never leave a partially migrated batch as the new baseline.
     - Keep the `src` and `src.generated_files` compatibility exports until Step 7.
 
     Do these batches in order:
 
-    **4.1 Migrate constants**
-    - Change production imports of constants currently exposed by `src` to `src.core.constants`.
-    - Migrate the corresponding test imports and patch targets in the same batch.
-    - Leave errors, logging helpers, CLI constants, and `GENERATED_PATH` for their own batches.
-    - Run the affected tests, then verify the migrated callers import the expected constant values.
+    **4.1 Migrate constants to `src.core.constants`**
+    - 4.1a `tests/__init__.py` (`MUSIC_TLD`); run the full suite, since every test imports this package
+    - 4.1b `src/subprocess_utils.py` + `tests/test_subprocess_utilities.py` (`UTF8`)
+    - 4.1c `src/audio_info/audio_utilities.py` + `tests/test_audio_utilities.py`
+    - 4.1d `src/audio_normalize/audio_normalization.py` + `tests/test_audio_normalization.py`
+    - 4.1e `src/audio_info/audio_playlist.py` + `tests/test_audio_playlist.py`
+      (the test only imports `PlaylistError`, which stays until 4.3, so only the production module changes)
+    - 4.1f `src/audio_info/audio_art.py` + `tests/test_audio_art.py`
+    - 4.1g `src/audio_info/audio_metadata.py` + `tests/test_audio_metadata.py`
+    - 4.1h `src/dir_processing/directory_processing.py` + `tests/test_directory_processing.py`
+    - 4.1i `src/gui/wx_app.py` and `main.py`; run `python main.py --help`
+    - Verify the migrated callers import the expected constant values.
 
-    **4.2 Migrate `GENERATED_PATH`**
-    - Change production and test imports from `src.generated_files` to `src.core.paths`.
-    - Update any string-based patch targets that refer to the old import location.
+    **4.2 Migrate `GENERATED_PATH` to `src.core.paths`**
+    - 4.2a `tests/test_audio_utilities.py` (test import only)
+    - 4.2b `tests/test_audio_normalization.py` (test import only)
+    - 4.2c `src/audio_info/audio_playlist.py` + `tests/test_audio_playlist.py`
+    - 4.2d `src/audio_info/audio_art.py` (production only; `tests/test_audio_art.py` reads
+      `audio_art_module.GENERATED_PATH` as an attribute and has no import to change)
+    - 4.2e `src/dir_processing/directory_processing.py` + `tests/test_directory_processing.py`
+    - 4.2f `tests/test_audio_metadata.py` (test import only)
+    - 4.2g `src/gui/wx_app.py`, then `main.py` (separate commits)
     - Verify `GENERATED_PATH` still resolves to the existing `src/generated_files` directory and that
-      generated output locations are unchanged; run the affected tests.
+      generated output locations are unchanged.
+    - After 4.2g: `git grep -n "src.generated_files" -- "*.py"` shows only `src/generated_files/__init__.py`
+      and its docstring; record both as intentional shims.
 
     **4.3 Migrate logging helpers and errors after Step 6**
     - These destinations do not exist until Step 6 moves the modules. Do not migrate these imports before then.
     - After the moves, return to this batch before Step 7: migrate production and test imports of logging
       helpers to `src.core.logging_config` and errors to `src.core.errors`, in separate atomic batches.
-    - Update corresponding string-based mock patch targets in each batch, run affected tests, and verify
+    - Update any string-based mock patch targets that refer to the old locations (none exist today), run affected tests, and verify
       CLI and GUI startup still initialize logging as expected.
     - Keep the old module shims and package compatibility surface until the callers for both destinations
       have migrated and Step 7 explicitly removes them.
