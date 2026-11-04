@@ -1,4 +1,6 @@
-## Plan: MusicProcessing MVC Refactor
+<!-- markdownlint-disable MD033 -->
+
+# Plan: MusicProcessing MVC Refactor
 
 Update this plan against the current repository state of the `gui` branch as of 2026-11-02.<br>
 Treat this file as the working implementation and sequencing prompt for refactoring the codebase into a Model-View-Controller layout;<br>
@@ -10,62 +12,81 @@ Retain audio-processing behavior, command-line subcommands, output file formats,
 Preserve the existing VS Code, Doxygen, and CI scaffolding.<br>
 Each milestone must leave the existing test suite passing.
 
-**Outline Alignment**
+## Outline Alignment
 
 Key goals of this plan:
 
 - Models never import `wx`, `argparse`, `tqdm`, or `yaspin`, and never reference widgets.
-- Controllers never read or write view widgets and never call private view methods. Views pass plain values in and
-  receive results through a small view interface.
+- Controllers never read or write view widgets and never call private view methods.
+- Views pass plain values in and receive results through a small view interface.
 - Views and the CLI are interchangeable front ends over the same models and controllers.
-- Progress and spinner display go through a `ProgressReporter` interface, so `AudioMetadata.create_album_dirs`
-  and `SubprocessUtilities` display correctly in both CLI mode (`tqdm`, `yaspin`) and the not-yet-coded GUI (`wx.Gauge` for both determinate and
-  indeterminate progress). `yaspin` is CLI-only and is never used in GUI mode.
-- Shared infrastructure (constants, paths, errors, logging) lives in `src/core/` and depends on nothing else in `src`.
-- Dependencies point inward: `views` and `cli` depend on `controllers`, `controllers` depend on `models`, and every
-  layer may depend on `core`.
+- Progress and spinner display go through a `ProgressReporter` interface
+  - `AudioMetadata.create_album_dirs` and `SubprocessUtilities` need to display correctly in both modes:
+    - CLI mode (`tqdm`, `yaspin`)
+    - not-yet-coded GUI (`wx.Gauge` for both determinate and indeterminate progress).
+  - `yaspin` is CLI-only and is never used in GUI mode.
+- Shared infrastructure (constants, paths, errors, logging, subprocess) lives in `src/core/` and depends on nothing else in `src`.
+- Dependencies point inward:
+  - `views` and `cli` depend on `controllers`
+  - `controllers` depend on `models`
+  - every layer may depend on `core`.
 
-**Incremental Migration And Compatibility**
+## Incremental Migration And Compatibility
 
-- Keep the existing `main.py` CLI and `src/gui/` GUI operational while their replacements are being built. Do not
-  remove, disable, or redirect either entry point merely because replacement modules exist.
-- Migrate in small steps behind the existing entry points. The existing CLI commands and GUI remain the usable
-  baseline while models, controllers, and replacement views are added; avoid requiring a branch switch to use them.
-- Switch an entry point only after its replacement meets the parity checks below. Until then, preserve the old path
-  and use compatibility adapters or re-exports where needed. Prefer having both paths call the same migrated
-  implementation over maintaining duplicate business logic.
-- After a successful cutover, keep the old entry point as a thin adapter for any remaining callers. Remove obsolete
-  implementation only after its callers and compatibility requirements have been checked.
-- This is a staged migration, not a requirement to keep two complete implementations indefinitely: retire old
-  implementations after their replacement is verified and the cutover is complete.
-- CLI parity means unchanged subcommand names, arguments, validation, help output, exit behavior, and observable
-  processing/output behavior. GUI parity means successful startup and manual verification of every existing tab's
-  primary workflow, validation, progress/busy behavior, dialogs, and generated outputs.
+- Keep the existing `main.py` CLI and `src/gui/` GUI operational while their replacements are being built.
+  - Do not remove, disable, or redirect either entry point merely because replacement modules exist.
+- Migrate in small steps behind the existing entry points.
+  - The existing CLI commands and GUI remain the usable baseline while models, controllers, and replacement views are added.
+  - Avoid requiring a branch switch to use them.
+- Switch an entry point only after its replacement meets the parity checks below.
+  - Until then, preserve the old path and use compatibility adapters or re-exports where needed.
+  - Prefer having both paths call the same migrated implementation over maintaining duplicate business logic.
+- After a successful cutover, keep the old entry point as a thin adapter for any remaining callers.
+  - Remove obsolete implementation only after its callers and compatibility requirements have been checked.
+- This is a staged migration, not a requirement to keep two complete implementations indefinitely:
+  - retire old implementations after their replacement is verified and the cutover is complete.
+- CLI parity means unchanged subcommand names, arguments, validation, help output, exit behavior, and observable processing/output behavior.
+- GUI parity means successful startup and manual verification of every existing tab's:
+  - primary workflow, validation, progress/busy behavior, dialogs, and generated outputs.
 
-**Repository Snapshot**
+## Repository Snapshot
 
-1. Models, flat by area: `src/audio_info/` (`AudioArt`, `AudioMetadata`, `AudioPlaylist`, `AudioUtilities`),
-   `src/audio_normalize/audio_normalization.py`, and `src/dir_processing/directory_processing.py`.
-2. GUI: `src/gui/wx_app.py` (`MainFrame`, about 1,000 lines, builds every panel, validates input, runs worker threads)
-   and `src/gui/handlers.py` (`EventHandlers`).
-3. Coupling: `EventHandlers` reads widgets directly (`self.frame.convert_file_path.GetValue()`) and calls private
-   frame methods (`_validate_dir`, `run_task`, `_show_generated_files_dialog`). Module-level model instances
-   (`art`, `metadata`, `directory`, `normalization`, `playlist`) are created in `handlers.py`.
-4. CLI: `main.py` holds `CustomHelpFormatter`, `CustomArgumentParser`, one wrapper function per subcommand, a
-   `main(args)` if-chain dispatcher, `existing_file` and `existing_path` validators, and the parser construction under
-   `if __name__ == "__main__"`. The `gui` subcommand is dispatched from the same `main`.
-5. Infrastructure at `src/` root: `errors.py`, `level_filter.py`, `logging_config.py`, `subprocess_utils.py` (all move to `core/`; `subprocess_utils.py` is generic infrastructure, not a model).
-6. `src/__init__.py` mixes package marker, re-exports (errors, logging helpers, `GENERATED_PATH`), and all constants
-   (audio, directory, log, and `ARG_CLI_*` / `ARG_HELP_*` strings).
-7. `src/generated_files/` mixes runtime output (CSV, text results, `.m3u`) with static GUI assets
-   (`icon_files/`, `licenses/`) and user-supplied `AlbumArt/*.jpg` (read by `set_album_art`); its `__init__.py` exports `GENERATED_PATH`.
-8. Progress display: `AudioMetadata.create_album_dirs` uses `tqdm` directly and `SubprocessUtilities` uses `yaspin`
-   directly. Neither has a GUI equivalent yet.
+1. Models, flat by area:
+  - `src/audio_info/` (`AudioArt`, `AudioMetadata`, `AudioPlaylist`, `AudioUtilities`)
+  - `src/audio_normalize/audio_normalization.py`
+  - `src/dir_processing/directory_processing.py`.
+2. GUI:
+  - `src/gui/wx_app.py` (`MainFrame`, about 1,000 lines, builds every panel, validates input, runs worker threads)
+  - `src/gui/handlers.py` (`EventHandlers`).
+3. Coupling:
+  - `EventHandlers` reads widgets directly (`self.frame.convert_file_path.GetValue()`)
+    - calls private frame methods (`_validate_dir`, `run_task`, `_show_generated_files_dialog`).
+  - Module-level model instances (`art`, `metadata`, `directory`, `normalization`, `playlist`) are created in `handlers.py`.
+4. CLI:
+  - `main.py` holds `CustomHelpFormatter`, `CustomArgumentParser`, one wrapper function per subcommand
+    - a `main(args)` if-chain dispatcher, `existing_file` and `existing_path` validators
+    - the parser construction under `if __name__ == "__main__"`.
+  - The `gui` subcommand is dispatched from the same `main`.
+5. Infrastructure at `src/` root:
+  - `errors.py`, `level_filter.py`, `logging_config.py`, `subprocess_utils.py`
+    - all move to `core/`, `subprocess_utils.py` is generic infrastructure, not a model.
+6. `src/__init__.py`
+  - mixes package marker, re-exports (errors, logging helpers, `GENERATED_PATH`)
+  - has all constants (audio, directory, log, and `ARG_CLI_*` / `ARG_HELP_*` strings).
+7. `src/generated_files/`
+  - mixes runtime output (CSV, text results, `.m3u`) with static GUI assets (`icon_files/`, `licenses/`)
+  - contains user-supplied `AlbumArt/*.jpg` (read by `set_album_art`)
+  - its `__init__.py` exports `GENERATED_PATH`.
+8. Progress display:
+  - `AudioMetadata.create_album_dirs` uses `tqdm` directly.
+  - `SubprocessUtilities` uses `yaspin` directly.
+  - Neither has a GUI equivalent yet.
 9. Tests are flat under `tests/` (one module per model plus `test_gui.py` and `test_subprocess_utilities.py`).
-   `test_gui.py` is a smoke test (`MainFrame` instantiation and `run_gui` callable). `tests/__init__.py` holds fixture
-   paths and expected values; `tests/Music/` and `expected.*` hold fixture data.
+  - `test_gui.py` is a smoke test (`MainFrame` instantiation and `run_gui` callable).
+  - `tests/__init__.py` holds fixture paths and expected values.
+  - `tests/Music/` and `expected.*` hold fixture data.
 
-**Target Structure**
+## Target Structure
 
 ```text
 MusicProcessing/
@@ -104,7 +125,7 @@ MusicProcessing/
 │   │   ├── audio_playlist.py
 │   │   ├── audio_utilities.py
 │   │   ├── audio_normalization.py
-│   │   ├── directory_processing.py
+│   │   └── directory_processing.py
 │   │
 │   ├── resources/                    # New, static view assets (icons, licenses); no __init__.py
 │   │   ├── AlbumArt/                 # User-supplied album art jpegs (read by set_album_art); git-ignored, not fixtures; no __init__.py
@@ -129,10 +150,10 @@ MusicProcessing/
 └── main.py                           # Entry point: parses args, runs GUI or CLI
 ```
 
-**Execution Milestones**
+## Execution Milestones
 
 1. Milestone 1: Baseline and safety net
-  - Record the current passing state before moving anything. COMPLETED
+  - Record the current passing state before moving anything. COMPLETED, gui & development branches verified/committed.
   - Files: `tests/`, `.github/workflows/python-app.yml`
   - Work:
     - run the full suite and record any pre-existing failures RESULT: all tests pass, no skips
@@ -141,7 +162,7 @@ MusicProcessing/
     - run the full suite COMPLETED
     - run ci locally COMPLETED
     - merge gui branch into development COMPLETED
-    - create a new branch for the upcoming core extraction work COMPLETED
+    - create a new branch for the upcoming core extraction work COMPLETED, feature/mvc-refactoring
   - Exit criteria: a known-good baseline exists, and CI runs the suite.
 
 COMPLETED
@@ -163,14 +184,14 @@ COMPLETED
   - Work:
     - split constants: audio, directory, log, and encoding constants go to `core/constants.py` COMPLETED
     - `ARG_CLI_*` and `ARG_HELP_*` go to `cli/constants.py` (Milestone 5) COMPLETED
-    - move `GENERATED_PATH` to `core/paths.py` and add `RESOURCES_PATH`
-    - keep temporary re-exports in the old locations so imports continue to resolve
-    - empty `src/__init__.py` last, to avoid circular imports
+    - move `GENERATED_PATH` to `core/paths.py` and add `RESOURCES_PATH` COMPLETED
+    - keep temporary re-exports in the old locations so imports continue to resolve COMPLETED
+    - empty `src/__init__.py` last, to avoid circular imports IN PROGRESS
 
     **Step 0**: Preparation COMPLETED
 
-    On feature/mvc-refactoring, run the full suite once to confirm the baseline. COMPLETED<br>
-    Find where each name is used, so the split follows real usage: COMPLETED<br>
+    On feature/mvc-refactoring, run the full suite once to confirm the baseline.<br>
+    Find where each name is used, so the split follows real usage:<br>
     grep -rnE "from src import|import src" --include=*.py .<br>
     Check ARG_* and APP_NAME especially, since main.py and the GUI may use them.
 
@@ -206,8 +227,9 @@ COMPLETED
       - These are useful for distinguishing runtime-generated files from static resources, but they are not all Python imports
       to change in this step.
 
-    Use the inventory to plan small, reviewable migration batches:<br>
-    migrate production imports by destination module, then update the related tests and any string-based mock patch targets.<br>
+    Use the inventory to plan small, reviewable migration batches:
+
+    Migrate production imports by destination module, then update the related tests and any string-based mock patch targets.<br>
     Keep each test module in `tests/`; do not reorganize or move tests as part of this work.<br>
     Leave all imports unchanged during this inventory step.
 
@@ -217,17 +239,17 @@ COMPLETED
 
     **Step 2** Add the destination modules COMPLETED
 
-    Create src/core/ and src/cli/, with lightweight __init__.py files. COMPLETED<br>
-    Add: src/core/constants.py COMPLETED
-      - for the application, audio, directory, logging, encoding, and normalization constants currently in src/__init__.py:
+    Create src/core/ and src/cli/, with lightweight `__init__.py` files.<br>
+    Add: src/core/constants.py
+      - for the application, audio, directory, logging, encoding, and normalization constants currently in `src/__init__.py`:
         - APP_NAME, ASF_TYPE, AUDIO_EXTS, AUDIO_FILES, CSV_DIR, CSV_EXT, ERROR_LOG_FORMAT, FLAC_EXT, FLAC_TYPE
         - FOLDER_ART, ILT, LRA, LOG_DIR, LOG_EXT, LRA, M3U_EXT, M4A_EXT, MP3_EXT, MP3_TYPE, MP4_TYPE, MUSIC_TLD
         - PLAYLIST_EXTS, PLAYLIST_TYPES, RESULT_DIR, RESULT_EXT, TP, UTF8, WMA_EXT
 
-    Add: src/cli/constants.py COMPLETED
+    Add: `src/cli/constants.py`
       -  for all ARG_CLI_* and ARG_HELP_* constants. Keep them; they’re planned CLI API, not unused constants.
 
-    Add: src/core/paths.py COMPLETED
+    Add: `src/core/paths.py`
       - for GENERATED_PATH and RESOURCES_PATH.
         - Initially, GENERATED_PATH must resolve to the existing src/generated_files directory.
         - Set RESOURCES_PATH to the planned static-assets directory, src/resources, and use it when the assets move.
@@ -236,32 +258,56 @@ COMPLETED
 
     **Step 3** Preserve compatibility from src
 
-    Goal: `src/__init__.py` re-exports the constants and paths from `core/`, so `from src import AUDIO_EXTS` and
-    `from src.core.constants import AUDIO_EXTS` both work and return the same object. Errors, logging helpers and
-    package logging initialization stay exactly as they are.
+    Goal:<br>
+    `src/__init__.py` re-exports the constants and paths from `core/`,<br>
+    so `from src import AUDIO_EXTS` and `from src.core.constants import AUDIO_EXTS` both work and return the same object.<br>
+    Errors, logging helpers and package logging initialization stay exactly as they are.
 
     Do these in order, one at a time:
 
-    3.1 Baseline: run the full test suite and record the result. Do not continue if it is not green.
-    3.2 In `src/__init__.py`, add one explicit import line per name from `src.core.constants` (no wildcard, no
-        parenthesized multi-name imports; keep the existing `from x import NAME  # comment` style):
-        APP_NAME, ASF_TYPE, AUDIO_EXTS, AUDIO_FILES, CSV_DIR, CSV_EXT, ERROR_LOG_FORMAT, FLAC_EXT, FLAC_TYPE, FOLDER_ART,
-        ILT, LOG_DIR, LOG_EXT, LRA, M3U_EXT, M4A_EXT, MP3_EXT, MP3_TYPE, MP4_TYPE, MUSIC_TLD, PLAYLIST_EXTS,
-        PLAYLIST_TYPES, RESULT_DIR, RESULT_EXT, TP, UTF8, WMA_EXT.
-    3.3 In `src/__init__.py`, delete the matching literal assignments (`APP_NAME = "Music Processing"` ... `WMA_EXT = ".wma"`)
-        and their doc comments. Place the new imports above the `configure_package_logging(...)` call, because that call
-        uses CSV_DIR, LOG_DIR, RESULT_DIR, LOG_EXT, UTF8 and ERROR_LOG_FORMAT.
-    3.4 Replace `from src.generated_files import GENERATED_PATH` with `from src.core.paths import GENERATED_PATH`.
-        Leave the `src.errors` and `src.logging_config` imports untouched (they move in Step 6).
-    3.5 Do NOT import `ARG_CLI_*` / `ARG_HELP_*` into `src/__init__.py`; they live only in `src.cli.constants`.
-    3.6 Confirm `__all__` still lists every name above (add `APP_NAME`, which is missing today) and add `GENERATED_PATH`
-        and `RESOURCES_PATH` only if existing callers need them from `src`. Keep it alphabetized.
+    3.1 Baseline: COMPLETED, PASSED
+      - run the full test suite and record the result. Do not continue if it is not green.
+
+    3.2 In `src/__init__.py` COMPLETED
+      - add one explicit import line per name from `src.core.constants`
+      - (no wildcard, no parenthesized multi-name imports; keep the existing `from x import NAME  # comment` style):
+        - APP_NAME, ASF_TYPE, AUDIO_EXTS, AUDIO_FILES, CSV_DIR, CSV_EXT, ERROR_LOG_FORMAT, FLAC_EXT, FLAC_TYPE, FOLDER_ART
+        - ILT, LOG_DIR, LOG_EXT, LRA, M3U_EXT, M4A_EXT, MP3_EXT, MP3_TYPE, MP4_TYPE, MUSIC_TLD, PLAYLIST_EXTS
+        - PLAYLIST_TYPES, RESULT_DIR, RESULT_EXT, TP, UTF8, WMA_EXT.
+
+    3.3 In `src/__init__.py` COMPLETED
+      - delete the matching literal assignments (`APP_NAME = "Music Processing"` ... `WMA_EXT = ".wma"`) and doc comments.
+      - Place the new imports above the `configure_package_logging(...)` call
+      - because that call uses CSV_DIR, LOG_DIR, RESULT_DIR, LOG_EXT, UTF8 and ERROR_LOG_FORMAT.
+
+    3.4 Replace `from src.generated_files import GENERATED_PATH` with `from src.core.paths import GENERATED_PATH`. COMPLETED
+      - Leave the `src.errors` and `src.logging_config` imports untouched (they move in Step 6). COMPLETED
+
+    3.5 Do NOT import `ARG_CLI_*` / `ARG_HELP_*` into `src/__init__.py` COMPLETED
+      - they live only in `src.cli.constants`.
+
+    3.6 Update `__all__` in `src/__init__.py`:
+      - add `"APP_NAME"` (imported in 3.2 but missing from `__all__` today) COMPLETED
+      - add `"GENERATED_PATH"`: COMPLETED
+        - it is already imported into `src` and is part of the old export surface that Step 7 removes
+        - listing it keeps `from src import *` and the "old paths" promise accurate during migration
+      - do NOT add `"RESOURCES_PATH"`: COMPLETED
+        - it is new, has no old callers, and must only be imported from `src.core.paths`, (do not import it into `src/__init__.py` at all)
+      - keep entries alphabetized, matching the existing ordering style COMPLETED
+      - note: today every caller imports `GENERATED_PATH` from `src.generated_files`:
+        - `main.py`, `src/gui/wx_app.py`, `directory_processing.py`, `audio_art.py`, `audio_playlist.py`, tests, not from `src`
+        - those move to `src.core.paths` in Step 4, so the `src` re-export is only a safety net and is removed in Step 7
+
     3.7 Verify identity with a throwaway check (do not commit it):
-        `python -c "import src, src.core.constants as c; assert all(getattr(src, n) is getattr(c, n) for n in src.__all__ if hasattr(c, n))"`
-        and `python -c "from src import GENERATED_PATH; from src.core.paths import GENERATED_PATH as g; assert GENERATED_PATH == g"`.
-    3.8 Confirm `GENERATED_PATH` still resolves to the existing `src/generated_files` directory and that logging
-        initialization still creates the same csv/log/result directories.
-    3.9 Confirm `src/core/` and `src/cli/` import nothing from `src` (`grep -rn "^from src import\|^import src$" src/core src/cli` is empty).
+      - `python -c "import src, src.core.constants as c; assert all(getattr(src, n) is getattr(c, n) for n in src.__all__ if hasattr(c, n))"`
+      - `python -c "from src import GENERATED_PATH; from src.core.paths import GENERATED_PATH as g; assert GENERATED_PATH == g"`.
+
+    3.8 Confirm `GENERATED_PATH` still resolves to the existing `src/generated_files` directory COMPLETED
+      - logging initialization still creates the same csv/log/result directories.
+
+    3.9 Confirm `src/core/` and `src/cli/` import nothing from `src` COMPLETED
+      - `grep -rn "^from src import\|^import src$" src/core src/cli` is empty.
+
     3.10 Run the full test suite, then `python main.py --help`; both must match the 3.1 baseline. Commit as one commit.
 
     **Step 4** Migrate imports in small batches
@@ -437,7 +483,7 @@ COMPLETED
     - move test modules into mirrored folders if chosen in Milestone 1
   - Exit criteria: full suite and CI pass with only the new import paths.
 
-**Test And Validation Status**
+## Test And Validation Status
 
 1. Existing: unit tests per model, a `SubprocessUtilities` test, and a GUI smoke test; fixture data in `tests/Music/`.
 2. Fixtures (`tests/Music/`, `expected.*`, the CSV and M3U files) do not change.
@@ -447,7 +493,7 @@ COMPLETED
 4. New tests: progress interface, CLI parser and dispatch, controllers (with a fake view), and reporter selection.
 5. Run after every milestone: the full suite plus a manual smoke run of one CLI subcommand and the GUI.
 
-**Repo Risks And Mismatches**
+## Repo Risks And Mismatches
 
 1. `src/__init__.py` imports from submodules that import back from `src`
   1. moving constants and errors to `core/` removes the cycle, but the order of edits matters. Empty the root `__init__.py` last.
@@ -461,7 +507,7 @@ COMPLETED
 6. `docs/planning/TODO.txt` includes a GUI logging item (run_task output to both the display and a log file); the
    controller and view interface in Milestone 6 is the natural place to resolve it, but it is out of scope unless added here.
 
-**Relevant Files**
+## Relevant Files
 
 - `main.py` - current CLI parser, dispatcher, and entry point.
 - `src/__init__.py` - current constants and re-exports.
@@ -475,7 +521,7 @@ COMPLETED
 - `.github/workflows/python-app.yml` - CI test workflow.
 - `Doxyfile`, `docs/md_files/` - documentation that references the layout.
 
-**Verification**
+## Verification
 
 1. The full test suite passes at the end of every milestone.
 2. `main.py <subcommand> --help` output matches the pre-refactor output for every subcommand.
@@ -489,7 +535,7 @@ COMPLETED
 8. `create_album_dirs` and the subprocess spinner display correctly in CLI mode and report through `ProgressReporter`
    (verified with `FakeProgress`); the GUI gauge (including pulse mode for subprocess runs) is verified manually once Milestone 7 is complete.
 
-**Decisions**
+## Decisions
 
 - `tqdm` stays out of models and controllers. In the GUI it is optional and only via `TextCtrlStream`; `GaugeProgress` is primary.
 - A single root `.gitignore` is the only ignore file; no nested `.gitignore` files.
@@ -502,7 +548,7 @@ COMPLETED
 - Keep static assets in the repository and runtime output out of the source tree.
 - Keep the project's Doxygen comment style for all moved and new modules.
 
-**Further Considerations**
+## Further Considerations
 
 1. Test layout: flat `tests/` works, but mirroring `src/` (`tests/models/`, `tests/controllers/`, `tests/cli/`,
    `tests/views/`) scales better. Decide in Milestone 1. DECISION: flat for now. Mirror in Milestone 10.
