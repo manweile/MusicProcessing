@@ -256,7 +256,7 @@ COMPLETED
 
     At this stage, add the new definitions without changing existing imports.
 
-    **Step 3** Preserve compatibility from src
+    **Step 3** Preserve compatibility from src COMPLETED
 
     Goal:<br>
     `src/__init__.py` re-exports the constants and paths from `core/`,<br>
