@@ -36,12 +36,12 @@ from mutagen.mp4 import MP4                                 # for handling MP4 a
 from src import add_module_handler                          # for adding a module-specific handler to the logger
 
 # Local Module Constants
-from src import AUDIO_EXTS                                  # for supported audio file extensions
-from src import FOLDER_ART                                  # for folder art directory
-from src import FLAC_EXT                                    # for FLAC file extension
-from src import M4A_EXT                                     # for M4A file extension
-from src import MP3_EXT                                     # for MP3 file extension
-from src import WMA_EXT                                     # for WMA file extension
+from src.core.constants import AUDIO_EXTS                   # for supported audio file extensions
+from src.core.constants import FOLDER_ART                   # for folder art directory
+from src.core.constants import FLAC_EXT                     # for FLAC file extension
+from src.core.constants import M4A_EXT                      # for M4A file extension
+from src.core.constants import MP3_EXT                      # for MP3 file extension
+from src.core.constants import WMA_EXT                      # for WMA file extension
 from src.generated_files import GENERATED_PATH              # for generated files path
 
 # Local Module Classes

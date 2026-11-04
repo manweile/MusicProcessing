@@ -29,9 +29,9 @@ from unittest.mock import patch                             # for write-operatio
 from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
-from src import FOLDER_ART                                  # for album-art fixture filenames
-from src import MP3_EXT                                     # for MP3 file-pattern extraction tests
-from src import PLAYLIST_EXTS                               # for invalid file-pattern extraction tests
+from src.core.constants import FOLDER_ART                   # for album-art fixture filenames
+from src.core.constants import MP3_EXT                      # for MP3 file-pattern extraction tests
+from src.core.constants import PLAYLIST_EXTS                # for invalid file-pattern extraction tests
 from tests import TEST_FLAC_ALANNAH_MYLES                   # for FLAC album-art extraction tests
 from tests import TEST_M3U                                  # for invalid audio input tests
 from tests import TEST_M4A_DAVIS                            # for M4A album-art extraction tests
@@ -461,7 +461,7 @@ class TestAudioArt(TestCase):
 
         @test Happy path.
 
-        @param self {TestAudioArt} The instance of the test class.
+        @param self: (TestAudioArt) The instance of the test class.
         '''
 
         with tempfile.TemporaryDirectory() as generated_path:
@@ -473,11 +473,22 @@ class TestAudioArt(TestCase):
             )
 
             original_join = os.path.join
-            join_side_effect = lambda *paths: (
-                album_art_dir
-                if paths == (audio_art_module.GENERATED_PATH, audio_art_module.ALBUM_ART)
-                else original_join(*paths)
-            )
+
+            def join_side_effect(*paths):
+                '''
+                @brief Redirect the generated album-art path to the isolated fixture.
+
+                @details Returns the temporary album-art directory for the generated album-art path and defers all other joins to the original function.
+
+                @param paths: (tuple[str, ...]) Path components passed to os.path.join.
+
+                @return The temporary album-art directory or the normally joined path.
+                '''
+
+                if paths == (audio_art_module.GENERATED_PATH, audio_art_module.ALBUM_ART):
+                    return album_art_dir
+                return original_join(*paths)
+
             with patch("src.audio_info.audio_art.os.path.join", side_effect=join_side_effect):
                 art.set_album_art(TESTS_TLD)
 

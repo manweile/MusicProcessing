@@ -326,6 +326,7 @@ COMPLETED
       - `from src.generated_files import GENERATED_PATH` line (4.2).
       - Leave `add_module_handler` and error imports for 4.3.
     - Keep behavior unchanged; do not combine unrelated destinations in one batch.
+    - for each test suite, do a search for `@patch` to see if there are any string-based patch targets that may need review.
     - String-based mock patch targets in the tests are module attributes on the consuming module so none need changing in 4.1 or 4.2.
       - for example `src.audio_info.audio_art.os.path.join`
       - If a string-based patch target may refer to a migrated name, check for that name before and after.
@@ -357,7 +358,8 @@ COMPLETED
     - 4.1e `src/audio_info/audio_playlist.py` + `tests/test_audio_playlist.py` COMPLETED ALL TESTS PASS
       - the test only imports `PlaylistError`, which stays until 4.3, so only the production module changes
       - `AUDIO_EXTS`, `MP3_EXT`, `PLAYLIST_EXTS`
-    - 4.1f `src/audio_info/audio_art.py` + `tests/test_audio_art.py`
+    - 4.1f `src/audio_info/audio_art.py` + `tests/test_audio_art.py` COMPLETED ALL TESTS PASS
+      - `AUDIO_EXTS`, `FOLDER_ART`, `FLAC_EXT`, `M4A_EXT`, `MP3_EXT`, `WMA_EXT`, `PLAYLIST_EXTS`
     - 4.1g `src/audio_info/audio_metadata.py` + `tests/test_audio_metadata.py`
     - 4.1h `src/dir_processing/directory_processing.py` + `tests/test_directory_processing.py`
     - 4.1i `src/gui/wx_app.py` and `main.py`; run `python main.py --help`
