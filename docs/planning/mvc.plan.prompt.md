@@ -354,8 +354,9 @@ COMPLETED
       - `ILT`, `LRA`, `MP3_EXT`, `TP`, `RESULT_DIR`, `RESULT_EXT`
     - 4.1d `src/audio_normalize/audio_normalization.py` + `tests/test_audio_normalization.py` COMPLETED ALL TESTS PASS
       - `ILT`, `LRA`, `MUSIC_TLD`, `TP`, `MP3_EXT`
-    - 4.1e `src/audio_info/audio_playlist.py` + `tests/test_audio_playlist.py`
-      (the test only imports `PlaylistError`, which stays until 4.3, so only the production module changes)
+    - 4.1e `src/audio_info/audio_playlist.py` + `tests/test_audio_playlist.py` COMPLETED ALL TESTS PASS
+      - the test only imports `PlaylistError`, which stays until 4.3, so only the production module changes
+      - `AUDIO_EXTS`, `MP3_EXT`, `PLAYLIST_EXTS`
     - 4.1f `src/audio_info/audio_art.py` + `tests/test_audio_art.py`
     - 4.1g `src/audio_info/audio_metadata.py` + `tests/test_audio_metadata.py`
     - 4.1h `src/dir_processing/directory_processing.py` + `tests/test_directory_processing.py`
