@@ -26,7 +26,7 @@ from unittest.mock import patch                             # for patched subpro
 from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
-from src import UTF8                                        # for decoding error fixture encoding
+from src.core.constants import UTF8                         # for UTF-8 text encoding
 from tests import TEST_M3U                                  # for invalid file-type tests
 from tests import TEST_MP3_CRUSH                            # for valid media command tests
 from tests import TEST_WAV_NONE                             # for non-existent file tests

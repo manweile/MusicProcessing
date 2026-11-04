@@ -321,14 +321,24 @@ COMPLETED
 
     Each batch below is one atomic change:
     - Each batch is one commit and touches one module plus its test file.
-    - Edit only that module's `from src import <CONSTANT>` lines (4.1) or `from src.generated_files import GENERATED_PATH` line (4.2).
+    - Edit only that module's:
+      - `from src import <CONSTANT>` lines (4.1)
+      - `from src.generated_files import GENERATED_PATH` line (4.2).
       - Leave `add_module_handler` and error imports for 4.3.
     - Keep behavior unchanged; do not combine unrelated destinations in one batch.
-    - String-based mock patch targets in the tests are module attributes on the consuming module
-      (for example `src.audio_info.audio_art.os.path.join`), so none need changing in 4.1 or 4.2.
-      Confirm with `git grep -nE "patch.*src\." -- <test file>` before and after.
-    - Check: `git grep -nE "^from src import (<migrated names>)\b" -- <files>` is empty, run that
-      module's test file, then commit.
+    - String-based mock patch targets in the tests are module attributes on the consuming module so none need changing in 4.1 or 4.2.
+      - for example `src.audio_info.audio_art.os.path.join`
+      - If a string-based patch target may refer to a migrated name, check for that name before and after.
+        - Check: `git grep -nE 'patch.*<CONSTANT>|<CONSTANT>.*patch' -- tests/test_<CLASS>.py`.
+        - eg `git grep -nE 'patch.*UTF8|UTF8.*patch' -- tests/test_subprocess_utilities.py`
+        - no output means no same-line patch target mentions `<CONSTANT>`
+        - If it prints a line, inspect the patch target; a match is a cue to review, not proof it must change.<br>
+        For example, `@patch('src.subprocess_utils.UTF8')` targets the name where subprocess_utils uses it.<br>
+        That target can stay the same after changing the import to from src.core.constants import UTF8.<br>
+        If a target instead points to the old source, such as src.UTF8, check whether that’s actually where the code under test looks up UTF8;<br>
+        update it only if the import migration changed that lookup.
+    - Check: if `git grep -nE "^from src import (<migrated names>)\b" -- <files>` is empty, run that module's test file, then commit.
+      - eg `git grep -nE '^from src import UTF8\b' -- src/subprocess_utils.py tests/test_subprocess_utilities.py`
     - If a check fails, fix the batch or restore its pre-batch state before starting another batch.
     - Never leave a partially migrated batch as the new baseline.
     - Keep the `src` and `src.generated_files` compatibility exports until Step 7.
@@ -336,8 +346,8 @@ COMPLETED
     Do these batches in order:
 
     **4.1 Migrate constants to `src.core.constants`**
-    - 4.1a `tests/__init__.py` (`MUSIC_TLD`); run the full suite, since every test imports this package COMPLETED
-    - 4.1b `src/subprocess_utils.py` + `tests/test_subprocess_utilities.py` (`UTF8`)
+    - 4.1a `tests/__init__.py` (`MUSIC_TLD`); run the full suite, since every test imports this package COMPLETED, ALL TESTS PASS
+    - 4.1b `src/subprocess_utils.py` + `tests/test_subprocess_utilities.py` (`UTF8`) COMPLETED test_subprocess_utilities.py, ALL TESTS PASS
     - 4.1c `src/audio_info/audio_utilities.py` + `tests/test_audio_utilities.py`
     - 4.1d `src/audio_normalize/audio_normalization.py` + `tests/test_audio_normalization.py`
     - 4.1e `src/audio_info/audio_playlist.py` + `tests/test_audio_playlist.py`

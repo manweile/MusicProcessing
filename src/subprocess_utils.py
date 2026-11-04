@@ -31,7 +31,7 @@ from yaspin.spinners import Spinners                        # for spinner defini
 from src import add_module_handler                          # for module-specific logging handlers
 
 # Local Module Constants
-from src import UTF8                                        # for UTF-8 text encoding
+from src.core.constants import UTF8                         # for UTF-8 text encoding
 
 # Local Module Errors
 from src import FfmpegProcessError                          # for FFmpeg process failures
