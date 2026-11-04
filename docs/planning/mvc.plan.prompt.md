@@ -364,7 +364,9 @@ COMPLETED
       - many in both files
     - 4.1h `src/dir_processing/directory_processing.py` + `tests/test_directory_processing.py` COMPLETED ALL TESTS PASS
       - many in both files
-    - 4.1i `src/gui/wx_app.py` and `main.py`; run `python main.py --help`
+    - 4.1i `src/gui/wx_app.py` and `main.py` COMPLETED
+      - many in main.py
+      - run `python main.py --help`
     - Verify the migrated callers import the expected constant values.
 
     **4.2 Migrate `GENERATED_PATH` to `src.core.paths`**

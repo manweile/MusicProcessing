@@ -48,6 +48,7 @@ class TestGuiSmoke(unittest.TestCase):
         frame.Destroy()
         app.Destroy()
 
+
     def test_run_gui_callable(self):
         '''
         @brief Test that the run_gui function is callable.

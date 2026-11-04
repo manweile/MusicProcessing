@@ -22,10 +22,10 @@ import shutil                                               # terminal size look
 import sys                                                  # system-specific parameters and functions module
 
 # Local Module Constants
-from src import ERROR_LOG_FORMAT                            # error log format
-from src import LOG_DIR                                     # log directory
-from src import LOG_EXT                                     # log file extension
-from src import UTF8                                        # utf encoding for file writing
+from src.core.constants import ERROR_LOG_FORMAT             # error log format
+from src.core.constants import LOG_DIR                      # log directory
+from src.core.constants import LOG_EXT                      # log file extension
+from src.core.constants import UTF8                         # utf encoding for file writing
 from src.generated_files import GENERATED_PATH              # generated files path
 
 # Local Module Classes

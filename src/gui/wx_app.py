@@ -20,11 +20,11 @@ import wx                                                   # for wxPython GUI c
 from src import add_module_handler                          # for adding module-specific logging handlers
 
 # Local Module Constants
-from src import AUDIO_EXTS                                  # for audio file extensions
-from src import MUSIC_TLD                                   # top level directory for music files
-from src import PLAYLIST_EXTS                               # supported playlist file extensions
-from src import RESULT_DIR                                  # directory for storing test results
-from src import RESULT_EXT                                  # file extension for result files
+from src.core.constants import AUDIO_EXTS                   # for audio file extensions
+from src.core.constants import MUSIC_TLD                    # top level directory for music files
+from src.core.constants import PLAYLIST_EXTS                # supported playlist file extensions
+from src.core.constants import RESULT_DIR                   # directory for storing test results
+from src.core.constants import RESULT_EXT                   # file extension for result files
 from src.generated_files import GENERATED_PATH              # for generated files path
 
 # Local Module Classes
