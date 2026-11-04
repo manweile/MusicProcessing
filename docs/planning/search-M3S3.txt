@@ -18,14 +18,22 @@ PS D:\MusicProcessing> git status --short -- '*.py'
 PS D:\MusicProcessing>
 
 CLI:
-PS D:\MusicProcessing> $results = @(
->>     '--- Python imports and generated path ---'
->>     git grep -n -E 'from src import|from src\.generated_files|GENERATED_PATH' -- '*.py'
->>     ''
->>     '--- Generated resources and paths ---'
->>     git grep -n -E 'generated_files|icon_files|licenses|RESOURCES_PATH' -- .
->> )
-PS D:\MusicProcessing> $results | Set-Content -Path docs/planning/search.txt -Encoding utf8
+$ex = @(':(exclude)docs/planning', ':(exclude)docs/command_lines', ':(exclude)docs/scripts')
+
+$results = @(
+    '--- Python imports and generated path ---'
+    git grep --break -n -E 'from src import|from src\.generated_files|GENERATED_PATH' -- '*.py'
+    ''
+    '--- Multi-line and plain src imports ---'
+    git grep --break -n -E 'from src import \(|^\s*import src\b|from src\.[a-z_.]+ import \(' -- '*.py'
+    ''
+    '--- String-based mock patch targets ---'
+    git grep --break -n -E 'patch(\.object|\.dict)?\(' -- 'tests/*.py'
+    ''
+    '--- Generated resources and paths ---'
+    git grep --break -n -E 'generated_files|icon_files|licenses|RESOURCES_PATH' -- . @ex
+)
+$results | Set-Content -Path docs/planning/search.txt -Encoding utf8
 
 Results:
 --- Python imports and generated path ---

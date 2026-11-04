@@ -1,6 +1,4 @@
-﻿Progress: M3S3 before S4
-
---- Python imports and generated path ---
+﻿--- Python imports and generated path ---
 main.py:25:from src import ERROR_LOG_FORMAT                            # error log format
 main.py:26:from src import LOG_DIR                                     # log directory
 main.py:27:from src import LOG_EXT                                     # log file extension
@@ -139,6 +137,7 @@ tests/test_audio_normalization.py:88:        cls.norm_path = os.path.join(GENERA
 tests/test_audio_playlist.py:26:from src.generated_files import GENERATED_PATH              # for generated playlist output paths
 tests/test_audio_playlist.py:33:from src import PlaylistError                               # for expected playlist parsing errors
 tests/test_audio_playlist.py:63:        cls.generated_m3u = os.path.join(GENERATED_PATH, "test.m3u")
+
 tests/test_audio_utilities.py:27:from src import RESULT_DIR                                  # for result text directory
 tests/test_audio_utilities.py:28:from src import RESULT_EXT                                  # for result text extension
 tests/test_audio_utilities.py:29:from src.generated_files import GENERATED_PATH              # for generated output paths
@@ -170,6 +169,49 @@ tests/test_directory_processing.py:484:        target_path = os.path.join(GENERA
 tests/test_subprocess_utilities.py:29:from src import UTF8                                        # for decoding error fixture encoding
 tests/test_subprocess_utilities.py:36:from src import FfmpegProcessError                          # for expected ffmpeg command failures
 
+--- Multi-line and plain src imports ---
+
+--- String-based mock patch targets ---
+tests/test_audio_art.py:481:            with patch("src.audio_info.audio_art.os.path.join", side_effect=join_side_effect):
+tests/test_audio_art.py:565:    @patch("builtins.open", side_effect=BlockingIOError(errno.EWOULDBLOCK, "Operation blocked"))
+tests/test_audio_art.py:593:    @patch("builtins.open", side_effect=OSError(errno.EACCES, "Permission denied"))
+
+tests/test_audio_metadata.py:648:    @patch('src.audio_info.audio_metadata.SubprocessUtilities.popen_pipe')
+tests/test_audio_metadata.py:778:    @patch('src.audio_info.audio_metadata.SubprocessUtilities.subprocess_run')
+tests/test_audio_metadata.py:1258:        with patch.object(metadata, "normalize_filename") as mock_normalize_filename:
+tests/test_audio_metadata.py:1304:        with patch("src.audio_info.audio_metadata.FLAC", DummyFlacFile), patch.object(
+tests/test_audio_metadata.py:1306:        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+tests/test_audio_metadata.py:1381:            patch("src.audio_info.audio_metadata.MP3", DummyAudioFile),
+tests/test_audio_metadata.py:1382:            patch.object(metadata, "load_any_file", return_value=DummyAudioFile()),
+tests/test_audio_metadata.py:1383:            patch("src.audio_info.audio_metadata.os.rename") as mock_rename,
+tests/test_audio_metadata.py:1424:        with patch("src.audio_info.audio_metadata.MP4", DummyMp4File), patch.object(
+tests/test_audio_metadata.py:1426:        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+tests/test_audio_metadata.py:1465:        with patch("src.audio_info.audio_metadata.ASF", DummyWmaFile), patch.object(
+tests/test_audio_metadata.py:1467:        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+tests/test_audio_metadata.py:1587:        with patch("src.audio_info.audio_metadata.MP3", DummyAudioFile), patch.object(
+tests/test_audio_metadata.py:1735:    @patch("src.audio_info.audio_metadata.logger.error")
+tests/test_audio_metadata.py:1736:    @patch.object(AudioMetadata, "_AudioMetadata__set_genre")
+
+tests/test_audio_normalization.py:264:    @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
+tests/test_audio_normalization.py:354:    @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
+tests/test_audio_normalization.py:648:    @patch("src.audio_normalize.audio_normalization.TP", "2.0")
+tests/test_audio_normalization.py:671:    @patch.object(AudioNormalization, "get_volume_info", return_value={"max_volume": float(TP) - 1.0})
+tests/test_audio_normalization.py:733:    @patch.object(AudioNormalization, "get_volume_info", return_value={"mean_volume": float(TP), "max_volume": float(TP) - 1.0})
+
+tests/test_audio_playlist.py:154:    @patch('src.audio_info.audio_playlist.logger.warning')
+
+tests/test_audio_utilities.py:78:            patch_volume_info = patch(get_volume_info_path, return_value=volume_info)
+tests/test_audio_utilities.py:79:            patch_ebu_info = patch(get_ebu_info_path, return_value=ebu_info)
+tests/test_audio_utilities.py:80:            patch_create_txt = patch(create_txt_path)
+tests/test_audio_utilities.py:109:        with patch.object(
+tests/test_audio_utilities.py:233:    @patch("src.audio_info.audio_utilities.TP", "2.0")
+
+tests/test_directory_processing.py:491:    @patch('src.dir_processing.directory_processing.logger.error')
+tests/test_directory_processing.py:515:    @patch('src.dir_processing.directory_processing.logger.warning')
+
+tests/test_subprocess_utilities.py:242:    @patch('src.subprocess_utils.subprocess.Popen')
+tests/test_subprocess_utilities.py:357:    @patch('src.subprocess_utils.subprocess.run')
+
 --- Generated resources and paths ---
 .gitignore:177:src/generated_files/csv_files/
 .gitignore:178:src/generated_files/log_files/
@@ -179,305 +221,11 @@ README.md:243:| |_generated_files
 README.md:254:| | |_icon_files
 README.md:258:| | |_licenses
 
-docs/command_lines/ffmpeg/ffmpeg-normalization-debug-capture.txt:1:ffmpeg ~/ConvertedMusic/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
-docs/command_lines/ffmpeg/ffmpeg-normalization-debug-capture.txt:47: D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-Live.mp3
-docs/command_lines/ffmpeg/ffmpeg-normalize_dry_run.txt:32:gerald@msi-laptop:~$ ffmpeg-normalize /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3 -p -n -f
-docs/command_lines/ffmpeg/ffmpeg-normalize_dry_run.txt:42:        "input_file": "/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3",
-docs/command_lines/ffmpeg/ffmpeg-normalize_peak_normalize_copy_metadata_art.txt:2:ffmpeg-normalize F:\ConvertedMusic\Crush\Here\Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
-docs/command_lines/ffmpeg/ffmpeg-normalize_peak_normalize_copy_metadata_art.txt:5:ffmpeg-normalize /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3 -p -n -f
-docs/command_lines/ffmpeg/ffmpeg_convert_to_mp3_no_metdata_no_stream.txt:5:ffmpeg -hide_banner -i F:\PreppedMusic\Crush\Here\Crush-Live.mp3 -vn -map_metadata -1 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
-docs/command_lines/ffmpeg/ffmpeg_convert_to_mp3_no_metdata_no_stream.txt:9:ffmpeg -hide_banner -i D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -vn -map_metadata -1 -id3v2_version 3 -b:a 128198 D:\MusicProcessing\src\generated_files\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -y
-docs/command_lines/ffmpeg/ffmpeg_convert_to_mp3_no_metdata_no_stream.txt:11:ffmpeg -hide_banner -i D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -vn -map_metadata -1 -id3v2_version 3 -b:a 128198 -metadata TALB=Waterloo D:\MusicProcessing\src\generated_files\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -y
-docs/command_lines/ffmpeg/ffmpeg_convert_to_mp3_no_metdata_no_stream.txt:16:ffmpeg -hide_banner -i F:\PreppedMusic\Crush\Here\Crush-Live.mp3 -vn -map_metadata -1 -codec:a libmp3lame -b:a 128k D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
-docs/command_lines/ffmpeg/ffmpeg_convert_to_mp3_no_metdata_no_stream.txt:22:ffmpeg -hide_banner -i F:\PreppedMusic\Crush\Here\Crush-Live.mp3 -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128k D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
-docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:15:ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -an -map 0:v -map_metadata -1 -update 1 D:\MusicProcessing\src\generated_files\Music\Crush\Here\ffmpeg-Extracted-map-metadata.jpg -y
-docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:56:Output #0, image2, to 'D:\MusicProcessing\src\generated_files\Music\Crush\Here\ffmpeg-Extracted-map-metadata.jpg':
-docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:77:PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -an -vcodec copy -update 1 D:\MusicProcessing\src\generated_files\Music\Crush\Here\ffmpeg-Extracted.jpg -y
-docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:117:Output #0, image2, to 'D:\MusicProcessing\src\generated_files\Music\Crush\Here\cover.jpg':
-docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:160:gerald@msi-laptop:~$ ffmpeg -hide_banner -i ~/Music/Crush/Here/Crush-Live.mp3 -an -vcodec copy ~/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg -y
-docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:198:Output #0, image2, to '/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg':
-docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:236:[image2 @ 0x572e96184100] The specified filename '/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg' does not contain an image sequence pattern or a pattern is invalid.
-docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:245:gerald@msi-laptop:~$ ffmpeg -hide_banner -i ~/Music/Crush/Here/Crush-Live.mp3 -an -c:v copy ~/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg -y
-docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:283:Output #0, image2, to '/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg':
-docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:321:[image2 @ 0x5f30aac66100] The specified filename '/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg' does not contain an image sequence pattern or a pattern is invalid.
-docs/command_lines/ffmpeg/ffmpeg_loudnorm_2_pass_stats_normalization.txt:47:                    -threads 5 -ar 44100 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
-docs/command_lines/ffmpeg/ffmpeg_preserve_art.txt:12:"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
-docs/command_lines/ffmpeg/ffmpeg_preserve_art.txt:14:PS C:\Users\gmanw> ffmpeg -hide_banner -i "C:\Music\Crush\Here\Crush-Live.mp3"  -ab 128k -c:v copy -id3v2_version 3 "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
-docs/command_lines/ffmpeg/ffmpeg_preserve_art.txt:56:Output #0, mp3, to 'D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3':
-docs/command_lines/ffmpeg/ffmpeg_volumedetect_then_change.txt:21:"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3"
-docs/command_lines/ffmpeg/ffmpeg_volumedetect_then_change.txt:29:PS C:\Users\gmanw> ffmpeg -hide_banner -i "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -filter:a "volumedetect" -map 0:a -f null NUL
-
 docs/md_files/Workflow.md:477:Copy it to the special `/MusicProcessing/src/generated_files/AlbumArt` folder.
 docs/md_files/Workflow.md:618:The default save location is `/MusicProcessing/src/generated_files/Music`.
 docs/md_files/Workflow.md:646:The functions output a list, `clip-check-file.txt` in `/MusicProcessing/src/generated_files/result_files/`.
 docs/md_files/Workflow.md:707:Updated playlist files will be in the special `/MusicProcessing/src/generated_files/` directory, under `Music`.<br>
 docs/md_files/Workflow.md:727:The files are in the special `/MusicProcessing/src/generated_files/` directory, under `csv_file/`s and/or `result_files/`.<br>
-
-docs/planning/TODO.txt:52:    i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
-docs/planning/TODO.txt:60:    i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
-docs/planning/TODO.txt:65:  b) will need to add licenses etc
-docs/planning/TODO.txt:204:  12) think about moving generated_files from /src to root
-docs/planning/TODO.txt:235:  19) think hard about removing reliance on src/generated_files/Music for conversion and leveling
-docs/planning/TODO.txt:285:  29) think hard about removing reliance on src/generated_files/Music/AlbumArt for setting album art
-docs/planning/TODO.txt:369:  37) think about playlist updating writing to input directory or a target directory instead of generated_files
-
-docs/planning/mvc.plan.prompt.md:63:    - calls private frame methods (`_validate_dir`, `run_task`, `_show_generated_files_dialog`).
-docs/planning/mvc.plan.prompt.md:76:7. `src/generated_files/`
-docs/planning/mvc.plan.prompt.md:77:  - mixes runtime output (CSV, text results, `.m3u`) with static GUI assets (`icon_files/`, `licenses/`)
-docs/planning/mvc.plan.prompt.md:116:Γöé   Γöé   Γö£ΓöÇΓöÇ paths.py                  # GENERATED_PATH, RESOURCES_PATH
-docs/planning/mvc.plan.prompt.md:130:Γöé   Γö£ΓöÇΓöÇ resources/                    # New, static view assets (icons, licenses); no __init__.py
-docs/planning/mvc.plan.prompt.md:132:Γöé   Γöé   Γö£ΓöÇΓöÇ icon_files/               # Icon files; no __init__.py`
-docs/planning/mvc.plan.prompt.md:133:Γöé   Γöé   ΓööΓöÇΓöÇ licenses/                 # License files; no __init__.py
-docs/planning/mvc.plan.prompt.md:183:    - `src/generated_files/__init__.py`
-docs/planning/mvc.plan.prompt.md:187:    - move `GENERATED_PATH` to `core/paths.py` and add `RESOURCES_PATH` COMPLETED
-docs/planning/mvc.plan.prompt.md:210:    grep -RInE --include="*.py" "from src import|from src\\.generated_files|GENERATED_PATH" .
-docs/planning/mvc.plan.prompt.md:211:    grep -RInE --exclude-dir=.git "generated_files|icon_files|licenses|RESOURCES_PATH" .
-docs/planning/mvc.plan.prompt.md:214:    The first search in `search.txt` already includes `from src.generated_files` and `GENERATED_PATH`;<br>
-docs/planning/mvc.plan.prompt.md:219:    - `from src.generated_files import GENERATED_PATH` identifies callers of the old path export.
-docs/planning/mvc.plan.prompt.md:222:      - Retaining exports from `src` alone does not migrate imports from `src.generated_files`.
-docs/planning/mvc.plan.prompt.md:225:      - The initial `src.core.paths` definition must still resolve to the existing `src/generated_files` directory so this migration does not change output locations.
-docs/planning/mvc.plan.prompt.md:253:      - for GENERATED_PATH and RESOURCES_PATH.
-docs/planning/mvc.plan.prompt.md:254:        - Initially, GENERATED_PATH must resolve to the existing src/generated_files directory.
-docs/planning/mvc.plan.prompt.md:255:        - Set RESOURCES_PATH to the planned static-assets directory, src/resources, and use it when the assets move.
-docs/planning/mvc.plan.prompt.md:283:    3.4 Replace `from src.generated_files import GENERATED_PATH` with `from src.core.paths import GENERATED_PATH`. COMPLETED
-docs/planning/mvc.plan.prompt.md:294:      - do NOT add `"RESOURCES_PATH"`: COMPLETED
-docs/planning/mvc.plan.prompt.md:297:      - note: today every caller imports `GENERATED_PATH` from `src.generated_files`:
-docs/planning/mvc.plan.prompt.md:305:    3.8 Confirm `GENERATED_PATH` still resolves to the existing `src/generated_files` directory COMPLETED
-docs/planning/mvc.plan.prompt.md:328:    - Keep the `src` and `src.generated_files` compatibility exports until Step 7.
-docs/planning/mvc.plan.prompt.md:339:    - Change production and test imports from `src.generated_files` to `src.core.paths`.
-docs/planning/mvc.plan.prompt.md:341:    - Verify `GENERATED_PATH` still resolves to the existing `src/generated_files` directory and that
-docs/planning/mvc.plan.prompt.md:441:    - a view interface (`show_message`, `show_error`, `show_generated_files`, `set_busy`) implemented by the wx view
-docs/planning/mvc.plan.prompt.md:479:  - Files: `src/generated_files/`, `.gitignore`, `src/core/paths.py`
-docs/planning/mvc.plan.prompt.md:481:    - move `icon_files/` and `licenses/` to `src/resources/`
-docs/planning/mvc.plan.prompt.md:485:      - merge the rules from `src/generated_files/.gitignore` (`Music/**/*.*`, `test.m3u`, `AlbumArt/*.*`) and
-docs/planning/mvc.plan.prompt.md:553:- `src/generated_files/` - runtime output plus static GUI assets.
-
-docs/planning/search.txt:6:main.py:29:from src.generated_files import GENERATED_PATH              # generated files path
-docs/planning/search.txt:19:src/audio_info/audio_art.py:45:from src.generated_files import GENERATED_PATH              # for generated files path
-docs/planning/search.txt:38:src/audio_info/audio_playlist.py:29:from src.generated_files import GENERATED_PATH              # for generated file output paths
-docs/planning/search.txt:52:src/core/paths.py:38:GENERATED_PATH = os.path.join(SRC_PATH, "generated_files")  # same location (src/generated_files) until Milestone 9 Resources and generated output
-docs/planning/search.txt:66:src/dir_processing/directory_processing.py:43:from src.generated_files import GENERATED_PATH              # for generated file output paths
-docs/planning/search.txt:72:src/generated_files/__init__.py:19:## @var GENERATED_PATH
-docs/planning/search.txt:73:src/generated_files/__init__.py:22:GENERATED_PATH = os.path.dirname(os.path.abspath(__file__))
-docs/planning/search.txt:74:src/generated_files/__init__.py:26:# @details In modules needing the constant, add `from src.generated_files import GENERATED_PATH`.
-docs/planning/search.txt:75:src/generated_files/__init__.py:28:    "GENERATED_PATH",
-docs/planning/search.txt:82:src/gui/wx_app.py:28:from src.generated_files import GENERATED_PATH              # for generated files path
-docs/planning/search.txt:107:tests/test_audio_metadata.py:56:from src.generated_files import GENERATED_PATH              # path to generated files
-docs/planning/search.txt:119:tests/test_audio_normalization.py:37:from src.generated_files import GENERATED_PATH              # for generated output paths
-docs/planning/search.txt:121:tests/test_audio_playlist.py:26:from src.generated_files import GENERATED_PATH              # for generated playlist output paths
-docs/planning/search.txt:126:tests/test_audio_utilities.py:29:from src.generated_files import GENERATED_PATH              # for generated output paths
-docs/planning/search.txt:137:tests/test_directory_processing.py:40:from src.generated_files import GENERATED_PATH              # for generated test output paths
-docs/planning/search.txt:154:.gitignore:177:src/generated_files/csv_files/
-docs/planning/search.txt:155:.gitignore:178:src/generated_files/log_files/
-docs/planning/search.txt:156:.gitignore:179:src/generated_files/result_files/
-docs/planning/search.txt:157:README.md:243:| |_generated_files
-docs/planning/search.txt:158:README.md:254:| | |_icon_files
-docs/planning/search.txt:159:README.md:258:| | |_licenses
-docs/planning/search.txt:160:docs/command_lines/ffmpeg/ffmpeg-normalization-debug-capture.txt:1:ffmpeg ~/ConvertedMusic/Crush/Here/Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o ~/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3
-docs/planning/search.txt:161:docs/command_lines/ffmpeg/ffmpeg-normalization-debug-capture.txt:47: D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-Live.mp3
-docs/planning/search.txt:162:docs/command_lines/ffmpeg/ffmpeg-normalize_dry_run.txt:32:gerald@msi-laptop:~$ ffmpeg-normalize /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3 -p -n -f
-docs/planning/search.txt:163:docs/command_lines/ffmpeg/ffmpeg-normalize_dry_run.txt:42:        "input_file": "/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3",
-docs/planning/search.txt:164:docs/command_lines/ffmpeg/ffmpeg-normalize_peak_normalize_copy_metadata_art.txt:2:ffmpeg-normalize F:\ConvertedMusic\Crush\Here\Crush-Live.mp3 -c:a libmp3lame -b:a 128k --extra-output-options "-id3v2_version 3" --normalization-type peak --target-level 0 -f -o D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3
-docs/planning/search.txt:165:docs/command_lines/ffmpeg/ffmpeg-normalize_peak_normalize_copy_metadata_art.txt:5:ffmpeg-normalize /home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3 -p -n -f
-docs/planning/search.txt:166:docs/command_lines/ffmpeg/ffmpeg_convert_to_mp3_no_metdata_no_stream.txt:5:ffmpeg -hide_banner -i F:\PreppedMusic\Crush\Here\Crush-Live.mp3 -vn -map_metadata -1 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
-docs/planning/search.txt:167:docs/command_lines/ffmpeg/ffmpeg_convert_to_mp3_no_metdata_no_stream.txt:9:ffmpeg -hide_banner -i D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -vn -map_metadata -1 -id3v2_version 3 -b:a 128198 D:\MusicProcessing\src\generated_files\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -y
-docs/planning/search.txt:168:docs/command_lines/ffmpeg/ffmpeg_convert_to_mp3_no_metdata_no_stream.txt:11:ffmpeg -hide_banner -i D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -vn -map_metadata -1 -id3v2_version 3 -b:a 128198 -metadata TALB=Waterloo D:\MusicProcessing\src\generated_files\Music\Abba\Waterloo\ABBA-Waterloo.mp3 -y
-docs/planning/search.txt:169:docs/command_lines/ffmpeg/ffmpeg_convert_to_mp3_no_metdata_no_stream.txt:16:ffmpeg -hide_banner -i F:\PreppedMusic\Crush\Here\Crush-Live.mp3 -vn -map_metadata -1 -codec:a libmp3lame -b:a 128k D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
-docs/planning/search.txt:170:docs/command_lines/ffmpeg/ffmpeg_convert_to_mp3_no_metdata_no_stream.txt:22:ffmpeg -hide_banner -i F:\PreppedMusic\Crush\Here\Crush-Live.mp3 -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128k D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
-docs/planning/search.txt:171:docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:15:ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -an -map 0:v -map_metadata -1 -update 1 D:\MusicProcessing\src\generated_files\Music\Crush\Here\ffmpeg-Extracted-map-metadata.jpg -y
-docs/planning/search.txt:172:docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:56:Output #0, image2, to 'D:\MusicProcessing\src\generated_files\Music\Crush\Here\ffmpeg-Extracted-map-metadata.jpg':
-docs/planning/search.txt:173:docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:77:PS C:\Users\gmanw> ffmpeg -hide_banner -i C:\Music\Crush\Here\Crush-Live.mp3 -an -vcodec copy -update 1 D:\MusicProcessing\src\generated_files\Music\Crush\Here\ffmpeg-Extracted.jpg -y
-docs/planning/search.txt:174:docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:117:Output #0, image2, to 'D:\MusicProcessing\src\generated_files\Music\Crush\Here\cover.jpg':
-docs/planning/search.txt:175:docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:160:gerald@msi-laptop:~$ ffmpeg -hide_banner -i ~/Music/Crush/Here/Crush-Live.mp3 -an -vcodec copy ~/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg -y
-docs/planning/search.txt:176:docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:198:Output #0, image2, to '/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg':
-docs/planning/search.txt:177:docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:236:[image2 @ 0x572e96184100] The specified filename '/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg' does not contain an image sequence pattern or a pattern is invalid.
-docs/planning/search.txt:178:docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:245:gerald@msi-laptop:~$ ffmpeg -hide_banner -i ~/Music/Crush/Here/Crush-Live.mp3 -an -c:v copy ~/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg -y
-docs/planning/search.txt:179:docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:283:Output #0, image2, to '/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg':
-docs/planning/search.txt:180:docs/command_lines/ffmpeg/ffmpeg_extact-album_art.txt:321:[image2 @ 0x5f30aac66100] The specified filename '/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/cover.jpg' does not contain an image sequence pattern or a pattern is invalid.
-docs/planning/search.txt:181:docs/command_lines/ffmpeg/ffmpeg_loudnorm_2_pass_stats_normalization.txt:47:                    -threads 5 -ar 44100 D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3 -y
-docs/planning/search.txt:182:docs/command_lines/ffmpeg/ffmpeg_preserve_art.txt:12:"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
-docs/planning/search.txt:183:docs/command_lines/ffmpeg/ffmpeg_preserve_art.txt:14:PS C:\Users\gmanw> ffmpeg -hide_banner -i "C:\Music\Crush\Here\Crush-Live.mp3"  -ab 128k -c:v copy -id3v2_version 3 "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -y
-docs/planning/search.txt:184:docs/command_lines/ffmpeg/ffmpeg_preserve_art.txt:56:Output #0, mp3, to 'D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3':
-docs/planning/search.txt:185:docs/command_lines/ffmpeg/ffmpeg_volumedetect_then_change.txt:21:"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3"
-docs/planning/search.txt:186:docs/command_lines/ffmpeg/ffmpeg_volumedetect_then_change.txt:29:PS C:\Users\gmanw> ffmpeg -hide_banner -i "D:\MusicProcessing\src\generated_files\Music\Crush\Here\Test-Crush-live.mp3" -filter:a "volumedetect" -map 0:a -f null NUL
-docs/planning/search.txt:187:docs/md_files/Workflow.md:477:Copy it to the special `/MusicProcessing/src/generated_files/AlbumArt` folder.
-docs/planning/search.txt:188:docs/md_files/Workflow.md:618:The default save location is `/MusicProcessing/src/generated_files/Music`.
-docs/planning/search.txt:189:docs/md_files/Workflow.md:646:The functions output a list, `clip-check-file.txt` in `/MusicProcessing/src/generated_files/result_files/`.
-docs/planning/search.txt:190:docs/md_files/Workflow.md:707:Updated playlist files will be in the special `/MusicProcessing/src/generated_files/` directory, under `Music`.<br>
-docs/planning/search.txt:191:docs/md_files/Workflow.md:727:The files are in the special `/MusicProcessing/src/generated_files/` directory, under `csv_file/`s and/or `result_files/`.<br>
-docs/planning/search.txt:192:docs/planning/TODO.txt:52:    i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
-docs/planning/search.txt:193:docs/planning/TODO.txt:60:    i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
-docs/planning/search.txt:194:docs/planning/TODO.txt:65:  b) will need to add licenses etc
-docs/planning/search.txt:195:docs/planning/TODO.txt:204:  12) think about moving generated_files from /src to root
-docs/planning/search.txt:196:docs/planning/TODO.txt:235:  19) think hard about removing reliance on src/generated_files/Music for conversion and leveling
-docs/planning/search.txt:197:docs/planning/TODO.txt:285:  29) think hard about removing reliance on src/generated_files/Music/AlbumArt for setting album art
-docs/planning/search.txt:198:docs/planning/TODO.txt:369:  37) think about playlist updating writing to input directory or a target directory instead of generated_files
-docs/planning/search.txt:199:docs/planning/mvc.plan.prompt.md:63:    - calls private frame methods (`_validate_dir`, `run_task`, `_show_generated_files_dialog`).
-docs/planning/search.txt:200:docs/planning/mvc.plan.prompt.md:76:7. `src/generated_files/`
-docs/planning/search.txt:201:docs/planning/mvc.plan.prompt.md:77:  - mixes runtime output (CSV, text results, `.m3u`) with static GUI assets (`icon_files/`, `licenses/`)
-docs/planning/search.txt:202:docs/planning/mvc.plan.prompt.md:116:╬ô├╢├⌐   ╬ô├╢├⌐   ╬ô├╢┬ú╬ô├╢├ç╬ô├╢├ç paths.py                  # GENERATED_PATH, RESOURCES_PATH
-docs/planning/search.txt:203:docs/planning/mvc.plan.prompt.md:130:╬ô├╢├⌐   ╬ô├╢┬ú╬ô├╢├ç╬ô├╢├ç resources/                    # New, static view assets (icons, licenses); no __init__.py
-docs/planning/search.txt:204:docs/planning/mvc.plan.prompt.md:132:╬ô├╢├⌐   ╬ô├╢├⌐   ╬ô├╢┬ú╬ô├╢├ç╬ô├╢├ç icon_files/               # Icon files; no __init__.py`
-docs/planning/search.txt:205:docs/planning/mvc.plan.prompt.md:133:╬ô├╢├⌐   ╬ô├╢├⌐   ╬ô├╢├╢╬ô├╢├ç╬ô├╢├ç licenses/                 # License files; no __init__.py
-docs/planning/search.txt:206:docs/planning/mvc.plan.prompt.md:183:    - `src/generated_files/__init__.py`
-docs/planning/search.txt:207:docs/planning/mvc.plan.prompt.md:187:    - move `GENERATED_PATH` to `core/paths.py` and add `RESOURCES_PATH` COMPLETED
-docs/planning/search.txt:208:docs/planning/mvc.plan.prompt.md:210:    grep -RInE --include="*.py" "from src import|from src\\.generated_files|GENERATED_PATH" .
-docs/planning/search.txt:209:docs/planning/mvc.plan.prompt.md:211:    grep -RInE --exclude-dir=.git "generated_files|icon_files|licenses|RESOURCES_PATH" .
-docs/planning/search.txt:210:docs/planning/mvc.plan.prompt.md:214:    The first search in `search.txt` already includes `from src.generated_files` and `GENERATED_PATH`;<br>
-docs/planning/search.txt:211:docs/planning/mvc.plan.prompt.md:219:    - `from src.generated_files import GENERATED_PATH` identifies callers of the old path export.
-docs/planning/search.txt:212:docs/planning/mvc.plan.prompt.md:222:      - Retaining exports from `src` alone does not migrate imports from `src.generated_files`.
-docs/planning/search.txt:213:docs/planning/mvc.plan.prompt.md:225:      - The initial `src.core.paths` definition must still resolve to the existing `src/generated_files` directory so this migration does not change output locations.
-docs/planning/search.txt:214:docs/planning/mvc.plan.prompt.md:253:      - for GENERATED_PATH and RESOURCES_PATH.
-docs/planning/search.txt:215:docs/planning/mvc.plan.prompt.md:254:        - Initially, GENERATED_PATH must resolve to the existing src/generated_files directory.
-docs/planning/search.txt:216:docs/planning/mvc.plan.prompt.md:255:        - Set RESOURCES_PATH to the planned static-assets directory, src/resources, and use it when the assets move.
-docs/planning/search.txt:217:docs/planning/mvc.plan.prompt.md:283:    3.4 Replace `from src.generated_files import GENERATED_PATH` with `from src.core.paths import GENERATED_PATH`. COMPLETED
-docs/planning/search.txt:218:docs/planning/mvc.plan.prompt.md:294:      - do NOT add `"RESOURCES_PATH"`: COMPLETED
-docs/planning/search.txt:219:docs/planning/mvc.plan.prompt.md:297:      - note: today every caller imports `GENERATED_PATH` from `src.generated_files`:
-docs/planning/search.txt:220:docs/planning/mvc.plan.prompt.md:305:    3.8 Confirm `GENERATED_PATH` still resolves to the existing `src/generated_files` directory COMPLETED
-docs/planning/search.txt:221:docs/planning/mvc.plan.prompt.md:328:    - Keep the `src` and `src.generated_files` compatibility exports until Step 7.
-docs/planning/search.txt:222:docs/planning/mvc.plan.prompt.md:339:    - Change production and test imports from `src.generated_files` to `src.core.paths`.
-docs/planning/search.txt:223:docs/planning/mvc.plan.prompt.md:341:    - Verify `GENERATED_PATH` still resolves to the existing `src/generated_files` directory and that
-docs/planning/search.txt:224:docs/planning/mvc.plan.prompt.md:441:    - a view interface (`show_message`, `show_error`, `show_generated_files`, `set_busy`) implemented by the wx view
-docs/planning/search.txt:225:docs/planning/mvc.plan.prompt.md:479:  - Files: `src/generated_files/`, `.gitignore`, `src/core/paths.py`
-docs/planning/search.txt:226:docs/planning/mvc.plan.prompt.md:481:    - move `icon_files/` and `licenses/` to `src/resources/`
-docs/planning/search.txt:227:docs/planning/mvc.plan.prompt.md:485:      - merge the rules from `src/generated_files/.gitignore` (`Music/**/*.*`, `test.m3u`, `AlbumArt/*.*`) and
-docs/planning/search.txt:228:docs/planning/mvc.plan.prompt.md:553:- `src/generated_files/` - runtime output plus static GUI assets.
-docs/planning/search.txt:229:docs/planning/search.txt:3:PS D:\MusicProcessing> grep -RInE --include="*.py" "from src import|from src\.generated_files|GENERATED_PATH" .
-docs/planning/search.txt:230:docs/planning/search.txt:9:./main.py:29:from src.generated_files import GENERATED_PATH              # generated files path
-docs/planning/search.txt:231:docs/planning/search.txt:19:./src/audio_info/audio_art.py:45:from src.generated_files import GENERATED_PATH              # for generated files path
-docs/planning/search.txt:232:docs/planning/search.txt:40:./src/audio_info/audio_playlist.py:29:from src.generated_files import GENERATED_PATH              # for generated file output paths
-docs/planning/search.txt:233:docs/planning/search.txt:84:./src/core/paths.py:27:GENERATED_PATH = os.path.join(SRC_PATH, "generated_files")  # same location as today
-docs/planning/search.txt:234:docs/planning/search.txt:99:./src/dir_processing/directory_processing.py:43:from src.generated_files import GENERATED_PATH              # for generated file output paths
-docs/planning/search.txt:235:docs/planning/search.txt:106:./src/generated_files/__init__.py:19:## @var GENERATED_PATH
-docs/planning/search.txt:236:docs/planning/search.txt:107:./src/generated_files/__init__.py:22:GENERATED_PATH = os.path.dirname(os.path.abspath(__file__))
-docs/planning/search.txt:237:docs/planning/search.txt:108:./src/generated_files/__init__.py:26:# @details In modules needing the constant, add `from src.generated_files import GENERATED_PATH`.
-docs/planning/search.txt:238:docs/planning/search.txt:109:./src/generated_files/__init__.py:28:    "GENERATED_PATH",
-docs/planning/search.txt:239:docs/planning/search.txt:117:./src/gui/wx_app.py:28:from src.generated_files import GENERATED_PATH              # for generated files path
-docs/planning/search.txt:240:docs/planning/search.txt:126:./src/__init__.py:21:from src.generated_files import GENERATED_PATH              # path to the directory where generated files are stored
-docs/planning/search.txt:241:docs/planning/search.txt:173:./tests/test_audio_metadata.py:56:from src.generated_files import GENERATED_PATH              # path to generated files
-docs/planning/search.txt:242:docs/planning/search.txt:186:./tests/test_audio_normalization.py:37:from src.generated_files import GENERATED_PATH              # for generated output paths
-docs/planning/search.txt:243:docs/planning/search.txt:189:./tests/test_audio_playlist.py:26:from src.generated_files import GENERATED_PATH              # for generated playlist output paths
-docs/planning/search.txt:244:docs/planning/search.txt:195:./tests/test_audio_utilities.py:29:from src.generated_files import GENERATED_PATH              # for generated output paths
-docs/planning/search.txt:245:docs/planning/search.txt:207:./tests/test_directory_processing.py:40:from src.generated_files import GENERATED_PATH              # for generated test output paths
-docs/planning/search.txt:246:docs/planning/search.txt:226:PS D:\MusicProcessing> grep -RInE --exclude-dir=.git "generated_files|icon_files|licenses|RESOURCES_PATH" .
-docs/planning/search.txt:247:docs/planning/search.txt:228:./.gitignore:177:src/generated_files/csv_files/
-docs/planning/search.txt:248:docs/planning/search.txt:229:./.gitignore:178:src/generated_files/log_files/
-docs/planning/search.txt:249:docs/planning/search.txt:230:./.gitignore:179:src/generated_files/result_files/
-docs/planning/search.txt:250:docs/planning/search.txt:232:./docs/md_files/Workflow.md:477:Copy it to the special `/MusicProcessing/src/generated_files/AlbumArt` folder.
-docs/planning/search.txt:251:docs/planning/search.txt:233:./docs/md_files/Workflow.md:618:The default save location is `/MusicProcessing/src/generated_files/Music`.
-docs/planning/search.txt:252:docs/planning/search.txt:234:./docs/md_files/Workflow.md:646:The functions output a list, `clip-check-file.txt` in `/MusicProcessing/src/generated_files/result_files/`.
-docs/planning/search.txt:253:docs/planning/search.txt:235:./docs/md_files/Workflow.md:707:Updated playlist files will be in the special `/MusicProcessing/src/generated_files/` directory, under `Music`.<br>
-docs/planning/search.txt:254:docs/planning/search.txt:236:./docs/md_files/Workflow.md:727:The files are in the special `/MusicProcessing/src/generated_files/` directory, under `csv_file/`s and/or `result_files/`.<br>
-docs/planning/search.txt:255:docs/planning/search.txt:238:./main.py:29:from src.generated_files import GENERATED_PATH              # generated files path
-docs/planning/search.txt:256:docs/planning/search.txt:239:./main.py:969:        # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
-docs/planning/search.txt:257:docs/planning/search.txt:241:./README.md:243:| |_generated_files
-docs/planning/search.txt:258:docs/planning/search.txt:242:./README.md:254:| | |_icon_files
-docs/planning/search.txt:259:docs/planning/search.txt:243:./README.md:258:| | |_licenses
-docs/planning/search.txt:260:docs/planning/search.txt:245:./src/audio_info/audio_art.py:45:from src.generated_files import GENERATED_PATH              # for generated files path
-docs/planning/search.txt:261:docs/planning/search.txt:246:./src/audio_info/audio_art.py:635:                # eg: D:\MusicProcessing\src\generated_files\AlbumArt
-docs/planning/search.txt:262:docs/planning/search.txt:247:./src/audio_info/audio_art.py:641:                    # eg: D:\MusicProcessing\src\generated_files\AlbumArt\Best Of The Blues, Vol. 1.jpg
-docs/planning/search.txt:263:docs/planning/search.txt:249:./src/audio_info/audio_playlist.py:29:from src.generated_files import GENERATED_PATH              # for generated file output paths
-docs/planning/search.txt:264:docs/planning/search.txt:251:./src/core/paths.py:27:GENERATED_PATH = os.path.join(SRC_PATH, "generated_files")  # same location as today
-docs/planning/search.txt:265:docs/planning/search.txt:252:./src/core/paths.py:29:## @var RESOURCES_PATH
-docs/planning/search.txt:266:docs/planning/search.txt:253:./src/core/paths.py:32:RESOURCES_PATH = os.path.join(SRC_PATH, "resources")        # unused until Milestone 8
-docs/planning/search.txt:267:docs/planning/search.txt:255:./src/dir_processing/directory_processing.py:43:from src.generated_files import GENERATED_PATH              # for generated file output paths
-docs/planning/search.txt:268:docs/planning/search.txt:257:./src/generated_files/__init__.py:2:@package src.generated_files
-docs/planning/search.txt:269:docs/planning/search.txt:258:./src/generated_files/__init__.py:3:@file src/generated_files/__init__.py
-docs/planning/search.txt:270:docs/planning/search.txt:259:./src/generated_files/__init__.py:26:# @details In modules needing the constant, add `from src.generated_files import GENERATED_PATH`.
-docs/planning/search.txt:271:docs/planning/search.txt:261:./src/gui/handlers.py:145:        self.mainFrame.run_task(metadata.convert_file, path, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:272:docs/planning/search.txt:262:./src/gui/handlers.py:167:        self.mainFrame.run_task(metadata.convert_walk, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:273:docs/planning/search.txt:263:./src/gui/handlers.py:249:        self.mainFrame.run_task(metadata.get_media_info_walk, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:274:docs/planning/search.txt:264:./src/gui/handlers.py:271:        self.mainFrame.run_task(metadata.get_tags_walk, tld, pattern, ffprobe, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:275:docs/planning/search.txt:265:./src/gui/handlers.py:290:        self.mainFrame.run_task(metadata.get_unique_media, tld, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:276:docs/planning/search.txt:266:./src/gui/handlers.py:309:        self.mainFrame.run_task(directory.list_audio, tld, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:277:docs/planning/search.txt:267:./src/gui/handlers.py:334:        self.mainFrame.run_task(directory.list_type, tld, ext, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:278:docs/planning/search.txt:268:./src/gui/handlers.py:355:        self.mainFrame.run_task(normalization.normalize_walk, tld, norm_type, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:279:docs/planning/search.txt:269:./src/gui/handlers.py:393:        self.mainFrame.run_task(directory.remove_albums, tld, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:280:docs/planning/search.txt:270:./src/gui/handlers.py:418:        self.mainFrame.run_task(directory.remove_pattern, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:281:docs/planning/search.txt:272:./src/gui/wx_app.py:28:from src.generated_files import GENERATED_PATH              # for generated files path
-docs/planning/search.txt:282:docs/planning/search.txt:273:./src/gui/wx_app.py:795:    def _show_generated_files_dialog(self):
-docs/planning/search.txt:283:docs/planning/search.txt:275:./src/__init__.py:21:from src.generated_files import GENERATED_PATH              # path to the directory where generated files are stored
-docs/planning/search.txt:284:docs/planning/search.txt:277:./tests/test_audio_metadata.py:56:from src.generated_files import GENERATED_PATH              # path to generated files
-docs/planning/search.txt:285:docs/planning/search.txt:278:./tests/test_audio_metadata.py:111:        # the top level directory path where files will be created - D:\MusicProcessing\src\generated_files\Music
-docs/planning/search.txt:286:docs/planning/search.txt:279:./tests/test_audio_metadata.py:113:        # directory for text result files - D:\MusicProcessing\src\generated_files\Result
-docs/planning/search.txt:287:docs/planning/search.txt:281:./tests/test_audio_normalization.py:37:from src.generated_files import GENERATED_PATH              # for generated output paths
-docs/planning/search.txt:288:docs/planning/search.txt:282:./tests/test_audio_normalization.py:87:        # the path where converted files will be created D:\MusicProcessing\src\generated_files\Music
-docs/planning/search.txt:289:docs/planning/search.txt:284:./tests/test_audio_playlist.py:26:from src.generated_files import GENERATED_PATH              # for generated playlist output paths
-docs/planning/search.txt:290:docs/planning/search.txt:286:./tests/test_audio_utilities.py:29:from src.generated_files import GENERATED_PATH              # for generated output paths
-docs/planning/search.txt:291:docs/planning/search.txt:288:./tests/test_directory_processing.py:40:from src.generated_files import GENERATED_PATH              # for generated test output paths
-docs/planning/search.txt:292:docs/planning/search.txt:289:./tests/test_directory_processing.py:479:        # successful path_info returns a mp3 file name in generated_files/Music/Joshua Davis/The Voice Peformance
-docs/planning/search.txt:293:docs/planning/search.txt:290:./tests/test_directory_processing.py:598:        /generated_files/Music
-docs/planning/search.txt:294:docs/scripts/google/extract_art_examples/ffmpeg_art_extract.py:47:    extracted_art = r"/home/gerald/MusicProcessing/src/generated_files/Crush/Here/ffmpeg-Extracted.jpg"
-docs/planning/search.txt:295:docs/scripts/google/extract_art_examples/ffmpeg_art_extract.py:50:    extracted_art = r"D:\MusicProcessing\src\generated_files\Music\Crush\Here\ffmpeg-Extracted.jpg"
-docs/planning/search.txt:296:docs/scripts/google/get_mount_point/get_mount_point.py:14:file_path = os.path.join("D", "MusicProcessing", "src", "generated_files", "Music")
-docs/planning/search.txt:297:docs/scripts/google/metadata_mapping_examples/mpa-wma_to_id3.py:35:mp3_file = r"/home/gerald/MusicProcessing/src/generated_files/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.mp3"
-docs/planning/search.txt:298:docs/scripts/google/metadata_mapping_examples/wma_metadata_to_id3_metadata.py:37:mp3_file = r"/home/gerald/MusicProcessing/src/generated_files/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.mp3"
-docs/planning/search.txt:299:docs/scripts/google/normalize_examples/ffmpeg-normalize_ebur128.py:4:output_file = '/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3'
-docs/planning/search.txt:300:docs/scripts/google/normalize_examples/numpy_normalize.py:6:input_mp3_path = r"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3" # Replace with your MP3 file path
-docs/planning/search.txt:301:docs/scripts/google/normalize_examples/numpy_normalize.py:32:output_mp3_path = r"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Normalized.mp3"
-docs/planning/search.txt:302:docs/scripts/google/progress_bar_exampl;es/yaspin_ebu_norm_subprocess_run.py:35:        out_file = r"C:\MusicProcessing\src\generated_files\Music\Crush\Here\RBU-Crush-Live.mp3"
-docs/planning/search.txt:303:docs/scripts/google/progress_bar_exampl;es/yaspin_ebu_norm_subprocess_run.py:38:        out_file = r"/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/RBU-Crush-Live.mp3"
-docs/planning/search.txt:304:docs/scripts/google/progress_bar_exampl;es/yaspin_peak_norm_subprocess_run.py:14:    # D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-Live.mp3 -y
-docs/planning/search.txt:305:docs/scripts/google/progress_bar_exampl;es/yaspin_peak_norm_subprocess_run.py:47:        out_file = r"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-Live.mp3"
-docs/planning/search.txt:306:docs/scripts/google/progress_bar_exampl;es/yaspin_peak_norm_subprocess_run.py:50:        out_file = r"/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Peak-Crush-Live.mp3"
-docs/planning/search.txt:307:docs/scripts/mine/two_pass_normalize.py:50:        out_file = r"C:\MusicProcessing\src\generated_files\Music\Crush\Here\RBU-Crush-Live.mp3"
-docs/planning/search.txt:308:docs/scripts/mine/two_pass_normalize.py:53:        out_file = r"/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/RBU-Crush-Live.mp3"
-docs/planning/search.txt:309:main.py:29:from src.generated_files import GENERATED_PATH              # generated files path
-docs/planning/search.txt:310:main.py:969:        # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
-docs/planning/search.txt:311:src/audio_info/audio_art.py:45:from src.generated_files import GENERATED_PATH              # for generated files path
-docs/planning/search.txt:312:src/audio_info/audio_art.py:635:                # eg: D:\MusicProcessing\src\generated_files\AlbumArt
-docs/planning/search.txt:313:src/audio_info/audio_art.py:641:                    # eg: D:\MusicProcessing\src\generated_files\AlbumArt\Best Of The Blues, Vol. 1.jpg
-docs/planning/search.txt:314:src/audio_info/audio_playlist.py:29:from src.generated_files import GENERATED_PATH              # for generated file output paths
-docs/planning/search.txt:315:src/core/paths.py:38:GENERATED_PATH = os.path.join(SRC_PATH, "generated_files")  # same location (src/generated_files) until Milestone 9 Resources and generated output
-docs/planning/search.txt:316:src/core/paths.py:40:## @var RESOURCES_PATH
-docs/planning/search.txt:317:src/core/paths.py:43:RESOURCES_PATH = os.path.join(SRC_PATH, "resources")        # unused until Milestone 9 Resources and generated output
-docs/planning/search.txt:318:src/dir_processing/directory_processing.py:43:from src.generated_files import GENERATED_PATH              # for generated file output paths
-docs/planning/search.txt:319:src/generated_files/__init__.py:2:@package src.generated_files
-docs/planning/search.txt:320:src/generated_files/__init__.py:3:@file src/generated_files/__init__.py
-docs/planning/search.txt:321:src/generated_files/__init__.py:26:# @details In modules needing the constant, add `from src.generated_files import GENERATED_PATH`.
-docs/planning/search.txt:322:src/gui/handlers.py:145:        self.mainFrame.run_task(metadata.convert_file, path, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:323:src/gui/handlers.py:167:        self.mainFrame.run_task(metadata.convert_walk, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:324:src/gui/handlers.py:249:        self.mainFrame.run_task(metadata.get_media_info_walk, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:325:src/gui/handlers.py:271:        self.mainFrame.run_task(metadata.get_tags_walk, tld, pattern, ffprobe, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:326:src/gui/handlers.py:290:        self.mainFrame.run_task(metadata.get_unique_media, tld, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:327:src/gui/handlers.py:309:        self.mainFrame.run_task(directory.list_audio, tld, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:328:src/gui/handlers.py:334:        self.mainFrame.run_task(directory.list_type, tld, ext, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:329:src/gui/handlers.py:355:        self.mainFrame.run_task(normalization.normalize_walk, tld, norm_type, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:330:src/gui/handlers.py:393:        self.mainFrame.run_task(directory.remove_albums, tld, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:331:src/gui/handlers.py:418:        self.mainFrame.run_task(directory.remove_pattern, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
-docs/planning/search.txt:332:src/gui/wx_app.py:28:from src.generated_files import GENERATED_PATH              # for generated files path
-docs/planning/search.txt:333:src/gui/wx_app.py:795:    def _show_generated_files_dialog(self):
-docs/planning/search.txt:334:tests/test_audio_metadata.py:56:from src.generated_files import GENERATED_PATH              # path to generated files
-docs/planning/search.txt:335:tests/test_audio_metadata.py:111:        # the top level directory path where files will be created - D:\MusicProcessing\src\generated_files\Music
-docs/planning/search.txt:336:tests/test_audio_metadata.py:113:        # directory for text result files - D:\MusicProcessing\src\generated_files\Result
-docs/planning/search.txt:337:tests/test_audio_normalization.py:37:from src.generated_files import GENERATED_PATH              # for generated output paths
-docs/planning/search.txt:338:tests/test_audio_normalization.py:87:        # the path where converted files will be created D:\MusicProcessing\src\generated_files\Music
-docs/planning/search.txt:339:tests/test_audio_playlist.py:26:from src.generated_files import GENERATED_PATH              # for generated playlist output paths
-docs/planning/search.txt:340:tests/test_audio_utilities.py:29:from src.generated_files import GENERATED_PATH              # for generated output paths
-docs/planning/search.txt:341:tests/test_directory_processing.py:40:from src.generated_files import GENERATED_PATH              # for generated test output paths
-docs/planning/search.txt:342:tests/test_directory_processing.py:479:        # successful path_info returns a mp3 file name in generated_files/Music/Joshua Davis/The Voice Peformance
-docs/planning/search.txt:343:tests/test_directory_processing.py:598:        /generated_files/Music
-
-docs/scripts/google/extract_art_examples/ffmpeg_art_extract.py:47:    extracted_art = r"/home/gerald/MusicProcessing/src/generated_files/Crush/Here/ffmpeg-Extracted.jpg"
-docs/scripts/google/extract_art_examples/ffmpeg_art_extract.py:50:    extracted_art = r"D:\MusicProcessing\src\generated_files\Music\Crush\Here\ffmpeg-Extracted.jpg"
-
-docs/scripts/google/get_mount_point/get_mount_point.py:14:file_path = os.path.join("D", "MusicProcessing", "src", "generated_files", "Music")
-
-docs/scripts/google/metadata_mapping_examples/mpa-wma_to_id3.py:35:mp3_file = r"/home/gerald/MusicProcessing/src/generated_files/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.mp3"
-docs/scripts/google/metadata_mapping_examples/wma_metadata_to_id3_metadata.py:37:mp3_file = r"/home/gerald/MusicProcessing/src/generated_files/Music/Alejandro Escovedo/More Miles Than Money- Live 1994-1996/Alejandro Escovedo-Broken Bottle.mp3"
-
-docs/scripts/google/normalize_examples/ffmpeg-normalize_ebur128.py:4:output_file = '/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Crush-Live.mp3'
-docs/scripts/google/normalize_examples/numpy_normalize.py:6:input_mp3_path = r"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Crush-Live.mp3" # Replace with your MP3 file path
-docs/scripts/google/normalize_examples/numpy_normalize.py:32:output_mp3_path = r"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Normalized.mp3"
-
-docs/scripts/google/progress_bar_exampl;es/yaspin_ebu_norm_subprocess_run.py:35:        out_file = r"C:\MusicProcessing\src\generated_files\Music\Crush\Here\RBU-Crush-Live.mp3"
-docs/scripts/google/progress_bar_exampl;es/yaspin_ebu_norm_subprocess_run.py:38:        out_file = r"/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/RBU-Crush-Live.mp3"
-docs/scripts/google/progress_bar_exampl;es/yaspin_peak_norm_subprocess_run.py:14:    # D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-Live.mp3 -y
-docs/scripts/google/progress_bar_exampl;es/yaspin_peak_norm_subprocess_run.py:47:        out_file = r"D:\MusicProcessing\src\generated_files\Music\Crush\Here\Peak-Crush-Live.mp3"
-docs/scripts/google/progress_bar_exampl;es/yaspin_peak_norm_subprocess_run.py:50:        out_file = r"/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/Peak-Crush-Live.mp3"
-
-docs/scripts/mine/two_pass_normalize.py:50:        out_file = r"C:\MusicProcessing\src\generated_files\Music\Crush\Here\RBU-Crush-Live.mp3"
-docs/scripts/mine/two_pass_normalize.py:53:        out_file = r"/home/gerald/MusicProcessing/src/generated_files/Music/Crush/Here/RBU-Crush-Live.mp3"
 
 main.py:29:from src.generated_files import GENERATED_PATH              # generated files path
 main.py:969:        # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
