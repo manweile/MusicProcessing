@@ -310,17 +310,51 @@ COMPLETED
 
     3.10 Run the full test suite, then `python main.py --help`; both must match the 3.1 baseline. Commit as one commit.
 
-    **Step 4** Migrate imports in small batches
+    **Step 4** Migrate imports in small, atomic batches
 
-    Update production imports to use the new modules:
+    Preconditions:
+    - Step 3 is complete and its compatibility imports and re-exports are in place.
+    - Refresh the Step 1 import inventory if the source changed since it was recorded.
+    - Use that inventory to list every production import, test import (including `tests/__init__.py`),
+      and string-based mock patch target for each destination module.
+    - Do not move or reorganize test files, migrate `ARG_CLI_*` / `ARG_HELP_*` here, or remove compatibility shims.
 
-        Constants → src.core.constants
-        Logging helpers → src.core.logging_config (once that module is moved)
-        Errors → src.core.errors (once moved)
-        GENERATED_PATH → src.core.paths
+    Each batch below is one atomic change:
+    - Change all related production imports, test imports, and string-based mock patch targets together.
+    - Keep behavior unchanged; do not combine unrelated destinations in one batch.
+    - Run the relevant tests and a focused import/runtime check before considering the batch complete.
+    - If a check fails, fix the batch or restore its pre-batch state before starting another batch.
+    - Commit each passing batch separately. Never leave a partially migrated batch as the new baseline.
+    - Keep the `src` and `src.generated_files` compatibility exports until Step 7.
 
-    Then update the corresponding test imports, including tests/__init__.py, and any string-based mock patch targets.<br>
-    Run the tests after each batch. The src re-exports remain in place so unmigrated code continues to work.
+    Do these batches in order:
+
+    **4.1 Migrate constants**
+    - Change production imports of constants currently exposed by `src` to `src.core.constants`.
+    - Migrate the corresponding test imports and patch targets in the same batch.
+    - Leave errors, logging helpers, CLI constants, and `GENERATED_PATH` for their own batches.
+    - Run the affected tests, then verify the migrated callers import the expected constant values.
+
+    **4.2 Migrate `GENERATED_PATH`**
+    - Change production and test imports from `src.generated_files` to `src.core.paths`.
+    - Update any string-based patch targets that refer to the old import location.
+    - Verify `GENERATED_PATH` still resolves to the existing `src/generated_files` directory and that
+      generated output locations are unchanged; run the affected tests.
+
+    **4.3 Migrate logging helpers and errors after Step 6**
+    - These destinations do not exist until Step 6 moves the modules. Do not migrate these imports before then.
+    - After the moves, return to this batch before Step 7: migrate production and test imports of logging
+      helpers to `src.core.logging_config` and errors to `src.core.errors`, in separate atomic batches.
+    - Update corresponding string-based mock patch targets in each batch, run affected tests, and verify
+      CLI and GUI startup still initialize logging as expected.
+    - Keep the old module shims and package compatibility surface until the callers for both destinations
+      have migrated and Step 7 explicitly removes them.
+
+    After all batches:
+    - Search production and test code for imports from the old locations. Remaining matches may only be
+      the intentional compatibility re-exports/shims; record and explain each such match.
+    - Run the full test suite and `python main.py --help`; both must match the Step 3 baseline.
+    - Confirm no tests were moved and no generated-file paths or logging startup behavior changed.
 
     **Step 5** Wire in the CLI constants
 
