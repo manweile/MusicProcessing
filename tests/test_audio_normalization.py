@@ -30,10 +30,10 @@ from unittest.mock import patch                             # for patched subpro
 from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
-from src import ILT                                         # for loudness normalization targets
-from src import LRA                                         # for loudness-range normalization target
-from src import MUSIC_TLD                                   # for generated music directory paths
-from src import TP                                          # for true-peak normalization target
+from src.core.constants import ILT                          # for loudness normalization targets
+from src.core.constants import LRA                          # for loudness-range normalization target
+from src.core.constants import MUSIC_TLD                    # for generated music directory paths
+from src.core.constants import TP                           # for true-peak normalization target
 from src.generated_files import GENERATED_PATH              # for generated output paths
 from tests import TEST_M3U                                  # for invalid audio input tests
 from tests import TEST_MP3_ABBA                             # for dynamic normalization tests

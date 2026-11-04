@@ -346,10 +346,14 @@ COMPLETED
     Do these batches in order:
 
     **4.1 Migrate constants to `src.core.constants`**
-    - 4.1a `tests/__init__.py` (`MUSIC_TLD`); run the full suite, since every test imports this package COMPLETED, ALL TESTS PASS
-    - 4.1b `src/subprocess_utils.py` + `tests/test_subprocess_utilities.py` (`UTF8`) COMPLETED test_subprocess_utilities.py, ALL TESTS PASS
-    - 4.1c `src/audio_info/audio_utilities.py` + `tests/test_audio_utilities.py` COMPLETED, test_audio_utilities.py, ALL TESTS PASS
-    - 4.1d `src/audio_normalize/audio_normalization.py` + `tests/test_audio_normalization.py`
+    - 4.1a `tests/__init__.py` run the full suite, since every test imports this package COMPLETED ALL TESTS PASS
+      - `MUSIC_TLD`
+    - 4.1b `src/subprocess_utils.py` + `tests/test_subprocess_utilities.py` COMPLETED ALL TESTS PASS
+      - `UTF8`
+    - 4.1c `src/audio_info/audio_utilities.py` + `tests/test_audio_utilities.py` COMPLETED ALL TESTS PASS
+      - `ILT`, `LRA`, `MP3_EXT`, `TP`, `RESULT_DIR`, `RESULT_EXT`
+    - 4.1d `src/audio_normalize/audio_normalization.py` + `tests/test_audio_normalization.py` COMPLETED ALL TESTS PASS
+      - `ILT`, `LRA`, `MUSIC_TLD`, `TP`, `MP3_EXT`
     - 4.1e `src/audio_info/audio_playlist.py` + `tests/test_audio_playlist.py`
       (the test only imports `PlaylistError`, which stays until 4.3, so only the production module changes)
     - 4.1f `src/audio_info/audio_art.py` + `tests/test_audio_art.py`
