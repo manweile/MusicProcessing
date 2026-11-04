@@ -28,15 +28,15 @@ from unittest.mock import patch                             # for warning-log in
 from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
-from src import AUDIO_EXTS                                  # for non-audio path assertions
-from src import CSV_DIR                                     # for generated CSV fixture directories
-from src import CSV_EXT                                     # for generated CSV filename extensions
-from src import M4A_EXT                                     # for M4A file-list filtering tests
-from src import MP3_EXT                                     # for MP3 file-list filtering tests
-from src import MUSIC_TLD                                   # for generated music directory paths
-from src import RESULT_DIR                                  # for generated text fixture directories
-from src import RESULT_EXT                                  # for generated text filename extensions
-from src import WMA_EXT                                     # for WMA file-list filtering tests
+from src.core.constants import AUDIO_EXTS                   # for non-audio path assertions
+from src.core.constants import CSV_DIR                      # for generated CSV fixture directories
+from src.core.constants import CSV_EXT                      # for generated CSV filename extensions
+from src.core.constants import M4A_EXT                      # for M4A file-list filtering tests
+from src.core.constants import MP3_EXT                      # for MP3 file-list filtering tests
+from src.core.constants import MUSIC_TLD                    # for generated music directory paths
+from src.core.constants import RESULT_DIR                   # for generated text fixture directories
+from src.core.constants import RESULT_EXT                   # for generated text filename extensions
+from src.core.constants import WMA_EXT                      # for WMA file-list filtering tests
 from src.generated_files import GENERATED_PATH              # for generated test output paths
 from tests import TEST_M3U                                  # for non-audio fixture tests
 from tests import TEST_M4A_DAVIS                            # for M4A fixture path tests
