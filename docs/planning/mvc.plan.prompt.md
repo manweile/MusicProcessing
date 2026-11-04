@@ -348,7 +348,7 @@ COMPLETED
     **4.1 Migrate constants to `src.core.constants`**
     - 4.1a `tests/__init__.py` (`MUSIC_TLD`); run the full suite, since every test imports this package COMPLETED, ALL TESTS PASS
     - 4.1b `src/subprocess_utils.py` + `tests/test_subprocess_utilities.py` (`UTF8`) COMPLETED test_subprocess_utilities.py, ALL TESTS PASS
-    - 4.1c `src/audio_info/audio_utilities.py` + `tests/test_audio_utilities.py`
+    - 4.1c `src/audio_info/audio_utilities.py` + `tests/test_audio_utilities.py` COMPLETED, test_audio_utilities.py, ALL TESTS PASS
     - 4.1d `src/audio_normalize/audio_normalization.py` + `tests/test_audio_normalization.py`
     - 4.1e `src/audio_info/audio_playlist.py` + `tests/test_audio_playlist.py`
       (the test only imports `PlaylistError`, which stays until 4.3, so only the production module changes)

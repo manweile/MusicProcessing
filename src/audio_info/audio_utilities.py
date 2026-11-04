@@ -25,10 +25,10 @@ from pathlib import Path                                    # for object-oriente
 from src import add_module_handler                          # for module-specific logging handlers
 
 # Local Module Constants
-from src import ILT                                         # for integrated loudness target
-from src import LRA                                         # for loudness range target
-from src import MP3_EXT                                     # for MP3 file extension
-from src import TP                                          # for true-peak normalization target
+from src.core.constants import ILT                          # for integrated loudness target
+from src.core.constants import LRA                          # for loudness range target
+from src.core.constants import MP3_EXT                      # for MP3 file extension
+from src.core.constants import TP                           # for true-peak normalization target
 
 # Local Module Classes
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
