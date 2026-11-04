@@ -312,7 +312,7 @@ COMPLETED
 
     **Step 4** Migrate imports in small, atomic batches
 
-    Preconditions:
+    Preconditions: COMPLETED
     - Step 3 is complete and its compatibility imports and re-exports are in place.
     - Refresh the Step 1 import inventory if the source changed since it was recorded.
     - Use that inventory to list every production import, test import (including `tests/__init__.py`),
@@ -321,9 +321,8 @@ COMPLETED
 
     Each batch below is one atomic change:
     - Each batch is one commit and touches one module plus its test file.
-    - Edit only that module's `from src import <CONSTANT>` lines (4.1) or
-      `from src.generated_files import GENERATED_PATH` line (4.2).
-      Leave `add_module_handler` and error imports for 4.3.
+    - Edit only that module's `from src import <CONSTANT>` lines (4.1) or `from src.generated_files import GENERATED_PATH` line (4.2).
+      - Leave `add_module_handler` and error imports for 4.3.
     - Keep behavior unchanged; do not combine unrelated destinations in one batch.
     - String-based mock patch targets in the tests are module attributes on the consuming module
       (for example `src.audio_info.audio_art.os.path.join`), so none need changing in 4.1 or 4.2.
@@ -337,7 +336,7 @@ COMPLETED
     Do these batches in order:
 
     **4.1 Migrate constants to `src.core.constants`**
-    - 4.1a `tests/__init__.py` (`MUSIC_TLD`); run the full suite, since every test imports this package
+    - 4.1a `tests/__init__.py` (`MUSIC_TLD`); run the full suite, since every test imports this package COMPLETED
     - 4.1b `src/subprocess_utils.py` + `tests/test_subprocess_utilities.py` (`UTF8`)
     - 4.1c `src/audio_info/audio_utilities.py` + `tests/test_audio_utilities.py`
     - 4.1d `src/audio_normalize/audio_normalization.py` + `tests/test_audio_normalization.py`

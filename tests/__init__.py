@@ -17,7 +17,7 @@
 import os                                                   # for operating-system path operations
 
 # Local Module Constants
-from src import MUSIC_TLD                                   # for the test music top level directory
+from src.core.constants import MUSIC_TLD                      # for the test music top level directory
 
 ## @var TESTS_PATH
 # @brief Test-fixture directory path.
