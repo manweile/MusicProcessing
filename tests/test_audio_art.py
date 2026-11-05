@@ -29,9 +29,11 @@ from unittest.mock import patch                             # for write-operatio
 from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
+from src.core.constants import ALBUM_ART                    # for album art directory
 from src.core.constants import FOLDER_ART                   # for album-art fixture filenames
 from src.core.constants import MP3_EXT                      # for MP3 file-pattern extraction tests
 from src.core.constants import PLAYLIST_EXTS                # for invalid file-pattern extraction tests
+from src.generated_files import GENERATED_PATH              # path to generated files
 from tests import TEST_FLAC_ALANNAH_MYLES                   # for FLAC album-art extraction tests
 from tests import TEST_M3U                                  # for invalid audio input tests
 from tests import TEST_M4A_DAVIS                            # for M4A album-art extraction tests
@@ -45,7 +47,7 @@ from tests import TESTS_TLD                                 # for test music fix
 
 # Local Module Classes
 from src.audio_info import AudioArt                         # for album-art functionality under test
-from src.audio_info import audio_art as audio_art_module    # for album-art path construction under test
+# from src.audio_info import audio_art as audio_art_module    # for album-art path construction under test
 
 ## @var art
 # @brief AudioArt instance under test.
@@ -485,7 +487,7 @@ class TestAudioArt(TestCase):
                 @return The temporary album-art directory or the normally joined path.
                 '''
 
-                if paths == (audio_art_module.GENERATED_PATH, audio_art_module.ALBUM_ART):
+                if paths == (GENERATED_PATH, ALBUM_ART):
                     return album_art_dir
                 return original_join(*paths)
 

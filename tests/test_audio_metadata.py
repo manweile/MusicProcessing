@@ -40,19 +40,19 @@ from mutagen._util import MutagenError                      # for handling mutag
 from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
-from src.core.constants import AUDIO_FILES                                 # directory containing audio files
-from src.core.constants import CSV_DIR                                     # directory containing CSV files
-from src.core.constants import CSV_EXT                                     # file extension for CSV files
-from src.core.constants import FLAC_EXT                                    # file extension for FLAC audio files
-from src.core.constants import FOLDER_ART                                  # directory containing folder art images
-from src.core.constants import M4A_EXT                                     # file extension for M4A audio files
-from src.core.constants import MP3_EXT                                     # file extension for MP3 audio files
-from src.core.constants import MUSIC_TLD                                   # top level directory for music files
-from src.core.constants import PLAYLIST_EXTS                               # supported playlist file extensions
-from src.core.constants import RESULT_DIR                                  # directory for storing test results
-from src.core.constants import RESULT_EXT                                  # file extension for result files
-from src.core.constants import WMA_EXT                                     # file extension for WMA audio files
-from src.core.constants import UTF8                                        # UTF-8 encoding constant
+from src.core.constants import AUDIO_FILES                  # directory containing audio files
+from src.core.constants import CSV_DIR                      # directory containing CSV files
+from src.core.constants import CSV_EXT                      # file extension for CSV files
+from src.core.constants import FLAC_EXT                     # file extension for FLAC audio files
+from src.core.constants import FOLDER_ART                   # directory containing folder art images
+from src.core.constants import M4A_EXT                      # file extension for M4A audio files
+from src.core.constants import MP3_EXT                      # file extension for MP3 audio files
+from src.core.constants import MUSIC_TLD                    # top level directory for music files
+from src.core.constants import PLAYLIST_EXTS                # supported playlist file extensions
+from src.core.constants import RESULT_DIR                   # directory for storing test results
+from src.core.constants import RESULT_EXT                   # file extension for result files
+from src.core.constants import WMA_EXT                      # file extension for WMA audio files
+from src.core.constants import UTF8                         # UTF-8 encoding constant
 from src.generated_files import GENERATED_PATH              # path to generated files
 from tests import TEST_FLAC_CREAM                           # test data for FLAC Cream audio file
 from tests import TEST_FLAC_CREAM_ALBUM_ARTIST              # test data for FLAC Cream album artist

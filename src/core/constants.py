@@ -18,6 +18,11 @@ Refer to docs/planning/mvc.plan.prompt.md for when they will be used.
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
+## @var ALBUM_ART
+# @brief Album art directory name.
+# @details Identifies the generated directory that stores compilation album art.
+ALBUM_ART = "AlbumArt"
+
 ## @var APP_NAME
 # @brief The app description
 # @details use when needing application name/description
@@ -159,6 +164,7 @@ WMA_EXT = ".wma"
 # @brief Exposes package members for importing by other modules.
 # @details In modules needing the constant, add `from src.core.constants import <CONSTANT_NAME>`.
 __all__ = [
+    "ALBUM_ART",
     "APP_NAME",
     "ASF_TYPE",
     "AUDIO_EXTS",

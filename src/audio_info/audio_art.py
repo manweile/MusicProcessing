@@ -36,6 +36,7 @@ from mutagen.mp4 import MP4                                 # for handling MP4 a
 from src import add_module_handler                          # for adding a module-specific handler to the logger
 
 # Local Module Constants
+from src.core.constants import ALBUM_ART                    # for album art directory
 from src.core.constants import AUDIO_EXTS                   # for supported audio file extensions
 from src.core.constants import FOLDER_ART                   # for folder art directory
 from src.core.constants import FLAC_EXT                     # for FLAC file extension
@@ -75,11 +76,6 @@ normalization = AudioNormalization()
 # @brief Subprocess utilities instance.
 # @details Provides subprocess utility functionality.
 subprocess_utils = SubprocessUtilities()
-
-## @var ALBUM_ART
-# @brief Album art directory name.
-# @details Identifies the generated directory that stores compilation album art.
-ALBUM_ART = "AlbumArt"
 
 
 class AudioArt():
