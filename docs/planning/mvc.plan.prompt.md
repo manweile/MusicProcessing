@@ -346,7 +346,7 @@ COMPLETED
 
     Do these batches in order:
 
-    **4.1 Migrate constants to `src.core.constants`**
+    **4.1 Migrate constants to `src.core.constants`** COMPLETED
     - 4.1a `tests/__init__.py` run the full suite, since every test imports this package COMPLETED ALL TESTS PASS
       - `MUSIC_TLD`
     - 4.1b `src/subprocess_utils.py` + `tests/test_subprocess_utilities.py` COMPLETED ALL TESTS PASS

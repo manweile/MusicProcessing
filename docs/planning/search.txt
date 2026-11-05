@@ -1,8 +1,4 @@
 ﻿--- Python imports and generated path ---
-main.py:25:from src import ERROR_LOG_FORMAT                            # error log format
-main.py:26:from src import LOG_DIR                                     # log directory
-main.py:27:from src import LOG_EXT                                     # log file extension
-main.py:28:from src import UTF8                                        # utf encoding for file writing
 main.py:29:from src.generated_files import GENERATED_PATH              # generated files path
 main.py:59:log_filename = os.path.join(GENERATED_PATH, LOG_DIR, file)
 
@@ -12,65 +8,27 @@ src/__init__.py:75:# @details In modules needing the method, add: `from src impo
 src/__init__.py:90:    "GENERATED_PATH",
 
 src/audio_info/audio_art.py:36:from src import add_module_handler                          # for adding a module-specific handler to the logger
-src/audio_info/audio_art.py:39:from src import AUDIO_EXTS                                  # for supported audio file extensions
-src/audio_info/audio_art.py:40:from src import FOLDER_ART                                  # for folder art directory
-src/audio_info/audio_art.py:41:from src import FLAC_EXT                                    # for FLAC file extension
-src/audio_info/audio_art.py:42:from src import M4A_EXT                                     # for M4A file extension
-src/audio_info/audio_art.py:43:from src import MP3_EXT                                     # for MP3 file extension
-src/audio_info/audio_art.py:44:from src import WMA_EXT                                     # for WMA file extension
-src/audio_info/audio_art.py:45:from src.generated_files import GENERATED_PATH              # for generated files path
-src/audio_info/audio_art.py:636:                album_art_dir = os.path.join(GENERATED_PATH, ALBUM_ART)
+src/audio_info/audio_art.py:46:from src.generated_files import GENERATED_PATH              # for generated files path
+src/audio_info/audio_art.py:632:                album_art_dir = os.path.join(GENERATED_PATH, ALBUM_ART)
 
 src/audio_info/audio_metadata.py:53:from src import add_module_handler                          # for adding module-specific logging handlers
-src/audio_info/audio_metadata.py:56:from src import AUDIO_EXTS                                  # for audio file extensions
-src/audio_info/audio_metadata.py:57:from src import AUDIO_FILES                                 # for audio file paths
-src/audio_info/audio_metadata.py:58:from src import ASF_TYPE                                    # for ASF audio file type
-src/audio_info/audio_metadata.py:59:from src import FLAC_TYPE                                   # for FLAC audio file type
-src/audio_info/audio_metadata.py:60:from src import FOLDER_ART                                  # for folder artwork paths
-src/audio_info/audio_metadata.py:61:from src import FLAC_EXT                                    # for FLAC file extension
-src/audio_info/audio_metadata.py:62:from src import MP3_EXT                                     # for MP3 file extension
-src/audio_info/audio_metadata.py:63:from src import MP3_TYPE                                    # for MP3 audio file type
-src/audio_info/audio_metadata.py:64:from src import MP4_TYPE                                    # for MP4 audio file type
 src/audio_info/audio_metadata.py:67:from src import MetadataTypeError                           # for handling metadata type errors
 src/audio_info/audio_metadata.py:68:from src import MusicProcessingError                        # for handling music processing errors
 src/audio_info/audio_metadata.py:69:from src import PathInfoError                               # for handling path info errors
 
 src/audio_info/audio_playlist.py:23:from src import add_module_handler                          # for module-specific logging handlers
-src/audio_info/audio_playlist.py:26:from src import AUDIO_EXTS                                  # for supported audio file extensions
-src/audio_info/audio_playlist.py:27:from src import MP3_EXT                                     # for MP3 file extension
-src/audio_info/audio_playlist.py:28:from src import PLAYLIST_EXTS                               # for supported playlist file extensions
 src/audio_info/audio_playlist.py:29:from src.generated_files import GENERATED_PATH              # for generated file output paths
 src/audio_info/audio_playlist.py:32:from src import PlaylistError                               # for playlist processing failures
 src/audio_info/audio_playlist.py:160:            export_path = GENERATED_PATH
 
 src/audio_info/audio_utilities.py:25:from src import add_module_handler                          # for module-specific logging handlers
-src/audio_info/audio_utilities.py:28:from src import ILT                                         # for integrated loudness target
-src/audio_info/audio_utilities.py:29:from src import LRA                                         # for loudness range target
-src/audio_info/audio_utilities.py:30:from src import MP3_EXT                                     # for MP3 file extension
-src/audio_info/audio_utilities.py:31:from src import TP                                          # for true-peak normalization target
 
 src/audio_normalize/audio_normalization.py:28:from src import add_module_handler                          # for module-specific logging handlers
-src/audio_normalize/audio_normalization.py:31:from src import ILT                                         # for integrated loudness target
-src/audio_normalize/audio_normalization.py:32:from src import LRA                                         # for loudness range target
-src/audio_normalize/audio_normalization.py:33:from src import MP3_EXT                                     # for MP3 file extension
-src/audio_normalize/audio_normalization.py:34:from src import TP                                          # for true-peak target
 
 src/core/paths.py:35:## @var GENERATED_PATH
 src/core/paths.py:38:GENERATED_PATH = os.path.join(SRC_PATH, "generated_files")  # same location (src/generated_files) until Milestone 9 Resources and generated output
 
 src/dir_processing/directory_processing.py:28:from src import add_module_handler                          # for module-specific logging handlers
-src/dir_processing/directory_processing.py:31:from src import AUDIO_EXTS                                  # for supported audio file extensions
-src/dir_processing/directory_processing.py:32:from src import CSV_DIR                                     # for CSV output directory name
-src/dir_processing/directory_processing.py:33:from src import CSV_EXT                                     # for CSV file extension
-src/dir_processing/directory_processing.py:34:from src import FLAC_EXT                                    # for FLAC file extension
-src/dir_processing/directory_processing.py:35:from src import M3U_EXT                                     # for M3U file extension
-src/dir_processing/directory_processing.py:36:from src import M4A_EXT                                     # for M4A file extension
-src/dir_processing/directory_processing.py:37:from src import MP3_EXT                                     # for MP3 file extension
-src/dir_processing/directory_processing.py:38:from src import MUSIC_TLD                                   # for music top level directory name
-src/dir_processing/directory_processing.py:39:from src import RESULT_DIR                                  # for text result directory name
-src/dir_processing/directory_processing.py:40:from src import RESULT_EXT                                  # for text result extension
-src/dir_processing/directory_processing.py:41:from src import UTF8                                        # for UTF-8 text encoding
-src/dir_processing/directory_processing.py:42:from src import WMA_EXT                                     # for WMA file extension
 src/dir_processing/directory_processing.py:43:from src.generated_files import GENERATED_PATH              # for generated file output paths
 src/dir_processing/directory_processing.py:46:from src import MusicProcessingError                        # for directory processing failures
 src/dir_processing/directory_processing.py:47:from src import PathInfoError                               # for path info related errors
@@ -84,40 +42,17 @@ src/generated_files/__init__.py:26:# @details In modules needing the constant, a
 src/generated_files/__init__.py:28:    "GENERATED_PATH",
 
 src/gui/wx_app.py:20:from src import add_module_handler                          # for adding module-specific logging handlers
-src/gui/wx_app.py:23:from src import AUDIO_EXTS                                  # for audio file extensions
-src/gui/wx_app.py:24:from src import MUSIC_TLD                                   # top level directory for music files
-src/gui/wx_app.py:25:from src import PLAYLIST_EXTS                               # supported playlist file extensions
-src/gui/wx_app.py:26:from src import RESULT_DIR                                  # directory for storing test results
-src/gui/wx_app.py:27:from src import RESULT_EXT                                  # file extension for result files
 src/gui/wx_app.py:28:from src.generated_files import GENERATED_PATH              # for generated files path
 src/gui/wx_app.py:804:        generated_dir = os.path.join(GENERATED_PATH, MUSIC_TLD)
 src/gui/wx_app.py:838:        generated_dir = GENERATED_PATH
 src/gui/wx_app.py:874:        result_path = os.path.join(GENERATED_PATH, RESULT_DIR, filename + RESULT_EXT)
 
 src/subprocess_utils.py:31:from src import add_module_handler                          # for module-specific logging handlers
-src/subprocess_utils.py:34:from src import UTF8                                        # for UTF-8 text encoding
 src/subprocess_utils.py:37:from src import FfmpegProcessError                          # for FFmpeg process failures
 
-tests/__init__.py:20:from src import MUSIC_TLD                                   # for the test music top level directory
+tests/test_audio_art.py:36:from src.generated_files import GENERATED_PATH              # path to generated files
+tests/test_audio_art.py:490:                if paths == (GENERATED_PATH, ALBUM_ART):
 
-tests/test_audio_art.py:32:from src import FOLDER_ART                                  # for album-art fixture filenames
-tests/test_audio_art.py:33:from src import MP3_EXT                                     # for MP3 file-pattern extraction tests
-tests/test_audio_art.py:34:from src import PLAYLIST_EXTS                               # for invalid file-pattern extraction tests
-tests/test_audio_art.py:478:                if paths == (audio_art_module.GENERATED_PATH, audio_art_module.ALBUM_ART)
-
-tests/test_audio_metadata.py:43:from src import AUDIO_FILES                                 # directory containing audio files
-tests/test_audio_metadata.py:44:from src import CSV_DIR                                     # directory containing CSV files
-tests/test_audio_metadata.py:45:from src import CSV_EXT                                     # file extension for CSV files
-tests/test_audio_metadata.py:46:from src import FLAC_EXT                                    # file extension for FLAC audio files
-tests/test_audio_metadata.py:47:from src import FOLDER_ART                                  # directory containing folder art images
-tests/test_audio_metadata.py:48:from src import M4A_EXT                                     # file extension for M4A audio files
-tests/test_audio_metadata.py:49:from src import MP3_EXT                                     # file extension for MP3 audio files
-tests/test_audio_metadata.py:50:from src import MUSIC_TLD                                   # top level directory for music files
-tests/test_audio_metadata.py:51:from src import PLAYLIST_EXTS                               # supported playlist file extensions
-tests/test_audio_metadata.py:52:from src import RESULT_DIR                                  # directory for storing test results
-tests/test_audio_metadata.py:53:from src import RESULT_EXT                                  # file extension for result files
-tests/test_audio_metadata.py:54:from src import WMA_EXT                                     # file extension for WMA audio files
-tests/test_audio_metadata.py:55:from src import UTF8                                        # UTF-8 encoding constant
 tests/test_audio_metadata.py:56:from src.generated_files import GENERATED_PATH              # path to generated files
 tests/test_audio_metadata.py:83:from src import MusicProcessingError                        # custom error class for music processing exceptions
 tests/test_audio_metadata.py:112:        cls.test_tld = os.path.join(GENERATED_PATH, MUSIC_TLD)
@@ -127,10 +62,6 @@ tests/test_audio_metadata.py:1390:        csv_path = os.path.join(GENERATED_PATH
 tests/test_audio_metadata.py:1431:        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
 tests/test_audio_metadata.py:1472:        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
 
-tests/test_audio_normalization.py:33:from src import ILT                                         # for loudness normalization targets
-tests/test_audio_normalization.py:34:from src import LRA                                         # for loudness-range normalization target
-tests/test_audio_normalization.py:35:from src import MUSIC_TLD                                   # for generated music directory paths
-tests/test_audio_normalization.py:36:from src import TP                                          # for true-peak normalization target
 tests/test_audio_normalization.py:37:from src.generated_files import GENERATED_PATH              # for generated output paths
 tests/test_audio_normalization.py:88:        cls.norm_path = os.path.join(GENERATED_PATH, MUSIC_TLD)
 
@@ -138,20 +69,9 @@ tests/test_audio_playlist.py:26:from src.generated_files import GENERATED_PATH  
 tests/test_audio_playlist.py:33:from src import PlaylistError                               # for expected playlist parsing errors
 tests/test_audio_playlist.py:63:        cls.generated_m3u = os.path.join(GENERATED_PATH, "test.m3u")
 
-tests/test_audio_utilities.py:27:from src import RESULT_DIR                                  # for result text directory
-tests/test_audio_utilities.py:28:from src import RESULT_EXT                                  # for result text extension
 tests/test_audio_utilities.py:29:from src.generated_files import GENERATED_PATH              # for generated output paths
 tests/test_audio_utilities.py:118:        output_path = os.path.join(GENERATED_PATH, RESULT_DIR, f"{txt_filename}{RESULT_EXT}")
 
-tests/test_directory_processing.py:31:from src import AUDIO_EXTS                                  # for non-audio path assertions
-tests/test_directory_processing.py:32:from src import CSV_DIR                                     # for generated CSV fixture directories
-tests/test_directory_processing.py:33:from src import CSV_EXT                                     # for generated CSV filename extensions
-tests/test_directory_processing.py:34:from src import M4A_EXT                                     # for M4A file-list filtering tests
-tests/test_directory_processing.py:35:from src import MP3_EXT                                     # for MP3 file-list filtering tests
-tests/test_directory_processing.py:36:from src import MUSIC_TLD                                   # for generated music directory paths
-tests/test_directory_processing.py:37:from src import RESULT_DIR                                  # for generated text fixture directories
-tests/test_directory_processing.py:38:from src import RESULT_EXT                                  # for generated text filename extensions
-tests/test_directory_processing.py:39:from src import WMA_EXT                                     # for WMA file-list filtering tests
 tests/test_directory_processing.py:40:from src.generated_files import GENERATED_PATH              # for generated test output paths
 tests/test_directory_processing.py:49:from src import MusicProcessingError                        # for safe-removal error assertions
 tests/test_directory_processing.py:79:        cls.dir_path = os.path.join(GENERATED_PATH, MUSIC_TLD, "ArtistDir", "AlbumDir")
@@ -166,15 +86,14 @@ tests/test_directory_processing.py:416:        bad_path = os.path.join(GENERATED
 tests/test_directory_processing.py:480:        expected_info = os.path.join(GENERATED_PATH, MUSIC_TLD, "Joshua Davis", "The Voice Peformance", "Joshua Davis-The Workingman's Hymn.mp3")
 tests/test_directory_processing.py:484:        target_path = os.path.join(GENERATED_PATH, MUSIC_TLD)
 
-tests/test_subprocess_utilities.py:29:from src import UTF8                                        # for decoding error fixture encoding
 tests/test_subprocess_utilities.py:36:from src import FfmpegProcessError                          # for expected ffmpeg command failures
 
 --- Multi-line and plain src imports ---
 
 --- String-based mock patch targets ---
-tests/test_audio_art.py:481:            with patch("src.audio_info.audio_art.os.path.join", side_effect=join_side_effect):
-tests/test_audio_art.py:565:    @patch("builtins.open", side_effect=BlockingIOError(errno.EWOULDBLOCK, "Operation blocked"))
-tests/test_audio_art.py:593:    @patch("builtins.open", side_effect=OSError(errno.EACCES, "Permission denied"))
+tests/test_audio_art.py:494:            with patch("src.audio_info.audio_art.os.path.join", side_effect=join_side_effect):
+tests/test_audio_art.py:578:    @patch("builtins.open", side_effect=BlockingIOError(errno.EWOULDBLOCK, "Operation blocked"))
+tests/test_audio_art.py:606:    @patch("builtins.open", side_effect=OSError(errno.EACCES, "Permission denied"))
 
 tests/test_audio_metadata.py:648:    @patch('src.audio_info.audio_metadata.SubprocessUtilities.popen_pipe')
 tests/test_audio_metadata.py:778:    @patch('src.audio_info.audio_metadata.SubprocessUtilities.subprocess_run')
@@ -230,9 +149,9 @@ docs/md_files/Workflow.md:727:The files are in the special `/MusicProcessing/src
 main.py:29:from src.generated_files import GENERATED_PATH              # generated files path
 main.py:969:        # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
 
-src/audio_info/audio_art.py:45:from src.generated_files import GENERATED_PATH              # for generated files path
-src/audio_info/audio_art.py:635:                # eg: D:\MusicProcessing\src\generated_files\AlbumArt
-src/audio_info/audio_art.py:641:                    # eg: D:\MusicProcessing\src\generated_files\AlbumArt\Best Of The Blues, Vol. 1.jpg
+src/audio_info/audio_art.py:46:from src.generated_files import GENERATED_PATH              # for generated files path
+src/audio_info/audio_art.py:631:                # eg: D:\MusicProcessing\src\generated_files\AlbumArt
+src/audio_info/audio_art.py:637:                    # eg: D:\MusicProcessing\src\generated_files\AlbumArt\Best Of The Blues, Vol. 1.jpg
 
 src/audio_info/audio_playlist.py:29:from src.generated_files import GENERATED_PATH              # for generated file output paths
 
@@ -259,6 +178,8 @@ src/gui/handlers.py:418:        self.mainFrame.run_task(directory.remove_pattern
 
 src/gui/wx_app.py:28:from src.generated_files import GENERATED_PATH              # for generated files path
 src/gui/wx_app.py:795:    def _show_generated_files_dialog(self):
+
+tests/test_audio_art.py:36:from src.generated_files import GENERATED_PATH              # path to generated files
 
 tests/test_audio_metadata.py:56:from src.generated_files import GENERATED_PATH              # path to generated files
 tests/test_audio_metadata.py:111:        # the top level directory path where files will be created - D:\MusicProcessing\src\generated_files\Music
