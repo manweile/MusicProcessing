@@ -53,7 +53,7 @@ from src.core.constants import RESULT_DIR                   # directory for stor
 from src.core.constants import RESULT_EXT                   # file extension for result files
 from src.core.constants import WMA_EXT                      # file extension for WMA audio files
 from src.core.constants import UTF8                         # UTF-8 encoding constant
-from src.generated_files import GENERATED_PATH              # path to generated files
+from src.core.paths import GENERATED_PATH                   # path to generated files
 from tests import TEST_FLAC_CREAM                           # test data for FLAC Cream audio file
 from tests import TEST_FLAC_CREAM_ALBUM_ARTIST              # test data for FLAC Cream album artist
 from tests import TEST_FLAC_CREAM_BADGE                     # test data for FLAC Cream badge
