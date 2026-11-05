@@ -43,7 +43,7 @@ from src.core.constants import FLAC_EXT                     # for FLAC file exte
 from src.core.constants import M4A_EXT                      # for M4A file extension
 from src.core.constants import MP3_EXT                      # for MP3 file extension
 from src.core.constants import WMA_EXT                      # for WMA file extension
-from src.generated_files import GENERATED_PATH              # for generated files path
+from src.core.paths import GENERATED_PATH                   # for generated files path
 
 # Local Module Classes
 from src.audio_info.audio_metadata import AudioMetadata     # for audio metadata handling functionality
