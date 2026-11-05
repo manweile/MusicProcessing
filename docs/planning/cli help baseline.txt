@@ -1,4 +1,4 @@
-PS D:\MusicProcessing> python main.py --help
+python main.py --help
 usage: main.py [-h] command ...
 
 Music Processing
@@ -34,11 +34,3 @@ subcommands:
     update-genres tld csv                                   Update songs genre from CSV; mandatory: start path tld only; mandatory: artist genre CSV file path
     update-playlist tld m3u                                 Update playlist file songs path; mandatory: start path tld only; mandatory: playlist file in tld path
     update-walk tld                                         Update playlist files songs path; mandatory: start path tld only
-  
-
-Test Suite:  
-----------------------------------------------------------------------
-Ran 141 tests in 234.619s
-
-OK
-Finished running tests!

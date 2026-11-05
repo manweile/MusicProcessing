@@ -2,7 +2,10 @@
 
 # Plan: MusicProcessing MVC Refactor
 
-Update this plan against the current repository state of the `gui` branch as of 2026-11-02.<br>
+This plan does NOT subsume the undisposed items in TODO.txt; they must be addressed separately, after the refactoring is complete.
+
+The `gui` branch is the baseline & starting point for this plan. Keep it frozen throughout the refactoring.
+
 Treat this file as the working implementation and sequencing prompt for refactoring the codebase into a Model-View-Controller layout;<br>
 not as a historical archive of earlier planning notes.
 
@@ -91,9 +94,10 @@ Key goals of this plan:
 ```text
 MusicProcessing/
 ├── output/                           # New, runtime-generated files (git-ignored); no __init__.py
-│   ├── csv_files/                    # Runtime-generated CSV files; no __init__.py
-│   ├── log_files/                    # Runtime-generated log files; no __init__.py
-│   └── result_files/                 # Runtime-generated result files; no __init__.py
+│   ├── csv_files/                    # Runtime-generated CSV files (git-ignored); no __init__.py
+│   ├── log_files/                    # Runtime-generated log files (git-ignored); no __init__.py
+│   ├── Music/                        # Runtime-generated music files (git-ignored); no __init__.py
+│   └── result_files/                 # Runtime-generated result files (git-ignored); no __init__.py
 │
 ├── src/
 │   ├── cli/                          # New, command-line interface layer
@@ -127,8 +131,8 @@ MusicProcessing/
 │   │   ├── audio_normalization.py
 │   │   └── directory_processing.py
 │   │
-│   ├── resources/                    # New, static view assets (icons, licenses); no __init__.py
-│   │   ├── AlbumArt/                 # User-supplied album art jpegs (read by set_album_art); git-ignored, not fixtures; no __init__.py
+│   ├── resources/                    # New, static view assets; no __init__.py
+│   │   ├── AlbumArt/                 # User-supplied album art jpegs (read by set_album_art); not fixtures; no __init__.py
 │   │   ├── icon_files/               # Icon files; no __init__.py`
 │   │   └── licenses/                 # License files; no __init__.py
 │   │
@@ -381,21 +385,22 @@ COMPLETED
         - delete main.log, then launch the application to verify that logging still initializes correctly (it relies on generated path)
       - Verify that generated output locations are unchanged.
         - convert test/Music/Abba/Abba-Waterloo.mp3, and verify the output is placed in the expected generated files location.
+      - Verify that main.py --help displays the expected help message.
     - After 4.2g: `git grep -n -F "src.generated_files" -- "*.py"` COMPLETED SEARCH PASSES
       - shows only `src/generated_files/__init__.py` and its docstring; record both as intentional shims.
 
     **4.3 Migrate logging helpers and errors after Step 6**
     - These destinations do not exist until Step 6 moves the modules. Do not migrate these imports before then.
-    - After the moves, return to this batch before Step 7: migrate production and test imports of logging
-      helpers to `src.core.logging_config` and errors to `src.core.errors`, in separate atomic batches.
-    - Update any string-based mock patch targets that refer to the old locations (none exist today), run affected tests, and verify
-      CLI and GUI startup still initialize logging as expected.
-    - Keep the old module shims and package compatibility surface until the callers for both destinations
-      have migrated and Step 7 explicitly removes them.
+    - After the moves, return to this batch before Step 7:
+    - 4.3a Migrate production and test imports of logging helpers to `src.core.logging_config`
+    - 4.3b Migrate production and test imports of errors to `src.core.errors`
+    - Update any string-based mock patch targets that refer to the old locations (none exist today)
+      - Run affected tests, and verify CLI and GUI startup still initialize logging as expected.
+    - Keep old module shims and package compatibility surface until callers for both destinations have migrated and Step 7 explicitly removes them.
 
     After all batches:
-    - Search production and test code for imports from the old locations. Remaining matches may only be
-      the intentional compatibility re-exports/shims; record and explain each such match.
+    - Search production and test code for imports from the old locations.
+      - Remaining matches may only be the intentional compatibility re-exports/shims; record and explain each such match.
     - Run the full test suite and `python main.py --help`; both must match the Step 3 baseline.
     - Confirm no tests were moved and no generated-file paths or logging startup behavior changed.
 
@@ -410,8 +415,8 @@ COMPLETED
     **Step 6** Move logging and error infrastructure
 
     Move `errors.py`, `logging_config.py`, `level_filter.py`, and `subprocess_utils.py` into `core/`<br>
-    (`SubprocessUtilities` is generic infrastructure, not a domain model; it depends only on `core/` errors, constants and logging.)<br>
-    update their imports and leave compatibility re-exports at their old locations until callers are migrated.<br>
+    `SubprocessUtilities` is generic infrastructure, not a domain model; it depends only on `core/` errors, constants and logging.<br>
+    Update their imports and leave compatibility re-exports at their old locations until callers are migrated.<br>
     Keep `core/__init__.py` free of logging setup side effects to avoid introducing import cycles.
 
     Before emptying `src/__init__.py`:

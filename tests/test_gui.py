@@ -30,6 +30,8 @@ class TestGuiSmoke(unittest.TestCase):
 
         @details This test will fail if there are any issues with the MainFrame class or its dependencies that prevent it from being created.
 
+        @param self: (type[TestGuiSmoke]) Test instance.
+
         @exception Exception A common baseclass exception to handle unforeseen errors.
         @exception SystemExit If the GUI environment is unavailable, the test will be skipped with a message indicating the reason.
         '''
@@ -54,6 +56,8 @@ class TestGuiSmoke(unittest.TestCase):
         @brief Test that the run_gui function is callable.
 
         @details This test will fail if there are any issues with the run_gui function or its dependencies that prevent it from being called.
+
+        @param self: (type[TestGuiSmoke]) Test instance.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         @exception SystemExit A common baseclass exception to handle unforeseen errors.

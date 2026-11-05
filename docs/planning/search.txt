@@ -1,5 +1,5 @@
 ﻿--- Python imports and generated path ---
-main.py:29:from src.generated_files import GENERATED_PATH              # generated files path
+main.py:29:from src.core.paths import GENERATED_PATH                   # generated files path
 main.py:59:log_filename = os.path.join(GENERATED_PATH, LOG_DIR, file)
 
 src/__init__.py:48:from src.core.paths import GENERATED_PATH                   # path to the directory where generated files are stored
@@ -8,7 +8,7 @@ src/__init__.py:75:# @details In modules needing the method, add: `from src impo
 src/__init__.py:90:    "GENERATED_PATH",
 
 src/audio_info/audio_art.py:36:from src import add_module_handler                          # for adding a module-specific handler to the logger
-src/audio_info/audio_art.py:46:from src.generated_files import GENERATED_PATH              # for generated files path
+src/audio_info/audio_art.py:46:from src.core.paths import GENERATED_PATH                   # for generated files path
 src/audio_info/audio_art.py:632:                album_art_dir = os.path.join(GENERATED_PATH, ALBUM_ART)
 
 src/audio_info/audio_metadata.py:53:from src import add_module_handler                          # for adding module-specific logging handlers
@@ -17,7 +17,7 @@ src/audio_info/audio_metadata.py:68:from src import MusicProcessingError        
 src/audio_info/audio_metadata.py:69:from src import PathInfoError                               # for handling path info errors
 
 src/audio_info/audio_playlist.py:23:from src import add_module_handler                          # for module-specific logging handlers
-src/audio_info/audio_playlist.py:29:from src.generated_files import GENERATED_PATH              # for generated file output paths
+src/audio_info/audio_playlist.py:29:from src.core.paths import GENERATED_PATH                   # for generated file output paths
 src/audio_info/audio_playlist.py:32:from src import PlaylistError                               # for playlist processing failures
 src/audio_info/audio_playlist.py:160:            export_path = GENERATED_PATH
 
@@ -29,7 +29,7 @@ src/core/paths.py:35:## @var GENERATED_PATH
 src/core/paths.py:38:GENERATED_PATH = os.path.join(SRC_PATH, "generated_files")  # same location (src/generated_files) until Milestone 9 Resources and generated output
 
 src/dir_processing/directory_processing.py:28:from src import add_module_handler                          # for module-specific logging handlers
-src/dir_processing/directory_processing.py:43:from src.generated_files import GENERATED_PATH              # for generated file output paths
+src/dir_processing/directory_processing.py:43:from src.core.paths import GENERATED_PATH                   # for generated file output paths
 src/dir_processing/directory_processing.py:46:from src import MusicProcessingError                        # for directory processing failures
 src/dir_processing/directory_processing.py:47:from src import PathInfoError                               # for path info related errors
 src/dir_processing/directory_processing.py:105:                csv_dir = os.path.join(GENERATED_PATH, CSV_DIR)
@@ -42,7 +42,7 @@ src/generated_files/__init__.py:26:# @details In modules needing the constant, a
 src/generated_files/__init__.py:28:    "GENERATED_PATH",
 
 src/gui/wx_app.py:20:from src import add_module_handler                          # for adding module-specific logging handlers
-src/gui/wx_app.py:28:from src.generated_files import GENERATED_PATH              # for generated files path
+src/gui/wx_app.py:28:from src.core.paths import GENERATED_PATH                   # for generated files path
 src/gui/wx_app.py:804:        generated_dir = os.path.join(GENERATED_PATH, MUSIC_TLD)
 src/gui/wx_app.py:838:        generated_dir = GENERATED_PATH
 src/gui/wx_app.py:874:        result_path = os.path.join(GENERATED_PATH, RESULT_DIR, filename + RESULT_EXT)
@@ -50,10 +50,10 @@ src/gui/wx_app.py:874:        result_path = os.path.join(GENERATED_PATH, RESULT_
 src/subprocess_utils.py:31:from src import add_module_handler                          # for module-specific logging handlers
 src/subprocess_utils.py:37:from src import FfmpegProcessError                          # for FFmpeg process failures
 
-tests/test_audio_art.py:36:from src.generated_files import GENERATED_PATH              # path to generated files
+tests/test_audio_art.py:36:from src.core.paths import GENERATED_PATH                   # path to generated files
 tests/test_audio_art.py:490:                if paths == (GENERATED_PATH, ALBUM_ART):
 
-tests/test_audio_metadata.py:56:from src.generated_files import GENERATED_PATH              # path to generated files
+tests/test_audio_metadata.py:56:from src.core.paths import GENERATED_PATH                   # path to generated files
 tests/test_audio_metadata.py:83:from src import MusicProcessingError                        # custom error class for music processing exceptions
 tests/test_audio_metadata.py:112:        cls.test_tld = os.path.join(GENERATED_PATH, MUSIC_TLD)
 tests/test_audio_metadata.py:114:        cls.txt_dir = os.path.join(GENERATED_PATH, RESULT_DIR)
@@ -62,17 +62,17 @@ tests/test_audio_metadata.py:1390:        csv_path = os.path.join(GENERATED_PATH
 tests/test_audio_metadata.py:1431:        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
 tests/test_audio_metadata.py:1472:        csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
 
-tests/test_audio_normalization.py:37:from src.generated_files import GENERATED_PATH              # for generated output paths
+tests/test_audio_normalization.py:37:from src.core.paths import GENERATED_PATH                   # for generated output paths
 tests/test_audio_normalization.py:88:        cls.norm_path = os.path.join(GENERATED_PATH, MUSIC_TLD)
 
-tests/test_audio_playlist.py:26:from src.generated_files import GENERATED_PATH              # for generated playlist output paths
+tests/test_audio_playlist.py:26:from src.core.paths import GENERATED_PATH                   # for generated playlist output paths
 tests/test_audio_playlist.py:33:from src import PlaylistError                               # for expected playlist parsing errors
 tests/test_audio_playlist.py:63:        cls.generated_m3u = os.path.join(GENERATED_PATH, "test.m3u")
 
-tests/test_audio_utilities.py:29:from src.generated_files import GENERATED_PATH              # for generated output paths
+tests/test_audio_utilities.py:29:from src.core.paths import GENERATED_PATH                   # for generated output paths
 tests/test_audio_utilities.py:118:        output_path = os.path.join(GENERATED_PATH, RESULT_DIR, f"{txt_filename}{RESULT_EXT}")
 
-tests/test_directory_processing.py:40:from src.generated_files import GENERATED_PATH              # for generated test output paths
+tests/test_directory_processing.py:40:from src.core.paths import GENERATED_PATH                  # for generated test output paths
 tests/test_directory_processing.py:49:from src import MusicProcessingError                        # for safe-removal error assertions
 tests/test_directory_processing.py:79:        cls.dir_path = os.path.join(GENERATED_PATH, MUSIC_TLD, "ArtistDir", "AlbumDir")
 tests/test_directory_processing.py:80:        cls.generated_tld = os.path.join(GENERATED_PATH, MUSIC_TLD)
@@ -114,8 +114,8 @@ tests/test_audio_metadata.py:1736:    @patch.object(AudioMetadata, "_AudioMetada
 tests/test_audio_normalization.py:264:    @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
 tests/test_audio_normalization.py:354:    @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
 tests/test_audio_normalization.py:648:    @patch("src.audio_normalize.audio_normalization.TP", "2.0")
-tests/test_audio_normalization.py:671:    @patch.object(AudioNormalization, "get_volume_info", return_value={"max_volume": float(TP) - 1.0})
-tests/test_audio_normalization.py:733:    @patch.object(AudioNormalization, "get_volume_info", return_value={"mean_volume": float(TP), "max_volume": float(TP) - 1.0})
+tests/test_audio_normalization.py:672:    @patch.object(AudioNormalization, "get_volume_info", return_value={"max_volume": float(TP) - 1.0})
+tests/test_audio_normalization.py:735:    @patch.object(AudioNormalization, "get_volume_info", return_value={"mean_volume": float(TP), "max_volume": float(TP) - 1.0})
 
 tests/test_audio_playlist.py:154:    @patch('src.audio_info.audio_playlist.logger.warning')
 
@@ -146,20 +146,14 @@ docs/md_files/Workflow.md:646:The functions output a list, `clip-check-file.txt`
 docs/md_files/Workflow.md:707:Updated playlist files will be in the special `/MusicProcessing/src/generated_files/` directory, under `Music`.<br>
 docs/md_files/Workflow.md:727:The files are in the special `/MusicProcessing/src/generated_files/` directory, under `csv_file/`s and/or `result_files/`.<br>
 
-main.py:29:from src.generated_files import GENERATED_PATH              # generated files path
 main.py:969:        # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
 
-src/audio_info/audio_art.py:46:from src.generated_files import GENERATED_PATH              # for generated files path
 src/audio_info/audio_art.py:631:                # eg: D:\MusicProcessing\src\generated_files\AlbumArt
 src/audio_info/audio_art.py:637:                    # eg: D:\MusicProcessing\src\generated_files\AlbumArt\Best Of The Blues, Vol. 1.jpg
-
-src/audio_info/audio_playlist.py:29:from src.generated_files import GENERATED_PATH              # for generated file output paths
 
 src/core/paths.py:38:GENERATED_PATH = os.path.join(SRC_PATH, "generated_files")  # same location (src/generated_files) until Milestone 9 Resources and generated output
 src/core/paths.py:40:## @var RESOURCES_PATH
 src/core/paths.py:43:RESOURCES_PATH = os.path.join(SRC_PATH, "resources")        # unused until Milestone 9 Resources and generated output
-
-src/dir_processing/directory_processing.py:43:from src.generated_files import GENERATED_PATH              # for generated file output paths
 
 src/generated_files/__init__.py:2:@package src.generated_files
 src/generated_files/__init__.py:3:@file src/generated_files/__init__.py
@@ -176,22 +170,12 @@ src/gui/handlers.py:355:        self.mainFrame.run_task(normalization.normalize_
 src/gui/handlers.py:393:        self.mainFrame.run_task(directory.remove_albums, tld, on_success=self.mainFrame._show_generated_files_dialog)
 src/gui/handlers.py:418:        self.mainFrame.run_task(directory.remove_pattern, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
 
-src/gui/wx_app.py:28:from src.generated_files import GENERATED_PATH              # for generated files path
 src/gui/wx_app.py:795:    def _show_generated_files_dialog(self):
 
-tests/test_audio_art.py:36:from src.generated_files import GENERATED_PATH              # path to generated files
-
-tests/test_audio_metadata.py:56:from src.generated_files import GENERATED_PATH              # path to generated files
 tests/test_audio_metadata.py:111:        # the top level directory path where files will be created - D:\MusicProcessing\src\generated_files\Music
 tests/test_audio_metadata.py:113:        # directory for text result files - D:\MusicProcessing\src\generated_files\Result
 
-tests/test_audio_normalization.py:37:from src.generated_files import GENERATED_PATH              # for generated output paths
 tests/test_audio_normalization.py:87:        # the path where converted files will be created D:\MusicProcessing\src\generated_files\Music
 
-tests/test_audio_playlist.py:26:from src.generated_files import GENERATED_PATH              # for generated playlist output paths
-
-tests/test_audio_utilities.py:29:from src.generated_files import GENERATED_PATH              # for generated output paths
-
-tests/test_directory_processing.py:40:from src.generated_files import GENERATED_PATH              # for generated test output paths
 tests/test_directory_processing.py:479:        # successful path_info returns a mp3 file name in generated_files/Music/Joshua Davis/The Voice Peformance
 tests/test_directory_processing.py:598:        /generated_files/Music

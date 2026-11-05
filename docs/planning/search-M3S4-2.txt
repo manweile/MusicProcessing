@@ -1,0 +1,109 @@
+Progress: M3S4.2 before 4.3
+
+Git:
+PS D:\MusicProcessing> git diff --name-only "$($inventoryCommit)..HEAD" -- '*.py'
+PS D:\MusicProcessing>
+PS D:\MusicProcessing> git status --short -- '*.py'
+PS D:\MusicProcessing>
+
+CLI:
+$ex = @(':(exclude)docs/planning', ':(exclude)docs/command_lines', ':(exclude)docs/scripts')
+$results = @(
+    '--- Python imports and generated path ---'
+    git grep --break -n -E 'from src import|from src\.generated_files|GENERATED_PATH' -- '*.py'
+    ''
+    '--- Multi-line and plain src imports ---'
+    git grep --break -n -E 'from src import \(|^\s*import src\b|from src\.[a-z_.]+ import \(' -- '*.py'
+    ''
+    '--- String-based mock patch targets ---'
+    git grep --break -n -E 'patch(\.object|\.dict)?\(' -- 'tests/*.py'
+    ''
+    '--- Generated resources and paths ---'
+    git grep --break -n -E 'generated_files|icon_files|licenses|RESOURCES_PATH' -- . @ex
+)
+$results | Set-Content -Path docs/planning/search.txt -Encoding utf8
+
+--- Python imports and generated path ---
+main.py:29:from src.core.paths import GENERATED_PATH                   # generated files path
+
+src/__init__.py:48:from src.core.paths import GENERATED_PATH                   # path to the directory where generated files are stored
+
+src/audio_info/audio_art.py:36:from src import add_module_handler                          # for adding a module-specific handler to the logger
+src/audio_info/audio_art.py:46:from src.core.paths import GENERATED_PATH                   # for generated files path
+
+src/audio_info/audio_metadata.py:53:from src import add_module_handler                          # for adding module-specific logging handlers
+src/audio_info/audio_metadata.py:67:from src import MetadataTypeError                           # for handling metadata type errors
+src/audio_info/audio_metadata.py:68:from src import MusicProcessingError                        # for handling music processing errors
+src/audio_info/audio_metadata.py:69:from src import PathInfoError                               # for handling path info errors
+
+src/audio_info/audio_playlist.py:23:from src import add_module_handler                          # for module-specific logging handlers
+src/audio_info/audio_playlist.py:29:from src.core.paths import GENERATED_PATH                   # for generated file output paths
+src/audio_info/audio_playlist.py:32:from src import PlaylistError                               # for playlist processing failures
+
+src/audio_info/audio_utilities.py:25:from src import add_module_handler                          # for module-specific logging handlers
+
+src/audio_normalize/audio_normalization.py:28:from src import add_module_handler                          # for module-specific logging handlers
+
+src/dir_processing/directory_processing.py:28:from src import add_module_handler                          # for module-specific logging handlers
+src/dir_processing/directory_processing.py:43:from src.core.paths import GENERATED_PATH                   # for generated file output paths
+src/dir_processing/directory_processing.py:46:from src import MusicProcessingError                        # for directory processing failures
+src/dir_processing/directory_processing.py:47:from src import PathInfoError                               # for path info related errors
+
+src/gui/wx_app.py:20:from src import add_module_handler                          # for adding module-specific logging handlers
+src/gui/wx_app.py:28:from src.core.paths import GENERATED_PATH                   # for generated files path
+
+src/subprocess_utils.py:31:from src import add_module_handler                          # for module-specific logging handlers
+src/subprocess_utils.py:37:from src import FfmpegProcessError                          # for FFmpeg process failures
+
+tests/test_audio_art.py:36:from src.core.paths import GENERATED_PATH                   # path to generated files
+
+tests/test_audio_metadata.py:56:from src.core.paths import GENERATED_PATH                   # path to generated files
+tests/test_audio_metadata.py:83:from src import MusicProcessingError                        # custom error class for music processing exceptions
+
+tests/test_audio_normalization.py:37:from src.core.paths import GENERATED_PATH                   # for generated output paths
+
+tests/test_audio_playlist.py:26:from src.core.paths import GENERATED_PATH                   # for generated playlist output paths
+tests/test_audio_playlist.py:33:from src import PlaylistError                               # for expected playlist parsing errors
+
+tests/test_audio_utilities.py:29:from src.core.paths import GENERATED_PATH                   # for generated output paths
+
+tests/test_directory_processing.py:40:from src.core.paths import GENERATED_PATH                  # for generated test output paths
+tests/test_directory_processing.py:49:from src import MusicProcessingError                        # for safe-removal error assertions
+
+tests/test_subprocess_utilities.py:36:from src import FfmpegProcessError                          # for expected ffmpeg command failures
+
+--- Multi-line and plain src imports ---
+
+--- String-based mock patch targets ---
+
+--- Generated resources and paths ---
+.gitignore:177:src/generated_files/csv_files/
+.gitignore:178:src/generated_files/log_files/
+.gitignore:179:src/generated_files/result_files/
+
+README.md:243:| |_generated_files
+README.md:254:| | |_icon_files
+README.md:258:| | |_licenses
+
+docs/md_files/Workflow.md:477:Copy it to the special `/MusicProcessing/src/generated_files/AlbumArt` folder.
+docs/md_files/Workflow.md:618:The default save location is `/MusicProcessing/src/generated_files/Music`.
+docs/md_files/Workflow.md:646:The functions output a list, `clip-check-file.txt` in `/MusicProcessing/src/generated_files/result_files/`.
+docs/md_files/Workflow.md:707:Updated playlist files will be in the special `/MusicProcessing/src/generated_files/` directory, under `Music`.<br>
+docs/md_files/Workflow.md:727:The files are in the special `/MusicProcessing/src/generated_files/` directory, under `csv_file/`s and/or `result_files/`.<br>
+
+main.py:969:        # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
+
+src/audio_info/audio_art.py:631:                # eg: D:\MusicProcessing\src\generated_files\AlbumArt
+src/audio_info/audio_art.py:637:                    # eg: D:\MusicProcessing\src\generated_files\AlbumArt\Best Of The Blues, Vol. 1.jpg
+
+src/generated_files/__init__.py:2:@package src.generated_files
+src/generated_files/__init__.py:3:@file src/generated_files/__init__.py
+src/generated_files/__init__.py:26:# @details In modules needing the constant, add `from src.generated_files import GENERATED_PATH`.
+
+tests/test_audio_metadata.py:111:        # the top level directory path where files will be created - D:\MusicProcessing\src\generated_files\Music
+tests/test_audio_metadata.py:113:        # directory for text result files - D:\MusicProcessing\src\generated_files\Result
+
+tests/test_audio_normalization.py:87:        # the path where converted files will be created D:\MusicProcessing\src\generated_files\Music
+
+tests/test_directory_processing.py:479:        # successful path_info returns a mp3 file name in generated_files/Music/Joshua Davis/The Voice Peformance
+tests/test_directory_processing.py:598:        /generated_files/Music

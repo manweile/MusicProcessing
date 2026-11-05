@@ -30,22 +30,21 @@ TODO
 4) Think about adding wxFormBuilder info to environment.md
 TODO
 
-GUI:
-0) implement mvc refactoring planning
-IN PROGRESS
-
-1) Think about how I want to log in gui mode
-  a) this could be very big refactor, could expand
-  b) run_task writes to display in splitter, also want writing to log file
+5) find out if test suites can be executed in parallel threads
+  a) test audio normalization is longer running
+  b) test audio utilities (test clip check walk) is longer running
 TODO
 
-2) put magic strings into src\gui\__init__.py as constants
-  a) reference src\gui\__init__.py in handlers.py & wx_app.py
-  b) use the constants
+GUI:
+1) implement mvc refactoring planning
+IN PROGRESS
+
+2) put UI magic strings into appropriate __init__.py as constants
+  a) reference appropriately and use
 TODO
 
 3) Modify Convert tab UI/UX
-  a) add optional target directory input
+  a) add optional target directory input, default to output/Music
     i) applies to single file conversion
     ii) applies to directory walk conversions
   b) remove "after conversion" move dialog
@@ -53,7 +52,7 @@ TODO
 TODO
 
 3) Modify Leveling tab UI/UX
-  a) add optional target directory input
+  a) add optional target directory input, default to output/Music
     i) applies to single file conversion
     ii) applies to directory walk conversions
   b) remove "after leveling" move dialog
@@ -63,19 +62,36 @@ TODO
 4) add icons to tabs
   a) will need to find appropriate iconography
   b) will need to add licenses etc
+  c) going to need an "about" menu item?
 
 5) How do I log warnings?
-  a) test case: run extract art on D:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
+  a) warnings are not fatal, but user does need to know.
+    i) currently neither CLI or GUI mode inform user
+  b) test case: run extract art on D:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
     this file has no art at all, so extract_album_art will log into debug.log, info.log, warning.log, main.log, audio_art.log
     but the gui will show success!!
-    do I need to throw a MusicProcessing Error in extract_album_art? Note this will probably change tests
+    Need to check on what CLI does.
+    Do I need to throw a MusicProcessing Error in extract_album_art? Note this will probably change tests
     Also, there are other model functions that have this pattern - write to a log file
     Basically, have to inspect and think about every logger.info and logger.warning.
     Some of the logger.warnings may need to be upgraded to actually throwing an exception.
 TODO
 
 6) add the new functions: clip_check_file, clip_walk, rename_albums etc
+  a) to which tab do each of them belong?
 TODO
+
+7) rethink metadata and directory tabs.
+  a) model functions have changed
+  b) possibly want to display file output in splitter control log area
+TODO
+
+8) going to need menu structure
+TODO
+
+9) figure out how to test gui functionality
+  a) refer to page 144 of wxPython in Action
+  b) test very basic gui functionality; existing test suite handles the models
 
 DISPOSED:
   1) import doxygen create from esp scale project
