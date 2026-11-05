@@ -23,7 +23,7 @@ from unittest.mock import patch                             # for warning-log in
 from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
-from src.generated_files import GENERATED_PATH              # for generated playlist output paths
+from src.core.paths import GENERATED_PATH                   # for generated playlist output paths
 from tests import TEST_M3U                                  # for playlist update tests
 from tests import TEST_MP3_CRUSH                            # for invalid playlist input tests
 from tests import TESTS_PATH                                # for expected playlist fixture paths

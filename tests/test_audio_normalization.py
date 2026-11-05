@@ -34,7 +34,7 @@ from src.core.constants import ILT                          # for loudness norma
 from src.core.constants import LRA                          # for loudness-range normalization target
 from src.core.constants import MUSIC_TLD                    # for generated music directory paths
 from src.core.constants import TP                           # for true-peak normalization target
-from src.generated_files import GENERATED_PATH              # for generated output paths
+from src.core.paths import GENERATED_PATH                   # for generated output paths
 from tests import TEST_M3U                                  # for invalid audio input tests
 from tests import TEST_MP3_ABBA                             # for dynamic normalization tests
 from tests import TEST_MP3_CRUSH                            # for linear normalization tests
@@ -665,7 +665,8 @@ class TestAudioNormalization(TestCase):
         with self.assertLogs(logger, level=logging.WARNING) as cm:
             normalization.peak_normalize_file(self.peak_src, None, show_spinner=False)
 
-        self.assertIn(self.peak_clipping_res, cm.output[0])
+        # Normalize the case of the file paths for comparison
+        self.assertIn(os.path.normcase(self.peak_clipping_res), os.path.normcase(cm.output[0]))
 
 
     @patch.object(AudioNormalization, "get_volume_info", return_value={"max_volume": float(TP) - 1.0})
@@ -727,7 +728,8 @@ class TestAudioNormalization(TestCase):
         with self.assertLogs(logger, level=logging.WARNING) as cm:
             normalization.rms_normalize_file(self.rms_clipping_src, None, show_spinner=False)
 
-        self.assertIn(self.rms_clipping_res, cm.output[0])
+        # Normalize the case of the file paths for comparison
+        self.assertIn(os.path.normcase(self.rms_clipping_res), os.path.normcase(cm.output[0]))
 
 
     @patch.object(AudioNormalization, "get_volume_info", return_value={"mean_volume": float(TP), "max_volume": float(TP) - 1.0})
