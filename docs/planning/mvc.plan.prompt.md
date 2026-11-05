@@ -369,18 +369,20 @@ COMPLETED
       - run `python main.py --help`
     - Verify the migrated callers import the expected constant values.
 
-    **4.2 Migrate `GENERATED_PATH` to `src.core.paths`**
+    **4.2 Migrate `GENERATED_PATH` to `src.core.paths`** COMPLETED
     - 4.2a `tests/test_audio_utilities.py` (test import only) COMPLETED ALL TESTS PASS
     - 4.2b `tests/test_audio_normalization.py` (test import only) COMPLETED ALL TESTS PASS
     - 4.2c `src/audio_info/audio_playlist.py` + `tests/test_audio_playlist.py` COMPLETED ALL TESTS PASS
     - 4.2d `src/audio_info/audio_art.py` + `tests/test_audio_art.py` COMPLETED ALL TESTS PASS
     - 4.2e `src/dir_processing/directory_processing.py` + `tests/test_directory_processing.py` COMPLETED ALL TESTS PASS
     - 4.2f `tests/test_audio_metadata.py` (test import only) COMPLETED ALL TESTS PASS
-    - 4.2g `src/gui/wx_app.py`, then `main.py` (separate commits)
-    - Verify `GENERATED_PATH` still resolves to the existing `src/generated_files` directory and that
-      generated output locations are unchanged.
-    - After 4.2g: `git grep -n "src.generated_files" -- "*.py"` shows only `src/generated_files/__init__.py`
-      and its docstring; record both as intentional shims.
+    - 4.2g `src/gui/wx_app.py` +  `main.py` COMPLETED ALL TESTS PASS
+      - Verify `GENERATED_PATH` still resolves to the existing `src/generated_files` directory
+        - delete main.log, then launch the application to verify that logging still initializes correctly (it relies on generated path)
+      - Verify that generated output locations are unchanged.
+        - convert test/Music/Abba/Abba-Waterloo.mp3, and verify the output is placed in the expected generated files location.
+    - After 4.2g: `git grep -n -F "src.generated_files" -- "*.py"` COMPLETED SEARCH PASSES
+      - shows only `src/generated_files/__init__.py` and its docstring; record both as intentional shims.
 
     **4.3 Migrate logging helpers and errors after Step 6**
     - These destinations do not exist until Step 6 moves the modules. Do not migrate these imports before then.

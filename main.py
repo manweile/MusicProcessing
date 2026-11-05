@@ -26,7 +26,7 @@ from src.core.constants import ERROR_LOG_FORMAT             # error log format
 from src.core.constants import LOG_DIR                      # log directory
 from src.core.constants import LOG_EXT                      # log file extension
 from src.core.constants import UTF8                         # utf encoding for file writing
-from src.generated_files import GENERATED_PATH              # generated files path
+from src.core.paths import GENERATED_PATH                   # generated files path
 
 # Local Module Classes
 from src.audio_info import AudioArt                         # audio art handling class

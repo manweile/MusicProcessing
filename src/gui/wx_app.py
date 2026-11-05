@@ -25,7 +25,7 @@ from src.core.constants import MUSIC_TLD                    # top level director
 from src.core.constants import PLAYLIST_EXTS                # supported playlist file extensions
 from src.core.constants import RESULT_DIR                   # directory for storing test results
 from src.core.constants import RESULT_EXT                   # file extension for result files
-from src.generated_files import GENERATED_PATH              # for generated files path
+from src.core.paths import GENERATED_PATH                   # for generated files path
 
 # Local Module Classes
 from src.gui.handlers import EventHandlers
