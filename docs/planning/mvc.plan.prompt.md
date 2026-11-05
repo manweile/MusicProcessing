@@ -374,7 +374,7 @@ COMPLETED
     - 4.2b `tests/test_audio_normalization.py` (test import only) COMPLETED ALL TESTS PASS
     - 4.2c `src/audio_info/audio_playlist.py` + `tests/test_audio_playlist.py` COMPLETED ALL TESTS PASS
     - 4.2d `src/audio_info/audio_art.py` + `tests/test_audio_art.py` COMPLETED ALL TESTS PASS
-    - 4.2e `src/dir_processing/directory_processing.py` + `tests/test_directory_processing.py`
+    - 4.2e `src/dir_processing/directory_processing.py` + `tests/test_directory_processing.py` COMPLETED ALL TESTS PASS
     - 4.2f `tests/test_audio_metadata.py` (test import only)
     - 4.2g `src/gui/wx_app.py`, then `main.py` (separate commits)
     - Verify `GENERATED_PATH` still resolves to the existing `src/generated_files` directory and that

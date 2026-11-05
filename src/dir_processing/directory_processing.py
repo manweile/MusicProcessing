@@ -40,7 +40,7 @@ from src.core.constants import RESULT_DIR                   # for text result di
 from src.core.constants import RESULT_EXT                   # for text result extension
 from src.core.constants import UTF8                         # for UTF-8 text encoding
 from src.core.constants import WMA_EXT                      # for WMA file extension
-from src.generated_files import GENERATED_PATH              # for generated file output paths
+from src.core.paths import GENERATED_PATH                   # for generated file output paths
 
 # Local Module Errors
 from src import MusicProcessingError                        # for directory processing failures

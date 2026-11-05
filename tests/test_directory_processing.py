@@ -37,7 +37,7 @@ from src.core.constants import MUSIC_TLD                    # for generated musi
 from src.core.constants import RESULT_DIR                   # for generated text fixture directories
 from src.core.constants import RESULT_EXT                   # for generated text filename extensions
 from src.core.constants import WMA_EXT                      # for WMA file-list filtering tests
-from src.generated_files import GENERATED_PATH              # for generated test output paths
+from src.core.paths import GENERATED_PATH                  # for generated test output paths
 from tests import TEST_M3U                                  # for non-audio fixture tests
 from tests import TEST_M4A_DAVIS                            # for M4A fixture path tests
 from tests import TEST_MP3_ABBA                             # for MP3 fixture path tests
