@@ -26,7 +26,7 @@ from src import add_module_handler                          # for module-specifi
 from src.core.constants import AUDIO_EXTS                   # for supported audio file extensions
 from src.core.constants import MP3_EXT                      # for MP3 file extension
 from src.core.constants import PLAYLIST_EXTS                # for supported playlist file extensions
-from src.generated_files import GENERATED_PATH              # for generated file output paths
+from src.core.paths import GENERATED_PATH                   # for generated file output paths
 
 # Local Module Errors
 from src import PlaylistError                               # for playlist processing failures
