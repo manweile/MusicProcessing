@@ -26,7 +26,7 @@ from tests.support import get_method_names                  # for direct test-su
 # Local Module Constants
 from src.core.constants import RESULT_DIR                   # for result text directory
 from src.core.constants import RESULT_EXT                   # for result text extension
-from src.generated_files import GENERATED_PATH              # for generated output paths
+from src.core.paths import GENERATED_PATH                   # for generated output paths
 from tests import TESTS_TLD                                 # for audio utility walk input
 
 # Local Module Classes

@@ -370,7 +370,7 @@ COMPLETED
     - Verify the migrated callers import the expected constant values.
 
     **4.2 Migrate `GENERATED_PATH` to `src.core.paths`**
-    - 4.2a `tests/test_audio_utilities.py` (test import only)
+    - 4.2a `tests/test_audio_utilities.py` (test import only) COMPLETED ALL TESTS PASS
     - 4.2b `tests/test_audio_normalization.py` (test import only)
     - 4.2c `src/audio_info/audio_playlist.py` + `tests/test_audio_playlist.py`
     - 4.2d `src/audio_info/audio_art.py` (production only; `tests/test_audio_art.py` reads
