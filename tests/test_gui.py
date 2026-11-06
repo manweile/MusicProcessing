@@ -6,18 +6,22 @@
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# standard modules
-import unittest
-import importlib
+# Standard Modules
+import importlib                                            # for dynamic module import
+import unittest                                             # for direct test-suite execution
+from unittest import TestCase                               # for test-case assertions
 
-# third party modules
+# Third Party Modules
 try:
     import wx
 except ImportError:  # pragma: no cover
     wx = None
 
+# Local Module Methods
+from tests.support import get_method_names                  # for direct test-suite construction
 
-class TestGuiSmoke(unittest.TestCase):
+
+class TestGuiSmoke(TestCase):
     '''
     @brief Basic checks for GUI module.
 
@@ -30,7 +34,7 @@ class TestGuiSmoke(unittest.TestCase):
 
         @details This test will fail if there are any issues with the MainFrame class or its dependencies that prevent it from being created.
 
-        @param self: (type[TestGuiSmoke]) Test instance.
+        @param self {TestGuiSmoke} Test instance.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         @exception SystemExit If the GUI environment is unavailable, the test will be skipped with a message indicating the reason.
@@ -57,7 +61,7 @@ class TestGuiSmoke(unittest.TestCase):
 
         @details This test will fail if there are any issues with the run_gui function or its dependencies that prevent it from being called.
 
-        @param self: (type[TestGuiSmoke]) Test instance.
+        @param self {TestGuiSmoke} Test instance.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         @exception SystemExit A common baseclass exception to handle unforeseen errors.
@@ -72,3 +76,24 @@ class TestGuiSmoke(unittest.TestCase):
             self.skipTest(f"GUI environment unavailable: {exc}")
 
         self.assertTrue(callable(gui_module.run_gui))
+
+
+if __name__ == "__main__":
+    '''
+    @brief Run the TestGuiSmoke test suite directly.
+
+    @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
+
+    @note This test module can be run directly with `python tests/test_gui.py`.
+
+    @test Execution of the test suite.
+    '''
+
+    methods = get_method_names(TestGuiSmoke)
+
+    suite = unittest.TestSuite()
+    for name in methods:
+        suite.addTest(TestGuiSmoke(name))
+
+    runner = unittest.TextTestRunner(verbosity=2)
+    runner.run(suite)

@@ -417,10 +417,10 @@ COMPLETED
 
     **Step 6** Move logging and error infrastructure
 
-    Move `errors.py`, `logging_config.py`, `level_filter.py`, and `subprocess_utils.py` into `core/`<br>
-    `SubprocessUtilities` is generic infrastructure, not a domain model; it depends only on `core/` errors, constants and logging.<br>
-    Update their imports and leave compatibility re-exports at their old locations until callers are migrated.<br>
-    Keep `core/__init__.py` free of logging setup side effects to avoid introducing import cycles.
+    Move:
+    - `errors.py`, `logging_config.py`, `level_filter.py`, and `subprocess_utils.py` into `core/`
+    - Update their imports and leave compatibility re-exports at their old locations until callers are migrated.
+    - Keep `core/__init__.py` free of logging setup side effects to avoid introducing import cycles.
 
     Before emptying `src/__init__.py`:
     - Preserve current package-level logging initialization

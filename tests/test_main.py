@@ -45,7 +45,7 @@ class TestMain(TestCase):
 
         @note The baseline file must exist, co-located with test suite, and contain the expected help output.
 
-        @param cls: (type[TestMain]) Test class receiving the fixture.
+        @param cls {TestMain} Test class receiving the fixture.
         '''
 
         baseline_path = Path(__file__).with_name("cli help baseline.txt")
@@ -59,7 +59,9 @@ class TestMain(TestCase):
 
         @details Deletes any existing main.log, runs main.py without arguments, and checks the log after it exits.
 
-        @param self: (type[TestMain]) Test instance.
+        @note main.py must exist in root.
+
+        @param self {TestMain} Test instance.
 
         @exception subprocess.TimeoutExpired If main.py does not close within the timeout.
         '''
@@ -83,13 +85,50 @@ class TestMain(TestCase):
             self.fail(f"main.py did not exit within the timeout: {ste}")
 
 
+    def test_main_with_gui_argument_creates_main_log(self):
+        '''
+        @brief Test that main.py creates main.log when called with the gui argument.
+
+        @details Deletes any existing main.log, calls main with the gui subcommand, and checks the log after it exits.
+
+        @note main.py must exist in root.
+
+        @param self {TestMain} Test instance.
+
+        @exception subprocess.TimeoutExpired If main.py does not close within the timeout.
+        '''
+
+        try:
+            project_root = Path(__file__).resolve().parents[1]
+            log_path = Path(os.path.join(GENERATED_PATH, LOG_DIR, "main.log"))
+
+            # Remove existing main.log if it exists before running main.py
+            if log_path.exists():
+                log_path.unlink()
+
+            # create the inline script to run main.py with the gui subcommand
+            script = "import argparse; import main; main.gui = lambda: None; main.main(argparse.Namespace(subcommand='gui'))"
+
+            # execute the inline script with the Python interpreter, capturing output and enforcing a timeout
+            result = subprocess.run([sys.executable, "-c", script], cwd=project_root, capture_output=True, text=True, timeout=180)
+
+            expected_result = f"main.py gui exited with {result.returncode}.\n{result.stdout}\n{result.stderr}"
+            self.assertEqual(result.returncode, 0, expected_result)
+            self.assertTrue(log_path.is_file())
+
+        except subprocess.TimeoutExpired as ste:
+            self.fail(f"main.py gui did not exit within the timeout: {ste}")
+
+
     def test_main_help_matches_baseline(self):
         '''
         @brief Test that main.py --help matches the recorded baseline.
 
         @details Runs main.py with --help and compares its output with the saved help baseline.
 
-        @param self: (type[TestMain]) Test instance.
+        @note main.py must exist in root.
+
+        @param self {TestMain} Test instance.
 
         @exception subprocess.TimeoutExpired If main.py does not close within the timeout.
         '''
@@ -98,6 +137,7 @@ class TestMain(TestCase):
             project_root = Path(__file__).resolve().parents[1]
             main_path = project_root.joinpath("main.py")
 
+            # run main.py with the --help argument
             result = subprocess.run([sys.executable, str(main_path), "--help"], cwd=project_root, capture_output=True, text=True, timeout=180)
 
             expected_result = f"main.py --help exited with {result.returncode}.\n{result.stdout}\n{result.stderr}"
