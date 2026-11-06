@@ -404,7 +404,7 @@ COMPLETED
     - Run the full test suite and `python main.py --help`; both must match the Step 3 baseline.
     - Confirm no tests were moved and no generated-file paths or logging startup behavior changed.
 
-    **Step 5** Wire in the CLI constants
+    **Step 5** Wire in the CLI constants COMPLETED
 
     When extracting the CLI, use ARG_CLI_* in parser argument definitions and when reading the corresponding parsed fields in main(args);<br>
     for example, getattr(args, ARG_CLI_FILE). Use ARG_HELP_* for the related help text.

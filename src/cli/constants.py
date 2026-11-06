@@ -17,10 +17,10 @@ Refer to docs/planning/mvc.plan.prompt.md for when they will be used.
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-## @var ARG_CLI_EXT
+## @var ARG_CLI_CSV
 # @brief add argument cli
-# @details use when needing mandatory file extension cli
-ARG_CLI_EXT = "ext"
+# @details use when needing mandatory CSV file
+ARG_CLI_CSV = "csv"
 
 ## @var ARG_CLI_FFPROBE
 # @brief add argument cli
@@ -32,15 +32,20 @@ ARG_CLI_FFPROBE = "ffprobe"
 # @details use when needing mandatory file cli
 ARG_CLI_FILE = "file"
 
+## @var ARG_CLI_PATTERN
+# @brief add argument cli
+# @details use when needing mandatory pattern cli
+ARG_CLI_PATTERN = "pattern"
+
 ## @var ARG_CLI_PLAYLIST
 # @brief add argument cli
 # @details use when needing optional playlist cli
 ARG_CLI_PLAYLIST = "m3u"
 
-## @var ARG_CLI_PATTERN
+## @var ARG_CLI_TARGET
 # @brief add argument cli
-# @details use when needing mandatory pattern cli
-ARG_CLI_PATTERN = "pattern"
+# @details use when needing optional target path cli
+ARG_CLI_TARGET = "target"
 
 ## @var ARG_CLI_TLD
 # @brief add argument cli
@@ -52,35 +57,40 @@ ARG_CLI_TLD = "tld"
 # @details use when needing mandatory type cli
 ARG_CLI_TYPE = "type"
 
+## @var ARG_HELP_OPT_FFPROBE
+# @brief add argument help
+# @details use when needing optional ffprobe input
+ARG_HELP_OPT_FFPROBE = "optional use ffprobe True"
+
+## @var ARG_HELP_OPT_PATTERN
+# @brief add argument help
+# @details use when needing optional pattern input
+ARG_HELP_OPT_PATTERN = "optional file ext {.flac|.mp3|.m4a|.wma}"
+
+## @var ARG_HELP_OPT_TARGET
+# @brief add argument help
+# @details use when needing optional target path input
+ARG_HELP_OPT_TARGET = "optional target path"
+
 ## @var ARG_HELP_AUDIO
 # @brief add argument help
 # @details use when needing mandatory file path input
-ARG_HELP_AUDIO = "mandatory full path to audio file"
+ARG_HELP_AUDIO = "mandatory audio file path"
 
-## @var ARG_HELP_FFPROBE
+## @var ARG_HELP_GENRE
 # @brief add argument help
-# @details use when needing optional ffprobe input
-ARG_HELP_FFPROBE = "optional ffprobe tags"
-
-## @var ARG_HELP_FILE
-# @brief add argument help
-# @details use when needing optional file extension
-ARG_HELP_FILE = "optional file extension"
+# @details use when needing mandatory genre input
+ARG_HELP_GENRE = "mandatory genre csv file path"
 
 ## @var ARG_HELP_NORMAL
 # @brief add argument help
 # @details use when needing mandatory normalization type
-ARG_HELP_NORMAL = "mandatory normalization type"
+ARG_HELP_LEVEL = "mandatory level type {ebu|peak|rms}"
 
 ## @var ARG_HELP_PATTERN_MAN
 # @brief add argument help
 # @details use when needing mandatory pattern input
-ARG_HELP_PATTERN_MAN = "mandatory file pattern"
-
-## @var ARG_HELP_PATTERN_OPT
-# @brief add argument help
-# @details use when needing optional pattern input
-ARG_HELP_PATTERN_OPT = "optional file pattern"
+ARG_HELP_PATTERN = "mandatory file pattern"
 
 ## @var ARG_HELP_PLAYLIST
 # @brief add argument help
@@ -90,26 +100,40 @@ ARG_HELP_PLAYLIST = "mandatory m3u file path"
 ## @var ARG_HELP_TLD
 # @brief add argument help
 # @details use when needing mandatory directory input
-ARG_HELP_TLD = "mandatory top level directory"
+ARG_HELP_TLD = "mandatory start path tld only"
+
+## @var ARG_HELP_TLD_FLD
+# @brief add argument help
+# @details use when needing mandatory mandatory tld or fld start path
+ARG_HELP_TLD_FLD = "mandatory start path tld/fld"
+
+## @var ARG_HELP_TLD_FLD_SLD
+# @brief add argument help
+# @details use when needing mandatory tld, fld, or sld start path
+ARG_HELP_TLD_FLD_SLD = "mandatory start path tld/fld/sld"
 
 ## @var __all__
 # @brief Exposes package members for importing by other modules.
 # @details Include all CLI argument and help constants.
 # @details In modules needing the constant, add `from src.cli.constants import <CONSTANT_NAME>`.
 __all__ = [
-    "ARG_CLI_EXT",
+    "ARG_CLI_CSV",
     "ARG_CLI_FFPROBE",
     "ARG_CLI_FILE",
-    "ARG_CLI_PLAYLIST",
     "ARG_CLI_PATTERN",
+    "ARG_CLI_PLAYLIST",
+    "ARG_CLI_TARGET",
     "ARG_CLI_TLD",
     "ARG_CLI_TYPE",
+    "ARG_HELP_OPT_FFPROBE",
+    "ARG_HELP_OPT_PATTERN",
+    "ARG_HELP_OPT_TARGET",
     "ARG_HELP_AUDIO",
-    "ARG_HELP_FFPROBE",
-    "ARG_HELP_FILE",
-    "ARG_HELP_NORMAL",
-    "ARG_HELP_PATTERN_MAN",
-    "ARG_HELP_PATTERN_OPT",
+    "ARG_HELP_GENRE",
+    "ARG_HELP_LEVEL",
+    "ARG_HELP_PATTERN",
     "ARG_HELP_PLAYLIST",
     "ARG_HELP_TLD",
+    "ARG_HELP_TLD_FLD",
+    "ARG_HELP_TLD_FLD_SLD"
 ]

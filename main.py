@@ -22,6 +22,28 @@ import shutil                                               # terminal size look
 import sys                                                  # system-specific parameters and functions module
 
 # Local Module Constants
+from src.cli.constants import ARG_CLI_CSV                   # CLI argument for CSV file
+from src.cli.constants import ARG_CLI_FFPROBE               # CLI argument for ffprobe
+from src.cli.constants import ARG_CLI_FILE                  # CLI argument for the audio file
+from src.cli.constants import ARG_CLI_PATTERN               # CLI argument for the pattern
+from src.cli.constants import ARG_CLI_PLAYLIST              # CLI argument for the playlist
+from src.cli.constants import ARG_CLI_TARGET                # CLI argument for the target path
+from src.cli.constants import ARG_CLI_TLD                   # CLI argument for the top-level directory
+from src.cli.constants import ARG_CLI_TYPE                  # CLI argument for the type
+
+from src.cli.constants import ARG_HELP_OPT_FFPROBE          # CLI argument help for the optional ffprobe input
+from src.cli.constants import ARG_HELP_OPT_PATTERN          # CLI argument help for the optional pattern input
+from src.cli.constants import ARG_HELP_OPT_TARGET           # CLI argument help for the optional target path
+
+from src.cli.constants import ARG_HELP_AUDIO                # CLI argument help for the mandatory audio file path
+from src.cli.constants import ARG_HELP_GENRE                # CLI argument help for the mandatory genre csv file path
+from src.cli.constants import ARG_HELP_LEVEL                # CLI argument help for the mandatory level type input
+from src.cli.constants import ARG_HELP_PATTERN              # CLI argument help for the mandatory file pattern input
+from src.cli.constants import ARG_HELP_PLAYLIST             # CLI argument help for the mandatory m3u file path
+from src.cli.constants import ARG_HELP_TLD                  # CLI argument help for the mandatory tld only start path
+from src.cli.constants import ARG_HELP_TLD_FLD              # CLI argument help for the mandatory tld/fld start path
+from src.cli.constants import ARG_HELP_TLD_FLD_SLD          # CLI argument help for the mandatory tld/fld/sld start path
+
 from src.core.constants import ERROR_LOG_FORMAT             # error log format
 from src.core.constants import LOG_DIR                      # log directory
 from src.core.constants import LOG_EXT                      # log file extension
@@ -563,119 +585,119 @@ def main(args) -> None:
             gui()
 
         if args.subcommand == "clip-check-file":
-            file_path = getattr(args, "file")
+            file_path = getattr(args, ARG_CLI_FILE)
             clip_check_file(file_path)
 
         if args.subcommand == "clip-check-walk":
-            tld_path = getattr(args, "tld")
+            tld_path = getattr(args, ARG_CLI_TLD)
             clip_check_walk(tld_path)
 
         if args.subcommand == "convert-file":
-            file_path = getattr(args, "file")
-            target = getattr(args, "target")
+            file_path = getattr(args, ARG_CLI_FILE)
+            target = getattr(args, ARG_CLI_TARGET)
             convert_file(file_path, target)
 
         if args.subcommand == "convert-walk":
-            tld_path = getattr(args, "tld")
-            file_pattern = getattr(args, "pattern")
-            target = getattr(args, "target")
+            tld_path = getattr(args, ARG_CLI_TLD)
+            file_pattern = getattr(args, ARG_CLI_PATTERN)
+            target = getattr(args, ARG_CLI_TARGET)
             convert_walk(tld_path, file_pattern, target)
 
         if args.subcommand == "create-albums":
-            tld_path = getattr(args, "tld")
+            tld_path = getattr(args, ARG_CLI_TLD)
             create_albums(tld_path)
 
         if args.subcommand == "ebu-file":
-            file_path = getattr(args, "file")
-            target = getattr(args, "target")
+            file_path = getattr(args, ARG_CLI_FILE)
+            target = getattr(args, ARG_CLI_TARGET)
             ebu_file(file_path, target)
 
         if args.subcommand == "extract-album-art":
-            file_path = getattr(args, "file")
+            file_path = getattr(args, ARG_CLI_FILE)
             extract_album_art(file_path)
 
         if args.subcommand == "extract-walk":
-            tld_path = getattr(args, "tld")
-            file_pattern = getattr(args, "pattern")
+            tld_path = getattr(args, ARG_CLI_TLD)
+            file_pattern = getattr(args, ARG_CLI_PATTERN)
             extract_walk(tld_path, file_pattern)
 
         if args.subcommand == "get-audio-file-list":
-            tld_path = getattr(args, "tld")
+            tld_path = getattr(args, ARG_CLI_TLD)
             get_audio_file_list(tld_path)
 
         if args.subcommand == "get-ext-file-list":
-            tld_path = getattr(args, "tld")
-            file_pattern = getattr(args, "pattern")
+            tld_path = getattr(args, ARG_CLI_TLD)
+            file_pattern = getattr(args, ARG_CLI_PATTERN)
             get_ext_file_list(tld_path, file_pattern)
 
         if args.subcommand == "get-media-info-walk":
-            tld_path = getattr(args, "tld")
-            file_pattern = getattr(args, "pattern")
+            tld_path = getattr(args, ARG_CLI_TLD)
+            file_pattern = getattr(args, ARG_CLI_PATTERN)
             get_media_info_walk(tld_path, file_pattern)
 
         if args.subcommand == "get-tags-walk":
-            tld_path = getattr(args, "tld")
-            file_pattern = getattr(args, "pattern")
-            ffprobe = getattr(args, "ffprobe")
+            tld_path = getattr(args, ARG_CLI_TLD)
+            file_pattern = getattr(args, ARG_CLI_PATTERN)
+            ffprobe = getattr(args, ARG_CLI_FFPROBE)
             get_tags_walk(tld_path, file_pattern, ffprobe)
 
         if args.subcommand == "level-normalize-walk":
-            tld_path = getattr(args, "tld")
-            norm_type = getattr(args, "type")
-            target = getattr(args, "target")
+            tld_path = getattr(args, ARG_CLI_TLD)
+            norm_type = getattr(args, ARG_CLI_TYPE)
+            target = getattr(args, ARG_CLI_TARGET)
             level_normalize_walk(tld_path, norm_type, target)
 
         if args.subcommand == "normalize-filename":
-            file_path = getattr(args, "file")
+            file_path = getattr(args, ARG_CLI_FILE)
             normalize_filename(file_path)
 
         if args.subcommand == "normalize-filename-walk":
-            tld_path = getattr(args, "tld")
+            tld_path = getattr(args, ARG_CLI_TLD)
             normalize_filename_walk(tld_path)
 
         if args.subcommand == "peak-file":
-            file_path = getattr(args, "file")
-            target = getattr(args, "target")
+            file_path = getattr(args, ARG_CLI_FILE)
+            target = getattr(args, ARG_CLI_TARGET)
             peak_file(file_path, target)
 
         if args.subcommand == "rms-file":
-            file_path = getattr(args, "file")
-            target = getattr(args, "target")
+            file_path = getattr(args, ARG_CLI_FILE)
+            target = getattr(args, ARG_CLI_TARGET)
             rms_file(file_path, target)
 
         if args.subcommand == "remove-empty-albums":
-            tld_path = getattr(args, "tld")
+            tld_path = getattr(args, ARG_CLI_TLD)
             remove_empty_albums(tld_path)
 
         if args.subcommand == "remove-pattern":
-            tld_path = getattr(args, "tld")
-            file_pattern = getattr(args, "pattern")
+            tld_path = getattr(args, ARG_CLI_TLD)
+            file_pattern = getattr(args, ARG_CLI_PATTERN)
             remove_pattern(tld_path, file_pattern)
 
         if args.subcommand == "remove-set-list":
-            tld_path = getattr(args, "tld")
+            tld_path = getattr(args, ARG_CLI_TLD)
             remove_set_list(tld_path)
 
         if args.subcommand == "rename-album-directories":
-            tld_path = getattr(args, "tld")
+            tld_path = getattr(args, ARG_CLI_TLD)
             rename_album_directories(tld_path)
 
         if args.subcommand == "set-album-art":
-            tld_path = getattr(args, "tld")
+            tld_path = getattr(args, ARG_CLI_TLD)
             set_album_art(tld_path)
 
         if args.subcommand == "update-genres":
-            tld_path = getattr(args, "tld")
-            csv_path = getattr(args, "csv")
+            tld_path = getattr(args, ARG_CLI_TLD)
+            csv_path = getattr(args, ARG_CLI_CSV)
             update_genres(tld_path, csv_path)
 
         if args.subcommand == "update-playlist":
-            tld_path = getattr(args, "tld")
-            input_m3u = getattr(args, "m3u")
+            tld_path = getattr(args, ARG_CLI_TLD)
+            input_m3u = getattr(args, ARG_CLI_PLAYLIST)
             update_playlist(tld_path, input_m3u)
 
         if args.subcommand == "update-walk":
-            tld_path = getattr(args, "tld")
+            tld_path = getattr(args, ARG_CLI_TLD)
             update_walk(tld_path)
 
     except Exception as e:
@@ -748,8 +770,8 @@ if __name__ == "__main__":
         # check peak, RMS, and EBU R128 leveling for a single audio file
         # 1 mandatory arg, the audio file path
         # clip-check-file "D:\MusicProcessing\tests\Music\Abba\Waterloo\Abba-Waterloo.mp3"
-        clip_check_file_parser = subparsers.add_parser("clip-check-file", help="Check peak, RMS, and EBU R128 leveling for a single audio file")
-        clip_check_file_parser.add_argument("file", type=existing_file, help="mandatory audio file path")
+        clip_check_file_parser = subparsers.add_parser("clip-check-file", help="Check peak/RMS/EBU R128 leveling for single audio file")
+        clip_check_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
         clip_check_file_parser.set_defaults(func=clip_check_file)
 
         # check max volume and clip level of audio files
@@ -758,8 +780,8 @@ if __name__ == "__main__":
         # clip-check-walk "D:\MusicProcessing\tests\Music\Abba"
         # clip-check-walk "D:\MusicProcessing\tests\Music\Abba\Waterloo"
         # clip-check-walk "D:\MusicProcessing\tests\Music\The Lord of the Rings"
-        clip_check_walk_parser = subparsers.add_parser("clip-check-walk", help="Check peak, RMS, and EBU R128 leveling options for audio files")
-        clip_check_walk_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld")
+        clip_check_walk_parser = subparsers.add_parser("clip-check-walk", help="Check peak/RMS/EBU R128 leveling for multiple audio files")
+        clip_check_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
         clip_check_walk_parser.set_defaults(func=clip_check_walk)
 
         # convert audio file specified to mp3 format
@@ -767,8 +789,8 @@ if __name__ == "__main__":
         # 1 optional arg, the target directory for exported files
         # convert-file "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"
         convert_file_parser = subparsers.add_parser("convert-file", help="Convert audio file to mp3")
-        convert_file_parser.add_argument("file", type=existing_file, help="mandatory audio file path")
-        convert_file_parser.add_argument("--target", type=existing_path, help="optional converted file target path")
+        convert_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
+        convert_file_parser.add_argument("--" + ARG_CLI_TARGET, type=existing_path, help=ARG_HELP_OPT_TARGET)
         convert_file_parser.set_defaults(func=convert_file)
 
         # convert all audio files found in top level directory
@@ -780,16 +802,16 @@ if __name__ == "__main__":
         # convert-walk "C:\Music\Abba"
         # convert-walk "C:\Music\Abba\Waterloo"
         convert_walk_parser = subparsers.add_parser("convert-walk", help="Convert audio files to mp3")
-        convert_walk_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld/sld")
-        convert_walk_parser.add_argument("--pattern", type=str, help="optional file ext {.flac|.mp3|.m4a|.wma}")
-        convert_walk_parser.add_argument("--target", type=existing_path, help="optional converted files target path")
+        convert_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD_SLD)
+        convert_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
+        convert_walk_parser.add_argument("--" + ARG_CLI_TARGET, type=existing_path, help=ARG_HELP_OPT_TARGET)
         convert_walk_parser.set_defaults(func=convert_walk)
 
         # create album directories
         # 1 mandatory arg, the tld path (must be the tld, fld and sld will not work)
         # create-albums C:\Music
         create_albums_parser = subparsers.add_parser("create-albums", help="Create album sub-directories")
-        create_albums_parser.add_argument("tld", type=existing_path, help="mandatory start path tld only")
+        create_albums_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
         create_albums_parser.set_defaults(func=create_albums)
 
         # ebu normalize an mp3 audio file
@@ -797,15 +819,15 @@ if __name__ == "__main__":
         # 1 optional arg, the target directory for exported files
         # ebu-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
         ebu_file_parser = subparsers.add_parser("ebu-file", help="EBU R128 level audio file")
-        ebu_file_parser.add_argument("file", type=existing_file, help="mandatory audio file path")
-        ebu_file_parser.add_argument("--target", type=existing_path, help="optional leveled file target path")
+        ebu_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
+        ebu_file_parser.add_argument("--" + ARG_CLI_TARGET, type=existing_path, help=ARG_HELP_OPT_TARGET)
         ebu_file_parser.set_defaults(func=ebu_file)
 
         # extract album art from specified audio file
         # 1 mandatory arg, the path to audio file
         # extract-file "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"
         extract_album_art_parser = subparsers.add_parser("extract-album-art", help="Extract audio file embedded art")
-        extract_album_art_parser.add_argument("file", type=existing_file, help="mandatory audio file path")
+        extract_album_art_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
         extract_album_art_parser.set_defaults(func=extract_album_art)
 
         # extract album art from all audio files found in top level directory
@@ -818,15 +840,15 @@ if __name__ == "__main__":
         # extract-walk C:\Music\Abba
         # extract-walk C:\Music
         extract_walk_parser = subparsers.add_parser("extract-walk", help="Extract audio files embedded art")
-        extract_walk_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld")
-        extract_walk_parser.add_argument("--pattern", type=str, help="optional file ext {.flac|.mp3|.m4a|.wma}")
+        extract_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        extract_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
         extract_walk_parser.set_defaults(func=extract_walk)
 
         # list all audio files
         # 1 mandatory arg, the start path (can be tld or fld, but not sld)
         # get-audio-file-list D:\MusicProcessing\tests\Music
-        get_audio_file_list_audio_parser = subparsers.add_parser("get-audio-file-list", help="Get CSV list of audio file paths")
-        get_audio_file_list_audio_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld")
+        get_audio_file_list_audio_parser = subparsers.add_parser("get-audio-file-list", help="Get list of audio file paths")
+        get_audio_file_list_audio_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
         get_audio_file_list_audio_parser.set_defaults(func=get_audio_file_list)
 
         # list files by extension
@@ -837,9 +859,9 @@ if __name__ == "__main__":
         # get-ext-file-list C:\Music --pattern .m4a
         # get-ext-file-list C:\Music --pattern .wma
         # get-ext-file-list D:\MusicProcessing\tests\Music
-        get_ext_file_list_parser = subparsers.add_parser("get-ext-file-list", help="Get CSV list of audio file extensions")
-        get_ext_file_list_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld")
-        get_ext_file_list_parser.add_argument("--pattern", type=str, help="optional file ext {.flac|.mp3|.m4a|.wma}")
+        get_ext_file_list_parser = subparsers.add_parser("get-ext-file-list", help="Get list of audio file extensions")
+        get_ext_file_list_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        get_ext_file_list_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
         get_ext_file_list_parser.set_defaults(func=get_ext_file_list)
 
         # get media information for files
@@ -850,9 +872,9 @@ if __name__ == "__main__":
         # get-media-info-walk C:\Music --pattern .wma
         # get-media-info-walk C:\Music --pattern .flac
         # get-media-info-walk D:\MusicProcessing\tests\Music
-        get_media_info_walk_parser = subparsers.add_parser("get-media-info-walk", help="Get text list of audio files media info")
-        get_media_info_walk_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld")
-        get_media_info_walk_parser.add_argument("--pattern", type=str, help="optional file ext {.flac|.mp3|.m4a|.wma}")
+        get_media_info_walk_parser = subparsers.add_parser("get-media-info-walk", help="Get list of audio files media info")
+        get_media_info_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        get_media_info_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
         get_media_info_walk_parser.set_defaults(func=get_media_info_walk)
 
         # get metadata tags from all audio files found in top level directory
@@ -865,10 +887,10 @@ if __name__ == "__main__":
         # get-tags-walk C:\Music --pattern .wma --ffprobe True
         # get-tags-walk C:\Music --pattern .flac --ffprobe True
         # get-tags-walk D:\MusicProcessing\tests\Music --ffprobe True
-        get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Get text list of audio files metadata tags")
-        get_tags_walk_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld")
-        get_tags_walk_parser.add_argument("--pattern", type=str, help="optional file ext {.flac|.mp3|.m4a|.wma}")
-        get_tags_walk_parser.add_argument("--ffprobe", type=bool, help="optional use ffprobe True")
+        get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Get list of audio files metadata tags")
+        get_tags_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        get_tags_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
+        get_tags_walk_parser.add_argument("--" + ARG_CLI_FFPROBE, type=bool, help=ARG_HELP_OPT_FFPROBE)
         get_tags_walk_parser.set_defaults(func=get_tags_walk)
 
         # level normalize mp3 files
@@ -879,29 +901,29 @@ if __name__ == "__main__":
         # level-normalize-walk C:\Music peak
         # level-normalize-walk C:\Music rms
         # level-normalize-walk "F:\Rick\RickConverted\Elton John" ebu --target "F:\Rick\RickLeveled"
-        level_normalize_walk_parser = subparsers.add_parser("level-normalize-walk", help="Level normalize files per type")
-        level_normalize_walk_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld")
-        level_normalize_walk_parser.add_argument("type", type=str, help="mandatory level type {ebu|peak|rms}")
-        level_normalize_walk_parser.add_argument("--target", type=existing_path, help="optional leveled files target path")
+        level_normalize_walk_parser = subparsers.add_parser("level-normalize-walk", help="Level normalize audio files")
+        level_normalize_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        level_normalize_walk_parser.add_argument(ARG_CLI_TYPE, type=str, help=ARG_HELP_LEVEL)
+        level_normalize_walk_parser.add_argument("--" + ARG_CLI_TARGET, type=existing_path, help=ARG_HELP_OPT_TARGET)
         level_normalize_walk_parser.set_defaults(func=level_normalize_walk)
 
-        # normalize a filename from its metadata
+        # rename an audio filename from its metadata
         # 1 mandatory arg, the audio file path
         # normalize-filename "C:\Music\song.flac"
         # normalize-filename "C:\Music\song.mp3"
         # normalize-filename "C:\Music\song.m4a"
         # normalize-filename "C:\Music\song.wma"
-        normalize_filename_parser = subparsers.add_parser("normalize-filename", help="Normalize audio file from its metadata")
-        normalize_filename_parser.add_argument("file", type=existing_file, help="mandatory audio file path")
+        normalize_filename_parser = subparsers.add_parser("normalize-filename", help="Rename audio file from metadata")
+        normalize_filename_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
         normalize_filename_parser.set_defaults(func=normalize_filename)
 
-        # normalize audio filenames from metadata for all acceptable audio file types in directory
+        # rename audio filenames from metadata for all acceptable audio file types in directory
         # 1 mandatory arg, the start path (can be tld, fld, or sld)
         # normalize-filename-walk "F:\Rick\RickPrepped"
         # normalize-filename-walk "F:\Rick\RickPrepped\Duffy"
         # normalize-filename-walk "F:\Rick\RickPrepped\Duffy\Rockferry"
-        normalize_filename_walk_parser = subparsers.add_parser("normalize-filename-walk", help="Normalize audio files from their metadata")
-        normalize_filename_walk_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld/sld")
+        normalize_filename_walk_parser = subparsers.add_parser("normalize-filename-walk", help="Rename audio files from metadata")
+        normalize_filename_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD_SLD)
         normalize_filename_walk_parser.set_defaults(func=normalize_filename_walk)
 
         # peak normalize an mp3 audio file
@@ -909,15 +931,15 @@ if __name__ == "__main__":
         # 1 optional arg, the target directory for exported files
         # peak-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
         peak_file_parser = subparsers.add_parser("peak-file", help="Peak level audio file")
-        peak_file_parser.add_argument("file", type=existing_file, help="mandatory audio file path")
-        peak_file_parser.add_argument("--target", type=str, help="optional leveled file target path")
+        peak_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
+        peak_file_parser.add_argument("--" + ARG_CLI_TARGET, type=str, help=ARG_HELP_OPT_TARGET)
         peak_file_parser.set_defaults(func=peak_file)
 
         # remove empty album directories
         # 1 mandatory arg, the start path (can be tld or fld, but not sld)
         # remove-empty-albums C:\Music
         remove_empty_albums_parser = subparsers.add_parser("remove-empty-albums", help="Remove empty album sub-directories")
-        remove_empty_albums_parser.add_argument("tld", type=existing_path, help="mandatory start path tld/fld")
+        remove_empty_albums_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
         remove_empty_albums_parser.set_defaults(func=remove_empty_albums)
 
         # remove files matching specified file pattern
@@ -929,22 +951,22 @@ if __name__ == "__main__":
         # remove-pattern C:\Music AlbumArt*Small.jpg
         # remove-pattern C:\Music AlbumArt*Large.jpg
         remove_pattern_parser = subparsers.add_parser("remove-pattern", help="Remove files with specified pattern")
-        remove_pattern_parser.add_argument("tld", type=existing_path, help="mandatory starting path tld/fld/sld")
-        remove_pattern_parser.add_argument("pattern", type=str, help="mandatory file pattern")
+        remove_pattern_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD_SLD)
+        remove_pattern_parser.add_argument(ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN)
         remove_pattern_parser.set_defaults(func=remove_pattern)
 
         # remove files matching a hard-coded set of patterns
         # 1 mandatory arg, the start path (can be tld, fld, or sld)
         # remove-set-list "F:\Rick\RickPrepped\Huey Lewis & The News"
         remove_set_list_parser = subparsers.add_parser("remove-set-list", help="Remove files matching hard-coded pattern set")
-        remove_set_list_parser.add_argument("tld", type=existing_path, help="mandatory starting path tld/fld/sld")
+        remove_set_list_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD_SLD)
         remove_set_list_parser.set_defaults(func=remove_set_list)
 
         # rename album directories based on metadata
         # 1 mandatory arg, the tld path (must be the tld, fld and sld will not work)
         # rename-album-directories "F:\Rick\RickPrepped"
         rename_album_directories_parser = subparsers.add_parser("rename-album-directories", help="Rename album paths from metadata")
-        rename_album_directories_parser.add_argument("tld", type=existing_path, help="mandatory start path tld only")
+        rename_album_directories_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
         rename_album_directories_parser.set_defaults(func=rename_album_directories)
 
         # rms normalize an mp3 audio file
@@ -952,15 +974,15 @@ if __name__ == "__main__":
         # 1 optional arg, the target directory for exported files
         # rms-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
         rms_file_parser = subparsers.add_parser("rms-file", help="RMS level audio file")
-        rms_file_parser.add_argument("file", type=existing_file, help="mandatory audio file path")
-        rms_file_parser.add_argument("--target", type=str, help="optional leveled file target path")
+        rms_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
+        rms_file_parser.add_argument("--" + ARG_CLI_TARGET, type=str, help=ARG_HELP_OPT_TARGET)
         rms_file_parser.set_defaults(func=rms_file)
 
         # set album art file
         # 1 mandatory arg, the start path (can be tld or fld, but not sld)
         # set-album-art C:\Music
         set_album_art_parser = subparsers.add_parser("set-album-art", help="Set albums art file")
-        set_album_art_parser.add_argument("tld", type=existing_path, help="mandatory starting path tld/fld")
+        set_album_art_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
         set_album_art_parser.set_defaults(func=set_album_art)
 
         # update genre metadata from artist directory mappings in a CSV file
@@ -968,8 +990,8 @@ if __name__ == "__main__":
         # 2nd mandatory arg, the artist genre CSV path
         # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
         update_genres_parser = subparsers.add_parser("update-genres", help="Update songs genre from CSV")
-        update_genres_parser.add_argument("tld", type=existing_path, help="mandatory start path tld only")
-        update_genres_parser.add_argument("csv", type=existing_file, help="mandatory artist genre CSV file path")
+        update_genres_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
+        update_genres_parser.add_argument(ARG_CLI_CSV, type=existing_file, help=ARG_HELP_GENRE)
         update_genres_parser.set_defaults(func=update_genres)
 
         # update a m3u playlist file
@@ -977,15 +999,15 @@ if __name__ == "__main__":
         # 2nd mandatory arg, the path to the m3u playlist file
         # update-playlist D:\MusicProcessing\tests\Music D:\MusicProcessing\tests\Music\test.m3u
         update_playlist_parsers = subparsers.add_parser("update-playlist", help="Update playlist file songs path")
-        update_playlist_parsers.add_argument("tld", type=existing_path, help="mandatory start path tld only")
-        update_playlist_parsers.add_argument("m3u", type=existing_file, help="mandatory playlist file in tld path")
+        update_playlist_parsers.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
+        update_playlist_parsers.add_argument(ARG_CLI_PLAYLIST, type=existing_file, help=ARG_HELP_PLAYLIST)
         update_playlist_parsers.set_defaults(func=update_playlist)
 
         # update m3u playlist files in directory
         # 1 mandatory arg, the tld path (must be the tld, fld and sld will not work)
         # update-walk C:\Music
         update_walk_parsers = subparsers.add_parser("update-walk", help="Update playlist files songs path")
-        update_walk_parsers.add_argument("tld", type=existing_path, help="mandatory start path tld only")
+        update_walk_parsers.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
         update_walk_parsers.set_defaults(func=update_walk)
 
         # append each argument's help text (mandatory first, then optional) to its subcommand help so the top level help displays them

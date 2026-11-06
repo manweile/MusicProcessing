@@ -50,7 +50,7 @@ class TestMain(TestCase):
 
         baseline_path = Path(__file__).with_name("cli help baseline.txt")
         baseline_lines = baseline_path.read_text(encoding="utf-8").splitlines()
-        cls.expected_help = "\n".join(baseline_lines[1:])
+        cls.expected_help = "\n".join(baseline_lines)
 
 
     def test_main_without_arguments_creates_main_log(self):
