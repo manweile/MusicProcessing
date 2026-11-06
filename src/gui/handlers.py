@@ -69,8 +69,8 @@ class EventHandlers:
 
         @details A basic class implementation with no instantiation parameters.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param main_frame: (wx.Frame) The main frame of the application.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param main_frame {wx.Frame} The main frame of the application.
         '''
 
         self.mainFrame = main_frame
@@ -83,9 +83,9 @@ class EventHandlers:
         @details Opens a directory dialog for the user to select a directory.<br>
         The selected directory path is then set in the provided text control.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
-        @param textctrl: (wx.TextCtrl) The text control to update with the selected directory path.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+        @param textctrl {wx.TextCtrl} The text control to update with the selected directory path.
         '''
 
         # prevent typing or picking a non-existent path
@@ -106,10 +106,10 @@ class EventHandlers:
         @details Opens a file dialog for the user to select a file.<br>
         The selected file path is then set in the provided text control.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
-        @param textctrl: (wx.TextCtrl) The text control to update with the selected file path.
-        @param wildcard: (str) Optional, the file type filter for the dialog.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+        @param textctrl {wx.TextCtrl} The text control to update with the selected file path.
+        @param wildcard {str} Optional, the file type filter for the dialog.
         '''
 
         if wildcard is None:
@@ -133,8 +133,8 @@ class EventHandlers:
         @details Retrieves the file path from the GUI, validates it, and then runs the conversion task.<br>
         The conversion task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the file path from the GUI and validate it before conversion
@@ -152,8 +152,8 @@ class EventHandlers:
         @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the conversion task.<br>
         The conversion task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the top-level directory and validate it before conversion
@@ -174,8 +174,8 @@ class EventHandlers:
         @details Retrieves the file path from the GUI, validates it, and then runs the EBU normalization task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the result file.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the file path from the GUI and validate it before EBU normalization
@@ -193,8 +193,8 @@ class EventHandlers:
         @details Retrieves the file path from the GUI, validates it, and then runs the album art extraction task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the file path from the GUI and validate it before extracting album art
@@ -213,8 +213,8 @@ class EventHandlers:
         @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the album art extraction task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the top-level directory and validate it before extracting album art from a directory walk
@@ -235,8 +235,8 @@ class EventHandlers:
         @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the media information retrieval task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the top-level directory and validate it before retrieving media information from a directory walk
@@ -256,8 +256,8 @@ class EventHandlers:
         @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the media tags retrieval task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the top-level directory and validate it before retrieving media tags from a directory walk
@@ -278,8 +278,8 @@ class EventHandlers:
         @details Retrieves the top-level directory from the GUI, validates it, and then runs the unique media retrieval task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the top-level directory and validate it before retrieving unique media files
@@ -297,8 +297,8 @@ class EventHandlers:
         @details Retrieves the top-level directory from the GUI, validates it, and then runs the audio listing task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the top-level directory and validate it before listing audio files``
@@ -316,8 +316,8 @@ class EventHandlers:
         @details Retrieves the top-level directory and file extension from the GUI, validates them, and then runs the file type listing task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the top-level directory and validate it before listing files of a specific type
@@ -341,8 +341,8 @@ class EventHandlers:
         @details Retrieves the top-level directory and normalization type from the GUI, validates them, and then runs the normalization task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the top-level directory and validate it before normalizing audio files in a directory walk
@@ -362,8 +362,8 @@ class EventHandlers:
         @details Retrieves the file path from the GUI, validates it, and then runs the peak normalization task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the result file.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the file path from the GUI and validate it before peak normalizing the audio file
@@ -381,8 +381,8 @@ class EventHandlers:
         @details Retrieves the top-level directory from the GUI, validates it, and then runs the album removal task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the top-level directory and validate it before removing albums
@@ -400,8 +400,8 @@ class EventHandlers:
         @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the pattern removal task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the top-level directory and validate it before removing files matching a pattern
@@ -425,8 +425,8 @@ class EventHandlers:
         @details Retrieves the file path from the GUI, validates it, and then runs the RMS normalization task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the result file.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the file path from the GUI and validate it before RMS normalizing the audio file
@@ -444,8 +444,8 @@ class EventHandlers:
         @details Retrieves the top-level directory from the GUI, validates it, and then runs the album art setting task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the top-level directory and validate it before setting album art for audio files in a directory
@@ -463,8 +463,8 @@ class EventHandlers:
         @details Retrieves the M3U file path from the GUI, validates it, and then runs the playlist update task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with generated playlist files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the M3U file path from the GUI and validate it before updating the playlist
@@ -482,8 +482,8 @@ class EventHandlers:
         @details Retrieves the top-level directory from the GUI, validates it, and then runs the directory walk update task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with generated playlist files.
 
-        @param self: (EventHandlers) The instance of the class the method belongs to.
-        @param event: (object) The event object.
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
         '''
 
         # Get the top-level directory from the GUI and validate it before updating a directory walk

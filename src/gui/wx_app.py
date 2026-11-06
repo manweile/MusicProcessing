@@ -51,7 +51,9 @@ def _timestamp() -> str:
 
     @details This function is used for generating unique result file names based on the current date and time.
 
-    @retval time_stamp (str) A string representing the current timestamp in the format "YYYY-MM-DD HH:MM:SS".
+    @retval time_stamp {str} A string representing the current timestamp in the format "YYYY-MM-DD HH:MM:SS".
+
+    @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
     '''
 
     try:
@@ -97,8 +99,8 @@ class MainFrame(wx.Frame):
 
         @details This constructor sets up the main window, including the layout, panels, and event handlers.
 
-        @param self: (MainFrame) The instance of the class.
-        @param parent: (Any) The parent window, if any.
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent window, if any.
         '''
 
         # Initialize the main frame with the specified parent, title, and size
@@ -158,8 +160,8 @@ class MainFrame(wx.Frame):
 
         @details Stacks the extraction sections at left and places the setting section to their right.
 
-        @param self: (MainFrame) The instance of the class.
-        @param parent: (Any) The parent window for the panel.
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent window for the panel.
 
         @retval panel (wx.Panel) The created art panel.
         '''
@@ -184,10 +186,10 @@ class MainFrame(wx.Frame):
 
         @details Provides directory selection, file type filtering, and extraction controls.
 
-        @param self: (MainFrame) The instance of the class.
-        @param parent: (wx.Panel) The parent panel for the section.
+        @param self {MainFrame} The instance of the class.
+        @param parent {wx.Panel} The parent panel for the section.
 
-        @retval bulk_sizer (wx.StaticBoxSizer) The sizer containing the extraction controls.
+        @retval bulk_sizer {wx.StaticBoxSizer} The sizer containing the extraction controls.
         '''
 
         # Create the static box, sizers, and panel for the bulk directory art extraction section
@@ -244,10 +246,10 @@ class MainFrame(wx.Frame):
 
         @details Provides audio file selection and art extraction controls.
 
-        @param self: (MainFrame) The instance of the class.
-        @param parent: (wx.Panel) The parent panel for the section.
+        @param self {MainFrame} The instance of the class.
+        @param parent {wx.Panel} The parent panel for the section.
 
-        @retval fileSizer (wx.StaticBoxSizer) The sizer containing the extraction controls.
+        @retval fileSizer {wx.StaticBoxSizer} The sizer containing the extraction controls.
         '''
 
         # Create the static box, sizer , and panel for the file art extraction section
@@ -303,10 +305,10 @@ class MainFrame(wx.Frame):
 
         @details Provides directory selection and album art setting controls.
 
-        @param self: (MainFrame) The instance of the class.
-        @param parent: (wx.Panel) The parent panel for the section.
+        @param self {MainFrame} The instance of the class.
+        @param parent {wx.Panel} The parent panel for the section.
 
-        @retval setBulkSizer (wx.StaticBoxSizer) The sizer containing the setting controls.
+        @retval setBulkSizer {wx.StaticBoxSizer} The sizer containing the setting controls.
         '''
 
         # Create the static box, sizer, and panel for the album art setting section
@@ -358,10 +360,10 @@ class MainFrame(wx.Frame):
 
         @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
 
-        @param self: (MainFrame) The instance of the class.
-        @param parent: (Any) The parent window for the panel.
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent window for the panel.
 
-        @retval panel (wx.Panel) The created convert panel.
+        @retval panel {wx.Panel} The created convert panel.
         '''
 
         panel = wx.Panel(parent)
@@ -446,10 +448,10 @@ class MainFrame(wx.Frame):
         @details Provides controls for listing audio files, listing files by type, and removing empty albums or files matching a pattern.<br>
         It includes options for selecting top-level directories and specifying file extensions or patterns.
 
-        @param self: (MainFrame) The instance of the class.
-        @param parent: (Any) The parent window for the panel.
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent window for the panel.
 
-        @retval panel (wx.Panel) The created directory panel.
+        @retval panel {wx.Panel} The created directory panel.
         '''
 
         panel = wx.Panel(parent)
@@ -512,10 +514,10 @@ class MainFrame(wx.Frame):
         @details This panel provides controls for retrieving and displaying metadata from media files.<br>
         It includes options for tags walk, media info walk, and unique media extraction.
 
-        @param self: (MainFrame) The instance of the class.
-        @param parent: (Any) The parent window for the panel.
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent window for the panel.
 
-        @retval panel (wx.Panel) The created metadata panel.
+        @retval panel {wx.Panel} The created metadata panel.
         '''
 
         panel = wx.Panel(parent)
@@ -567,14 +569,14 @@ class MainFrame(wx.Frame):
 
     def _panel_leveling(self, parent) -> wx.Panel:
         '''
-        @brief This panel includes controls for audio normalization
+        @brief Create the leveling panel.
 
         @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
 
-        @param self: (MainFrame) The instance of the class.
-        @param parent: (Any) The parent window for the panel.
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent window for the panel.
 
-        @retval panel (wx.Panel) The created normalize panel.
+        @retval panel {wx.Panel} The created normalize panel.
         '''
 
         panel = wx.Panel(parent)
@@ -683,10 +685,10 @@ class MainFrame(wx.Frame):
 
         @details This function is used to create consistent path input controls across different panels in the application.
 
-        @param self: (MainFrame) The instance of the class.
-        @param parent: (Any) The parent window for the controls.
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent window for the controls.
 
-        @retval path_controls ((wx.TextCtrl), (wx.Button)) Tuple containing the text control and the browse button.
+        @retval path_controls {((wx.TextCtrl), (wx.Button))} Tuple containing the text control and the browse button.
         '''
 
         pathLabel = wx.TextCtrl(parent)
@@ -706,10 +708,10 @@ class MainFrame(wx.Frame):
         @details This panel provides controls for updating M3U playlists and performing directory walks.<br>
         It includes nested subpanels for updating a specific playlist file and for walking a directory tree.
 
-        @param self: (MainFrame) The instance of the class.
-        @param parent: (any) The parent window for the panel.
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent window for the panel.
 
-        @retval panel (wx.Panel) The created playlist panel.
+        @retval panel {wx.Panel} The created playlist panel.
         '''
 
         panel = wx.Panel(parent)
@@ -776,15 +778,17 @@ class MainFrame(wx.Frame):
         return panel
 
 
-    def _set_busy_state(self, busy=True):
+    def _set_busy_state(self, busy=True) -> None:
         '''
         @brief Set the busy state of the application.
 
         @details This method enables or disables the main window and log control based on the busy state.<br>
         It also changes the cursor to a wait cursor when busy and back to the default cursor when not busy.
 
-        @param self: (MainFrame) The instance of the class.
-        @param busy: (bool) True to set the application to busy state, False to set it to idle state.
+        @param self {MainFrame} The instance of the class.
+        @param busy {bool} True to set the application to busy state, False to set it to idle state.
+
+        @return {None} This function does not return any value.
         '''
 
         self.Enable(not busy)
@@ -798,7 +802,7 @@ class MainFrame(wx.Frame):
 
         @details This method opens a file dialog starting in the directory where generated MP3 files are stored.
 
-        @param self: (MainFrame) The instance of the class.
+        @param self {MainFrame} The instance of the class.
         '''
 
         generated_dir = os.path.join(GENERATED_PATH, MUSIC_TLD)
@@ -832,7 +836,7 @@ class MainFrame(wx.Frame):
         @details This method opens a file dialog starting in the generated files directory.<br>
         It restricts file selection to playlist file extensions only.
 
-        @param self: (MainFrame) The instance of the class.
+        @param self {MainFrame} The instance of the class.
         '''
 
         generated_dir = GENERATED_PATH
@@ -867,8 +871,8 @@ class MainFrame(wx.Frame):
 
         @details This method constructs the path to the result file based on the provided filename and checks if it exists.
 
-        @param self: (MainFrame) The instance of the class.
-        @param filename: (str) The base name of the result file (without extension) to display.
+        @param self {MainFrame} The instance of the class.
+        @param filename {str} The base name of the result file (without extension) to display.
         '''
 
         result_path = os.path.join(GENERATED_PATH, RESULT_DIR, filename + RESULT_EXT)
@@ -894,8 +898,8 @@ class MainFrame(wx.Frame):
         @details This method checks if the provided path is not empty and exists as a directory.<br>
         If the validation fails, it displays an appropriate message box to the user.
 
-        @param self: (MainFrame) The instance of the class.
-        @param path: (str) The directory path to validate.
+        @param self {MainFrame} The instance of the class.
+        @param path {str} The directory path to validate.
         '''
 
         if not path:
@@ -916,8 +920,8 @@ class MainFrame(wx.Frame):
         @details This method checks if the provided path is not empty and exists as a file.<br>
         If the validation fails, it displays an appropriate message box to the user.
 
-        @param self: (MainFrame) The instance of the class.
-        @param path: (str) The file path to validate.
+        @param self {MainFrame} The instance of the class.
+        @param path {str} The file path to validate.
         '''
 
         if not path:
@@ -937,9 +941,9 @@ class MainFrame(wx.Frame):
 
         @details This method attempts to move each file in the provided list of file paths to the specified destination directory.
 
-        @param self: (MainFrame) The instance of the class.
-        @param file_paths: (list) A list of file paths to move.
-        @param dest_dir: (str) The destination directory to move the files to.
+        @param self {MainFrame} The instance of the class.
+        @param file_paths {list} A list of file paths to move.
+        @param dest_dir {str} The destination directory to move the files to.
 
         @exception Exception caught and recorded in the failed list, which is included in the summary message displayed to the user.
         '''
@@ -974,8 +978,8 @@ class MainFrame(wx.Frame):
         @details Displays a directory selection dialog to the user and moves the selected files to the chosen directory if confirmed.<br>
         If the user cancels the dialog, no action is taken.
 
-        @param self: (MainFrame) The instance of the class.
-        @param file_paths: (list) A list of file paths to move.
+        @param self {MainFrame} The instance of the class.
+        @param file_paths {list} A list of file paths to move.
         '''
 
         dest_dlg = wx.DirDialog(
@@ -998,8 +1002,8 @@ class MainFrame(wx.Frame):
         @details This method uses wx.CallAfter to ensure that log updates are thread-safe and do not cause issues with the GUI responsiveness.<br>
         Each log entry is prefixed with a timestamp for better tracking of events.
 
-        @param self: (MainFrame) The instance of the class.
-        @param message: (str) The message to log.
+        @param self {MainFrame} The instance of the class.
+        @param message {str} The message to log.
         '''
 
         wx.CallAfter(self.mainLog.AppendText, f"[{_timestamp()}] {message}\n")
@@ -1012,10 +1016,10 @@ class MainFrame(wx.Frame):
         @details Runs the given function in a separate thread to keep the GUI responsive.<br>
         Logs the start and completion of the task, and handles any exceptions that occur.
 
-        @param self: (MainFrame) The instance of the class.
-        @param func: (callable) The function to run as the task.
-        @param args: (tuple) Arguments to pass to the function.
-        @param on_success: (callback) Optional callback to run on the main thread after successful completion of the task.
+        @param self {MainFrame} The instance of the class.
+        @param func {callable} The function to run as the task.
+        @param args {tuple} Arguments to pass to the function.
+        @param on_success {callback} Optional callback to run on the main thread after successful completion of the task.
         '''
 
         self._set_busy_state(True)
@@ -1029,10 +1033,10 @@ class MainFrame(wx.Frame):
         @details Executes the task, logs its outcome, and schedules GUI updates on the main thread.
         It also ensures that the busy state of the GUI is properly managed.
 
-        @param self: (MainFrame) The instance of the class.
-        @param func: (Any) The function to run as the task.
-        @param args: (Tuple) Arguments to pass to the function.
-        @param on_success: (Callable) Optional callback to run on the main thread after successful completion of the task.
+        @param self {MainFrame} The instance of the class.
+        @param func {Any} The function to run as the task.
+        @param args {Tuple} Arguments to pass to the function.
+        @param on_success {Callable} Optional callback to run on the main thread after successful completion of the task.
         '''
 
         self.log(f"Running {func.__name__}...")

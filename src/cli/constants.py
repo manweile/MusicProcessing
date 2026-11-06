@@ -82,12 +82,12 @@ ARG_HELP_AUDIO = "mandatory audio file path"
 # @details use when needing mandatory genre input
 ARG_HELP_GENRE = "mandatory genre csv file path"
 
-## @var ARG_HELP_NORMAL
+## @var ARG_HELP_LEVEL
 # @brief add argument help
 # @details use when needing mandatory normalization type
 ARG_HELP_LEVEL = "mandatory level type {ebu|peak|rms}"
 
-## @var ARG_HELP_PATTERN_MAN
+## @var ARG_HELP_PATTERN
 # @brief add argument help
 # @details use when needing mandatory pattern input
 ARG_HELP_PATTERN = "mandatory file pattern"

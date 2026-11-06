@@ -41,30 +41,31 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 
 ## Shared Doxygen Rules
 
-- Use a one-line `@brief`, terminated by a period.
+- Immediately below the definition line, include a one-line `@brief`, terminated by a period.
 - Leave an empty line after `@brief`.
 - Add a `@details` block.
 - Follow the Details Block Formatting Rules.
 - Class and Test files documentation blocks may include `@note` blocks.
   - `@note` blocks are placed after the  blank line following the `@details` block and before any code example blocks.
-  - Note blocks are followed by a blank line.
 - Class and Test files documentation blocks may include code examples using the `@code{.text}` and `@endcode` tags to illustrate command-line usage.
   - Code example blocks follow whatever is last of:
     1. The `@details` block
     2. The `@note` block
   - the `@endcode` tag is followed by a blank line.
-- Use:
-  - if the function has a `self` parameter, include it in the `@param` list with the type of the class it belongs to.
-    - `@param self: (ClassName) The instance of the class the method belongs to.`
-  - `@param name: (type) description` for input parameters, terminated by a period.
-  - If there any return values, add a blank line after the final `@param` line and before the first `@retval` or `@return` line.
-  - If there are no `@retval` or `@return` values, do not add a blank line after the final `@param` line.
-  - `@retval name (type) description` when the function returns a specifically named value, terminated by a period.
-  - `@retval (type) description` when the function returns an unnamed value, terminated by a period.
-  - `@return description` when the function returns an expression, terminated by a period.
-  - Do not leave an empty line after the final `@retval`, or `@return` line.
+- If the function accepts input parameters, include them in the `@param` list with their types and descriptions.
+  - for regular argument parameters, use `@param name {data type} description`, terminated by a period.
+  - for `self` specific instance of class parameter, use  `@param self {ClassName} The instance of the class.`
+  - If there are any return values, add a blank line after the final `@param` line and before the first `@retval`  line.
+- If the functions has a return value, include them in the `@retval` list with their types and descriptions.
+  - `@retval name {type} description` when the function returns a specifically named value, terminated by a period.
+  - `@retval {type} description` when the function returns an unnamed value, terminated by a period.
+  - If there any exceptions, add a blank line after the final `@retval` line.
+- If the functions raises exceptions, include them in the `@exception` list with their types and descriptions.
+  - `@exception name {ExceptionClass} description` when the function raises an exception, terminated by a period.
+  - If there any exceptions, do NOT add a blank line after the final `@exception` line.
 - Omit `@param` entirely for functions with no parameters.
-- Use `@exception (type) description` for exceptions raised by the function, terminated by a period.
+- Omit `@retval` entirely for functions that do not return a specifically named value.
+- Omit `@retval` entirely for functions that do not return an unnamed named value.
 - Omit `@exception` entirely for functions that do not raise any exceptions.
 - All Doxygen documentation blocks in class definitions are followed by 1 blank line.
 - All Doxygen documentation blocks in function definitions inside classes are followed by 1 blank line.
@@ -72,13 +73,19 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 
 ## Column Length Rules
 
-- All text in Python source files, including code, comments, and Doxygen documentation, must not exceed column 150.
-- Inline comments are denoted by `#` and do not have a period at the end
+- All text in Python source files, including code, inline comments, and Doxygen documentation, must not exceed column 150.
 - For imports:
   - follow the Import Rules for placement of purpose comments.
 - For long parameter lists:
   - break parameters across continuation lines using standard Python indentation.
   - align continuation lines with the opening delimiter or use a hanging indent of 4 spaces.
+
+## Inline Comments Rules
+
+- Inline comments are denoted by `#`.
+- Inline comments are preceded by a single space after the `#`.
+- Inline comments should be concise and clear.
+- Inline comments do not require a period at the end.
 
 ## Details Block Formatting Rules
 
