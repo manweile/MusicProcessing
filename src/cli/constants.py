@@ -7,10 +7,6 @@
 
 @details Defines constants used by the command-line interface.
 
-@todo This module contains constants for the command-line interface.<br>
-They are not yet in use, just defined here.<br>
-Refer to docs/planning/mvc.plan.prompt.md for when they will be used.
-
 @version 1.0.0
 @date 2026-11-02
 

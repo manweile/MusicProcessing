@@ -405,12 +405,15 @@ COMPLETED
     - Confirm no tests were moved and no generated-file paths or logging startup behavior changed.
 
     **Step 5** Wire in the CLI constants COMPLETED
-
-    When extracting the CLI, use ARG_CLI_* in parser argument definitions and when reading the corresponding parsed fields in main(args);<br>
-    for example, getattr(args, ARG_CLI_FILE). Use ARG_HELP_* for the related help text.
-
     These constants describe argument field names and help text, not subcommand names.<br>
     Keep subcommand names such as "gui" and "convert-file" separate unless you introduce constants for them explicitly.
+
+    When extracting the CLI:
+    - use ARG_CLI_* in parser argument definitions
+    - when reading the corresponding parsed fields in main(args)
+      - for example, getattr(args, ARG_CLI_FILE)
+      - Use ARG_HELP_* for the related help text.
+    - Verify that main.py --help displays the expected help message. COMPLETED
 
     **Step 6** Move logging and error infrastructure
 

@@ -7,11 +7,6 @@
 
 @details Defines constants used by the core of the application.
 
-@todo This module contains constants for the core of the application.<br>
-They are not yet in use, just defined here.<br>
-Currently, src/__init__.py contains the in-use definitions.<br>
-Refer to docs/planning/mvc.plan.prompt.md for when they will be used.
-
 @version 1.0.0
 @date 2026-11-02
 
