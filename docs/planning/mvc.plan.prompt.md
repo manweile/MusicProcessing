@@ -394,8 +394,11 @@ COMPLETED
     - After the moves, return to this batch before Step 7:
     - 4.3a Migrate production and test imports of logging helpers to `src.core.logging_config`
     - 4.3b Migrate production and test imports of errors to `src.core.errors`
-    - Update any string-based mock patch targets that refer to the old locations (none exist today)
-      - Run affected tests, and verify CLI and GUI startup still initialize logging as expected.
+    - 4.3c Migrate production and test imports of subprocess utilities to `src.core.subprocess_utils`
+    - Update string-based mock patch targets to the module where the symbol is now looked up.
+      - For example, change `src.subprocess_utils.subprocess.Popen` and `src.subprocess_utils.subprocess.run` in `tests/test_subprocess_utilities.py` to `src.core.subprocess_utils...`.
+      - Search all patch targets; do not assume there are no string-based references.
+    - Run affected tests, and verify CLI and GUI startup still initialize logging as expected.
     - Keep old module shims and package compatibility surface until callers for both destinations have migrated and Step 7 explicitly removes them.
 
     After all batches:
@@ -417,15 +420,45 @@ COMPLETED
 
     **Step 6** Move logging and error infrastructure
 
-    Move:
-    - `errors.py`, `logging_config.py`, `level_filter.py`, and `subprocess_utils.py` into `core/`
-    - Update their imports and leave compatibility re-exports at their old locations until callers are migrated.
-    - Keep `core/__init__.py` free of logging setup side effects to avoid introducing import cycles.
+    Treat each move and its old-path shim as one change: no intermediate state may leave a module missing at either import path. Keep `src/__init__.py` and the old package-level logging initialization in place throughout this step; removing that startup side effect belongs to Step 7.
 
-    Before emptying `src/__init__.py`:
-    - Preserve current package-level logging initialization
-      - use an explicit, one-time startup/bootstrap call from the application entry point.
-    - Verify logging still initializes for both CLI and GUI startup.
+    **6.1 Move the implementation modules**
+    - Move `src/errors.py`, `src/logging_config.py`, `src/level_filter.py`, and `src/subprocess_utils.py` to the corresponding files under `src/core/`.
+    - Leave a thin compatibility shim at each old module path. Each shim must re-export the objects from the new module, not redefine classes or duplicate logging state; old and new imports must refer to the same exception classes and functions.
+    - Preserve public names and behavior, including `SubprocessUtilities` methods and module-level logger setup.
+
+    **6.2 Make dependencies point to core leaf modules**
+    - In `src/core/logging_config.py`, import `LevelFilter` from `src.core.level_filter` (or its relative leaf path), never from `src.level_filter`.
+    - In `src/core/subprocess_utils.py`, import `FfmpegProcessError` from `src.core.errors` and `add_module_handler` from `src.core.logging_config`; import constants from `src.core.constants`.
+    - Apply the same rule to every import in `src/core/`: do not import from the `src` package root or from an old compatibility module. Prefer leaf-module imports over `from src.core import ...` inside core modules so importing one core module does not eagerly load unrelated core modules.
+    - Keep `src/core/__init__.py` free of logging configuration, handler registration, and imports from other application layers. Any public re-exports there must be one-way and must not be used by core leaf modules.
+
+    For example, in `src/core/subprocess_utils.py`:
+
+    ```python
+    # Do not do this: it reaches through the package's compatibility surface.
+    from src import FfmpegProcessError
+
+    # Import the definition from its owning leaf module instead.
+    from src.core.errors import FfmpegProcessError
+    ```
+
+    Python executes `src/__init__.py` before loading `src.core.errors`, so the direct import alone is not a cure for every cycle. The important invariant is that core leaf modules never import names back from `src` (or their old shims), and `src/core/__init__.py` does not perform setup or load higher-level modules. That keeps the dependency graph one-way while `src/__init__.py` still provides temporary compatibility exports.
+
+    **6.3 Preserve startup logging until the entry points own it**
+    - Do not remove the package-root logging initialization in this step: existing modules call `add_module_handler` during import and require package logging to have been configured first.
+    - Before Step 7 removes that side effect, add an explicit, one-time logging bootstrap for each supported startup path. It must run before importing modules that register module handlers; in particular, defer `main.py`'s application/GUI imports until after bootstrap, and arrange for test collection to bootstrap before importing those modules.
+    - Make repeated bootstrap calls harmless (no duplicate package handlers), and verify generated log directories, formats, and module log files remain unchanged. Do not put bootstrap calls in `src/core/__init__.py`.
+    - Step 7 may empty `src/__init__.py` only after the CLI, GUI, and test startup paths work with the explicit bootstrap and no application import depends on package initialization for logging.
+
+    **6.4 Migrate consumers and verify compatibility**
+    - After the moves and shims exist, complete batches 4.3a-4.3c before Step 7. Update production and test imports, plus string-based mock patch targets, to the new module paths.
+    - Until Step 7, verify both the old module/package paths and the new `src.core.*` paths resolve, and that old and new exception imports are the identical class objects.
+    - Run the focused tests for errors, logging, and subprocess utilities after each batch, then the full suite and `python main.py --help`.
+    - In a fresh interpreter, import each moved `src.core` leaf module and confirm there is no partially initialized module / circular-import failure. Search `src/core/` for imports from `src` outside `src.core.*`, and for references to the old module paths; only intentional compatibility shims may refer to them.
+    - Smoke-test CLI and GUI startup and confirm logging is initialized once and outputs remain in their existing locations.
+
+    `src/core/subprocess_utils.py` currently uses `yaspin`. Keep that behavior unchanged in this step; Milestone 4 replaces it with `ProgressReporter`. The final core dependency check for `yaspin` is therefore completed after that Milestone 4 work, not used to block this move.
 
     **Step 7** Empty `src/__init__.py` last
 
@@ -438,7 +471,7 @@ COMPLETED
     That order keeps compatibility while the imports move, and avoids breaking startup logging when the package-root side effect is removed.
 
   - Validation: the full suite passes with both old and new import paths.
-  - Exit criteria: `core/` imports nothing else from `src`, and nothing under `core/` imports `wx`, `tqdm` or `yaspin`.
+  - Exit criteria: core leaf modules do not import through the `src` root, old shims, or other application layers; nothing under `core/` imports `wx` or `tqdm`. The temporary `yaspin` use in `core/subprocess_utils.py` is removed in Milestone 4 before claiming the final core dependency boundary.
 
 4. Milestone 4: Progress interface
   - Add `core/progress.py` with `ProgressReporter` (`start(total, description)`, `advance(step)`, `finish()`) and a no-op `NullProgress`.
