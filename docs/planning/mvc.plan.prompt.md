@@ -444,6 +444,7 @@ COMPLETED
     - First inventory current imports and patch targets, including direct module attributes and `from src import ...`.
       The list below reflects this checkout; investigate any new callers rather than assuming it is exhaustive.
     - Move the modules **one at a time**, in the dependency order listed below.
+      - `level_filter.py`, `logging_config.py`, `errors.py`, then `subprocess_utils.py`.
       Complete all of the following actions for one module before starting the next:
 
       1. Check the working tree with `git status --short`.
@@ -504,19 +505,18 @@ COMPLETED
          `git mv` stages the move, but later edits and the recreated shim must also be staged.
          If committing, commit only after the complete unit passes its checks.
 
-    - “Atomic” here means the **completed change** contains the move, shim,
-      and required import updates together. The working tree may briefly be incomplete
-      while editing, but do not test, commit, or move on until the unit is complete.
+    - “Atomic” here means the **completed change** contains the move, shim, and required import updates together.
+    - The working tree may briefly be incomplete while editing, but do not test, commit, or move on until the unit is complete.
     - Use this order: `level_filter.py`, `logging_config.py`, `errors.py`, then `subprocess_utils.py`.
-      In the logging move, change its `LevelFilter` import to `src.core.level_filter`;
-      in the subprocess move, change its imports to the core leaf modules described in 6.2.
+      - In the logging move, change its `LevelFilter` import to `src.core.level_filter`;
+      - In the subprocess move, change its imports to the core leaf modules described in 6.2.
     - Leave `src/__init__.py` importing its existing old paths for now.
-      Those imports will pass through the shims, and its existing `configure_package_logging(...)` call
+      - Those imports will pass through the shims, and its existing `configure_package_logging(...)` call
       will configure the single moved logging implementation before the subprocess module registers its handler.
 
     **6.1b Create the old-path shims**
     - At each old path retain an appropriate package/module docstring, then add these explicit imports.
-      The snippets show the complete application-defined re-exports; do not copy the implementations,
+      - The snippets show the complete application-defined re-exports; do not copy the implementations,
       call logging setup, create handlers, or use `from ... import *` in a shim.
     - `src/level_filter.py`:
 
