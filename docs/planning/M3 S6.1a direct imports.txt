@@ -1,0 +1,42 @@
+PS D:\MusicProcessing> git grep -n -E '^[[:space:]]*(from|import)[[:space:]]+src\.(errors|logging_config|level_filter|subprocess_utils)' -- '*.py'
+src/__init__.py:17:from src.logging_config import add_module_handler           # for adding module-specific file handlers to loggers
+src/__init__.py:18:from src.logging_config import configure_package_logging    # for configuring package-level file logging
+src/__init__.py:51:from src.errors import FfmpegProcessError                   # custom error for ffmpeg process failures
+src/__init__.py:52:from src.errors import JSONOutputError                      # custom error for JSON output issues
+src/__init__.py:53:from src.errors import MetadataTypeError                    # custom error for metadata type mismatches
+src/__init__.py:54:from src.errors import MusicProcessingError                 # custom error for general music processing issues
+src/__init__.py:55:from src.errors import PathInfoError                        # custom error for path information issues
+src/__init__.py:56:from src.errors import PlaylistError                        # custom error for playlist related issues
+src/__init__.py:57:from src.errors import VideoStreamError                     # custom error for video stream related issues
+
+src/audio_info/audio_art.py:51:from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functions
+
+src/audio_info/audio_metadata.py:74:from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functionality
+
+src/audio_info/audio_utilities.py:36:from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functionality
+
+src/audio_normalize/audio_normalization.py:37:from src.errors import JSONOutputError                      # for missing FFmpeg JSON output
+src/audio_normalize/audio_normalization.py:38:from src.errors import PathInfoError                        # for missing generated-file paths
+src/audio_normalize/audio_normalization.py:42:from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functionality
+
+src/logging_config.py:26:from src.level_filter import LevelFilter                    # for filtering records by exact logging level
+
+tests/test_audio_normalization.py:46:from src.errors import JSONOutputError                      # for loudnorm output parsing errors
+
+tests/test_directory_processing.py:50:from src.errors import PathInfoError                        # for path-info target conflict assertions
+
+tests/test_subprocess_utilities.py:39:from src.subprocess_utils import SubprocessUtilities        # for subprocess functionality under test
+
+PS D:\MusicProcessing> git grep -n -E '\berrors\.' -- '*.py'
+docs/scripts/google/extract_art_examples/ffmpeg-python_extract_art.py:20:    @exception Exception A common baseclass exception to handle unforeseen errors.
+docs/scripts/google/extract_art_examples/mutagen_extract_embedded_art_wma.py:20:    @exception Exception A common baseclass exception to handle unforeseen errors.
+... etc. they are all `@tags` in doc blocks, so no worries.
+
+PS D:\MusicProcessing> git grep -n -E '\logging_config\.' -- '*.py'
+src/logging_config.py:3:@file logging_config.py
+
+PS D:\MusicProcessing> git grep -n -E '\level_filter\.' -- '*.py'
+src/level_filter.py:3:@file level_filter.py
+
+PS D:\MusicProcessing> git grep -n -E '\subprocess_utils\.' -- '*.py'
+PS D:\MusicProcessing>

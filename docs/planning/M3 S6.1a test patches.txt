@@ -1,0 +1,40 @@
+PS D:\MusicProcessing> git grep -n -E '(@patch|patch\(|patch\.object|mock\.patch|monkeypatch)' -- '*.py'
+tests/test_audio_art.py:494:            with patch("src.audio_info.audio_art.os.path.join", side_effect=join_side_effect):
+tests/test_audio_art.py:578:    @patch("builtins.open", side_effect=BlockingIOError(errno.EWOULDBLOCK, "Operation blocked"))
+tests/test_audio_art.py:606:    @patch("builtins.open", side_effect=OSError(errno.EACCES, "Permission denied"))
+
+tests/test_audio_metadata.py:648:    @patch('src.audio_info.audio_metadata.SubprocessUtilities.popen_pipe')
+tests/test_audio_metadata.py:778:    @patch('src.audio_info.audio_metadata.SubprocessUtilities.subprocess_run')
+tests/test_audio_metadata.py:1258:        with patch.object(metadata, "normalize_filename") as mock_normalize_filename:
+tests/test_audio_metadata.py:1304:        with patch("src.audio_info.audio_metadata.FLAC", DummyFlacFile), patch.object(
+tests/test_audio_metadata.py:1306:        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+tests/test_audio_metadata.py:1381:            patch("src.audio_info.audio_metadata.MP3", DummyAudioFile),
+tests/test_audio_metadata.py:1382:            patch.object(metadata, "load_any_file", return_value=DummyAudioFile()),
+tests/test_audio_metadata.py:1383:            patch("src.audio_info.audio_metadata.os.rename") as mock_rename,
+tests/test_audio_metadata.py:1424:        with patch("src.audio_info.audio_metadata.MP4", DummyMp4File), patch.object(
+tests/test_audio_metadata.py:1426:        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+tests/test_audio_metadata.py:1465:        with patch("src.audio_info.audio_metadata.ASF", DummyWmaFile), patch.object(
+tests/test_audio_metadata.py:1467:        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+tests/test_audio_metadata.py:1587:        with patch("src.audio_info.audio_metadata.MP3", DummyAudioFile), patch.object(
+tests/test_audio_metadata.py:1735:    @patch("src.audio_info.audio_metadata.logger.error")
+tests/test_audio_metadata.py:1736:    @patch.object(AudioMetadata, "_AudioMetadata__set_genre")
+
+tests/test_audio_normalization.py:264:    @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
+tests/test_audio_normalization.py:354:    @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
+tests/test_audio_normalization.py:648:    @patch("src.audio_normalize.audio_normalization.TP", "2.0")
+tests/test_audio_normalization.py:672:    @patch.object(AudioNormalization, "get_volume_info", return_value={"max_volume": float(TP) - 1.0})
+tests/test_audio_normalization.py:735:    @patch.object(AudioNormalization, "get_volume_info", return_value={"mean_volume": float(TP), "max_volume": float(TP) - 1.0})
+
+tests/test_audio_playlist.py:154:    @patch('src.audio_info.audio_playlist.logger.warning')
+
+tests/test_audio_utilities.py:78:            patch_volume_info = patch(get_volume_info_path, return_value=volume_info)
+tests/test_audio_utilities.py:79:            patch_ebu_info = patch(get_ebu_info_path, return_value=ebu_info)
+tests/test_audio_utilities.py:80:            patch_create_txt = patch(create_txt_path)
+tests/test_audio_utilities.py:109:        with patch.object(
+tests/test_audio_utilities.py:233:    @patch("src.audio_info.audio_utilities.TP", "2.0")
+
+tests/test_directory_processing.py:491:    @patch('src.dir_processing.directory_processing.logger.error')
+tests/test_directory_processing.py:515:    @patch('src.dir_processing.directory_processing.logger.warning')
+
+tests/test_subprocess_utilities.py:242:    @patch('src.subprocess_utils.subprocess.Popen')
+tests/test_subprocess_utilities.py:357:    @patch('src.subprocess_utils.subprocess.run')

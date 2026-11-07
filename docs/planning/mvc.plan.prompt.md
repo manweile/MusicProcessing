@@ -396,7 +396,8 @@ COMPLETED
     - 4.3b Migrate production and test imports of errors to `src.core.errors`
     - 4.3c Migrate production and test imports of subprocess utilities to `src.core.subprocess_utils`
     - Update string-based mock patch targets to the module where the symbol is now looked up.
-      - For example, change `src.subprocess_utils.subprocess.Popen` and `src.subprocess_utils.subprocess.run` in `tests/test_subprocess_utilities.py` to `src.core.subprocess_utils...`.
+      - Eg, change `src.subprocess_utils.subprocess.Popen` and `src.subprocess_utils.subprocess.run` in `tests/test_subprocess_utilities.py`
+      to `src.core.subprocess_utils...`.
       - Search all patch targets; do not assume there are no string-based references.
     - Run affected tests, and verify CLI and GUI startup still initialize logging as expected.
     - Keep old module shims and package compatibility surface until callers for both destinations have migrated and Step 7 explicitly removes them.
@@ -418,25 +419,85 @@ COMPLETED
       - Use ARG_HELP_* for the related help text.
     - Verify that main.py --help displays the expected help message. COMPLETED
 
-    **Step 6** Move logging and error infrastructure
+    **Step 6** Move logging and error infrastructure IN PROGRESS
 
     Treat each move and its old-path shim as one change: no intermediate state may leave a module missing at either import path.<br>
     Keep `src/__init__.py` and the old package-level logging initialization in place throughout this step;<br>
     removing that startup side effect belongs to Step 7.
 
     **6.1 Move the implementation modules**
-    A compatibility shim is a small Python module left at an old import path after the implementation moves.
-    It imports and exposes the actual objects from their new location; it does not implement them again.
-    This lets existing callers keep using the old path while new callers use `src.core.*`.
+    A compatibility shim is a small Python module left at an old import path after the implementation moves.<br>
+    It imports and exposes the actual objects from their new location; it does not implement them again.<br>
+    This lets existing callers keep using the old path while new callers use `src.core.*`.<br>
     Keep the shims until all callers are migrated and Step 7 removes them.
 
     **6.1a Prepare and move in dependency order**
     - First inventory current imports and patch targets, including direct module attributes and `from src import ...`.
       The list below reflects this checkout; investigate any new callers rather than assuming it is exhaustive.
-    - Move one implementation at a time with `git mv`, immediately recreate its old file as the shim shown below,
-      make any required internal import changes in the same change, and run the relevant checks before moving on.
-      Treat the move, shim, and internal import changes as an atomic unit:
-      do not commit or test a half-moved module, and leave the suite passing at each completed unit.
+    - Move the modules **one at a time**, in the dependency order listed below.
+      Complete all of the following actions for one module before starting the next:
+
+      1. Check the working tree with `git status --short`.
+         Note any existing changes and do not overwrite or stage unrelated work.
+
+      2. Move the implementation from `src/` to `src/core/` using `git mv`.
+         For example, in PowerShell, from the repository root:
+
+         ```powershell
+         git mv src/level_filter.py src/core/level_filter.py
+         ```
+
+         The implementation now lives at the new path, but the old path is temporarily missing.
+         Do not commit or run tests yet.
+
+      3. Recreate a **new file at the old path** with an appropriate module docstring
+         and the explicit shim imports listed in 6.1b. For this example,
+         `src/level_filter.py` must contain:
+
+         ```python
+         from src.core.level_filter import LevelFilter
+         ```
+
+         Do not paste the class implementation into the old file.
+         Both paths must expose the same class, not two separately defined classes.
+
+      4. In the moved implementation, update any imports required by this move.
+         For example, when moving `logging_config.py`, change its `LevelFilter`
+         import to `src.core.level_filter`. When moving `subprocess_utils.py`,
+         update its imports as specified in 6.2.
+         Do not migrate unrelated callers yet; they should continue working through the shims.
+
+      5. Check the result before testing:
+         - The implementation exists at the new path.
+         - The old path exists and contains only the shim and its docstring.
+         - Required internal imports point to the correct core leaf modules.
+         - Existing package-root exports and logging initialization remain in place.
+
+      6. Run the identity and compatibility checks in 6.1d for the module just moved,
+         followed by its affected tests and the full suite:
+
+         ```powershell
+         python -m unittest discover tests
+         ```
+
+         Resolve failures before proceeding to the next module.
+         Both the old and new paths must work at this point.
+
+      7. Review and stage the completed unit. For the `level_filter.py` example:
+
+         ```powershell
+         git add src/level_filter.py src/core/level_filter.py
+         git diff --cached -- src/level_filter.py src/core/level_filter.py
+         git status --short
+         ```
+
+         Include any other files changed as part of this unit in the review and staging.
+         `git mv` stages the move, but later edits and the recreated shim must also be staged.
+         If committing, commit only after the complete unit passes its checks.
+
+    - “Atomic” here means the **completed change** contains the move, shim,
+      and required import updates together. The working tree may briefly be incomplete
+      while editing, but do not test, commit, or move on until the unit is complete.
     - Use this order: `level_filter.py`, `logging_config.py`, `errors.py`, then `subprocess_utils.py`.
       In the logging move, change its `LevelFilter` import to `src.core.level_filter`;
       in the subprocess move, change its imports to the core leaf modules described in 6.2.

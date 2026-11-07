@@ -1,0 +1,26 @@
+M3 S6.1a inventory
+
+1) Direct imports of four old modules (errors, logging_config, level_filter, and subprocess_utils)
+
+git grep -n -E '^[[:space:]]*(from|import)[[:space:]]+src\.(errors|logging_config|level_filter|subprocess_utils)' -- '*.py'
+
+a) Also inspect aliases reported by command 1—for example, import src.errors as errors. Search each alias separately:
+
+git grep -n -E '\berrors\.' -- '*.py'
+
+Replace errors with the actual alias. Some matches may be unrelated.
+
+2) Package-root imports, including from src import FfmpegProcessError
+
+git grep -n -E '^[[:space:]]*(from[[:space:]]+src[[:space:]]+import|import[[:space:]]+src([[:space:],]|$))' -- '*.py'
+
+3) Direct module attributes, such as src.errors.PathInfoError
+
+git grep -n -E 'src\.(errors|logging_config|level_filter|subprocess_utils)\.' -- '*.py'
+
+4) Test patches, including patch targets that may use strings or objects
+
+git grep -n -E '(@patch|patch\(|patch\.object|mock\.patch|monkeypatch)' -- '*.py'
+
+Inspect the surrounding code for each match.
+These searches are line-based: multiline imports or patch calls may require reading the following lines, and untracked files are not included.
