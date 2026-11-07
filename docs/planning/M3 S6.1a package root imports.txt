@@ -29,3 +29,36 @@ tests/test_audio_playlist.py:33:from src import PlaylistError                   
 tests/test_directory_processing.py:49:from src import MusicProcessingError                        # for safe-removal error assertions
 
 tests/test_subprocess_utilities.py:36:from src import FfmpegProcessError                          # for expected ffmpeg command failures
+
+After errors.py moved & shimmed
+
+src/audio_info/audio_art.py:36:from src import add_module_handler                          # for adding a module-specific handler to the logger
+
+src/audio_info/audio_metadata.py:53:from src import add_module_handler                          # for adding module-specific logging handlers
+src/audio_info/audio_metadata.py:67:from src import MetadataTypeError                           # for handling metadata type errors
+src/audio_info/audio_metadata.py:68:from src import MusicProcessingError                        # for handling music processing errors
+src/audio_info/audio_metadata.py:69:from src import PathInfoError                               # for handling path info errors
+
+src/audio_info/audio_playlist.py:23:from src import add_module_handler                          # for module-specific logging handlers
+src/audio_info/audio_playlist.py:32:from src import PlaylistError                               # for playlist processing failures
+
+src/audio_info/audio_utilities.py:25:from src import add_module_handler                          # for module-specific logging handlers
+
+src/audio_normalize/audio_normalization.py:28:from src import add_module_handler                          # for module-specific logging handlers
+
+src/dir_processing/directory_processing.py:28:from src import add_module_handler                          # for module-specific logging handlers
+src/dir_processing/directory_processing.py:46:from src import MusicProcessingError                        # for directory processing failures
+src/dir_processing/directory_processing.py:47:from src import PathInfoError                               # for path info related errors
+
+src/gui/wx_app.py:20:from src import add_module_handler                          # for adding module-specific logging handlers
+
+src/subprocess_utils.py:31:from src import add_module_handler                          # for module-specific logging handlers
+src/subprocess_utils.py:37:from src import FfmpegProcessError                          # for FFmpeg process failures
+
+tests/test_audio_metadata.py:83:from src import MusicProcessingError                        # custom error class for music processing exceptions
+
+tests/test_audio_playlist.py:33:from src import PlaylistError                               # for expected playlist parsing errors
+
+tests/test_directory_processing.py:49:from src import MusicProcessingError                        # for safe-removal error assertions
+
+tests/test_subprocess_utilities.py:36:from src import FfmpegProcessError                          # for expected ffmpeg command failures

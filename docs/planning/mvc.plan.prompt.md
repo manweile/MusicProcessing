@@ -439,11 +439,15 @@ COMPLETED
     It re-exports the actual objects from their new location; it does not implement them again.
     Keep each shim until all callers are migrated and Step 7 removes it.
 
-    The dependency order and current status are: `level_filter.py` (COMPLETED), `logging_config.py` (COMPLETED),
-    `errors.py` (COMPLETED), then `subprocess_utils.py` (next).
-    For each module not already marked COMPLETED, follow the complete loop below before starting the next.
-    **Open a new terminal at the repository root for each module move.** Do not reuse the previous module's
-    terminal; treat each move as a separate iteration with its own status check, validation, and review.
+    The dependency order and current status are:
+    - `level_filter.py` (COMPLETED)
+    - `logging_config.py` (COMPLETED)
+    - `errors.py` (COMPLETED)
+    - `subprocess_utils.py`
+
+    For each module not already marked COMPLETED, follow the complete loop below before starting the next.<br>
+    **Open a new terminal at the repository root for each module move.**<br>
+    Do not reuse the previous module's terminal; treat each move as a separate iteration with its own status check, validation, and review.
 
     1. In the new terminal, run `git status --short`. Note existing changes and do not overwrite or stage unrelated work.
     2. Recheck current imports and patch targets for the module being moved, including direct module attributes and
@@ -588,6 +592,8 @@ COMPLETED
       Remove the old call and activate explicit startup together only when all startup paths are ready.
     - Do not put bootstrap calls in `src/core/__init__.py`.
     - Step 7 may empty `src/__init__.py` only after the CLI, GUI, and test startup paths work with the explicit bootstrap and no application import depends on package initialization for logging.
+
+    ***Return to Step 4.3 now that the module moves and shims are complete, then complete Step 6.4***
 
     **6.4 Migrate consumers and verify compatibility**
     - After the moves and shims exist, complete batches 4.3a-4.3c before Step 7.
