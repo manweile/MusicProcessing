@@ -460,8 +460,31 @@ COMPLETED
       - Do not test or commit while the old path is missing.
       - The snippets are the complete application-defined re-exports:
         - Do not copy implementations, call logging setup, create handlers, or use `from ... import *`.
-    4. Update imports inside the moved implementation that must now use core leaf modules.
-      - Do not migrate unrelated callers yet; they should keep working through the shim.
+    4. Update imports inside the moved implementation that must now use core leaf modules, then complete the
+       compatibility checks for this module before continuing this iteration.
+       - Do not migrate unrelated callers yet; they should keep working through the shim.
+       - In fresh Python interpreters, import the old and new paths in both orders and assert their corresponding
+         classes/functions are identical.
+       - For `errors.py`, cover all eight exception classes and existing `src` error exports; assert an exception
+         raised through the new path is caught through the old path.
+       - For `level_filter.py`, check `LevelFilter` and its existing package-root export.
+       - For `logging_config.py`, check both existing package-root logging exports. Configure logging through the
+         existing package startup and verify a module handler added via the old function uses the same configured
+         paths as one added via the new function. The old and new function imports must be identical objects;
+         their globals live in `src.core.logging_config`. Do not copy `_generated_path` or other mutable
+         configuration globals into the shim.
+       - The shim module and core module are distinct module objects. Re-exporting does not forward assignment,
+         monkey-patching, private state, or every incidental imported name. Audit callers of such attributes; if one
+         must remain temporarily, explicitly preserve and test its behavior rather than treating the shim as a module
+         alias.
+       - For `subprocess_utils.py`, preserve the existing `SubprocessUtilities` API, `subprocess_utils.log` file,
+         and one module handler. Moving code changes `__name__` to `src.core.subprocess_utils`; explicitly retain
+         the old logger name so log records do not change. Assert old and new `SubprocessUtilities` imports are
+         identical, both `subprocess` attributes are the same module, and importing both paths adds no duplicate
+         handler. Run `python -m unittest tests.test_subprocess_utilities` with the old patch targets before
+         migrating them.
+       - The affected tests and full suite run in step 6 before proceeding to another module. Investigate failures
+         rather than removing compatibility checks.
 
       **Old-path re-exports**
       Retain an appropriate module docstring at each old path, followed by these explicit imports:
@@ -504,7 +527,7 @@ COMPLETED
        - Required internal imports use the correct core leaf modules.
        - Existing package-root exports and logging initialization remain in place.
        - The old and new imports expose the same class/function objects; the shim has not created a second implementation.
-    6. Run the fresh-interpreter compatibility checks for this module described below, then its affected tests and the full suite.<br>
+    6. Run the affected tests for this module and the full suite.<br>
     Use the VS Code test explorer or run:
 
        ```powershell
@@ -536,30 +559,6 @@ COMPLETED
       Move the patch targets to `src.core.subprocess_utils.subprocess.*` in batch 4.3c.<br>
       Do not assume arbitrary patches of shim names affect globals in the moved module;<br>
       patch the namespace where the implementation looks up each name.
-
-    **Compatibility checks to perform within each module's iteration**
-    - Use fresh Python interpreters to import the old and new paths in both orders and assert their corresponding
-      classes/functions are identical.
-      - For `errors.py`, cover all eight exception classes and existing `src` error exports;
-      - assert an exception raised through the new path is caught through the old path.
-      - For `level_filter.py`, check `LevelFilter` and its existing package-root export;
-      - for `logging_config.py`, check both existing package-root logging exports.
-    - The old and new logging function imports must be identical objects.
-      - Their globals live in `src.core.logging_config`, so configuration through either import is visible to `add_module_handler`.
-      - Do not copy `_generated_path` or other mutable configuration globals into the shim.
-    - The shim module and core module are distinct module objects.
-      - Re-exporting does not forward assignment, monkey-patching, private state, or every incidental imported name.
-      - Audit callers of such attributes;
-        - if one must remain temporarily, explicitly preserve and test its behavior rather than treating the shim as a module alias.
-    - For `subprocess_utils.py`:
-      - Preserve the existing `SubprocessUtilities` API, `subprocess_utils.log` file, and one module handler.
-      - Moving code changes `__name__` to `src.core.subprocess_utils`; explicitly retain the old logger name so log records do not change.
-      - Assert old and new `SubprocessUtilities` imports are identical, both `subprocess` attributes are the same module, and importing both paths adds no duplicate handler.
-      - Run `python -m unittest tests.test_subprocess_utilities` with the old patch targets before migrating them.
-    - For `logging_config.py`, configure logging through the existing package startup and verify a module handler
-      added via the old function uses the same configured paths as one added via the new function.
-    - Run affected tests after each move and the full suite before considering that iteration complete. Investigate
-      failures rather than removing compatibility checks.
 
     **6.2 Make dependencies point to core leaf modules**
     - In `src/core/logging_config.py`, import `LevelFilter` from `src.core.level_filter` (or its relative leaf path), never from `src.level_filter`.
