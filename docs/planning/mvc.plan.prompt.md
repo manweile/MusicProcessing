@@ -26,13 +26,17 @@ Key goals of this plan:
 - Progress and spinner display go through a `ProgressReporter` interface
   - `AudioMetadata.create_album_dirs` and `SubprocessUtilities` need to display correctly in both modes:
     - CLI mode: `tqdm` and `yaspin` are RETAINED and are the CLI display (confined to `cli/progress.py`)
-    - not-yet-coded GUI: native wxPython widgets only (`wx.Gauge` for determinate progress; `wx.ActivityIndicator`
-      for indeterminate/spinner use, with `wx.Gauge.Pulse()` as fallback).
+    - not-yet-coded GUI:
+      - native wxPython widgets only (`wx.Gauge` for determinate progress;
+      - `wx.ActivityIndicator` for indeterminate/spinner use, with `wx.Gauge.Pulse()` as fallback).
   - `yaspin` and `tqdm` are CLI-only and are never used in GUI mode (`yaspin` is incompatible with wxPython).
-  - CLI operations that REQUIRE `yaspin`: `get_ebu_loudness_info`, `ebu_normalize_file`, `peak_normalize_file`,
-    `rms_normalize_file`, `convert_file`. The CLI operation that REQUIRES `tqdm`: `create_album_dir`.
-  - Unit tests never use `yaspin` or `tqdm` (deliberate, retained pattern). The existing `show_spinner=False` flag is
-    kept so tests run headless; it maps to `NullProgress`. Tests that check progress use `FakeProgress`.
+  - CLI operations that REQUIRE `yaspin`:
+    - `get_ebu_loudness_info`, `ebu_normalize_file`, `peak_normalize_file`, `rms_normalize_file`, `convert_file`.
+  - CLI operation that REQUIRES `tqdm`:
+    - `create_album_dir`.
+  - Unit tests never use `yaspin` or `tqdm` (deliberate, retained pattern).
+    - The existing `show_spinner=False` flag is kept so tests run headless; it maps to `NullProgress`.
+    - Tests that check progress use `FakeProgress`.
 - Shared infrastructure (constants, paths, errors, logging, subprocess) lives in `src/core/` and depends on nothing else in `src`.
 - Dependencies point inward:
   - `views` and `cli` depend on `controllers`
@@ -147,7 +151,7 @@ MusicProcessing/
 │   │       ├── __init__.py           # Re-exports: run_gui
 │   │       ├── app.py
 │   │       ├── main_frame.py
-│   │   ├── progress.py               # GaugeProgress (wx.Gauge determinate; wx.ActivityIndicator/Pulse() indeterminate; wx.CallAfter)
+│   │       ├── progress.py           # GaugeProgress (wx.Gauge determinate; wx.ActivityIndicator/Pulse() indeterminate; wx.CallAfter)
 │   │       └── panels/
 │   │           ├── __init__.py
 │   │           └── *_panel.py
@@ -657,25 +661,28 @@ COMPLETED
 4. Milestone 4: Progress interface
   - Add `core/progress.py` with `ProgressReporter` (`start(total, description)`, `advance(step)`, `finish()`) and a no-op `NullProgress`.
   - `total=None` means indeterminate (spinner).
-  - `finish()` returns the elapsed time in seconds (float). Callers currently read `spinner.elapsed_time`
-    (`audio_normalization.py` ebu/peak/rms success messages, `spinner_popen_pipe` success message); they use the
-    `finish()` return value instead. `NullProgress.finish()` returns 0.0 and `FakeProgress` returns a settable value.
-  - `yaspin` and `tqdm` are NOT removed from the project: they stay as the CLI display, in `cli/progress.py` (Milestone 6).
-    Milestone 4 only moves them out of `core/`.
+  - `finish()` returns the elapsed time in seconds (float).
+    - Callers currently read `spinner.elapsed_time` (`audio_normalization.py` ebu/peak/rms success messages, `spinner_popen_pipe` success message);
+    - they use the `finish()` return value instead.
+    - `NullProgress.finish()` returns 0.0 and `FakeProgress` returns a settable value.
+  - `yaspin` and `tqdm` are NOT removed from the project:
+    - they stay as the CLI display, in `cli/progress.py` (Milestone 6). Milestone 4 only moves them out of `core/`.
   - Files: `src/core/progress.py`, `tests/support.py`
   - Work:
     - add a recording `FakeProgress` to `tests/support.py`
     - unit-test `NullProgress` and `FakeProgress` semantics (including the `finish()` elapsed return)
-    - once `core/subprocess_utils.py` exists (Milestone 3), replace its `yaspin` use (`spinner_popen_pipe`, `spinner_subprocess_run`)
-      with `ProgressReporter` calls (`start(None, ...)` and `finish()`) taking an optional `progress=None` (defaults to `NullProgress`)
+    - once `core/subprocess_utils.py` exists (Milestone 3):
+      - replace its `yaspin` use (`spinner_popen_pipe`, `spinner_subprocess_run`) with `ProgressReporter` calls:
+        - (`start(None, ...)` and `finish()`) taking an optional `progress=None` (defaults to `NullProgress`)
       - `spinner_subprocess_run` returns `(process, elapsed)` instead of `(process, spinner)`
-    - keep the `show_spinner` parameter on `get_ebu_loudness_info`, `ebu_normalize_file`, `peak_normalize_file`,
-      `rms_normalize_file`, `level_normalize_walk` and `convert_file`; it exists so unit tests run headless.
-      `show_spinner=False` means no reporter is used (`NullProgress`); `show_spinner=True` uses the supplied `progress`
+    - keep the `show_spinner` parameter on:
+      - `get_ebu_loudness_info`, `ebu_normalize_file`, `peak_normalize_file`, `rms_normalize_file`, `level_normalize_walk` and `convert_file`;
+      - it exists so unit tests run headless.
+      - `show_spinner=False` means no reporter is used (`NullProgress`); `show_spinner=True` uses the supplied `progress`
     - add optional `progress=None` to those same operations (and `audio_utilities.py` caller of `get_ebu_loudness_info`)
       and pass it through to `subprocess_utils`
-    - CLI behavior is unchanged in the end: until `SpinnerProgress` exists (Milestone 6), `main.py` supplies a
-      temporary `yaspin`-backed reporter (outside `core/`) so CLI spinners keep working after this milestone
+    - CLI behavior is unchanged in the end:
+      - Until `SpinnerProgress` exists (Milestone 6), `main.py` supplies a temporary `yaspin`-backed reporter (outside `core/`) so CLI spinners keep working after this milestone
   - Validation: existing tests keep passing with `show_spinner=False`; no test imports or invokes `yaspin` or `tqdm`.
   - Exit criteria: the interface exists and has tests; `core/` has no `yaspin` import; the five yaspin CLI operations still show their spinner.
 
