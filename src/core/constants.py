@@ -1,6 +1,6 @@
 '''
 @module constants
-@file constants.py
+@file src/core/constants.py
 @author Gerald Manweiler
 
 @brief Defines the core constants module.

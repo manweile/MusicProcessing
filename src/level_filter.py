@@ -1,59 +1,17 @@
 '''
-@class LevelFilter
-@file level_filter.py
+@module level_filter
+@file src/level_filter.py
 @author Gerald Manweiler
 
-@brief Defines the level filter class.
+@brief Level filter module.
 
-@details from https://stackoverflow.com/questions/36337244/logging-how-to-set-a-maximum-log-level-for-a-handler/36338212#36338212
-
-@note This implementation is part of logging functionality, and does not log messages itself.
+@details Provides the LevelFilter class for logging level filtering.
 
 @version 1.0.0
-@date 2024-06-05
+@date 2026-11-02
 
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-# Standard Modules
-from logging import Filter                                  # Standard logging filter class used as base for LevelFilter
-
-
-class LevelFilter(Filter):
-    '''
-    @brief Defines base level filtering used by project.
-
-    @details This class provides a logging filter that allows only log records within a specified level range to pass through.
-    '''
-
-    def __init__(self, low, high):
-        '''
-        @brief Initializes the LevelFilter class.
-
-        @details Initializes the LevelFilter with the specified low and high log levels.
-
-        @param self {LevelFilter} The instance of the class.
-        @param low {int} The lowest log level.
-        @param high {int} The highest log level.
-        '''
-
-        self._low = low
-        self._high = high
-        Filter.__init__(self)
-
-
-    def filter(self, record):
-        '''
-        @brief Checks if log record log level is within the specified level range.
-
-        @details Checks if the log record's level is within the instance's specified low and high level range.
-
-        @param self {LevelFilter} The instance of the class.
-        @param record {LogRecord} The log record instance emitted when an event is logged.
-        @returns {bool} True if record level is in specified level range, False otherwise.
-        '''
-
-        if self._low <= record.levelno <= self._high:
-            return True
-
-        return False
+# Local Modules
+from src.core.level_filter import LevelFilter               # Shim for old import path

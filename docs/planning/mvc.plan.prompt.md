@@ -444,7 +444,10 @@ COMPLETED
     - First inventory current imports and patch targets, including direct module attributes and `from src import ...`.
       The list below reflects this checkout; investigate any new callers rather than assuming it is exhaustive.
     - Move the modules **one at a time**, in the dependency order listed below.
-      - `level_filter.py`, `logging_config.py`, `errors.py`, then `subprocess_utils.py`.
+      - `level_filter.py` COMPLETED
+      - `logging_config.py`
+      - `errors.py`
+      - `subprocess_utils.py`.
       Complete all of the following actions for one module before starting the next:
 
       1. Check the working tree with `git status --short`.
@@ -472,10 +475,9 @@ COMPLETED
          Both paths must expose the same class, not two separately defined classes.
 
       4. In the moved implementation, update any imports required by this move.
-         For example, when moving `logging_config.py`, change its `LevelFilter`
-         import to `src.core.level_filter`. When moving `subprocess_utils.py`,
-         update its imports as specified in 6.2.
-         Do not migrate unrelated callers yet; they should continue working through the shims.
+         - For example, when moving `logging_config.py`, change its `LevelFilter` import to `src.core.level_filter`.
+         - When moving `subprocess_utils.py`, update its imports as specified in 6.2.
+         - Do not migrate unrelated callers yet; they should continue working through the shims.
 
       5. Check the result before testing:
          - The implementation exists at the new path.
@@ -483,17 +485,20 @@ COMPLETED
          - Required internal imports point to the correct core leaf modules.
          - Existing package-root exports and logging initialization remain in place.
 
-      6. Run the identity and compatibility checks in 6.1d for the module just moved,
-         followed by its affected tests and the full suite:
+      6. Run the identity and compatibility checks in 6.1d for the module just moved, followed by its affected tests and the full suite:
+         - from VS Code test explorer UI.
+         - or from this cli:
 
          ```powershell
          python -m unittest discover tests
          ```
 
-         Resolve failures before proceeding to the next module.
-         Both the old and new paths must work at this point.
+         - Resolve failures before proceeding to the next module.
+         - Both the old and new paths must work at this point.
 
-      7. Review and stage the completed unit. For the `level_filter.py` example:
+      7. Review and stage the completed unit.
+         - VS Code git integration
+         - cli mode, for the `level_filter.py` example:
 
          ```powershell
          git add src/level_filter.py src/core/level_filter.py
@@ -501,9 +506,9 @@ COMPLETED
          git status --short
          ```
 
-         Include any other files changed as part of this unit in the review and staging.
-         `git mv` stages the move, but later edits and the recreated shim must also be staged.
-         If committing, commit only after the complete unit passes its checks.
+         - Include any other files changed as part of this unit in the review and staging.
+         - `git mv` stages the move, but later edits and the recreated shim must also be staged.
+         - If committing, commit only after the complete unit passes its checks.
 
     - “Atomic” here means the **completed change** contains the move, shim, and required import updates together.
     - The working tree may briefly be incomplete while editing, but do not test, commit, or move on until the unit is complete.
