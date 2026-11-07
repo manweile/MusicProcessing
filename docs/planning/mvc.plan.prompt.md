@@ -25,9 +25,14 @@ Key goals of this plan:
 - Views and the CLI are interchangeable front ends over the same models and controllers.
 - Progress and spinner display go through a `ProgressReporter` interface
   - `AudioMetadata.create_album_dirs` and `SubprocessUtilities` need to display correctly in both modes:
-    - CLI mode (`tqdm`, `yaspin`)
-    - not-yet-coded GUI (`wx.Gauge` for both determinate and indeterminate progress).
-  - `yaspin` is CLI-only and is never used in GUI mode.
+    - CLI mode: `tqdm` and `yaspin` are RETAINED and are the CLI display (confined to `cli/progress.py`)
+    - not-yet-coded GUI: native wxPython widgets only (`wx.Gauge` for determinate progress; `wx.ActivityIndicator`
+      for indeterminate/spinner use, with `wx.Gauge.Pulse()` as fallback).
+  - `yaspin` and `tqdm` are CLI-only and are never used in GUI mode (`yaspin` is incompatible with wxPython).
+  - CLI operations that REQUIRE `yaspin`: `get_ebu_loudness_info`, `ebu_normalize_file`, `peak_normalize_file`,
+    `rms_normalize_file`, `convert_file`. The CLI operation that REQUIRES `tqdm`: `create_album_dir`.
+  - Unit tests never use `yaspin` or `tqdm` (deliberate, retained pattern). The existing `show_spinner=False` flag is
+    kept so tests run headless; it maps to `NullProgress`. Tests that check progress use `FakeProgress`.
 - Shared infrastructure (constants, paths, errors, logging, subprocess) lives in `src/core/` and depends on nothing else in `src`.
 - Dependencies point inward:
   - `views` and `cli` depend on `controllers`
@@ -83,7 +88,7 @@ Key goals of this plan:
 8. Progress display:
   - `AudioMetadata.create_album_dirs` uses `tqdm` directly.
   - `SubprocessUtilities` uses `yaspin` directly.
-  - Neither has a GUI equivalent yet.
+  - Both are required in CLI mode and stay; neither has a GUI equivalent yet.
 9. Tests are flat under `tests/` (one module per model plus `test_gui.py` and `test_subprocess_utilities.py`).
   - `test_gui.py` is a smoke test (`MainFrame` instantiation and `run_gui` callable).
   - `tests/__init__.py` holds fixture paths and expected values.
@@ -142,7 +147,7 @@ MusicProcessing/
 │   │       ├── __init__.py           # Re-exports: run_gui
 │   │       ├── app.py
 │   │       ├── main_frame.py
-│   │       ├── progress.py           # GaugeProgress (wx.Gauge; determinate + Pulse() for indeterminate; updates via wx.CallAfter)
+│   │   ├── progress.py               # GaugeProgress (wx.Gauge determinate; wx.ActivityIndicator/Pulse() indeterminate; wx.CallAfter)
 │   │       └── panels/
 │   │           ├── __init__.py
 │   │           └── *_panel.py
@@ -652,24 +657,38 @@ COMPLETED
 4. Milestone 4: Progress interface
   - Add `core/progress.py` with `ProgressReporter` (`start(total, description)`, `advance(step)`, `finish()`) and a no-op `NullProgress`.
   - `total=None` means indeterminate (spinner).
+  - `finish()` returns the elapsed time in seconds (float). Callers currently read `spinner.elapsed_time`
+    (`audio_normalization.py` ebu/peak/rms success messages, `spinner_popen_pipe` success message); they use the
+    `finish()` return value instead. `NullProgress.finish()` returns 0.0 and `FakeProgress` returns a settable value.
+  - `yaspin` and `tqdm` are NOT removed from the project: they stay as the CLI display, in `cli/progress.py` (Milestone 6).
+    Milestone 4 only moves them out of `core/`.
   - Files: `src/core/progress.py`, `tests/support.py`
   - Work:
     - add a recording `FakeProgress` to `tests/support.py`
-    - unit-test `NullProgress` and `FakeProgress` semantics
+    - unit-test `NullProgress` and `FakeProgress` semantics (including the `finish()` elapsed return)
     - once `core/subprocess_utils.py` exists (Milestone 3), replace its `yaspin` use (`spinner_popen_pipe`, `spinner_subprocess_run`)
       with `ProgressReporter` calls (`start(None, ...)` and `finish()`) taking an optional `progress=None` (defaults to `NullProgress`)
-    - update `audio_normalization.py` callers to pass the reporter through
-  - Exit criteria: the interface exists and has tests; `core/` has no `yaspin` import.
+      - `spinner_subprocess_run` returns `(process, elapsed)` instead of `(process, spinner)`
+    - keep the `show_spinner` parameter on `get_ebu_loudness_info`, `ebu_normalize_file`, `peak_normalize_file`,
+      `rms_normalize_file`, `level_normalize_walk` and `convert_file`; it exists so unit tests run headless.
+      `show_spinner=False` means no reporter is used (`NullProgress`); `show_spinner=True` uses the supplied `progress`
+    - add optional `progress=None` to those same operations (and `audio_utilities.py` caller of `get_ebu_loudness_info`)
+      and pass it through to `subprocess_utils`
+    - CLI behavior is unchanged in the end: until `SpinnerProgress` exists (Milestone 6), `main.py` supplies a
+      temporary `yaspin`-backed reporter (outside `core/`) so CLI spinners keep working after this milestone
+  - Validation: existing tests keep passing with `show_spinner=False`; no test imports or invokes `yaspin` or `tqdm`.
+  - Exit criteria: the interface exists and has tests; `core/` has no `yaspin` import; the five yaspin CLI operations still show their spinner.
 
 5. Milestone 5: Models move and decouple
   - Move model packages into `src/models/` and remove display dependencies.
   - Files: `src/audio_info/`, `src/audio_normalize/`, `src/dir_processing/`
   - Work:
     - `git mv` each module and leave temporary re-exports at the old paths
-    - `AudioMetadata.create_album_dirs(tld, progress=None)` reports through `ProgressReporter` instead of `tqdm`
+    - `AudioMetadata.create_album_dirs(tld, progress=None)` reports through `ProgressReporter` instead of importing `tqdm`
+      (CLI still renders it with `tqdm` via `TqdmProgress`, Milestone 6)
     - update `mock.patch` targets in tests to the new module paths
     - re-assess models that log warnings. Some will have to become exceptions, others may be downgraded to info, or removed entirely
-  - Validation: tests that patched `tqdm` or `yaspin` now assert on `FakeProgress` calls.
+  - Validation: tests that patched `tqdm` or `yaspin` now assert on `FakeProgress` calls; tests still never use `tqdm` or `yaspin`.
   - Exit criteria: `grep` finds no `wx`, `argparse`, `tqdm`, or `yaspin` import under `src/models/`.
 
 6. Milestone 6: CLI extraction
@@ -683,7 +702,10 @@ COMPLETED
     - move the per-subcommand wrapper functions to `cli/commands.py`
     - replace the `main(args)` if-chain with `run_cli_command(args)` returning an exit code (0 on success, 1 on error)
     - move `existing_file` and `existing_path` to `cli/parser.py`
-    - add `cli/progress.py` with `TqdmProgress` and `SpinnerProgress` and pass them into model calls
+    - add `cli/progress.py` with `TqdmProgress` (`tqdm`, used by `create_album_dir`) and `SpinnerProgress`
+      (`yaspin`, `finish()` returns `elapsed_time`; used by `get_ebu_loudness_info`, `ebu_normalize_file`,
+      `peak_normalize_file`, `rms_normalize_file`, `convert_file`) and pass them into model calls
+    - replace the temporary Milestone 4 `yaspin` shim with `SpinnerProgress`
     - `main(args)` runs the GUI for `gui`, otherwise returns `run_cli_command(args)`
     - the `__main__` block keeps `sys.exit(main(args))`
   - Validation:
@@ -713,13 +735,15 @@ COMPLETED
     - do not remove `handlers.py` or redirect `run_gui` until the replacement passes GUI parity checks
     - one panel class per notebook tab (art, convert, normalize, playlist, metadata, directory)
     - panels bind events and forward plain values to controllers; they implement the view interface
-    - add `views/wx/progress.py` with `GaugeProgress`
+    - add `views/wx/progress.py` with `GaugeProgress` (native wxPython only; no `tqdm`, no `yaspin`)
       - updating widgets only through `wx.CallAfter`
-      - indeterminate (`total=None`) is the GUI replacement for the `yaspin` spinner: `start()` begins a `wx.Timer`-driven
-        `Pulse()` (or shows a `wx.ActivityIndicator`), `finish()` stops it and resets the gauge
-      - optional: a `TextCtrlStream` (`write`/`flush`) lets `tqdm(file=stream)` render text progress into a `wx.TextCtrl`;
-        it must treat `\r` as "replace the last line" and post every update through `wx.CallAfter`. tqdm has no indeterminate
-        mode, so the gauge remains the primary GUI display and this is only for a text log
+      - determinate (`total` set; replaces `tqdm` for `create_album_dir`): `wx.Gauge` with range `total`, `advance()` updates the value
+      - indeterminate (`total=None`; replaces the `yaspin` spinner): show a native `wx.ActivityIndicator`
+        (wxPython 4.1+; verify the installed version) and, if unavailable, a `wx.Gauge` driven by `Pulse()` via `wx.Timer`
+      - `finish()` stops/hides the widget and returns elapsed seconds (`time.perf_counter`), matching `SpinnerProgress`,
+        so success messages keep the same "in N secs" text
+      - alternative to evaluate in this milestone: `wx.ProgressDialog` (`wx.PD_ELAPSED_TIME`; `Pulse()` for indeterminate)
+        as a modal/"toast"-like display; `wx.adv.NotificationMessage` is only for a completion notice, not live progress
     - keep the existing worker-thread behavior so the UI stays responsive
     - after parity is verified
       - switch `run_gui` to the replacement view and retain a compatibility adapter if existing callers still import `src/gui/`
@@ -791,8 +815,8 @@ COMPLETED
 
 1. `src/__init__.py` imports from submodules that import back from `src`
   1. moving constants and errors to `core/` removes the cycle, but the order of edits matters. Empty the root `__init__.py` last.
-2. `yaspin` assumes a terminal and does NOT work with wxPython. It is confined to `cli/progress.py` (`SpinnerProgress`);
-   GUI mode uses `GaugeProgress` pulse mode instead.
+2. `yaspin` assumes a terminal and does NOT work with wxPython. It is retained for CLI mode and confined to
+   `cli/progress.py` (`SpinnerProgress`); GUI mode uses `GaugeProgress` (`wx.ActivityIndicator` / `Pulse()`) instead.
   1. `SubprocessUtilities` must never import `yaspin`; reporter selection (CLI vs GUI) happens in the front end.
   2. verify the GUI spinner animates when a subprocess runs from a worker thread, and that tests use `FakeProgress`.
 3. `wx.Gauge` and widgets must only be touched from the main thread. All `GaugeProgress` updates go through `wx.CallAfter`.
@@ -831,7 +855,9 @@ COMPLETED
 
 ## Decisions
 
-- `tqdm` stays out of models and controllers. In the GUI it is optional and only via `TextCtrlStream`; `GaugeProgress` is primary.
+- `tqdm` and `yaspin` are retained for CLI mode only (`cli/progress.py`); they stay out of `core/`, models, controllers and the GUI.
+  The GUI uses native wxPython widgets (`GaugeProgress`); no `TextCtrlStream`.
+- Unit tests never use `tqdm` or `yaspin`; `show_spinner=False` and `FakeProgress`/`NullProgress` keep them headless.
 - A single root `.gitignore` is the only ignore file; no nested `.gitignore` files.
 - `AlbumArt/*.jpg` are user-supplied resources, git-ignored and not treated as test fixtures.
 - Keep `main.py` as a thin entry point.
