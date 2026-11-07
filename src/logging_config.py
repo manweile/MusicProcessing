@@ -5,7 +5,7 @@
 
 @brief Defines the logging configuration module shim.
 
-@details Configure package and module file logging shim.
+@details Re-exports the configuration for package and module file logging shim.
 
 @version 1.0.0
 @date 2026-09-16

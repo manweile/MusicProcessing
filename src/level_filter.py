@@ -5,7 +5,7 @@
 
 @brief Defines the LevelFilter class shim.
 
-@details Provides the LevelFilter class for logging level filtering.
+@details Re-exports the LevelFilter class, providing the LevelFilter class for logging level filtering.
 
 @version 1.0.0
 @date 2026-11-02

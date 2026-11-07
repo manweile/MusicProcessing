@@ -1,13 +1,11 @@
 '''
 @module errors
-@file errors.py
+@file src/errors.py
 @author Gerald Manweiler
 
-@brief Defines the errors module
+@brief Defines the errors module shim.
 
-@details Defines the custom exceptions used in the MusicProcessing module.
-
-@note This implementation does not require logging functionality.
+@details Re-exports the custom exceptions used in the MusicProcessing module shim.
 
 @version 1.0.0
 @date 2024-06-05
@@ -15,172 +13,12 @@
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-
-class MusicProcessingException(Exception):
-    '''
-    @brief Base class for any MusicProcessing Exception
-
-    @details Base class for all custom exceptions in the MusicProcessing module.
-    '''
-
-    def __init__(self, message="A MusicProcessingException occurred"):
-        '''
-        @brief Initializes the MusicProcessingException class.
-
-        @details Initializes the MusicProcessingException with the provided error message.
-
-        @param self {MusicProcessingException} The instance of the class.
-        @param message {str} The error message.
-        '''
-
-        self.message = message
-        super().__init__(self.message)
-
-
-class FfmpegProcessError(MusicProcessingException):
-    '''
-    @brief Base class for ffmpeg processing errors.
-
-    @details Base class for all ffmpeg processing errors in the MusicProcessing module.
-    '''
-
-    def __init__(self, message="A FfmpegError occurred"):
-        '''
-        @brief Initializes the FfmpegProcessError class.
-
-        @details Initializes the FfmpegProcessError with the provided error message.
-
-        @param self {FfmpegProcessError} The instance of the class.
-        @param message {str} The error message.
-        '''
-
-        self.message = message
-        super().__init__(self.message)
-
-
-class JSONOutputError(MusicProcessingException):
-    '''
-    @brief Base class for JSON output errors.
-
-    @details Base class for all JSON output errors in the MusicProcessing module.
-    '''
-
-    def __init__(self, message="A JSONOutputError occurred"):
-        '''
-        @brief Initializes the JSONOutputError class.
-
-        @details Initializes the JSONOutputError with the provided error message.
-
-        @param self {JSONOutputError} The instance of the class.
-        @param message {str} The error message.
-        '''
-
-        self.message = message
-        super().__init__(self.message)
-
-
-class MetadataTypeError(MusicProcessingException):
-    '''
-    @brief Base class for metadata type errors.
-
-    @details Base class for all metadata type errors in the MusicProcessing module.
-    '''
-
-    def __init__(self, message="A MetadataTypeError occurred"):
-        '''
-        @brief Initializes the MetadataTypeError class.
-
-        @details Initializes the MetadataTypeError with the provided error message.
-
-        @param self {MetadataTypeError} The instance of the class.
-        @param message {str} The error message.
-        '''
-
-        self.message = message
-        super().__init__(self.message)
-
-
-class MusicProcessingError(MusicProcessingException):
-    '''
-    @brief Base class for generic music processing errors.
-
-    @details Base class for all generic music processing errors in the MusicProcessing module.
-    '''
-
-    def __init__(self, message="A MusicProcessingError occurred"):
-        '''
-        @brief Initializes the MusicProcessingError class.
-
-        @details Initializes the MusicProcessingError with the provided error message.
-
-        @param self {MusicProcessingError} The instance of the class.
-        @param message {str} The error message.
-        '''
-
-        self.message = message
-        super().__init__(self.message)
-
-
-class PathInfoError(MusicProcessingException):
-    '''
-    @brief Base class for path info errors.
-
-    @details Base class for all path info errors in the MusicProcessing module.
-    '''
-
-    def __init__(self, message="A PathInfoError occurred"):
-        '''
-        @brief Initializes the PathInfoError class.
-
-        @details Initializes the PathInfoError with the provided error message.
-
-        @param self {PathInfoError} The instance of the class.
-        @param message {str} The error message.
-        '''
-
-        self.message = message
-        super().__init__(self.message)
-
-
-class PlaylistError(MusicProcessingException):
-    '''
-    @brief Base class for playlist errors.
-
-    @details Base class for all playlist errors in the MusicProcessing module.
-
-    @param message {str} The error message.
-    '''
-
-    def __init__(self, message="A PlaylistError occurred"):
-        '''
-        @brief Initializes the PlaylistError class.
-
-        @details Initializes the PlaylistError with the provided error message.
-
-        @param self {PlaylistError} The instance of the class.
-        @param message {str} The error message.
-        '''
-
-        self.message = message
-        super().__init__(self.message)
-
-
-class VideoStreamError(MusicProcessingException):
-    '''
-    @brief Base class for video stream errors.
-
-    @details Base class for all video stream errors in the MusicProcessing module.
-    '''
-
-    def __init__(self, message="A VideoStreamError occurred"):
-        '''
-        @brief Initializes the VideoStreamError class.
-
-        @details Initializes the VideoStreamError with the provided error message.
-
-        @param self {VideoStreamError} The instance of the class.
-        @param message {str} The error message.
-        '''
-
-        self.message = message
-        super().__init__(self.message)
+# Local Modules
+from src.core.errors import FfmpegProcessError              # Shim for old import path
+from src.core.errors import JSONOutputError                 # Shim for old import path
+from src.core.errors import MetadataTypeError               # Shim for old import path
+from src.core.errors import MusicProcessingError            # Shim for old import path
+from src.core.errors import MusicProcessingException        # Shim for old import path
+from src.core.errors import PathInfoError                   # Shim for old import path
+from src.core.errors import PlaylistError                   # Shim for old import path
+from src.core.errors import VideoStreamError                # Shim for old import path
