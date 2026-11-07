@@ -3,7 +3,7 @@
 @file src/level_filter.py
 @author Gerald Manweiler
 
-@brief Level filter module.
+@brief Defines the LevelFilter class shim.
 
 @details Provides the LevelFilter class for logging level filtering.
 

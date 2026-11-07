@@ -3,11 +3,12 @@
 @file src/core/level_filter.py
 @author Gerald Manweiler
 
-@brief Defines the level filter class.
+@brief Defines the LevelFilter class.
 
-@details from https://stackoverflow.com/questions/36337244/logging-how-to-set-a-maximum-log-level-for-a-handler/36338212#36338212
+@details Provides the LevelFilter class for logging level filtering.
 
-@note This implementation is part of logging functionality, and does not log messages itself.
+@note This implementation is part of logging functionality, and does not log messages itself.<br>
+From https://stackoverflow.com/questions/36337244/logging-how-to-set-a-maximum-log-level-for-a-handler/36338212#36338212
 
 @version 1.0.0
 @date 2024-06-05
@@ -50,7 +51,8 @@ class LevelFilter(Filter):
 
         @param self {LevelFilter} The instance of the class.
         @param record {LogRecord} The log record instance emitted when an event is logged.
-        @returns {bool} True if record level is in specified level range, False otherwise.
+
+        @retval {bool} True if record level is in specified level range, False otherwise.
         '''
 
         if self._low <= record.levelno <= self._high:
