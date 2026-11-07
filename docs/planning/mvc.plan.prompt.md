@@ -739,7 +739,7 @@ COMPLETED
       - updating widgets only through `wx.CallAfter`
       - determinate (`total` set; replaces `tqdm` for `create_album_dir`): `wx.Gauge` with range `total`, `advance()` updates the value
       - indeterminate (`total=None`; replaces the `yaspin` spinner): show a native `wx.ActivityIndicator`
-        (wxPython 4.1+; verify the installed version) and, if unavailable, a `wx.Gauge` driven by `Pulse()` via `wx.Timer`
+        (the installed wxPython version is >=4.2.3); use a `wx.Gauge` driven by `Pulse()` via `wx.Timer` only as a fallback
       - `finish()` stops/hides the widget and returns elapsed seconds (`time.perf_counter`), matching `SpinnerProgress`,
         so success messages keep the same "in N secs" text
       - alternative to evaluate in this milestone: `wx.ProgressDialog` (`wx.PD_ELAPSED_TIME`; `Pulse()` for indeterminate)
