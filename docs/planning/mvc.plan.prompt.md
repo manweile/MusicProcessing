@@ -612,13 +612,33 @@ COMPLETED
     the implicit setup from `src/__init__.py`. Do not remove or move that existing setup during Step 6.
 
     Make these edits:
-    - In `src/core/logging_config.py`, add a parameterless `bootstrap_package_logging()` entry point.
-      It must configure package logging with the existing generated-path and logging constants, and be safe to call
-      repeatedly: it must not add another set of package handlers when logging is already configured.
-      Keep configuration out of module import time; importing `src.core.logging_config` must not itself configure logging.
-    - Keep `configure_package_logging(...)` and the existing call in `src/__init__.py` unchanged throughout Step 6.
-      During this transition, the bootstrap function must recognize that this call has already configured logging
-      and must not configure it a second time.
+    - In `src/core/logging_config.py`, add a parameterless `bootstrap_package_logging()` function that returns the
+      configured `src` package logger. It is the explicit startup API; callers must not need to supply configuration.
+      Implement it as follows:
+      1. Import the configuration values from their owning leaf modules, not from `src` or `src.core`:
+         `GENERATED_PATH` from `src.core.paths`, and `CSV_DIR`, `LOG_DIR`, `RESULT_DIR`, `LOG_EXT`, `UTF8`, and
+         `ERROR_LOG_FORMAT` from `src.core.constants`.
+      2. Add a private module-level boolean, initially `False`, that records whether package logging has completed
+         configuration. Set it to `True` only after `configure_package_logging(...)` has successfully created the
+         generated directories and attached all package handlers. Do not infer this state from the presence of
+         arbitrary handlers on `logging.getLogger("src")`.
+      3. If the flag is `False`, call
+         `configure_package_logging(GENERATED_PATH, CSV_DIR, LOG_DIR, RESULT_DIR, LOG_EXT, UTF8, ERROR_LOG_FORMAT)`.
+         If it is already `True`, do not call the configurator again. In either case return `logging.getLogger("src")`.
+         Let configuration exceptions propagate; do not report success or set the flag after a failed configuration.
+      4. Preserve the signature and existing handler behavior of `configure_package_logging(...)` as the lower-level
+         API; add only the configured-flag update after successful setup. Do not make that function itself
+         idempotent in this substep. The repeat-call guarantee applies to `bootstrap_package_logging()`.
+      The `logging_config.py` module body must not call either bootstrap or configuration. Importing the module itself
+      must not add package handlers or create generated directories. Note that until Step 7, Python executes
+      `src/__init__.py` before importing `src.core.logging_config`; its existing package-root call is a separate,
+      intentional startup side effect in this transitional step. The private configured flag must therefore also be
+      set by a successful call to `configure_package_logging(...)`, so the later explicit bootstrap recognizes that
+      setup and does not add a second handler set.
+    - Keep the `configure_package_logging(...)` signature and the existing call in `src/__init__.py` in place
+      throughout Step 6. The call must continue to configure the same directories and handlers. Its successful
+      execution sets the private configured flag described above, so a later bootstrap call does not configure
+      logging a second time.
     - In `main.py`, call `bootstrap_package_logging()` before importing application or GUI modules that register
       module handlers. Move those imports below the bootstrap call; retain the CLI behavior and `--help` output.
     - In `src/gui/wx_app.py`, ensure the GUI startup path calls the bootstrap before importing or creating components
@@ -628,11 +648,20 @@ COMPLETED
     - Do not put bootstrap calls in `src/core/__init__.py`.
 
     Validate Step 6.3:
-    - Add or update focused tests for the bootstrap: it configures logging when needed, repeated calls do not add
-      duplicate package handlers, and existing module-specific handlers still work.
-    - Check in fresh processes that CLI startup, direct GUI startup, and test collection run their bootstrap before
-      handler-registering modules are imported. While the `src/__init__.py` setup remains, verify the explicit calls
-      do not create duplicate handlers.
+    - Add or update focused tests for both states. With the current `src/__init__.py` setup active, assert that a
+      successful `configure_package_logging(...)` marks logging configured and that one or more bootstrap calls
+      leave the package logger's handler count unchanged. With package-root setup disabled in an isolated test
+      (as it will be after Step 7), assert that the first bootstrap creates the directories and package handlers,
+      and that subsequent calls leave the handler count unchanged. Also assert configuration failures propagate
+      and do not mark logging configured.
+    - For the configured package logger, verify the existing five package log files (`debug`, `info`, `warning`,
+      `error`, `critical`, each with `LOG_EXT`) are attached once with `ERROR_LOG_FORMAT`; non-debug handlers keep
+      their exact-level filters. Verify an `add_module_handler(...)` call still creates the expected module log file
+      under `GENERATED_PATH/LOG_DIR` and uses the existing format and encoding.
+    - Check in fresh processes that CLI startup, direct GUI startup, and test collection call bootstrap before any
+      application module registers a module handler. While the `src/__init__.py` setup remains, verify these explicit
+      calls do not add another package-handler set. After Step 7 removes that setup, repeat the same checks to prove
+      each startup path configures logging itself.
     - Confirm generated log directories, log formats, output locations, and module log files remain unchanged.
       Run the focused logging tests, the full test suite, and `python main.py --help`.
 
