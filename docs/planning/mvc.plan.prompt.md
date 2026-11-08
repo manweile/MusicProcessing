@@ -1,4 +1,3 @@
-<!-- markdownlint-disable MD033 -->
 
 # Plan: MusicProcessing MVC Refactor
 
@@ -460,31 +459,50 @@ COMPLETED
       - Do not test or commit while the old path is missing.
       - The snippets are the complete application-defined re-exports:
         - Do not copy implementations, call logging setup, create handlers, or use `from ... import *`.
-    4. Update imports inside the moved implementation that must now use core leaf modules, then complete the
-       compatibility checks for this module before continuing this iteration.
-       - Do not migrate unrelated callers yet; they should keep working through the shim.
-       - In fresh Python interpreters, import the old and new paths in both orders and assert their corresponding
-         classes/functions are identical.
-       - For `errors.py`, cover all eight exception classes and existing `src` error exports; assert an exception
-         raised through the new path is caught through the old path.
-       - For `level_filter.py`, check `LevelFilter` and its existing package-root export.
-       - For `logging_config.py`, check both existing package-root logging exports. Configure logging through the
-         existing package startup and verify a module handler added via the old function uses the same configured
-         paths as one added via the new function. The old and new function imports must be identical objects;
-         their globals live in `src.core.logging_config`. Do not copy `_generated_path` or other mutable
-         configuration globals into the shim.
-       - The shim module and core module are distinct module objects. Re-exporting does not forward assignment,
-         monkey-patching, private state, or every incidental imported name. Audit callers of such attributes; if one
-         must remain temporarily, explicitly preserve and test its behavior rather than treating the shim as a module
-         alias.
-       - For `subprocess_utils.py`, preserve the existing `SubprocessUtilities` API, `subprocess_utils.log` file,
-         and one module handler. Moving code changes `__name__` to `src.core.subprocess_utils`; explicitly retain
-         the old logger name so log records do not change. Assert old and new `SubprocessUtilities` imports are
-         identical, both `subprocess` attributes are the same module, and importing both paths adds no duplicate
-         handler. Run `python -m unittest tests.test_subprocess_utilities` with the old patch targets before
-         migrating them.
-       - The affected tests and full suite run in step 6 before proceeding to another module. Investigate failures
-         rather than removing compatibility checks.
+    4. Update imports inside the moved implementation and prove compatibility before continuing this iteration.
+       Keep unrelated callers on the old path for now; they must continue to work through the shim.
+       Complete these checks in order:
+       1. **Fix the moved implementation's dependencies.** Search its imports for references to moved modules.
+          Change each such reference to the owning `src.core.<leaf_module>` path (or its relative leaf path).
+          Do not import through `src`, `src.core`, or an old-path shim. Do not change unrelated caller imports.
+       2. **Check the old-path shim.** Confirm it has its module docstring and only the explicit re-exports listed
+          below. Compare each exported name with the original module's supported API and `src/__init__.py`;
+          keep existing package-root exports unchanged. Do not add a second implementation, wildcard import,
+          logging setup, handler registration, or copied mutable state.
+       3. **Audit old-path attribute usage.** Search callers, tests, and patch declarations for module attributes,
+          monkey-patches, private globals, and incidental names that are not in the explicit re-exports. For every
+          use, either update it only when this step explicitly permits that migration, or retain the required
+          compatibility surface and add a check proving it works. A shim and its core implementation are distinct
+          module objects: assignment, monkey-patching, and private state do not forward automatically.
+       4. **Check both import orders in isolated interpreters.** Start a fresh Python process for each order:
+          import the old path and then the new path; in a second process import the new path and then the old path.
+          In both processes, assert that the module objects are distinct and that every required old/new public
+          class or function is the identical object (`is`), not merely equal. Also verify imports do not fail or
+          cause duplicate initialization. Do not rely on `importlib.reload` or a shared interpreter's module cache.
+       5. **Run the module-specific assertions below.** Check the package-root exports as well as both module paths;
+          check behavior, not only successful imports. For logging and subprocess utilities, perform the side-effect
+          checks in a fresh process so prior test state cannot hide duplicate configuration or handlers.
+       6. **Run tests and inspect failures.** Run the module's affected tests, then the full suite using step 6.
+          For `subprocess_utils.py`, run `python -m unittest tests.test_subprocess_utilities` while its tests still
+          use the old patch targets. Do not migrate those targets in this step. Investigate and fix failures;
+          never remove or weaken a compatibility assertion to make the suite pass.
+
+       Module-specific assertions:
+       - **`errors.py`:** Assert identity for all eight exception classes between `src.errors` and
+         `src.core.errors`, and for each existing error export from `src`. Raise an exception via
+         `src.core.errors` and catch it via the corresponding old-path class.
+       - **`level_filter.py`:** Assert identity for `LevelFilter` across both paths and its existing `src`
+         package-root export.
+       - **`logging_config.py`:** Assert identity for `add_module_handler` and `configure_package_logging`
+         across both paths and their existing `src` exports. Start with the existing package logging startup,
+         add a module handler through each import path, and verify both use the same configured paths and the
+         same implementation globals in `src.core.logging_config`. Confirm startup/configuration occurs once.
+         Do not copy `_generated_path` or any other mutable configuration global into the shim.
+       - **`subprocess_utils.py`:** Assert identity for `SubprocessUtilities` across both paths and that the
+         old/new `subprocess` attributes are the same standard-library module object. Confirm the
+         `subprocess_utils.log` file is still used, the logger name remains `src.subprocess_utils` despite the
+         moved module's `__name__`, and importing both paths registers exactly one module handler. Verify the
+         existing `SubprocessUtilities` API still behaves as before.
 
       **Old-path re-exports**
       Retain an appropriate module docstring at each old path, followed by these explicit imports:
