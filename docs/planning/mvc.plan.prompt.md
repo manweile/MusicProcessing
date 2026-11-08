@@ -203,8 +203,12 @@ COMPLETED
     **Step 0**: Preparation COMPLETED
 
     On feature/mvc-refactoring, run the full suite once to confirm the baseline.<br>
-    Find where each name is used, so the split follows real usage:<br>
-    grep -rnE "from src import|import src" --include=*.py .<br>
+    Find where each name is used, so the split follows real usage:
+
+    ```powershell
+    grep -rnE "from src import|import src" --include=*.py .
+    ```
+
     Check ARG_* and APP_NAME especially, since main.py and the GUI may use them.
 
     **Step 1** Confirm baseline and inventory COMPLETED
