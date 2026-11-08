@@ -437,6 +437,12 @@ COMPLETED
     Keep `src/__init__.py` and the old package-level logging initialization in place throughout this step;<br>
     removing that startup side effect belongs to Step 7.
 
+    **Intentional logging API rename:** `configure_package_logging` was renamed to `configure_logging` in Step 6.3
+    to keep code and inline comments within the 150-column limit. Do not retain an alias for the old name in
+    `src`, `src.logging_config`, or `src.core.logging_config`; callers using it must switch to `configure_logging`.
+    This is an explicit exception to preserving existing exported names. The old module-path shims and all other
+    compatibility exports remain in place until Step 7.
+
     **6.1 Move the implementation modules one at a time**
     A compatibility shim is a small Python module left at an old import path after the implementation moves.
     It re-exports the actual objects from their new location; it does not implement them again.
@@ -667,8 +673,8 @@ COMPLETED
       under `GENERATED_PATH/LOG_DIR` and uses the existing format and encoding. COMPLETED
     - Check in fresh processes that CLI startup, direct GUI startup, and test collection call bootstrap before any
       application module registers a module handler. While the `src/__init__.py` setup remains, verify these explicit
-      calls do not add another package-handler set. After Step 7 removes that setup, repeat the same checks to prove
-      each startup path configures logging itself. COMPLETED
+      calls do not add another package-handler set. COMPLETED
+      After Step 7 removes that setup, repeat the same checks to prove each startup path configures logging itself. TODO IN STEP 7
     - Confirm generated log directories, log formats, output locations, and module log files remain unchanged.
       Run the focused logging tests, the full test suite, and `python main.py --help`. COMPLETED
 
