@@ -606,20 +606,39 @@ COMPLETED
     and `src/core/__init__.py` does not perform setup or load higher-level modules.<br>
     That keeps the dependency graph one-way while `src/__init__.py` still provides temporary compatibility exports.
 
-    **6.3 Preserve startup logging until the entry points own it**
-    - Do not remove the package-root logging initialization in this step:
-      - Existing modules call `add_module_handler` during import and require package logging to have been configured first.
-    - Before Step 7 removes that side effect, add an explicit, one-time logging bootstrap for each supported startup path.
-      - It must run before importing modules that register module handlers;
-      - In particular, defer `main.py`'s application/GUI imports until after bootstrap,
-      and arrange for test collection to bootstrap before importing those modules.
-    - Make repeated bootstrap calls harmless (no duplicate package handlers),
-    and verify generated log directories, formats, and module log files remain unchanged.
-      - The existing `configure_package_logging` adds handlers on every call; merely calling it again is not idempotent.
-      During the transition, account for the configuration already performed by `src/__init__.py`.
-      Remove the old call and activate explicit startup together only when all startup paths are ready.
+    **6.3 Add explicit logging bootstrap calls; keep the package-root setup for now**
+
+    This step makes code changes. Its goal is to prepare every startup path to own logging before Step 7 removes
+    the implicit setup from `src/__init__.py`. Do not remove or move that existing setup during Step 6.
+
+    Make these edits:
+    - In `src/core/logging_config.py`, add a parameterless `bootstrap_package_logging()` entry point.
+      It must configure package logging with the existing generated-path and logging constants, and be safe to call
+      repeatedly: it must not add another set of package handlers when logging is already configured.
+      Keep configuration out of module import time; importing `src.core.logging_config` must not itself configure logging.
+    - Keep `configure_package_logging(...)` and the existing call in `src/__init__.py` unchanged throughout Step 6.
+      During this transition, the bootstrap function must recognize that this call has already configured logging
+      and must not configure it a second time.
+    - In `main.py`, call `bootstrap_package_logging()` before importing application or GUI modules that register
+      module handlers. Move those imports below the bootstrap call; retain the CLI behavior and `--help` output.
+    - In `src/gui/wx_app.py`, ensure the GUI startup path calls the bootstrap before importing or creating components
+      that register module handlers. This must also cover starting the GUI without first running the CLI dispatcher.
+    - In `tests/__init__.py`, call the bootstrap before test modules are imported, so test collection does not depend
+      on the `src/__init__.py` logging side effect.
     - Do not put bootstrap calls in `src/core/__init__.py`.
-    - Step 7 may empty `src/__init__.py` only after the CLI, GUI, and test startup paths work with the explicit bootstrap and no application import depends on package initialization for logging.
+
+    Validate Step 6.3:
+    - Add or update focused tests for the bootstrap: it configures logging when needed, repeated calls do not add
+      duplicate package handlers, and existing module-specific handlers still work.
+    - Check in fresh processes that CLI startup, direct GUI startup, and test collection run their bootstrap before
+      handler-registering modules are imported. While the `src/__init__.py` setup remains, verify the explicit calls
+      do not create duplicate handlers.
+    - Confirm generated log directories, log formats, output locations, and module log files remain unchanged.
+      Run the focused logging tests, the full test suite, and `python main.py --help`.
+
+    Do not remove the call from `src/__init__.py` in this step. Step 7 performs the cutover: after all three explicit
+    startup paths above are in place, remove the old package-root logging side effect together with the other
+    `src/__init__.py` compatibility exports, then repeat the fresh-process startup checks and full validation.
 
     ***Return to Step 4.3 now that the module moves and shims are complete, then complete Step 6.4***
 
@@ -641,9 +660,11 @@ COMPLETED
 
     Once repository imports no longer rely on from src import ..., the old error/logging modules, or the old generated-files path export:
 
-        Remove the compatibility re-exports and old module shims.
-        Make `src/__init__.py` empty apart from its package docstring.
-        Run the full test suite, check CLI help, and smoke-test GUI startup and logging.
+        Remove the compatibility re-exports and old module shims, including the package-root logging initialization.
+        Make `src/__init__.py` empty apart from its package docstring; explicit startup bootstraps from Step 6.3
+        must now configure logging before any module-specific handlers are registered.
+        In fresh processes, verify CLI startup, direct GUI startup, and test collection each configure logging once.
+        Run the full test suite, check CLI help, and smoke-test GUI startup and logging output.
 
     That order keeps compatibility while the imports move, and avoids breaking startup logging when the package-root side effect is removed.
 
