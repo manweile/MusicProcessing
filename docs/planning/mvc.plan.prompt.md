@@ -398,7 +398,7 @@ COMPLETED
     - After 4.2g: `git grep -n -F "src.generated_files" -- "*.py"` COMPLETED SEARCH PASSES
       - shows only `src/generated_files/__init__.py` and its docstring; record both as intentional shims.
 
-    **4.3 Migrate logging helpers and errors after Step 6**
+    **4.3 Migrate logging helpers and errors after Step 6.3**
     - These destinations do not exist until Step 6 moves the modules. Do not migrate these imports before then.
     - After the moves, return to this batch before Step 7:
     - 4.3a Migrate production and test imports of logging helpers to `src.core.logging_config`
@@ -406,7 +406,7 @@ COMPLETED
     - 4.3c Migrate production and test imports of subprocess utilities to `src.core.subprocess_utils`
     - Update string-based mock patch targets to the module where the symbol is now looked up.
       - Eg, change `src.subprocess_utils.subprocess.Popen` and `src.subprocess_utils.subprocess.run` in `tests/test_subprocess_utilities.py`
-      to `src.core.subprocess_utils...`.
+      to `src.core.subprocess_utils.subprocess.Popen` and `src.core.subprocess_utils.subprocess.run`.
       - Search all patch targets; do not assume there are no string-based references.
     - Run affected tests, and verify CLI and GUI startup still initialize logging as expected.
     - Keep old module shims and package compatibility surface until callers for both destinations have migrated and Step 7 explicitly removes them.
@@ -440,9 +440,9 @@ COMPLETED
     Keep each shim until all callers are migrated and Step 7 removes it.
 
     The dependency order and current status are:
-    - `level_filter.py` (COMPLETED)
-    - `logging_config.py` (COMPLETED)
-    - `errors.py` (COMPLETED)
+    - `level_filter.py` COMPLETED
+    - `logging_config.py` COMPLETED
+    - `errors.py` COMPLETED
     - `subprocess_utils.py`
 
     For each module not already marked COMPLETED, follow the complete loop below before starting the next.<br>
@@ -450,29 +450,69 @@ COMPLETED
     Do not reuse the previous module's terminal; treat each move as a separate iteration with its own status check, validation, and review.
 
     1. In the new terminal, run `git status --short`. Note existing changes and do not overwrite or stage unrelated work.
-    2. Recheck current imports and patch targets for the module being moved, including direct module attributes and
-       `from src import ...`. Existing search notes may reflect an earlier checkout; investigate current callers
-       rather than assuming those notes are exhaustive.
-       Inspect context for matches, since patch targets and multiline imports may need manual review.
-    3. Move the implementation with `git mv`, then recreate the old path immediately with its module docstring
-       and the explicit re-exports below. Do not test or commit while the old path is missing.
-       The snippets are the complete application-defined re-exports: do not copy implementations, call logging
-       setup, create handlers, or use `from ... import *`.
-    4. Update imports inside the moved implementation that must now use core leaf modules. Do not migrate unrelated
-       callers yet; they should keep working through the shim.
+    2. Recheck current imports and patch targets for the module being moved:
+      - Direct module attributes: git grep -n -E 'src\.(errors|logging_config|level_filter|subprocess_utils)\.' -- '*.py'
+      - Package-root imports: git grep -n -E '^[[:space:]]*(from[[:space:]]+src[[:space:]]+import|import[[:space:]]+src([[:space:],]|$))' -- '*.py'
+      - Existing search notes may reflect an earlier checkout; investigate current callers rather than assuming those notes are exhaustive.
+      - Inspect context for matches, since patch targets and multiline imports may need manual review.
+    3. Move the implementation with `git mv src/<file>.py src/core/<file>.py`
+      - then recreate the old path immediately with its module docstring and the explicit re-exports below.
+      - Do not test or commit while the old path is missing.
+      - The snippets are the complete application-defined re-exports:
+        - Do not copy implementations, call logging setup, create handlers, or use `from ... import *`.
+    4. Update imports inside the moved implementation that must now use core leaf modules.
+      - Do not migrate unrelated callers yet; they should keep working through the shim.
+
+      **Old-path re-exports**
+      Retain an appropriate module docstring at each old path, followed by these explicit imports:
+
+      - `src/level_filter.py`:
+
+        ```python
+        from src.core.level_filter import LevelFilter
+        ```
+
+      - `src/logging_config.py`:
+
+        ```python
+        from src.core.logging_config import add_module_handler
+        from src.core.logging_config import configure_package_logging
+        ```
+
+      - `src/errors.py` (include the base class even though `src/__init__.py` does not export it):
+
+        ```python
+        from src.core.errors import FfmpegProcessError
+        from src.core.errors import JSONOutputError
+        from src.core.errors import MetadataTypeError
+        from src.core.errors import MusicProcessingError
+        from src.core.errors import MusicProcessingException
+        from src.core.errors import PathInfoError
+        from src.core.errors import PlaylistError
+        from src.core.errors import VideoStreamError
+        ```
+
+      - `src/subprocess_utils.py`:
+
+        ```python
+        from src.core.subprocess_utils import SubprocessUtilities
+        from src.core.subprocess_utils import subprocess
+        ```
+
     5. Check the completed unit before testing:
        - The implementation is at `src/core/` and the old path contains only its docstring and shim imports.
        - Required internal imports use the correct core leaf modules.
        - Existing package-root exports and logging initialization remain in place.
        - The old and new imports expose the same class/function objects; the shim has not created a second implementation.
-    6. Run the fresh-interpreter compatibility checks for this module described below, then its affected tests and the
-       full suite. Use the VS Code test explorer or run:
+    6. Run the fresh-interpreter compatibility checks for this module described below, then its affected tests and the full suite.<br>
+    Use the VS Code test explorer or run:
 
        ```powershell
        python -m unittest discover tests
        ```
 
        Resolve failures before proceeding. Both old and new paths must work after every move.
+
     7. Review and stage only the completed unit, including any required internal-import updates. For example:
 
        ```powershell
@@ -481,74 +521,41 @@ COMPLETED
        git status --short
        ```
 
-       `git mv` stages the move, but subsequent edits and the recreated shim must also be staged. If committing,
-       commit only after the complete unit passes its checks.
+       `git mv` stages the move, but subsequent edits and the recreated shim must also be staged.<br>
+       If committing, commit only after the complete unit passes its checks.
 
     The implementation may be temporarily incomplete while editing, but do not test, commit, or move on until the
-    move, shim, required internal-import updates, checks, tests, and review for that module are all complete.
-    Keep `src/__init__.py` importing its existing old paths for now. Its imports pass through the shims, and its
-    existing `configure_package_logging(...)` call configures the single moved logging implementation before
-    the subprocess module registers its handler.
+    move, shim, required internal-import updates, checks, tests, and review for that module are all complete.<br>
+    Keep `src/__init__.py` importing its existing old paths for now.<br>
+    Its imports pass through the shims, and its existing `configure_package_logging(...)` call configures the single moved logging implementation
+    before the subprocess module registers its handler.
 
-    **Old-path re-exports**
-    Retain an appropriate module docstring at each old path, followed by these explicit imports:
 
-    - `src/level_filter.py`:
-
-      ```python
-      from src.core.level_filter import LevelFilter
-      ```
-
-    - `src/logging_config.py`:
-
-      ```python
-      from src.core.logging_config import add_module_handler
-      from src.core.logging_config import configure_package_logging
-      ```
-
-    - `src/errors.py` (include the base class even though `src/__init__.py` does not export it):
-
-      ```python
-      from src.core.errors import FfmpegProcessError
-      from src.core.errors import JSONOutputError
-      from src.core.errors import MetadataTypeError
-      from src.core.errors import MusicProcessingError
-      from src.core.errors import MusicProcessingException
-      from src.core.errors import PathInfoError
-      from src.core.errors import PlaylistError
-      from src.core.errors import VideoStreamError
-      ```
-
-    - `src/subprocess_utils.py`:
-
-      ```python
-      from src.core.subprocess_utils import SubprocessUtilities
-      from src.core.subprocess_utils import subprocess
-      ```
-
-      The `subprocess` re-export temporarily preserves the existing
-      `@patch('src.subprocess_utils.subprocess.Popen')` and `.run` tests. Both paths refer to the same standard-library
-      module object, so those patches still reach the implementation. Move the patch targets to
-      `src.core.subprocess_utils.subprocess.*` in batch 4.3c. Do not assume arbitrary patches of shim names affect
-      globals in the moved module; patch the namespace where the implementation looks up each name.
+      The `subprocess` re-export temporarily preserves the existing `@patch('src.subprocess_utils.subprocess.Popen')` and `.run` tests.<br>
+      Both paths refer to the same standard-library module object, so those patches still reach the implementation.<br>
+      Move the patch targets to `src.core.subprocess_utils.subprocess.*` in batch 4.3c.<br>
+      Do not assume arbitrary patches of shim names affect globals in the moved module;<br>
+      patch the namespace where the implementation looks up each name.
 
     **Compatibility checks to perform within each module's iteration**
     - Use fresh Python interpreters to import the old and new paths in both orders and assert their corresponding
-      classes/functions are identical. For `errors.py`, cover all eight exception classes and existing `src` error
-      exports; assert an exception raised through the new path is caught through the old path. For
-      `level_filter.py`, check `LevelFilter` and its existing package-root export; for `logging_config.py`, check
-      both existing package-root logging exports.
-    - The old and new logging function imports must be identical objects. Their globals live in
-      `src.core.logging_config`, so configuration through either import is visible to `add_module_handler`.
-      Do not copy `_generated_path` or other mutable configuration globals into the shim.
-    - The shim module and core module are distinct module objects. Re-exporting does not forward assignment,
-      monkey-patching, private state, or every incidental imported name. Audit callers of such attributes; if one
-      must remain temporarily, explicitly preserve and test its behavior rather than treating the shim as a module alias.
-    - For `subprocess_utils.py`, preserve the existing `SubprocessUtilities` API, `subprocess_utils.log` file, and one
-      module handler. Moving code changes `__name__` to `src.core.subprocess_utils`; explicitly retain the old logger
-      name so log records do not change. Assert old and new `SubprocessUtilities` imports are identical, both
-      `subprocess` attributes are the same module, and importing both paths adds no duplicate handler. Run
-      `python -m unittest tests.test_subprocess_utilities` with the old patch targets before migrating them.
+      classes/functions are identical.
+      - For `errors.py`, cover all eight exception classes and existing `src` error exports;
+      - assert an exception raised through the new path is caught through the old path.
+      - For `level_filter.py`, check `LevelFilter` and its existing package-root export;
+      - for `logging_config.py`, check both existing package-root logging exports.
+    - The old and new logging function imports must be identical objects.
+      - Their globals live in `src.core.logging_config`, so configuration through either import is visible to `add_module_handler`.
+      - Do not copy `_generated_path` or other mutable configuration globals into the shim.
+    - The shim module and core module are distinct module objects.
+      - Re-exporting does not forward assignment, monkey-patching, private state, or every incidental imported name.
+      - Audit callers of such attributes;
+        - if one must remain temporarily, explicitly preserve and test its behavior rather than treating the shim as a module alias.
+    - For `subprocess_utils.py`:
+      - Preserve the existing `SubprocessUtilities` API, `subprocess_utils.log` file, and one module handler.
+      - Moving code changes `__name__` to `src.core.subprocess_utils`; explicitly retain the old logger name so log records do not change.
+      - Assert old and new `SubprocessUtilities` imports are identical, both `subprocess` attributes are the same module, and importing both paths adds no duplicate handler.
+      - Run `python -m unittest tests.test_subprocess_utilities` with the old patch targets before migrating them.
     - For `logging_config.py`, configure logging through the existing package startup and verify a module handler
       added via the old function uses the same configured paths as one added via the new function.
     - Run affected tests after each move and the full suite before considering that iteration complete. Investigate
