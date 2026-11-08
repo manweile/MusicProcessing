@@ -442,7 +442,7 @@ COMPLETED
     - `level_filter.py` COMPLETED
     - `logging_config.py` COMPLETED
     - `errors.py` COMPLETED
-    - `subprocess_utils.py`
+    - `subprocess_utils.py` COMPLETED
 
     For each module not already marked COMPLETED, follow the complete loop below before starting the next.<br>
     **Open a new terminal at the repository root for each module move.**<br>

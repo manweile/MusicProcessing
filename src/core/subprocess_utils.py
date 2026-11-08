@@ -28,13 +28,13 @@ from yaspin import yaspin                                   # for command progre
 from yaspin.spinners import Spinners                        # for spinner definitions
 
 # Local Module Methods
-from src import add_module_handler                          # for module-specific logging handlers
+from src.core.logging_config import add_module_handler      # for module-specific logging handlers
 
 # Local Module Constants
 from src.core.constants import UTF8                         # for UTF-8 text encoding
 
 # Local Module Errors
-from src import FfmpegProcessError                          # for FFmpeg process failures
+from src.core.errors import FfmpegProcessError              # for FFmpeg process failures
 
 ## @var logger
 # @brief Logger instance for the module.

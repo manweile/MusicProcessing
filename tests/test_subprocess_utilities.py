@@ -33,10 +33,10 @@ from tests import TEST_WAV_NONE                             # for non-existent f
 from tests import TESTS_PATH                                # for invalid media fixture paths
 
 # Local Module Errors
-from src import FfmpegProcessError                          # for expected ffmpeg command failures
+from src.core.errors import FfmpegProcessError              # for expected ffmpeg command failures
 
 # Local Module Classes
-from src.subprocess_utils import SubprocessUtilities        # for subprocess functionality under test
+from src.core.subprocess_utils import SubprocessUtilities   # for subprocess functionality under test
 
 ## @var subprocess_utils
 # @brief SubprocessUtilities instance under test.
@@ -239,7 +239,7 @@ class TestSubprocessUtilities(TestCase):
         self.assertTrue(cm.exception.args[0], err_msg)
 
 
-    @patch('src.subprocess_utils.subprocess.Popen')
+    @patch('src.core.subprocess_utils.subprocess.Popen')
     def test_popen_pipe_communicate_decode_error(self, mock_popen):
         '''
         @brief Test pipe execution with undecodable communicate output.
@@ -354,7 +354,7 @@ class TestSubprocessUtilities(TestCase):
         self.assertEqual(stderr, expected_err)
 
 
-    @patch('src.subprocess_utils.subprocess.run')
+    @patch('src.core.subprocess_utils.subprocess.run')
     def test_subprocess_run_unicode_decode_error(self, mock_subprocess_run):
         '''
         @brief Test subprocess execution with undecodable output.
