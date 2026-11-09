@@ -15,7 +15,7 @@
 
 # Local Module Methods
 from src.logging_config import add_module_handler           # for adding module-specific file handlers to loggers
-from src.logging_config import configure_package_logging    # for configuring package-level file logging
+from src.logging_config import configure_logging    # for configuring package-level file logging
 
 # Local Module Constants
 from src.core.constants import APP_NAME                     # application name/description
@@ -59,7 +59,7 @@ from src.errors import VideoStreamError                     # custom error for v
 ## @var src_logger
 # @brief Configured package logger.
 # @details Configures package-level logging for generated project files.
-src_logger = configure_package_logging(
+src_logger = configure_logging(
     GENERATED_PATH,
     CSV_DIR,
     LOG_DIR,

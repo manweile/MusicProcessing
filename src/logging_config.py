@@ -15,4 +15,4 @@
 
 # Local Modules
 from src.core.logging_config import add_module_handler        # Shim for old import path
-from src.core.logging_config import configure_package_logging # Shim for old import path
+from src.core.logging_config import configure_logging # Shim for old import path

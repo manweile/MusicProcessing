@@ -21,6 +21,9 @@ import re                                                   # regular expression
 import shutil                                               # terminal size lookup module
 import sys                                                  # system-specific parameters and functions module
 
+# Local Module Methods
+from src.core.logging_config import bootstrap_logging       # for package logging startup
+
 # Local Module Constants
 from src.cli.constants import ARG_CLI_CSV                   # CLI argument for CSV file
 from src.cli.constants import ARG_CLI_FFPROBE               # CLI argument for ffprobe
@@ -50,14 +53,20 @@ from src.core.constants import LOG_EXT                      # log file extension
 from src.core.constants import UTF8                         # utf encoding for file writing
 from src.core.paths import GENERATED_PATH                   # generated files path
 
+# Configure logging before importing modules that register handlers
+bootstrap_logging()
+
 # Local Module Classes
-from src.audio_info import AudioArt                         # audio art handling class
-from src.audio_info import AudioMetadata                    # audio metadata handling class
-from src.audio_info import AudioPlaylist                    # audio playlist handling class
-from src.audio_info import AudioUtilities                   # audio utility functions class
-from src.audio_normalize import AudioNormalization          # audio normalization handling class
-from src.dir_processing import DirectoryProcessing          # directory processing handling class
-from src.gui.wx_app import run_gui                          # GUI application runner
+# required location after registering logging, as modules register handlers, needs noqa: E402 (module import after code) to stop error warning
+from src.audio_info import AudioArt                         # noqa: E402, audio art handling class
+from src.audio_info import AudioMetadata                    # noqa: E402, audio metadata handling class
+from src.audio_info import AudioPlaylist                    # noqa: E402, audio playlist handling class
+from src.audio_info import AudioUtilities                   # noqa: E402, audio utility functions class
+from src.audio_normalize import AudioNormalization          # noqa: E402, audio normalization handling class
+from src.dir_processing import DirectoryProcessing          # noqa: E402, directory processing handling class
+
+# importing gui application runner can also register handlers, must also be after registering package logging
+from src.gui.wx_app import run_gui                          # noqa: E402, GUI application runner
 
 # Configure logging
 ## @var basename

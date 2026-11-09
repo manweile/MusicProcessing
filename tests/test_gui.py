@@ -1,8 +1,15 @@
 '''
+@class TestGuiSmoke
 @file test_gui.py
+@author Gerald Manweiler
+
 @brief Simple GUI smoke tests for wxPython support.
 
-@author Gerald Manweiler
+@details Provides basic smoke tests for the GUI module, ensuring that key components can be instantiated and functions are callable.
+
+@version 1.0.0
+@date 2026-11-08
+
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 

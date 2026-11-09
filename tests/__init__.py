@@ -16,8 +16,14 @@
 # Standard Modules
 import os                                                   # for operating-system path operations
 
+# Local Module Methods
+from src.core.logging_config import bootstrap_logging       # for test logging startup
+
 # Local Module Constants
-from src.core.constants import MUSIC_TLD                      # for the test music top level directory
+from src.core.constants import MUSIC_TLD                    # for the test music top level directory
+
+# Configure package logging before test modules import application modules
+bootstrap_logging()
 
 ## @var TESTS_PATH
 # @brief Test-fixture directory path.

@@ -1,6 +1,6 @@
 PS D:\MusicProcessing> git grep -n -E '^[[:space:]]*(from|import)[[:space:]]+src\.(errors|logging_config|level_filter|subprocess_utils)' -- '*.py'
 src/__init__.py:17:from src.logging_config import add_module_handler           # for adding module-specific file handlers to loggers
-src/__init__.py:18:from src.logging_config import configure_package_logging    # for configuring package-level file logging
+src/__init__.py:18:from src.logging_config import configure_logging    # for configuring package-level file logging
 src/__init__.py:51:from src.errors import FfmpegProcessError                   # custom error for ffmpeg process failures
 src/__init__.py:52:from src.errors import JSONOutputError                      # custom error for JSON output issues
 src/__init__.py:53:from src.errors import MetadataTypeError                    # custom error for metadata type mismatches
@@ -43,7 +43,7 @@ PS D:\MusicProcessing>
 
 After errors.py moved & shimmed
 src/__init__.py:17:from src.logging_config import add_module_handler           # for adding module-specific file handlers to loggers
-src/__init__.py:18:from src.logging_config import configure_package_logging    # for configuring package-level file logging
+src/__init__.py:18:from src.logging_config import configure_logging    # for configuring package-level file logging
 src/__init__.py:51:from src.errors import FfmpegProcessError                   # custom error for ffmpeg process failures
 src/__init__.py:52:from src.errors import JSONOutputError                      # custom error for JSON output issues
 src/__init__.py:53:from src.errors import MetadataTypeError                    # custom error for metadata type mismatches

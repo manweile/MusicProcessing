@@ -293,7 +293,7 @@ COMPLETED
 
     3.3 In `src/__init__.py` COMPLETED
       - delete the matching literal assignments (`APP_NAME = "Music Processing"` ... `WMA_EXT = ".wma"`) and doc comments.
-      - Place the new imports above the `configure_package_logging(...)` call
+      - Place the new imports above the `configure_logging(...)` call
       - because that call uses CSV_DIR, LOG_DIR, RESULT_DIR, LOG_EXT, UTF8 and ERROR_LOG_FORMAT.
 
     3.4 Replace `from src.generated_files import GENERATED_PATH` with `from src.core.paths import GENERATED_PATH`. COMPLETED
@@ -497,7 +497,7 @@ COMPLETED
          `src.core.errors` and catch it via the corresponding old-path class.
        - **`level_filter.py`:** Assert identity for `LevelFilter` across both paths and its existing `src`
          package-root export.
-       - **`logging_config.py`:** Assert identity for `add_module_handler` and `configure_package_logging`
+       - **`logging_config.py`:** Assert identity for `add_module_handler` and `configure_logging`
          across both paths and their existing `src` exports. Start with the existing package logging startup,
          add a module handler through each import path, and verify both use the same configured paths and the
          same implementation globals in `src.core.logging_config`. Confirm startup/configuration occurs once.
@@ -521,7 +521,7 @@ COMPLETED
 
         ```python
         from src.core.logging_config import add_module_handler
-        from src.core.logging_config import configure_package_logging
+        from src.core.logging_config import configure_logging
         ```
 
       - `src/errors.py` (include the base class even though `src/__init__.py` does not export it):
@@ -572,7 +572,7 @@ COMPLETED
     The implementation may be temporarily incomplete while editing, but do not test, commit, or move on until the
     move, shim, required internal-import updates, checks, tests, and review for that module are all complete.<br>
     Keep `src/__init__.py` importing its existing old paths for now.<br>
-    Its imports pass through the shims, and its existing `configure_package_logging(...)` call configures the single moved logging implementation
+    Its imports pass through the shims, and its existing `configure_logging(...)` call configures the single moved logging implementation
     before the subprocess module registers its handler.
 
 
@@ -612,35 +612,42 @@ COMPLETED
     the implicit setup from `src/__init__.py`. Do not remove or move that existing setup during Step 6.
 
     Make these edits:
-    - In `src/core/logging_config.py`, add a parameterless `bootstrap_package_logging()` function that returns the
+    - In `src/core/logging_config.py`, add a parameterless `bootstrap_logging()` function that returns the
       configured `src` package logger. It is the explicit startup API; callers must not need to supply configuration.
       Implement it as follows:
       1. Import the configuration values from their owning leaf modules, not from `src` or `src.core`:
          `GENERATED_PATH` from `src.core.paths`, and `CSV_DIR`, `LOG_DIR`, `RESULT_DIR`, `LOG_EXT`, `UTF8`, and
-         `ERROR_LOG_FORMAT` from `src.core.constants`.
+         `ERROR_LOG_FORMAT` from `src.core.constants`. COMPLETED
       2. Add a private module-level boolean, initially `False`, that records whether package logging has completed
-         configuration. Set it to `True` only after `configure_package_logging(...)` has successfully created the
+         configuration. Set it to `True` only after `configure_logging(...)` has successfully created the
          generated directories and attached all package handlers. Do not infer this state from the presence of
-         arbitrary handlers on `logging.getLogger("src")`.
+         arbitrary handlers on `logging.getLogger("src")`. COMPLETED
       3. If the flag is `False`, call
-         `configure_package_logging(GENERATED_PATH, CSV_DIR, LOG_DIR, RESULT_DIR, LOG_EXT, UTF8, ERROR_LOG_FORMAT)`.
+         `configure_logging(GENERATED_PATH, CSV_DIR, LOG_DIR, RESULT_DIR, LOG_EXT, UTF8, ERROR_LOG_FORMAT)`.
          If it is already `True`, do not call the configurator again. In either case return `logging.getLogger("src")`.
-         Let configuration exceptions propagate; do not report success or set the flag after a failed configuration.
-      4. Preserve the signature and existing handler behavior of `configure_package_logging(...)` as the lower-level
+         Let configuration exceptions propagate; do not report success or set the flag after a failed configuration. COMPLETED
+      4. Preserve the signature and existing handler behavior of `configure_logging(...)` as the lower-level
          API; add only the configured-flag update after successful setup. Do not make that function itself
-         idempotent in this substep. The repeat-call guarantee applies to `bootstrap_package_logging()`.
+         idempotent in this substep. The repeat-call guarantee applies to `bootstrap_logging()`. COMPLETED
+
       The `logging_config.py` module body must not call either bootstrap or configuration. Importing the module itself
       must not add package handlers or create generated directories. Note that until Step 7, Python executes
       `src/__init__.py` before importing `src.core.logging_config`; its existing package-root call is a separate,
       intentional startup side effect in this transitional step. The private configured flag must therefore also be
-      set by a successful call to `configure_package_logging(...)`, so the later explicit bootstrap recognizes that
+      set by a successful call to `configure_logging(...)`, so the later explicit bootstrap recognizes that
       setup and does not add a second handler set.
-    - Keep the `configure_package_logging(...)` signature and the existing call in `src/__init__.py` in place
+    - Keep the `configure_logging(...)` signature and the existing call in `src/__init__.py` in place
       throughout Step 6. The call must continue to configure the same directories and handlers. Its successful
       execution sets the private configured flag described above, so a later bootstrap call does not configure
       logging a second time.
-    - In `main.py`, call `bootstrap_package_logging()` before importing application or GUI modules that register
+    - In `main.py`, call `bootstrap_logging()` before importing application or GUI modules that register
       module handlers. Move those imports below the bootstrap call; retain the CLI behavior and `--help` output.
+      Add this import with the other local method imports, before the application class imports:
+
+      ```python
+      from src.core.logging_config import bootstrap_logging  # for package logging startup
+      ```
+
     - In `src/gui/wx_app.py`, ensure the GUI startup path calls the bootstrap before importing or creating components
       that register module handlers. This must also cover starting the GUI without first running the CLI dispatcher.
     - In `tests/__init__.py`, call the bootstrap before test modules are imported, so test collection does not depend
@@ -649,21 +656,21 @@ COMPLETED
 
     Validate Step 6.3:
     - Add or update focused tests for both states. With the current `src/__init__.py` setup active, assert that a
-      successful `configure_package_logging(...)` marks logging configured and that one or more bootstrap calls
+      successful `configure_logging(...)` marks logging configured and that one or more bootstrap calls
       leave the package logger's handler count unchanged. With package-root setup disabled in an isolated test
       (as it will be after Step 7), assert that the first bootstrap creates the directories and package handlers,
       and that subsequent calls leave the handler count unchanged. Also assert configuration failures propagate
-      and do not mark logging configured.
+      and do not mark logging configured. COMPLETED
     - For the configured package logger, verify the existing five package log files (`debug`, `info`, `warning`,
       `error`, `critical`, each with `LOG_EXT`) are attached once with `ERROR_LOG_FORMAT`; non-debug handlers keep
       their exact-level filters. Verify an `add_module_handler(...)` call still creates the expected module log file
-      under `GENERATED_PATH/LOG_DIR` and uses the existing format and encoding.
+      under `GENERATED_PATH/LOG_DIR` and uses the existing format and encoding. COMPLETED
     - Check in fresh processes that CLI startup, direct GUI startup, and test collection call bootstrap before any
       application module registers a module handler. While the `src/__init__.py` setup remains, verify these explicit
       calls do not add another package-handler set. After Step 7 removes that setup, repeat the same checks to prove
-      each startup path configures logging itself.
+      each startup path configures logging itself. COMPLETED
     - Confirm generated log directories, log formats, output locations, and module log files remain unchanged.
-      Run the focused logging tests, the full test suite, and `python main.py --help`.
+      Run the focused logging tests, the full test suite, and `python main.py --help`. COMPLETED
 
     Do not remove the call from `src/__init__.py` in this step. Step 7 performs the cutover: after all three explicit
     startup paths above are in place, remove the old package-root logging side effect together with the other

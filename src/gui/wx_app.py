@@ -18,6 +18,7 @@ import wx                                                   # for wxPython GUI c
 
 # Local Module Methods
 from src import add_module_handler                          # for adding module-specific logging handlers
+from src.core.logging_config import bootstrap_logging       # for package logging startup
 
 # Local Module Constants
 from src.core.constants import AUDIO_EXTS                   # for audio file extensions
@@ -27,8 +28,12 @@ from src.core.constants import RESULT_DIR                   # directory for stor
 from src.core.constants import RESULT_EXT                   # file extension for result files
 from src.core.paths import GENERATED_PATH                   # for generated files path
 
+# Configure logging before importing modules that register handlers
+bootstrap_logging()
+
 # Local Module Classes
-from src.gui.handlers import EventHandlers
+# required location after registering logging, as modules register handlers, needs noqa: E402 (module import after code) to stop error warning
+from src.gui.handlers import EventHandlers                  # noqa: E402, event handlers for the GUI
 
 ## @var logger
 # @brief Logger instance for the module.

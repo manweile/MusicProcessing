@@ -1,6 +1,32 @@
-Test Suite:
+from test UI:
 ----------------------------------------------------------------------
-Ran 144 tests in 268.396s
+Ran 147 tests in 233.956s
 
 OK
 Finished running tests!
+
+from terminal:
+PS D:\MusicProcessing> python -m unittest discover tests
+...................................................................................................................................................
+----------------------------------------------------------------------
+Ran 147 tests in 261.766s
+
+OK
+
+There 3 test suites with sub tests, for total of 9
+Thats why test UI says 156 tests, but results say 147
+
+TestAudioArt.test_unpack_asf_image_malformed_data:
+  image payload is truncated
+  MIME type is missing its terminator
+  missing its header
+
+TestAudioMetadata.test_update_genres_from_csv_invalid_input:
+  "blank"
+  "duplicate"
+  "header"
+  "unsorted"
+
+TestDirectoryProcessing.test_get_audio_file_rejects_lower_level_paths:
+  start_path = D:\MusicProcessing\tests\Music\Abba
+  start_path = D:\MusicProcessing\tests\Music\Abba\Waterloo
