@@ -131,6 +131,13 @@ TODO
 8) going to need menu structure
 TODO
 
+9) rename AlbumArt
+  a) use album_art instead; more in keeping with other resource directory names
+TODO
+
+10) think about renaming Music to music_files
+TODO
+
 TESTING:
 1) figure out how to test gui functionality
   a) refer to page 144 of wxPython in Action

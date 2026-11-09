@@ -705,22 +705,178 @@ COMPLETED
     Keep that behavior unchanged in this step; Milestone 4 replaces it with `ProgressReporter`.<br>
     The final core dependency check for `yaspin` is therefore completed after that Milestone 4 work, not used to block this move.
 
-    **Step 7** Empty `src/__init__.py` last
+    **Step 7: Remove the compatibility surface and package-root logging setup last**
 
-    Once repository imports no longer rely on from src import ..., the old error/logging modules, or the old generated-files path export:
+    Preconditions:
+      - Complete Steps 4.1–4.3, 5, and 6.3–6.4. COMPLETED
+      - Production code and tests must use the new src.core.* paths COMPLETED
+      - main.py, src/gui/wx_app.py, and tests/__init__.py must each call bootstrap_logging()
+      before any application module registers a module-specific handler. COMPLETED
+      - While the compatibility files still exist, search Python files for old imports and inspect every match:
 
-        Remove the compatibility re-exports and old module shims, including the package-root logging initialization.
-        Make `src/__init__.py` empty apart from its package docstring; explicit startup bootstraps from Step 6.3
-        must now configure logging before any module-specific handlers are registered.
-        In fresh processes, verify CLI startup, direct GUI startup, and test collection each configure logging once.
-        Run the full test suite, check CLI help, and smoke-test GUI startup and logging output.
+      ```powershell
+      git grep -nE '(^|[[:space:]])(from src import|import src([.]|[[:space:]]|$)|from src[.](errors|logging_config|level_filter|subprocess_utils|generated_files)([.]|[[:space:]]|$))' -- '*.py'
+      ```
 
-    That order keeps compatibility while the imports move, and avoids breaking startup logging when the package-root side effect is removed.
+      - expected result is no return lines (empty output) if all old imports have been removed COMPLETED
+      - Migrate any remaining production or test imports to their owning src.core.* modules COMPLETED
+      - update any string-based mock patch targets whose lookup location changed. COMPLETED
+      - Re-run the affected tests. Do not remove the compatibility files while consumers still depend on them. COMPLETED
 
-  - Validation: the full suite passes with both old and new import paths.
-  - Exit criteria:
-    - core leaf modules do not import through the `src` root, old shims, or other application layers; nothing under `core/` imports `wx` or `tqdm`.
-    - The temporary `yaspin` use in `core/subprocess_utils.py` is removed in Milestone 4 before claiming the final core dependency boundary.
+    Make these changes in order:
+      - Delete the old-path shim files: COMPLETED
+        - `src/errors.py`
+        - `src/logging_config.py`
+        - `src/level_filter.py`
+        - `src/subprocess_utils.py`
+        - `src/generated_files/__init__.py`
+      - Do *not* delete: COMPLETED
+        - src/core/errors.py
+        - src/core/logging_config.py
+        - src/core/level_filter.py
+        - src/core/subprocess_utils.py
+        - src/core/paths.py.
+      - Make src/__init__.py contain only its existing package docstring. COMPLETED
+        - Remove every import and re-export, src_logger, the call to configure_logging(...), and __all__.
+      - Leave the explicit bootstrap calls in main.py, src/gui/wx_app.py, and tests/__init__.py in place. COMPLETED
+        - Do not move them below application imports or module-handler registration.
+        - Do not add a bootstrap call to src/core/__init__.py or any core module.
+      - Verify logging startup in separate fresh Python processes for each path: COMPLETED
+        - CLI (main.py --help)
+        ```powershell
+        Remove-Item .\src\generated_files\log_files\*.log
+        python .\main.py --help
+        Get-ChildItem .\src\generated_files\log_files
+        ```
+        - direct GUI startup (src.gui.wx_app.run_gui()) COMPLETED
+        ```powershell
+        Remove-Item .\src\generated_files\log_files\*.log -ErrorAction SilentlyContinue
+        python -c "from src.gui.wx_app import run_gui; run_gui()"
+        ```
+        Close the GUI and then:
+        ```powershell
+        Get-ChildItem .\src\generated_files\log_files
+        ```
+      - Use this temporary, uncommitted harness to check CLI, GUI, and test collection COMPLETED
+        - the harness runs CLI, GUI, and test collection in three separate for loops.
+        - each loop spawns a fresh Python process that wraps src.core.logging_config.configure_logging to count calls.
+        - when the GUI is fully loaded, close it normally to continue the harness.
+        - expected out put is help message from the CLI and:
+          - cli: logging configured once; package and module output verified.
+          - gui: logging configured once; package and module output verified.
+          - tests: logging configured once; package and module output verified.
+        ```powershell
+        $check = @'
+        import logging
+        import os
+        import runpy
+        import sys
+        import unittest
+        import uuid
+
+        path = sys.argv[1]
+
+        # Importing src alone must not configure package logging.
+        import src
+        assert not logging.getLogger("src").handlers
+
+        from src.core import logging_config
+        from src.core.constants import LOG_DIR, LOG_EXT, UTF8
+        from src.core.paths import GENERATED_PATH
+
+        assert not logging_config._package_logging_configured
+        assert not logging.getLogger("src").handlers
+
+        # Count configurations and check ordering before module handlers are added.
+        calls = 0
+        original_configure = logging_config.configure_logging
+        original_add_handler = logging_config.add_module_handler
+
+        def counted_configure(*args, **kwargs):
+            global calls
+            calls += 1
+            return original_configure(*args, **kwargs)
+
+        def checked_add_handler(*args, **kwargs):
+            assert calls == 1, "Module handler registered before package configuration"
+            assert logging_config._package_logging_configured
+            return original_add_handler(*args, **kwargs)
+
+        logging_config.configure_logging = counted_configure
+        logging_config.add_module_handler = checked_add_handler
+
+        if path == "cli":
+            sys.argv = ["main.py", "--help"]
+            try:
+                runpy.run_path("main.py", run_name="__main__")
+            except SystemExit as exc:
+                assert exc.code in (0, None), f"CLI exited with {exc.code}"
+            module_logger = logging.getLogger("__main__")
+            module_file = "main"
+
+        elif path == "gui":
+            from src.gui.wx_app import run_gui
+            run_gui()  # Close the window normally to continue.
+            module_logger = logging.getLogger("src.gui.wx_app")
+            module_file = "wx_app"
+
+        elif path == "tests":
+            loader = unittest.TestLoader()
+            loader.discover("tests", top_level_dir=".")
+            assert not loader.errors, "\n".join(loader.errors)
+            module_logger = logging.getLogger("src.audio_info.audio_art")
+            module_file = "audio_art"
+
+        else:
+            raise ValueError(f"Unknown startup path: {path}")
+
+        assert calls == 1, f"configure_logging called {calls} times"
+
+        package_logger = logging.getLogger("src")
+        assert len(package_logger.handlers) == 5, (
+            f"Expected five package handlers, found {len(package_logger.handlers)}"
+        )
+
+        log_dir = os.path.join(GENERATED_PATH, LOG_DIR)
+        for level in ("debug", "info", "warning", "error", "critical"):
+            log_path = os.path.join(log_dir, level + LOG_EXT)
+            assert os.path.isfile(log_path), f"Missing package log: {log_path}"
+
+        # Write unique markers and verify they reach package and module logs.
+        marker = f"startup-check-{path}-{uuid.uuid4()}"
+        package_logger.warning(marker)
+        module_logger.info(marker)
+
+        for handler in package_logger.handlers + module_logger.handlers + logging.getLogger().handlers:
+            handler.flush()
+
+        for filename in ("warning" + LOG_EXT, module_file + LOG_EXT):
+            log_path = os.path.join(log_dir, filename)
+            with open(log_path, encoding=UTF8) as log:
+                assert marker in log.read(), f"Marker missing from {log_path}"
+
+        print(f"{path}: logging configured once; package and module output verified.")
+        '@
+
+        foreach ($path in @("cli", "gui", "tests")) {
+            $check | python - $path
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "$path startup check failed."
+                break
+            }
+        }
+        ```
+      - in the same process, run `python -m unittest discover -s tests -t . -v`
+
+    After Step 7, verify these invariants
+
+    Python imports no longer use from src import ... COMPLETED
+      - for exported application names, the removed old module paths, or src.generated_files. COMPLETED
+      - Core leaf modules do not import through the src root, old shims, or higher application layers COMPLETED
+      - nothing under src/core/ imports wx or tqdm. COMPLETED
+
+    Validation: COMPLETED
+    - After Step 7, the full suite must pass using the new paths; the removed old paths are no longer supported. COMPLETED
 
 4. Milestone 4: Progress interface
   - Add `core/progress.py` with `ProgressReporter` (`start(total, description)`, `advance(step)`, `finish()`) and a no-op `NullProgress`.
@@ -834,7 +990,7 @@ COMPLETED
   - Files: `src/generated_files/`, `.gitignore`, `src/core/paths.py`
   - Work:
     - move `icon_files/` and `licenses/` to `src/resources/`
-    - move `AlbumArt/` to `src/resources/AlbumArt/`; these jpegs are user-supplied resources consumed by `set_album_art`, not
+    - move `AlbumArt/` to `src/resources/AlbumArt/`; these jpegs are user-supplied resources used by `set_album_art`, not
       fixtures, and are NOT tracked. Update `set_album_art` and every path reference to the new location
     - consolidate to a single master `.gitignore` at the repo root:
       - merge the rules from `src/generated_files/.gitignore` (`Music/**/*.*`, `test.m3u`, `AlbumArt/*.*`) and

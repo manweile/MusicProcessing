@@ -1,0 +1,65 @@
+﻿--- Python imports and generated path ---
+main.py:54:from src.core.paths import GENERATED_PATH                   # generated files path
+
+src/audio_info/audio_art.py:46:from src.core.paths import GENERATED_PATH                   # for generated files path
+
+src/audio_info/audio_playlist.py:29:from src.core.paths import GENERATED_PATH                   # for generated file output paths
+
+src/core/logging_config.py:33:from src.core.paths import GENERATED_PATH                   # for the base generated files path
+
+src/core/paths.py:38:GENERATED_PATH = os.path.join(SRC_PATH, "generated_files")  # same location (src/generated_files) until Milestone 9 Resources and generated output
+
+src/dir_processing/directory_processing.py:43:from src.core.paths import GENERATED_PATH                   # for generated file output paths
+
+src/gui/wx_app.py:29:from src.core.paths import GENERATED_PATH                   # for generated files path
+
+tests/test_audio_art.py:36:from src.core.paths import GENERATED_PATH                   # path to generated files
+
+tests/test_audio_metadata.py:56:from src.core.paths import GENERATED_PATH                   # path to generated files
+
+tests/test_audio_normalization.py:37:from src.core.paths import GENERATED_PATH                   # for generated output paths
+
+tests/test_audio_playlist.py:26:from src.core.paths import GENERATED_PATH                   # for generated playlist output paths
+
+tests/test_audio_utilities.py:29:from src.core.paths import GENERATED_PATH                   # for generated output paths
+
+tests/test_directory_processing.py:40:from src.core.paths import GENERATED_PATH                   # for generated test output paths
+
+tests/test_main.py:29:from src.core.paths import GENERATED_PATH                   # directory containing generated files
+
+--- Multi-line and plain src imports ---
+
+--- String-based mock patch targets ---
+tests/test_subprocess_utilities.py:234:    @patch('src.core.subprocess_utils.subprocess.Popen')
+tests/test_subprocess_utilities.py:343:    @patch('src.core.subprocess_utils.subprocess.run')
+
+--- Generated resources and paths ---
+.gitignore:177:src/generated_files/csv_files/
+.gitignore:178:src/generated_files/log_files/
+.gitignore:179:src/generated_files/result_files/
+
+README.md:243:| |_generated_files
+README.md:254:| | |_icon_files
+README.md:258:| | |_licenses
+
+docs/md_files/Workflow.md:477:Copy it to the special `/MusicProcessing/src/generated_files/AlbumArt` folder.
+docs/md_files/Workflow.md:618:The default save location is `/MusicProcessing/src/generated_files/Music`.
+docs/md_files/Workflow.md:646:The functions output a list, `clip-check-file.txt` in `/MusicProcessing/src/generated_files/result_files/`.
+docs/md_files/Workflow.md:707:Updated playlist files will be in the special `/MusicProcessing/src/generated_files/` directory, under `Music`.<br>
+docs/md_files/Workflow.md:727:The files are in the special `/MusicProcessing/src/generated_files/` directory, under `csv_file/`s and/or `result_files/`.<br>
+
+main.py:1000:        # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
+
+src/audio_info/audio_art.py:631:                # eg: D:\MusicProcessing\src\generated_files\AlbumArt
+src/audio_info/audio_art.py:637:                    # eg: D:\MusicProcessing\src\generated_files\AlbumArt\Best Of The Blues, Vol. 1.jpg
+
+src/core/paths.py:38:GENERATED_PATH = os.path.join(SRC_PATH, "generated_files")  # same location (src/generated_files) until Milestone 9 Resources and generated output
+src/core/paths.py:40:## @var RESOURCES_PATH
+src/core/paths.py:43:RESOURCES_PATH = os.path.join(SRC_PATH, "resources")        # unused until Milestone 9 Resources and generated output
+
+tests/test_audio_metadata.py:111:        # the top level directory path where files will be created - D:\MusicProcessing\src\generated_files\Music
+tests/test_audio_metadata.py:113:        # directory for text result files - D:\MusicProcessing\src\generated_files\Result
+
+tests/test_audio_normalization.py:87:        # the path where converted files will be created D:\MusicProcessing\src\generated_files\Music
+
+tests/test_directory_processing.py:479:        # successful path_info returns a mp3 file name in generated_files/Music/Joshua Davis/The Voice Peformance
