@@ -684,15 +684,22 @@ COMPLETED
 
     ***Return to Step 4.3 now that the module moves and shims are complete, then complete Step 6.4***
 
-    **6.4 Migrate consumers and verify compatibility**
-    - After the moves and shims exist, complete batches 4.3a-4.3c before Step 7.
-    - Update production and test imports, plus string-based mock patch targets, to the new module paths.
-    - Until Step 7, verify both the old module/package paths and the new `src.core.*` paths resolve, and that old and new exception imports are the identical class objects.
-    - Run the focused tests for errors, logging, and subprocess utilities after each batch, then the full suite and `python main.py --help`.
-    - In a fresh interpreter, import each moved `src.core` leaf module and confirm there is no partially initialized module / circular-import failure.
+    **6.4 Migrate consumers and verify compatibility** COMPLETED
+    - After the moves and shims exist, complete batches 4.3a-4.3c before Step 7. COMPLETED
+    - Update production and test imports, plus string-based mock patch targets, to the new module paths. COMPLETED
+    - Until Step 7, verify both the old module/package paths and the new `src.core.*` paths resolve, and that old and new exception imports are the identical class objects. COMPLETED
+    - after each batch, run the focused tests for errors, logging, and subprocess utilities, then the full suite.
+    - Run the focused tests for errors:
+      - `python -m unittest tests.test_audio_metadata tests.test_audio_normalization tests.test_audio_playlist tests.test_directory_processing tests.test_subprocess_utilities`
+      - Run focused tests for logging:
+        - `python -m unittest tests.test_logging_config -v`
+      - Run focused tests for subprocess utilities:
+       - `python -m unittest tests.test_subprocess_utilities -v`
+    - In a fresh interpreter, import each moved `src.core` leaf module
+    and confirm there is no partially initialized module / circular-import failure. COMPLETED
     - Search `src/core/` for imports from `src` outside `src.core.*`,
-    and for references to the old module paths; only intentional compatibility shims may refer to them.
-    - Smoke-test CLI and GUI startup and confirm logging is initialized once and outputs remain in their existing locations.
+    and for references to the old module paths; only intentional compatibility shims may refer to them. COMPLETED
+    - Smoke-test CLI and GUI startup and confirm logging is initialized once and outputs remain in their existing locations. COMPLETED
 
     `src/core/subprocess_utils.py` currently uses `yaspin`.<br>
     Keep that behavior unchanged in this step; Milestone 4 replaces it with `ProgressReporter`.<br>
