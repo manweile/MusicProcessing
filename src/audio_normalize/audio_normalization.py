@@ -25,7 +25,7 @@ from pathlib import Path                                    # for object-oriente
 from subprocess import CompletedProcess                     # for completed subprocess results
 
 # Local Module Methods
-from src import add_module_handler                          # for module-specific logging handlers
+from src.core.logging_config import add_module_handler      # for module-specific logging handlers
 
 # Local Module Constants
 from src.core.constants import ILT                          # for integrated loudness target

@@ -17,7 +17,7 @@ from datetime import datetime                               # for handling date 
 import wx                                                   # for wxPython GUI components
 
 # Local Module Methods
-from src import add_module_handler                          # for adding module-specific logging handlers
+from src.core.logging_config import add_module_handler      # for adding module-specific logging handlers
 from src.core.logging_config import bootstrap_logging       # for package logging startup
 
 # Local Module Constants

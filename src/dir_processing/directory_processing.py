@@ -25,7 +25,7 @@ from os import strerror                                     # for operating-syst
 from pathlib import Path                                    # for object-oriented filesystem paths
 
 # Local Module Methods
-from src import add_module_handler                          # for module-specific logging handlers
+from src.core.logging_config import add_module_handler      # for module-specific logging handlers
 
 # Local Module Constants
 from src.core.constants import AUDIO_EXTS                   # for supported audio file extensions

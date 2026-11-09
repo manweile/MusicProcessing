@@ -33,7 +33,7 @@ from mutagen.mp3 import MP3                                 # for handling MP3 a
 from mutagen.mp4 import MP4                                 # for handling MP4 audio files
 
 # Local Module Methods
-from src import add_module_handler                          # for adding a module-specific handler to the logger
+from src.core.logging_config import add_module_handler      # for adding a module-specific handler to the logger
 
 # Local Module Constants
 from src.core.constants import ALBUM_ART                    # for album art directory

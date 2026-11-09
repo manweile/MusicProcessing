@@ -72,8 +72,8 @@ src_logger = configure_logging(
 ## @var __all__
 # @brief Exposes package members for importing by other modules.
 # @details In modules needing the constant, add `from src.core.constants import <CONSTANT_NAME>`.
-# @details In modules needing the method, add: `from src import add_module_handler`.
-# @details In modules needing the class, add: `from src.errors import <ErrorClass>`.
+# @details In modules needing the method, add: `from src.core.logging_config import add_module_handler`.
+# @details In modules needing the class, add: `from src.core.errors import <ErrorClass>`.
 __all__ = [
     "add_module_handler",
     "APP_NAME",

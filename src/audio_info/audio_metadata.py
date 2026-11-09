@@ -50,7 +50,7 @@ from pathvalidate.error import ValidationError              # for handling path 
 from tqdm import tqdm                                       # for displaying progress bars
 
 # Local Module Methods
-from src import add_module_handler                          # for adding module-specific logging handlers
+from src.core.logging_config import add_module_handler      # for adding module-specific logging handlers
 
 # Local Module Constants
 from src.core.constants import AUDIO_EXTS                   # for audio file extensions

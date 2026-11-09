@@ -21,21 +21,7 @@ $results | Set-Content -Path docs/planning/search.txt -Encoding utf8
 
 --- Python imports and generated path ---
 
-src/audio_info/audio_art.py:36:from src import add_module_handler                          # for adding a module-specific handler to the logger
-
-src/audio_info/audio_metadata.py:53:from src import add_module_handler                          # for adding module-specific logging handlers
-
-src/audio_info/audio_playlist.py:23:from src import add_module_handler                          # for module-specific logging handlers
-
-src/audio_info/audio_utilities.py:25:from src import add_module_handler                          # for module-specific logging handlers
-
-src/audio_normalize/audio_normalization.py:28:from src import add_module_handler                          # for module-specific logging handlers
-
 src/core/paths.py:38:GENERATED_PATH = os.path.join(SRC_PATH, "generated_files")  # same location (src/generated_files) until Milestone 9 Resources and generated output
-
-src/dir_processing/directory_processing.py:28:from src import add_module_handler                          # for module-specific logging handlers
-
-src/gui/wx_app.py:20:from src import add_module_handler                          # for adding module-specific logging handlers
 
 --- Multi-line and plain src imports ---
 
