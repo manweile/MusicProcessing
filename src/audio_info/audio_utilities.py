@@ -33,7 +33,7 @@ from src.core.constants import TP                           # for true-peak norm
 # Local Module Classes
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
 from src.dir_processing import DirectoryProcessing          # for directory processing functionality
-from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functionality
+from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functionality
 
 ## @var logger
 # @brief Logger instance for the module.

@@ -14,8 +14,8 @@
 '''
 
 # Local Module Methods
-from src.logging_config import add_module_handler           # for adding module-specific file handlers to loggers
-from src.logging_config import configure_logging    # for configuring package-level file logging
+from src.core.logging_config import add_module_handler      # for adding module-specific file handlers to loggers
+from src.core.logging_config import configure_logging       # for configuring package-level file logging
 
 # Local Module Constants
 from src.core.constants import APP_NAME                     # application name/description
@@ -48,13 +48,13 @@ from src.core.constants import WMA_EXT                      # WMA file extension
 from src.core.paths import GENERATED_PATH                   # path to the directory where generated files are stored
 
 # Local Module Errors
-from src.errors import FfmpegProcessError                   # custom error for ffmpeg process failures
-from src.errors import JSONOutputError                      # custom error for JSON output issues
-from src.errors import MetadataTypeError                    # custom error for metadata type mismatches
-from src.errors import MusicProcessingError                 # custom error for general music processing issues
-from src.errors import PathInfoError                        # custom error for path information issues
-from src.errors import PlaylistError                        # custom error for playlist related issues
-from src.errors import VideoStreamError                     # custom error for video stream related issues
+from src.core.errors import FfmpegProcessError              # custom error for ffmpeg process failures
+from src.core.errors import JSONOutputError                 # custom error for JSON output issues
+from src.core.errors import MetadataTypeError               # custom error for metadata type mismatches
+from src.core.errors import MusicProcessingError            # custom error for general music processing issues
+from src.core.errors import PathInfoError                   # custom error for path information issues
+from src.core.errors import PlaylistError                   # custom error for playlist related issues
+from src.core.errors import VideoStreamError                # custom error for video stream related issues
 
 ## @var src_logger
 # @brief Configured package logger.

@@ -43,7 +43,7 @@ from tests import TEST_MP3_X                                # for max-volume tes
 from tests import TESTS_PATH                                # for normalized test-fixture paths
 
 # Local Module Errors
-from src.errors import JSONOutputError                      # for loudnorm output parsing errors
+from src.core.errors import JSONOutputError                 # for loudnorm output parsing errors
 
 # Local Module Classes
 from src.audio_normalize import AudioNormalization          # for normalization functionality under test

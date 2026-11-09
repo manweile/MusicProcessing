@@ -29,7 +29,7 @@ from src.core.constants import PLAYLIST_EXTS                # for supported play
 from src.core.paths import GENERATED_PATH                   # for generated file output paths
 
 # Local Module Errors
-from src import PlaylistError                               # for playlist processing failures
+from src.core.errors import PlaylistError                   # for playlist processing failures
 
 # Local Module Classes
 from src.dir_processing import DirectoryProcessing          # for directory processing functionality

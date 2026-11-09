@@ -80,7 +80,7 @@ from tests import TEST_WMA_JOHN_ALBUM_ARTIST                # test data for WMA 
 from tests import TEST_WMA_JOHN_TITLE                       # test data for WMA John title
 
 # Local Module Errors
-from src import MusicProcessingError                        # custom error class for music processing exceptions
+from src.core.errors import MusicProcessingError            # custom error class for music processing exceptions
 
 # Local Module Classes
 from src.audio_info import AudioMetadata                    # class for accessing audio metadata

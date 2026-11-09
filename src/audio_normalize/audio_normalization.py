@@ -34,12 +34,12 @@ from src.core.constants import MP3_EXT                      # for MP3 file exten
 from src.core.constants import TP                           # for true-peak target
 
 # Local Module Errors
-from src.errors import JSONOutputError                      # for missing FFmpeg JSON output
-from src.errors import PathInfoError                        # for missing generated-file paths
+from src.core.errors import JSONOutputError                 # for missing FFmpeg JSON output
+from src.core.errors import PathInfoError                   # for missing generated-file paths
 
 # Local Module Classes
 from src.dir_processing import DirectoryProcessing          # for directory processing functionality
-from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functionality
+from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functionality
 
 ## @var logger
 # @brief Logger instance for the module.

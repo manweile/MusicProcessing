@@ -37,7 +37,7 @@ from src.core.constants import MUSIC_TLD                    # for generated musi
 from src.core.constants import RESULT_DIR                   # for generated text fixture directories
 from src.core.constants import RESULT_EXT                   # for generated text filename extensions
 from src.core.constants import WMA_EXT                      # for WMA file-list filtering tests
-from src.core.paths import GENERATED_PATH                  # for generated test output paths
+from src.core.paths import GENERATED_PATH                   # for generated test output paths
 from tests import TEST_M3U                                  # for non-audio fixture tests
 from tests import TEST_M4A_DAVIS                            # for M4A fixture path tests
 from tests import TEST_MP3_ABBA                             # for MP3 fixture path tests
@@ -46,8 +46,8 @@ from tests import TESTS_PATH                                # for expected file 
 from tests import TESTS_TLD                                 # for test music directory paths
 
 # Local Module Errors
-from src import MusicProcessingError                        # for safe-removal error assertions
-from src.errors import PathInfoError                        # for path-info target conflict assertions
+from src.core.errors import MusicProcessingError            # for safe-removal error assertions
+from src.core.errors import PathInfoError                   # for path-info target conflict assertions
 
 # Local Module Classes
 from src.dir_processing import DirectoryProcessing          # for directory functionality under test

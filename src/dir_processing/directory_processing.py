@@ -43,8 +43,8 @@ from src.core.constants import WMA_EXT                      # for WMA file exten
 from src.core.paths import GENERATED_PATH                   # for generated file output paths
 
 # Local Module Errors
-from src import MusicProcessingError                        # for directory processing failures
-from src import PathInfoError                               # for path info related errors
+from src.core.errors import MusicProcessingError            # for directory processing failures
+from src.core.errors import PathInfoError                   # for path info related errors
 
 ## @var logger
 # @brief Logger instance for the module.

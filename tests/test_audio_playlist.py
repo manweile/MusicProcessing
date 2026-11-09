@@ -30,7 +30,7 @@ from tests import TESTS_PATH                                # for expected playl
 from tests import TESTS_TLD                                 # for playlist media root paths
 
 # Local Module Errors
-from src import PlaylistError                               # for expected playlist parsing errors
+from src.core.errors import PlaylistError                   # for expected playlist parsing errors
 
 # Local Module Classes
 from src.audio_info import AudioPlaylist                    # for playlist functionality under test

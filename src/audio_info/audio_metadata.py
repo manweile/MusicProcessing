@@ -53,25 +53,25 @@ from tqdm import tqdm                                       # for displaying pro
 from src import add_module_handler                          # for adding module-specific logging handlers
 
 # Local Module Constants
-from src.core.constants import AUDIO_EXTS                                  # for audio file extensions
-from src.core.constants import AUDIO_FILES                                 # for audio file paths
-from src.core.constants import ASF_TYPE                                    # for ASF audio file type
-from src.core.constants import FLAC_TYPE                                   # for FLAC audio file type
-from src.core.constants import FOLDER_ART                                  # for folder artwork paths
-from src.core.constants import FLAC_EXT                                    # for FLAC file extension
-from src.core.constants import MP3_EXT                                     # for MP3 file extension
-from src.core.constants import MP3_TYPE                                    # for MP3 audio file type
-from src.core.constants import MP4_TYPE                                    # for MP4 audio file type
+from src.core.constants import AUDIO_EXTS                   # for audio file extensions
+from src.core.constants import AUDIO_FILES                  # for audio file paths
+from src.core.constants import ASF_TYPE                     # for ASF audio file type
+from src.core.constants import FLAC_TYPE                    # for FLAC audio file type
+from src.core.constants import FOLDER_ART                   # for folder artwork paths
+from src.core.constants import FLAC_EXT                     # for FLAC file extension
+from src.core.constants import MP3_EXT                      # for MP3 file extension
+from src.core.constants import MP3_TYPE                     # for MP3 audio file type
+from src.core.constants import MP4_TYPE                     # for MP4 audio file type
 
 # Local Module Errors
-from src import MetadataTypeError                           # for handling metadata type errors
-from src import MusicProcessingError                        # for handling music processing errors
-from src import PathInfoError                               # for handling path info errors
+from src.core.errors import MetadataTypeError               # for handling metadata type errors
+from src.core.errors import MusicProcessingError            # for handling music processing errors
+from src.core.errors import PathInfoError                   # for handling path info errors
 
 # Local Module Classes
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
 from src.dir_processing import DirectoryProcessing          # for directory processing functionality
-from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functionality
+from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functionality
 
 ## @var logger
 # @brief Logger instance for the module.

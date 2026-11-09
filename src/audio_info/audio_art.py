@@ -48,7 +48,7 @@ from src.core.paths import GENERATED_PATH                   # for generated file
 # Local Module Classes
 from src.audio_info.audio_metadata import AudioMetadata     # for audio metadata handling functionality
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
-from src.subprocess_utils import SubprocessUtilities        # for subprocess utility functions
+from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functions
 
 ## @var logger
 # @brief Logger instance for the module.
