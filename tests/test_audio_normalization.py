@@ -267,7 +267,7 @@ class TestAudioNormalization(TestCase):
         @brief Test bitrate retrieval with invalid JSON output.
 
         @details Verifies malformed mocked ffprobe output raises a JSON decode error.<br>
-        Patching SubprocessUtilities.subprocess_run to return invalid JSON.
+        Patching audio normalization SubprocessUtilities.subprocess_run call to return invalid JSON.
 
         @code{.text}
         get bit rate command
@@ -303,6 +303,7 @@ class TestAudioNormalization(TestCase):
         self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
         self.assertEqual(self.json_decode_msg, cm.exception.msg)
 
+        # reset the mock to clear previous call history and side effects
         mock_subprocess_run.reset_mock(return_value=True, side_effect=True)
 
 
@@ -357,8 +358,7 @@ class TestAudioNormalization(TestCase):
         @brief Test sample-rate retrieval with invalid JSON output.
 
         @details Verifies malformed mocked ffprobe output raises a JSON decode error.<br>
-        Patching SubprocessUtilities.subprocess_run to return invalid JSON.
-
+        Patching audio normalization SubprocessUtilities.subprocess_run call to return invalid JSON.
 
         @code{.text}
         get sample rate command
@@ -375,8 +375,6 @@ class TestAudioNormalization(TestCase):
 
         @param self {TestAudioNormalization} The instance of the test class.
         @param mock_subprocess_run {Mock} Patched subprocess runner returning invalid JSON.
-
-        @exception JSONDecodeError Mocked ffprobe output is not valid JSON.
         '''
 
         sample_rate = None
@@ -402,6 +400,7 @@ class TestAudioNormalization(TestCase):
         self.assertEqual("JSONDecodeError", cm.exception.__class__.__name__)
         self.assertEqual(self.json_decode_msg, cm.exception.msg)
 
+        # reset the mock to clear previous call history and side effects
         mock_subprocess_run.reset_mock(return_value=True, side_effect=True)
 
 
@@ -651,7 +650,7 @@ class TestAudioNormalization(TestCase):
         @brief Test peak normalization when an unsafe target would clip.
 
         @details Verifies peak normalization logs a clipping warning.<br>
-        Patching TP to simulate an unsafe target that would cause clipping.<br>
+        Patching TP from -2.0 to +2.0 to simulate an unsafe target that would cause clipping.<br>
         Ensures peak normalization refuses a target that would cause clipping, regardless of the file's volume.
 
         @test Edge case.
@@ -675,7 +674,7 @@ class TestAudioNormalization(TestCase):
         @brief Test peak normalization when maximum volume is already reached.
 
         @details Verifies a mocked target peak causes peak normalization to log that no adjustment is needed.<br>
-        Patching the volume-information provider to simulate maximum volume.<br>
+        Patch object AudioNormalization's get_volume_info method to simulate returning a maximum volume just below the target peak.<br>
         Ensures peak normalization detects that the file is already at maximum volume and logs a warning accordingly.
 
         @test Edge case.
@@ -738,7 +737,7 @@ class TestAudioNormalization(TestCase):
         @brief Test RMS normalization when maximum volume is already reached.
 
         @details Verifies mocked RMS and peak levels cause normalization to log a clipping warning.<br>
-        Patching the volume-information provider to simulate maximum volume.<br>
+        Patch object AudioNormalization's get_volume_info method to simulate returning mean volume and maximum volume for the audio file.<br>
         Ensures the RMS normalization process detects that the file is already at maximum volume and logs a warning accordingly.
 
         @test Edge case.

@@ -47,20 +47,21 @@ class TestAudioUtilities(TestCase):
     '''
 
 
-    def _run_clip_check(self, volume_info, ebu_info=None):
+    def _run_clip_check(self, volume_info, ebu_info=None) -> str:
         '''
         @brief Run clip_check_walk on one fake mp3 with mocked loudness information.
 
         @details Creates a temporary directory with a single fake MP3 file and runs the clip check on it.<br>
-        Using mocked volume and EBU loudness information is easier than creating actual audio with specific characteristics.
+        Using mocked volume and EBU loudness information is easier than creating actual test fixture audio with specific characteristics.
 
         @param self {TestAudioUtilities} The instance of the test class.
         @param volume_info {dict} Mocked volume information returned for the file.
         @param ebu_info {dict} Mocked EBU loudness information returned for the file.
-        @return report {str} The report lines joined by newlines.
+
+        @retval report {str} The report lines joined by newlines.
         '''
 
-        # Ensure EBU info is set to default if not provided
+        # Ensure EBU info is set to defaults that will clip
         if ebu_info is None:
             ebu_info = {'input_i': -20.0, 'input_tp': -10.0, 'input_lra': 5.0}
 
@@ -103,14 +104,11 @@ class TestAudioUtilities(TestCase):
 
         # walk through audio test fixtures in the top-level music directory
         converted_tld = TESTS_TLD
-        get_ebu_loudness_info = normalization.get_ebu_loudness_info
+        info_func = "get_ebu_loudness_info"
+        loudness_info = normalization.get_ebu_loudness_info
 
         # Patch the get_ebu_loudness_info function to control its behavior during the test
-        with patch.object(
-            normalization,
-            "get_ebu_loudness_info",
-            side_effect=lambda file_path: get_ebu_loudness_info(file_path, show_spinner=False)
-        ):
+        with patch.object(normalization, info_func, side_effect=lambda file_path: loudness_info(file_path, show_spinner=False)):
             utilities.clip_check_walk(converted_tld)
 
         #  verify output txt file exists
@@ -236,7 +234,7 @@ class TestAudioUtilities(TestCase):
         @brief Test a true-peak target above digital full scale is reported as clipping.
 
         @details Verifies a true-peak target above digital full scale is reported as clipping.<br>
-        Patches TP to 2.0, so the buffered target peak is +1.0 dB.
+        Patches audio_utilities.TP from -2.0 to +2.0, so the buffered target peak is +1.0 dB.
 
         @test Edge case.
 

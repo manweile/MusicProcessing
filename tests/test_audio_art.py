@@ -482,7 +482,7 @@ class TestAudioArt(TestCase):
 
                 @details Returns the temporary album-art directory for the generated album-art path and defers all other joins to the original function.
 
-                @param paths: (tuple[str, ...]) Path components passed to os.path.join.
+                @param paths {tuple[str, ...]} Path components passed to os.path.join.
 
                 @return The temporary album-art directory or the normally joined path.
                 '''
@@ -491,9 +491,11 @@ class TestAudioArt(TestCase):
                     return album_art_dir
                 return original_join(*paths)
 
+            # patch os.path.join to redirect the generated album-art path to the isolated fixture
             with patch("src.audio_info.audio_art.os.path.join", side_effect=join_side_effect):
                 art.set_album_art(TESTS_TLD)
 
+        # verify that the album-art files exist after setting them
         found_art_exists = os.path.exists(self.found_album_art_jpg)
         set_art_exists = os.path.exists(self.set_album_art_jpg)
 
@@ -581,7 +583,7 @@ class TestAudioArt(TestCase):
         @brief Test write-data handling of a blocking I/O error.
 
         @details Verifies the mocked writer preserves the blocking error number and message.<br>
-        Patch the built-in open function to simulate the blocking I/O error.
+        Patch the builtins.open function to simulate the OSError EWOULDBLOCK operation blocked.
 
         @test Error case.
 
@@ -609,7 +611,7 @@ class TestAudioArt(TestCase):
         @brief Test write-data handling of an operating-system error.
 
         @details Verifies the mocked writer preserves the operating-system error number and message.<br>
-        Patch the built-in open function to simulate the operating-system error.
+        Patch the builtins.open function to simulate the OSError EACCES permission denied.
 
         @test Error case.
 

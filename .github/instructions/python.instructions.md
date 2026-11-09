@@ -80,12 +80,18 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   - break parameters across continuation lines using standard Python indentation.
   - align continuation lines with the opening delimiter or use a hanging indent of 4 spaces.
 
-## Inline Comments Rules
+## Code Line Comments Rules
 
-- Inline comments are denoted by `#`.
-- Inline comments are preceded by a single space after the `#`.
-- Inline comments should be concise and clear.
-- Inline comments do not require a period at the end.
+- Code line comments are used to explain the "why" of a specific line of code when it is not immediately obvious from the code itself.
+- Code line comments should be concise and clear.
+- Code line comments go above the line they refer to.
+- Code line comments are denoted by `#`.
+- Code line comments are preceded by a single space after the `#`.
+- Code line comments start with a lowercase letter.
+- Code line comments do not exceed column 150.
+  - if a code line comment will exceed column 150:
+    - break it into multiple lines, each aligned with the first line of the comment.
+- Code line comments are not terminated with a period.
 
 ## Details Block Formatting Rules
 
@@ -167,15 +173,7 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - Never use relative imports (e.g., `from .module import ...`).
 - Always use 1 import per line, never combine multiple imports in a single statement.
 - Always use absolute imports for local modules in package files.
-- all imports have an `# ...` comment where `...` explains the purpose of the import statement.
-- The entire import statement plus same line comment must never exceed column 150.
-  - use the shortest possible comment that clearly conveys the purpose of the import.
-  - if the import statement does not exceed column 61, and the comment is less than 90 characters
-    - place the comment after the import statement on the same line, starting at column 61.
-  - if the import statement does not exceed column 61, but the comment is 90 characters or more
-    - place the comment immediately before the import statement.
-  - if the import statement exceeds column 61
-    - place the comment immediately before the import statement.
+- all imports have an inline comment, per the Import Inline Comment Rules.
 - Group imports in this order:
   1. Python standard modules - the modules installed with Python itself.
   2. third party modules - the modules installed via package managers like pip.
@@ -192,6 +190,21 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
     2. `Constants` - constant values defined within the module, Eg. `Local Module Constants` for constants.
     3. `Errors` - custom error classes defined within the module, Eg. `Local Module Errors` for errors.
     4. `Classes` - classes defined within the module, Eg. `Local Module Classes` for classes.
+
+### Import Inline Comment Rules
+
+- all imports have an `# ...` comment where `...` explains the purpose of the import statement.
+- Inline comments start with a lowercase letter.
+- Inline comments are not terminated with a period.
+- The entire import statement plus same line comment must never exceed column 150.
+  - use the shortest possible comment that clearly conveys the purpose of the import.
+  - if the import statement does not exceed column 61, and the comment is less than 90 characters
+    - place the comment after the import statement on the same line, starting at column 61.
+  - if the import statement does not exceed column 61, but the comment is 90 characters or more
+    - place the comment on the line immediately above the import statement.
+  - if the import statement exceeds column 61
+    - place the comment immediately above the import statement.
+
 
 ### Module Level Variables and Constants
 

@@ -321,8 +321,9 @@ class TestLoggingConfig(TestCase):
                     created_handlers.append(handler)
                     return handler
 
-                # patch the FileHandler to simulate failure after the first handler is created
-                with patch.object(logging_config, "FileHandler", side_effect=create_one_handler_then_fail):
+                # patch logging_config FileHandler to simulate failure after the first handler is created
+                patched_object = patch.object(logging_config, "FileHandler", side_effect=create_one_handler_then_fail)
+                with patched_object:
                     # attempt to bootstrap logging, expecting an OSError after the first handler is created
                     with self.assertRaisesRegex(OSError, "simulated handler creation failure"):
                         logging_config.bootstrap_logging()

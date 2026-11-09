@@ -494,7 +494,7 @@ class TestDirectoryProcessing(TestCase):
         @brief Test path information when the target path is the same as the input path.
 
         @details Verifies that path resolution rejects an output target matching the input file's parent directory.<br>
-        Patching the error logger to capture target path conflicts.
+        Patching the directory_processing error logger to capture target path conflicts.
 
         @test Error case.
 
@@ -518,7 +518,7 @@ class TestDirectoryProcessing(TestCase):
         @brief Test path information for a non-audio file.
 
         @details Verifies a playlist input returns none and logs a warning.<br>
-        Patching the warning logger to capture non-audio input warnings.
+        Patching the directory_processing warning logger to capture non-audio input warnings.
 
         @test Error case.
 

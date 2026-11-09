@@ -137,6 +137,44 @@ TESTING:
   b) test very basic gui functionality; existing test suite handles the models
   c) update testing.md
 
+2) add a test for get_ebu_loudness_info
+TODO
+
+3) speed up test_clip_check_walk.
+  get_ebu_loudness_info is causing slowdown; testing over tests/Music, which contains 16 mp3 files, takes ~140 sec
+  test is about what's in the report file, not get_ebu_loudness_info
+  a) option 1: run get_ebu_loudness_info for different files concurrently, then collect the results before writing/verifying the report
+    i) more coding
+    ii) no coupling or technical debt
+    iii) possibility of race condition, cpu choking
+  b) option 2: mock the get_ebu_loudness_info results
+    i) have to run get_ebu_loudness_info over the audio test fixtures to get values for mocking
+    ii) couples test to those specific text fixtures; incurs technical debt if the test fixtures change
+    iii) prob as much coding as concurrent get_ebu_loudness_info
+  c) option 3: reduce the number of test fixtures used
+    i) would need to set up temp directory (like test_audio_normalization does in setUpClass) for the files that will generate expected results
+    ii) increases coupling slightly & incurs tech debt if test fixtures change - but not as much as option 2
+    iii) avoids mocking and increase performance; # of test fixtures goes to 4 from 16, prob execution time ~35 sec from ~140 sec
+        "headroom available": NOT Diamond Rio-Lyin' Eyes.mp3, NOT X Ambassadors-Renegades.mp3
+        "no headroom": Diamond Rio-Lyin' Eyes.mp3, X Ambassadors-Renegades.mp3
+        "peak leveling adjustment": NOT Howard Shore-The Taming Of Smeagol.mp3
+        "already at target peak": Annie Lennox - Into the West.mp3
+        "rms leveling adjustment": Howard Shore-The Taming Of Smeagol.mp3
+        "rms clipping amount": NOT Howard Shore-The Taming Of Smeagol.mp3
+        "ebu dynamic leveling required": 04 - Donna.mp3, Albert Collins - Trash Talkin'.mp3, Bear McCreary - BSG Gayatri Mantra Theme Song.mp3
+        Sawyer Fredricks - Shots Fired.mp3, Annie Lennox - Into the West.mp3, Howard Shore-The Taming Of Smeagol.mp3
+        "ebu linear leveling adjustment": 38 Special-Teacher Teacher.mp3, ABBA-Waterloo.mp3,
+        Devil's Got a New Disguise-The Very Best of Aerosmith\Aerosmith-Dream On.mp3, Crush-Live.mp3, No_tag_Crush-Live.mp3,
+        Daughtry-No Surprise.mp3, Diamond Rio-Lyin' Eyes.mp3, Genesis-In Too Deep.mp3, No_tag_Crush-Live.mp3, X Ambassadors-Renegades.mp3
+
+        set:
+        04 - Donna.mp3                          :headroom available, rms clipping amount, ebu dynamic leveling required
+        Diamond Rio-Lyin' Eyes.mp3              :no headroom, peak leveling adjustment, ebu linear leveling adjustment
+        Annie Lennox - Into the West.mp3        :already at target peak
+        Howard Shore-The Taming Of Smeagol.mp3  :rms leveling adjustment
+  d) update testing.md table (depending on option selected)
+  TODO
+
 DISPOSED:
   1) import doxygen create from esp scale project
   COMPLETED

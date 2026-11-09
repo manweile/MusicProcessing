@@ -50,14 +50,15 @@ def mock_communicate_with_error() -> tuple:
 
     @details Returns undecodable bytes that trigger a Unicode decode error.
 
-    @return undecoded_bytes {tuple} Simulated communicate output with undecodable bytes.
+    @retval undecoded_bytes {tuple{bytes, bytes}} Simulated communicate output with undecodable bytes.
     '''
 
     # A byte string that is invalid UTF-8
     invalid_utf8_bytes = b'hello \x99\xae world'
 
-    # communicate() returns (stdout, stderr) tuples, to cause a decode error later, return undecoded bytes
+    # communicate() returns (stdout, stderr) tuple, to cause a decode error later, return undecoded bytes
     undecoded_bytes = (invalid_utf8_bytes, b'')
+
     return undecoded_bytes
 
 
@@ -105,8 +106,7 @@ class TestSubprocessUtilities(TestCase):
         -f null -; sends the output to null to avoid creating an actual output file
         @endcode
 
-        @param cls {type[TestSubprocessUtilities]} Test class receiving shared command fixtures.
-
+        @param cls {TestSubprocessUtilities} Test class receiving shared command fixtures.
         '''
 
         cls.file_path = TEST_M3U
@@ -146,8 +146,6 @@ class TestSubprocessUtilities(TestCase):
         @test Error case.
 
         @param self {TestSubprocessUtilities} The instance of the test class.
-
-        @exception RuntimeError ffmpeg fails to process the invalid input file.
         '''
 
         mpeg_process = None
@@ -170,8 +168,6 @@ class TestSubprocessUtilities(TestCase):
         @test Error case.
 
         @param self {TestSubprocessUtilities} The instance of the test class.
-
-        @exception FfmpegProcessError ffmpeg reports a command execution failure.
         '''
 
         mpeg_process = None
@@ -194,8 +190,6 @@ class TestSubprocessUtilities(TestCase):
         @test Error case.
 
         @param self {TestSubprocessUtilities} The instance of the test class.
-
-        @exception RuntimeError ffprobe cannot process malformed MP3 data.
         '''
 
         file_path = os.path.join(TESTS_PATH, "No_audio_Crush-Live.mp3")
@@ -221,8 +215,6 @@ class TestSubprocessUtilities(TestCase):
         @test Error case.
 
         @param self {TestSubprocessUtilities} The instance of the test class.
-
-        @exception RuntimeError ffprobe cannot process the playlist input.
         '''
 
         file_path = TEST_M3U
@@ -245,14 +237,12 @@ class TestSubprocessUtilities(TestCase):
         @brief Test pipe execution with undecodable communicate output.
 
         @details Verifies undecodable mocked output raises a Unicode decode error.<br>
-        Patching the Popen constructor to simulate undecodable output.
+        Patching the subprocess_utils.subprocess.Popen constructor to simulate undecodable output.
 
         @test Error case.
 
         @param self {TestSubprocessUtilities} The instance of the test class.
         @param mock_popen {Mock} Patched Popen constructor returning undecodable output.
-
-        @exception UnicodeDecodeError Mocked communicate output is not valid UTF-8.
         '''
 
         file_path = TEST_MP3_CRUSH
@@ -286,8 +276,6 @@ class TestSubprocessUtilities(TestCase):
         @test Error case.
 
         @param self {TestSubprocessUtilities} The instance of the test class.
-
-        @exception CalledProcessError ffmpeg cannot process the playlist input.
         '''
 
         file_path = TEST_M3U
@@ -328,8 +316,6 @@ class TestSubprocessUtilities(TestCase):
         @test Error case.
 
         @param self {TestSubprocessUtilities} The instance of the test class.
-
-        @exception CalledProcessError ffprobe cannot locate the input file.
         '''
 
         file_path = TEST_WAV_NONE
@@ -360,14 +346,12 @@ class TestSubprocessUtilities(TestCase):
         @brief Test subprocess execution with undecodable output.
 
         @details Verifies an undecodable mocked subprocess result raises a Unicode decode error.<br>
-        Patching the Popen constructor to simulate undecodable output.
+        Patching the subprocess_utils.subprocess.run constructor to simulate undecodable output.
 
         @test Error case.
 
         @param self {TestSubprocessUtilities} The instance of the test class.
         @param mock_subprocess_run {Mock} Patched subprocess runner raising a decoding error.
-
-        @exception UnicodeDecodeError Mocked subprocess output is not valid UTF-8.
         '''
 
         file_path = TEST_MP3_CRUSH

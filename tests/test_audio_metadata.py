@@ -52,7 +52,7 @@ from src.core.constants import PLAYLIST_EXTS                # supported playlist
 from src.core.constants import RESULT_DIR                   # directory for storing test results
 from src.core.constants import RESULT_EXT                   # file extension for result files
 from src.core.constants import WMA_EXT                      # file extension for WMA audio files
-from src.core.constants import UTF8                         # UTF-8 encoding constant
+from src.core.constants import UTF8                         # utf-8 encoding constant
 from src.core.paths import GENERATED_PATH                   # path to generated files
 from tests import TEST_FLAC_CREAM                           # test data for FLAC Cream audio file
 from tests import TEST_FLAC_CREAM_ALBUM_ARTIST              # test data for FLAC Cream album artist
@@ -651,7 +651,7 @@ class TestAudioMetadata(TestCase):
         @brief Test media-info parsing when nested dictionaries are absent.
 
         @details Verifies parsing retains values when mocked ffprobe output has no nested dictionaries.<br>
-        Patching popen_pipe to return simplified ffprobe output without nested dictionaries.
+        Patching SubprocessUtilities.popen_pipe return value to provide simplified ffprobe output without nested dictionaries.
 
         @test Edge case.
 
@@ -781,7 +781,7 @@ class TestAudioMetadata(TestCase):
         @brief Test media-tag parsing with invalid JSON output.
 
         @details Verifies invalid mocked ffprobe JSON raises a JSON decode error.<br>
-        Patching SubprocessUtilities.subprocess_run to return invalid JSON.
+        Patching SubprocessUtilities.subprocess_run return value to provide invalid JSON output.
 
         @code{.text}
         get
@@ -1255,6 +1255,7 @@ class TestAudioMetadata(TestCase):
         for file_path in [mp3_file, flac_file, *m4a_files, *wma_files, os.path.join(test_dir, "notes.txt")]:
             Path(file_path).touch()
 
+        # patch the normalize_filename function to track its calls without actually renaming files
         with patch.object(metadata, "normalize_filename") as mock_normalize_filename:
             metadata.normalize_filename_walk(test_dir)
 
@@ -1273,15 +1274,15 @@ class TestAudioMetadata(TestCase):
         @param self {TestAudioMetadata} The instance of the test class.
         '''
 
-        # Set up the test directory for the FLAC file
+        # set up the test directory for the FLAC file
         test_dir = os.path.join(self.test_tld, TEST_FLAC_CREAM_ALBUM_ARTIST, "Goodbye")
         os.makedirs(test_dir, exist_ok=True)
 
-        # Create the source FLAC file to simulate its presence
+        # create the source FLAC file to simulate its presence
         src_file = os.path.join(test_dir, os.path.basename(TEST_FLAC_CREAM))
         normalized_file = os.path.join(test_dir, f"{TEST_FLAC_CREAM_ALBUM_ARTIST}-{TEST_FLAC_CREAM_TITLE}{FLAC_EXT}")
 
-        class DummyFlacFile:
+        class DummyFlac:
             '''
             @brief Simulates a FLAC audio file for testing purposes.
 
@@ -1300,25 +1301,24 @@ class TestAudioMetadata(TestCase):
                     "title": [TEST_FLAC_CREAM_TITLE],
                 }
 
-        # Patch the FLAC class, the load_any_file method, and os.rename to test the normalization without affecting the actual filesystem
-        with patch("src.audio_info.audio_metadata.FLAC", DummyFlacFile), patch.object(
-            metadata, "load_any_file", return_value=DummyFlacFile()
-        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
-            # metadata.normalize_flac_filename(src_file)
+        # patch the FLAC class, the load_any_file method, and os.rename to test the normalization without affecting the actual filesystem
+        flac_class = "src.audio_info.audio_metadata.FLAC"
+        rename_func = "src.audio_info.audio_metadata.os.rename"
+        with patch(flac_class, DummyFlac), patch.object(metadata, "load_any_file", return_value=DummyFlac()), patch(rename_func) as mock_rename:
             metadata.normalize_filename(src_file)
 
-        # Verify that the os.rename function was called with the correct arguments
+        # verify that the os.rename function was called with the correct arguments
         mock_rename.assert_called_once_with(src_file, normalized_file)
 
-        # Verify that the CSV file was created and contains the expected row for the normalized FLAC file
+        # verify that the CSV file was created and contains the expected row for the normalized FLAC file
         csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
         self.assertTrue(os.path.exists(csv_path))
 
-        # Read the contents of the CSV file to verify the expected row is present
+        # read the contents of the CSV file to verify the expected row is present
         with open(csv_path, "r", encoding=UTF8) as f:
             lines = f.readlines()
 
-        # Strip any trailing newline characters from the lines read from the CSV file
+        # Define the expected row for the normalized FLAC file in the CSV.
         expected_row = f"{src_file};{TEST_FLAC_CREAM_ALBUM_ARTIST};{TEST_FLAC_CREAM_TITLE};{normalized_file}\n"
         self.assertIn(expected_row, lines)
 
@@ -1356,7 +1356,7 @@ class TestAudioMetadata(TestCase):
 
                 self.text = [text]
 
-        class DummyAudioFile:
+        class DummyMp3:
             '''
             @brief Simulates an MP3 audio file for testing purposes.
 
@@ -1377,22 +1377,24 @@ class TestAudioMetadata(TestCase):
                     "TIT2": DummyTag(TEST_MP3_10CC_TITLE),
                 }.get(key)
 
-        with (
-            patch("src.audio_info.audio_metadata.MP3", DummyAudioFile),
-            patch.object(metadata, "load_any_file", return_value=DummyAudioFile()),
-            patch("src.audio_info.audio_metadata.os.rename") as mock_rename,
-        ):
-            # metadata.normalize_mp3_filename(src_file)
+        # patch the MP3 class and the os.rename function for testing the normalization of MP3 filenames
+        mp3_class = "src.audio_info.audio_metadata.MP3"
+        rename_func = "src.audio_info.audio_metadata.os.rename"
+        with (patch(mp3_class, DummyMp3), patch.object(metadata, "load_any_file", return_value=DummyMp3()),  patch(rename_func) as mock_rename):
             metadata.normalize_filename(src_file)
 
+        # verify that the os.rename function was called with the correct arguments
         mock_rename.assert_called_once_with(src_file, normalized_file)
 
+        # verify that the CSV file was created and contains the expected row
         csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
         self.assertTrue(os.path.exists(csv_path))
 
+        # read the contents of the CSV file to verify the expected row is present
         with open(csv_path, "r", encoding=UTF8) as f:
             lines = f.readlines()
 
+        # define the expected row for the normalized MP3 file in the CSV
         expected_row = f"{src_file};{TEST_MP3_10CC_ALBUM_ARTIST};{TEST_MP3_10CC_TITLE};{normalized_file}\n"
         self.assertIn(expected_row, lines)
 
@@ -1414,26 +1416,31 @@ class TestAudioMetadata(TestCase):
         normalized_file = os.path.join(test_dir, f"{TEST_M4A_DAVIS_ALBUM_ARTIST}-{TEST_M4A_DAVIS_TITLE}{M4A_EXT}")
 
         # Create a dummy MP4 file class to simulate the behavior of the actual MP4 file.
-        class DummyMp4File:
+        class DummyMp4:
             def __init__(self):
                 self.tags = {
                     "aART": [TEST_M4A_DAVIS_ALBUM_ARTIST],
                     "\xa9nam": [TEST_M4A_DAVIS_TITLE],
                 }
 
-        with patch("src.audio_info.audio_metadata.MP4", DummyMp4File), patch.object(
-            metadata, "load_any_file", return_value=DummyMp4File()
-        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+        # patch the MP4 class and the os.rename function for testing the normalization of MP4 filenames
+        mp4_class = "src.audio_info.audio_metadata.MP4"
+        rename_func = "src.audio_info.audio_metadata.os.rename"
+        with patch(mp4_class, DummyMp4), patch.object(metadata, "load_any_file", return_value=DummyMp4()), patch(rename_func) as mock_rename:
             metadata.normalize_filename(src_file)
 
+        # verify that the os.rename function was called with the correct arguments
         mock_rename.assert_called_once_with(src_file, normalized_file)
 
+        # verify that the CSV file was created and contains the expected row
         csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
         self.assertTrue(os.path.exists(csv_path))
 
+        # read the contents of the CSV file to verify the expected row is present
         with open(csv_path, "r", encoding=UTF8) as f:
             lines = f.readlines()
 
+        # define the expected row for the normalized MP3 file in the CSV
         expected_row = f"{src_file};{TEST_M4A_DAVIS_ALBUM_ARTIST};{TEST_M4A_DAVIS_TITLE};{normalized_file}\n"
         self.assertIn(expected_row, lines)
 
@@ -1455,26 +1462,31 @@ class TestAudioMetadata(TestCase):
         normalized_file = os.path.join(test_dir, f"{TEST_WMA_JOHN_ALBUM_ARTIST}-{TEST_WMA_JOHN_TITLE}{WMA_EXT}")
 
         # Create a dummy WMA file class to simulate the behavior of the actual WMA file.
-        class DummyWmaFile:
+        class DummyWma:
             def __init__(self):
                 self.tags = {
                     "WM/AlbumArtist": [TEST_WMA_JOHN_ALBUM_ARTIST],
                     "Title": [TEST_WMA_JOHN_TITLE],
                 }
 
-        with patch("src.audio_info.audio_metadata.ASF", DummyWmaFile), patch.object(
-            metadata, "load_any_file", return_value=DummyWmaFile()
-        ), patch("src.audio_info.audio_metadata.os.rename") as mock_rename:
+        # patch the ASF (wma) class and the os.rename function for testing the normalization of WMA filenames
+        wma_class = "src.audio_info.audio_metadata.ASF"
+        rename_func = "src.audio_info.audio_metadata.os.rename"
+        with patch(wma_class, DummyWma), patch.object(metadata, "load_any_file", return_value=DummyWma()), patch(rename_func) as mock_rename:
             metadata.normalize_filename(src_file)
 
+        # verify that the os.rename function was called with the correct arguments
         mock_rename.assert_called_once_with(src_file, normalized_file)
 
+        # verify that the CSV file was created and contains the expected row
         csv_path = os.path.join(GENERATED_PATH, CSV_DIR, "normalize_filename" + CSV_EXT)
         self.assertTrue(os.path.exists(csv_path))
 
+        # read the contents of the CSV file to verify the expected row is present
         with open(csv_path, "r", encoding=UTF8) as f:
             lines = f.readlines()
 
+        # define the expected row for the normalized MP3 file in the CSV
         expected_row = f"{src_file};{TEST_WMA_JOHN_ALBUM_ARTIST};{TEST_WMA_JOHN_TITLE};{normalized_file}\n"
         self.assertIn(expected_row, lines)
 
@@ -1561,7 +1573,7 @@ class TestAudioMetadata(TestCase):
 
                 self.text = [text]
 
-        class DummyAudioFile:
+        class DummyMp3:
             '''
             @brief Simulates an MP3 audio file for testing purposes.
 
@@ -1584,9 +1596,9 @@ class TestAudioMetadata(TestCase):
 
         normalized_file = os.path.join(test_dir, "10cc-Ships Don't Disappear In The Night (Do They).mp3")
 
-        with patch("src.audio_info.audio_metadata.MP3", DummyAudioFile), patch.object(
-            metadata, "load_any_file", return_value=DummyAudioFile()
-        ):
+        # patch the MP3 class and the load_any_file function to use the DummyMp3 class for testing
+        mp3_class = "src.audio_info.audio_metadata.MP3"
+        with patch(mp3_class, DummyMp3), patch.object(metadata, "load_any_file", return_value=DummyMp3()):
             metadata.normalize_filename(src_file)
 
         self.assertFalse(os.path.exists(src_file))
@@ -1739,8 +1751,8 @@ class TestAudioMetadata(TestCase):
         @brief Tests propagating a genre update failure.
 
         @details Verifies setter errors propagate instead of being collected in the report.<br>
-        Patching AudioMetadata.__set_genre to simulate a failure.<br>
-        Patching AudioMetadata.update_genres to trigger the genre update process.
+        Patching logger.error to capture error messages during the test.<br>
+        Patch object AudioMetadata.__set_genre is for simulating a failure during genre update.
 
         @param self {TestAudioMetadata} The instance of the test class.
         @param mock_set_genre {Mock} Mocked private genre setter.
@@ -1749,15 +1761,19 @@ class TestAudioMetadata(TestCase):
         @test Error case.
         '''
 
-        # Define the file path that will simulate a failure during genre update
+        # define the file path that will simulate a failure during genre update
         failed_file_path = self.genre_files["empty_mp3"]
+
+        # Patch the __set_genre method to simulate a failure for the specified file path
         mock_set_genre.side_effect = lambda file_path, artist_genre: (
             (_ for _ in ()).throw(OSError("test error")) if file_path == failed_file_path else None
         )
 
+        # attempt to update genres, expecting an OSError to be raised due to the simulated failure
         with self.assertRaisesRegex(OSError, "test error"):
             metadata.update_genres(self.genre, self.genre_csv)
 
+        # verify that the error logger was called with the expected message and exception info
         mock_logger_error.assert_called_once_with("Exception OSError updating genres from CSV", exc_info=True)
 
 

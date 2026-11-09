@@ -157,7 +157,7 @@ class TestAudioPlaylist(TestCase):
         @brief Test playlist path updates against expected output.
 
         @details Verifies existing audio paths are written and missing audio paths produce warnings.<br>
-        Patching the warning logger to capture missing audio path warnings.
+        Patching the audio playlist warning logger to capture missing audio path warnings.
 
         @test Happy path.
 
