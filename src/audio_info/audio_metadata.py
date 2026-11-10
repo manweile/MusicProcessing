@@ -70,7 +70,7 @@ from src.core.errors import PathInfoError                   # for handling path 
 
 # Local Module Classes
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
-from src.core.progress import ProgressReporter               # progress reporting interface
+from src.core.progress import ProgressReporter              # progress reporting interface
 from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functionality
 from src.dir_processing import DirectoryProcessing          # for directory processing functionality
 
@@ -426,13 +426,7 @@ class AudioMetadata():
             return id3_tags
 
 
-    def convert_file(
-        self,
-        file_path: str = None,
-        target: str = None,
-        show_spinner: bool = True,
-        progress: ProgressReporter | None = None
-    ) -> None:
+    def convert_file(self, file_path: str = None, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None) -> None:
         '''
         @brief Converts an acceptable audio file to mp3 audio file, using ffmpeg directly.
 

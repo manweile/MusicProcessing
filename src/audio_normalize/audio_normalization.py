@@ -38,7 +38,7 @@ from src.core.errors import JSONOutputError                 # for missing FFmpeg
 from src.core.errors import PathInfoError                   # for missing generated-file paths
 
 # Local Module Classes
-from src.core.progress import ProgressReporter               # progress reporting interface
+from src.core.progress import ProgressReporter              # progress reporting interface
 from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functionality
 from src.dir_processing import DirectoryProcessing          # for directory processing functionality
 
@@ -158,12 +158,7 @@ class AudioNormalization():
 
 
 
-    def get_ebu_loudness_info(
-        self,
-        file_path: str,
-        show_spinner: bool = True,
-        progress: ProgressReporter | None = None
-    ) -> dict:
+    def get_ebu_loudness_info(self, file_path: str, show_spinner: bool = True, progress: ProgressReporter | None = None) -> dict:
         '''
         @brief Gets EBU loudness statistics from an audio file.
 
@@ -224,13 +219,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def ebu_normalize_file(
-        self,
-        file_path: str,
-        target: str = None,
-        show_spinner: bool = True,
-        progress: ProgressReporter | None = None
-    ) -> None:
+    def ebu_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None) -> None:
         '''
         @brief Normalizes an audio file to the EBU R128 standard, optionally specifying a target directory.
 
@@ -666,13 +655,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def peak_normalize_file(
-        self,
-        file_path: str,
-        target: str = None,
-        show_spinner: bool = True,
-        progress: ProgressReporter | None = None
-    ) -> None:
+    def peak_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None) -> None:
         '''
         @brief Peak normalizes audio file level.
 
@@ -800,13 +783,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def rms_normalize_file(
-        self,
-        file_path: str,
-        target: str = None,
-        show_spinner: bool = True,
-        progress: ProgressReporter | None = None
-    ) -> None:
+    def rms_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None) -> None:
         '''
         @brief RMS normalizes audio file level.
 
