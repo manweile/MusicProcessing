@@ -23,10 +23,6 @@ from subprocess import CalledProcessError                   # for subprocess exe
 from subprocess import CompletedProcess                     # for completed process results
 from subprocess import PIPE                                 # for subprocess stream pipes
 
-# Third Party Modules
-from yaspin import yaspin                                   # for command progress indicators
-from yaspin.spinners import Spinners                        # for spinner definitions
-
 # Local Module Methods
 from src.core.logging_config import add_module_handler      # for module-specific logging handlers
 
@@ -35,6 +31,10 @@ from src.core.constants import UTF8                         # for UTF-8 text enc
 
 # Local Module Errors
 from src.core.errors import FfmpegProcessError              # for FFmpeg process failures
+
+# Local Module Classes
+from src.core.null_progress import NullProgress             # no-op progress reporter
+from src.core.progress import ProgressReporter              # progress reporting interface
 
 ## @var logger
 # @brief Logger instance for the module.
@@ -76,11 +76,12 @@ class SubprocessUtilities():
 
         @param self {SubprocessUtilities} The instance of the class.
         @param command {list[str]} FFprobe command for Popen to run.
-        @return stdout {str} The decoded subprocess output.
 
-        @exception RuntimeError A runtime error from subprocess popen.
-        @exception UnicodeDecodeError A unicode decode error on subprocess stdout bytes.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @retval stdout {str} The decoded subprocess output.
+
+        @exception r_error {RuntimeError} A runtime error from subprocess popen.
+        @exception ud_error {UnicodeDecodeError} A unicode decode error on subprocess stdout bytes.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -114,29 +115,44 @@ class SubprocessUtilities():
             return stdout
 
 
-    def spinner_popen_pipe(self, export_path: str, command: list[str], show_spinner: bool = True) -> str:
+    def spinner_popen_pipe(self, export_path: str, command: list[str], progress: ProgressReporter | None = None) -> str:
         '''
-        @brief Runs command in new process with option to display a spinner.
+        @brief Runs command in a new process while reporting indeterminate progress.
 
         @details Runs an FFmpeg command asynchronously and redirects output to standard error.
 
         @param self {SubprocessUtilities} The instance of the class.
         @param export_path {str} Path to destination audio file.
         @param command {list[str]} FFmpeg command for Popen to run.
-        @param show_spinner {bool} Flag to use spinner or not. Default True.
-        @return success_msg {str} Success message on completion.
+        @param progress {ProgressReporter | None} Optional progress reporter.
 
-        @exception FfmpegProcessError Exception occurred processing a ffmpeg command.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @retval success_msg {str} Success message on completion.
+
+        @exception fp_error {FfmpegProcessError} Exception occurred processing a ffmpeg command.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
             input_path = Path(export_path)
             input_file_name = input_path.stem
             text = f"Converting {input_file_name}"
+            reporter = progress if progress is not None else NullProgress()
+            reporter.start(None, text)
+            elapsed = 0.0
 
-            if show_spinner:
-                with yaspin(Spinners.dots, text=text, timer=True) as sp:
+            try:
+                if isinstance(reporter, NullProgress):
+                    with open(os.devnull, 'rb') as devnull:
+                        p = subprocess.Popen(
+                            command,
+                            stdin=devnull,
+                            stdout=PIPE,
+                            stderr=PIPE,
+                        )
+
+                    p_out, p_err = p.communicate()
+                    std_err = p_err.decode(errors='ignore')
+                else:
                     with open(os.devnull, 'rb') as devnull:
                         p = subprocess.Popen(
                             command,
@@ -152,19 +168,9 @@ class SubprocessUtilities():
                             break
 
                     p_out, p_err = p.communicate()
-            else:
-                with open(os.devnull, 'rb') as devnull:
-                    p = subprocess.Popen(
-                        command,
-                        stdin=devnull,
-                        stdout=PIPE,
-                        stderr=PIPE,
-                    )
-
-                # ffmpeg returns via stderr (unlike ffprobe, which uses stdout)
-                p_out, p_err = p.communicate()
-                # using 'ignore' because I don't want a UnicodeDecodeError to happen
-                std_err = p_err.decode(errors='ignore')
+                    std_err = p_err
+            finally:
+                elapsed = reporter.finish()
 
             if p.returncode != 0:
                 fp_error_msg = f"Ffmpeg returned error code: {p.returncode}\n, with output: {std_err}\n for command:{command}\n"
@@ -177,34 +183,41 @@ class SubprocessUtilities():
             logger.exception(f"Exception running command {shlex.join(command)}", stack_info=True)
             raise e_error
         else:
-            success_msg = None
-            if show_spinner:
-                success_msg = f"Successful conversion on {input_path.stem} from {input_path.suffix.removeprefix(".")} in {sp.elapsed_time:.2f} secs"
+            if not isinstance(reporter, NullProgress):
+                success_msg = (
+                    f"Successful conversion on {input_path.stem} from {input_path.suffix.removeprefix(".")} "
+                    f"in {elapsed:.2f} secs"
+                )
             else:
                 success_msg = f"Successful conversion on {input_path.stem} from {input_path.suffix.removeprefix(".")}"
 
             return success_msg
 
 
-    def spinner_subprocess_run(self, command: list[str], text: str) -> tuple:
+    def spinner_subprocess_run(self, command: list[str], text: str, progress: ProgressReporter | None = None) -> tuple[CompletedProcess, float]:
         '''
-        @brief Runs command in subprocess with a spinner.
+        @brief Runs a command in a subprocess while reporting indeterminate progress.
 
-        @details Runs a subprocess command and returns the completed process with its spinner.
+        @details Runs a subprocess command and returns the completed process and elapsed time.
 
         @param self {SubprocessUtilities} The instance of the class.
         @param command {list[str]} Command for subprocess to run.
-        @param text {str} Text for spinner to display.
-        @return results (process, spinner) ({CompletedProcess}, {Yaspin}) Tuple containing completed process and spinner objects.
+        @param text {str} Description for the progress reporter.
+        @param progress {ProgressReporter | None} Optional progress reporter.
 
-        @exception CalledProcessError A subprocess error from ffmpeg command execution.
-        @exception UnicodeDecodeError A unicode decode error on subprocess stdout bytes.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @retval results {tuple[CompletedProcess, float]} Completed process and elapsed seconds.
+
+        @exception cp_error {CalledProcessError} A subprocess error from ffmpeg command execution.
+        @exception ud_error {UnicodeDecodeError} A unicode decode error on subprocess stdout bytes.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
+        reporter = progress if progress is not None else NullProgress()
+        elapsed = 0.0
         try:
-            # Check raises CalledProcessError; capture_output and text collect decoded standard streams
-            with yaspin(Spinners.dots, text=text, timer=True) as spinner:
+            reporter.start(None, text)
+            try:
+                # Check raises CalledProcessError; capture_output and text collect decoded standard streams
                 process = subprocess.run(
                     command,
                     check=True,
@@ -212,7 +225,8 @@ class SubprocessUtilities():
                     encoding=UTF8,
                     text=True
                 )
-
+            finally:
+                elapsed = reporter.finish()
 
         except CalledProcessError as cp_error:
             logger.exception(
@@ -230,7 +244,7 @@ class SubprocessUtilities():
             logger.exception(f"Exception processing command: {command}", stack_info=True)
             raise e_error
         else:
-            results = (process, spinner)
+            results = (process, elapsed)
             return results
 
 
@@ -242,11 +256,12 @@ class SubprocessUtilities():
 
         @param self {SubprocessUtilities} The instance of the class.
         @param command {list[str]} Command for subprocess to run.
-        @return process {CompletedProcess} Completed process object.
 
-        @exception CalledProcessError A subprocess error from ffmpeg command execution.
-        @exception UnicodeDecodeError A unicode decode error on subprocess stdout bytes.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @retval process {CompletedProcess} Completed process object.
+
+        @exception cp_error {CalledProcessError} A subprocess error from ffmpeg command execution.
+        @exception ud_error {UnicodeDecodeError} A unicode decode error on subprocess stdout bytes.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
         try:

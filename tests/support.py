@@ -16,6 +16,75 @@
 # Standard Modules
 import inspect                                              # for test method discovery
 
+# Local Module Classes
+from src.core.progress import ProgressReporter              # progress reporting interface
+
+
+class FakeProgress(ProgressReporter):
+    '''
+    @brief Records progress calls for tests.
+
+    @details Captures operation starts, advances, and finishes without displaying progress.
+    '''
+
+
+    def __init__(self, elapsed_time: float = 0.0) -> None:
+        '''
+        @brief Initializes the fake progress reporter.
+
+        @details Initializes empty call records and the elapsed time returned by finish().
+
+        @param self {FakeProgress} The progress reporter.
+        @param elapsed_time {float} The elapsed time finish() returns.
+        '''
+
+        self.advances: list[int] = []
+        self.elapsed_time = elapsed_time
+        self.finish_calls = 0
+        self.starts: list[tuple[int | None, str]] = []
+
+
+    def advance(self, step: int) -> None:
+        '''
+        @brief Records a progress advance.
+
+        @details Appends the completed step count to the call record.
+
+        @param self {FakeProgress} The progress reporter.
+        @param step {int} The number of completed steps.
+        '''
+
+        self.advances.append(step)
+
+
+    def finish(self) -> float:
+        '''
+        @brief Records completion and returns the configured elapsed time.
+
+        @details Increments the finish-call count.
+
+        @param self {FakeProgress} The progress reporter.
+
+        @retval {float} The configured elapsed time in seconds.
+        '''
+
+        self.finish_calls += 1
+        return self.elapsed_time
+
+
+    def start(self, total: int | None, description: str) -> None:
+        '''
+        @brief Records the start of a progress operation.
+
+        @details Appends the total and description to the call record.
+
+        @param self {FakeProgress} The progress reporter.
+        @param total {int | None} The total number of progress steps, or None for indeterminate progress.
+        @param description {str} A description of the operation.
+        '''
+
+        self.starts.append((total, description))
+
 
 def get_method_names(cls):
     '''

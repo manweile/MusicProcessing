@@ -878,7 +878,7 @@ COMPLETED
     Validation: COMPLETED
     - After Step 7, the full suite must pass using the new paths; the removed old paths are no longer supported. COMPLETED
 
-4. Milestone 4: Progress interface
+4. Milestone 4: Progress interface IN PROGRESS
   - Add `core/progress.py` with `ProgressReporter` (`start(total, description)`, `advance(step)`, `finish()`) and a no-op `NullProgress`.
   - `total=None` means indeterminate (spinner).
   - `finish()` returns the elapsed time in seconds (float).

@@ -32,8 +32,9 @@ from src.core.constants import TP                           # for true-peak norm
 
 # Local Module Classes
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
-from src.dir_processing import DirectoryProcessing          # for directory processing functionality
+from src.core.progress import ProgressReporter              # progress reporting interface
 from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functionality
+from src.dir_processing import DirectoryProcessing          # for directory processing functionality
 
 ## @var logger
 # @brief Logger instance for the module.
@@ -80,7 +81,7 @@ class AudioUtilities():
         pass
 
 
-    def clip_check_file(self, file_path: str, text_mode: str | None = None) -> None:
+    def clip_check_file(self, file_path: str, text_mode: str | None = None, progress: ProgressReporter | None = None) -> None:
         '''
         @brief Checks for potential clipping and headroom in a single MP3 file.
 
@@ -90,9 +91,9 @@ class AudioUtilities():
         @param self {AudioUtilities} The instance of the class.
         @param file_path {str} The path to the audio file.
         @param text_mode {str} Optional text mode for writing the file.
-        @return {None} This function does not return any value.
+        @param progress {ProgressReporter | None} Optional progress reporter.
 
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
         data = []
@@ -111,7 +112,7 @@ class AudioUtilities():
 
             # Retrieve volume and loudness information for the audio file
             volume_info = normalization.get_volume_info(file_path)
-            ebu_info = normalization.get_ebu_loudness_info(file_path)
+            ebu_info = normalization.get_ebu_loudness_info(file_path, progress=progress)
 
             # Check if volume information is available before proceeding with peak/rms analysis
             if 'mean_volume' not in volume_info or 'max_volume' not in volume_info:
@@ -215,7 +216,7 @@ class AudioUtilities():
             raise e_error
 
 
-    def clip_check_walk(self, tld_path: str) -> None:
+    def clip_check_walk(self, tld_path: str, progress: ProgressReporter | None = None) -> None:
         '''
         @brief Analyzes volume and ebu loudness for MP3 files.
 
@@ -225,9 +226,9 @@ class AudioUtilities():
         @param self {AudioUtilities} The instance of the class.
         @param tld_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
-        @return {None} This function does not return any value.
+        @param progress {ProgressReporter | None} Optional progress reporter.
 
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -244,7 +245,7 @@ class AudioUtilities():
                     else:
                         file_path = os.path.join(root, file)
 
-                    self.clip_check_file(file_path, "a")
+                    self.clip_check_file(file_path, "a", progress)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} while clip and max volume checking audio file: {file_path}", stack_info=True)

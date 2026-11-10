@@ -38,8 +38,9 @@ from src.core.errors import JSONOutputError                 # for missing FFmpeg
 from src.core.errors import PathInfoError                   # for missing generated-file paths
 
 # Local Module Classes
-from src.dir_processing import DirectoryProcessing          # for directory processing functionality
+from src.core.progress import ProgressReporter               # progress reporting interface
 from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functionality
+from src.dir_processing import DirectoryProcessing          # for directory processing functionality
 
 ## @var logger
 # @brief Logger instance for the module.
@@ -157,7 +158,12 @@ class AudioNormalization():
 
 
 
-    def get_ebu_loudness_info(self, file_path: str, show_spinner: bool = True) -> dict:
+    def get_ebu_loudness_info(
+        self,
+        file_path: str,
+        show_spinner: bool = True,
+        progress: ProgressReporter | None = None
+    ) -> dict:
         '''
         @brief Gets EBU loudness statistics from an audio file.
 
@@ -186,6 +192,7 @@ class AudioNormalization():
         @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The path to the audio file.
         @param show_spinner {bool} Whether to display a spinner while retrieving statistics.
+        @param progress {ProgressReporter | None} Optional progress reporter.
         @return {dict} FFmpeg's input integrated loudness, true peak, loudness range, and threshold.
 
         @exception Exception A generic exception if an unexpected error occurs during the retrieval of loudnorm statistics.
@@ -205,7 +212,7 @@ class AudioNormalization():
 
             if show_spinner:
                 stats_text = "Retrieving loudnorm statistics"
-                stats_process, _ = subprocess_utils.spinner_subprocess_run(stats_command, stats_text)
+                stats_process, _ = subprocess_utils.spinner_subprocess_run(stats_command, stats_text, progress)
             else:
                 stats_process = subprocess_utils.subprocess_run(stats_command)
 
@@ -217,7 +224,13 @@ class AudioNormalization():
             raise e_error
 
 
-    def ebu_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True) -> None:
+    def ebu_normalize_file(
+        self,
+        file_path: str,
+        target: str = None,
+        show_spinner: bool = True,
+        progress: ProgressReporter | None = None
+    ) -> None:
         '''
         @brief Normalizes an audio file to the EBU R128 standard, optionally specifying a target directory.
 
@@ -271,6 +284,7 @@ class AudioNormalization():
         @param file_path {str} The full file path for mp3 audio file.
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
+        @param progress {ProgressReporter | None} Optional progress reporter.
         @return {None} This function does not return any value.
 
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
@@ -329,9 +343,11 @@ class AudioNormalization():
             data.append(stats_pre_text)
 
             if show_spinner:
-                stats_process, stats_spinner = subprocess_utils.spinner_subprocess_run(stats_command, stats_text)
-                stats_time = stats_spinner.elapsed_time
-                stats_post_text = f"Analyzed loudnorm stats in {stats_time:.2f} secs"
+                stats_process, stats_time = subprocess_utils.spinner_subprocess_run(stats_command, stats_text, progress)
+                if progress is not None:
+                    stats_post_text = f"Analyzed loudnorm stats in {stats_time:.2f} secs"
+                else:
+                    stats_post_text = "Analyzed loudnorm stats"
             else:
                 stats_process = subprocess_utils.subprocess_run(stats_command)
                 stats_post_text = "Analyzed loudnorm stats"
@@ -372,14 +388,18 @@ class AudioNormalization():
             data.append(post_text)
 
             if show_spinner:
-                normalize_process, normalize_spinner = subprocess_utils.spinner_subprocess_run(
+                normalize_process, normalization_time = subprocess_utils.spinner_subprocess_run(
                     normalize_command,
                     normalizing_text,
+                    progress,
                 )
-                normalization_time = normalize_spinner.elapsed_time
-                apply_post_text = f"Applied loudnorm stats in {normalization_time:.2f} secs"
-                total_time = normalization_time + stats_time
-                total_time_text = f" in total time {total_time:.2f} secs\n "
+                if progress is not None:
+                    apply_post_text = f"Applied loudnorm stats in {normalization_time:.2f} secs"
+                    total_time = normalization_time + stats_time
+                    total_time_text = f" in total time {total_time:.2f} secs\n "
+                else:
+                    apply_post_text = "Applied loudnorm stats"
+                    total_time_text = ""
             else:
                 normalize_process = subprocess_utils.subprocess_run(normalize_command)
                 apply_post_text = "Applied loudnorm stats"
@@ -591,7 +611,14 @@ class AudioNormalization():
             return volumes
 
 
-    def level_normalize_walk(self, tld_path: str, norm_type: str, target: str = None, show_spinner: bool = True) -> None:
+    def level_normalize_walk(
+        self,
+        tld_path: str,
+        norm_type: str,
+        target: str = None,
+        show_spinner: bool = True,
+        progress: ProgressReporter | None = None
+    ) -> None:
         '''
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
@@ -603,6 +630,7 @@ class AudioNormalization():
         @param norm_type {str} The type of normalization to perform.
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
+        @param progress {ProgressReporter | None} Optional progress reporter.
         @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -623,11 +651,11 @@ class AudioNormalization():
                     input_file_path = os.path.join(dir_path, file)
 
                     if norm_type == "ebu":
-                        self.ebu_normalize_file(input_file_path, target, show_spinner)
+                        self.ebu_normalize_file(input_file_path, target, show_spinner, progress)
                     elif norm_type == "peak":
-                        self.peak_normalize_file(input_file_path, target, show_spinner)
+                        self.peak_normalize_file(input_file_path, target, show_spinner, progress)
                     elif norm_type == "rms":
-                        self.rms_normalize_file(input_file_path, target, show_spinner)
+                        self.rms_normalize_file(input_file_path, target, show_spinner, progress)
 
         except Exception as e_error:
             logger.exception(
@@ -638,7 +666,13 @@ class AudioNormalization():
             raise e_error
 
 
-    def peak_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True) -> None:
+    def peak_normalize_file(
+        self,
+        file_path: str,
+        target: str = None,
+        show_spinner: bool = True,
+        progress: ProgressReporter | None = None
+    ) -> None:
         '''
         @brief Peak normalizes audio file level.
 
@@ -665,6 +699,7 @@ class AudioNormalization():
         @param file_path {str} The full file path for mp3 audio file.
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
+        @param progress {ProgressReporter | None} Optional progress reporter.
         @return {None} This function does not return any value.
 
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
@@ -746,8 +781,11 @@ class AudioNormalization():
             data.append(command)
 
             if show_spinner:
-                _, spinner = subprocess_utils.spinner_subprocess_run(command, text)
-                success_text = f"Successful peak normalization on {input_path_basename} in {spinner.elapsed_time:.2f} secs\n"
+                _, elapsed = subprocess_utils.spinner_subprocess_run(command, text, progress)
+                if progress is not None:
+                    success_text = f"Successful peak normalization on {input_path_basename} in {elapsed:.2f} secs\n"
+                else:
+                    success_text = f"Successful peak normalization on {input_path_basename}"
             else:
                 _ = subprocess_utils.subprocess_run(command)
                 success_text = f"Successful peak normalization on {input_path_basename}"
@@ -762,7 +800,13 @@ class AudioNormalization():
             raise e_error
 
 
-    def rms_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True) -> None:
+    def rms_normalize_file(
+        self,
+        file_path: str,
+        target: str = None,
+        show_spinner: bool = True,
+        progress: ProgressReporter | None = None
+    ) -> None:
         '''
         @brief RMS normalizes audio file level.
 
@@ -789,6 +833,7 @@ class AudioNormalization():
         @param file_path {str} The full file path for mp3 audio file.
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
+        @param progress {ProgressReporter | None} Optional progress reporter.
         @return {None} This function does not return any value.
 
         @exception PathInfoError Indicates directory_processing.path_info function returned None.
@@ -876,8 +921,11 @@ class AudioNormalization():
             data.append(command)
 
             if show_spinner:
-                _, spinner = subprocess_utils.spinner_subprocess_run(command, text)
-                success_text = f"Successful rms normalization on {input_path_basename} in {spinner.elapsed_time:.2f} secs\n"
+                _, elapsed = subprocess_utils.spinner_subprocess_run(command, text, progress)
+                if progress is not None:
+                    success_text = f"Successful rms normalization on {input_path_basename} in {elapsed:.2f} secs\n"
+                else:
+                    success_text = f"Successful rms normalization on {input_path_basename}"
             else:
                 _ = subprocess_utils.subprocess_run(command)
                 success_text = f"Successful rms normalization on {input_path_basename}"

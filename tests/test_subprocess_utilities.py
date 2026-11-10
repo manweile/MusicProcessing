@@ -37,6 +37,7 @@ from src.core.errors import FfmpegProcessError              # for expected ffmpe
 
 # Local Module Classes
 from src.core.subprocess_utils import SubprocessUtilities   # for subprocess functionality under test
+from tests.support import FakeProgress                      # recording progress reporter
 
 ## @var subprocess_utils
 # @brief SubprocessUtilities instance under test.
@@ -173,12 +174,38 @@ class TestSubprocessUtilities(TestCase):
         mpeg_process = None
 
         with self.assertRaises(FfmpegProcessError) as cm:
-            mpeg_process = subprocess_utils.spinner_popen_pipe(self.file_path, self.ffmpeg_command, show_spinner=False)
+            mpeg_process = subprocess_utils.spinner_popen_pipe(self.file_path, self.ffmpeg_command)
 
         self.assertIsNone(mpeg_process)
         self.assertEqual("FfmpegProcessError", cm.exception.__class__.__name__)
         err_msg = f"FfmpegProcessError running command {shlex.join(self.ffmpeg_command)}"
         self.assertTrue(cm.exception.args[0], err_msg)
+
+
+    def test_spinner_subprocess_run_reports_elapsed_time(self):
+        '''
+        @brief Tests subprocess progress reporting and elapsed time.
+
+        @details Verifies the progress lifecycle and elapsed value are returned with the process.
+
+        @param self {TestSubprocessUtilities} The instance of the test class.
+        '''
+
+        process = Mock()
+        progress = FakeProgress(1.25)
+
+        # Patch subprocess.run to return a mocked process and test spinner_subprocess_run with FakeProgress.
+        with patch("src.core.subprocess_utils.subprocess.run", return_value=process):
+            actual_process, elapsed = subprocess_utils.spinner_subprocess_run(
+                self.ffmpeg_command,
+                "Running test command",
+                progress,
+            )
+
+        self.assertIs(process, actual_process)
+        self.assertEqual(1.25, elapsed)
+        self.assertEqual([(None, "Running test command")], progress.starts)
+        self.assertEqual(1, progress.finish_calls)
 
 
     def test_popen_pipe_ffprobe_invalid_data(self):

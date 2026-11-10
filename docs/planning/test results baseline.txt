@@ -13,6 +13,12 @@ Ran 147 tests in 261.766s
 
 OK
 
+----------------------------------------------------------------------
+Ran 150 tests in 236.389s
+
+OK
+Finished running tests!
+
 There 3 test suites with sub tests, for total of 9
 Thats why test UI says 156 tests, but results say 147
 

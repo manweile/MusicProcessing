@@ -13,4 +13,16 @@
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-__all__ = []
+# Local Module Classes
+from src.core.null_progress import NullProgress                  # no-op progress reporter
+from src.core.progress import ProgressReporter                   # progress reporting interface
+
+## @var __all__
+# @brief Exposes class for importing by other modules.
+# @details  In modules needing the class, add `from src.core import NullProgress`
+# @details  In modules needing the class, add `from src.core import ProgressReporter`
+
+__all__ = [
+    "NullProgress",
+    "ProgressReporter"
+]

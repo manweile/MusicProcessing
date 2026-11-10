@@ -108,7 +108,7 @@ class TestAudioUtilities(TestCase):
         loudness_info = normalization.get_ebu_loudness_info
 
         # Patch the get_ebu_loudness_info function to control its behavior during the test
-        with patch.object(normalization, info_func, side_effect=lambda file_path: loudness_info(file_path, show_spinner=False)):
+        with patch.object(normalization, info_func, side_effect=lambda file_path, **kwargs: loudness_info(file_path, show_spinner=False)):
             utilities.clip_check_walk(converted_tld)
 
         #  verify output txt file exists

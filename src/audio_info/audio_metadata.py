@@ -70,8 +70,9 @@ from src.core.errors import PathInfoError                   # for handling path 
 
 # Local Module Classes
 from src.audio_normalize import AudioNormalization          # for audio normalization functionality
-from src.dir_processing import DirectoryProcessing          # for directory processing functionality
+from src.core.progress import ProgressReporter               # progress reporting interface
 from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functionality
+from src.dir_processing import DirectoryProcessing          # for directory processing functionality
 
 ## @var logger
 # @brief Logger instance for the module.
@@ -425,7 +426,13 @@ class AudioMetadata():
             return id3_tags
 
 
-    def convert_file(self, file_path: str = None, target: str = None, show_spinner: bool = True) -> None:
+    def convert_file(
+        self,
+        file_path: str = None,
+        target: str = None,
+        show_spinner: bool = True,
+        progress: ProgressReporter | None = None
+    ) -> None:
         '''
         @brief Converts an acceptable audio file to mp3 audio file, using ffmpeg directly.
 
@@ -459,6 +466,7 @@ class AudioMetadata():
         @param file_path {str} The path for audio file to be converted.
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Show spinner flag.
+        @param progress {ProgressReporter | None} Optional progress reporter.
         @return {None} This function does not return any value.
 
         @exception MetadataTypeError Indicates a non-standard metadata type was encountered.
@@ -541,8 +549,11 @@ class AudioMetadata():
             # specify the output with overwrite flag, always want clean output
             command.extend([export_path, '-y'])
 
-            success_msg = None
-            success_msg = subprocess_utils.spinner_popen_pipe(export_path, command, show_spinner)
+            success_msg = subprocess_utils.spinner_popen_pipe(
+                export_path,
+                command,
+                progress if show_spinner else None,
+            )
             if success_msg is not None:
                 data.append(success_msg)
 
@@ -576,7 +587,14 @@ class AudioMetadata():
             raise e_error
 
 
-    def convert_walk(self, start_path: str, file_pattern: str, target: str = None, show_spinner: bool = True) -> None:
+    def convert_walk(
+        self,
+        start_path: str,
+        file_pattern: str,
+        target: str = None,
+        show_spinner: bool = True,
+        progress: ProgressReporter | None = None
+    ) -> None:
         '''
         @brief Converts all audio files found in specified path to mp3 format.
 
@@ -590,6 +608,7 @@ class AudioMetadata():
         @param file_pattern {str} Optional, the audio file pattern we want to transform.
         @param target {str} Optional, the target directory for exported files. Defaults to None.
         @param show_spinner {bool} Optional, whether to display a spinner during conversion. Defaults to True.
+        @param progress {ProgressReporter | None} Optional progress reporter.
         @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -617,7 +636,7 @@ class AudioMetadata():
                             continue
 
                     input_file_path = os.path.join(dir_path, file)
-                    self.convert_file(input_file_path, target, show_spinner)
+                    self.convert_file(input_file_path, target, show_spinner, progress)
 
         except Exception as e_error:
             if file_pattern:

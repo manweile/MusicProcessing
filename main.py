@@ -20,6 +20,7 @@ import os                                                   # operating system m
 import re                                                   # regular expression module
 import shutil                                               # terminal size lookup module
 import sys                                                  # system-specific parameters and functions module
+from typing import Any                                      # for the temporary spinner handle
 
 # Local Module Methods
 from src.core.logging_config import bootstrap_logging       # for package logging startup
@@ -63,6 +64,7 @@ from src.audio_info import AudioMetadata                    # noqa: E402, audio 
 from src.audio_info import AudioPlaylist                    # noqa: E402, audio playlist handling class
 from src.audio_info import AudioUtilities                   # noqa: E402, audio utility functions class
 from src.audio_normalize import AudioNormalization          # noqa: E402, audio normalization handling class
+from src.core.progress import ProgressReporter               # noqa: E402, progress reporting interface
 from src.dir_processing import DirectoryProcessing          # noqa: E402, directory processing handling class
 
 # importing gui application runner can also register handlers, must also be after registering package logging
@@ -126,6 +128,78 @@ playlist = AudioPlaylist()
 # @brief Utility functions instance.
 # @details Provides various utility functions for the application.
 utilities = AudioUtilities()
+
+
+class YaspinProgress(ProgressReporter):
+    '''
+    @brief Adapts the CLI spinner to the progress reporting interface.
+
+    @details Provides the temporary CLI display until the CLI progress module is introduced.
+    '''
+
+
+    def __init__(self) -> None:
+        '''
+        @brief Initializes the temporary CLI progress reporter.
+
+        @details Defers importing yaspin until a CLI operation starts.
+
+        @param self {YaspinProgress} The progress reporter.
+        '''
+
+        self._spinner: Any = None
+
+
+    def advance(self, step: int) -> None:
+        '''
+        @brief Accepts a progress advance.
+
+        @details The temporary CLI reporter only supports indeterminate spinner operations.
+
+        @param self {YaspinProgress} The progress reporter.
+        @param step {int} The number of completed steps.
+        '''
+
+        pass
+
+
+    def finish(self) -> float:
+        '''
+        @brief Stops the CLI spinner and returns elapsed time.
+
+        @details Stops the active spinner when one has been started.
+
+        @param self {YaspinProgress} The progress reporter.
+
+        @retval {float} Elapsed time in seconds.
+        '''
+
+        if self._spinner is None:
+            return 0.0
+
+        spinner = self._spinner
+        self._spinner = None
+        spinner.__exit__(None, None, None)
+
+        return spinner.elapsed_time
+
+
+    def start(self, total: int | None, description: str) -> None:
+        '''
+        @brief Starts the CLI spinner.
+
+        @details Creates a yaspin spinner for indeterminate progress.
+
+        @param self {YaspinProgress} The progress reporter.
+        @param total {int | None} The total number of progress steps, or None for indeterminate progress.
+        @param description {str} A description of the operation.
+        '''
+
+        from yaspin import yaspin                            # for CLI progress indication
+        from yaspin.spinners import Spinners                 # for the CLI spinner definition
+
+        self._spinner = yaspin(Spinners.dots, text=description, timer=True)
+        self._spinner.__enter__()
 
 
 class CustomHelpFormatter(argparse.HelpFormatter):
@@ -254,7 +328,7 @@ def clip_check_file(file_path):
     @param file_path {str} The full path to the audio file.
     '''
 
-    utilities.clip_check_file(file_path)
+    utilities.clip_check_file(file_path, progress=YaspinProgress())
 
 
 def clip_check_walk(tld_path):
@@ -266,7 +340,7 @@ def clip_check_walk(tld_path):
     @param tld_path {str} The tld, or fld path that contains all the music files.
     '''
 
-    utilities.clip_check_walk(tld_path)
+    utilities.clip_check_walk(tld_path, progress=YaspinProgress())
 
 
 def convert_file(file_path, target):
@@ -280,7 +354,7 @@ def convert_file(file_path, target):
     @param target {str} The optional target directory for exported files.
     '''
 
-    metadata.convert_file(file_path, target)
+    metadata.convert_file(file_path, target, progress=YaspinProgress())
 
 
 def convert_walk(tld_path, file_pattern, target):
@@ -296,7 +370,7 @@ def convert_walk(tld_path, file_pattern, target):
     @param target {str} The optional target directory for exported files.
     '''
 
-    metadata.convert_walk(tld_path, file_pattern, target)
+    metadata.convert_walk(tld_path, file_pattern, target, progress=YaspinProgress())
 
 
 def create_albums(tld_path):
@@ -323,7 +397,7 @@ def ebu_file(file_path, target):
     @param target {str} The optional target directory for exported files.
     '''
 
-    normalization.ebu_normalize_file(file_path, target)
+    normalization.ebu_normalize_file(file_path, target, progress=YaspinProgress())
 
 
 def extract_album_art(file_path):
@@ -417,7 +491,7 @@ def level_normalize_walk(tld_path, norm_type, target):
     @param target {str} The optional target directory for exported files.
     '''
 
-    normalization.level_normalize_walk(tld_path, norm_type, target)
+    normalization.level_normalize_walk(tld_path, norm_type, target, progress=YaspinProgress())
 
 
 def normalize_filename(file_path):
@@ -454,7 +528,7 @@ def peak_file(file_path, target):
     @param target {str} The optional target directory for exported files.
     '''
 
-    normalization.peak_normalize_file(file_path, target)
+    normalization.peak_normalize_file(file_path, target, progress=YaspinProgress())
 
 
 def remove_empty_albums(tld_path):
@@ -517,7 +591,7 @@ def rms_file(file_path, target):
     @param target {str} The optional target directory for exported files.
     '''
 
-    normalization.rms_normalize_file(file_path, target)
+    normalization.rms_normalize_file(file_path, target, progress=YaspinProgress())
 
 
 def set_album_art(tld_path):
