@@ -126,7 +126,8 @@ MusicProcessing/
 │   │   ├── logging_config.py
 │   │   ├── level_filter.py
 │   │   ├── paths.py                  # GENERATED_PATH, RESOURCES_PATH
-│   │   ├── progress.py               # ProgressReporter protocol + NullProgress (default no-op)
+│   │   ├── progress.py               # ProgressReporter protocol
+│   │   ├── null_progress.py          # NullProgress (default no-op)
 │   │   └── subprocess_utils.py       # run(cmd, progress=None); no yaspin import
 │   │
 │   ├── models/                       # New, domain logic; no wx, argparse, tqdm or yaspin imports
@@ -879,7 +880,8 @@ COMPLETED
     - After Step 7, the full suite must pass using the new paths; the removed old paths are no longer supported. COMPLETED
 
 4. Milestone 4: Progress interface IN PROGRESS
-  - Add `core/progress.py` with `ProgressReporter` (`start(total, description)`, `advance(step)`, `finish()`) and a no-op `NullProgress`.
+  - Add `core/progress.py` with the `ProgressReporter` protocol (`start(total, description)`, `advance(step)`, `finish()`).
+  - Add `core/null_progress.py` with the no-op `NullProgress` implementation; re-export both from `core/__init__.py`.
   - `total=None` means indeterminate (spinner).
   - `finish()` returns the elapsed time in seconds (float).
     - Callers currently read `spinner.elapsed_time` (`audio_normalization.py` ebu/peak/rms success messages, `spinner_popen_pipe` success message);
@@ -887,10 +889,10 @@ COMPLETED
     - `NullProgress.finish()` returns 0.0 and `FakeProgress` returns a settable value.
   - `yaspin` and `tqdm` are NOT removed from the project:
     - they stay as the CLI display, in `cli/progress.py` (Milestone 6). Milestone 4 only moves them out of `core/`.
-  - Files: `src/core/progress.py`, `tests/support.py`
+  - Files: `src/core/progress.py`, `src/core/null_progress.py`, `src/core/__init__.py`, `tests/support.py`, `tests/test_progress.py`, `tests/test_null_progress.py`
   - Work:
     - add a recording `FakeProgress` to `tests/support.py`
-    - unit-test `NullProgress` and `FakeProgress` semantics (including the `finish()` elapsed return)
+    - test `FakeProgress` semantics in `tests/test_progress.py` and `NullProgress` no-op semantics in `tests/test_null_progress.py` (including the `finish()` elapsed return)
     - once `core/subprocess_utils.py` exists (Milestone 3):
       - replace its `yaspin` use (`spinner_popen_pipe`, `spinner_subprocess_run`) with `ProgressReporter` calls:
         - (`start(None, ...)` and `finish()`) taking an optional `progress=None` (defaults to `NullProgress`)
