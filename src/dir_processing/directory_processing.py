@@ -66,7 +66,7 @@ class DirectoryProcessing():
     @details Provides methods to create generated files and maintain music-directory content.
     '''
 
-    def __init__(self) -> None:
+    def __init__(self):
         '''
         @brief Initializes the DirectoryProcessing class.
 

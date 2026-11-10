@@ -85,7 +85,7 @@ class AudioArt():
     @details Provides methods for extracting, processing, and managing album art associated with audio files.
     '''
 
-    def __init__(self) -> None:
+    def __init__(self):
         '''
         @brief Initializes the AudioArt class.
 
@@ -236,6 +236,7 @@ class AudioArt():
 
         @param self {AudioArt} The instance of the class.
         @param file_path {str} The full path to audio file.
+
         @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.

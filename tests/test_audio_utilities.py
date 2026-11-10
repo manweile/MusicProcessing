@@ -77,6 +77,7 @@ class TestAudioUtilities(TestCase):
 
             # Prepare the patch objects for mocking the utility functions
             patch_volume_info = patch(get_volume_info_path, return_value=volume_info)
+            # since we mocked the EBU info, we don't need to worry about the spinner for it
             patch_ebu_info = patch(get_ebu_info_path, return_value=ebu_info)
             patch_create_txt = patch(create_txt_path)
 
@@ -104,10 +105,12 @@ class TestAudioUtilities(TestCase):
 
         # walk through audio test fixtures in the top-level music directory
         converted_tld = TESTS_TLD
+
+        # patch object get_ebu_loudness_info
         info_func = "get_ebu_loudness_info"
         loudness_info = normalization.get_ebu_loudness_info
 
-        # Patch the get_ebu_loudness_info function to control its behavior during the test
+        # for headless test, disable the spinner by passing show_spinner=False and not sending a progress reporter
         with patch.object(normalization, info_func, side_effect=lambda file_path, **kwargs: loudness_info(file_path, show_spinner=False)):
             utilities.clip_check_walk(converted_tld)
 

@@ -260,7 +260,7 @@ class AudioMetadata():
     @details Provides methods for handling and updating audio file metadata across different formats.
     '''
 
-    def __init__(self) -> None:
+    def __init__(self):
         '''
         @brief Initializes the AudioMetadata class.
 
@@ -543,11 +543,11 @@ class AudioMetadata():
             # specify the output with overwrite flag, always want clean output
             command.extend([export_path, '-y'])
 
-            success_msg = subprocess_utils.spinner_popen_pipe(
-                export_path,
-                command,
-                progress if show_spinner else None,
-            )
+            progress_reporter = None
+            if show_spinner:
+                progress_reporter = progress
+
+            success_msg = subprocess_utils.spinner_popen_pipe(export_path, command, progress_reporter)
             if success_msg is not None:
                 data.append(success_msg)
 

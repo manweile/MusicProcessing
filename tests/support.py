@@ -1,6 +1,6 @@
 '''
-@module tests.support
-@file support.py
+@package tests.support
+@file tests/support.py
 @author Gerald Manweiler
 
 @brief Defines shared test support functions.
@@ -28,7 +28,7 @@ class FakeProgress(ProgressReporter):
     '''
 
 
-    def __init__(self, elapsed_time: float = 0.0) -> None:
+    def __init__(self, elapsed_time: float = 0.0):
         '''
         @brief Initializes the fake progress reporter.
 
@@ -38,13 +38,14 @@ class FakeProgress(ProgressReporter):
         @param elapsed_time {float} The elapsed time finish() returns.
         '''
 
+        # Initialize call records for advances, starts, and finish calls.
         self.advances: list[int] = []
         self.elapsed_time = elapsed_time
         self.finish_calls = 0
         self.starts: list[tuple[int | None, str]] = []
 
 
-    def advance(self, step: int) -> None:
+    def advance(self, step: int):
         '''
         @brief Records a progress advance.
 
@@ -68,11 +69,12 @@ class FakeProgress(ProgressReporter):
         @retval {float} The configured elapsed time in seconds.
         '''
 
+        # Record the finish call and return the configured elapsed time.
         self.finish_calls += 1
         return self.elapsed_time
 
 
-    def start(self, total: int | None, description: str) -> None:
+    def start(self, total: int | None, description: str):
         '''
         @brief Records the start of a progress operation.
 
@@ -83,22 +85,27 @@ class FakeProgress(ProgressReporter):
         @param description {str} A description of the operation.
         '''
 
+        # Record the start call with the total and description.
         self.starts.append((total, description))
 
 
-def get_method_names(cls):
+def get_method_names(cls) -> list[str]:
     '''
     @brief Get names of test methods defined by a class.
 
     @details Filters class methods to names that begin with the test prefix.
 
     @param cls {type} Class containing test methods.
-    @return method_names {list[str]} Names of test methods defined by the class.
+
+    @retval method_names {list[str]} Names of test methods defined by the class.
     '''
 
     method_names = []
+
+    # Iterate over all members of the class and collect test method names.
     for name, obj in inspect.getmembers(cls):
         if inspect.isfunction(obj) or inspect.ismethod(obj):
             if name.startswith('test_'):
                 method_names.append(name)
+
     return method_names

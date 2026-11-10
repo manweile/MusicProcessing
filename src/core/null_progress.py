@@ -5,7 +5,8 @@
 
 @brief Defines the no-op progress reporter class.
 
-@details Supports headless operation without displaying progress.
+@details Supports headless operation without displaying progress.<br>
+Intentionally a no-op implementation.
 
 @version 1.0.0
 @date 2026-11-09
@@ -22,7 +23,7 @@ class NullProgress:
     '''
 
 
-    def start(self, total: int | None, description: str) -> None:
+    def start(self, total: int | None, description: str):
         '''
         @brief Starts a no-op progress operation.
 
@@ -36,7 +37,7 @@ class NullProgress:
         pass
 
 
-    def advance(self, step: int) -> None:
+    def advance(self, step: int):
         '''
         @brief Advances a no-op progress operation.
 
@@ -57,7 +58,8 @@ class NullProgress:
 
         @param self {NullProgress} The progress reporter.
 
-        @retval {float} Zero elapsed seconds.
+        @retval zero_elapsed {float} Zero elapsed seconds.
         '''
 
-        return 0.0
+        zero_elapsed = 0.0
+        return zero_elapsed

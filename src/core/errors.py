@@ -1,6 +1,6 @@
 '''
-@module errors
-@file src/core/errors.py
+@module src.core.errors
+@file errors.py
 @author Gerald Manweiler
 
 @brief Defines the errors module

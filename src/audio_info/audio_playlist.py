@@ -64,7 +64,7 @@ class AudioPlaylist():
     @details Provides methods that update M3U playlist entries for the project's music collection.
     '''
 
-    def __init__(self) -> None:
+    def __init__(self):
         '''
         @brief Initializes the AudioPlaylist class.
 

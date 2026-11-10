@@ -1,6 +1,6 @@
 '''
 @class SubprocessUtilities
-@file src/core/subprocess_utils.py
+@file subprocess_utils.py
 @author Gerald Manweiler
 
 @brief Defines the subprocess utilities class.
@@ -85,13 +85,9 @@ class SubprocessUtilities():
         '''
 
         try:
-            res = subprocess.Popen(
-                command,
-                stdout=PIPE,
-                stderr=PIPE
-            )
+            res = subprocess.Popen(command, stdout=PIPE, stderr=PIPE)
 
-            # ffprobe returns via stdout (unlike ffmpeg, which uses stderr)
+            # ffprobe returns via stdout (unlike ffmpeg, which uses stderr), but we still capture stderr for error reporting
             stdout_bytes, stderr_bytes = res.communicate()
             stdout = stdout_bytes.decode(UTF8)
             std_err = stderr_bytes.decode(UTF8)
@@ -119,12 +115,13 @@ class SubprocessUtilities():
         '''
         @brief Runs command in a new process while reporting indeterminate progress.
 
-        @details Runs an FFmpeg command asynchronously and redirects output to standard error.
+        @details Runs an FFmpeg command asynchronously and redirects output to standard error.<br>
+        Since ffmpeg outputs progress information to standard error, ignore standard output and process stderr for return.
 
         @param self {SubprocessUtilities} The instance of the class.
         @param export_path {str} Path to destination audio file.
         @param command {list[str]} FFmpeg command for Popen to run.
-        @param progress {ProgressReporter | None} Optional progress reporter.
+        @param progress {ProgressReporter | None} Optional progress reporter for cli/gui mode.
 
         @retval success_msg {str} Success message on completion.
 
@@ -136,31 +133,28 @@ class SubprocessUtilities():
             input_path = Path(export_path)
             input_file_name = input_path.stem
             text = f"Converting {input_file_name}"
-            reporter = progress if progress is not None else NullProgress()
+
+            reporter = progress
+            if reporter is None:
+                reporter = NullProgress()
+
+            # its for a toast, so no detailed progress needed
             reporter.start(None, text)
             elapsed = 0.0
 
+            # nested try-finally to ensure progress reporting and elapsed time capture
             try:
+                # null progress means we don't need to report detailed progress, just run the command and capture command output
                 if isinstance(reporter, NullProgress):
                     with open(os.devnull, 'rb') as devnull:
-                        p = subprocess.Popen(
-                            command,
-                            stdin=devnull,
-                            stdout=PIPE,
-                            stderr=PIPE,
-                        )
+                        p = subprocess.Popen(command, stdin=devnull, stdout=PIPE, stderr=PIPE)
 
                     p_out, p_err = p.communicate()
                     std_err = p_err.decode(errors='ignore')
                 else:
                     with open(os.devnull, 'rb') as devnull:
-                        p = subprocess.Popen(
-                            command,
-                            stdin=devnull,
-                            stdout=PIPE,
-                            stderr=PIPE,
-                            universal_newlines=True
-                        )
+                        # need newlines true because we want to read lines from stderr as text
+                        p = subprocess.Popen(command, stdin=devnull, stdout=PIPE, stderr=PIPE, universal_newlines=True)
 
                     while True:
                         line = p.stderr.readline()
@@ -198,7 +192,8 @@ class SubprocessUtilities():
         '''
         @brief Runs a command in a subprocess while reporting indeterminate progress.
 
-        @details Runs a subprocess command and returns the completed process and elapsed time.
+        @details Runs a subprocess command and returns the completed process and elapsed time.<br>
+        If no progress reporter is provided, a NullProgress instance is used.
 
         @param self {SubprocessUtilities} The instance of the class.
         @param command {list[str]} Command for subprocess to run.
@@ -212,19 +207,20 @@ class SubprocessUtilities():
         @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
-        reporter = progress if progress is not None else NullProgress()
-        elapsed = 0.0
         try:
+            # use the provided progress reporter, or default to NullProgress if none is supplied
+            reporter = progress
+            if reporter is None:
+                reporter = NullProgress()
+
+            # its for a toast, so no detailed progress needed
             reporter.start(None, text)
+            elapsed = 0.0
+
+            # nested try-finally to ensure progress reporter finish is called even if subprocess.run raises an exception
             try:
                 # Check raises CalledProcessError; capture_output and text collect decoded standard streams
-                process = subprocess.run(
-                    command,
-                    check=True,
-                    capture_output=True,
-                    encoding=UTF8,
-                    text=True
-                )
+                process = subprocess.run(command, check=True, capture_output=True, encoding=UTF8, text=True)
             finally:
                 elapsed = reporter.finish()
 
@@ -266,14 +262,7 @@ class SubprocessUtilities():
 
         try:
             # Check raises CalledProcessError; capture_output and text collect decoded standard streams
-
-            process = subprocess.run(
-                command,
-                check=True,
-                capture_output=True,
-                encoding=UTF8,
-                text=True
-            )
+            process = subprocess.run(command, check=True, capture_output=True, encoding=UTF8, text=True)
 
         except CalledProcessError as cp_error:
             logger.exception(f"CalledProcessError returncode: {cp_error.returncode} on command {cp_error.cmd}", stack_info=True)

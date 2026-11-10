@@ -1,4 +1,3 @@
-
 '''
 @class AudioUtilities
 @file audio_utilities.py
@@ -71,17 +70,19 @@ class AudioUtilities():
     @details Provides utility methods that coordinate audio processing operations across project components.
     '''
 
-    def __init__(self) -> None:
+    def __init__(self):
         '''
         @brief Initializes the AudioUtilities class.
 
         @details Initializes an AudioUtilities instance without instance-specific state.
+
+        @param self {AudioUtilities} The instance of the class.
         '''
 
         pass
 
 
-    def clip_check_file(self, file_path: str, text_mode: str | None = None, progress: ProgressReporter | None = None) -> None:
+    def clip_check_file(self, file_path: str, text_mode: str | None = None, progress: ProgressReporter | None = None):
         '''
         @brief Checks for potential clipping and headroom in a single MP3 file.
 
@@ -216,7 +217,7 @@ class AudioUtilities():
             raise e_error
 
 
-    def clip_check_walk(self, tld_path: str, progress: ProgressReporter | None = None) -> None:
+    def clip_check_walk(self, tld_path: str, progress: ProgressReporter | None = None):
         '''
         @brief Analyzes volume and ebu loudness for MP3 files.
 

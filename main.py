@@ -138,7 +138,7 @@ class YaspinProgress(ProgressReporter):
     '''
 
 
-    def __init__(self) -> None:
+    def __init__(self):
         '''
         @brief Initializes the temporary CLI progress reporter.
 
@@ -150,7 +150,7 @@ class YaspinProgress(ProgressReporter):
         self._spinner: Any = None
 
 
-    def advance(self, step: int) -> None:
+    def advance(self, step: int):
         '''
         @brief Accepts a progress advance.
 
@@ -184,7 +184,7 @@ class YaspinProgress(ProgressReporter):
         return spinner.elapsed_time
 
 
-    def start(self, total: int | None, description: str) -> None:
+    def start(self, total: int | None, description: str):
         '''
         @brief Starts the CLI spinner.
 
@@ -229,7 +229,7 @@ class CustomHelpFormatter(argparse.HelpFormatter):
         super().__init__(prog, max_help_position=max_help_position, width=width)
 
 
-    def _format_action(self, action):
+    def _format_action(self, action) -> str:
         '''
         @brief Formats help descriptions at a fixed column.
 
@@ -237,7 +237,8 @@ class CustomHelpFormatter(argparse.HelpFormatter):
 
         @param self {CustomHelpFormatter} The instance of the custom help formatter.
         @param action {argparse.Action} The action being formatted.
-        @return {str} Formatted help string for the action.
+
+        @retval formatted {str} Formatted help string for the action.
         '''
 
         # Check if the action is the root help action (top-level help)

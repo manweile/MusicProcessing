@@ -72,7 +72,7 @@ class AudioNormalization():
     @details Provides methods to analyze audio levels and apply supported normalization strategies.
     '''
 
-    def __init__(self) -> None:
+    def __init__(self):
         '''
         @brief Initializes the AudioNormalization class.
 
@@ -111,21 +111,22 @@ class AudioNormalization():
 
         @param self {AudioNormalization} The instance of the class.
         @param input_process A subprocess.CompletedProcess instance containing the stderr data.
-        @return A dictionary containing the following FFmpeg loudnorm statistics:
-        - **input_i** *(str)*: Input integrated loudness (numeric string).
-        - **input_tp** *(str)*: Input maximum true peak (numeric string).
-        - **input_lra** *(str)*: Input loudness range target (numeric string).
-        - **input_thresh** *(str)*: Input threshold (numeric string).
-        - **output_i** *(str)*: Output integrated loudness (numeric string).
-        - **output_tp** *(str)*: Output maximum true peak (numeric string).
-        - **output_lra** *(str)*: Output loudness range target (numeric string).
-        - **output_thresh** *(str)*: Output threshold (numeric string).
-        - **normalization_type** *(str)*: Scaling type to apply (alphabetic string).
-        - **target_offset** *(str)*: Offset gain applied before true peak limiter (numeric string).
 
-        @exception JSONOutputError Indicates an error occurred finding the JSON structure.
-        @exception json.JSONDecodeError A native JSON decoding error occurred if the block is malformed.
-        @exception Exception A generic exception if an unexpected error occurs during parsing.
+        @retval output_data {dict} A dictionary containing the following FFmpeg loudnorm statistics:
+        - **input_i** *{str}*: Input integrated loudness (numeric string).
+        - **input_tp** *{str}*: Input maximum true peak (numeric string).
+        - **input_lra** *{str}*: Input loudness range target (numeric string).
+        - **input_thresh** *{str}*: Input threshold (numeric string).
+        - **output_i** *{str}*: Output integrated loudness (numeric string).
+        - **output_tp** *{str}*: Output maximum true peak (numeric string).
+        - **output_lra** *{str}*: Output loudness range target (numeric string).
+        - **output_thresh** *{str}*: Output threshold (numeric string).
+        - **normalization_type** *{str}*: Scaling type to apply (alphabetic string).
+        - **target_offset** *{str}*: Offset gain applied before true peak limiter (numeric string).
+
+        @exception jd_error {JSONDecodeError} A native JSON decoding error occurred if the block is malformed.
+        @exception jo_error {JSONOutputError} Indicates an error occurred finding the JSON structure.
+        @exception e_error {Exception} A generic exception if an unexpected error occurs during parsing.
         '''
 
         try:
@@ -155,7 +156,6 @@ class AudioNormalization():
             raise e_error
         else:
             return output_data
-
 
 
     def get_ebu_loudness_info(self, file_path: str, show_spinner: bool = True, progress: ProgressReporter | None = None) -> dict:
@@ -188,9 +188,10 @@ class AudioNormalization():
         @param file_path {str} The path to the audio file.
         @param show_spinner {bool} Whether to display a spinner while retrieving statistics.
         @param progress {ProgressReporter | None} Optional progress reporter.
-        @return {dict} FFmpeg's input integrated loudness, true peak, loudness range, and threshold.
 
-        @exception Exception A generic exception if an unexpected error occurs during the retrieval of loudnorm statistics.
+        @retval stats_data {dict} FFmpeg's input integrated loudness, true peak, loudness range, and threshold.
+
+        @exception e_error {Exception} A generic exception if an unexpected error occurs during the retrieval of loudnorm statistics.
         '''
 
         try:
@@ -219,7 +220,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def ebu_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None) -> None:
+    def ebu_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None):
         '''
         @brief Normalizes an audio file to the EBU R128 standard, optionally specifying a target directory.
 
@@ -274,10 +275,9 @@ class AudioNormalization():
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
         @param progress {ProgressReporter | None} Optional progress reporter.
-        @return {None} This function does not return any value.
 
-        @exception PathInfoError Indicates directory_processing.path_info function returned None.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception pi_error {PathInfoError} Indicates directory_processing.path_info function returned None.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
         data = []
@@ -435,10 +435,12 @@ class AudioNormalization():
 
         @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The path to the media file.
-        @return bit_rate {int | None} The bitrate in bits per second, or None if not found.
 
-        @exception JSONDecodeError A json decoding error occurred.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @retval bit_rate {int | None} The bitrate in bits per second, or None if not found.
+
+        @exception i_error {IndexError} Raised if the format or bit rate information is missing.
+        @exception jd_error {JSONDecodeError} A json decoding error occurred.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -493,11 +495,12 @@ class AudioNormalization():
 
         @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The full path to audio file.
-        @return sample_rate {int | None} The sample rate in Hz, or None if not found.
 
-        @exception IndexError An index error finding audio stream or sample rate information.
-        @exception JSONDecodeError A json decoding error occurred.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @retval sample_rate {int | None} The sample rate in Hz, or None if not found.
+
+        @exception i_error {IndexError} An index error finding audio stream or sample rate information.
+        @exception jd_error {JSONDecodeError} A json decoding error occurred.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -552,16 +555,13 @@ class AudioNormalization():
 
         @param self {AudioNormalization} The instance of the class.
         @param file_path {str} The full path to audio file.
-        @return volumes {dict} The mean and max volumes of audio file in decibels relative to max PCM value.
-        @code{.text}
-        Key                 |Value
-        --------------------|----------------------------------------
-        mean_value {str}    |the root mean square volume {float}
-        max_volume {str}    |the per-sample maximum volume {float}
-        @endcode
 
-        @exception re.error An error occurred processing a regular expression with re module.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @retval volumes {dict} The mean and max volumes of audio file in decibels relative to max PCM value.
+        - **mean_value** *{float}*: the root mean square volume
+        - **max_volume** *{float}*: the per-sample maximum volume
+
+        @exception re_error {re.error} An error occurred processing a regular expression with re module.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -607,7 +607,7 @@ class AudioNormalization():
         target: str = None,
         show_spinner: bool = True,
         progress: ProgressReporter | None = None
-    ) -> None:
+    ):
         '''
         @brief Normalizes all audio files in specified top level directory per input normalization type.
 
@@ -620,9 +620,8 @@ class AudioNormalization():
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
         @param progress {ProgressReporter | None} Optional progress reporter.
-        @return {None} This function does not return any value.
 
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
@@ -655,7 +654,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def peak_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None) -> None:
+    def peak_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None):
         '''
         @brief Peak normalizes audio file level.
 
@@ -683,10 +682,9 @@ class AudioNormalization():
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
         @param progress {ProgressReporter | None} Optional progress reporter.
-        @return {None} This function does not return any value.
 
-        @exception PathInfoError Indicates directory_processing.path_info function returned None.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception pi_error {PathInfoError} Indicates directory_processing.path_info function returned None.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
         data = []
@@ -783,7 +781,7 @@ class AudioNormalization():
             raise e_error
 
 
-    def rms_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None) -> None:
+    def rms_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None):
         '''
         @brief RMS normalizes audio file level.
 
@@ -811,10 +809,9 @@ class AudioNormalization():
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Whether to display a progress spinner.
         @param progress {ProgressReporter | None} Optional progress reporter.
-        @return {None} This function does not return any value.
 
-        @exception PathInfoError Indicates directory_processing.path_info function returned None.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
+        @exception pi_error {PathInfoError} Indicates directory_processing.path_info function returned None.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
         data = []

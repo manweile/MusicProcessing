@@ -380,7 +380,7 @@ class TestAudioMetadata(TestCase):
         err_msg = f"album directory {input_path_parent} does not contain a {FOLDER_ART} file."
 
         with self.assertRaises(MusicProcessingError) as cm:
-            metadata.convert_file(TEST_MP3_CRUSH, None)
+            metadata.convert_file(TEST_MP3_CRUSH, None, show_spinner=False)
 
         self.assertEqual(cm.exception.message, err_msg)
 
@@ -1294,6 +1294,8 @@ class TestAudioMetadata(TestCase):
                 @brief Initializes the DummyFlacFile instance.
 
                 @details Sets up the tags for the simulated FLAC file.
+
+                @param self {DummyFlac} The instance of the class.
                 '''
 
                 self.tags = {
@@ -1368,6 +1370,8 @@ class TestAudioMetadata(TestCase):
                 @brief Initializes the DummyAudioFile instance.
 
                 @details Sets up the tags and version information for the simulated MP3 file.
+
+                @param self {DummyMp3} The instance of the class.
                 '''
 
                 self.tags = Mock()
@@ -1380,7 +1384,7 @@ class TestAudioMetadata(TestCase):
         # patch the MP3 class and the os.rename function for testing the normalization of MP3 filenames
         mp3_class = "src.audio_info.audio_metadata.MP3"
         rename_func = "src.audio_info.audio_metadata.os.rename"
-        with (patch(mp3_class, DummyMp3), patch.object(metadata, "load_any_file", return_value=DummyMp3()),  patch(rename_func) as mock_rename):
+        with (patch(mp3_class, DummyMp3), patch.object(metadata, "load_any_file", return_value=DummyMp3()), patch(rename_func) as mock_rename):
             metadata.normalize_filename(src_file)
 
         # verify that the os.rename function was called with the correct arguments
@@ -1418,6 +1422,14 @@ class TestAudioMetadata(TestCase):
         # Create a dummy MP4 file class to simulate the behavior of the actual MP4 file.
         class DummyMp4:
             def __init__(self):
+                '''
+                @brief Initializes the DummyMp4 class.
+
+                @details Sets up the tags dictionary with album artist and title metadata.
+
+                @param self {DummyMp4} The instance of the class.
+                '''
+
                 self.tags = {
                     "aART": [TEST_M4A_DAVIS_ALBUM_ARTIST],
                     "\xa9nam": [TEST_M4A_DAVIS_TITLE],
@@ -1464,6 +1476,14 @@ class TestAudioMetadata(TestCase):
         # Create a dummy WMA file class to simulate the behavior of the actual WMA file.
         class DummyWma:
             def __init__(self):
+                '''
+                @brief Initializes the DummyWma class.
+
+                @details Sets up the tags dictionary with album artist and title metadata.
+
+                @param self {DummyWma} The instance of the class.
+                '''
+
                 self.tags = {
                     "WM/AlbumArtist": [TEST_WMA_JOHN_ALBUM_ARTIST],
                     "Title": [TEST_WMA_JOHN_TITLE],
@@ -1585,6 +1605,8 @@ class TestAudioMetadata(TestCase):
                 @brief Initializes the DummyAudioFile instance.
 
                 @details Sets up the tags and version information for the simulated MP3 file.
+
+                @param self {DummyMp3} The instance of the class.
                 '''
 
                 self.tags = Mock()

@@ -1,6 +1,6 @@
 '''
-@module core.paths
-@file src/core/paths.py
+@module paths
+@file paths.py
 @author Gerald Manweiler
 
 @brief Defines the core paths module.

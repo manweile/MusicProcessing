@@ -879,7 +879,7 @@ COMPLETED
     Validation: COMPLETED
     - After Step 7, the full suite must pass using the new paths; the removed old paths are no longer supported. COMPLETED
 
-4. Milestone 4: Progress interface IN PROGRESS
+4. Milestone 4: Progress interface COMPLETED
   - Add `core/progress.py` with the `ProgressReporter` protocol (`start(total, description)`, `advance(step)`, `finish()`).
   - Add `core/null_progress.py` with the no-op `NullProgress` implementation; re-export both from `core/__init__.py`.
   - `total=None` means indeterminate (spinner).
@@ -892,7 +892,8 @@ COMPLETED
   - Files: `src/core/progress.py`, `src/core/null_progress.py`, `src/core/__init__.py`, `tests/support.py`, `tests/test_progress.py`, `tests/test_null_progress.py`
   - Work:
     - add a recording `FakeProgress` to `tests/support.py`
-    - test `FakeProgress` semantics in `tests/test_progress.py` and `NullProgress` no-op semantics in `tests/test_null_progress.py` (including the `finish()` elapsed return)
+    - test `FakeProgress` semantics in `tests/test_progress.py`
+    and `NullProgress` no-op semantics in `tests/test_null_progress.py` (including the `finish()` elapsed return)
     - once `core/subprocess_utils.py` exists (Milestone 3):
       - replace its `yaspin` use (`spinner_popen_pipe`, `spinner_subprocess_run`) with `ProgressReporter` calls:
         - (`start(None, ...)` and `finish()`) taking an optional `progress=None` (defaults to `NullProgress`)

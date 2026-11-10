@@ -55,8 +55,8 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 - If the function accepts input parameters, include them in the `@param` list with their types and descriptions.
   - for regular argument parameters, use `@param name {data type} description`, terminated by a period.
   - for `self` specific instance of class parameter, use  `@param self {ClassName} The instance of the class.`
-  - If there are any return values, add a blank line after the final `@param` line and before the first `@retval`  line.
-- If the functions has a return value, include them in the `@retval` list with their types and descriptions.
+  - If there are any return values, add a blank line after the final `@param` line and before the first `@retval` line.
+- If the functions specifies a return data type in the function signature, include them in the `@retval` list with their types and descriptions.
   - `@retval name {type} description` when the function returns a specifically named value, terminated by a period.
   - `@retval {type} description` when the function returns an unnamed value, terminated by a period.
   - If there any exceptions, add a blank line after the final `@retval` line.
@@ -65,7 +65,7 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
   - If there any exceptions, do NOT add a blank line after the final `@exception` line.
 - Omit `@param` entirely for functions with no parameters.
 - Omit `@retval` entirely for functions that do not return a specifically named value.
-- Omit `@retval` entirely for functions that do not return an unnamed named value.
+- Omit `@retval` entirely for functions that do not return an unnamed value.
 - Omit `@exception` entirely for functions that do not raise any exceptions.
 - All Doxygen documentation blocks in class definitions are followed by 1 blank line.
 - All Doxygen documentation blocks in function definitions inside classes are followed by 1 blank line.
