@@ -116,6 +116,7 @@ TODO
     Also, there are other model functions that have this pattern - write to a log file
     Basically, have to inspect and think about every logger.info and logger.warning.
     Some of the logger.warnings may need to be upgraded to actually throwing an exception.
+  c) test_audio_playlist.test_update_playlist has a patch for logger.warning; changes made may impact this
 TODO
 
 6) add the new functions: clip_check_file, clip_walk, rename_albums etc
@@ -137,9 +138,36 @@ TODO
 10) think about renaming Music to music_files
 TODO
 
-11) get rid of audio_info directory nesting
+11) splitter pane needs a clear button
+TODO
+
+12) get rid of audio_info directory nesting
   a) saves col space with src.models.audio_art vs src.models.audio_info.audio_art
   b) minor refactoring, let copilot do it
+TODO
+
+13) after an action completes
+  a) need path input to clear from input field
+  b) path input prepended to success message
+  c) this may mean some model functions will require return values
+TODO
+
+14) display logger.info messages
+  a) go through and remove unnecessary logger.info IN PROGRESS
+  b) some info's user needs to know
+  c) in gui mode, need to display in log pane
+  d) in cli mode display in terminal
+    i) but need to handle test mode (ie headless)
+  e) this may mean some model functions will require return values
+  f) test_directory_processing.test_path_info_not_audio has a patch for logger.info; changes made may impact this
+TODO
+
+15) add cancel buttons
+  a) will require thought about layout change
+  b) cancel action will clear related input field
+TODO
+
+16) Add color to each function action sub panel border.
 TODO
 
 TESTING:

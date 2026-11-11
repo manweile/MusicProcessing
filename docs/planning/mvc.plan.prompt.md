@@ -924,6 +924,8 @@ COMPLETED
 6. Milestone 6: CLI extraction
   - Move command-line code out of `main.py`.
   - Files: `main.py`, new `src/cli/`
+  - Preconditions:
+    - run full test suite to ensure current functionality is intact
   - Work:
     - keep the existing `main.py` invocation operational throughout extraction;
       - first make the new parser and command layer callable alongside it, then have `main.py` delegate only after CLI parity is verified
@@ -939,8 +941,7 @@ COMPLETED
     - `main(args)` runs the GUI for `gui`, otherwise returns `run_cli_command(args)`
     - the `__main__` block keeps `sys.exit(main(args))`
   - Validation:
-    - capture baseline help and behavior before extraction
-    - compare every subcommand's `--help` output
+    - compare every subcommand's `--help` output to baseline
     - exercise each command's validation, exit behavior, and representative output against the baseline.
     - Keep the old implementation available until these checks pass, then switch `main.py` to the new layer and retain it as the thin entry point.
   - Exit criteria: `main.py` contains only argument parsing wiring and the dispatch entry point.

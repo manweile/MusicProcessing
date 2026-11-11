@@ -24,6 +24,7 @@ from typing import Any                                      # for the temporary 
 
 # Local Module Methods
 from src.core.logging_config import bootstrap_logging       # for package logging startup
+from src.gui.wx_app import run_gui                          # GUI application runner
 
 # Local Module Constants
 from src.cli.constants import ARG_CLI_CSV                   # CLI argument for CSV file
@@ -54,11 +55,11 @@ from src.core.constants import LOG_EXT                      # log file extension
 from src.core.constants import UTF8                         # utf encoding for file writing
 from src.core.paths import GENERATED_PATH                   # generated files path
 
-# Configure logging before importing modules that register handlers
+# MUST configure logging before importing modules that register logging handlers
+# imports after executable code require noqa: E402 (module import after code) to stop error warning
 bootstrap_logging()
 
 # Local Module Classes
-# required location after registering logging, as modules register handlers, needs noqa: E402 (module import after code) to stop error warning
 from src.audio_info import AudioArt                         # noqa: E402, audio art handling class
 from src.audio_info import AudioMetadata                    # noqa: E402, audio metadata handling class
 from src.audio_info import AudioPlaylist                    # noqa: E402, audio playlist handling class
@@ -68,9 +69,6 @@ from src.dir_processing import DirectoryProcessing          # noqa: E402, direct
 
 from src.core.progress import ProgressReporter              # noqa: E402, progress reporting interface
 from src.cli.progress import TqdmProgress                   # noqa: E402, CLI progress display
-
-# importing gui application runner can also register handlers, must also be after registering package logging
-from src.gui.wx_app import run_gui                          # noqa: E402, GUI application runner
 
 # Configure logging
 ## @var basename

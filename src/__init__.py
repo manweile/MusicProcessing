@@ -3,9 +3,10 @@
 @file src/__init__.py
 @author Gerald Manweiler
 
-@brief Package for shared MusicProcessing constants and imports.
+@brief Package for MusicProcessing core utilities.
 
-@details Exposes shared constants, errors, and logging helpers for MusicProcessing modules.
+@details Provides core utilities for the MusicProcessing project, including logging configuration, constants, and shared functionality.<br>
+Intentionally empty to indicate that this package only provides core utilities and does not define additional functionality.
 
 @version 1.0.0
 @date 2024-06-05

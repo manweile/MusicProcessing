@@ -118,6 +118,7 @@ def bootstrap_logging() -> Logger:
             ERROR_LOG_FORMAT,
         )
 
+    # Get the package logger after ensuring logging is configured
     logger = logging.getLogger("src")
 
     return logger

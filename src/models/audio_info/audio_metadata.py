@@ -685,8 +685,7 @@ class AudioMetadata():
                         progress.advance(1)
                     continue
 
-                # since we skip tld items that are files,
-                # now we need to check tld items that are directories
+                # since we skip tld items that are files, now we need to check tld items that are directories
                 artist_content = os.listdir(tld_item_path)
                 # want to know if we have any empty artist directories so we can deal with them later
                 if os.path.isdir(tld_item_path) and not artist_content:

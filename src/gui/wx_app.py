@@ -28,11 +28,13 @@ from src.core.constants import RESULT_DIR                   # directory for stor
 from src.core.constants import RESULT_EXT                   # file extension for result files
 from src.core.paths import GENERATED_PATH                   # for generated files path
 
-# Configure logging before importing modules that register handlers
+# MUST configure logging before importing modules that register logging handlers
+# applies because of EventHandlers importing modules that call add_module_handler at module scope
+# also, this module must configure logging first to to protect itself from early logging issues
+# imports after executable code require noqa: E402 (module import after code) to stop error warning
 bootstrap_logging()
 
 # Local Module Classes
-# required location after registering logging, as modules register handlers, needs noqa: E402 (module import after code) to stop error warning
 from src.gui.handlers import EventHandlers                  # noqa: E402, event handlers for the GUI
 
 ## @var logger
