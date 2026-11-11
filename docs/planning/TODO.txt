@@ -1,7 +1,6 @@
 NOT DISPOSED:
 
 DOXYGEN:
-1) keep
 
 ENVIRONMENT:
 1) pylance hover
@@ -136,6 +135,11 @@ TODO
 TODO
 
 10) think about renaming Music to music_files
+TODO
+
+11) get rid of audio_info directory nesting
+  a) saves col space with src.models.audio_art vs src.models.audio_info.audio_art
+  b) minor refactoring, let copilot do it
 TODO
 
 TESTING:

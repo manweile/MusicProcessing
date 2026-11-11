@@ -26,13 +26,14 @@ from src.core.logging_config import add_module_handler      # for module-specifi
 from src.core.constants import AUDIO_EXTS                   # for supported audio file extensions
 from src.core.constants import MP3_EXT                      # for MP3 file extension
 from src.core.constants import PLAYLIST_EXTS                # for supported playlist file extensions
+
 from src.core.paths import GENERATED_PATH                   # for generated file output paths
 
 # Local Module Errors
 from src.core.errors import PlaylistError                   # for playlist processing failures
 
 # Local Module Classes
-from src.dir_processing import DirectoryProcessing          # for directory processing functionality
+from src.models.dir_processing import DirectoryProcessing   # for directory processing functionality
 
 ## @var logger
 # @brief Logger instance for the module.

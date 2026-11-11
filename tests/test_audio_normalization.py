@@ -34,7 +34,9 @@ from src.core.constants import ILT                          # for loudness norma
 from src.core.constants import LRA                          # for loudness-range normalization target
 from src.core.constants import MUSIC_TLD                    # for generated music directory paths
 from src.core.constants import TP                           # for true-peak normalization target
+
 from src.core.paths import GENERATED_PATH                   # for generated output paths
+
 from tests import TEST_M3U                                  # for invalid audio input tests
 from tests import TEST_MP3_ABBA                             # for dynamic normalization tests
 from tests import TEST_MP3_CRUSH                            # for linear normalization tests
@@ -46,7 +48,7 @@ from tests import TESTS_PATH                                # for normalized tes
 from src.core.errors import JSONOutputError                 # for loudnorm output parsing errors
 
 # Local Module Classes
-from src.audio_normalize import AudioNormalization          # for normalization functionality under test
+from src.models.audio_normalize import AudioNormalization   # for normalization functionality under test
 
 ## @var normalization
 # @brief AudioNormalization instance under test.
@@ -242,6 +244,29 @@ class TestAudioNormalization(TestCase):
         self.assertTrue(os.path.exists(self.ebu_linear_res))
 
 
+    def test_normalization_methods_reject_non_mp3_files(self):
+        '''
+        @brief Tests normalization methods reject files that are not MP3s.
+
+        @details Verifies each MP3-only normalization method raises ValueError for unsupported input.
+
+        @test Error case.
+
+        @param self {TestAudioNormalization} The instance of the test class.
+        '''
+
+        methods = [
+            normalization.ebu_normalize_file,
+            normalization.peak_normalize_file,
+            normalization.rms_normalize_file
+        ]
+
+        for method in methods:
+            with self.subTest(method=method.__name__):
+                with self.assertRaisesRegex(ValueError, "is not an mp3"):
+                    method("not-an-mp3.wav", show_spinner=False)
+
+
     def test_get_bit_rate(self):
         '''
         @brief Test audio bitrate retrieval.
@@ -261,7 +286,7 @@ class TestAudioNormalization(TestCase):
         self.assertEqual(res_bitrate, exp_bitrate)
 
 
-    @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
+    @patch('src.models.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
     def test_get_bit_rate_decode_error(self, mock_subprocess_run):
         '''
         @brief Test bitrate retrieval with invalid JSON output.
@@ -352,7 +377,7 @@ class TestAudioNormalization(TestCase):
         self.assertEqual(self.sample_rate_res, sample_rate)
 
 
-    @patch('src.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
+    @patch('src.models.audio_normalize.audio_normalization.SubprocessUtilities.subprocess_run')
     def test_get_sample_rate_decode_error(self, mock_subprocess_run):
         '''
         @brief Test sample-rate retrieval with invalid JSON output.
@@ -644,7 +669,7 @@ class TestAudioNormalization(TestCase):
         self.assertTrue(os.path.exists(self.peak_res))
 
 
-    @patch("src.audio_normalize.audio_normalization.TP", "2.0")
+    @patch("src.models.audio_normalize.audio_normalization.TP", "2.0")
     def test_peak_normalize_file_clipping(self):
         '''
         @brief Test peak normalization when an unsafe target would clip.
@@ -675,7 +700,7 @@ class TestAudioNormalization(TestCase):
 
         @details Verifies a mocked target peak causes peak normalization to log that no adjustment is needed.<br>
         Patch object AudioNormalization's get_volume_info method to simulate returning a maximum volume just below the target peak.<br>
-        Ensures peak normalization detects that the file is already at maximum volume and logs a warning accordingly.
+        Ensures peak normalization detects that the file is already at maximum volume and logs an informational message.
 
         @test Edge case.
 
@@ -686,7 +711,7 @@ class TestAudioNormalization(TestCase):
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
 
-        with self.assertLogs(logger, level=logging.WARNING) as cm:
+        with self.assertLogs(logger, level=logging.INFO) as cm:
             normalization.peak_normalize_file(self.max_vol_src, None, show_spinner=False)
 
         mock_get_volume_info.assert_called_once_with(self.max_vol_src)
@@ -736,9 +761,9 @@ class TestAudioNormalization(TestCase):
         '''
         @brief Test RMS normalization when maximum volume is already reached.
 
-        @details Verifies mocked RMS and peak levels cause normalization to log a clipping warning.<br>
+        @details Verifies mocked RMS and peak levels cause normalization to log that no adjustment is needed.<br>
         Patch object AudioNormalization's get_volume_info method to simulate returning mean volume and maximum volume for the audio file.<br>
-        Ensures the RMS normalization process detects that the file is already at maximum volume and logs a warning accordingly.
+        Ensures the RMS normalization process detects that the file is already at target and logs an informational message.
 
         @test Edge case.
 
@@ -749,7 +774,7 @@ class TestAudioNormalization(TestCase):
         module = f"{normalization.__module__}"
         logger = logging.getLogger(module)
 
-        with self.assertLogs(logger, level=logging.WARNING) as cm:
+        with self.assertLogs(logger, level=logging.INFO) as cm:
             normalization.rms_normalize_file(self.max_vol_src, None, show_spinner=False)
 
         mock_get_volume_info.assert_called_once_with(self.max_vol_src)

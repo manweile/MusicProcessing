@@ -3,23 +3,29 @@
 @file src/audio_normalize/__init__.py
 @author Gerald Manweiler
 
-@brief Package for audio normalization processing.
+@brief Provides compatibility imports for audio normalization models.
 
-@details Exposes audio normalization functionality through a single package interface.
+@details Re-exports the model package while legacy imports are being migrated.
 
 @version 1.0.0
-@date 2026-09-22
+@date 2026-11-10
 
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
+# Standard Modules
+import sys                                                  # for registering legacy module paths
+
 # Local Module Classes
-# for audio normalization functionality
-from src.audio_normalize.audio_normalization import AudioNormalization
+from src.models.audio_normalize import AudioNormalization   # exposes audio normalization operations
+
+from src.models.audio_normalize import audio_normalization  # provides legacy module access
+
+sys.modules[f"{__name__}.audio_normalization"] = audio_normalization
 
 ## @var __all__
-# @brief Exposes class for importing by other modules.
-# @details In modules needing the class, add `from src.audio_normalize import AudioNormalization`.
+# @brief Exposes the public compatibility class.
+# @details The class is implemented in src.models.audio_normalize.
 __all__ = [
     "AudioNormalization"
 ]

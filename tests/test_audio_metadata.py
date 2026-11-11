@@ -38,6 +38,7 @@ from mutagen._util import MutagenError                      # for handling mutag
 
 # Local Module Methods
 from tests.support import get_method_names                  # for direct test-suite construction
+from tests.support import FakeProgress                      # recording progress reporter
 
 # Local Module Constants
 from src.core.constants import AUDIO_FILES                  # directory containing audio files
@@ -53,7 +54,9 @@ from src.core.constants import RESULT_DIR                   # directory for stor
 from src.core.constants import RESULT_EXT                   # file extension for result files
 from src.core.constants import WMA_EXT                      # file extension for WMA audio files
 from src.core.constants import UTF8                         # utf-8 encoding constant
+
 from src.core.paths import GENERATED_PATH                   # path to generated files
+
 from tests import TEST_FLAC_CREAM                           # test data for FLAC Cream audio file
 from tests import TEST_FLAC_CREAM_ALBUM_ARTIST              # test data for FLAC Cream album artist
 from tests import TEST_FLAC_CREAM_BADGE                     # test data for FLAC Cream badge
@@ -83,7 +86,7 @@ from tests import TEST_WMA_JOHN_TITLE                       # test data for WMA 
 from src.core.errors import MusicProcessingError            # custom error class for music processing exceptions
 
 # Local Module Classes
-from src.audio_info import AudioMetadata                    # class for accessing audio metadata
+from src.models.audio_info import AudioMetadata             # class for accessing audio metadata
 
 ## @var metadata
 # @brief AudioMetadata instance under test.
@@ -470,7 +473,14 @@ class TestAudioMetadata(TestCase):
         @param self {TestAudioMetadata} The instance of the test class.
         '''
 
-        metadata.create_album_dirs(self.prepped, False)
+        progress = FakeProgress()
+        top_level_entries = len(os.listdir(self.prepped))
+
+        metadata.create_album_dirs(self.prepped, progress)
+
+        self.assertEqual(progress.starts, [(top_level_entries, f"Processing {self.prepped} content")])
+        self.assertEqual(progress.advances, [1] * top_level_entries)
+        self.assertEqual(progress.finish_calls, 1)
 
         for dir in self.prepped_results:
             dir_exists = os.path.exists(dir)
@@ -502,7 +512,7 @@ class TestAudioMetadata(TestCase):
         create_album_metadata.create_album_dirs = mock_album_metadata
 
         with self.assertRaises(ExecError) as cm:
-            create_album_metadata.create_album_dirs(prepped_path, False)
+            create_album_metadata.create_album_dirs(prepped_path)
 
         self.assertEqual("ExecError", cm.exception.__class__.__name__)
 
@@ -528,7 +538,7 @@ class TestAudioMetadata(TestCase):
         create_album_metadata.create_album_dirs = mock_album_metadata
 
         with self.assertRaises(ValueError) as cm:
-            create_album_metadata.create_album_dirs(self.prepped, False)
+            create_album_metadata.create_album_dirs(self.prepped)
 
         self.assertEqual("ValueError", cm.exception.__class__.__name__)
 
@@ -645,7 +655,7 @@ class TestAudioMetadata(TestCase):
         self.assertDictEqual(media_dict, results_dict)
 
 
-    @patch('src.audio_info.audio_metadata.SubprocessUtilities.popen_pipe')
+    @patch('src.models.audio_info.audio_metadata.SubprocessUtilities.popen_pipe')
     def test_get_media_info_regex_no_dict(self, mock_popen_pipe):
         '''
         @brief Test media-info parsing when nested dictionaries are absent.
@@ -775,7 +785,7 @@ class TestAudioMetadata(TestCase):
         self.assertDictEqual(media_tags, tag_dict)
 
 
-    @patch('src.audio_info.audio_metadata.SubprocessUtilities.subprocess_run')
+    @patch('src.models.audio_info.audio_metadata.SubprocessUtilities.subprocess_run')
     def test_get_media_tags_json_error(self, mock_subprocess_run):
         '''
         @brief Test media-tag parsing with invalid JSON output.
@@ -1304,8 +1314,8 @@ class TestAudioMetadata(TestCase):
                 }
 
         # patch the FLAC class, the load_any_file method, and os.rename to test the normalization without affecting the actual filesystem
-        flac_class = "src.audio_info.audio_metadata.FLAC"
-        rename_func = "src.audio_info.audio_metadata.os.rename"
+        flac_class = "src.models.audio_info.audio_metadata.FLAC"
+        rename_func = "src.models.audio_info.audio_metadata.os.rename"
         with patch(flac_class, DummyFlac), patch.object(metadata, "load_any_file", return_value=DummyFlac()), patch(rename_func) as mock_rename:
             metadata.normalize_filename(src_file)
 
@@ -1382,8 +1392,8 @@ class TestAudioMetadata(TestCase):
                 }.get(key)
 
         # patch the MP3 class and the os.rename function for testing the normalization of MP3 filenames
-        mp3_class = "src.audio_info.audio_metadata.MP3"
-        rename_func = "src.audio_info.audio_metadata.os.rename"
+        mp3_class = "src.models.audio_info.audio_metadata.MP3"
+        rename_func = "src.models.audio_info.audio_metadata.os.rename"
         with (patch(mp3_class, DummyMp3), patch.object(metadata, "load_any_file", return_value=DummyMp3()), patch(rename_func) as mock_rename):
             metadata.normalize_filename(src_file)
 
@@ -1436,8 +1446,8 @@ class TestAudioMetadata(TestCase):
                 }
 
         # patch the MP4 class and the os.rename function for testing the normalization of MP4 filenames
-        mp4_class = "src.audio_info.audio_metadata.MP4"
-        rename_func = "src.audio_info.audio_metadata.os.rename"
+        mp4_class = "src.models.audio_info.audio_metadata.MP4"
+        rename_func = "src.models.audio_info.audio_metadata.os.rename"
         with patch(mp4_class, DummyMp4), patch.object(metadata, "load_any_file", return_value=DummyMp4()), patch(rename_func) as mock_rename:
             metadata.normalize_filename(src_file)
 
@@ -1490,8 +1500,8 @@ class TestAudioMetadata(TestCase):
                 }
 
         # patch the ASF (wma) class and the os.rename function for testing the normalization of WMA filenames
-        wma_class = "src.audio_info.audio_metadata.ASF"
-        rename_func = "src.audio_info.audio_metadata.os.rename"
+        wma_class = "src.models.audio_info.audio_metadata.ASF"
+        rename_func = "src.models.audio_info.audio_metadata.os.rename"
         with patch(wma_class, DummyWma), patch.object(metadata, "load_any_file", return_value=DummyWma()), patch(rename_func) as mock_rename:
             metadata.normalize_filename(src_file)
 
@@ -1619,7 +1629,7 @@ class TestAudioMetadata(TestCase):
         normalized_file = os.path.join(test_dir, "10cc-Ships Don't Disappear In The Night (Do They).mp3")
 
         # patch the MP3 class and the load_any_file function to use the DummyMp3 class for testing
-        mp3_class = "src.audio_info.audio_metadata.MP3"
+        mp3_class = "src.models.audio_info.audio_metadata.MP3"
         with patch(mp3_class, DummyMp3), patch.object(metadata, "load_any_file", return_value=DummyMp3()):
             metadata.normalize_filename(src_file)
 
@@ -1766,7 +1776,7 @@ class TestAudioMetadata(TestCase):
         self.assertEqual(metadata.get_mutagen_tags(self.genre_files["unmatched_mp3"])["TCON"].text, ["Rock"])
 
 
-    @patch("src.audio_info.audio_metadata.logger.error")
+    @patch("src.models.audio_info.audio_metadata.logger.error")
     @patch.object(AudioMetadata, "_AudioMetadata__set_genre")
     def test_update_genres_from_csv_propagates_set_genre_failure(self, mock_set_genre, mock_logger_error):
         '''

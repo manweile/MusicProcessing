@@ -1,26 +1,12 @@
 from test UI:
 ----------------------------------------------------------------------
-Ran 147 tests in 233.956s
+Ran 152 tests in 235.554s
 
 OK
 Finished running tests!
 
-from terminal:
-PS D:\MusicProcessing> python -m unittest discover tests
-...................................................................................................................................................
-----------------------------------------------------------------------
-Ran 147 tests in 261.766s
-
-OK
-
-----------------------------------------------------------------------
-Ran 150 tests in 246.389s
-
-OK
-Finished running tests!
-
-There 3 test suites with sub tests, for total of 9
-Thats why test UI says 156 tests, but results say 147
+There 4 test suites with sub tests, for total of 12
+Thats why test UI says 164 tests, but results say 152
 
 TestAudioArt.test_unpack_asf_image_malformed_data:
   image payload is truncated
@@ -32,6 +18,11 @@ TestAudioMetadata.test_update_genres_from_csv_invalid_input:
   "duplicate"
   "header"
   "unsorted"
+
+TestAudioNormalization.test_normalization_methods_reject_non_mp3_files:
+  ebu_normalize_file
+  peak_normalize_file
+  rms_normalize_file
 
 TestDirectoryProcessing.test_get_audio_file_rejects_lower_level_paths:
   start_path = D:\MusicProcessing\tests\Music\Abba

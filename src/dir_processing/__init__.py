@@ -3,23 +3,29 @@
 @file src/dir_processing/__init__.py
 @author Gerald Manweiler
 
-@brief Package for directory processing.
+@brief Provides compatibility imports for directory-processing models.
 
-@details Exposes directory processing functionality through a single package interface.
+@details Re-exports the model package while legacy imports are being migrated.
 
 @version 1.0.0
-@date 2026-09-22
+@date 2026-11-10
 
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
+# Standard Modules
+import sys                                                  # for registering legacy module paths
+
 # Local Module Classes
-# for directory processing functionality
-from src.dir_processing.directory_processing import DirectoryProcessing
+from src.models.dir_processing import DirectoryProcessing   # exposes directory-processing operations
+
+from src.models.dir_processing import directory_processing  # provides legacy module access
+
+sys.modules[f"{__name__}.directory_processing"] = directory_processing
 
 ## @var __all__
-# @brief Exposes class for importing by other modules.
-# @details In modules needing the class, add `from src.dir_processing import DirectoryProcessing`.
+# @brief Exposes the public compatibility class.
+# @details The class is implemented in src.models.dir_processing.
 __all__ = [
-    "DirectoryProcessing",
+    "DirectoryProcessing"
 ]

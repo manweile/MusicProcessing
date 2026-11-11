@@ -19,10 +19,10 @@ import unittest                                             # for direct test-su
 from unittest import TestCase                               # for test-case assertions
 
 # Third Party Modules
-try:
-    import wx
-except ImportError:  # pragma: no cover
-    wx = None
+try:                                                        # try/except block to handle optional wxPython dependency
+    import wx                                               # for wxPython GUI support
+except ImportError:                                         # pragma: no cover
+    wx = None                                               # wxPython not available
 
 # Local Module Methods
 from tests.support import get_method_names                  # for direct test-suite construction

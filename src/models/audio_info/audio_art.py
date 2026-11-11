@@ -43,12 +43,15 @@ from src.core.constants import FLAC_EXT                     # for FLAC file exte
 from src.core.constants import M4A_EXT                      # for M4A file extension
 from src.core.constants import MP3_EXT                      # for MP3 file extension
 from src.core.constants import WMA_EXT                      # for WMA file extension
+
 from src.core.paths import GENERATED_PATH                   # for generated files path
 
 # Local Module Classes
-from src.audio_info.audio_metadata import AudioMetadata     # for audio metadata handling functionality
-from src.audio_normalize import AudioNormalization          # for audio normalization functionality
 from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functions
+
+# for audio metadata handling functionality
+from src.models.audio_info.audio_metadata import AudioMetadata
+from src.models.audio_normalize import AudioNormalization   # for audio normalization functionality
 
 ## @var logger
 # @brief Logger instance for the module.
@@ -255,7 +258,7 @@ class AudioArt():
             # we don't touch non-audio files like m3u etc
             input_file_ext = input_path.suffix
             if input_file_ext.lower() not in AUDIO_EXTS:
-                logger.warning(f"{input_path.name} is not an audio file")
+                logger.info(f"{input_path.name} is not an audio file")
                 return
 
             # ffmpeg extraction is primary method because is file type agnostic, so long as file has a video stream
@@ -277,8 +280,7 @@ class AudioArt():
                 elif input_file_ext.lower() == FLAC_EXT:
                     self.extract_flac_art(file_path)
             else:
-                # warning because by this point, negative result from both art present checks, so simply can't extract any art
-                logger.warning(f"No album art present in {file_path}")
+                logger.info(f"No album art present in {file_path}")
                 return
 
         except Exception as e_error:
@@ -640,7 +642,7 @@ class AudioArt():
                     folder_jpg = os.path.join(album_path, FOLDER_ART)
                     shutil.copy(album_art_jpg, folder_jpg)
                 else:
-                    logger.warning(f"No album art set for {album_path}")
+                    logger.info(f"No album art set for {album_path}")
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} setting album art for {input_path}", stack_info=True)

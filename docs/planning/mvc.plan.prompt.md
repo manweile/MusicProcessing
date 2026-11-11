@@ -909,7 +909,7 @@ COMPLETED
   - Validation: existing tests keep passing with `show_spinner=False`; no test imports or invokes `yaspin` or `tqdm`.
   - Exit criteria: the interface exists and has tests; `core/` has no `yaspin` import; the five yaspin CLI operations still show their spinner.
 
-5. Milestone 5: Models move and decouple
+5. Milestone 5: Models move and decouple COMPLETED
   - Move model packages into `src/models/` and remove display dependencies.
   - Files: `src/audio_info/`, `src/audio_normalize/`, `src/dir_processing/`
   - Work:

@@ -27,11 +27,13 @@ from tests.support import get_method_names                  # for direct test-su
 from src.core.constants import RESULT_DIR                   # for result text directory
 from src.core.constants import RESULT_EXT                   # for result text extension
 from src.core.paths import GENERATED_PATH                   # for generated output paths
+
 from tests import TESTS_TLD                                 # for audio utility walk input
 
 # Local Module Classes
-from src.audio_info import AudioUtilities                   # for utility functionality under test
-from src.audio_info.audio_utilities import normalization    # for test-specific loudness configuration
+from src.models.audio_info import AudioUtilities            # for utility functionality under test
+# for test-specific loudness configuration
+from src.models.audio_info.audio_utilities import normalization
 
 ## @var utilities
 # @brief AudioUtilities instance under test.
@@ -45,6 +47,21 @@ class TestAudioUtilities(TestCase):
 
     @details Verifies audio utility behavior using music test fixtures.
     '''
+
+
+    def test_clip_check_file_rejects_non_mp3(self):
+        '''
+        @brief Tests clip checking rejects files that are not MP3s.
+
+        @details Verifies unsupported input raises ValueError before analysis begins.
+
+        @test Error case.
+
+        @param self {TestAudioUtilities} The instance of the test class.
+        '''
+
+        with self.assertRaisesRegex(ValueError, "is not an mp3"):
+            AudioUtilities().clip_check_file("not-an-mp3.wav")
 
 
     def _run_clip_check(self, volume_info, ebu_info=None) -> str:
@@ -71,9 +88,9 @@ class TestAudioUtilities(TestCase):
             open(fake_mp3, "w").close()
 
             # Define the paths to the functions that will be mocked during the test
-            get_volume_info_path = "src.audio_info.audio_utilities.normalization.get_volume_info"
-            get_ebu_info_path = "src.audio_info.audio_utilities.normalization.get_ebu_loudness_info"
-            create_txt_path = "src.audio_info.audio_utilities.directory.create_txt"
+            get_volume_info_path = "src.models.audio_info.audio_utilities.normalization.get_volume_info"
+            get_ebu_info_path = "src.models.audio_info.audio_utilities.normalization.get_ebu_loudness_info"
+            create_txt_path = "src.models.audio_info.audio_utilities.directory.create_txt"
 
             # Prepare the patch objects for mocking the utility functions
             patch_volume_info = patch(get_volume_info_path, return_value=volume_info)
@@ -231,7 +248,7 @@ class TestAudioUtilities(TestCase):
         self.assertIn("already at target ebu loudness", report)
 
 
-    @patch("src.audio_info.audio_utilities.TP", "2.0")
+    @patch("src.models.audio_info.audio_utilities.TP", "2.0")
     def test_clip_check_bad_target(self):
         '''
         @brief Test a true-peak target above digital full scale is reported as clipping.

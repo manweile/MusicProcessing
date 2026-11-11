@@ -24,6 +24,7 @@ from tests.support import get_method_names                  # for direct test-su
 
 # Local Module Constants
 from src.core.paths import GENERATED_PATH                   # for generated playlist output paths
+
 from tests import TEST_M3U                                  # for playlist update tests
 from tests import TEST_MP3_CRUSH                            # for invalid playlist input tests
 from tests import TESTS_PATH                                # for expected playlist fixture paths
@@ -33,7 +34,7 @@ from tests import TESTS_TLD                                 # for playlist media
 from src.core.errors import PlaylistError                   # for expected playlist parsing errors
 
 # Local Module Classes
-from src.audio_info import AudioPlaylist                    # for playlist functionality under test
+from src.models.audio_info import AudioPlaylist             # for playlist functionality under test
 
 ## @var playlist
 # @brief AudioPlaylist instance under test.
@@ -151,7 +152,7 @@ class TestAudioPlaylist(TestCase):
         self.assertEqual(expected_audio, result_audio)
 
 
-    @patch('src.audio_info.audio_playlist.logger.warning')
+    @patch('src.models.audio_info.audio_playlist.logger.warning')
     def test_update_playlist(self, mock_warning):
         '''
         @brief Test playlist path updates against expected output.

@@ -64,8 +64,10 @@ from src.audio_info import AudioMetadata                    # noqa: E402, audio 
 from src.audio_info import AudioPlaylist                    # noqa: E402, audio playlist handling class
 from src.audio_info import AudioUtilities                   # noqa: E402, audio utility functions class
 from src.audio_normalize import AudioNormalization          # noqa: E402, audio normalization handling class
-from src.core.progress import ProgressReporter              # noqa: E402, progress reporting interface
 from src.dir_processing import DirectoryProcessing          # noqa: E402, directory processing handling class
+
+from src.core.progress import ProgressReporter              # noqa: E402, progress reporting interface
+from src.cli.progress import TqdmProgress                   # noqa: E402, CLI progress display
 
 # importing gui application runner can also register handlers, must also be after registering package logging
 from src.gui.wx_app import run_gui                          # noqa: E402, GUI application runner
@@ -385,7 +387,7 @@ def create_albums(tld_path):
     @exception Exception A common baseclass exception to handle unforeseen errors.
     '''
 
-    metadata.create_album_dirs(tld_path)
+    metadata.create_album_dirs(tld_path, TqdmProgress())
 
 
 def ebu_file(file_path, target):

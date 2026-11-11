@@ -41,7 +41,9 @@ Always use [python doc strings](https://doxygen.nl/manual/docblocks.html#pythonb
 
 ## Shared Doxygen Rules
 
-- Immediately below the definition line, include a one-line `@brief`, terminated by a period.
+- Functions that do not have a return value should not have a `-> None` in the function signature.
+- Functions that do have a return value should include the appropriate return type in the function signature.
+- Immediately below the function definition line, include a one-line `@brief`, terminated by a period.
 - Leave an empty line after `@brief`.
 - Add a `@details` block.
 - Follow the Details Block Formatting Rules.

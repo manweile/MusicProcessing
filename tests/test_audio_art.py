@@ -33,7 +33,9 @@ from src.core.constants import ALBUM_ART                    # for album art dire
 from src.core.constants import FOLDER_ART                   # for album-art fixture filenames
 from src.core.constants import MP3_EXT                      # for MP3 file-pattern extraction tests
 from src.core.constants import PLAYLIST_EXTS                # for invalid file-pattern extraction tests
+
 from src.core.paths import GENERATED_PATH                   # path to generated files
+
 from tests import TEST_FLAC_ALANNAH_MYLES                   # for FLAC album-art extraction tests
 from tests import TEST_M3U                                  # for invalid audio input tests
 from tests import TEST_M4A_DAVIS                            # for M4A album-art extraction tests
@@ -46,8 +48,7 @@ from tests import TESTS_PATH                                # for prepared-fixtu
 from tests import TESTS_TLD                                 # for test music fixture paths
 
 # Local Module Classes
-from src.audio_info import AudioArt                         # for album-art functionality under test
-# from src.audio_info import audio_art as audio_art_module    # for album-art path construction under test
+from src.models.audio_info import AudioArt                  # for album-art functionality under test
 
 ## @var art
 # @brief AudioArt instance under test.
@@ -185,7 +186,7 @@ class TestAudioArt(TestCase):
         album_path = Path(input_audio).parent
         log_msg = f"{album_path} has a {FOLDER_ART}"
 
-        with self.assertLogs() as captured:
+        with self.assertLogs(level="INFO") as captured:
             art.extract_album_art(input_audio)
 
         self.assertEqual(len(captured.records), 1)
@@ -207,7 +208,7 @@ class TestAudioArt(TestCase):
         input_path = Path(input_audio)
         log_msg = f"{input_path.name} is not an audio file"
 
-        with self.assertLogs() as captured:
+        with self.assertLogs(level="INFO") as captured:
             art.extract_album_art(input_audio)
 
         self.assertEqual(len(captured.records), 1)
@@ -228,9 +229,9 @@ class TestAudioArt(TestCase):
         input_audio = TEST_MP3_NO_TAG
         no_jpg = os.path.join(TESTS_TLD, FOLDER_ART)
         info_msg = f"No video stream album art present in {input_audio}"
-        warning_msg = f"No album art present in {input_audio}"
+        no_art_msg = f"No album art present in {input_audio}"
 
-        with self.assertLogs() as captured:
+        with self.assertLogs(level="INFO") as captured:
             art.extract_album_art(input_audio)
 
         art_exists = os.path.exists(no_jpg)
@@ -238,7 +239,7 @@ class TestAudioArt(TestCase):
 
         self.assertEqual(len(captured.records), 2)
         self.assertEqual(captured.records[0].getMessage(), info_msg)
-        self.assertEqual(captured.records[1].getMessage(), warning_msg)
+        self.assertEqual(captured.records[1].getMessage(), no_art_msg)
 
 
     def test_extract_album_art_without_stream_with_tag(self):
@@ -492,7 +493,7 @@ class TestAudioArt(TestCase):
                 return original_join(*paths)
 
             # patch os.path.join to redirect the generated album-art path to the isolated fixture
-            with patch("src.audio_info.audio_art.os.path.join", side_effect=join_side_effect):
+            with patch("src.models.audio_info.audio_art.os.path.join", side_effect=join_side_effect):
                 art.set_album_art(TESTS_TLD)
 
         # verify that the album-art files exist after setting them

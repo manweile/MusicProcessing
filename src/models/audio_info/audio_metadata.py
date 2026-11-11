@@ -47,7 +47,6 @@ from mutagen.mp4 import MP4                                 # for handling MP4 a
 from mutagen.mp4 import MP4FreeForm                         # for handling MP4 freeform atoms
 from mutagen.mp4 import MP4Tags                             # for handling MP4 tags
 from pathvalidate.error import ValidationError              # for handling path validation errors
-from tqdm import tqdm                                       # for displaying progress bars
 
 # Local Module Methods
 from src.core.logging_config import add_module_handler      # for adding module-specific logging handlers
@@ -69,10 +68,11 @@ from src.core.errors import MusicProcessingError            # for handling music
 from src.core.errors import PathInfoError                   # for handling path info errors
 
 # Local Module Classes
-from src.audio_normalize import AudioNormalization          # for audio normalization functionality
 from src.core.progress import ProgressReporter              # progress reporting interface
 from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functionality
-from src.dir_processing import DirectoryProcessing          # for directory processing functionality
+
+from src.models.audio_normalize import AudioNormalization   # for audio normalization functionality
+from src.models.dir_processing import DirectoryProcessing   # for directory processing functionality
 
 ## @var logger
 # @brief Logger instance for the module.
@@ -337,7 +337,7 @@ class AudioMetadata():
             return artist_genres
 
 
-    def __set_genre(self, file_path: str, artist_genre: str) -> None:
+    def __set_genre(self, file_path: str, artist_genre: str):
         '''
         @brief Replaces an audio file genre tag.
 
@@ -346,7 +346,6 @@ class AudioMetadata():
         @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to the supported audio file.
         @param artist_genre {str} The replacement genre value.
-        @return {None} This function does not return any value.
 
         @exception MetadataTypeError Indicates the loaded file type is not supported.
         @exception MutagenError A custom exception in Mutagen occurred
@@ -426,7 +425,7 @@ class AudioMetadata():
             return id3_tags
 
 
-    def convert_file(self, file_path: str = None, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None) -> None:
+    def convert_file(self, file_path: str = None, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None):
         '''
         @brief Converts an acceptable audio file to mp3 audio file, using ffmpeg directly.
 
@@ -461,7 +460,6 @@ class AudioMetadata():
         @param target {str} The optional target directory for exported files.
         @param show_spinner {bool} Show spinner flag.
         @param progress {ProgressReporter | None} Optional progress reporter.
-        @return {None} This function does not return any value.
 
         @exception MetadataTypeError Indicates a non-standard metadata type was encountered.
         @exception MusicProcessingError A generic music processing error occurred.
@@ -486,7 +484,6 @@ class AudioMetadata():
             cover = os.path.join(input_path_parent, FOLDER_ART)
 
             if not os.path.exists(cover):
-                logger.warning(f"album directory {input_path_parent} does not contain a {FOLDER_ART} file.")
                 raise MusicProcessingError(f"album directory {input_path_parent} does not contain a {FOLDER_ART} file.")
 
             # export format is always mp3
@@ -588,7 +585,7 @@ class AudioMetadata():
         target: str = None,
         show_spinner: bool = True,
         progress: ProgressReporter | None = None
-    ) -> None:
+    ):
         '''
         @brief Converts all audio files found in specified path to mp3 format.
 
@@ -603,7 +600,6 @@ class AudioMetadata():
         @param target {str} Optional, the target directory for exported files. Defaults to None.
         @param show_spinner {bool} Optional, whether to display a spinner during conversion. Defaults to True.
         @param progress {ProgressReporter | None} Optional progress reporter.
-        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -642,7 +638,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def create_album_dirs(self, start_path: str, show_progress: bool = True) -> None:
+    def create_album_dirs(self, start_path: str, progress: ProgressReporter | None = None):
         r'''
         @brief Creates second level (sld) album sub-directories in first level (fld) artist directories.
 
@@ -659,8 +655,7 @@ class AudioMetadata():
         @param self {AudioMetadata} The instance of the class.
         @param start_path {str} The top level directory that contains all the music files.<br>
         The start path must be a valid top-level directory containing artist folders, and only a tld.
-        @param show_progress {bool} Flag indicating whether to display progress bar.
-        @return {None} This function does not return any value.
+        @param progress {ProgressReporter | None} Optional progress reporter.
 
         @exception ValidationError A pathlib module validation error occurred.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -670,23 +665,24 @@ class AudioMetadata():
         csv_filename = inspect.currentframe().f_code.co_name
         header_row = ["audio file path", "album metadata", "sanitized album directory"]
 
+        progress_started = False
+
         try:
             # get the artist dirs under tld
             tld_content = os.listdir(start_path)
             len_tld_content = len(tld_content)
 
-            if show_progress:
-                tld_bar = tqdm(desc=f'Processing {start_path} content', total=len_tld_content, unit=' items')
+            if progress is not None:
+                progress.start(len_tld_content, f"Processing {start_path} content")
+                progress_started = True
 
             # top level directory consists of artist directories, playlist files and couple other sundry files
             for tld_item in tld_content:
-                # update the progress bar before processing artist directory
-                # else we will have a mismatch in the bar processed/total display
-                # we only want artist directories, playlist/sundry files don't count
+                # Count every top-level entry to keep the total aligned with the report.
                 tld_item_path = os.path.join(start_path, tld_item)
                 if os.path.isfile(tld_item_path):
-                    if show_progress:
-                        tld_bar.update(1)
+                    if progress is not None:
+                        progress.advance(1)
                     continue
 
                 # since we skip tld items that are files,
@@ -695,8 +691,8 @@ class AudioMetadata():
                 # want to know if we have any empty artist directories so we can deal with them later
                 if os.path.isdir(tld_item_path) and not artist_content:
                     logger.info(f"{tld_item_path} is an empty artist directory")
-                    if show_progress:
-                        tld_bar.update(1)
+                    if progress is not None:
+                        progress.advance(1)
                     continue
 
                 # now we can look at what's in the current artist 1st level directory
@@ -752,14 +748,11 @@ class AudioMetadata():
                         shutil.move(audio_file, destination_path)
 
                     else:
-                        logger.warning(f"{audio_file} is missing album metadata")
+                        logger.info(f"{audio_file} is missing album metadata")
                         continue
 
-                if show_progress:
-                    tld_bar.update(1)
-
-            if show_progress:
-                tld_bar.close()
+                if progress is not None:
+                    progress.advance(1)
 
             directory.create_csv(csv_filename, data, None, None, header_row, 0)
 
@@ -772,6 +765,9 @@ class AudioMetadata():
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} creating sub-dirs for {start_path}", stack_info=True)
             raise e_error
+        finally:
+            if progress_started:
+                progress.finish()
 
 
     def get_mutagen_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags | VCFLACDict | None:
@@ -927,7 +923,7 @@ class AudioMetadata():
             return media_info
 
 
-    def get_media_info_walk(self, start_path: str, file_pattern: str) -> None:
+    def get_media_info_walk(self, start_path: str, file_pattern: str):
         '''
         @brief Gets media info (codec, duration, size, bitrate...) for audio files and saves to file.
 
@@ -938,7 +934,6 @@ class AudioMetadata():
         @param start_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} The audio file pattern we want to get tags from.
-        @return {None} This function does not return any value.
 
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -1082,7 +1077,7 @@ class AudioMetadata():
             return metadata_type
 
 
-    def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe: bool = False) -> None:
+    def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe: bool = False):
         '''
         @brief Gets tags for audio files and saves to file.
 
@@ -1096,7 +1091,6 @@ class AudioMetadata():
         The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
         @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
         @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
-        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1474,7 +1468,7 @@ class AudioMetadata():
             return id3_tags
 
 
-    def normalize_filename(self, file_path: str) -> None:
+    def normalize_filename(self, file_path: str):
         '''
         @brief Normalizes the filename of a single audio file based on its metadata.
 
@@ -1483,7 +1477,6 @@ class AudioMetadata():
         @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The path to the audio file to be have it's filename normalized.<br>
         The input file must be a valid audio file with a supported extension.
-        @return {None} This function does not return any value.
 
         @exception MetadataTypeError Indicates a non-standard metadata type or missing metadata was encountered.
         @exception MusicProcessingError Indicates attempting to process audio file with invalid extension.
@@ -1591,7 +1584,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def normalize_filename_walk(self, start_path: str) -> None:
+    def normalize_filename_walk(self, start_path: str):
         '''
         @brief Walks through a directory and calls appropriate functions to rename audio files.
 
@@ -1601,7 +1594,6 @@ class AudioMetadata():
         @param self {AudioMetadata} The instance of the class.
         @param start_path {str} The starting path that contains all the music files.<br>
         The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
-        @return {None} This function does not return any value.
 
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
@@ -1629,7 +1621,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def rename_album_directories(self, start_path: str) -> None:
+    def rename_album_directories(self, start_path: str):
         r'''
         @brief Renames second level (sld) album directories in first level (fld) artist directories.
 
@@ -1643,7 +1635,6 @@ class AudioMetadata():
         @param self {AudioMetadata} The instance of the class.
         @param start_path {str} The top-level directory containing artist folders.<br>
         The start path must be a valid top-level directory containing artist folders, and only a tld.
-        @return {None} This function does not return any value.
 
         @exception ValidationError Raised when the start path is invalid or does not meet the required criteria.
         @exception Exception A common baseclass exception to handle unforeseen errors.
@@ -1683,7 +1674,7 @@ class AudioMetadata():
                             break
 
                     if not value_album:
-                        logger.warning(f"{album_path} is missing album metadata")
+                        logger.info(f"{album_path} is missing album metadata")
                         continue
 
                     album = str(value_album).replace("/", "-")
@@ -1711,7 +1702,7 @@ class AudioMetadata():
             raise e_error
 
 
-    def update_genres(self, start_path: str, csv_path: str) -> None:
+    def update_genres(self, start_path: str, csv_path: str):
         '''
         @brief Updates supported audio genre metadata using artist directory mappings from a CSV file.
 
@@ -1742,7 +1733,6 @@ class AudioMetadata():
         @param start_path {str} The top level directory containing artist directories.
         The start path must be a valid top-level directory containing artist folders, and only a tld.
         @param csv_path {str} The full path to the artist genre CSV file.
-        @return {None} This function does not return any value.
 
         @exception ValueError Indicates the supplied directory or CSV file is invalid.
         @exception OSError A system related error occurred.

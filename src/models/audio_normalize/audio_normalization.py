@@ -40,7 +40,8 @@ from src.core.errors import PathInfoError                   # for missing genera
 # Local Module Classes
 from src.core.progress import ProgressReporter              # progress reporting interface
 from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functionality
-from src.dir_processing import DirectoryProcessing          # for directory processing functionality
+
+from src.models.dir_processing import DirectoryProcessing   # for directory processing functionality
 
 ## @var logger
 # @brief Logger instance for the module.
@@ -276,6 +277,7 @@ class AudioNormalization():
         @param show_spinner {bool} Whether to display a progress spinner.
         @param progress {ProgressReporter | None} Optional progress reporter.
 
+        @exception ValueError The file does not have an MP3 extension.
         @exception pi_error {PathInfoError} Indicates directory_processing.path_info function returned None.
         @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
@@ -286,8 +288,7 @@ class AudioNormalization():
         try:
             _, input_file_ext = os.path.splitext(file_path)
             if input_file_ext.lower() != MP3_EXT:
-                logger.warning(f"{file_path} is not an mp3")
-                return
+                raise ValueError(f"{file_path} is not an mp3")
 
             export_path = directory.path_info(file_path, target)
 
@@ -683,6 +684,7 @@ class AudioNormalization():
         @param show_spinner {bool} Whether to display a progress spinner.
         @param progress {ProgressReporter | None} Optional progress reporter.
 
+        @exception ValueError The file does not have an MP3 extension.
         @exception pi_error {PathInfoError} Indicates directory_processing.path_info function returned None.
         @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
@@ -693,8 +695,7 @@ class AudioNormalization():
         try:
             _, input_file_ext = os.path.splitext(file_path)
             if input_file_ext.lower() != MP3_EXT:
-                logger.warning(f"{file_path} is not an mp3")
-                return
+                raise ValueError(f"{file_path} is not an mp3")
 
             export_path = directory.path_info(file_path, target)
 
@@ -737,7 +738,7 @@ class AudioNormalization():
             # Check if file is already at your optimized target volume level
             if math.isclose(max_volume, target_tp, abs_tol=TOLERANCE):
                 max_text = f"{input_path_basename} is already at target peak: {max_volume:.2f} dB, peak normalization not needed"
-                logger.warning(max_text)
+                logger.info(max_text)
                 return
             else:
                 data.append(f"max volume: {max_volume:.2f} dB")
@@ -810,6 +811,7 @@ class AudioNormalization():
         @param show_spinner {bool} Whether to display a progress spinner.
         @param progress {ProgressReporter | None} Optional progress reporter.
 
+        @exception ValueError The file does not have an MP3 extension.
         @exception pi_error {PathInfoError} Indicates directory_processing.path_info function returned None.
         @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
@@ -820,8 +822,7 @@ class AudioNormalization():
         try:
             _, input_file_ext = os.path.splitext(file_path)
             if input_file_ext.lower() != MP3_EXT:
-                logger.warning(f"{file_path} is not an mp3")
-                return
+                raise ValueError(f"{file_path} is not an mp3")
 
             export_path = directory.path_info(file_path, target)
 
@@ -857,7 +858,7 @@ class AudioNormalization():
             # Skip processing if the average root mean square is already hitting the target window
             if math.isclose(mean_volume, TARGET_RMS, abs_tol=TOLERANCE):
                 mean_text = f"{input_path_basename} is already at target rms: {mean_volume:.2f} dB, rms normalization not needed."
-                logger.warning(mean_text)
+                logger.info(mean_text)
                 return
             else:
                 data.append(f"mean volume: {mean_volume:.2f} dB")

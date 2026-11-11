@@ -37,7 +37,9 @@ from src.core.constants import MUSIC_TLD                    # for generated musi
 from src.core.constants import RESULT_DIR                   # for generated text fixture directories
 from src.core.constants import RESULT_EXT                   # for generated text filename extensions
 from src.core.constants import WMA_EXT                      # for WMA file-list filtering tests
+
 from src.core.paths import GENERATED_PATH                   # for generated test output paths
+
 from tests import TEST_M3U                                  # for non-audio fixture tests
 from tests import TEST_M4A_DAVIS                            # for M4A fixture path tests
 from tests import TEST_MP3_ABBA                             # for MP3 fixture path tests
@@ -50,7 +52,7 @@ from src.core.errors import MusicProcessingError            # for safe-removal e
 from src.core.errors import PathInfoError                   # for path-info target conflict assertions
 
 # Local Module Classes
-from src.dir_processing import DirectoryProcessing          # for directory functionality under test
+from src.models.dir_processing import DirectoryProcessing   # for directory functionality under test
 
 ## @var directory
 # @brief DirectoryProcessing instance under test.
@@ -488,7 +490,7 @@ class TestDirectoryProcessing(TestCase):
         self.assertEqual(target_path_info, expected_info)
 
 
-    @patch('src.dir_processing.directory_processing.logger.error')
+    @patch('src.models.dir_processing.directory_processing.logger.error')
     def test_path_info_target_same(self, mock_error):
         '''
         @brief Test path information when the target path is the same as the input path.
@@ -512,18 +514,18 @@ class TestDirectoryProcessing(TestCase):
         mock_error.assert_called_once_with(expected_error, exc_info=True)
 
 
-    @patch('src.dir_processing.directory_processing.logger.warning')
-    def test_path_info_not_audio(self, mock_warning):
+    @patch('src.models.dir_processing.directory_processing.logger.info')
+    def test_path_info_not_audio(self, mock_info):
         '''
         @brief Test path information for a non-audio file.
 
-        @details Verifies a playlist input returns none and logs a warning.<br>
-        Patching the directory_processing warning logger to capture non-audio input warnings.
+        @details Verifies a playlist input returns none and logs an informational message.<br>
+        Patching the directory_processing info logger to capture non-audio input information.
 
         @test Error case.
 
         @param self {TestDirectoryProcessing} The instance of the test class.
-        @param mock_warning {Mock} Patched warning logger for non-audio input.
+        @param mock_info {Mock} Patched info logger for non-audio input.
         '''
 
         input_path = os.path.join(TESTS_TLD, "expected.m3u")
@@ -531,7 +533,7 @@ class TestDirectoryProcessing(TestCase):
         path_info = directory.path_info(input_path, None)
 
         self.assertIsNone(path_info)
-        mock_warning.assert_called_once_with(f"File {input_path} is not in {AUDIO_EXTS}")
+        mock_info.assert_called_once_with(f"File {input_path} is not in {AUDIO_EXTS}")
 
 
     def test_remove_albums(self):

@@ -30,10 +30,11 @@ from src.core.constants import MP3_EXT                      # for MP3 file exten
 from src.core.constants import TP                           # for true-peak normalization target
 
 # Local Module Classes
-from src.audio_normalize import AudioNormalization          # for audio normalization functionality
 from src.core.progress import ProgressReporter              # progress reporting interface
 from src.core.subprocess_utils import SubprocessUtilities   # for subprocess utility functionality
-from src.dir_processing import DirectoryProcessing          # for directory processing functionality
+
+from src.models.audio_normalize import AudioNormalization   # for audio normalization functionality
+from src.models.dir_processing import DirectoryProcessing   # for directory processing functionality
 
 ## @var logger
 # @brief Logger instance for the module.
@@ -94,6 +95,7 @@ class AudioUtilities():
         @param text_mode {str} Optional text mode for writing the file.
         @param progress {ProgressReporter | None} Optional progress reporter.
 
+        @exception ValueError The file does not have an MP3 extension.
         @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
         '''
 
@@ -105,8 +107,7 @@ class AudioUtilities():
         try:
             _, input_file_ext = os.path.splitext(file_path)
             if input_file_ext.lower() != MP3_EXT:
-                logger.warning(f"{file_path} is not an mp3")
-                return
+                raise ValueError(f"{file_path} is not an mp3")
 
             file_text = f"\n{file_path}"
             data.append(file_text)

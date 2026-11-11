@@ -40,6 +40,7 @@ from src.core.constants import RESULT_DIR                   # for text result di
 from src.core.constants import RESULT_EXT                   # for text result extension
 from src.core.constants import UTF8                         # for UTF-8 text encoding
 from src.core.constants import WMA_EXT                      # for WMA file extension
+
 from src.core.paths import GENERATED_PATH                   # for generated file output paths
 
 # Local Module Errors
@@ -439,7 +440,7 @@ class DirectoryProcessing():
 
             input_ext = input_path.suffix
             if input_ext.lower() not in AUDIO_EXTS:
-                logger.warning(f"File {input_path} is not in {AUDIO_EXTS}")
+                logger.info(f"File {input_path} is not in {AUDIO_EXTS}")
                 return None
 
             # The final two parent path components identify the artist and album directories
