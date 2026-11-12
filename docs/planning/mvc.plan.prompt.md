@@ -954,7 +954,7 @@ COMPLETED
         $ParityDir = Join-Path $PWD "parity-results"
         New-Item -ItemType Directory -Force -Path $ParityDir | Out-Null
 
-        $newCli = 'import sys; sys.argv[0] = "main.py"; from src.cli.parser import build_parser; from src.cli.commands import run_cli_command; sys.exit(run_cli_command(build_parser().parse_args()))'
+        $newCli = 'import sys; sys.argv[0] = ''main.py''; from src.cli.parser import build_parser; from src.cli.commands import run_cli_command; sys.exit(run_cli_command(build_parser().parse_args()))'
 
         function Invoke-ParityCase {
             param(
