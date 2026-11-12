@@ -328,8 +328,8 @@ class AudioMetadata():
         except OSError as os_error:
             logger.error(f"OSError {(strerror(os_error.errno))} reading artist genre CSV {csv_path}", exc_info=True)
             raise os_error
-        except ValueError as value_error:
-            raise value_error
+        except ValueError as v_error:
+            raise v_error
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} reading artist genre CSV: {csv_path}", stack_info=True)
             raise e_error

@@ -23,6 +23,7 @@ import sys                                                  # system-specific pa
 from typing import Any                                      # for the temporary spinner handle
 
 # Local Module Methods
+from src.cli.commands import run_cli_command                # function to run CLI commands
 from src.core.logging_config import bootstrap_logging       # for package logging startup
 from src.gui.wx_app import run_gui                          # GUI application runner
 
@@ -648,145 +649,47 @@ def update_walk(tld_path):
 
 ## @name Application Entry Point
 # @{
-def main(args) -> None:
+def main(args) -> int:
     '''
-    @brief Module entry point.
+    @brief Main entry point for the application.
 
-    @details Takes command line arguments and executes per arguments.
+    @details Dispatches to the appropriate subcommand handler based on the parsed arguments.
 
-    @dotfile functions.dot "Application startup and task flow"
+    @param args {Namespace} The parsed command-line arguments.
 
-    @param args {argparse.Namespace} Arguments for execution.
-
-    @return exit_code {int} Process exit code for the requested subcommand.
-
-    @exception {NotImplementedError} Indicates a subcommand has not been implemented.
-    @exception {Exception} Handles unforeseen errors.
+    @retval {int} Exit code, zero for success, one for failure.
     '''
+
+    # user wants GUI mode
+    # if args.subcommand == "gui":
+    #     try:
+    #         run_gui()
+    #         return 0
+    #     except Exception as e_error:
+    #         logger.exception(f"Exception propagated to main: {type(e_error).__name__}: {e_error}", stack_info=True)
+    #         print(f"Error in subcommand '{args.subcommand}': {type(e_error).__name__}: {e_error}")
+    #         return 1
+
+    # # user wants CLI mode
+    # return run_cli_command(args)
+
+    mode_result = None
 
     try:
+        # user wants GUI mode
         if args.subcommand == "gui":
-            gui()
+            run_gui()
+            mode_result = 0
+            return mode_result
+        else:
+            mode_result = run_cli_command(args)
+            return mode_result
 
-        if args.subcommand == "clip-check-file":
-            file_path = getattr(args, ARG_CLI_FILE)
-            clip_check_file(file_path)
-
-        if args.subcommand == "clip-check-walk":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            clip_check_walk(tld_path)
-
-        if args.subcommand == "convert-file":
-            file_path = getattr(args, ARG_CLI_FILE)
-            target = getattr(args, ARG_CLI_TARGET)
-            convert_file(file_path, target)
-
-        if args.subcommand == "convert-walk":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            file_pattern = getattr(args, ARG_CLI_PATTERN)
-            target = getattr(args, ARG_CLI_TARGET)
-            convert_walk(tld_path, file_pattern, target)
-
-        if args.subcommand == "create-albums":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            create_albums(tld_path)
-
-        if args.subcommand == "ebu-file":
-            file_path = getattr(args, ARG_CLI_FILE)
-            target = getattr(args, ARG_CLI_TARGET)
-            ebu_file(file_path, target)
-
-        if args.subcommand == "extract-album-art":
-            file_path = getattr(args, ARG_CLI_FILE)
-            extract_album_art(file_path)
-
-        if args.subcommand == "extract-walk":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            file_pattern = getattr(args, ARG_CLI_PATTERN)
-            extract_walk(tld_path, file_pattern)
-
-        if args.subcommand == "get-audio-file-list":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            get_audio_file_list(tld_path)
-
-        if args.subcommand == "get-ext-file-list":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            file_pattern = getattr(args, ARG_CLI_PATTERN)
-            get_ext_file_list(tld_path, file_pattern)
-
-        if args.subcommand == "get-media-info-walk":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            file_pattern = getattr(args, ARG_CLI_PATTERN)
-            get_media_info_walk(tld_path, file_pattern)
-
-        if args.subcommand == "get-tags-walk":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            file_pattern = getattr(args, ARG_CLI_PATTERN)
-            ffprobe = getattr(args, ARG_CLI_FFPROBE)
-            get_tags_walk(tld_path, file_pattern, ffprobe)
-
-        if args.subcommand == "level-normalize-walk":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            norm_type = getattr(args, ARG_CLI_TYPE)
-            target = getattr(args, ARG_CLI_TARGET)
-            level_normalize_walk(tld_path, norm_type, target)
-
-        if args.subcommand == "normalize-filename":
-            file_path = getattr(args, ARG_CLI_FILE)
-            normalize_filename(file_path)
-
-        if args.subcommand == "normalize-filename-walk":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            normalize_filename_walk(tld_path)
-
-        if args.subcommand == "peak-file":
-            file_path = getattr(args, ARG_CLI_FILE)
-            target = getattr(args, ARG_CLI_TARGET)
-            peak_file(file_path, target)
-
-        if args.subcommand == "rms-file":
-            file_path = getattr(args, ARG_CLI_FILE)
-            target = getattr(args, ARG_CLI_TARGET)
-            rms_file(file_path, target)
-
-        if args.subcommand == "remove-empty-albums":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            remove_empty_albums(tld_path)
-
-        if args.subcommand == "remove-pattern":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            file_pattern = getattr(args, ARG_CLI_PATTERN)
-            remove_pattern(tld_path, file_pattern)
-
-        if args.subcommand == "remove-set-list":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            remove_set_list(tld_path)
-
-        if args.subcommand == "rename-album-directories":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            rename_album_directories(tld_path)
-
-        if args.subcommand == "set-album-art":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            set_album_art(tld_path)
-
-        if args.subcommand == "update-genres":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            csv_path = getattr(args, ARG_CLI_CSV)
-            update_genres(tld_path, csv_path)
-
-        if args.subcommand == "update-playlist":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            input_m3u = getattr(args, ARG_CLI_PLAYLIST)
-            update_playlist(tld_path, input_m3u)
-
-        if args.subcommand == "update-walk":
-            tld_path = getattr(args, ARG_CLI_TLD)
-            update_walk(tld_path)
-
-    except Exception as e:
-        logger.exception(f"Exception propagated to main: {type(e).__name__}: {e}", stack_info=True)
-        print(f"Error in subcommand '{args.subcommand}': {type(e).__name__}: {e}")
+    except Exception as e_error:
+        logger.exception(f"Exception propagated to main: {type(e_error).__name__}: {e_error}", stack_info=True)
+        print(f"Error in subcommand '{args.subcommand}': {type(e_error).__name__}: {e_error}")
+        mode_result = 1
+        return mode_result
 ## @}
 
 
@@ -800,7 +703,8 @@ def existing_file(file):
     Helper function for ArgumentParser to validate file paths.
 
     @param file {str} The file path.
-    @return file {str} The file path.
+
+    @retval file {str} The file path.
 
     @exception {ArgumentTypeError} Indicates the file was not found.
     '''
@@ -819,7 +723,8 @@ def existing_path(path):
     Helper function for ArgumentParser to validate directory paths.
 
     @param path {str} The directory path.
-    @return path {str} The directory path.
+
+    @retval path {str} The directory path.
 
     @exception {ArgumentTypeError} Indicates the directory was not found.
     '''

@@ -444,7 +444,7 @@ def run_cli_command(args: Namespace) -> int:
 
     @param args {Namespace} Parsed command-line arguments.
 
-    @retval {int} Zero on success, or one when command execution fails.
+    @retval {int} Exit code, zero on success, or one when command execution fails.
     '''
 
     subcommand = getattr(args, "subcommand", None)
@@ -453,14 +453,17 @@ def run_cli_command(args: Namespace) -> int:
 
     try:
         handler = getattr(args, "func", None)
+
         if handler is None or subcommand not in _COMMAND_ARGUMENTS:
-            raise NotImplementedError(f"Subcommand '{subcommand}' is not implemented.")
+            logger.exception(f"Subcommand '{subcommand}' is not implemented", exc_info=True)
+            raise NotImplementedError(f"Subcommand '{subcommand}' is not implemented")
 
         handler(*(getattr(args, name) for name in _COMMAND_ARGUMENTS[subcommand]))
         return 0
 
-    except Exception as error:
-        logger.exception(f"Exception propagated to CLI command: {type(error).__name__}: {error}", stack_info=True)
-        print(f"Error in subcommand '{subcommand}': {type(error).__name__}: {error}")
-        return 1
+    except NotImplementedError as ni_error:
+        raise ni_error
+    except Exception as e_error:
+        logger.exception(f"Error executing subcommand '{subcommand}'", stack_info=True)
+        raise e_error
 ## @}
