@@ -15,6 +15,7 @@
 
 # Standard Modules
 import os
+import shutil                                              # for preparing test audio fixtures
 import tempfile                                             # for temporary fake audio files
 import unittest                                             # for direct test-suite execution
 from unittest import TestCase                               # for test-case assertions
@@ -26,9 +27,15 @@ from tests.support import get_method_names                  # for direct test-su
 # Local Module Constants
 from src.core.constants import RESULT_DIR                   # for result text directory
 from src.core.constants import RESULT_EXT                   # for result text extension
+
 from src.core.paths import GENERATED_PATH                   # for generated output paths
 
-from tests import TESTS_TLD                                 # for audio utility walk input
+from tests import TEST_DIAMOND_RIO                          # for no-headroom clip-check input
+from tests import TEST_LENNOX                                # for at-target-peak clip-check input
+from tests import TEST_MP3_10CC                             # for EBU dynamic leveling test input
+from tests import TEST_MP3_SMEAGOL                          # for RMS leveling test input
+from tests import TESTS_PATH                                # for test fixture directories
+from tests import TESTS_TLD                                 # for audio utility fixture paths
 
 # Local Module Classes
 from src.models.audio_info import AudioUtilities            # for utility functionality under test
@@ -48,20 +55,46 @@ class TestAudioUtilities(TestCase):
     @details Verifies audio utility behavior using music test fixtures.
     '''
 
-
-    def test_clip_check_file_rejects_non_mp3(self):
+    @classmethod
+    def setUpClass(cls):
         '''
-        @brief Tests clip checking rejects files that are not MP3s.
+        @brief Initialize audio fixtures for directory-walk tests.
 
-        @details Verifies unsupported input raises ValueError before analysis begins.
+        @details Copies the four audio fixtures needed for clip-check report coverage into a dedicated directory.
 
-        @test Error case.
-
-        @param self {TestAudioUtilities} The instance of the test class.
+        @param cls {TestAudioUtilities} Test class receiving shared fixtures.
         '''
 
-        with self.assertRaisesRegex(ValueError, "is not an mp3"):
-            AudioUtilities().clip_check_file("not-an-mp3.wav")
+        cls.converted = os.path.join(TESTS_PATH, "ConvertedClipCheckMusic")
+        cls.clip_check_source_paths = [
+            TEST_MP3_10CC,
+            TEST_DIAMOND_RIO,
+            TEST_LENNOX,
+            TEST_MP3_SMEAGOL
+        ]
+
+        if os.path.exists(cls.converted):
+            shutil.rmtree(cls.converted)
+
+        for src_path in cls.clip_check_source_paths:
+            relative_path = os.path.relpath(src_path, TESTS_TLD)
+            dest_path = os.path.join(cls.converted, relative_path)
+            os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+            shutil.copy(src_path, dest_path)
+
+
+    @classmethod
+    def tearDownClass(cls):
+        '''
+        @brief Remove prepared clip-check fixtures.
+
+        @details Deletes the dedicated fixture directory after the test class completes.
+
+        @param cls {TestAudioUtilities} Test class containing shared fixtures.
+        '''
+
+        if os.path.exists(cls.converted):
+            shutil.rmtree(cls.converted)
 
 
     def _run_clip_check(self, volume_info, ebu_info=None) -> str:
@@ -109,6 +142,21 @@ class TestAudioUtilities(TestCase):
         return format_report
 
 
+    def test_clip_check_file_rejects_non_mp3(self):
+        '''
+        @brief Tests clip checking rejects files that are not MP3s.
+
+        @details Verifies unsupported input raises ValueError before analysis begins.
+
+        @test Error case.
+
+        @param self {TestAudioUtilities} The instance of the test class.
+        '''
+
+        with self.assertRaisesRegex(ValueError, "is not an mp3"):
+            AudioUtilities().clip_check_file("not-an-mp3.wav")
+
+
     def test_clip_check_walk(self):
         '''
         @brief Test for potential clipping and headroom analysis over a directory walk.
@@ -120,8 +168,9 @@ class TestAudioUtilities(TestCase):
         @param self {TestAudioUtilities} The instance of the test class.
         '''
 
-        # walk through audio test fixtures in the top-level music directory
-        converted_tld = TESTS_TLD
+        output_path = os.path.join(GENERATED_PATH, RESULT_DIR, f"clip_check_file{RESULT_EXT}")
+        if os.path.exists(output_path):
+            os.remove(output_path)
 
         # patch object get_ebu_loudness_info
         info_func = "get_ebu_loudness_info"
@@ -129,11 +178,9 @@ class TestAudioUtilities(TestCase):
 
         # for headless test, disable the spinner by passing show_spinner=False and not sending a progress reporter
         with patch.object(normalization, info_func, side_effect=lambda file_path, **kwargs: loudness_info(file_path, show_spinner=False)):
-            utilities.clip_check_walk(converted_tld)
+            utilities.clip_check_walk(self.converted)
 
         #  verify output txt file exists
-        txt_filename = "clip_check_file"
-        output_path = os.path.join(GENERATED_PATH, RESULT_DIR, f"{txt_filename}{RESULT_EXT}")
         self.assertTrue(os.path.exists(output_path))
 
         # verify file contains expected leveling information

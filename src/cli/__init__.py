@@ -13,4 +13,15 @@
 @copyright @showdate "%Y" GWN Software. All rights reserved.
 '''
 
-__all__ = []
+# Local Module Methods
+from src.cli.commands import run_cli_command                 # exposes CLI command dispatch
+from src.cli.parser import build_parser                      # exposes CLI parser construction
+
+## @var __all__
+# @brief Exposes the public CLI entry points.
+# @details Import `build_parser` to construct the CLI argument parser.
+# @details Import `run_cli_command` to dispatch a parsed CLI command.
+__all__ = [
+    "build_parser",
+    "run_cli_command"
+]

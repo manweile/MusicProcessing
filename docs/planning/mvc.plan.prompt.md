@@ -921,30 +921,152 @@ COMPLETED
   - Validation: tests that patched `tqdm` or `yaspin` now assert on `FakeProgress` calls; tests still never use `tqdm` or `yaspin`.
   - Exit criteria: `grep` finds no `wx`, `argparse`, `tqdm`, or `yaspin` import under `src/models/`.
 
-6. Milestone 6: CLI extraction
-  - Move command-line code out of `main.py`.
-  - Files: `main.py`, new `src/cli/`
-  - Preconditions:
-    - run full test suite to ensure current functionality is intact
-  - Work:
-    - keep the existing `main.py` invocation operational throughout extraction;
-      - first make the new parser and command layer callable alongside it, then have `main.py` delegate only after CLI parity is verified
-    - use the constants defined in `src/cli/constants.py`
-    - move `CustomHelpFormatter`, `CustomArgumentParser`, and the parser construction to `cli/parser.py` as `build_parser()`
-    - move the per-subcommand wrapper functions to `cli/commands.py`
-    - replace the `main(args)` if-chain with `run_cli_command(args)` returning an exit code (0 on success, 1 on error)
-    - move `existing_file` and `existing_path` to `cli/parser.py`
-    - add `cli/progress.py` with `TqdmProgress` (`tqdm`, used by `create_album_dir`) and `SpinnerProgress`
-      (`yaspin`, `finish()` returns `elapsed_time`; used by `get_ebu_loudness_info`, `ebu_normalize_file`,
-      `peak_normalize_file`, `rms_normalize_file`, `convert_file`) and pass them into model calls
-    - replace the temporary Milestone 4 `yaspin` shim with `SpinnerProgress`
-    - `main(args)` runs the GUI for `gui`, otherwise returns `run_cli_command(args)`
-    - the `__main__` block keeps `sys.exit(main(args))`
-  - Validation:
-    - compare every subcommand's `--help` output to baseline
-    - exercise each command's validation, exit behavior, and representative output against the baseline.
-    - Keep the old implementation available until these checks pass, then switch `main.py` to the new layer and retain it as the thin entry point.
-  - Exit criteria: `main.py` contains only argument parsing wiring and the dispatch entry point.
+6. Milestone 6: CLI extraction IN PROGRESS
+  - Move command-line code out of main.py.
+  - Files: main.py, new src/cli/
+  - Preconditions: COMPLETED
+    - Run the full test suite to ensure current functionality is intact.
+  - work:
+    - Keep the existing main.py invocation operational throughout extraction.
+
+    **Step 1** COMPLETED
+    - build the new parser and command layer so they are callable and testable alongside the unchanged main.py:
+      - Use the constants defined in src/cli/constants.py. COMPLETED
+      - Move CustomHelpFormatter, CustomArgumentParser, parser construction, existing_file, and existing_path to src/cli/parser.py; COMPLETED
+        - expose parser construction as build_parser().
+      - Copy the subcommand handlers to src/cli/commands.py. COMPLETED
+      - Add run_cli_command(args) to src/cli/commands.py. COMPLETED
+        - It dispatches the parsed command and returns 0 on success or 1 on command failure.
+      - Add to src/cli/progress.py:
+        - TqdmProgress (tqdm), used by create_album_dir.
+        - SpinnerProgress (yaspin), whose finish() returns elapsed_time;
+          - use it for get_ebu_loudness_info, ebu_normalize_file, peak_normalize_file, rms_normalize_file, and convert_file.
+      - Wire the new command handlers to the new progress classes. COMPLETED
+      - Keep any old main.py handlers and progress shim operational during this stage; COMPLETED
+        - do not redirect or remove the old CLI path merely because the new modules exist.
+
+    **Step 2**
+    - verify parity between the old and new CLI implementations before changing main.py.
+      - Run the checks from the repository root in PowerShell.
+        - This helper compares exit codes and captured output.
+        - It supports different arguments for old and new runs, which is useful when using separate disposable input copies and output directories.
+        ```powershell
+        $ParityDir = Join-Path $PWD "parity-results"
+        New-Item -ItemType Directory -Force -Path $ParityDir | Out-Null
+
+        $newCli = 'import sys; sys.argv[0] = "main.py"; from src.cli.parser import build_parser; from src.cli.commands import run_cli_command; sys.exit(run_cli_command(build_parser().parse_args()))'
+
+        function Invoke-ParityCase {
+            param(
+                [Parameter(Mandatory = $true)]
+                [string]$Name,
+                [string[]]$CliArgs,
+                [string[]]$OldArgs,
+                [string[]]$NewArgs
+            )
+
+            if ($null -eq $OldArgs) { $OldArgs = $CliArgs }
+            if ($null -eq $NewArgs) { $NewArgs = $CliArgs }
+
+            $oldFile = Join-Path $ParityDir "$Name.old.txt"
+            $newFile = Join-Path $ParityDir "$Name.new.txt"
+
+            python .\main.py @OldArgs *> $oldFile
+            $oldExit = $LASTEXITCODE
+
+            python -c $newCli @NewArgs *> $newFile
+            $newExit = $LASTEXITCODE
+
+            $oldText = Get-Content $oldFile -Raw
+            $newText = Get-Content $newFile -Raw
+
+            Write-Host "`n=== $Name ==="
+            Write-Host "Exit codes: old=$oldExit new=$newExit"
+
+            if ($oldExit -eq $newExit -and $oldText -ceq $newText) {
+                Write-Host "PASS: exit code and captured output match."
+            } else {
+                Write-Host "CHECK: output or exit code differs."
+                Compare-Object `
+                    -ReferenceObject ($oldText -split "`r?`n") `
+                    -DifferenceObject ($newText -split "`r?`n") |
+                    Format-Table -AutoSize |
+                    Out-Host
+                Write-Host "Full outputs: $oldFile and $newFile"
+            }
+        }
+
+        Invoke-ParityCase -Name "top-level-help" -CliArgs @("--help")
+
+        $commands = @(
+            "gui", "clip-check-file", "clip-check-walk",
+            "convert-file", "convert-walk", "create-albums", "ebu-file",
+            "extract-album-art", "extract-walk", "get-audio-file-list",
+            "get-ext-file-list", "get-media-info-walk", "get-tags-walk",
+            "level-normalize-walk", "normalize-filename", "normalize-filename-walk",
+            "peak-file", "remove-empty-albums", "remove-pattern", "remove-set-list",
+            "rename-album-directories", "rms-file", "set-album-art", "update-genres",
+            "update-playlist", "update-walk"
+        )
+
+        foreach ($command in $commands) {
+            Invoke-ParityCase -Name "$command-help" -CliArgs @($command, "--help")
+        }
+
+        Invoke-ParityCase `
+            -Name "convert-file-missing-argument" `
+            -CliArgs @("convert-file")
+
+        Invoke-ParityCase `
+            -Name "convert-file-missing-file" `
+            -CliArgs @("convert-file", "C:\parity\missing.mp3")
+
+        Invoke-ParityCase `
+            -Name "convert-file-invalid-option" `
+            -CliArgs @("convert-file", "C:\parity\missing.mp3", "--not-a-real-option")
+        ```
+
+      For successful processing checks, use identical disposable copies of the input and separate output directories for old and new runs.<br>
+      For example, after creating the files and directories:
+      ```powershell
+      $oldInput = "C:\parity\old-input\song.m4a"
+      $newInput = "C:\parity\new-input\song.m4a"
+      $oldOutput = "C:\parity\old-output"
+      $newOutput = "C:\parity\new-output"
+
+      Invoke-ParityCase `
+          -Name "convert-file-success" `
+          -OldArgs @("convert-file", $oldInput, "--target", $oldOutput) `
+          -NewArgs @("convert-file", $newInput, "--target", $newOutput)
+
+      Get-ChildItem -File -Recurse $oldOutput
+      Get-ChildItem -File -Recurse $newOutput
+      ```
+    - Compare exit codes, messages, generated files, formats, metadata, and other observable behavior.
+    - For destructive commands such as rename or remove, use disposable directory trees.
+    - Paths, elapsed times, and encoded audio bytes may differ for legitimate reasons;
+      - investigate differences rather than treating every textual or binary difference as a failure.
+    - Keep the old implementation available until the parity checks pass.
+    - These checks exercise the new parser and dispatcher directly; they do not change main.py.
+
+    **STEP 3**
+    - after parity is verified, switch main.py to delegate CLI commands to the new layer:
+      - Keep main(args) as the entry point. It runs the GUI for gui; otherwise, it returns run_cli_command(args).
+      - Keep sys.exit(main(args)) in the __main__ block.
+      - Remove the old subcommand-handler implementations from main.py once delegation is in place and callers have been checked.
+      - Replace the temporary Milestone 4 yaspin shim with SpinnerProgress once the old path no longer needs it.
+
+    Validation:
+      - Compare every subcommand’s help output against the baseline.
+      - Exercise representative valid and invalid inputs, exit behavior, and processing/output behavior for each command.
+      - Run the existing test suite before and after the cutover.
+      - Keep python main.py ... operational and repeat representative checks through that entry point after delegation.
+      - Test GUI startup separately; a GUI help comparison does not count as launching or testing the GUI.
+
+    Exit criteria:
+    - The new CLI passes parity checks before main.py delegates to it.
+    - main.py remains a working thin entry point after cutover.
+    - main.py contains only argument-parsing wiring and the dispatch entry point.
 
 7. Milestone 7: Controllers
   - Introduce controllers that own validation and model coordination.

@@ -33,8 +33,8 @@ Given the large number of test cases, having a unique test fixture for every tes
 So I went the multi-use route, which does create it's own issues in regards to intra-case compatibility.<br>
 That's the point of the table, a summary overview of what audio file is used for what test case.<br>
 
-Some test cases are destructive or permanently altering, requiring temporary deep copies of the test fixtures being manipulated.<br>
-The deep copies are located in the `/tests/Music/` directory, and are cleaned up after test suite execution.<br>
+Some test cases use dedicated copies of fixtures instead of altering the original files.<br>
+These deep copies are stored in suite-specific directories under `/tests/` and cleaned up when the suite defines cleanup.
 
 **NOTE:** class level teardown functions sometimes run into transient file permission denial, especially on all suite runs.<br>
 It is very hard to replicate for debugging, so not worth the coding effort to fix.<br>
@@ -46,8 +46,8 @@ Re-run the failing test(s) individually, empirically they succeed on 2nd try.
 | 10cc | 10cc | 04 - Donna.mp3 | test_audio_metadata | Already-normalized filename |
 | 10cc | 10cc | 04 - Donna.mp3 | test_audio_metadata | Windows filename-character sanitization |
 | 10cc | 10cc | 04 - Donna.mp3 | test_audio_metadata | Directory-walk filename normalization |
+| 10cc | 10cc | 04 - Donna.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | 38 Special | Teachers | 38 Special-Teacher Teacher.mp3 | test_audio_metadata | Whitespace-only MP3 genre replacement |
-| 38 Special | Teachers | 38 Special-Teacher Teacher.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | 38 Special | Teachers | 38 Special-Teacher Teacher.mp3 | test_directory_processing | Directory-walk file listing |
 | Abba | Waterloo | ABBA-Waterloo.mp3 | test_audio_art | Has existing folder art |
 | Abba | Waterloo | ABBA-Waterloo.mp3 | test_audio_metadata | ID3v2.3 Metadata Mapping |
@@ -58,12 +58,10 @@ Re-run the failing test(s) individually, empirically they succeed on 2nd try.
 | Alannah Myles | A-Lan-Nah | Alannah Myles-Do You Really Wanna Know Me.flac | test_audio_art | Embedded FLAC artwork extraction |
 | Albert Collins | Best Of The Blues, Vol. 1 | Albert Collins - Trash Talkin'.mp3 | test_audio_art | Missing compilation album art creation |
 | Albert Collins | Best Of The Blues, Vol. 1 | Albert Collins - Trash Talkin'.mp3 | test_audio_metadata | Directory-walk metadata keys |
-| Albert Collins | Best Of The Blues, Vol. 1 | Albert Collins - Trash Talkin'.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | Albert Collins | Best Of The Blues, Vol. 1 | Albert Collins - Trash Talkin'.mp3 | test_directory_processing | Directory-walk file listing |
 | Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_audio_art | Directory-walk album-art processing |
 | Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_audio_metadata | Directory-walk metadata keys |
 | Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_audio_metadata | Missing MP3 genre replacement |
-| Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | Bear McCreary | Battlestar Galactica | Bear McCreary - BSG Gayatri Mantra Theme Song.mp3 | test_directory_processing | Directory-walk file listing |
 | Billie Holiday | Georgia On My Mind | Billie Holiday-Georgia On My Mind.wma | test_audio_art | WM/Picture artwork without a video stream |
 | Cream | Goodbye | 02. Politician.flac | test_audio_metadata | FLAC filename normalization |
@@ -91,7 +89,6 @@ Re-run the failing test(s) individually, empirically they succeed on 2nd try.
 | Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_audio_art | Directory-walk album-art processing |
 | Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_audio_metadata | Directory-walk metadata keys |
 | Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_audio_metadata | Unmapped artist directory is skipped |
-| Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | Daughtry | Leave This Town | Daughtry-No Surprise.mp3 | test_directory_processing | Directory-walk file listing |
 | Diamond Rio | Diamond Rio | Diamond Rio-Lyin' Eyes.mp3 | test_audio_art | Directory-walk album-art processing |
 | Diamond Rio | Diamond Rio | Diamond Rio-Lyin' Eyes.mp3 | test_audio_metadata | Directory-walk metadata keys |
@@ -112,6 +109,8 @@ Re-run the failing test(s) individually, empirically they succeed on 2nd try.
 | The Eagles | Desperado | The Eagles-Desperado.m4a | test_audio_metadata | M4A Metadata Mapping |
 | The Eagles | Desperado | The Eagles-Desperado.m4a | test_audio_playlist | Playlist M4A parsing |
 | The Lord of the Rings | The Return of the King | Annie Lennox - Into the West.mp3 | test_audio_playlist | Playlist artist-path correction |
+| The Lord of the Rings | The Return of the King | Annie Lennox - Into the West.mp3 | test_audio_utilities | Directory-walk volume analysis |
+| The Lord of the Rings | The Two Towers | Howard Shore-The Taming Of Smeagol.mp3 | test_audio_utilities | Directory-walk volume analysis |
 | The Lord of the Rings | The Two Towers | Howard Shore-The Taming Of Smeagol.mp3 | test_audio_normalization | RMS level normalization |
 | X Ambassadors | VHS | X Ambassadors-Renegades.mp3 | test_audio_normalization | Max-volume check |
 | N/A | /tests | artist_genre_test.csv | test_audio_metadata | Valid artist-genre update mapping |

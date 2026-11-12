@@ -134,6 +134,16 @@ TEST_MP3_ABBA = os.path.join(TESTS_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 # @details This mp3 has a video stream and an ID3 APIC album art tag.
 TEST_MP3_CRUSH = os.path.join(TESTS_TLD, "Crush", "Here", "Crush-Live.mp3")
 
+## @var TEST_DIAMOND_RIO
+# @brief Path to Diamond Rio MP3 file for audio utility tests.
+# @details Use this when needing an MP3 with no headroom for clip-check tests.
+TEST_DIAMOND_RIO = os.path.join(TESTS_TLD, "Diamond Rio", "Diamond Rio-Lyin' Eyes.mp3")
+
+## @var TEST_LENNOX
+# @brief Path to Annie Lennox MP3 file for audio utility tests.
+# @details Use this when needing an MP3 already at target peak for clip-check tests.
+TEST_LENNOX = os.path.join(TESTS_TLD, "The Lord of the Rings", "The Return of the King", "Annie Lennox - Into the West.mp3")
+
 ## @var TEST_MP3_GENESIS
 # @brief Path to mp3 audio file for tests.
 # @details Use this when needing a mp3 audio file for audio metadata tests.
@@ -196,44 +206,16 @@ TEST_WMA_JOHN_TITLE = "Saturday Night’s Alright (for Fighting)"
 
 ## @var __all__
 # @brief Exposes test fixtures for importing by test modules.
-# @details Import TEST_FLAC_ALANNAH_MYLES with `from tests import TEST_FLAC_ALANNAH_MYLES`
-# @details Import TEST_FLAC_CREAM with `from tests import TEST_FLAC_CREAM`
-# @details Import TEST_FLAC_CREAM_ALBUM_ARTIST with `from tests import TEST_FLAC_CREAM_ALBUM_ARTIST`
-# @details Import TEST_FLAC_CREAM_BADGE with `from tests import TEST_FLAC_CREAM_BADGE`
-# @details Import TEST_FLAC_CREAM_INVALID_TITLE with `from tests import TEST_FLAC_CREAM_INVALID_TITLE`
-# @details Import TEST_FLAC_CREAM_TITLE with `from tests import TEST_FLAC_CREAM_TITLE`
-# @details Import TEST_M3U with `from tests import TEST_M3U`
-# @details Import TEST_M4A_DAVIS with `from tests import TEST_M4A_DAVIS`
-# @details Import TEST_M4A_DAVIS_ALBUM_ARTIST with `from tests import TEST_M4A_DAVIS_ALBUM_ARTIST`
-# @details Import TEST_M4A_DAVIS_TITLE with `from tests import TEST_M4A_DAVIS_TITLE`
-# @details Import TEST_M4A_EAGLES with `from tests import TEST_M4A_EAGLES`
-# @details Import TEST_M4A_EAGLES_ALBUM_ARTIST with `from tests import TEST_M4A_EAGLES_ALBUM_ARTIST`
-# @details Import TEST_M4A_EAGLES_TITLE with `from tests import TEST_M4A_EAGLES_TITLE`
-# @details Import TEST_MP3_10CC with `from tests import TEST_MP3_10CC`
-# @details Import TEST_MP3_10CC_ALBUM_ARTIST with `from tests import TEST_MP3_10CC_ALBUM_ARTIST`
-# @details Import TEST_MP3_10CC_TITLE with `from tests import TEST_MP3_10CC_TITLE`
-# @details Import TEST_MP3_ABBA with `from tests import TEST_MP3_ABBA`
-# @details Import TEST_MP3_CRUSH with `from tests import TEST_MP3_CRUSH`
-# @details Import TEST_MP3_GENESIS with `from tests import TEST_MP3_GENESIS`
-# @details Import TEST_MP3_NO_METADATA with `from tests import TEST_MP3_NO_METADATA`
-# @details Import TEST_MP3_NO_TAG with `from tests import TEST_MP3_NO_TAG`
-# @details Import TEST_MP3_SMEAGOL with `from tests import TEST_MP3_SMEAGOL`
-# @details Import TEST_MP3_X with `from tests import TEST_MP3_X`
-# @details Import TESTS_PATH with `from tests import TESTS_PATH`
-# @details Import TESTS_TLD with `from tests import TESTS_TLD`
-# @details Import TEST_WAV_NONE with `from tests import TEST_WAV_NONE`
-# @details Import TEST_WMA_CCR with `from tests import TEST_WMA_CCR`
-# @details Import TEST_WMA_HOLIDAY with `from tests import TEST_WMA_HOLIDAY`
-# @details Import TEST_WMA_JOHN with `from tests import TEST_WMA_JOHN`
-# @details Import TEST_WMA_JOHN_ALBUM_ARTIST with `from tests import TEST_WMA_JOHN_ALBUM_ARTIST`
-# @details Import TEST_WMA_JOHN_TITLE with `from tests import TEST_WMA_JOHN_TITLE`
+# @details In modules needing the constant, add `from tests import <CONSTANT_NAME>`.
 __all__ = [
+    "TEST_DIAMOND_RIO",
     "TEST_FLAC_ALANNAH_MYLES",
     "TEST_FLAC_CREAM",
     "TEST_FLAC_CREAM_ALBUM_ARTIST",
     "TEST_FLAC_CREAM_BADGE",
     "TEST_FLAC_CREAM_INVALID_TITLE",
     "TEST_FLAC_CREAM_TITLE",
+    "TEST_LENNOX",
     "TEST_M3U",
     "TEST_M4A_DAVIS",
     "TEST_M4A_DAVIS_ALBUM_ARTIST",

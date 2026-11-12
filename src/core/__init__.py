@@ -19,9 +19,7 @@ from src.core.progress import ProgressReporter                   # progress repo
 
 ## @var __all__
 # @brief Exposes class for importing by other modules.
-# @details  In modules needing the class, add `from src.core import NullProgress`
-# @details  In modules needing the class, add `from src.core import ProgressReporter`
-
+# @details  In modules needing the class, add `from src.core import <Class>`
 __all__ = [
     "NullProgress",
     "ProgressReporter"

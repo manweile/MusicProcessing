@@ -1,6 +1,31 @@
 NOT DISPOSED:
 
 DOXYGEN:
+1) update file doc blocks examples
+  a) __init__.py files get:
+    @file src/core/__init__.py
+    @package core
+  b) *.py files with just stand alone defs get:
+    @file src/core/logging_config.py
+    @package src.core.logging_config
+  c) *.py files with one class get:
+    @file src/core/directory_processing.py
+    @package src.core.directory_processing
+  d) *.py files with multiple classes get:
+    @file src/core/progress.py
+    @package core.progress
+  e) *.py with mixed classes and stand alone defs get:
+    @file src/core/parser.py
+    @package src.core.parser
+  f) python.instructions.md will need change in file doc block rules (note that @file always comes first)
+  g) do a one off test to verify good doxygen html
+  TODO
+
+2) I really don't want to curate all the @details in tests\__init__.py (probably any init file actually)
+  a) unnecessary tech debt to maintain.
+  b) thats what table in testing.md is for
+  c) coalesce multiple @details into single
+TODO
 
 ENVIRONMENT:
 1) pylance hover
@@ -211,8 +236,8 @@ TODO
         Diamond Rio-Lyin' Eyes.mp3              :no headroom, peak leveling adjustment, ebu linear leveling adjustment
         Annie Lennox - Into the West.mp3        :already at target peak
         Howard Shore-The Taming Of Smeagol.mp3  :rms leveling adjustment
-  d) update testing.md table (depending on option selected)
-  TODO
+  d) update testing.md table
+  COMPLETED
 
 DISPOSED:
   1) import doxygen create from esp scale project
