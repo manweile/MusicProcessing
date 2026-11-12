@@ -945,7 +945,7 @@ COMPLETED
       - Keep any old main.py handlers and progress shim operational during this stage; COMPLETED
         - do not redirect or remove the old CLI path merely because the new modules exist.
 
-    **Step 2**
+    **Step 2** COMPLETED
     - verify parity between the old and new CLI implementations before changing main.py.
       - Run the checks from the repository root in PowerShell.
         - This helper compares exit codes and captured output.
@@ -1027,31 +1027,6 @@ COMPLETED
             -Name "convert-file-invalid-option" `
             -CliArgs @("convert-file", "D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3", "--not-a-real-option")
         ```
-
-        For successful processing checks, use identical disposable copies of the input and separate output directories for old and new runs.<br>
-        For example, after creating the files and directories:
-
-        ```powershell
-        $oldInput = "C:\parity\old-input\song.m4a"
-        $newInput = "C:\parity\new-input\song.m4a"
-        $oldOutput = "C:\parity\old-output"
-        $newOutput = "C:\parity\new-output"
-
-        Invoke-ParityCase `
-            -Name "convert-file-success" `
-            -OldArgs @("convert-file", $oldInput, "--target", $oldOutput) `
-            -NewArgs @("convert-file", $newInput, "--target", $newOutput)
-
-        Get-ChildItem -File -Recurse $oldOutput
-        Get-ChildItem -File -Recurse $newOutput
-        ```
-
-    - Compare exit codes, messages, generated files, formats, metadata, and other observable behavior.
-    - For destructive commands such as rename or remove, use disposable directory trees.
-    - Paths, elapsed times, and encoded audio bytes may differ for legitimate reasons;
-      - investigate differences rather than treating every textual or binary difference as a failure.
-    - Keep the old implementation available until the parity checks pass.
-    - These checks exercise the new parser and dispatcher directly; they do not change main.py.
 
     **STEP 3**
     - after parity is verified, switch main.py to delegate CLI commands to the new layer:
