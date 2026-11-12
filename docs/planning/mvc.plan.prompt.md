@@ -1023,7 +1023,7 @@ COMPLETED
 
         Invoke-ParityCase `
             -Name "convert-file-invalid-option" `
-            -CliArgs @("convert-file", "C:\parity\missing.mp3", "--not-a-real-option")
+            -CliArgs @("convert-file", "D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3", "--not-a-real-option")
         ```
 
         For successful processing checks, use identical disposable copies of the input and separate output directories for old and new runs.<br>

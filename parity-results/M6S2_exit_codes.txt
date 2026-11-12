@@ -72,7 +72,7 @@ Invoke-ParityCase `
 
 Invoke-ParityCase `
     -Name "convert-file-invalid-option" `
-    -CliArgs @("convert-file", "C:\parity\missing.mp3", "--not-a-real-option")
+    -CliArgs @("convert-file", "D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3", "--not-a-real-option")
 
 Expected Output:
 
@@ -179,7 +179,7 @@ PASS: exit code and captured output match.
 === update-walk-help ===
 Exit codes: old=0 new=0
 PASS: exit code and captured output match.
-PS D:\MusicProcessing>
+
 PS D:\MusicProcessing> Invoke-ParityCase `
 >>     -Name "convert-file-missing-argument" `
 >>     -CliArgs @("convert-file")
@@ -199,7 +199,7 @@ At line:16 char:5                            <=
 
 
 Full outputs: D:\MusicProcessing\parity-results\convert-file-missing-argument.old.txt and D:\MusicProcessing\parity-results\convert-file-missing-argument.new.txt
-PS D:\MusicProcessing>
+
 PS D:\MusicProcessing> Invoke-ParityCase `
 >>     -Name "convert-file-missing-file" `
 >>     -CliArgs @("convert-file", "C:\parity\missing.mp3")
@@ -219,10 +219,10 @@ At line:16 char:5                            <=
 
 
 Full outputs: D:\MusicProcessing\parity-results\convert-file-missing-file.old.txt and D:\MusicProcessing\parity-results\convert-file-missing-file.new.txt
-PS D:\MusicProcessing>
+
 PS D:\MusicProcessing> Invoke-ParityCase `
 >>     -Name "convert-file-invalid-option" `
->>     -CliArgs @("convert-file", "C:\parity\missing.mp3", "--not-a-real-option")
+>>     -CliArgs @("convert-file", "D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3", "--not-a-real-option")
 
 === convert-file-invalid-option ===
 Exit codes: old=2 new=2
