@@ -956,6 +956,8 @@ COMPLETED
 
         $newCli = 'import sys; sys.argv[0] = ''main.py''; from src.cli.parser import build_parser; from src.cli.commands import run_cli_command; sys.exit(run_cli_command(build_parser().parse_args()))'
 
+        $capture = 'import subprocess, sys; from pathlib import Path; result = subprocess.run([sys.executable, *sys.argv[2:]], stdout=subprocess.PIPE, stderr=subprocess.STDOUT); Path(sys.argv[1]).write_bytes(result.stdout); sys.exit(result.returncode)'
+
         function Invoke-ParityCase {
             param(
                 [Parameter(Mandatory = $true)]
@@ -971,10 +973,10 @@ COMPLETED
             $oldFile = Join-Path $ParityDir "$Name.old.txt"
             $newFile = Join-Path $ParityDir "$Name.new.txt"
 
-            python .\main.py @OldArgs *> $oldFile
+            python -c $capture $oldFile .\main.py @OldArgs
             $oldExit = $LASTEXITCODE
 
-            python -c $newCli @NewArgs *> $newFile
+            python -c $capture $newFile -c $newCli @NewArgs
             $newExit = $LASTEXITCODE
 
             $oldText = Get-Content $oldFile -Raw
@@ -1042,7 +1044,7 @@ COMPLETED
 
         Get-ChildItem -File -Recurse $oldOutput
         Get-ChildItem -File -Recurse $newOutput
-      ```
+        ```
 
     - Compare exit codes, messages, generated files, formats, metadata, and other observable behavior.
     - For destructive commands such as rename or remove, use disposable directory trees.

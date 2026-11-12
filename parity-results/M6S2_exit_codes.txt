@@ -5,6 +5,8 @@ New-Item -ItemType Directory -Force -Path $ParityDir | Out-Null
 
 $newCli = 'import sys; sys.argv[0] = ''main.py''; from src.cli.parser import build_parser; from src.cli.commands import run_cli_command; sys.exit(run_cli_command(build_parser().parse_args()))'
 
+$capture = 'import subprocess, sys; from pathlib import Path; result = subprocess.run([sys.executable, *sys.argv[2:]], stdout=subprocess.PIPE, stderr=subprocess.STDOUT); Path(sys.argv[1]).write_bytes(result.stdout); sys.exit(result.returncode)'
+
 function Invoke-ParityCase {
     param(
         [Parameter(Mandatory = $true)]
@@ -20,10 +22,10 @@ function Invoke-ParityCase {
     $oldFile = Join-Path $ParityDir "$Name.old.txt"
     $newFile = Join-Path $ParityDir "$Name.new.txt"
 
-    python .\main.py @OldArgs *> $oldFile
+    python -c $capture $oldFile .\main.py @OldArgs
     $oldExit = $LASTEXITCODE
 
-    python -c $newCli @NewArgs *> $newFile
+    python -c $capture $newFile -c $newCli @NewArgs
     $newExit = $LASTEXITCODE
 
     $oldText = Get-Content $oldFile -Raw
@@ -75,6 +77,10 @@ Invoke-ParityCase `
     -CliArgs @("convert-file", "D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3", "--not-a-real-option")
 
 Expected Output:
+
+=== top-level-help ===
+Exit codes: old=0 new=0
+PASS: exit code and captured output match.
 
 === gui-help ===
 Exit codes: old=0 new=0
@@ -180,62 +186,14 @@ PASS: exit code and captured output match.
 Exit codes: old=0 new=0
 PASS: exit code and captured output match.
 
-PS D:\MusicProcessing> Invoke-ParityCase `
->>     -Name "convert-file-missing-argument" `
->>     -CliArgs @("convert-file")
-
 === convert-file-missing-argument ===
 Exit codes: old=2 new=2
-CHECK: output or exit code differs.
-
-InputObject                                  SideIndicator
------------                                  -------------
-At line:19 char:5                            =>
-+     python -c $newCli @NewArgs *> $newFile =>
-+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ =>
-At line:16 char:5                            <=
-+     python .\main.py @OldArgs *> $oldFile  <=
-+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  <=
-
-
-Full outputs: D:\MusicProcessing\parity-results\convert-file-missing-argument.old.txt and D:\MusicProcessing\parity-results\convert-file-missing-argument.new.txt
-
-PS D:\MusicProcessing> Invoke-ParityCase `
->>     -Name "convert-file-missing-file" `
->>     -CliArgs @("convert-file", "C:\parity\missing.mp3")
+PASS: exit code and captured output match.
 
 === convert-file-missing-file ===
 Exit codes: old=2 new=2
-CHECK: output or exit code differs.
-
-InputObject                                  SideIndicator
------------                                  -------------
-At line:19 char:5                            =>
-+     python -c $newCli @NewArgs *> $newFile =>
-+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ =>
-At line:16 char:5                            <=
-+     python .\main.py @OldArgs *> $oldFile  <=
-+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  <=
-
-
-Full outputs: D:\MusicProcessing\parity-results\convert-file-missing-file.old.txt and D:\MusicProcessing\parity-results\convert-file-missing-file.new.txt
-
-PS D:\MusicProcessing> Invoke-ParityCase `
->>     -Name "convert-file-invalid-option" `
->>     -CliArgs @("convert-file", "D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3", "--not-a-real-option")
+PASS: exit code and captured output match
 
 === convert-file-invalid-option ===
 Exit codes: old=2 new=2
-CHECK: output or exit code differs.
-
-InputObject                                  SideIndicator
------------                                  -------------
-At line:19 char:5                            =>
-+     python -c $newCli @NewArgs *> $newFile =>
-+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ =>
-At line:16 char:5                            <=
-+     python .\main.py @OldArgs *> $oldFile  <=
-+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  <=
-
-
-Full outputs: D:\MusicProcessing\parity-results\convert-file-invalid-option.old.txt and D:\MusicProcessing\parity-results\convert-file-invalid-option.new.txt
+PASS: exit code and captured output match.
