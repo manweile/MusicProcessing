@@ -1,0 +1,839 @@
+=== top-level-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                                                                                                             SideIndi
+                                                                                                                                                                                                        cator
+-----------                                                                                                                                                                                             --------
+python : Traceback (most recent call last):                                                                                                                                                             =>
+At line:19 char:1                                                                                                                                                                                       =>
++ python -c $newCli @NewArgs *> $newFile                                                                                                                                                                =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                                                                                                                =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException                                                                                             =>
+    + FullyQualifiedErrorId : NativeCommandError                                                                                                                                                        =>
+                                                                                                                                                                                                        =>
+  File "<string>", line 1, in <module>                                                                                                                                                                  =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                                                                                                             =>
+usage: main.py [-h] command ...                                                                                                                                                                         <=
+Music Processing                                                                                                                                                                                        <=
+                                                                                                                                                                                                        <=
+options:                                                                                                                                                                                                <=
+  -h, --help                                                show this help message and exit                                                                                                             <=
+                                                                                                                                                                                                        <=
+subcommands:                                                                                                                                                                                            <=
+  command                                                                                                                                                                                               <=
+    gui                                                     Run in GUI mode                                                                                                                             <=
+    clip-check-file file                                    Check peak/RMS/EBU R128 leveling for single audio file; mandatory: audio file path                                                          <=
+    clip-check-walk tld                                     Check peak/RMS/EBU R128 leveling for multiple audio files; mandatory: start path tld/fld                                                    <=
+    convert-file file --target target                       Convert audio file to mp3; mandatory: audio file path; optional: target path                                                                <=
+    convert-walk tld --pattern pattern --target target      Convert audio files to mp3; mandatory: start path tld/fld/sld; optional: file ext {.flac|.mp3|.m4a|.wma}; optional: target path             <=
+    create-albums tld                                       Create album sub-directories; mandatory: start path tld only                                                                                <=
+    ebu-file file --target target                           EBU R128 level audio file; mandatory: audio file path; optional: target path                                                                <=
+    extract-album-art file                                  Extract audio file embedded art; mandatory: audio file path                                                                                 <=
+    extract-walk tld --pattern pattern                      Extract audio files embedded art; mandatory: start path tld/fld; optional: file ext {.flac|.mp3|.m4a|.wma}                                  <=
+    get-audio-file-list tld                                 Get list of audio file paths; mandatory: start path tld/fld                                                                                 <=
+    get-ext-file-list tld --pattern pattern                 Get list of audio file extensions; mandatory: start path tld/fld; optional: file ext {.flac|.mp3|.m4a|.wma}                                 <=
+    get-media-info-walk tld --pattern pattern               Get list of audio files media info; mandatory: start path tld/fld; optional: file ext {.flac|.mp3|.m4a|.wma}                                <=
+    get-tags-walk tld --pattern pattern --ffprobe ffprobe   Get list of audio files metadata tags; mandatory: start path tld/fld; optional: file ext {.flac|.mp3|.m4a|.wma}; optional: use ffprobe True <=
+    level-normalize-walk tld type --target target           Level normalize audio files; mandatory: start path tld/fld; mandatory: level type {ebu|peak|rms}; optional: target path                     <=
+    normalize-filename file                                 Rename audio file from metadata; mandatory: audio file path                                                                                 <=
+    normalize-filename-walk tld                             Rename audio files from metadata; mandatory: start path tld/fld/sld                                                                         <=
+    peak-file file --target target                          Peak level audio file; mandatory: audio file path; optional: target path                                                                    <=
+    remove-empty-albums tld                                 Remove empty album sub-directories; mandatory: start path tld/fld                                                                           <=
+    remove-pattern tld pattern                              Remove files with specified pattern; mandatory: start path tld/fld/sld; mandatory: file pattern                                             <=
+    remove-set-list tld                                     Remove files matching hard-coded pattern set; mandatory: start path tld/fld/sld                                                             <=
+    rename-album-directories tld                            Rename album paths from metadata; mandatory: start path tld only                                                                            <=
+    rms-file file --target target                           RMS level audio file; mandatory: audio file path; optional: target path                                                                     <=
+    set-album-art tld                                       Set albums art file; mandatory: start path tld/fld                                                                                          <=
+    update-genres tld csv                                   Update songs genre from CSV; mandatory: start path tld only; mandatory: genre csv file path                                                 <=
+    update-playlist tld m3u                                 Update playlist file songs path; mandatory: start path tld only; mandatory: m3u file path                                                   <=
+    update-walk tld                                         Update playlist files songs path; mandatory: start path tld only                                                                            <=
+                                                                                                                                                                                                        <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\top-level-help.old.txt and D:\MusicProcessing\parity-results\top-level-help.new.txt
+PS D:\MusicProcessing>
+PS D:\MusicProcessing> $commands = @(
+>> "gui", "clip-check-file", "clip-check-walk",
+>> "convert-file", "convert-walk", "create-albums", "ebu-file",
+>> "extract-album-art", "extract-walk", "get-audio-file-list",
+>> "get-ext-file-list", "get-media-info-walk", "get-tags-walk",
+>> "level-normalize-walk", "normalize-filename", "normalize-filename-walk",
+>> "peak-file", "remove-empty-albums", "remove-pattern", "remove-set-list",
+>> "rename-album-directories", "rms-file", "set-album-art", "update-genres",
+>> "update-playlist", "update-walk"
+>> )
+PS D:\MusicProcessing>
+PS D:\MusicProcessing> foreach ($command in $commands) {
+>> Invoke-ParityCase -Name "$command-help" -CliArgs @($command, "--help")
+>> }
+
+=== gui-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py gui [-h]                                                                                     <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\gui-help.old.txt and D:\MusicProcessing\parity-results\gui-help.new.txt
+
+=== clip-check-file-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py clip-check-file [-h] file                                                                    <=
+positional arguments:                                                                                       <=
+  file        mandatory audio file path                                                                     <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\clip-check-file-help.old.txt and D:\MusicProcessing\parity-results\clip-check-file-help.new.txt
+
+=== clip-check-walk-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py clip-check-walk [-h] tld                                                                     <=
+positional arguments:                                                                                       <=
+  tld         mandatory start path tld/fld                                                                  <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\clip-check-walk-help.old.txt and D:\MusicProcessing\parity-results\clip-check-walk-help.new.txt
+
+=== convert-file-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py convert-file [-h] [--target TARGET] file                                                     <=
+positional arguments:                                                                                       <=
+  file             mandatory audio file path                                                                <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help       show this help message and exit                                                          <=
+  --target TARGET  optional target path                                                                     <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\convert-file-help.old.txt and D:\MusicProcessing\parity-results\convert-file-help.new.txt
+
+=== convert-walk-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py convert-walk [-h] [--pattern PATTERN] [--target TARGET] tld                                  <=
+                                                                                                            <=
+positional arguments:                                                                                       <=
+  tld                mandatory start path tld/fld/sld                                                       <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help         show this help message and exit                                                        <=
+  --pattern PATTERN  optional file ext {.flac|.mp3|.m4a|.wma}                                               <=
+  --target TARGET    optional target path                                                                   <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\convert-walk-help.old.txt and D:\MusicProcessing\parity-results\convert-walk-help.new.txt
+
+=== create-albums-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py create-albums [-h] tld                                                                       <=
+positional arguments:                                                                                       <=
+  tld         mandatory start path tld only                                                                 <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\create-albums-help.old.txt and D:\MusicProcessing\parity-results\create-albums-help.new.txt
+
+=== ebu-file-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py ebu-file [-h] [--target TARGET] file                                                         <=
+positional arguments:                                                                                       <=
+  file             mandatory audio file path                                                                <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help       show this help message and exit                                                          <=
+  --target TARGET  optional target path                                                                     <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\ebu-file-help.old.txt and D:\MusicProcessing\parity-results\ebu-file-help.new.txt
+
+=== extract-album-art-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py extract-album-art [-h] file                                                                  <=
+positional arguments:                                                                                       <=
+  file        mandatory audio file path                                                                     <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\extract-album-art-help.old.txt and D:\MusicProcessing\parity-results\extract-album-art-help.new.txt
+
+=== extract-walk-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py extract-walk [-h] [--pattern PATTERN] tld                                                    <=
+positional arguments:                                                                                       <=
+  tld                mandatory start path tld/fld                                                           <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help         show this help message and exit                                                        <=
+  --pattern PATTERN  optional file ext {.flac|.mp3|.m4a|.wma}                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\extract-walk-help.old.txt and D:\MusicProcessing\parity-results\extract-walk-help.new.txt
+
+=== get-audio-file-list-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py get-audio-file-list [-h] tld                                                                 <=
+positional arguments:                                                                                       <=
+  tld         mandatory start path tld/fld                                                                  <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\get-audio-file-list-help.old.txt and D:\MusicProcessing\parity-results\get-audio-file-list-help.new.txt
+
+=== get-ext-file-list-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py get-ext-file-list [-h] [--pattern PATTERN] tld                                               <=
+positional arguments:                                                                                       <=
+  tld                mandatory start path tld/fld                                                           <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help         show this help message and exit                                                        <=
+  --pattern PATTERN  optional file ext {.flac|.mp3|.m4a|.wma}                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\get-ext-file-list-help.old.txt and D:\MusicProcessing\parity-results\get-ext-file-list-help.new.txt
+
+=== get-media-info-walk-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py get-media-info-walk [-h] [--pattern PATTERN] tld                                             <=
+positional arguments:                                                                                       <=
+  tld                mandatory start path tld/fld                                                           <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help         show this help message and exit                                                        <=
+  --pattern PATTERN  optional file ext {.flac|.mp3|.m4a|.wma}                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\get-media-info-walk-help.old.txt and D:\MusicProcessing\parity-results\get-media-info-walk-help.new.txt
+
+=== get-tags-walk-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py get-tags-walk [-h] [--pattern PATTERN] [--ffprobe FFPROBE] tld                               <=
+                                                                                                            <=
+positional arguments:                                                                                       <=
+  tld                mandatory start path tld/fld                                                           <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help         show this help message and exit                                                        <=
+  --pattern PATTERN  optional file ext {.flac|.mp3|.m4a|.wma}                                               <=
+  --ffprobe FFPROBE  optional use ffprobe True                                                              <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\get-tags-walk-help.old.txt and D:\MusicProcessing\parity-results\get-tags-walk-help.new.txt
+
+=== level-normalize-walk-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py level-normalize-walk [-h] [--target TARGET] tld type                                         <=
+                                                                                                            <=
+positional arguments:                                                                                       <=
+  tld              mandatory start path tld/fld                                                             <=
+  type             mandatory level type {ebu|peak|rms}                                                      <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help       show this help message and exit                                                          <=
+  --target TARGET  optional target path                                                                     <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\level-normalize-walk-help.old.txt and D:\MusicProcessing\parity-results\level-normalize-walk-help.new.txt
+
+=== normalize-filename-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py normalize-filename [-h] file                                                                 <=
+positional arguments:                                                                                       <=
+  file        mandatory audio file path                                                                     <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\normalize-filename-help.old.txt and D:\MusicProcessing\parity-results\normalize-filename-help.new.txt
+
+=== normalize-filename-walk-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py normalize-filename-walk [-h] tld                                                             <=
+positional arguments:                                                                                       <=
+  tld         mandatory start path tld/fld/sld                                                              <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\normalize-filename-walk-help.old.txt and D:\MusicProcessing\parity-results\normalize-filename-walk-help.new.txt
+
+=== peak-file-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py peak-file [-h] [--target TARGET] file                                                        <=
+positional arguments:                                                                                       <=
+  file             mandatory audio file path                                                                <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help       show this help message and exit                                                          <=
+  --target TARGET  optional target path                                                                     <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\peak-file-help.old.txt and D:\MusicProcessing\parity-results\peak-file-help.new.txt
+
+=== remove-empty-albums-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py remove-empty-albums [-h] tld                                                                 <=
+positional arguments:                                                                                       <=
+  tld         mandatory start path tld/fld                                                                  <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\remove-empty-albums-help.old.txt and D:\MusicProcessing\parity-results\remove-empty-albums-help.new.txt
+
+=== remove-pattern-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py remove-pattern [-h] tld pattern                                                              <=
+positional arguments:                                                                                       <=
+  tld         mandatory start path tld/fld/sld                                                              <=
+  pattern     mandatory file pattern                                                                        <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\remove-pattern-help.old.txt and D:\MusicProcessing\parity-results\remove-pattern-help.new.txt
+
+=== remove-set-list-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py remove-set-list [-h] tld                                                                     <=
+positional arguments:                                                                                       <=
+  tld         mandatory start path tld/fld/sld                                                              <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\remove-set-list-help.old.txt and D:\MusicProcessing\parity-results\remove-set-list-help.new.txt
+
+=== rename-album-directories-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py rename-album-directories [-h] tld                                                            <=
+positional arguments:                                                                                       <=
+  tld         mandatory start path tld only                                                                 <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\rename-album-directories-help.old.txt and D:\MusicProcessing\parity-results\rename-album-directories-help.new.txt
+
+=== rms-file-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py rms-file [-h] [--target TARGET] file                                                         <=
+positional arguments:                                                                                       <=
+  file             mandatory audio file path                                                                <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help       show this help message and exit                                                          <=
+  --target TARGET  optional target path                                                                     <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\rms-file-help.old.txt and D:\MusicProcessing\parity-results\rms-file-help.new.txt
+
+=== set-album-art-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py set-album-art [-h] tld                                                                       <=
+positional arguments:                                                                                       <=
+  tld         mandatory start path tld/fld                                                                  <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\set-album-art-help.old.txt and D:\MusicProcessing\parity-results\set-album-art-help.new.txt
+
+=== update-genres-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py update-genres [-h] tld csv                                                                   <=
+positional arguments:                                                                                       <=
+  tld         mandatory start path tld only                                                                 <=
+  csv         mandatory genre csv file path                                                                 <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\update-genres-help.old.txt and D:\MusicProcessing\parity-results\update-genres-help.new.txt
+
+=== update-playlist-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py update-playlist [-h] tld m3u                                                                 <=
+positional arguments:                                                                                       <=
+  tld         mandatory start path tld only                                                                 <=
+  m3u         mandatory m3u file path                                                                       <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\update-playlist-help.old.txt and D:\MusicProcessing\parity-results\update-playlist-help.new.txt
+
+=== update-walk-help ===
+Exit codes: old=0 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+    + FullyQualifiedErrorId : NativeCommandError                                                            =>
+                                                                                                            =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+usage: main.py update-walk [-h] tld                                                                         <=
+positional arguments:                                                                                       <=
+  tld         mandatory start path tld only                                                                 <=
+                                                                                                            <=
+options:                                                                                                    <=
+  -h, --help  show this help message and exit                                                               <=
+                                                                                                            <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\update-walk-help.old.txt and D:\MusicProcessing\parity-results\update-walk-help.new.txt
+PS D:\MusicProcessing>
+PS D:\MusicProcessing> Invoke-ParityCase `
+>> -Name "convert-file-missing-argument" `
+>> -CliArgs @("convert-file")
+
+=== convert-file-missing-argument ===
+Exit codes: old=2 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+python : usage: main.py convert-file [-h] [--target TARGET] file                                            <=
+At line:16 char:1                                                                                           <=
++ python .\main.py @OldArgs *> $oldFile                                                                     <=
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                     <=
+    + CategoryInfo          : NotSpecified: (usage: main.py ...et TARGET] file:String) [], RemoteException  <=
+main.py convert-file: error: the following arguments are required: file                                     <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\convert-file-missing-argument.old.txt and D:\MusicProcessing\parity-results\convert-file-missing-argument.new.txt
+PS D:\MusicProcessing>
+PS D:\MusicProcessing> Invoke-ParityCase `
+>> -Name "convert-file-missing-file" `
+>> -CliArgs @("convert-file", "C:\parity\missing.mp3")
+
+=== convert-file-missing-file ===
+Exit codes: old=2 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+python : usage: main.py convert-file [-h] [--target TARGET] file                                            <=
+At line:16 char:1                                                                                           <=
++ python .\main.py @OldArgs *> $oldFile                                                                     <=
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                     <=
+    + CategoryInfo          : NotSpecified: (usage: main.py ...et TARGET] file:String) [], RemoteException  <=
+main.py convert-file: error: argument file: File not found: C:\parity\missing.mp3                           <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\convert-file-missing-file.old.txt and D:\MusicProcessing\parity-results\convert-file-missing-file.new.txt
+PS D:\MusicProcessing>
+PS D:\MusicProcessing> Invoke-ParityCase `
+>> -Name "convert-file-invalid-option" `
+>> -CliArgs @("convert-file", "C:\parity\missing.mp3", "--not-a-real-option")
+
+=== convert-file-invalid-option ===
+Exit codes: old=2 new=1
+CHECK: output or exit code differs.
+
+InputObject                                                                                                 SideIndicator
+-----------                                                                                                 -------------
+python : Traceback (most recent call last):                                                                 =>
+At line:19 char:1                                                                                           =>
++ python -c $newCli @NewArgs *> $newFile                                                                    =>
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                    =>
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException =>
+  File "<string>", line 1, in <module>                                                                      =>
+NameError: name 'main' is not defined. Did you mean: 'min'?                                                 =>
+python : usage: main.py convert-file [-h] [--target TARGET] file                                            <=
+At line:16 char:1                                                                                           <=
++ python .\main.py @OldArgs *> $oldFile                                                                     <=
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                     <=
+    + CategoryInfo          : NotSpecified: (usage: main.py ...et TARGET] file:String) [], RemoteException  <=
+main.py convert-file: error: argument file: File not found: C:\parity\missing.mp3                           <=
+
+
+Full outputs: D:\MusicProcessing\parity-results\convert-file-invalid-option.old.txt and D:\MusicProcessing\parity-results\convert-file-invalid-option.new.txt

@@ -1026,22 +1026,24 @@ COMPLETED
             -CliArgs @("convert-file", "C:\parity\missing.mp3", "--not-a-real-option")
         ```
 
-      For successful processing checks, use identical disposable copies of the input and separate output directories for old and new runs.<br>
-      For example, after creating the files and directories:
-      ```powershell
-      $oldInput = "C:\parity\old-input\song.m4a"
-      $newInput = "C:\parity\new-input\song.m4a"
-      $oldOutput = "C:\parity\old-output"
-      $newOutput = "C:\parity\new-output"
+        For successful processing checks, use identical disposable copies of the input and separate output directories for old and new runs.<br>
+        For example, after creating the files and directories:
 
-      Invoke-ParityCase `
-          -Name "convert-file-success" `
-          -OldArgs @("convert-file", $oldInput, "--target", $oldOutput) `
-          -NewArgs @("convert-file", $newInput, "--target", $newOutput)
+        ```powershell
+        $oldInput = "C:\parity\old-input\song.m4a"
+        $newInput = "C:\parity\new-input\song.m4a"
+        $oldOutput = "C:\parity\old-output"
+        $newOutput = "C:\parity\new-output"
 
-      Get-ChildItem -File -Recurse $oldOutput
-      Get-ChildItem -File -Recurse $newOutput
+        Invoke-ParityCase `
+            -Name "convert-file-success" `
+            -OldArgs @("convert-file", $oldInput, "--target", $oldOutput) `
+            -NewArgs @("convert-file", $newInput, "--target", $newOutput)
+
+        Get-ChildItem -File -Recurse $oldOutput
+        Get-ChildItem -File -Recurse $newOutput
       ```
+
     - Compare exit codes, messages, generated files, formats, metadata, and other observable behavior.
     - For destructive commands such as rename or remove, use disposable directory trees.
     - Paths, elapsed times, and encoded audio bytes may differ for legitimate reasons;
