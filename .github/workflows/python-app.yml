@@ -31,12 +31,15 @@ jobs:
       contents: read
       actions: write
     steps:
+      # need to detect if running in act (local GitHub Actions runner) to conditionally skip certain steps
       - name: Detect act
         id: detect-act
         run: echo "is-act=${ACT:-false}" >> "$GITHUB_OUTPUT"
 
-      # Checkout the repository to ensure the workflow has access to the codebase
+      # checkout the repository to ensure the workflow has access to the codebase
       - name: Checkout Repository
+        # skip checkout when running in act; the local workspace is already mounted,
+        # and running checkout will overwrite uncommitted changes or fail on unpushed commits
         if: steps.detect-act.outputs.is-act != 'true'
         uses: actions/checkout@v4
         with:
@@ -45,13 +48,13 @@ jobs:
           fetch-depth: 1
           submodules: false
 
-      # The python environment is set up with the required version and dependencies for running the unit tests
+      # the python environment is set up with the required version and dependencies for running the unit tests
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      # Cache FFmpeg download to speed up subsequent workflow runs
+      # cache FFmpeg download to speed up subsequent workflow runs
       - name: Cache FFmpeg Download
         uses: actions/cache@v4
         id: cache-ffmpeg
@@ -59,7 +62,7 @@ jobs:
           path: .cache/ffmpeg/${{ env.FFMPEG_ARCHIVE }}
           key: ${{ runner.os }}-ffmpeg-${{ env.FFMPEG_RELEASE_TAG }}
 
-      # Download FFmpeg if necessary and cache
+      # download FFmpeg if necessary and cache
       - name: Download FFmpeg
         if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
         run: |
@@ -69,7 +72,7 @@ jobs:
             "https://github.com/BtbN/FFmpeg-Builds/releases/download/${FFMPEG_RELEASE_TAG}/${FFMPEG_ARCHIVE}" \
             -O ".cache/ffmpeg/${FFMPEG_ARCHIVE}"
 
-      # Install FFmpeg
+      # install FFmpeg
       - name: Extract and Install FFmpeg
         run: |
           echo "Extracting ${FFMPEG_ARCHIVE}"
@@ -80,7 +83,7 @@ jobs:
           ffmpeg -version
           ffprobe -version
 
-      # Install Linux system dependencies needed to build wxPython on Ubuntu runners.
+      # install Linux system dependencies needed to build wxPython on Ubuntu runners
       - name: Install wxPython system dependencies
         run: |
           sudo apt-get update
@@ -89,11 +92,14 @@ jobs:
             libglib2.0-dev \
             libnotify-dev \
             libsm-dev \
+            libsdl2-2.0-0 \
             libcurl4-openssl-dev \
             freeglut3-dev \
-            pkg-config
+            pkg-config \
+            xvfb \
+            xauth
 
-      # Cache required pip modules to speed up subsequent workflow runs
+      # cache required pip modules to speed up subsequent workflow runs
       - name: Cache pip modules
         uses: actions/cache@v4
         with:
@@ -102,15 +108,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-python-
 
-      # Install Python dependencies
+      # install Python dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Run tests with unittest
+      # run tests with unittest
       - name: Test with unittest
+        # need PYTHONTRACEMALLOC for memory tracing; enables tracking of memory allocations during tests
         env:
-          PYTHONTRACEMALLOC: 1 # Enable tracemalloc
+          PYTHONTRACEMALLOC: 1
         run: |
-          python -m unittest discover tests
+          xvfb-run -a python -m unittest discover -v tests

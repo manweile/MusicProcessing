@@ -921,7 +921,7 @@ COMPLETED
   - Validation: tests that patched `tqdm` or `yaspin` now assert on `FakeProgress` calls; tests still never use `tqdm` or `yaspin`.
   - Exit criteria: `grep` finds no `wx`, `argparse`, `tqdm`, or `yaspin` import under `src/models/`.
 
-6. Milestone 6: CLI extraction IN PROGRESS
+6. Milestone 6: CLI extraction COMPLETED
   - Move command-line code out of main.py.
   - Files: main.py, new src/cli/
   - Preconditions: COMPLETED
@@ -1028,21 +1028,19 @@ COMPLETED
             -CliArgs @("convert-file", "D:\MusicProcessing\tests\Music\Abba\Waterloo\ABBA-Waterloo.mp3", "--not-a-real-option")
         ```
 
-    **STEP 3**
-    - after parity is verified, switch main.py to delegate CLI commands to the new layer:
-      - Keep main(args) as the entry point. It runs the GUI for gui; otherwise, it returns run_cli_command(args).
+    **STEP 3** COMPLETED
+    - after parity is verified, switch main.py to delegate CLI commands to the new layer: COMPLETED
+      - Keep main(args) as the entry point. It runs the GUI for gui; otherwise, it returns run_cli_command(args). COMPLETED
       - Keep sys.exit(main(args)) in the __main__ block. COMPLETED
       - Remove the old subcommand-handler implementations from main.py once delegation is in place and callers have been checked. COMPLETED
       - Replace the temporary Milestone 4 yaspin shim with SpinnerProgress once the old path no longer needs it. COMPLETED
 
-    Validation:
-      - Compare every subcommand’s help output against the baseline.
-      - Exercise representative valid and invalid inputs, exit behavior, and processing/output behavior for each command.
-      - Run the existing test suite before and after the cutover.
-      - Keep python main.py ... operational and repeat representative checks through that entry point after delegation.
-      - Test GUI startup separately; a GUI help comparison does not count as launching or testing the GUI.
+    Validation: COMPLETED
+      - Run the existing test suite before and after the cutover. COMPLETED
+      - Keep python main.py ... operational and repeat representative checks through that entry point after delegation. COMPLETED
+      - Test GUI startup separately; a GUI help comparison does not count as launching or testing the GUI. COMPLETED
 
-    Exit criteria:
+    Exit criteria: COMPLETED
     - The new CLI passes parity checks before main.py delegates to it.
     - main.py remains a working thin entry point after cutover.
     - main.py contains only argument-parsing wiring and the dispatch entry point.

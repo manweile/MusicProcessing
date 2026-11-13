@@ -4,7 +4,7 @@
 
 ## Purpose
 
-This project will use VS Code and Python, Ffmpeg and Mutagen.
+The primary tools this project will use are VS Code and Python, Ffmpeg and Mutagen.
 
 I use VS Code because it's the devil I know and like.<br>
 I have used it professionally and privately since 2016.<br>
@@ -50,7 +50,7 @@ or
 python -m pip install mutagen==1.47.0
 ```
 
-Save the required modules in `requirements.txt` at root level. The Github CI will need them.
+Save the required modules in `requirements.txt` at root level. The Github remote & local CI and  will need them.
 
 ## FFMPEG & FFPROBE
 
@@ -61,11 +61,11 @@ FFmpeg compiles and runs across Linux, Mac OS X, Microsoft Windows, the BSDs, So
 
 ### FFMPEG
 
-The "Engine" — used to manipulate, edit, and convert media files.
+[FFMPEG](https://www.ffmpeg.org/ffmpeg.html) is the "Engine" — used to manipulate, edit, and convert media files.
 
 ### FFPROBE
 
-The "Inspector" — used to look inside media files and gather technical data.
+[FFPROBE](https://www.ffmpeg.org/ffprobe.html) is the "Inspector" — used to look inside media files and gather technical data.
 
 ## Mutagen
 
@@ -91,9 +91,14 @@ To install from extensions.txt:
 Get-Content -Path "D:\MusicProcessing\docs\extensions\extensions.txt" | ForEach-Object { code --install-extension $_ --force }
 ```
 
+**Caveat Emptor**
+I make no promises about usability if you install the extensions as is, I can't know whats on *your* system after all.<br>
+I also use VS Code extensions for C/C++ development, so there are extensions dependent on that in my list.<br>
+I am reasonably confident VS Code won't turn belly up on you, it's never happened to me.
+
 **Note** VS code needs to be in your system PATH.
 
-The ones I regard as required or essential:
+The extensions I regard as required or essential:
 
 - pretty much anything Python related by Microsoft
 - pretty much anything Github related from Github
@@ -153,38 +158,45 @@ These files must be saved in the `.github/workflows/` directory of your reposito
 
 ### Github Local Actions
 
-I regard  Github local Actions as an essential external tool.<br>
+I regard  Github Local Actions (GLA) as an essential external tool.<br>
 It allows you to quickly and efficiently run your workflows locally,
-bypassing the hassle of committing and pushing changes every time you need to test a workflow<br>
+bypassing the hassle of committing and pushing changes every time you need to test a workflow.
+
+GLA uses the nektos/act CLI tool to read your Github actions from your `.github/workflows/*`.<br>
+Once nektos/act has the execution path & dependencies, it uses the Docker API to run the necessary containers.
 
 #### Requirements
 
 - [Github Local Actions](https://marketplace.visualstudio.com/items?itemName=SanjulaGanepola.github-local-actions)
+  - [Github Local Actions Docs](https://sanjulaganepola.github.io/github-local-actions-docs/)
 - [nektos/act](https://github.com/nektos/act)
+  - [nektos/act User Guide](https://nektosact.com/)
 - [Docker](https://docs.docker.com/engine/)
 
 I'm not going to go into *all* the ins and out of installing nektos/act and Docker here.<br>
 You can find the documentation by following the links.<br>
 While it is tedious, it is not overly complex.
 
-**Note** There are two Settings steps:
+**Note** There are two Settings steps for GLA:
 
 #### Secrets (GITHUB_TOKEN)
 
 GitHub token for local runs: GitHub Actions automatically provides github.token to workflows.<br>
-GitHub Local Actions and act, need to provide a GITHUB_TOKEN secret if the selected workflow or action needs to authenticate with GitHub APIs.<br>
+GLA and nektos/act need to provide a GITHUB_TOKEN secret if the selected workflow or action needs to authenticate with GitHub APIs.
+
 The artifact and workflow cleanup jobs use the token for deletion requests.<br>
 Use a token with only the permissions those jobs need, store it in the extension’s Secrets settings, and do not commit it to the repository.
 
 #### Options (bind true)
 
-Enable the bind option (true) in the GitHub Local Actions settings when testing uncommitted workflow or source changes.<br>
+Enable the bind option (true) in the GLA settings when testing uncommitted workflow or source changes.<br>
 This tells act to bind-mount the current worktree into the job container instead of copying it.
 
 Otherwise, the `python-app.yml` unit-test workflow would replace the local files with the commit selected by github.sha hash.<br>
-On GitHub Actions, ACT is not set, so the normal checkout still runs.<br>
-This lets local runs test worktree changes without committing them.<br>
-With the bind option set, and this in the `python-app.yml`:
+On GitHub Actions, act is not set, so the normal checkout still runs.
+
+We need local runs to test worktree changes without committing them.<br>
+With the bind option set, add this to the `python-app.yml`:
 
 ```yml
       - name: Detect act

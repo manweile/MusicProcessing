@@ -15,6 +15,7 @@
 
 # Standard Modules
 import os                                                   # for constructing file-system paths
+import shutil                                               # for locating the virtual display runner
 import subprocess                                           # for launching the application process
 import sys                                                  # for the current Python executable
 import textwrap                                             # for dedenting multi-line strings
@@ -64,19 +65,25 @@ class TestMain(TestCase):
 
         @param self {TestMain} Test instance.
 
-        @exception subprocess.TimeoutExpired If main.py does not close within the timeout.
+        @exception ste {subprocess.TimeoutExpired} If main.py does not close within the timeout.
         '''
 
+        # Determine the project root, main.py location and log path for the test.
+        project_root = Path(__file__).resolve().parents[1]
+        main_path = project_root.joinpath("main.py")
+        log_path = Path(os.path.join(GENERATED_PATH, LOG_DIR, "main.log"))
+
+        # want to preserve existing main.log data
+        backup_path = None
+        if log_path.exists():
+            backup_path = log_path.with_name("test_bak_main.log")
+            log_path.rename(backup_path)
+
         try:
-            project_root = Path(__file__).resolve().parents[1]
-            main_path = project_root.joinpath("main.py")
-            log_path = Path(os.path.join(GENERATED_PATH, LOG_DIR, "main.log"))
+            command = [sys.executable, str(main_path)]
 
-            # Remove existing main.log if it exists before running main.py
-            if log_path.exists():
-                log_path.unlink()
-
-            result = subprocess.run([sys.executable, str(main_path)], cwd=project_root, capture_output=True, text=True, timeout=180)
+            # if the timeout is reached, subprocess.run will raise a TimeoutExpired exception
+            result = subprocess.run(command, cwd=project_root, capture_output=True, text=True, timeout=180)
 
             expected_result = f"main.py exited with {result.returncode}.\n{result.stdout}\n{result.stderr}"
             self.assertEqual(result.returncode, 2, expected_result)
@@ -84,67 +91,94 @@ class TestMain(TestCase):
 
         except subprocess.TimeoutExpired as ste:
             self.fail(f"main.py did not exit within the timeout: {ste}")
+        finally:
+            # clean up the log file and restore backup if it exists
+            if backup_path is not None:
+                if log_path.exists():
+                    log_path.unlink()
+                backup_path.rename(log_path)
 
 
     def test_main_with_gui_argument_creates_main_log(self):
         '''
         @brief Test that launching main.py with the gui argument creates main.log.
 
-        @details Deletes any existing main.log, runs main.py for set time with the gui argument, and checks the log after it exits.
+        @details Preserves any existing main.log, runs main.py with the gui argument, and checks the log after it exits.
 
-        @note main.py must exist in root.
+        @note main.py must exist in root. Headless Linux requires xvfb-run and xauth.
 
         @param self {TestMain} Test instance.
 
-        @exception subprocess.TimeoutExpired If main.py does not close within the timeout.
+        @exception ste {subprocess.TimeoutExpired} If main.py does not close within the timeout.
         '''
 
+        # Determine the project root and log path for the test.
         project_root = Path(__file__).resolve().parents[1]
         log_path = Path(os.path.join(GENERATED_PATH, LOG_DIR, "main.log"))
 
+        # want to preserve existing main.log data
+        backup_path = None
         if log_path.exists():
-            log_path.unlink()
+            backup_path = log_path.with_name("test_bak_main.log")
+            log_path.rename(backup_path)
 
-        # prepare the inline script to run main.py with the gui subcommand and automatically close the GUI after a short delay
-        script = textwrap.dedent("""
-            import argparse
-            import sys
-            import wx
-            import main
-            from src.gui.wx_app import MainFrame
+        try:
+            # prepare the inline script to run main.py with the gui subcommand and automatically close the GUI after a short delay
+            script = textwrap.dedent("""
+                import argparse
+                import sys
+                import wx
+                import main
+                from src.gui.wx_app import MainFrame
 
-            original_show = MainFrame.Show
-            shown = []
+                original_show = MainFrame.Show
+                shown = []
 
-            def show_and_close(frame, *args, **kwargs):
-                result = original_show(frame, *args, **kwargs)
-                shown.append(True)
-                wx.CallLater(1500, frame.Close)
-                return result
+                def show_and_close(frame, *args, **kwargs):
+                    result = original_show(frame, *args, **kwargs)
+                    shown.append(True)
+                    wx.CallLater(1500, frame.Close)
+                    return result
 
-            MainFrame.Show = show_and_close
-            exit_code = main.main(argparse.Namespace(subcommand="gui"))
+                MainFrame.Show = show_and_close
+                exit_code = main.main(argparse.Namespace(subcommand="gui"))
 
-            if not shown:
-                raise RuntimeError("GUI window was not shown")
+                if not shown:
+                    raise RuntimeError("GUI window was not shown")
 
-            sys.exit(exit_code)
-        """)
+                sys.exit(exit_code)
+            """)
 
-        result = subprocess.run(
-            [sys.executable, "-c", script],
-            cwd=project_root,
-            capture_output=True,
-            text=True,
-            timeout=180,
-        )
+            command = [sys.executable, "-c", script]
 
-        expected_result = (
-            f"main.py gui exited with {result.returncode}.\n"
-            f"{result.stdout}\n{result.stderr}"
-        )
-        self.assertEqual(result.returncode, 0, expected_result)
-        self.assertTrue(log_path.is_file())
+            # determine if on a headless Linux environment
+            on_linux = sys.platform.startswith("linux")
+            # check if a X11 or Wayland display server is available
+            on_display = os.environ.get("DISPLAY")
+            on_wayland = os.environ.get("WAYLAND_DISPLAY")
+
+            # when on win or mac, no special handling for headless display is needed
+            if on_linux and not (on_display or on_wayland):
+                xvfb_run = shutil.which("xvfb-run")
+                self.assertIsNotNone(xvfb_run, "Headless GUI testing requires xvfb-run and xauth")
+                command = [xvfb_run, "-a", *command]
+
+            # if the timeout is reached, subprocess.run will raise a TimeoutExpired exception
+            result = subprocess.run(command, cwd=project_root, capture_output=True, text=True, timeout=180)
+
+            expected_result = (f"main.py gui exited with {result.returncode}.\n{result.stdout}\n{result.stderr}")
+
+            self.assertEqual(result.returncode, 0, expected_result)
+            self.assertTrue(log_path.is_file())
+
+        except subprocess.TimeoutExpired as ste:
+            self.fail(f"main.py did not exit within the timeout: {ste}")
+        finally:
+            # clean up the log file and restore backup if it exists
+            if backup_path is not None:
+                if log_path.exists():
+                    log_path.unlink()
+                backup_path.rename(log_path)
 
 
     def test_main_help_matches_baseline(self):

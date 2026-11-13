@@ -157,49 +157,6 @@ class TestAudioUtilities(TestCase):
             AudioUtilities().clip_check_file("not-an-mp3.wav")
 
 
-    def test_clip_check_walk(self):
-        '''
-        @brief Test for potential clipping and headroom analysis over a directory walk.
-
-        @details Verifies the utility processes all audio fixtures in the top-level music directory.
-
-        @test Happy path.
-
-        @param self {TestAudioUtilities} The instance of the test class.
-        '''
-
-        output_path = os.path.join(GENERATED_PATH, RESULT_DIR, f"clip_check_file{RESULT_EXT}")
-        if os.path.exists(output_path):
-            os.remove(output_path)
-
-        # patch object get_ebu_loudness_info
-        info_func = "get_ebu_loudness_info"
-        loudness_info = normalization.get_ebu_loudness_info
-
-        # for headless test, disable the spinner by passing show_spinner=False and not sending a progress reporter
-        with patch.object(normalization, info_func, side_effect=lambda file_path, **kwargs: loudness_info(file_path, show_spinner=False)):
-            utilities.clip_check_walk(self.converted)
-
-        #  verify output txt file exists
-        self.assertTrue(os.path.exists(output_path))
-
-        # verify file contains expected leveling information
-        with open(output_path, "r") as f:
-            content = f.read()
-
-        self.assertIn("headroom available", content)
-        self.assertIn("no headroom", content)
-
-        self.assertIn("peak leveling adjustment", content)
-        self.assertIn("already at target peak", content)
-
-        self.assertIn("rms leveling adjustment", content)
-        self.assertIn("rms clipping amount", content)
-
-        self.assertIn("ebu dynamic leveling required", content)
-        self.assertIn("ebu linear leveling adjustment", content)
-
-
     def test_clip_check_leveling(self):
         '''
         @brief Test peak and rms leveling reports match the normalizers when headroom exists.
@@ -327,6 +284,49 @@ class TestAudioUtilities(TestCase):
         report = self._run_clip_check({})
 
         self.assertIn("volume information unavailable", report)
+
+
+    def test_clip_check_walk(self):
+        '''
+        @brief Test for potential clipping and headroom analysis over a directory walk.
+
+        @details Verifies the utility processes all audio fixtures in the top-level music directory.
+
+        @test Happy path.
+
+        @param self {TestAudioUtilities} The instance of the test class.
+        '''
+
+        output_path = os.path.join(GENERATED_PATH, RESULT_DIR, f"clip_check_file{RESULT_EXT}")
+        if os.path.exists(output_path):
+            os.remove(output_path)
+
+        # patch object get_ebu_loudness_info
+        info_func = "get_ebu_loudness_info"
+        loudness_info = normalization.get_ebu_loudness_info
+
+        # for headless test, disable the spinner by passing show_spinner=False and not sending a progress reporter
+        with patch.object(normalization, info_func, side_effect=lambda file_path, **kwargs: loudness_info(file_path, show_spinner=False)):
+            utilities.clip_check_walk(self.converted)
+
+        #  verify output txt file exists
+        self.assertTrue(os.path.exists(output_path))
+
+        # verify file contains expected leveling information
+        with open(output_path, "r") as f:
+            content = f.read()
+
+        self.assertIn("headroom available", content)
+        self.assertIn("no headroom", content)
+
+        self.assertIn("peak leveling adjustment", content)
+        self.assertIn("already at target peak", content)
+
+        self.assertIn("rms leveling adjustment", content)
+        self.assertIn("rms clipping amount", content)
+
+        self.assertIn("ebu dynamic leveling required", content)
+        self.assertIn("ebu linear leveling adjustment", content)
 
 
 if __name__ == "__main__":

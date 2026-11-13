@@ -40,6 +40,10 @@ GUI mode exists for accessibility and discoverability, visual feedback, and a lo
 - Visual Feedback: Complex data, live previews, progress bars, and error highlights are much easier to inspect in a visual layout.
 - Lower Barrier to Entry: Casual or occasional users can learn and operate the software quickly with minimal training or documentation.
 
+```powershell
+python main.py gui
+```
+
 ### CLI Mode
 
 CLI mode exists for automation and scripting, batch processing, remote and headless environments, and speed for power users.
@@ -271,7 +275,7 @@ MusicProcessing
 |
 |_tests
 | |_ __init__.py
-| |_ *<fixture>.csv
+| |_ <fixture>.csv
 | |_ <fixture>.m3u
 | |_ <fixture>.txt
 | |_ <fixture>.mp3
@@ -282,7 +286,6 @@ MusicProcessing
 | |_ test_audio_playlist.py
 | |_ test_audio_utilities.py
 | |_ test_directory_processing.py
-| |_ test_gui.py
 | |_ test_subprocess_utilities.py
 | |
 | |_Music
