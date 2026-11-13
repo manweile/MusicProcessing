@@ -24,6 +24,10 @@ cd D:/MusicProcessing/tests
 python test_name.py
 ```
 
+On headless Linux, install `xvfb` and `xauth` to run the GUI startup test without a display.
+To run all GUI tests with a virtual display, use `xvfb-run -a python -m unittest discover tests`
+from the repository root.
+
 ## Test Fixtures & Test Cases
 
 Music files are audio files (flac, mp3, m4a, wma) and m3u playlist files.<br>

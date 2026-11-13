@@ -91,7 +91,9 @@ jobs:
             libsm-dev \
             libcurl4-openssl-dev \
             freeglut3-dev \
-            pkg-config
+            pkg-config \
+            xvfb \
+            xauth
 
       # Cache required pip modules to speed up subsequent workflow runs
       - name: Cache pip modules
@@ -113,4 +115,4 @@ jobs:
         env:
           PYTHONTRACEMALLOC: 1 # Enable tracemalloc
         run: |
-          python -m unittest discover tests
+          xvfb-run -a python -m unittest discover tests

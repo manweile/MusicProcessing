@@ -15,6 +15,7 @@
 
 # Standard Modules
 import os                                                   # for constructing file-system paths
+import shutil                                               # for locating the virtual display runner
 import subprocess                                           # for launching the application process
 import sys                                                  # for the current Python executable
 import textwrap                                             # for dedenting multi-line strings
@@ -92,7 +93,7 @@ class TestMain(TestCase):
 
         @details Deletes any existing main.log, runs main.py for set time with the gui argument, and checks the log after it exits.
 
-        @note main.py must exist in root.
+        @note main.py must exist in root. Headless Linux requires xvfb-run and xauth.
 
         @param self {TestMain} Test instance.
 
@@ -131,8 +132,14 @@ class TestMain(TestCase):
             sys.exit(exit_code)
         """)
 
+        command = [sys.executable, "-c", script]
+        if sys.platform.startswith("linux") and not (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")):
+            xvfb_run = shutil.which("xvfb-run")
+            self.assertIsNotNone(xvfb_run, "Headless GUI testing requires xvfb-run and xauth")
+            command = [xvfb_run, "-a", *command]
+
         result = subprocess.run(
-            [sys.executable, "-c", script],
+            command,
             cwd=project_root,
             capture_output=True,
             text=True,
