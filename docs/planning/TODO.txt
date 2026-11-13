@@ -125,7 +125,7 @@ TODO
     i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
 TODO
 
-3) Modify Leveling tab UI/UX
+4) Modify Leveling tab UI/UX
   a) add optional target directory input, default to output/Music
     i) applies to single file conversion
     ii) applies to directory walk conversions
@@ -133,12 +133,12 @@ TODO
     i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
 TODO
 
-4) add icons to tabs
+5) add icons to tabs
   a) will need to find appropriate iconography
   b) will need to add licenses etc
   c) going to need an "about" menu item?
 
-5) How do I log warnings?
+6) How do I log warnings?
   a) warnings are not fatal, but user does need to know.
     i) currently neither CLI or GUI mode inform user
   b) test case: run extract art on D:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
@@ -152,40 +152,40 @@ TODO
   c) test_audio_playlist.test_update_playlist has a patch for logger.warning; changes made may impact this
 TODO
 
-6) add the new functions: clip_check_file, clip_walk, rename_albums etc
+7) add the new functions: clip_check_file, clip_walk, rename_albums etc
   a) to which tab do each of them belong?
 TODO
 
-7) rethink metadata and directory tabs.
+8) rethink metadata and directory tabs.
   a) model functions have changed
   b) possibly want to display file output in splitter control log area
 TODO
 
-8) going to need menu structure
+9) going to need menu structure
 TODO
 
-9) rename AlbumArt
+10) rename AlbumArt
   a) use album_art instead; more in keeping with other resource directory names
 TODO
 
-10) think about renaming Music to music_files
+11) think about renaming Music to music_files
 TODO
 
-11) splitter pane needs a clear button
+12) splitter pane needs a clear button
 TODO
 
-12) get rid of audio_info directory nesting
+13) get rid of audio_info directory nesting
   a) saves col space with src.models.audio_art vs src.models.audio_info.audio_art
   b) minor refactoring, let copilot do it
 TODO
 
-13) after an action completes
+14) after an action completes
   a) need path input to clear from input field
   b) path input prepended to success message
   c) this may mean some model functions will require return values
 TODO
 
-14) display logger.info messages
+15) display logger.info messages
   a) go through and remove unnecessary logger.info IN PROGRESS
   b) some info's user needs to know
   c) in gui mode, need to display in log pane
@@ -195,12 +195,12 @@ TODO
   f) test_directory_processing.test_path_info_not_audio has a patch for logger.info; changes made may impact this
 TODO
 
-15) add cancel buttons
+16) add cancel buttons
   a) will require thought about layout change
   b) cancel action will clear related input field
 TODO
 
-16) Add color to each function action sub panel border.
+17) Add color to each function action sub panel border.
 TODO
 
 TESTING:
