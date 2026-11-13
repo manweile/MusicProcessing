@@ -10,7 +10,6 @@
 import logging                                              # for logging
 import os                                                   # for operating system interfaces
 import shutil                                               # for high-level file operations
-import threading                                            # for multithreading support
 from datetime import datetime                               # for handling date and time
 
 # Third Party Modules
@@ -35,6 +34,7 @@ from src.core.paths import GENERATED_PATH                   # for generated file
 bootstrap_logging()
 
 # Local Module Classes
+from src.controllers.task_runner import TaskRunner          # noqa: E402, for running tasks outside the GUI thread
 from src.gui.handlers import EventHandlers                  # noqa: E402, event handlers for the GUI
 
 ## @var logger
@@ -86,6 +86,7 @@ class MainFrame(wx.Frame):
     mainSplitter: wx.SplitterWindow
     mainNotebook: wx.Notebook
     mainHandlers: EventHandlers
+    taskRunner: TaskRunner
 
     panelArt: wx.Panel
     panelConvert: wx.Panel
@@ -149,6 +150,14 @@ class MainFrame(wx.Frame):
 
         # Create the log control for displaying log messages
         self.mainLog = wx.TextCtrl(self.mainSplitter, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL, value="")
+
+        # Create the background task runner with callbacks for GUI updates
+        self.taskRunner = TaskRunner(
+            log=self.log,
+            call_after=wx.CallAfter,
+            set_busy_state=self._set_busy_state,
+            show_error=self._show_task_error
+        )
 
         # Split horizontally: notebook on top, log on bottom
         self.mainSplitter.SplitHorizontally(self.mainNotebook, self.mainLog)
@@ -972,50 +981,17 @@ class MainFrame(wx.Frame):
         wx.CallAfter(self.mainLog.AppendText, f"[{_timestamp()}] {message}\n")
 
 
-    def run_task(self, func, *args, on_success=None):
+    def _show_task_error(self, message):
         '''
-        @brief Run a long-running task in a separate thread to keep the GUI responsive.
+        @brief Display an error reported by a background task.
 
-        @details Runs the given function in a separate thread to keep the GUI responsive.<br>
-        Logs the start and completion of the task, and handles any exceptions that occur.
+        @details Shows the task error in a GUI message box.
 
         @param self {MainFrame} The instance of the class.
-        @param func {callable} The function to run as the task.
-        @param args {tuple} Arguments to pass to the function.
-        @param on_success {callback} Optional callback to run on the main thread after successful completion of the task.
+        @param message {str} The task error message.
         '''
 
-        self._set_busy_state(True)
-        threading.Thread(target=self.worker, args=(func, args, on_success), daemon=True).start()
-
-
-    def worker(self, func, args, on_success=None):
-        '''
-        @brief Run a task in a worker thread and handle its outcome.
-
-        @details Executes the task, logs its outcome, and schedules GUI updates on the main thread.
-        It also ensures that the busy state of the GUI is properly managed.
-
-        @param self {MainFrame} The instance of the class.
-        @param func {Any} The function to run as the task.
-        @param args {Tuple} Arguments to pass to the function.
-        @param on_success {Callable} Optional callback to run on the main thread after successful completion of the task.
-        '''
-
-        self.log(f"Running {func.__name__}...")
-
-        try:
-            func(*args)
-            self.log(f"{func.__name__} completed.")
-            if on_success:
-                wx.CallAfter(on_success)
-
-        except Exception as e:
-            logger.exception("Task %s failed", func.__name__)
-            self.log(f"{func.__name__} failed: {e}")
-            wx.CallAfter(wx.MessageBox, str(e), "Error", wx.ICON_ERROR)
-        finally:
-            wx.CallAfter(self._set_busy_state, False)
+        wx.MessageBox(message, "Error", wx.ICON_ERROR)
 
 
 ## @name Entry Point

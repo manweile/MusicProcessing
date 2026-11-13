@@ -192,7 +192,7 @@ class EventHandlers:
         if not self._validate_file(path):
             return
 
-        self.mainFrame.run_task(metadata.convert_file, path, on_success=self.mainFrame._show_generated_files_dialog)
+        self.mainFrame.taskRunner.run_task(metadata.convert_file, path, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_convert_walk(self, event):
@@ -214,7 +214,7 @@ class EventHandlers:
         # Get the file type pattern selection from the GUI
         selection = self.mainFrame.convert_walk_pattern.GetSelection()
         pattern = None if selection == 0 else self.mainFrame.convert_walk_pattern.GetString(selection)
-        self.mainFrame.run_task(metadata.convert_walk, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
+        self.mainFrame.taskRunner.run_task(metadata.convert_walk, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_ebu_file(self, event):
@@ -233,7 +233,11 @@ class EventHandlers:
         if not self._validate_file(path):
             return
 
-        self.mainFrame.run_task(normalization.ebu_normalize_file, path, on_success=lambda: self.mainFrame._show_result_file("ebu_normalize_file"))
+        self.mainFrame.taskRunner.run_task(
+            normalization.ebu_normalize_file,
+            path,
+            on_success=lambda: self.mainFrame._show_result_file("ebu_normalize_file")
+        )
 
 
     def on_extract_file_art(self, event):
@@ -253,7 +257,7 @@ class EventHandlers:
         if not self._validate_file(file_path):
             return
 
-        self.mainFrame.run_task(art.extract_album_art, file_path)
+        self.mainFrame.taskRunner.run_task(art.extract_album_art, file_path)
 
 
     def on_extract_walk_art(self, event):
@@ -275,7 +279,7 @@ class EventHandlers:
         # Get the file type pattern selection from the GUI
         selection = self.mainFrame.patternChoice.GetSelection()
         pattern = None if selection == 0 else self.mainFrame.patternChoice.GetString(selection)
-        self.mainFrame.run_task(art.extract_walk, start_path, pattern)
+        self.mainFrame.taskRunner.run_task(art.extract_walk, start_path, pattern)
 
 
     def on_get_media_info_walk(self, event):
@@ -296,7 +300,7 @@ class EventHandlers:
 
         # Get the file type pattern from the GUI
         pattern = self.mainFrame.media_info_pattern.GetValue().strip() or None
-        self.mainFrame.run_task(metadata.get_media_info_walk, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
+        self.mainFrame.taskRunner.run_task(metadata.get_media_info_walk, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_get_tags_walk(self, event):
@@ -318,7 +322,7 @@ class EventHandlers:
         # Get the file type pattern and ffprobe path from the GUI
         pattern = self.mainFrame.tags_walk_pattern.GetValue().strip() or None
         ffprobe = self.mainFrame.tags_walk_ffprobe.GetValue()
-        self.mainFrame.run_task(metadata.get_tags_walk, tld, pattern, ffprobe, on_success=self.mainFrame._show_generated_files_dialog)
+        self.mainFrame.taskRunner.run_task(metadata.get_tags_walk, tld, pattern, ffprobe, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_get_unique_media(self, event):
@@ -337,7 +341,7 @@ class EventHandlers:
         if not self._validate_dir(tld):
             return
 
-        self.mainFrame.run_task(metadata.get_unique_media, tld, on_success=self.mainFrame._show_generated_files_dialog)
+        self.mainFrame.taskRunner.run_task(metadata.get_unique_media, tld, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_list_audio(self, event):
@@ -356,7 +360,7 @@ class EventHandlers:
         if not self._validate_dir(tld):
             return
 
-        self.mainFrame.run_task(directory.list_audio, tld, on_success=self.mainFrame._show_generated_files_dialog)
+        self.mainFrame.taskRunner.run_task(directory.list_audio, tld, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_list_type(self, event):
@@ -381,7 +385,7 @@ class EventHandlers:
             wx.MessageBox("Please enter a file extension", "Error", wx.ICON_ERROR)
             return
 
-        self.mainFrame.run_task(directory.list_type, tld, ext, on_success=self.mainFrame._show_generated_files_dialog)
+        self.mainFrame.taskRunner.run_task(directory.list_type, tld, ext, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_normalize_walk(self, event):
@@ -402,7 +406,7 @@ class EventHandlers:
 
         # Get the normalization type from the GUI
         norm_type = self.mainFrame.norm_type_choice.GetStringSelection().lower()
-        self.mainFrame.run_task(normalization.normalize_walk, tld, norm_type, on_success=self.mainFrame._show_generated_files_dialog)
+        self.mainFrame.taskRunner.run_task(normalization.normalize_walk, tld, norm_type, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_peak_file(self, event):
@@ -421,7 +425,11 @@ class EventHandlers:
         if not self._validate_file(path):
             return
 
-        self.mainFrame.run_task(normalization.peak_normalize_file, path, on_success=lambda: self.mainFrame._show_result_file("peak_normalize_file"))
+        self.mainFrame.taskRunner.run_task(
+            normalization.peak_normalize_file,
+            path,
+            on_success=lambda: self.mainFrame._show_result_file("peak_normalize_file")
+        )
 
 
     def on_remove_albums(self, event):
@@ -440,7 +448,7 @@ class EventHandlers:
         if not self._validate_dir(tld):
             return
 
-        self.mainFrame.run_task(directory.remove_albums, tld, on_success=self.mainFrame._show_generated_files_dialog)
+        self.mainFrame.taskRunner.run_task(directory.remove_albums, tld, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_remove_pattern(self, event):
@@ -465,7 +473,7 @@ class EventHandlers:
             wx.MessageBox("Please enter a pattern to remove", "Error", wx.ICON_ERROR)
             return
 
-        self.mainFrame.run_task(directory.remove_pattern, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
+        self.mainFrame.taskRunner.run_task(directory.remove_pattern, tld, pattern, on_success=self.mainFrame._show_generated_files_dialog)
 
 
     def on_rms_file(self, event):
@@ -484,7 +492,11 @@ class EventHandlers:
         if not self._validate_file(path):
             return
 
-        self.mainFrame.run_task(normalization.rms_normalize_file, path, on_success=lambda: self.mainFrame._show_result_file("rms_normalize_file"))
+        self.mainFrame.taskRunner.run_task(
+            normalization.rms_normalize_file,
+            path,
+            on_success=lambda: self.mainFrame._show_result_file("rms_normalize_file")
+        )
 
 
     def on_set_album_art(self, event):
@@ -503,7 +515,7 @@ class EventHandlers:
         if not self._validate_dir(tld):
             return
 
-        self.mainFrame.run_task(art.set_album_art, tld)
+        self.mainFrame.taskRunner.run_task(art.set_album_art, tld)
 
 
     def on_update_m3u(self, event):
@@ -522,7 +534,7 @@ class EventHandlers:
         if not self._validate_file(m3u_file):
             return
 
-        self.mainFrame.run_task(playlist.update_playlist, m3u_file, on_success=self.mainFrame._show_generated_playlist_dialog)
+        self.mainFrame.taskRunner.run_task(playlist.update_playlist, m3u_file, on_success=self.mainFrame._show_generated_playlist_dialog)
 
 
     def on_update_walk(self, event):
@@ -541,4 +553,4 @@ class EventHandlers:
         if not self._validate_dir(tld):
             return
 
-        self.mainFrame.run_task(playlist.update_walk, tld, on_success=self.mainFrame._show_generated_playlist_dialog)
+        self.mainFrame.taskRunner.run_task(playlist.update_walk, tld, on_success=self.mainFrame._show_generated_playlist_dialog)
