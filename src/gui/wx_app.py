@@ -898,50 +898,6 @@ class MainFrame(wx.Frame):
         wx.CallAfter(self.mainLog.SetValue, f"=== {filename + RESULT_EXT} ===\n{content}")
 
 
-    def _validate_dir(self, path):
-        '''
-        @brief Validate that the provided path is a directory.
-
-        @details This method checks if the provided path is not empty and exists as a directory.<br>
-        If the validation fails, it displays an appropriate message box to the user.
-
-        @param self {MainFrame} The instance of the class.
-        @param path {str} The directory path to validate.
-        '''
-
-        if not path:
-            wx.MessageBox("Please specify a directory path.", "Validation", wx.ICON_WARNING)
-            return False
-
-        if not os.path.isdir(path):
-            wx.MessageBox(f"Directory not found: {path}", "Validation", wx.ICON_ERROR)
-            return False
-
-        return True
-
-
-    def _validate_file(self, path):
-        '''
-        @brief Validate that the provided path is a file.
-
-        @details This method checks if the provided path is not empty and exists as a file.<br>
-        If the validation fails, it displays an appropriate message box to the user.
-
-        @param self {MainFrame} The instance of the class.
-        @param path {str} The file path to validate.
-        '''
-
-        if not path:
-            wx.MessageBox("Please specify a file path.", "Validation", wx.ICON_WARNING)
-            return False
-
-        if not os.path.isfile(path):
-            wx.MessageBox(f"File not found: {path}", "Validation", wx.ICON_ERROR)
-            return False
-
-        return True
-
-
     def _move_files(self, file_paths, dest_dir):
         '''
         @brief Move selected files to the specified destination directory and display a summary of the operation.
@@ -1075,5 +1031,4 @@ def run_gui():
     frame = MainFrame()
     frame.Show()
     app.MainLoop()
-
 ## @}

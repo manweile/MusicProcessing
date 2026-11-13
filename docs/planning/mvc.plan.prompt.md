@@ -1049,7 +1049,7 @@ COMPLETED
   - Introduce controllers that own validation and model coordination, delivered in two phases.
   - Files: new `src/controllers/`
   - Phase 1: move everything that does not belong in `MainFrame` to its proper home
-    - 7.1a move `_validate_dir` and `_validate_file` out of `MainFrame` into a shared validation module (no `wx` import)
+    - 7.1a move `_validate_dir` and `_validate_file` out of `MainFrame` into a shared validation module (no `wx` import) COMPLETED
     - 7.1b move worker-thread orchestration (`run_task`, `worker`) out of `MainFrame` into a shared task runner (no `wx` import)
     - 7.1c define the view interface (`show_message`, `show_error`, `show_generated_files`, `set_busy`); `MainFrame` implements it
     - 7.1d construct model instances in one composition root instead of module-level globals in `handlers.py`

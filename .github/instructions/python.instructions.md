@@ -425,7 +425,7 @@ add_module_handler(logger, basename)
 - Test files are Python files whose primary purpose is to define unit tests for the project.
 - Test files are Python files that contain test cases for the classes defined in the project.
 - Test files can be ran directly and therefore:
-  - must include the shebang line `#!/usr/bin/env python3` as the first line of the file.
+  - must contain the import: `from tests.support import get_method_names`
   - must contain the `if __name__ == "__main__":` block to execute the test functionality.
   - the `if __name__ == "__main__":` block is placed at the end of the test file.
   - The `if __name__ == "__main__":` block follows Shared Doxygen rules for function documentation.
