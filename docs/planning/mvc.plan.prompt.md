@@ -1046,16 +1046,29 @@ COMPLETED
     - main.py contains only argument-parsing wiring and the dispatch entry point.
 
 7. Milestone 7: Controllers
-  - Introduce controllers that own validation and model coordination.
+  - Introduce controllers that own validation and model coordination, delivered in two phases.
   - Files: new `src/controllers/`
-  - Work:
-    - one controller per area (convert, metadata, normalization, art, playlist, directory) taking plain values and a view interface
-    - a view interface (`show_message`, `show_error`, `show_generated_files`, `set_busy`) implemented by the wx view
-    - move `_validate_dir`, `_validate_file`, and worker-thread orchestration (`run_task`, `worker`) out of `MainFrame`
-    - construct model instances in one composition root instead of module-level globals in `handlers.py`
-    - CLI commands call the same controllers where behavior overlaps
-  - Validation: controller tests use a fake view and `NullProgress`; no `wx` import is needed.
-  - Exit criteria: controllers contain no widget references.
+  - Phase 1: move everything that does not belong in `MainFrame` to its proper home
+    - 7.1a move `_validate_dir` and `_validate_file` out of `MainFrame` into a shared validation module (no `wx` import)
+    - 7.1b move worker-thread orchestration (`run_task`, `worker`) out of `MainFrame` into a shared task runner (no `wx` import)
+    - 7.1c define the view interface (`show_message`, `show_error`, `show_generated_files`, `set_busy`); `MainFrame` implements it
+    - 7.1d construct model instances in one composition root instead of module-level globals in `handlers.py`
+    - 7.1e leave `MainFrame` with widget construction, layout, event binding, and view-interface methods only
+    - Validation: existing tests and GUI smoke test pass; moved code has unit tests that need no `wx`.
+    - Exit criteria: `MainFrame` contains no validation, threading, or model-coordination logic.
+  - Phase 2: create one controller per functional area, one area per iteration, in this order
+    - 7.2a art
+    - 7.2b convert
+    - 7.2c normalization
+    - 7.2d playlist
+    - 7.2e directory
+    - 7.2f metadata
+    - Each iteration:
+      - add the controller, taking plain values and the view interface, using the Phase 1 validation and task runner
+      - wire the matching `handlers.py` / `MainFrame` path and CLI command (where behavior overlaps) to the controller
+      - add controller tests using a fake view and `NullProgress`; no `wx` import is needed
+      - run the full suite and GUI smoke test before starting the next area
+  - Exit criteria: controllers contain no widget references; all six areas use controllers.
 
 8. Milestone 8: wx view split
   - Split `MainFrame` into frame plus panels and replace `EventHandlers`.
