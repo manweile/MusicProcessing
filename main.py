@@ -17,38 +17,41 @@
 import argparse                                             # argument parsing module
 import logging                                              # logging module
 import os                                                   # operating system module
-import re                                                   # regular expression module
+# import re                                                   # regular expression module
 import shutil                                               # terminal size lookup module
 import sys                                                  # system-specific parameters and functions module
 from typing import Any                                      # for the temporary spinner handle
 
 # Local Module Methods
 from src.cli.commands import run_cli_command                # function to run CLI commands
+from src.cli.parser import build_parser                     # function to build the CLI argument parser
+
 from src.core.logging_config import bootstrap_logging       # for package logging startup
+
 from src.gui.wx_app import run_gui                          # GUI application runner
 
 # Local Module Constants
-from src.cli.constants import ARG_CLI_CSV                   # CLI argument for CSV file
-from src.cli.constants import ARG_CLI_FFPROBE               # CLI argument for ffprobe
-from src.cli.constants import ARG_CLI_FILE                  # CLI argument for the audio file
-from src.cli.constants import ARG_CLI_PATTERN               # CLI argument for the pattern
-from src.cli.constants import ARG_CLI_PLAYLIST              # CLI argument for the playlist
-from src.cli.constants import ARG_CLI_TARGET                # CLI argument for the target path
-from src.cli.constants import ARG_CLI_TLD                   # CLI argument for the top-level directory
-from src.cli.constants import ARG_CLI_TYPE                  # CLI argument for the type
+# from src.cli.constants import ARG_CLI_CSV                   # CLI argument for CSV file
+# from src.cli.constants import ARG_CLI_FFPROBE               # CLI argument for ffprobe
+# from src.cli.constants import ARG_CLI_FILE                  # CLI argument for the audio file
+# from src.cli.constants import ARG_CLI_PATTERN               # CLI argument for the pattern
+# from src.cli.constants import ARG_CLI_PLAYLIST              # CLI argument for the playlist
+# from src.cli.constants import ARG_CLI_TARGET                # CLI argument for the target path
+# from src.cli.constants import ARG_CLI_TLD                   # CLI argument for the top-level directory
+# from src.cli.constants import ARG_CLI_TYPE                  # CLI argument for the type
 
-from src.cli.constants import ARG_HELP_OPT_FFPROBE          # CLI argument help for the optional ffprobe input
-from src.cli.constants import ARG_HELP_OPT_PATTERN          # CLI argument help for the optional pattern input
-from src.cli.constants import ARG_HELP_OPT_TARGET           # CLI argument help for the optional target path
+# from src.cli.constants import ARG_HELP_OPT_FFPROBE          # CLI argument help for the optional ffprobe input
+# from src.cli.constants import ARG_HELP_OPT_PATTERN          # CLI argument help for the optional pattern input
+# from src.cli.constants import ARG_HELP_OPT_TARGET           # CLI argument help for the optional target path
 
-from src.cli.constants import ARG_HELP_AUDIO                # CLI argument help for the mandatory audio file path
-from src.cli.constants import ARG_HELP_GENRE                # CLI argument help for the mandatory genre csv file path
-from src.cli.constants import ARG_HELP_LEVEL                # CLI argument help for the mandatory level type input
-from src.cli.constants import ARG_HELP_PATTERN              # CLI argument help for the mandatory file pattern input
-from src.cli.constants import ARG_HELP_PLAYLIST             # CLI argument help for the mandatory m3u file path
-from src.cli.constants import ARG_HELP_TLD                  # CLI argument help for the mandatory tld only start path
-from src.cli.constants import ARG_HELP_TLD_FLD              # CLI argument help for the mandatory tld/fld start path
-from src.cli.constants import ARG_HELP_TLD_FLD_SLD          # CLI argument help for the mandatory tld/fld/sld start path
+# from src.cli.constants import ARG_HELP_AUDIO                # CLI argument help for the mandatory audio file path
+# from src.cli.constants import ARG_HELP_GENRE                # CLI argument help for the mandatory genre csv file path
+# from src.cli.constants import ARG_HELP_LEVEL                # CLI argument help for the mandatory level type input
+# from src.cli.constants import ARG_HELP_PATTERN              # CLI argument help for the mandatory file pattern input
+# from src.cli.constants import ARG_HELP_PLAYLIST             # CLI argument help for the mandatory m3u file path
+# from src.cli.constants import ARG_HELP_TLD                  # CLI argument help for the mandatory tld only start path
+# from src.cli.constants import ARG_HELP_TLD_FLD              # CLI argument help for the mandatory tld/fld start path
+# from src.cli.constants import ARG_HELP_TLD_FLD_SLD          # CLI argument help for the mandatory tld/fld/sld start path
 
 from src.core.constants import ERROR_LOG_FORMAT             # error log format
 from src.core.constants import LOG_DIR                      # log directory
@@ -68,8 +71,8 @@ from src.audio_info import AudioUtilities                   # noqa: E402, audio 
 from src.audio_normalize import AudioNormalization          # noqa: E402, audio normalization handling class
 from src.dir_processing import DirectoryProcessing          # noqa: E402, directory processing handling class
 
-from src.core.progress import ProgressReporter              # noqa: E402, progress reporting interface
-from src.cli.progress import TqdmProgress                   # noqa: E402, CLI progress display
+# from src.core.progress import ProgressReporter              # noqa: E402, progress reporting interface
+# from src.cli.progress import TqdmProgress                   # noqa: E402, CLI progress display
 
 # Configure logging
 ## @var basename
@@ -131,519 +134,519 @@ playlist = AudioPlaylist()
 utilities = AudioUtilities()
 
 
-class YaspinProgress(ProgressReporter):
-    '''
-    @brief Adapts the CLI spinner to the progress reporting interface.
+# class YaspinProgress(ProgressReporter):
+#     '''
+#     @brief Adapts the CLI spinner to the progress reporting interface.
 
-    @details Provides the temporary CLI display until the CLI progress module is introduced.
-    '''
-
-
-    def __init__(self):
-        '''
-        @brief Initializes the temporary CLI progress reporter.
-
-        @details Defers importing yaspin until a CLI operation starts.
-
-        @param self {YaspinProgress} The progress reporter.
-        '''
-
-        self._spinner: Any = None
+#     @details Provides the temporary CLI display until the CLI progress module is introduced.
+#     '''
 
 
-    def advance(self, step: int):
-        '''
-        @brief Accepts a progress advance.
+#     def __init__(self):
+#         '''
+#         @brief Initializes the temporary CLI progress reporter.
 
-        @details The temporary CLI reporter only supports indeterminate spinner operations.
+#         @details Defers importing yaspin until a CLI operation starts.
 
-        @param self {YaspinProgress} The progress reporter.
-        @param step {int} The number of completed steps.
-        '''
+#         @param self {YaspinProgress} The progress reporter.
+#         '''
 
-        pass
-
-
-    def finish(self) -> float:
-        '''
-        @brief Stops the CLI spinner and returns elapsed time.
-
-        @details Stops the active spinner when one has been started.
-
-        @param self {YaspinProgress} The progress reporter.
-
-        @retval {float} Elapsed time in seconds.
-        '''
-
-        if self._spinner is None:
-            return 0.0
-
-        spinner = self._spinner
-        self._spinner = None
-        spinner.__exit__(None, None, None)
-
-        return spinner.elapsed_time
+#         self._spinner: Any = None
 
 
-    def start(self, total: int | None, description: str):
-        '''
-        @brief Starts the CLI spinner.
+#     def advance(self, step: int):
+#         '''
+#         @brief Accepts a progress advance.
 
-        @details Creates a yaspin spinner for indeterminate progress.
+#         @details The temporary CLI reporter only supports indeterminate spinner operations.
 
-        @param self {YaspinProgress} The progress reporter.
-        @param total {int | None} The total number of progress steps, or None for indeterminate progress.
-        @param description {str} A description of the operation.
-        '''
+#         @param self {YaspinProgress} The progress reporter.
+#         @param step {int} The number of completed steps.
+#         '''
 
-        from yaspin import yaspin                            # for CLI progress indication
-        from yaspin.spinners import Spinners                 # for the CLI spinner definition
-
-        self._spinner = yaspin(Spinners.dots, text=description, timer=True)
-        self._spinner.__enter__()
+#         pass
 
 
-class CustomHelpFormatter(argparse.HelpFormatter):
-    '''
-    @brief Formats command-line help with space for long command names.
+#     def finish(self) -> float:
+#         '''
+#         @brief Stops the CLI spinner and returns elapsed time.
 
-    @details Keeps command descriptions aligned after the longest subcommand.
-    '''
+#         @details Stops the active spinner when one has been started.
 
+#         @param self {YaspinProgress} The progress reporter.
 
-    def __init__(self, prog):
-        '''
-        @brief Initializes the help formatter.
+#         @retval {float} Elapsed time in seconds.
+#         '''
 
-        @details Sets the description column far enough right for long commands.
+#         if self._spinner is None:
+#             return 0.0
 
-        @param self {CustomHelpFormatter} The instance of the custom help formatter.
-        @param prog {str} The program name displayed in usage.
-        '''
+#         spinner = self._spinner
+#         self._spinner = None
+#         spinner.__exit__(None, None, None)
 
-        # Set the maximum help position for aligning command descriptions
-        max_help_position = 60
-        # Determine the terminal width for formatting help output
-        width = max(shutil.get_terminal_size().columns - 2, 220)
-
-        # Initialize the help formatter with a maximum help position for alignment
-        super().__init__(prog, max_help_position=max_help_position, width=width)
+#         return spinner.elapsed_time
 
 
-    def _format_action(self, action) -> str:
-        '''
-        @brief Formats help descriptions at a fixed column.
+#     def start(self, total: int | None, description: str):
+#         '''
+#         @brief Starts the CLI spinner.
 
-        @details Aligns help options and subcommand descriptions.
+#         @details Creates a yaspin spinner for indeterminate progress.
 
-        @param self {CustomHelpFormatter} The instance of the custom help formatter.
-        @param action {argparse.Action} The action being formatted.
+#         @param self {YaspinProgress} The progress reporter.
+#         @param total {int | None} The total number of progress steps, or None for indeterminate progress.
+#         @param description {str} A description of the operation.
+#         '''
 
-        @retval formatted {str} Formatted help string for the action.
-        '''
+#         from yaspin import yaspin                            # for CLI progress indication
+#         from yaspin.spinners import Spinners                 # for the CLI spinner definition
 
-        # Check if the action is the root help action (top-level help)
-        root_help_action = (action.dest == "help" and action.option_strings and os.path.basename(self._prog) == os.path.basename(__file__))
-
-        # Determine if the action is a subcommand action
-        subcommand_action = isinstance(action, argparse._SubParsersAction._ChoicesPseudoAction)
-
-        # Format the action differently if it is the root help action or a subcommand action
-        if root_help_action or subcommand_action:
-            # get the current action max length before modifying it
-            action_max_length = self._action_max_length
-            self._action_max_length = self._max_help_position - 2
-
-            try:
-                # Format the action using the parent class's method with the adjusted max length
-                formatted = super()._format_action(action)
-            finally:
-                # Restore the original action max length after formatting
-                self._action_max_length = action_max_length
-
-            return formatted
-
-        return super()._format_action(action)
+#         self._spinner = yaspin(Spinners.dots, text=description, timer=True)
+#         self._spinner.__enter__()
 
 
-class CustomArgumentParser(argparse.ArgumentParser):
-    '''
-    @brief Custom argument parser so argparse errors can be logged.
+# class CustomHelpFormatter(argparse.HelpFormatter):
+#     '''
+#     @brief Formats command-line help with space for long command names.
 
-    @details Logs argparse error messages that would otherwise be written to standard error.
-    '''
-
-
-    def __init__(self, *args, **kwargs):
-        '''
-        @brief Initializes the argument parser with the custom help formatter.
-
-        @details Applies consistent command help formatting to the parser and its subparsers.
-
-        @param self {CustomArgumentParser} The instance of the custom argument parser.
-        @param args {*args} Positional arguments for the argument parser.
-        @param kwargs {**kwargs} Keyword arguments for the argument parser.
-        '''
-
-        # Set the custom help formatter as the default for this parser
-        kwargs.setdefault("formatter_class", CustomHelpFormatter)
-        super().__init__(*args, **kwargs)
+#     @details Keeps command descriptions aligned after the longest subcommand.
+#     '''
 
 
-    def _print_message(self, message, file=None):
-        '''
-        @brief Override argparse.ArgumentParser._print_message so stderr gets logged and output to console.
+#     def __init__(self, prog):
+#         '''
+#         @brief Initializes the help formatter.
 
-        @details Logs standard-error messages while preserving default handling for all other output.
+#         @details Sets the description column far enough right for long commands.
 
-        @param self {CustomArgumentParser} The instance of the custom argument parser.
-        @param message {str} The error message to log.
-        @param file {TextIOWrapper} A file-like object for stderr.
-        '''
+#         @param self {CustomHelpFormatter} The instance of the custom help formatter.
+#         @param prog {str} The program name displayed in usage.
+#         '''
 
-        # want to log errors if the message is intended for stderr and print to console
-        if message:
-            if file is sys.stderr:
-                logger.error(f"Argparse Error: {message.strip()}")
+#         # Set the maximum help position for aligning command descriptions
+#         max_help_position = 60
+#         # Determine the terminal width for formatting help output
+#         width = max(shutil.get_terminal_size().columns - 2, 220)
 
-            super()._print_message(message, file)
+#         # Initialize the help formatter with a maximum help position for alignment
+#         super().__init__(prog, max_help_position=max_help_position, width=width)
+
+
+#     def _format_action(self, action) -> str:
+#         '''
+#         @brief Formats help descriptions at a fixed column.
+
+#         @details Aligns help options and subcommand descriptions.
+
+#         @param self {CustomHelpFormatter} The instance of the custom help formatter.
+#         @param action {argparse.Action} The action being formatted.
+
+#         @retval formatted {str} Formatted help string for the action.
+#         '''
+
+#         # Check if the action is the root help action (top-level help)
+#         root_help_action = (action.dest == "help" and action.option_strings and os.path.basename(self._prog) == os.path.basename(__file__))
+
+#         # Determine if the action is a subcommand action
+#         subcommand_action = isinstance(action, argparse._SubParsersAction._ChoicesPseudoAction)
+
+#         # Format the action differently if it is the root help action or a subcommand action
+#         if root_help_action or subcommand_action:
+#             # get the current action max length before modifying it
+#             action_max_length = self._action_max_length
+#             self._action_max_length = self._max_help_position - 2
+
+#             try:
+#                 # Format the action using the parent class's method with the adjusted max length
+#                 formatted = super()._format_action(action)
+#             finally:
+#                 # Restore the original action max length after formatting
+#                 self._action_max_length = action_max_length
+
+#             return formatted
+
+#         return super()._format_action(action)
+
+
+# class CustomArgumentParser(argparse.ArgumentParser):
+#     '''
+#     @brief Custom argument parser so argparse errors can be logged.
+
+#     @details Logs argparse error messages that would otherwise be written to standard error.
+#     '''
+
+
+#     def __init__(self, *args, **kwargs):
+#         '''
+#         @brief Initializes the argument parser with the custom help formatter.
+
+#         @details Applies consistent command help formatting to the parser and its subparsers.
+
+#         @param self {CustomArgumentParser} The instance of the custom argument parser.
+#         @param args {*args} Positional arguments for the argument parser.
+#         @param kwargs {**kwargs} Keyword arguments for the argument parser.
+#         '''
+
+#         # Set the custom help formatter as the default for this parser
+#         kwargs.setdefault("formatter_class", CustomHelpFormatter)
+#         super().__init__(*args, **kwargs)
+
+
+#     def _print_message(self, message, file=None):
+#         '''
+#         @brief Override argparse.ArgumentParser._print_message so stderr gets logged and output to console.
+
+#         @details Logs standard-error messages while preserving default handling for all other output.
+
+#         @param self {CustomArgumentParser} The instance of the custom argument parser.
+#         @param message {str} The error message to log.
+#         @param file {TextIOWrapper} A file-like object for stderr.
+#         '''
+
+#         # want to log errors if the message is intended for stderr and print to console
+#         if message:
+#             if file is sys.stderr:
+#                 logger.error(f"Argparse Error: {message.strip()}")
+
+#             super()._print_message(message, file)
 
 
 ## @name Subcommand Handlers
 # @{
-def gui():
-    '''
-    @brief Launches the graphical user interface for the application.
+# def gui():
+#     '''
+#     @brief Launches the graphical user interface for the application.
 
-    @details Initializes and displays the main window of the GUI application.
-    '''
+#     @details Initializes and displays the main window of the GUI application.
+#     '''
 
-    run_gui()
+#     run_gui()
 
 
-def clip_check_file(file_path):
-    '''
-    @brief Checks peak, RMS, and EBU R128 leveling for a single audio file.
+# def clip_check_file(file_path):
+#     '''
+#     @brief Checks peak, RMS, and EBU R128 leveling for a single audio file.
 
-    @details Reports peak and RMS clipping estimates and whether EBU leveling can use linear normalization.
+#     @details Reports peak and RMS clipping estimates and whether EBU leveling can use linear normalization.
 
-    @param file_path {str} The full path to the audio file.
-    '''
+#     @param file_path {str} The full path to the audio file.
+#     '''
 
-    utilities.clip_check_file(file_path, progress=YaspinProgress())
+#     utilities.clip_check_file(file_path, progress=YaspinProgress())
 
 
-def clip_check_walk(tld_path):
-    '''
-    @brief Checks peak, RMS, and EBU R128 leveling for audio files in a directory.
+# def clip_check_walk(tld_path):
+#     '''
+#     @brief Checks peak, RMS, and EBU R128 leveling for audio files in a directory.
 
-    @details Reports peak and RMS clipping estimates and whether EBU leveling can use linear normalization.
+#     @details Reports peak and RMS clipping estimates and whether EBU leveling can use linear normalization.
 
-    @param tld_path {str} The tld, or fld path that contains all the music files.
-    '''
+#     @param tld_path {str} The tld, or fld path that contains all the music files.
+#     '''
 
-    utilities.clip_check_walk(tld_path, progress=YaspinProgress())
+#     utilities.clip_check_walk(tld_path, progress=YaspinProgress())
 
 
-def convert_file(file_path, target):
-    '''
-    @brief Converts specified audio file to mp3 format.
+# def convert_file(file_path, target):
+#     '''
+#     @brief Converts specified audio file to mp3 format.
 
-    @details Converts the specified audio file to mp3 format using the metadata conversion functionality.<br>
-    Can accept optional optional target directory for the exported file.
+#     @details Converts the specified audio file to mp3 format using the metadata conversion functionality.<br>
+#     Can accept optional optional target directory for the exported file.
 
-    @param file_path {str} The full path to audio file.
-    @param target {str} The optional target directory for exported files.
-    '''
+#     @param file_path {str} The full path to audio file.
+#     @param target {str} The optional target directory for exported files.
+#     '''
 
-    metadata.convert_file(file_path, target, progress=YaspinProgress())
+#     metadata.convert_file(file_path, target, progress=YaspinProgress())
 
 
-def convert_walk(tld_path, file_pattern, target):
-    '''
-    @brief Converts all audio files in specified top level directory to mp3 format.
+# def convert_walk(tld_path, file_pattern, target):
+#     '''
+#     @brief Converts all audio files in specified top level directory to mp3 format.
 
-    @details Walks through the top level directory and converts all audio files to mp3 format.<br>
-    Can accept an optional file pattern to filter which files to convert.<br>
-    Can accept an optional target directory for the exported files.
+#     @details Walks through the top level directory and converts all audio files to mp3 format.<br>
+#     Can accept an optional file pattern to filter which files to convert.<br>
+#     Can accept an optional target directory for the exported files.
 
-    @param tld_path {str} The tld, fld, or sld path that contains all the music files.
-    @param file_pattern {str} The optional file pattern we want to convert.
-    @param target {str} The optional target directory for exported files.
-    '''
+#     @param tld_path {str} The tld, fld, or sld path that contains all the music files.
+#     @param file_pattern {str} The optional file pattern we want to convert.
+#     @param target {str} The optional target directory for exported files.
+#     '''
 
-    metadata.convert_walk(tld_path, file_pattern, target, progress=YaspinProgress())
+#     metadata.convert_walk(tld_path, file_pattern, target, progress=YaspinProgress())
 
 
-def create_albums(tld_path):
-    '''
-    @brief Create album 2nd level directories under artist first level directories in top level directory.
+# def create_albums(tld_path):
+#     '''
+#     @brief Create album 2nd level directories under artist first level directories in top level directory.
 
-    @details Creates album directories under first-level artist directories in the specified top level directory.
+#     @details Creates album directories under first-level artist directories in the specified top level directory.
 
-    @param tld_path {str} The top level directory path that contains all the music files, only accepts a tld.
+#     @param tld_path {str} The top level directory path that contains all the music files, only accepts a tld.
 
-    @exception Exception A common baseclass exception to handle unforeseen errors.
-    '''
+#     @exception Exception A common baseclass exception to handle unforeseen errors.
+#     '''
 
-    metadata.create_album_dirs(tld_path, TqdmProgress())
+#     metadata.create_album_dirs(tld_path, TqdmProgress())
 
 
-def ebu_file(file_path, target):
-    '''
-    @brief EBU R128 normalize the specified mp3 audio file.
+# def ebu_file(file_path, target):
+#     '''
+#     @brief EBU R128 normalize the specified mp3 audio file.
 
-    @details Normalizes the mp3 audio file to the EBU R128 loudness standard.
+#     @details Normalizes the mp3 audio file to the EBU R128 loudness standard.
 
-    @param file_path {str} The full path to audio file.
-    @param target {str} The optional target directory for exported files.
-    '''
+#     @param file_path {str} The full path to audio file.
+#     @param target {str} The optional target directory for exported files.
+#     '''
 
-    normalization.ebu_normalize_file(file_path, target, progress=YaspinProgress())
+#     normalization.ebu_normalize_file(file_path, target, progress=YaspinProgress())
 
 
-def extract_album_art(file_path):
-    '''
-    @brief Extracts and saves embedded album art from specified audio file.
+# def extract_album_art(file_path):
+#     '''
+#     @brief Extracts and saves embedded album art from specified audio file.
 
-    @details Saves the embedded album art from the specified audio file, co-locates the art with the audio file in the same directory.
+#     @details Saves the embedded album art from the specified audio file, co-locates the art with the audio file in the same directory.
 
-    @param file_path {str} The full path to audio file.
-    '''
+#     @param file_path {str} The full path to audio file.
+#     '''
 
-    art.extract_album_art(file_path)
+#     art.extract_album_art(file_path)
 
 
-def extract_walk(tld_path, file_pattern):
-    '''
-    @brief Extracts and saves embedded album art from all audio files in specified top level directory with specified pattern.
+# def extract_walk(tld_path, file_pattern):
+#     '''
+#     @brief Extracts and saves embedded album art from all audio files in specified top level directory with specified pattern.
 
-    @details Extracts & saves the embedded album art from all audio files in the specified top level directory that match the given file pattern.<br>
-    The extracted album art is co-located with the corresponding audio files in the same directory.
+#     @details Extracts & saves the embedded album art from all audio files in the specified top level directory that match the given file pattern.<br>
+#     The extracted album art is co-located with the corresponding audio files in the same directory.
 
-    @param tld_path {str} The tld, or fld path that contains all the music files.
-    @param file_pattern {str} The file pattern we want to extract album art from.
-    '''
+#     @param tld_path {str} The tld, or fld path that contains all the music files.
+#     @param file_pattern {str} The file pattern we want to extract album art from.
+#     '''
 
-    art.extract_walk(tld_path, file_pattern)
+#     art.extract_walk(tld_path, file_pattern)
 
 
-def get_audio_file_list(tld_path):
-    '''
-    @brief Gets lists of all audio files from specified top level directory.
+# def get_audio_file_list(tld_path):
+#     '''
+#     @brief Gets lists of all audio files from specified top level directory.
 
-    @details Retrieves a list of all audio files from the specified top level directory.
+#     @details Retrieves a list of all audio files from the specified top level directory.
 
-    @param tld_path {str} The tld, or fld path that contains all the music files.
-    '''
+#     @param tld_path {str} The tld, or fld path that contains all the music files.
+#     '''
 
-    directory.get_audio_file_list(tld_path)
+#     directory.get_audio_file_list(tld_path)
 
 
-def get_ext_file_list(tld_path, file_pattern=None):
-    '''
-    @brief Gets lists of all files from specified top level directory by specified extension.
+# def get_ext_file_list(tld_path, file_pattern=None):
+#     '''
+#     @brief Gets lists of all files from specified top level directory by specified extension.
 
-    @details Retrieves a list of all files with the specified extension from the specified top level directory.
+#     @details Retrieves a list of all files with the specified extension from the specified top level directory.
 
-    @param tld_path {str} The tld, or fld path that contains all the music files.
-    @param file_pattern {str} The file pattern of extension to get list of.
-    '''
+#     @param tld_path {str} The tld, or fld path that contains all the music files.
+#     @param file_pattern {str} The file pattern of extension to get list of.
+#     '''
 
-    directory.get_ext_file_list(tld_path, file_pattern)
+#     directory.get_ext_file_list(tld_path, file_pattern)
 
 
-def get_media_info_walk(start_path, file_pattern):
-    '''
-    @brief Gets media info.
+# def get_media_info_walk(start_path, file_pattern):
+#     '''
+#     @brief Gets media info.
 
-    @details Retrieves detailed media information for all audio files in the specified top level directory that match the given file pattern.<br>
-    Uses ffprobe to gather the media information.
+#     @details Retrieves detailed media information for all audio files in the specified top level directory that match the given file pattern.<br>
+#     Uses ffprobe to gather the media information.
 
-    @param start_path {str} The tld, or fld path that contains all the music files.
-    @param file_pattern {str} The file pattern we want to get media info for.
-    '''
+#     @param start_path {str} The tld, or fld path that contains all the music files.
+#     @param file_pattern {str} The file pattern we want to get media info for.
+#     '''
 
-    metadata.get_media_info_walk(start_path, file_pattern)
+#     metadata.get_media_info_walk(start_path, file_pattern)
 
 
-def get_tags_walk(tld_path, file_pattern, ffprobe):
-    '''
-    @brief Gets metadata from all audio files in specified top level directory with specified pattern.
+# def get_tags_walk(tld_path, file_pattern, ffprobe):
+#     '''
+#     @brief Gets metadata from all audio files in specified top level directory with specified pattern.
 
-    @details Retrieves all available metadata tags from all audio files in the specified top level directory that match the given file pattern.<br>
-    Defaults to mutagen if ffprobe is not specified.
+#     @details Retrieves all available metadata tags from all audio files in the specified top level directory that match the given file pattern.<br>
+#     Defaults to mutagen if ffprobe is not specified.
 
-    @param tld_path {str} The tld, or fld path that contains all the music files.
-    @param file_pattern {str} The file pattern we want to get tags for.
-    @param ffprobe {bool} Get ffprobe tags instead of mutagen specific tags.
-    '''
+#     @param tld_path {str} The tld, or fld path that contains all the music files.
+#     @param file_pattern {str} The file pattern we want to get tags for.
+#     @param ffprobe {bool} Get ffprobe tags instead of mutagen specific tags.
+#     '''
 
-    metadata.get_tags_walk(tld_path, file_pattern, ffprobe)
+#     metadata.get_tags_walk(tld_path, file_pattern, ffprobe)
 
 
-def level_normalize_walk(tld_path, norm_type, target):
-    '''
-    @brief Level normalizes all audio files in specified top level directory per input normalization type.
+# def level_normalize_walk(tld_path, norm_type, target):
+#     '''
+#     @brief Level normalizes all audio files in specified top level directory per input normalization type.
 
-    @details Level normalizes all mp3 audio files in the specified top level directory according to the specified normalization type.
+#     @details Level normalizes all mp3 audio files in the specified top level directory according to the specified normalization type.
 
-    @param tld_path {str} The tld, or fld path that contains all the music files.
-    @param norm_type {str} The type of normalization to perform.
-    @param target {str} The optional target directory for exported files.
-    '''
+#     @param tld_path {str} The tld, or fld path that contains all the music files.
+#     @param norm_type {str} The type of normalization to perform.
+#     @param target {str} The optional target directory for exported files.
+#     '''
 
-    normalization.level_normalize_walk(tld_path, norm_type, target, progress=YaspinProgress())
+#     normalization.level_normalize_walk(tld_path, norm_type, target, progress=YaspinProgress())
 
 
-def normalize_filename(file_path):
-    '''
-    @brief Renames an audio file using its album artist and title metadata.
+# def normalize_filename(file_path):
+#     '''
+#     @brief Renames an audio file using its album artist and title metadata.
 
-    @details Renames any valid audio file using its album artist and title metadata.
+#     @details Renames any valid audio file using its album artist and title metadata.
 
-    @param file_path {str} The full path to the audio file.
-    '''
+#     @param file_path {str} The full path to the audio file.
+#     '''
 
-    metadata.normalize_filename(file_path)
+#     metadata.normalize_filename(file_path)
 
 
-def normalize_filename_walk(tld_path):
-    '''
-    @brief Wrapper function to normalize filenames of audio files in specified directory.
+# def normalize_filename_walk(tld_path):
+#     '''
+#     @brief Wrapper function to normalize filenames of audio files in specified directory.
 
-    @details Renames all supported audio files in the specified tld, fld, or sld, using their album artist and title metadata.
+#     @details Renames all supported audio files in the specified tld, fld, or sld, using their album artist and title metadata.
 
-    @param tld_path {str} The tld, fld, or sld path that contains all the music files.
-    '''
+#     @param tld_path {str} The tld, fld, or sld path that contains all the music files.
+#     '''
 
-    metadata.normalize_filename_walk(tld_path)
+#     metadata.normalize_filename_walk(tld_path)
 
 
-def peak_file(file_path, target):
-    '''
-    @brief Peak normalize the specified audio file.
+# def peak_file(file_path, target):
+#     '''
+#     @brief Peak normalize the specified audio file.
 
-    @details Peak normalizes the specified audio file with ffmpeg.
+#     @details Peak normalizes the specified audio file with ffmpeg.
 
-    @param file_path {str} The full path to audio file.
-    @param target {str} The optional target directory for exported files.
-    '''
+#     @param file_path {str} The full path to audio file.
+#     @param target {str} The optional target directory for exported files.
+#     '''
 
-    normalization.peak_normalize_file(file_path, target, progress=YaspinProgress())
+#     normalization.peak_normalize_file(file_path, target, progress=YaspinProgress())
 
 
-def remove_empty_albums(tld_path):
-    '''
-    @brief Remove empty album directories from specified top level directory.
+# def remove_empty_albums(tld_path):
+#     '''
+#     @brief Remove empty album directories from specified top level directory.
 
-    @details Recursively scans the specified top level directory and removes any empty album directories.
+#     @details Recursively scans the specified top level directory and removes any empty album directories.
 
-    @param tld_path {str} The tld, or fld path that contains all the music files.
-    '''
+#     @param tld_path {str} The tld, or fld path that contains all the music files.
+#     '''
 
-    directory.remove_empty_albums(tld_path)
+#     directory.remove_empty_albums(tld_path)
 
 
-def remove_pattern(tld_path, file_pattern):
-    '''
-    @brief Remove files with specified pattern from specified top level directory.
+# def remove_pattern(tld_path, file_pattern):
+#     '''
+#     @brief Remove files with specified pattern from specified top level directory.
 
-    @details Recursively scans the specified top level directory and removes any files that match the given pattern.
+#     @details Recursively scans the specified top level directory and removes any files that match the given pattern.
 
-    @param tld_path {str} The tld, or fld path that contains all the music files.
-    @param file_pattern {str} The file pattern we want to delete.
-    '''
+#     @param tld_path {str} The tld, or fld path that contains all the music files.
+#     @param file_pattern {str} The file pattern we want to delete.
+#     '''
 
-    directory.remove_pattern(tld_path, file_pattern)
+#     directory.remove_pattern(tld_path, file_pattern)
 
 
-def remove_set_list(tld_path):
-    '''
-    @brief Remove files matching a hard-coded set of patterns from the specified top level directory.
+# def remove_set_list(tld_path):
+#     '''
+#     @brief Remove files matching a hard-coded set of patterns from the specified top level directory.
 
-    @details Recursively scans the specified top level directory and removes any files that match the hard-coded set of patterns.
+#     @details Recursively scans the specified top level directory and removes any files that match the hard-coded set of patterns.
 
-    @param tld_path {str} The tld, fld, or sld path that contains all the music files.
+#     @param tld_path {str} The tld, fld, or sld path that contains all the music files.
 
-    '''
+#     '''
 
-    directory.remove_set_list(tld_path)
+#     directory.remove_set_list(tld_path)
 
 
-def rename_album_directories(tld_path):
-    '''
-    @brief Renames album directories based on metadata.
+# def rename_album_directories(tld_path):
+#     '''
+#     @brief Renames album directories based on metadata.
 
-    @details Traverses the top level directory, reads album metadata, and renames album directories accordingly.
+#     @details Traverses the top level directory, reads album metadata, and renames album directories accordingly.
 
-    @param tld_path {str} The top level directory path that contains all the music files, only accepts a tld.
-    '''
+#     @param tld_path {str} The top level directory path that contains all the music files, only accepts a tld.
+#     '''
 
-    metadata.rename_album_directories(tld_path)
+#     metadata.rename_album_directories(tld_path)
 
 
-def rms_file(file_path, target):
-    '''
-    @brief RMS normalize the specified audio file.
+# def rms_file(file_path, target):
+#     '''
+#     @brief RMS normalize the specified audio file.
 
-    @details RMS normalizes the specified audio file with ffmpeg.
+#     @details RMS normalizes the specified audio file with ffmpeg.
 
-    @param file_path {str} The full path to audio file.
-    @param target {str} The optional target directory for exported files.
-    '''
+#     @param file_path {str} The full path to audio file.
+#     @param target {str} The optional target directory for exported files.
+#     '''
 
-    normalization.rms_normalize_file(file_path, target, progress=YaspinProgress())
+#     normalization.rms_normalize_file(file_path, target, progress=YaspinProgress())
 
 
-def set_album_art(tld_path):
-    '''
-    @brief Sets album art file for an album directory.
+# def set_album_art(tld_path):
+#     '''
+#     @brief Sets album art file for an album directory.
 
-    @details Sets the album art for all album directories matching stored art files.
+#     @details Sets the album art for all album directories matching stored art files.
 
-    @param tld_path {str} The tld or fld path that contains all the music files.
-    '''
+#     @param tld_path {str} The tld or fld path that contains all the music files.
+#     '''
 
-    art.set_album_art(tld_path)
+#     art.set_album_art(tld_path)
 
 
-def update_genres(tld_path, csv_path):
-    '''
-    @brief Updates genre metadata using artist genre mappings from a CSV file.
+# def update_genres(tld_path, csv_path):
+#     '''
+#     @brief Updates genre metadata using artist genre mappings from a CSV file.
 
-    @details Updates supported descendant audio files for artist directories that exactly match CSV artist names.
+#     @details Updates supported descendant audio files for artist directories that exactly match CSV artist names.
 
-    @param tld_path {str} The top level directory path that contains all the music files, only accepts a tld.
-    @param csv_path {str} The full path to the artist genre CSV file.
-    '''
+#     @param tld_path {str} The top level directory path that contains all the music files, only accepts a tld.
+#     @param csv_path {str} The full path to the artist genre CSV file.
+#     '''
 
-    metadata.update_genres(tld_path, csv_path)
+#     metadata.update_genres(tld_path, csv_path)
 
 
-def update_playlist(tld_path, input_m3u):
-    '''
-    @brief Updates an old playlist relative pathing.
+# def update_playlist(tld_path, input_m3u):
+#     '''
+#     @brief Updates an old playlist relative pathing.
 
-    @details Updates the relative paths in the specified playlist file based on the current top level directory structure.
+#     @details Updates the relative paths in the specified playlist file based on the current top level directory structure.
 
-    @param tld_path {str} The top level directory path that contains all the music files, only accepts a tld.
-    @param input_m3u {str} The full file path to playlist needing conversion.
-    '''
+#     @param tld_path {str} The top level directory path that contains all the music files, only accepts a tld.
+#     @param input_m3u {str} The full file path to playlist needing conversion.
+#     '''
 
-    playlist.update_playlist(tld_path, input_m3u)
+#     playlist.update_playlist(tld_path, input_m3u)
 
 
-def update_walk(tld_path):
-    '''
-    @brief Updates an old playlist relative pathing.
+# def update_walk(tld_path):
+#     '''
+#     @brief Updates an old playlist relative pathing.
 
-    @details Updates the relative paths in all playlist files within the specified top level directory based on the current directory structure.
+#     @details Updates the relative paths in all playlist files within the specified top level directory based on the current directory structure.
 
-    @param tld_path {str} The top level directory path that contains all the music files, only accepts a tld.
-    '''
+#     @param tld_path {str} The top level directory path that contains all the music files, only accepts a tld.
+#     '''
 
-    playlist.update_walk(tld_path)
+#     playlist.update_walk(tld_path)
 ## @}
 
 
@@ -660,79 +663,77 @@ def main(args) -> int:
     @retval {int} Exit code, zero for success, one for failure.
     '''
 
-    # user wants GUI mode
-    # if args.subcommand == "gui":
-    #     try:
-    #         run_gui()
-    #         return 0
-    #     except Exception as e_error:
-    #         logger.exception(f"Exception propagated to main: {type(e_error).__name__}: {e_error}", stack_info=True)
-    #         print(f"Error in subcommand '{args.subcommand}': {type(e_error).__name__}: {e_error}")
-    #         return 1
-
-    # # user wants CLI mode
-    # return run_cli_command(args)
-
-    mode_result = None
+    result_code = 0
+    subcommand = args.subcommand
 
     try:
-        # user wants GUI mode
-        if args.subcommand == "gui":
+        # user want GUI mode, which doesn't have an explicit result code
+        if subcommand == "gui":
             run_gui()
-            mode_result = 0
-            return mode_result
-        else:
-            mode_result = run_cli_command(args)
-            return mode_result
+            result_code = 0
+            return result_code
+
+        # user want CLI mode, which does have an explicit result code
+        run_cli_command(args)
+        result_code = 0
+        return result_code
 
     except Exception as e_error:
         logger.exception(f"Exception propagated to main: {type(e_error).__name__}: {e_error}", stack_info=True)
-        print(f"Error in subcommand '{args.subcommand}': {type(e_error).__name__}: {e_error}")
-        mode_result = 1
-        return mode_result
+
+        # we need a message no matter what mode was ran
+        message = (f"Error in subcommand '{subcommand}': {type(e_error).__name__}: {e_error}")
+        if subcommand == "gui":
+            import wx
+            wx.MessageBox(message, "Error", wx.OK | wx.ICON_ERROR)
+        else:
+            print(message)
+
+        result_code = 1
+        return result_code
 ## @}
 
 
 ## @name Argument Validation Helpers
 # @{
-def existing_file(file):
-    '''
-    @brief Checks if file exists.
+# def existing_file(file):
+#     '''
+#     @brief Checks if file exists.
 
-    @details Checks if the specified file exists and raises an ArgumentTypeError if it does not.<br>
-    Helper function for ArgumentParser to validate file paths.
+#     @details Checks if the specified file exists and raises an ArgumentTypeError if it does not.<br>
+#     Helper function for ArgumentParser to validate file paths.
 
-    @param file {str} The file path.
+#     @param file {str} The file path.
 
-    @retval file {str} The file path.
+#     @retval file {str} The file path.
 
-    @exception {ArgumentTypeError} Indicates the file was not found.
-    '''
+#     @exception {ArgumentTypeError} Indicates the file was not found.
+#     '''
 
-    if not os.path.isfile(file):
-        raise argparse.ArgumentTypeError(f"File not found: {file}")
+#     if not os.path.isfile(file):
+#         raise argparse.ArgumentTypeError(f"File not found: {file}")
 
-    return file
+#     return file
 
 
-def existing_path(path):
-    '''
-    @brief Checks if directory exists.
+# def existing_path(path):
+#     '''
+#     @brief Checks if directory exists.
 
-    @details Checks if the specified directory exists and raises an ArgumentTypeError if it does not.<br>
-    Helper function for ArgumentParser to validate directory paths.
+#     @details Checks if the specified directory exists and raises an ArgumentTypeError if it does not.<br>
+#     Helper function for ArgumentParser to validate directory paths.
 
-    @param path {str} The directory path.
+#     @param path {str} The directory path.
 
-    @retval path {str} The directory path.
+#     @retval path {str} The directory path.
 
-    @exception {ArgumentTypeError} Indicates the directory was not found.
-    '''
+#     @exception {ArgumentTypeError} Indicates the directory was not found.
+#     '''
 
-    if not os.path.isdir(path):
-        raise argparse.ArgumentTypeError(f"Directory not found: {path}")
+#     if not os.path.isdir(path):
+#         raise argparse.ArgumentTypeError(f"Directory not found: {path}")
 
-    return path
+#     return path
 ## @}
 
 
@@ -748,276 +749,281 @@ if __name__ == "__main__":
     '''
 
     try:
-        parser = CustomArgumentParser(description='Music Processing')
-        subparsers = parser.add_subparsers(title="subcommands", dest="subcommand", metavar="command")
+        # parser = CustomArgumentParser(description='Music Processing')
+        # subparsers = parser.add_subparsers(title="subcommands", dest="subcommand", metavar="command")
 
-        # run in gui mode instead of cli modes
-        # gui
-        gui_parser = subparsers.add_parser("gui", help="Run in GUI mode")
-        gui_parser.set_defaults(func=run_gui)
+        # # run in gui mode instead of cli modes
+        # # gui
+        # gui_parser = subparsers.add_parser("gui", help="Run in GUI mode")
+        # gui_parser.set_defaults(func=run_gui)
 
-        # check peak, RMS, and EBU R128 leveling for a single audio file
-        # 1 mandatory arg, the audio file path
-        # clip-check-file "D:\MusicProcessing\tests\Music\Abba\Waterloo\Abba-Waterloo.mp3"
-        clip_check_file_parser = subparsers.add_parser("clip-check-file", help="Check peak/RMS/EBU R128 leveling for single audio file")
-        clip_check_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
-        clip_check_file_parser.set_defaults(func=clip_check_file)
+        # # check peak, RMS, and EBU R128 leveling for a single audio file
+        # # 1 mandatory arg, the audio file path
+        # # clip-check-file "D:\MusicProcessing\tests\Music\Abba\Waterloo\Abba-Waterloo.mp3"
+        # clip_check_file_parser = subparsers.add_parser("clip-check-file", help="Check peak/RMS/EBU R128 leveling for single audio file")
+        # clip_check_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
+        # clip_check_file_parser.set_defaults(func=clip_check_file)
 
-        # check max volume and clip level of audio files
-        # 1 mandatory arg, the start path (can be tld or fld, but not sld)
-        # clip-check-walk "D:\MusicProcessing\tests\Music"
-        # clip-check-walk "D:\MusicProcessing\tests\Music\Abba"
-        # clip-check-walk "D:\MusicProcessing\tests\Music\Abba\Waterloo"
-        # clip-check-walk "D:\MusicProcessing\tests\Music\The Lord of the Rings"
-        clip_check_walk_parser = subparsers.add_parser("clip-check-walk", help="Check peak/RMS/EBU R128 leveling for multiple audio files")
-        clip_check_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
-        clip_check_walk_parser.set_defaults(func=clip_check_walk)
+        # # check max volume and clip level of audio files
+        # # 1 mandatory arg, the start path (can be tld or fld, but not sld)
+        # # clip-check-walk "D:\MusicProcessing\tests\Music"
+        # # clip-check-walk "D:\MusicProcessing\tests\Music\Abba"
+        # # clip-check-walk "D:\MusicProcessing\tests\Music\Abba\Waterloo"
+        # # clip-check-walk "D:\MusicProcessing\tests\Music\The Lord of the Rings"
+        # clip_check_walk_parser = subparsers.add_parser("clip-check-walk", help="Check peak/RMS/EBU R128 leveling for multiple audio files")
+        # clip_check_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        # clip_check_walk_parser.set_defaults(func=clip_check_walk)
 
-        # convert audio file specified to mp3 format
-        # 1 mandatory arg, the audio file path
-        # 1 optional arg, the target directory for exported files
-        # convert-file "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"
-        convert_file_parser = subparsers.add_parser("convert-file", help="Convert audio file to mp3")
-        convert_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
-        convert_file_parser.add_argument("--" + ARG_CLI_TARGET, type=existing_path, help=ARG_HELP_OPT_TARGET)
-        convert_file_parser.set_defaults(func=convert_file)
+        # # convert audio file specified to mp3 format
+        # # 1 mandatory arg, the audio file path
+        # # 1 optional arg, the target directory for exported files
+        # # convert-file "C:\Music\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.m4a"
+        # convert_file_parser = subparsers.add_parser("convert-file", help="Convert audio file to mp3")
+        # convert_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
+        # convert_file_parser.add_argument("--" + ARG_CLI_TARGET, type=existing_path, help=ARG_HELP_OPT_TARGET)
+        # convert_file_parser.set_defaults(func=convert_file)
 
-        # convert all audio files found in top level directory
-        # 1 mandatory arg, the start path (can be tld, fld, or sld)
-        # 1 optional arg, the file pattern to match (.flac, .mp3, .m4a .wma)
-        # 1 optional arg, the target directory for exported files
-        # convert-walk "C:\Music" --pattern .m4a "C:\ConvertedMusic"
-        # convert-walk "C:\Music"
-        # convert-walk "C:\Music\Abba"
-        # convert-walk "C:\Music\Abba\Waterloo"
-        convert_walk_parser = subparsers.add_parser("convert-walk", help="Convert audio files to mp3")
-        convert_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD_SLD)
-        convert_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
-        convert_walk_parser.add_argument("--" + ARG_CLI_TARGET, type=existing_path, help=ARG_HELP_OPT_TARGET)
-        convert_walk_parser.set_defaults(func=convert_walk)
+        # # convert all audio files found in top level directory
+        # # 1 mandatory arg, the start path (can be tld, fld, or sld)
+        # # 1 optional arg, the file pattern to match (.flac, .mp3, .m4a .wma)
+        # # 1 optional arg, the target directory for exported files
+        # # convert-walk "C:\Music" --pattern .m4a "C:\ConvertedMusic"
+        # # convert-walk "C:\Music"
+        # # convert-walk "C:\Music\Abba"
+        # # convert-walk "C:\Music\Abba\Waterloo"
+        # convert_walk_parser = subparsers.add_parser("convert-walk", help="Convert audio files to mp3")
+        # convert_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD_SLD)
+        # convert_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
+        # convert_walk_parser.add_argument("--" + ARG_CLI_TARGET, type=existing_path, help=ARG_HELP_OPT_TARGET)
+        # convert_walk_parser.set_defaults(func=convert_walk)
 
-        # create album directories
-        # 1 mandatory arg, the tld path (must be the tld, fld and sld will not work)
-        # create-albums C:\Music
-        create_albums_parser = subparsers.add_parser("create-albums", help="Create album sub-directories")
-        create_albums_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
-        create_albums_parser.set_defaults(func=create_albums)
+        # # create album directories
+        # # 1 mandatory arg, the tld path (must be the tld, fld and sld will not work)
+        # # create-albums C:\Music
+        # create_albums_parser = subparsers.add_parser("create-albums", help="Create album sub-directories")
+        # create_albums_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
+        # create_albums_parser.set_defaults(func=create_albums)
 
-        # ebu normalize an mp3 audio file
-        # 1 mandatory arg, the path to audio file
-        # 1 optional arg, the target directory for exported files
-        # ebu-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
-        ebu_file_parser = subparsers.add_parser("ebu-file", help="EBU R128 level audio file")
-        ebu_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
-        ebu_file_parser.add_argument("--" + ARG_CLI_TARGET, type=existing_path, help=ARG_HELP_OPT_TARGET)
-        ebu_file_parser.set_defaults(func=ebu_file)
+        # # ebu normalize an mp3 audio file
+        # # 1 mandatory arg, the path to audio file
+        # # 1 optional arg, the target directory for exported files
+        # # ebu-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
+        # ebu_file_parser = subparsers.add_parser("ebu-file", help="EBU R128 level audio file")
+        # ebu_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
+        # ebu_file_parser.add_argument("--" + ARG_CLI_TARGET, type=existing_path, help=ARG_HELP_OPT_TARGET)
+        # ebu_file_parser.set_defaults(func=ebu_file)
 
-        # extract album art from specified audio file
-        # 1 mandatory arg, the path to audio file
-        # extract-file "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"
-        extract_album_art_parser = subparsers.add_parser("extract-album-art", help="Extract audio file embedded art")
-        extract_album_art_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
-        extract_album_art_parser.set_defaults(func=extract_album_art)
+        # # extract album art from specified audio file
+        # # 1 mandatory arg, the path to audio file
+        # # extract-file "C:\Music\Elton John\Goodbye Yellow Brick Road\Elton John-Saturday Night's Alright for Fighting.wma"
+        # extract_album_art_parser = subparsers.add_parser("extract-album-art", help="Extract audio file embedded art")
+        # extract_album_art_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
+        # extract_album_art_parser.set_defaults(func=extract_album_art)
 
-        # extract album art from all audio files found in top level directory
-        # 1 mandatory arg, the start path (can be tld or fld, but not sld)
-        # 1 optional arg, the file pattern to match (.flac, .mp3, .m4a, .wma)
-        # extract-walk C:\Music --pattern .flac
-        # extract-walk C:\Music --pattern .mp3
-        # extract-walk C:\Music --pattern .m4a
-        # extract-walk C:\Music --pattern .wma
-        # extract-walk C:\Music\Abba
-        # extract-walk C:\Music
-        extract_walk_parser = subparsers.add_parser("extract-walk", help="Extract audio files embedded art")
-        extract_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
-        extract_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
-        extract_walk_parser.set_defaults(func=extract_walk)
+        # # extract album art from all audio files found in top level directory
+        # # 1 mandatory arg, the start path (can be tld or fld, but not sld)
+        # # 1 optional arg, the file pattern to match (.flac, .mp3, .m4a, .wma)
+        # # extract-walk C:\Music --pattern .flac
+        # # extract-walk C:\Music --pattern .mp3
+        # # extract-walk C:\Music --pattern .m4a
+        # # extract-walk C:\Music --pattern .wma
+        # # extract-walk C:\Music\Abba
+        # # extract-walk C:\Music
+        # extract_walk_parser = subparsers.add_parser("extract-walk", help="Extract audio files embedded art")
+        # extract_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        # extract_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
+        # extract_walk_parser.set_defaults(func=extract_walk)
 
-        # list all audio files
-        # 1 mandatory arg, the start path (can be tld or fld, but not sld)
-        # get-audio-file-list D:\MusicProcessing\tests\Music
-        get_audio_file_list_audio_parser = subparsers.add_parser("get-audio-file-list", help="Get list of audio file paths")
-        get_audio_file_list_audio_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
-        get_audio_file_list_audio_parser.set_defaults(func=get_audio_file_list)
+        # # list all audio files
+        # # 1 mandatory arg, the start path (can be tld or fld, but not sld)
+        # # get-audio-file-list D:\MusicProcessing\tests\Music
+        # get_audio_file_list_audio_parser = subparsers.add_parser("get-audio-file-list", help="Get list of audio file paths")
+        # get_audio_file_list_audio_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        # get_audio_file_list_audio_parser.set_defaults(func=get_audio_file_list)
 
-        # list files by extension
-        # 1 mandatory arg, the start path (can be tld or fld, but not sld)
-        # 1 optional arg, the file extension (.flac, .mp3, .m4a .wma)
-        # get-ext-file-list C:\Music --pattern .flac
-        # get-ext-file-list C:\Music --pattern .mp3
-        # get-ext-file-list C:\Music --pattern .m4a
-        # get-ext-file-list C:\Music --pattern .wma
-        # get-ext-file-list D:\MusicProcessing\tests\Music
-        get_ext_file_list_parser = subparsers.add_parser("get-ext-file-list", help="Get list of audio file extensions")
-        get_ext_file_list_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
-        get_ext_file_list_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
-        get_ext_file_list_parser.set_defaults(func=get_ext_file_list)
+        # # list files by extension
+        # # 1 mandatory arg, the start path (can be tld or fld, but not sld)
+        # # 1 optional arg, the file extension (.flac, .mp3, .m4a .wma)
+        # # get-ext-file-list C:\Music --pattern .flac
+        # # get-ext-file-list C:\Music --pattern .mp3
+        # # get-ext-file-list C:\Music --pattern .m4a
+        # # get-ext-file-list C:\Music --pattern .wma
+        # # get-ext-file-list D:\MusicProcessing\tests\Music
+        # get_ext_file_list_parser = subparsers.add_parser("get-ext-file-list", help="Get list of audio file extensions")
+        # get_ext_file_list_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        # get_ext_file_list_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
+        # get_ext_file_list_parser.set_defaults(func=get_ext_file_list)
 
-        # get media information for files
-        # 1 mandatory arg, the start path (can be tld or fld, but not sld)
-        # 1 optional arg, the file ext to match {.flac|.mp3|.m4a|.wma}
-        # get-media-info-walk C:\Music --pattern .mp3``
-        # get-media-info-walk C:\Music --pattern .m4a
-        # get-media-info-walk C:\Music --pattern .wma
-        # get-media-info-walk C:\Music --pattern .flac
-        # get-media-info-walk D:\MusicProcessing\tests\Music
-        get_media_info_walk_parser = subparsers.add_parser("get-media-info-walk", help="Get list of audio files media info")
-        get_media_info_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
-        get_media_info_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
-        get_media_info_walk_parser.set_defaults(func=get_media_info_walk)
+        # # get media information for files
+        # # 1 mandatory arg, the start path (can be tld or fld, but not sld)
+        # # 1 optional arg, the file ext to match {.flac|.mp3|.m4a|.wma}
+        # # get-media-info-walk C:\Music --pattern .mp3``
+        # # get-media-info-walk C:\Music --pattern .m4a
+        # # get-media-info-walk C:\Music --pattern .wma
+        # # get-media-info-walk C:\Music --pattern .flac
+        # # get-media-info-walk D:\MusicProcessing\tests\Music
+        # get_media_info_walk_parser = subparsers.add_parser("get-media-info-walk", help="Get list of audio files media info")
+        # get_media_info_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        # get_media_info_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
+        # get_media_info_walk_parser.set_defaults(func=get_media_info_walk)
 
-        # get metadata tags from all audio files found in top level directory
-        # 1 mandatory arg, the start path (can be tld or fld, but not sld)
-        # 1 optional arg, the file ext to match (.flac, .mp3, .m4a .wma)
-        # 1 optional arg, use ffprobe boolean
-        # get-tags-walk C:\Music
-        # get-tags-walk C:\Music --pattern .mp3 --ffprobe True
-        # get-tags-walk C:\Music --pattern .m4a --ffprobe True
-        # get-tags-walk C:\Music --pattern .wma --ffprobe True
-        # get-tags-walk C:\Music --pattern .flac --ffprobe True
-        # get-tags-walk D:\MusicProcessing\tests\Music --ffprobe True
-        get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Get list of audio files metadata tags")
-        get_tags_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
-        get_tags_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
-        get_tags_walk_parser.add_argument("--" + ARG_CLI_FFPROBE, type=bool, help=ARG_HELP_OPT_FFPROBE)
-        get_tags_walk_parser.set_defaults(func=get_tags_walk)
+        # # get metadata tags from all audio files found in top level directory
+        # # 1 mandatory arg, the start path (can be tld or fld, but not sld)
+        # # 1 optional arg, the file ext to match (.flac, .mp3, .m4a .wma)
+        # # 1 optional arg, use ffprobe boolean
+        # # get-tags-walk C:\Music
+        # # get-tags-walk C:\Music --pattern .mp3 --ffprobe True
+        # # get-tags-walk C:\Music --pattern .m4a --ffprobe True
+        # # get-tags-walk C:\Music --pattern .wma --ffprobe True
+        # # get-tags-walk C:\Music --pattern .flac --ffprobe True
+        # # get-tags-walk D:\MusicProcessing\tests\Music --ffprobe True
+        # get_tags_walk_parser = subparsers.add_parser("get-tags-walk", help="Get list of audio files metadata tags")
+        # get_tags_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        # get_tags_walk_parser.add_argument("--" + ARG_CLI_PATTERN, type=str, help=ARG_HELP_OPT_PATTERN)
+        # get_tags_walk_parser.add_argument("--" + ARG_CLI_FFPROBE, type=bool, help=ARG_HELP_OPT_FFPROBE)
+        # get_tags_walk_parser.set_defaults(func=get_tags_walk)
 
-        # level normalize mp3 files
-        # 1st mandatory arg, the start path (can be tld or fld, but not sld)
-        # 2nd mandatory arg, the normalization type (ebu, peak, rms)
-        # 1 optional arg, the target directory for exported files
-        # level-normalize-walk C:\Music ebu
-        # level-normalize-walk C:\Music peak
-        # level-normalize-walk C:\Music rms
-        # level-normalize-walk "F:\Rick\RickConverted\Elton John" ebu --target "F:\Rick\RickLeveled"
-        level_normalize_walk_parser = subparsers.add_parser("level-normalize-walk", help="Level normalize audio files")
-        level_normalize_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
-        level_normalize_walk_parser.add_argument(ARG_CLI_TYPE, type=str, help=ARG_HELP_LEVEL)
-        level_normalize_walk_parser.add_argument("--" + ARG_CLI_TARGET, type=existing_path, help=ARG_HELP_OPT_TARGET)
-        level_normalize_walk_parser.set_defaults(func=level_normalize_walk)
+        # # level normalize mp3 files
+        # # 1st mandatory arg, the start path (can be tld or fld, but not sld)
+        # # 2nd mandatory arg, the normalization type (ebu, peak, rms)
+        # # 1 optional arg, the target directory for exported files
+        # # level-normalize-walk C:\Music ebu
+        # # level-normalize-walk C:\Music peak
+        # # level-normalize-walk C:\Music rms
+        # # level-normalize-walk "F:\Rick\RickConverted\Elton John" ebu --target "F:\Rick\RickLeveled"
+        # level_normalize_walk_parser = subparsers.add_parser("level-normalize-walk", help="Level normalize audio files")
+        # level_normalize_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        # level_normalize_walk_parser.add_argument(ARG_CLI_TYPE, type=str, help=ARG_HELP_LEVEL)
+        # level_normalize_walk_parser.add_argument("--" + ARG_CLI_TARGET, type=existing_path, help=ARG_HELP_OPT_TARGET)
+        # level_normalize_walk_parser.set_defaults(func=level_normalize_walk)
 
-        # rename an audio filename from its metadata
-        # 1 mandatory arg, the audio file path
-        # normalize-filename "C:\Music\song.flac"
-        # normalize-filename "C:\Music\song.mp3"
-        # normalize-filename "C:\Music\song.m4a"
-        # normalize-filename "C:\Music\song.wma"
-        normalize_filename_parser = subparsers.add_parser("normalize-filename", help="Rename audio file from metadata")
-        normalize_filename_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
-        normalize_filename_parser.set_defaults(func=normalize_filename)
+        # # rename an audio filename from its metadata
+        # # 1 mandatory arg, the audio file path
+        # # normalize-filename "C:\Music\song.flac"
+        # # normalize-filename "C:\Music\song.mp3"
+        # # normalize-filename "C:\Music\song.m4a"
+        # # normalize-filename "C:\Music\song.wma"
+        # normalize_filename_parser = subparsers.add_parser("normalize-filename", help="Rename audio file from metadata")
+        # normalize_filename_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
+        # normalize_filename_parser.set_defaults(func=normalize_filename)
 
-        # rename audio filenames from metadata for all acceptable audio file types in directory
-        # 1 mandatory arg, the start path (can be tld, fld, or sld)
-        # normalize-filename-walk "F:\Rick\RickPrepped"
-        # normalize-filename-walk "F:\Rick\RickPrepped\Duffy"
-        # normalize-filename-walk "F:\Rick\RickPrepped\Duffy\Rockferry"
-        normalize_filename_walk_parser = subparsers.add_parser("normalize-filename-walk", help="Rename audio files from metadata")
-        normalize_filename_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD_SLD)
-        normalize_filename_walk_parser.set_defaults(func=normalize_filename_walk)
+        # # rename audio filenames from metadata for all acceptable audio file types in directory
+        # # 1 mandatory arg, the start path (can be tld, fld, or sld)
+        # # normalize-filename-walk "F:\Rick\RickPrepped"
+        # # normalize-filename-walk "F:\Rick\RickPrepped\Duffy"
+        # # normalize-filename-walk "F:\Rick\RickPrepped\Duffy\Rockferry"
+        # normalize_filename_walk_parser = subparsers.add_parser("normalize-filename-walk", help="Rename audio files from metadata")
+        # normalize_filename_walk_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD_SLD)
+        # normalize_filename_walk_parser.set_defaults(func=normalize_filename_walk)
 
-        # peak normalize an mp3 audio file
-        # 1 mandatory arg, the path to audio file
-        # 1 optional arg, the target directory for exported files
-        # peak-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
-        peak_file_parser = subparsers.add_parser("peak-file", help="Peak level audio file")
-        peak_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
-        peak_file_parser.add_argument("--" + ARG_CLI_TARGET, type=str, help=ARG_HELP_OPT_TARGET)
-        peak_file_parser.set_defaults(func=peak_file)
+        # # peak normalize an mp3 audio file
+        # # 1 mandatory arg, the path to audio file
+        # # 1 optional arg, the target directory for exported files
+        # # peak-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
+        # peak_file_parser = subparsers.add_parser("peak-file", help="Peak level audio file")
+        # peak_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
+        # peak_file_parser.add_argument("--" + ARG_CLI_TARGET, type=str, help=ARG_HELP_OPT_TARGET)
+        # peak_file_parser.set_defaults(func=peak_file)
 
-        # remove empty album directories
-        # 1 mandatory arg, the start path (can be tld or fld, but not sld)
-        # remove-empty-albums C:\Music
-        remove_empty_albums_parser = subparsers.add_parser("remove-empty-albums", help="Remove empty album sub-directories")
-        remove_empty_albums_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
-        remove_empty_albums_parser.set_defaults(func=remove_empty_albums)
+        # # remove empty album directories
+        # # 1 mandatory arg, the start path (can be tld or fld, but not sld)
+        # # remove-empty-albums C:\Music
+        # remove_empty_albums_parser = subparsers.add_parser("remove-empty-albums", help="Remove empty album sub-directories")
+        # remove_empty_albums_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        # remove_empty_albums_parser.set_defaults(func=remove_empty_albums)
 
-        # remove files matching specified file pattern
-        # 1st mandatory args, the start path (can be tld, fld, or sld)
-        # 2nd mandatory arg, the file pattern
-        # remove-pattern C:\Music *.db
-        # remove-pattern C:\Music *.ini
-        # remove-pattern C:\Music AlbumArtSmall.jpg
-        # remove-pattern C:\Music AlbumArt*Small.jpg
-        # remove-pattern C:\Music AlbumArt*Large.jpg
-        remove_pattern_parser = subparsers.add_parser("remove-pattern", help="Remove files with specified pattern")
-        remove_pattern_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD_SLD)
-        remove_pattern_parser.add_argument(ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN)
-        remove_pattern_parser.set_defaults(func=remove_pattern)
+        # # remove files matching specified file pattern
+        # # 1st mandatory args, the start path (can be tld, fld, or sld)
+        # # 2nd mandatory arg, the file pattern
+        # # remove-pattern C:\Music *.db
+        # # remove-pattern C:\Music *.ini
+        # # remove-pattern C:\Music AlbumArtSmall.jpg
+        # # remove-pattern C:\Music AlbumArt*Small.jpg
+        # # remove-pattern C:\Music AlbumArt*Large.jpg
+        # remove_pattern_parser = subparsers.add_parser("remove-pattern", help="Remove files with specified pattern")
+        # remove_pattern_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD_SLD)
+        # remove_pattern_parser.add_argument(ARG_CLI_PATTERN, type=str, help=ARG_HELP_PATTERN)
+        # remove_pattern_parser.set_defaults(func=remove_pattern)
 
-        # remove files matching a hard-coded set of patterns
-        # 1 mandatory arg, the start path (can be tld, fld, or sld)
-        # remove-set-list "F:\Rick\RickPrepped\Huey Lewis & The News"
-        remove_set_list_parser = subparsers.add_parser("remove-set-list", help="Remove files matching hard-coded pattern set")
-        remove_set_list_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD_SLD)
-        remove_set_list_parser.set_defaults(func=remove_set_list)
+        # # remove files matching a hard-coded set of patterns
+        # # 1 mandatory arg, the start path (can be tld, fld, or sld)
+        # # remove-set-list "F:\Rick\RickPrepped\Huey Lewis & The News"
+        # remove_set_list_parser = subparsers.add_parser("remove-set-list", help="Remove files matching hard-coded pattern set")
+        # remove_set_list_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD_SLD)
+        # remove_set_list_parser.set_defaults(func=remove_set_list)
 
-        # rename album directories based on metadata
-        # 1 mandatory arg, the tld path (must be the tld, fld and sld will not work)
-        # rename-album-directories "F:\Rick\RickPrepped"
-        rename_album_directories_parser = subparsers.add_parser("rename-album-directories", help="Rename album paths from metadata")
-        rename_album_directories_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
-        rename_album_directories_parser.set_defaults(func=rename_album_directories)
+        # # rename album directories based on metadata
+        # # 1 mandatory arg, the tld path (must be the tld, fld and sld will not work)
+        # # rename-album-directories "F:\Rick\RickPrepped"
+        # rename_album_directories_parser = subparsers.add_parser("rename-album-directories", help="Rename album paths from metadata")
+        # rename_album_directories_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
+        # rename_album_directories_parser.set_defaults(func=rename_album_directories)
 
-        # rms normalize an mp3 audio file
-        # 1 mandatory arg, the path to audio file
-        # 1 optional arg, the target directory for exported files
-        # rms-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
-        rms_file_parser = subparsers.add_parser("rms-file", help="RMS level audio file")
-        rms_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
-        rms_file_parser.add_argument("--" + ARG_CLI_TARGET, type=str, help=ARG_HELP_OPT_TARGET)
-        rms_file_parser.set_defaults(func=rms_file)
+        # # rms normalize an mp3 audio file
+        # # 1 mandatory arg, the path to audio file
+        # # 1 optional arg, the target directory for exported files
+        # # rms-file "C:\ConvertedMusic\Joshua Davis\The Voice Peformance\Joshua Davis-The Workingman's Hymn.mp3"
+        # rms_file_parser = subparsers.add_parser("rms-file", help="RMS level audio file")
+        # rms_file_parser.add_argument(ARG_CLI_FILE, type=existing_file, help=ARG_HELP_AUDIO)
+        # rms_file_parser.add_argument("--" + ARG_CLI_TARGET, type=str, help=ARG_HELP_OPT_TARGET)
+        # rms_file_parser.set_defaults(func=rms_file)
 
-        # set album art file
-        # 1 mandatory arg, the start path (can be tld or fld, but not sld)
-        # set-album-art C:\Music
-        set_album_art_parser = subparsers.add_parser("set-album-art", help="Set albums art file")
-        set_album_art_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
-        set_album_art_parser.set_defaults(func=set_album_art)
+        # # set album art file
+        # # 1 mandatory arg, the start path (can be tld or fld, but not sld)
+        # # set-album-art C:\Music
+        # set_album_art_parser = subparsers.add_parser("set-album-art", help="Set albums art file")
+        # set_album_art_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD_FLD)
+        # set_album_art_parser.set_defaults(func=set_album_art)
 
-        # update genre metadata from artist directory mappings in a CSV file
-        # 1st mandatory arg, the tld path (must be the tld, fld and sld will not work)
-        # 2nd mandatory arg, the artist genre CSV path
-        # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
-        update_genres_parser = subparsers.add_parser("update-genres", help="Update songs genre from CSV")
-        update_genres_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
-        update_genres_parser.add_argument(ARG_CLI_CSV, type=existing_file, help=ARG_HELP_GENRE)
-        update_genres_parser.set_defaults(func=update_genres)
+        # # update genre metadata from artist directory mappings in a CSV file
+        # # 1st mandatory arg, the tld path (must be the tld, fld and sld will not work)
+        # # 2nd mandatory arg, the artist genre CSV path
+        # # update-genres-from-csv F:/Rick/RickPrepped D:/MusicProcessing/src/generated_files/csv_files/artist_genre.csv
+        # update_genres_parser = subparsers.add_parser("update-genres", help="Update songs genre from CSV")
+        # update_genres_parser.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
+        # update_genres_parser.add_argument(ARG_CLI_CSV, type=existing_file, help=ARG_HELP_GENRE)
+        # update_genres_parser.set_defaults(func=update_genres)
 
-        # update a m3u playlist file
-        # 1st mandatory arg, the tld path (must be the tld, fld and sld will not work)
-        # 2nd mandatory arg, the path to the m3u playlist file
-        # update-playlist D:\MusicProcessing\tests\Music D:\MusicProcessing\tests\Music\test.m3u
-        update_playlist_parsers = subparsers.add_parser("update-playlist", help="Update playlist file songs path")
-        update_playlist_parsers.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
-        update_playlist_parsers.add_argument(ARG_CLI_PLAYLIST, type=existing_file, help=ARG_HELP_PLAYLIST)
-        update_playlist_parsers.set_defaults(func=update_playlist)
+        # # update a m3u playlist file
+        # # 1st mandatory arg, the tld path (must be the tld, fld and sld will not work)
+        # # 2nd mandatory arg, the path to the m3u playlist file
+        # # update-playlist D:\MusicProcessing\tests\Music D:\MusicProcessing\tests\Music\test.m3u
+        # update_playlist_parsers = subparsers.add_parser("update-playlist", help="Update playlist file songs path")
+        # update_playlist_parsers.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
+        # update_playlist_parsers.add_argument(ARG_CLI_PLAYLIST, type=existing_file, help=ARG_HELP_PLAYLIST)
+        # update_playlist_parsers.set_defaults(func=update_playlist)
 
-        # update m3u playlist files in directory
-        # 1 mandatory arg, the tld path (must be the tld, fld and sld will not work)
-        # update-walk C:\Music
-        update_walk_parsers = subparsers.add_parser("update-walk", help="Update playlist files songs path")
-        update_walk_parsers.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
-        update_walk_parsers.set_defaults(func=update_walk)
+        # # update m3u playlist files in directory
+        # # 1 mandatory arg, the tld path (must be the tld, fld and sld will not work)
+        # # update-walk C:\Music
+        # update_walk_parsers = subparsers.add_parser("update-walk", help="Update playlist files songs path")
+        # update_walk_parsers.add_argument(ARG_CLI_TLD, type=existing_path, help=ARG_HELP_TLD)
+        # update_walk_parsers.set_defaults(func=update_walk)
 
-        # append each argument's help text (mandatory first, then optional) to its subcommand help so the top level help displays them
-        for choice_action in subparsers._choices_actions:
-            sub_actions = [a for a in subparsers.choices[choice_action.dest]._actions if not isinstance(a, argparse._HelpAction)]
-            sub_actions.sort(key=lambda a: bool(a.option_strings))
-            arg_help = [re.sub(r"^(mandatory|optional)\s+", r"\1: ", a.help) for a in sub_actions if a.help]
+        # # append each argument's help text (mandatory first, then optional) to its subcommand help so the top level help displays them
+        # for choice_action in subparsers._choices_actions:
+        #     sub_actions = [a for a in subparsers.choices[choice_action.dest]._actions if not isinstance(a, argparse._HelpAction)]
+        #     sub_actions.sort(key=lambda a: bool(a.option_strings))
+        #     arg_help = [re.sub(r"^(mandatory|optional)\s+", r"\1: ", a.help) for a in sub_actions if a.help]
 
-            if arg_help:
-                choice_action.help += "; " + "; ".join(arg_help)
+        #     if arg_help:
+        #         choice_action.help += "; " + "; ".join(arg_help)
 
-            # show the command followed by its positional arguments and flags with value placeholders
-            arg_usage = [
-                f"{a.option_strings[0]} {a.dest}" if a.option_strings and a.nargs != 0 else (a.option_strings[0] if a.option_strings else a.dest)
-                for a in sub_actions
-            ]
-            choice_action.metavar = " ".join([choice_action.dest] + arg_usage)
+        #     # show the command followed by its positional arguments and flags with value placeholders
+        #     arg_usage = [
+        #         f"{a.option_strings[0]} {a.dest}" if a.option_strings and a.nargs != 0 else (a.option_strings[0] if a.option_strings else a.dest)
+        #         for a in sub_actions
+        #     ]
+        #     choice_action.metavar = " ".join([choice_action.dest] + arg_usage)
 
+        # args = parser.parse_args()
+        # sys.exit(main(args))
+
+        parser = build_parser()
         args = parser.parse_args()
         sys.exit(main(args))
 
     except Exception as e:
         logger.exception(f"Exception propagated to entry point: {type(e).__name__}: {e}", stack_info=True)
-        print(f"Error in entry point: {type(e).__name__}: {e}")
+        print(f"Exception propagated to entry point: {type(e).__name__}: {e}")
+        sys.exit(1)

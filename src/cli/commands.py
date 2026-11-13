@@ -112,8 +112,6 @@ def gui():
     @details Imports and starts the existing GUI only when the GUI command is dispatched.
     '''
 
-    # from src.gui.wx_app import run_gui                        # for launching the graphical interface
-
     run_gui()
 
 
@@ -436,34 +434,38 @@ def update_walk(tld_path: str):
 
 ## @name CLI Command Dispatcher
 ## @{
-def run_cli_command(args: Namespace) -> int:
+def run_cli_command(args: Namespace):
     '''
-    @brief Dispatches a parsed command-line request.
-
-    @details Runs the matching command handler and returns a process exit code.
+    @brief Dispatches a parsed CLI command.
 
     @param args {Namespace} Parsed command-line arguments.
 
-    @retval {int} Exit code, zero on success, or one when command execution fails.
+    @exception ni_error {NotImplementedError} Indicates the subcommand is not implemented.
+    @exception e_error {Exception} Logs and propagates command failures to main.
     '''
 
+    # retrieve the subcommand from the parsed arguments.
     subcommand = getattr(args, "subcommand", None)
-    if subcommand is None:
-        return 0
 
     try:
-        handler = getattr(args, "func", None)
+        if subcommand is None:
+            logger.error("A subcommand is required", exc_info=True)
+            raise ValueError("A subcommand is required")
 
+        # retrieve the handler function for the subcommand
+        handler = getattr(args, "func", None)
         if handler is None or subcommand not in _COMMAND_ARGUMENTS:
-            logger.exception(f"Subcommand '{subcommand}' is not implemented", exc_info=True)
+            logger.error(f"Subcommand '{subcommand}' is not implemented", exc_info=True)
             raise NotImplementedError(f"Subcommand '{subcommand}' is not implemented")
 
+        # call the handler function with the arguments specified for the subcommand
         handler(*(getattr(args, name) for name in _COMMAND_ARGUMENTS[subcommand]))
-        return 0
 
     except NotImplementedError as ni_error:
         raise ni_error
+    except ValueError as v_error:
+        raise v_error
     except Exception as e_error:
-        logger.exception(f"Error executing subcommand '{subcommand}'", stack_info=True)
+        logger.exception(f"Exception {type(e_error).__name__} executing subcommand {subcommand}", stack_info=True)
         raise e_error
 ## @}

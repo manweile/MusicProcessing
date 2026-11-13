@@ -101,6 +101,14 @@ TODO
   b) test audio utilities (test clip check walk) is longer running
 TODO
 
+6) add rule to python.instructions.md
+  a) refer to __read_artist_genres:
+  the if blocks where errors are logged and raised is the pattern I use to handle warnings, errors & exceptions.
+  the except blocks at end the function are the pattern I use to handle:
+    unexpected exceptions - they get logged and raised
+    the handled exceptions: (like from the if blocks) have already logged the problem,
+    so they just raise the exception up the chain Note that this pattern is why almost every function has a generic "except Exception as e_error:"
+
 GUI:
 1) implement mvc refactoring planning
 IN PROGRESS

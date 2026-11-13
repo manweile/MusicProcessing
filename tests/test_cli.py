@@ -113,7 +113,7 @@ class TestCli(TestCase):
         # run the CLI command with the prepared arguments
         exit_code = run_cli_command(args)
 
-        self.assertEqual(0, exit_code)
+        self.assertIsNone(exit_code)
         handler.assert_called_once_with(MUSIC_TLD)
 
 
@@ -136,27 +136,25 @@ class TestCli(TestCase):
 
         # logger patch object to capture exception logging during handler failure
         with patch.object(commands.logger, "exception") as log_exception:
-            # patch the built-in print function to capture error messages during handler failure
-            with patch("builtins.print") as print_error:
-                exit_code = run_cli_command(args)
+            with self.assertRaisesRegex(RuntimeError, "operation failed"):
+                run_cli_command(args)
 
-        self.assertEqual(1, exit_code)
         log_exception.assert_called_once()
-        print_error.assert_called_once_with("Error in subcommand 'get-audio-file-list': RuntimeError: operation failed")
 
 
-    def test_run_cli_command_without_subcommand_succeeds(self):
+    def test_run_cli_command_without_subcommand_raises(self):
         '''
         @brief Tests dispatch with no selected subcommand.
 
-        @details Returns success without invoking a command when no subcommand was selected.
+        @details Confirms that invoking the CLI without a subcommand raises a ValueError.
 
         @test Edge case.
 
         @param self {TestCli} The instance of the test class.
         '''
 
-        self.assertEqual(0, run_cli_command(argparse.Namespace(subcommand=None)))
+        with self.assertRaisesRegex(ValueError, "A subcommand is required"):
+            run_cli_command(argparse.Namespace(subcommand=None))
 
 
 if __name__ == "__main__":

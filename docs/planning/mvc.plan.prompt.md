@@ -1031,9 +1031,9 @@ COMPLETED
     **STEP 3**
     - after parity is verified, switch main.py to delegate CLI commands to the new layer:
       - Keep main(args) as the entry point. It runs the GUI for gui; otherwise, it returns run_cli_command(args).
-      - Keep sys.exit(main(args)) in the __main__ block.
-      - Remove the old subcommand-handler implementations from main.py once delegation is in place and callers have been checked.
-      - Replace the temporary Milestone 4 yaspin shim with SpinnerProgress once the old path no longer needs it.
+      - Keep sys.exit(main(args)) in the __main__ block. COMPLETED
+      - Remove the old subcommand-handler implementations from main.py once delegation is in place and callers have been checked. COMPLETED
+      - Replace the temporary Milestone 4 yaspin shim with SpinnerProgress once the old path no longer needs it. COMPLETED
 
     Validation:
       - Compare every subcommand’s help output against the baseline.

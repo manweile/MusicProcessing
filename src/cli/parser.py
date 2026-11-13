@@ -120,7 +120,7 @@ class CustomHelpFormatter(argparse.HelpFormatter):
         return super()._format_action(action)
 
 
-## @name Helper Functions
+## @name Parser Assembly
 ## @{
 def build_parser(prog: str | None = None) -> CustomArgumentParser:
     '''
@@ -128,11 +128,34 @@ def build_parser(prog: str | None = None) -> CustomArgumentParser:
 
     @details Creates all subcommands, preserves their validation, and appends argument help to the command list.
 
+    @note Each command specification is a tuple with these fields:
+          1. Command: the subcommand users enter on the command line.
+          2. Help text: the short description shown in help output.
+          3. Handler: the function called when the command is selected.
+          4. Argument specifications: a tuple describing the command's arguments.
+            Each argument specification contains:
+            - Argument name: the parsed argument's name.
+            - Argument type: a converter or validator applied to the supplied value.
+            - Argument help: the description shown for that argument.
+            - Optional flag: whether the argument is optional; optional arguments
+              are added as options, while required arguments are positional.
+
+    @code{.text}
+    Eg:
+    (
+      "clip-check-file",
+      "Check peak/RMS/EBU R128 leveling for single audio file",
+      commands.clip_check_file,
+      ((constants.ARG_CLI_FILE, existing_file, constants.ARG_HELP_AUDIO, False),)
+    )
+    @endcode
+
     @param prog {str | None} Optional program name displayed in usage.
 
     @retval {CustomArgumentParser} The configured command-line parser.
     '''
 
+    # define the specifications for each subcommand, including its name, help text, handler, and arguments
     command_specs = (
         ("gui", "Run in GUI mode", commands.gui, ()),
         (
@@ -329,45 +352,58 @@ def build_parser(prog: str | None = None) -> CustomArgumentParser:
         )
     )
 
+    # create the top-level argument parser and subparsers for each command
     parser = CustomArgumentParser(prog=prog, description="Music Processing")
-    subparsers = parser.add_subparsers(title="subcommands", dest="subcommand", metavar="command")
+    subparsers = parser.add_subparsers(title="subcommands", dest="subcommand", metavar="command", required=True)
 
+    # iterate over each command specification and add it to the subparsers
     for command, help_text, handler, arguments in command_specs:
         command_parser = subparsers.add_parser(command, help=help_text)
 
+        # iterate over each argument specification and add it to the command parser
         for name, argument_type, argument_help, optional in arguments:
             argument_name = "--" + name if optional else name
             command_parser.add_argument(argument_name, type=argument_type, help=argument_help)
 
         command_parser.set_defaults(func=handler)
 
+    # iterate over each subcommand and adjust its help and usage information
     for choice_action in subparsers._choices_actions:
         sub_actions = [
             action
             for action in subparsers.choices[choice_action.dest]._actions
             if not isinstance(action, argparse._HelpAction)
         ]
+
+        # sort the subcommand's actions so that positional arguments come before optional ones
         sub_actions.sort(key=lambda action: bool(action.option_strings))
+        # generate the help text for each argument based on its type and optionality
         argument_help = [
             re.sub(r"^(mandatory|optional)\s+", r"\1: ", action.help)
             for action in sub_actions
             if action.help
         ]
 
+        # append the generated argument help to the subcommand's help text if available
         if argument_help:
             choice_action.help += "; " + "; ".join(argument_help)
 
+        # generate the usage string for each argument based on its type and optionality
         argument_usage = [
             f"{action.option_strings[0]} {action.dest}"
             if action.option_strings and action.nargs != 0
             else (action.option_strings[0] if action.option_strings else action.dest)
             for action in sub_actions
         ]
+        #
         choice_action.metavar = " ".join([choice_action.dest] + argument_usage)
 
     return parser
+## @}
 
 
+## @name Argument Validation Helpers
+# @{
 def existing_file(file: str) -> str:
     '''
     @brief Checks whether a file exists.

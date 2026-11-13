@@ -1,6 +1,6 @@
 '''
 @class AudioArt
-@file src/audio_info/audio_art.py
+@file audio_art.py
 @author Gerald Manweiler
 
 @brief Defines the audio art class.

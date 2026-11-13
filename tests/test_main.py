@@ -17,6 +17,7 @@
 import os                                                   # for constructing file-system paths
 import subprocess                                           # for launching the application process
 import sys                                                  # for the current Python executable
+import textwrap                                             # for dedenting multi-line strings
 import unittest                                             # for direct test-suite execution
 from pathlib import Path                                    # for object-oriented file-system paths
 from unittest import TestCase                               # for test-case assertions
@@ -78,7 +79,7 @@ class TestMain(TestCase):
             result = subprocess.run([sys.executable, str(main_path)], cwd=project_root, capture_output=True, text=True, timeout=180)
 
             expected_result = f"main.py exited with {result.returncode}.\n{result.stdout}\n{result.stderr}"
-            self.assertEqual(result.returncode, 0, expected_result)
+            self.assertEqual(result.returncode, 2, expected_result)
             self.assertTrue(log_path.is_file())
 
         except subprocess.TimeoutExpired as ste:
@@ -87,9 +88,9 @@ class TestMain(TestCase):
 
     def test_main_with_gui_argument_creates_main_log(self):
         '''
-        @brief Test that main.py creates main.log when called with the gui argument.
+        @brief Test that launching main.py with the gui argument creates main.log.
 
-        @details Deletes any existing main.log, calls main with the gui subcommand, and checks the log after it exits.
+        @details Deletes any existing main.log, runs main.py for set time with the gui argument, and checks the log after it exits.
 
         @note main.py must exist in root.
 
@@ -98,26 +99,52 @@ class TestMain(TestCase):
         @exception subprocess.TimeoutExpired If main.py does not close within the timeout.
         '''
 
-        try:
-            project_root = Path(__file__).resolve().parents[1]
-            log_path = Path(os.path.join(GENERATED_PATH, LOG_DIR, "main.log"))
+        project_root = Path(__file__).resolve().parents[1]
+        log_path = Path(os.path.join(GENERATED_PATH, LOG_DIR, "main.log"))
 
-            # Remove existing main.log if it exists before running main.py
-            if log_path.exists():
-                log_path.unlink()
+        if log_path.exists():
+            log_path.unlink()
 
-            # create the inline script to run main.py with the gui subcommand
-            script = "import argparse; import main; main.gui = lambda: None; main.main(argparse.Namespace(subcommand='gui'))"
+        # prepare the inline script to run main.py with the gui subcommand and automatically close the GUI after a short delay
+        script = textwrap.dedent("""
+            import argparse
+            import sys
+            import wx
+            import main
+            from src.gui.wx_app import MainFrame
 
-            # execute the inline script with the Python interpreter, capturing output and enforcing a timeout
-            result = subprocess.run([sys.executable, "-c", script], cwd=project_root, capture_output=True, text=True, timeout=180)
+            original_show = MainFrame.Show
+            shown = []
 
-            expected_result = f"main.py gui exited with {result.returncode}.\n{result.stdout}\n{result.stderr}"
-            self.assertEqual(result.returncode, 0, expected_result)
-            self.assertTrue(log_path.is_file())
+            def show_and_close(frame, *args, **kwargs):
+                result = original_show(frame, *args, **kwargs)
+                shown.append(True)
+                wx.CallLater(1500, frame.Close)
+                return result
 
-        except subprocess.TimeoutExpired as ste:
-            self.fail(f"main.py gui did not exit within the timeout: {ste}")
+            MainFrame.Show = show_and_close
+            exit_code = main.main(argparse.Namespace(subcommand="gui"))
+
+            if not shown:
+                raise RuntimeError("GUI window was not shown")
+
+            sys.exit(exit_code)
+        """)
+
+        result = subprocess.run(
+            [sys.executable, "-c", script],
+            cwd=project_root,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+
+        expected_result = (
+            f"main.py gui exited with {result.returncode}.\n"
+            f"{result.stdout}\n{result.stderr}"
+        )
+        self.assertEqual(result.returncode, 0, expected_result)
+        self.assertTrue(log_path.is_file())
 
 
     def test_main_help_matches_baseline(self):
