@@ -56,8 +56,10 @@ Save the required modules in `requirements.txt` at root level. The Github remote
 
 [FFmpeg](https://www.ffmpeg.org/about.html) is the leading free & open source multimedia framework.<br>
 It is able to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.<br>
-It supports the most obscure ancient formats up to the cutting edge.<br>
-FFmpeg compiles and runs across Linux, Mac OS X, Microsoft Windows, the BSDs, Solaris, etc.
+It supports the most obscure ancient formats up to the cutting edge.
+
+FFmpeg compiles and runs across Linux, Mac OS X, Microsoft Windows, the BSDs, Solaris, etc.<br>
+I am using version n7.1.1-57-g1b48158a23-20250831 on my win 10 hardware, and 8.0.1-3ubuntu2 on my Linux hardware.
 
 ### FFMPEG
 

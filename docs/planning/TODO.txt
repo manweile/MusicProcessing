@@ -1,7 +1,13 @@
+This file is all about what I want 'to do'; it is NOT a full up planning document - planning docs actually draw from this file.
+
+======================================================================================================================================================
+
 NOT DISPOSED:
 
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
 DOXYGEN:
-1) update file doc blocks examples
+1) determine best practice for file doc blocks and update file doc blocks examples
   a) __init__.py files get:
     @file src/core/__init__.py
     @package core
@@ -21,15 +27,17 @@ DOXYGEN:
   g) do a one off test to verify good doxygen html
   TODO
 
-2) I really don't want to curate all the @details in tests\__init__.py (probably any init file actually)
+2) I really don't want to curate all the constants @details in tests\__init__.py (probably any init file actually)
   a) unnecessary tech debt to maintain.
   b) thats what table in testing.md is for
   c) coalesce multiple @details into single
 TODO
 
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
 ENVIRONMENT:
 1) pylance hover
-   a) figure out to have doxygen html I like with pylance I like
+   a) figure out to get doxygen html I like with pylance I like
    Eg given this doc header:
     def _timestamp() -> str:
         '''
@@ -86,9 +94,8 @@ TODO
 
 3) Update environment.md
   a) wxPython install on Linux - it's a brute
-  b) ffmpeg install, win & linux, & why version n7.1.5-12
+  b) ffmpeg install, win & linux
   c) add pip install -r requirements.txt option
-  d) add vs code install from extension list option
 TODO
 
 4) Think about wxFormBuilder
@@ -108,6 +115,9 @@ TODO
     unexpected exceptions - they get logged and raised
     the handled exceptions: (like from the if blocks) have already logged the problem,
     so they just raise the exception up the chain Note that this pattern is why almost every function has a generic "except Exception as e_error:"
+TODO
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
 
 GUI:
 1) implement mvc refactoring planning
@@ -203,6 +213,8 @@ TODO
 17) Add color to each function action sub panel border.
 TODO
 
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
 TESTING:
 1) figure out how to test gui functionality
   a) refer to page 144 of wxPython in Action
@@ -215,6 +227,8 @@ TODO
 3) Think about threading test suite
   a) will require care where test suites create temp directories
 TODO
+
+======================================================================================================================================================
 
 DISPOSED:
   1) import doxygen create from esp scale project
@@ -467,7 +481,9 @@ DISPOSED:
 
   36) look at audio_normalization.py wrt ebu_normalize_file error on Colin james song that had no metadata
   UNABLE TO REPLICATE
-  2026-10-05 20:03:51,051 — src.audio_normalize.audio_normalization — ERROR — ebu_normalize_file:342 — Exception TypeError while ebu normalizing audio file: F:\Rick\RickConverted\Colin James\Rooftops and Satellites\Colin James-If You've Gotta Go Go Now.mp3
+  2026-10-05 20:03:51,051 — src.audio_normalize.audio_normalization — ERROR — ebu_normalize_file:342
+  — Exception TypeError while ebu normalizing audio file:
+  F:\Rick\RickConverted\Colin James\Rooftops and Satellites\Colin James-If You've Gotta Go Go Now.mp3
   Traceback (most recent call last):
     File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 243, in ebu_normalize_file
       target_bitrate = min(original_bitrate, 192000)
@@ -485,7 +501,9 @@ DISPOSED:
     File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 342, in ebu_normalize_file
       logger.exception(f"Exception {type(e_error).__name__} while ebu normalizing audio file: {file_path}", stack_info=True)
 
-  2026-10-05 20:03:51,082 — src.audio_normalize.audio_normalization — ERROR — level_normalize_walk:559 — Exception TypeError on F:\Rick\RickConverted\Colin James\Rooftops and Satellites\Colin James-If You've Gotta Go Go Now.mp3 while walking F:\Rick\RickConverted to ebu normalize audio files
+  2026-10-05 20:03:51,082 — src.audio_normalize.audio_normalization — ERROR — level_normalize_walk:559
+  — Exception TypeError on F:\Rick\RickConverted\Colin James\Rooftops and Satellites\Colin James-If You've Gotta Go Go Now.mp3
+  while walking F:\Rick\RickConverted to ebu normalize audio files
   Traceback (most recent call last):
     File "D:\MusicProcessing\src\audio_normalize\audio_normalization.py", line 552, in level_normalize_walk
       self.ebu_normalize_file(input_file_path, show_spinner)
