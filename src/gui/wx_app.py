@@ -152,12 +152,7 @@ class MainFrame(wx.Frame):
         self.mainLog = wx.TextCtrl(self.mainSplitter, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL, value="")
 
         # Create the background task runner with callbacks for GUI updates
-        self.taskRunner = TaskRunner(
-            log=self.log,
-            call_after=wx.CallAfter,
-            set_busy_state=self._set_busy_state,
-            show_error=self._show_task_error
-        )
+        self.taskRunner = TaskRunner(log=self.log, call_after=wx.CallAfter, set_busy_state=self.set_busy, show_error=self.show_error)
 
         # Split horizontally: notebook on top, log on bottom
         self.mainSplitter.SplitHorizontally(self.mainNotebook, self.mainLog)
@@ -794,7 +789,7 @@ class MainFrame(wx.Frame):
         return panel
 
 
-    def _set_busy_state(self, busy=True) -> None:
+    def set_busy(self, busy: bool):
         '''
         @brief Set the busy state of the application.
 
@@ -803,8 +798,6 @@ class MainFrame(wx.Frame):
 
         @param self {MainFrame} The instance of the class.
         @param busy {bool} True to set the application to busy state, False to set it to idle state.
-
-        @return {None} This function does not return any value.
         '''
 
         self.Enable(not busy)
@@ -812,7 +805,7 @@ class MainFrame(wx.Frame):
         self.SetCursor(wx.Cursor(wx.CURSOR_WAIT if busy else wx.CURSOR_ARROW))
 
 
-    def _show_generated_files_dialog(self):
+    def show_generated_files(self):
         '''
         @brief Display a file dialog to select generated MP3 files for moving.
 
@@ -981,7 +974,7 @@ class MainFrame(wx.Frame):
         wx.CallAfter(self.mainLog.AppendText, f"[{_timestamp()}] {message}\n")
 
 
-    def _show_task_error(self, message):
+    def show_error(self, message: str):
         '''
         @brief Display an error reported by a background task.
 
@@ -992,6 +985,19 @@ class MainFrame(wx.Frame):
         '''
 
         wx.MessageBox(message, "Error", wx.ICON_ERROR)
+
+
+    def show_message(self, message: str):
+        '''
+        @brief Display an informational message.
+
+        @details Shows the message in a GUI message box.
+
+        @param self {MainFrame} The instance of the class.
+        @param message {str} The message to display.
+        '''
+
+        wx.MessageBox(message, "Info", wx.ICON_INFORMATION)
 
 
 ## @name Entry Point

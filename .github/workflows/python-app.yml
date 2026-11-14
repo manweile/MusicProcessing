@@ -5,7 +5,7 @@
 #
 # @details This workflow sets up the Python environment, caches FFmpeg and pip dependencies, installs FFmpeg, installs required
 # Linux system libraries for wxPython builds, installs Python dependencies, and runs unit tests.<br>
-# for more information, see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+# for more information, see: https://github.com
 #
 # @version 1.1.0
 # @date 2026-10-27
@@ -40,7 +40,7 @@ jobs:
       - name: Checkout Repository
         # skip checkout when running in act; the local workspace is already mounted,
         # and running checkout will overwrite uncommitted changes or fail on unpushed commits
-        if: steps.detect-act.outputs.is-act != 'true'
+        if: steps.detect-act.outputs.is-act == 'false'
         uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}
@@ -56,6 +56,8 @@ jobs:
 
       # cache FFmpeg download to speed up subsequent workflow runs
       - name: Cache FFmpeg Download
+        # only cache FFmpeg download if not running in act
+        if: steps.detect-act.outputs.is-act == 'false'
         uses: actions/cache@v4
         id: cache-ffmpeg
         with:
@@ -64,17 +66,25 @@ jobs:
 
       # download FFmpeg if necessary and cache
       - name: Download FFmpeg
-        if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
+        # download if not in cache on GitHub, or if archive is missing locally in act
+        if: >
+          (steps.detect-act.outputs.is-act == 'false' && steps.cache-ffmpeg.outputs.cache-hit == 'false') ||
+          (steps.detect-act.outputs.is-act == 'true' && hashFiles(format('.cache/ffmpeg/{0}', env.FFMPEG_ARCHIVE)) == '')
         run: |
           echo "Downloading ${FFMPEG_ARCHIVE}"
           mkdir -p .cache/ffmpeg
           wget --quiet --show-progress --tries=5 --waitretry=2 \
-            "https://github.com/BtbN/FFmpeg-Builds/releases/download/${FFMPEG_RELEASE_TAG}/${FFMPEG_ARCHIVE}" \
+            "https://github.com{FFMPEG_RELEASE_TAG}/${FFMPEG_ARCHIVE}" \
             -O ".cache/ffmpeg/${FFMPEG_ARCHIVE}"
 
       # install FFmpeg
       - name: Extract and Install FFmpeg
+        # only extract and install FFmpeg if not running in act or if FFmpeg is not already installed
         run: |
+          if [ "${ACT:-false}" = "true" ] && command -v ffmpeg >/dev/null 2>&1; then
+            echo "FFmpeg already installed, skipping."
+            exit 0
+          fi
           echo "Extracting ${FFMPEG_ARCHIVE}"
           sudo mkdir -p /opt/ffmpeg/extracted
           sudo tar --strip-components 1 -xf ".cache/ffmpeg/${FFMPEG_ARCHIVE}" -C /opt/ffmpeg/extracted
@@ -85,9 +95,15 @@ jobs:
 
       # install Linux system dependencies needed to build wxPython on Ubuntu runners
       - name: Install wxPython system dependencies
+        # only install wxPython system dependencies if not running in act or if xvfb-run is not already installed
+        # use --no-install-recommends to avoid installing unnecessary packages and ONLY gets the specified packages & dependencies
         run: |
+          if [ "${ACT:-false}" = "true" ] && command -v xvfb-run >/dev/null 2>&1; then
+            echo "System dependencies already installed, skipping."
+            exit 0
+          fi
           sudo apt-get update
-          sudo apt-get install -y \
+          sudo apt-get install -y --no-install-recommends \
             libgtk-3-dev \
             libglib2.0-dev \
             libnotify-dev \
@@ -101,6 +117,8 @@ jobs:
 
       # cache required pip modules to speed up subsequent workflow runs
       - name: Cache pip modules
+        # only cache pip modules if not running in act; local runs persist via Docker volume mount
+        if: steps.detect-act.outputs.is-act == 'false'
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
@@ -116,8 +134,15 @@ jobs:
 
       # run tests with unittest
       - name: Test with unittest
-        # need PYTHONTRACEMALLOC for memory tracing; enables tracking of memory allocations during tests
+        # need PYTHONTRACEMALLOC for memory tracing; enables tracking of memory allocations during tests (disabled in act for speed)
         env:
-          PYTHONTRACEMALLOC: 1
+          PYTHONTRACEMALLOC: ${{ steps.detect-act.outputs.is-act == 'false' && '1' || '0' }}
+        # /dev/shm is used for storing generated files in memory during act runs to improve performance
         run: |
+          if [ "${ACT:-false}" = "true" ]; then
+            rm -rf src/generated_files
+            mkdir -p /dev/shm/generated_files
+            ln -s /dev/shm/generated_files src/generated_files
+          fi
           xvfb-run -a python -m unittest discover -v tests
+

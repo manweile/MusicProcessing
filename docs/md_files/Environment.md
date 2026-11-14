@@ -156,55 +156,77 @@ They act as the "instruction manuals" for GitHub Actions, telling GitHub exactly
 how to automatically build, test, package, or deploy your project.<br>
 These files must be saved in the `.github/workflows/` directory of your repository to work.
 
-### Github Local Actions
+### GitHub Local Actions
 
-I regard  Github Local Actions (GLA) as an essential external tool.<br>
+I regard GitHub Local Actions (GLA) as an essential external tool.<br>
 It allows you to quickly and efficiently run your workflows locally,
 bypassing the hassle of committing and pushing changes every time you need to test a workflow.
 
-GLA uses the nektos/act CLI tool to read your Github actions from your `.github/workflows/*`.<br>
-Once nektos/act has the execution path & dependencies, it uses the Docker API to run the necessary containers.
+GLA uses the nektos/act CLI tool to read your GitHub Actions from your `.github/workflows/*`.<br>
+Once nektos/act has the execution path and dependencies, it uses the Docker API to run the necessary containers.
 
 #### Requirements
 
-- [Github Local Actions](https://marketplace.visualstudio.com/items?itemName=SanjulaGanepola.github-local-actions)
-  - [Github Local Actions Docs](https://sanjulaganepola.github.io/github-local-actions-docs/)
+- [GitHub Local Actions](https://marketplace.visualstudio.com/items?itemName=SanjulaGanepola.github-local-actions)
+  - [GitHub Local Actions Docs](https://sanjulaganepola.github.io/github-local-actions-docs/)
 - [nektos/act](https://github.com/nektos/act)
   - [nektos/act User Guide](https://nektosact.com/)
 - [Docker](https://docs.docker.com/engine/)
 
-I'm not going to go into *all* the ins and out of installing nektos/act and Docker here.<br>
+I'm not going to go into *all* the ins and outs of installing nektos/act and Docker here.<br>
 You can find the documentation by following the links.<br>
 While it is tedious, it is not overly complex.
 
-**Note** There are two Settings steps for GLA:
+**Note:** There are Settings steps for GLA:
 
 #### Secrets (GITHUB_TOKEN)
 
-GitHub token for local runs: GitHub Actions automatically provides github.token to workflows.<br>
-GLA and nektos/act need to provide a GITHUB_TOKEN secret if the selected workflow or action needs to authenticate with GitHub APIs.
+GitHub token for local runs: GitHub Actions automatically provides `github.token` to workflows.<br>
+GLA and nektos/act need to provide a `GITHUB_TOKEN` secret if the selected workflow or action needs to authenticate with GitHub APIs.
 
 The artifact and workflow cleanup jobs use the token for deletion requests.<br>
 Use a token with only the permissions those jobs need, store it in the extension’s Secrets settings, and do not commit it to the repository.
 
-#### Options (bind true)
+#### Runners
 
-Enable the bind option (true) in the GLA settings when testing uncommitted workflow or source changes.<br>
-This tells act to bind-mount the current worktree into the job container instead of copying it.
+Map the runner label defined in `python-app.yml` (`runs-on: ubuntu-24.04`) to its matching local Docker image in GLA's **Runners** settings:
 
-Otherwise, the `python-app.yml` unit-test workflow would replace the local files with the commit selected by github.sha hash.<br>
-On GitHub Actions, act is not set, so the normal checkout still runs.
+- `ubuntu-24.04` = `catthehacker/ubuntu:act-24.04`
 
-We need local runs to test worktree changes without committing them.<br>
-With the bind option set, add this to the `python-app.yml`:
+Ensure the checkbox next to `ubuntu-24.04` is enabled so nektos/act uses the cached Ubuntu 24.04 container image without prompting.
+
+#### Options
+
+Configure the following flags in GLA's **Options** settings to test uncommitted changes and speed up local runs:
+
+- **`artifact-server-path` (`C:\temp\act-artifacts`)**:
+  - Provides a local directory for `actions/cache` and artifact storage when running outside GitHub.
+- **`bind` (`true`)**:
+  - Tells act to bind-mount the current worktree directly into the job container instead of copying it,
+  allowing local runs to test uncommitted workflow or source changes.
+  - *(Note: Set to `false` if you need container-isolated filesystem changes, such as symlinking temporary directories inside Linux.)*
+- **`container-options` (`-v act-pip-cache:/root/.cache/pip -v act-toolcache:/opt/hostedtoolcache`)**:
+  - Mounts persistent Docker volumes so Python toolchains and `pip` wheels (such as `wxPython`) survive across container resets.
+- **`pull` (`false`)**:
+  - Stops act from checking Docker Hub for newer runner images before every local execution.
+- **`reuse` (`true`)**:
+  - Keeps the job container alive between runs so system packages (`apt`), FFmpeg binaries, and Python dependencies do not reinstall from scratch.
+
+Without `Detect act` and `bind`, the `python-app.yml` unit-test workflow would overwrite local changes with the commit selected by `github.sha`.<br>
+On GitHub Actions, `ACT` is not set, so the normal checkout still runs.
+
+Add this to `python-app.yml` as the very first step in the job:
 
 ```yml
+    steps:
+      # need to detect if running in act (local GitHub Actions runner) to conditionally skip certain steps
       - name: Detect act
         id: detect-act
-        run: echo "is-act=${ACT:-false}" >> "$GITHUB_OUTPUT"
+        run: echo "is-act=ACT:-false" >> "GITHUB_OUTPUT"
+```
 
-      # Checkout the repository to ensure the workflow has access to the codebase
-      - name: Checkout Repository
-        if: steps.detect-act.outputs.is-act != 'true'
-        uses: actions/checkout@v4
+Every task that should only execute remotely on GitHub—such as repository checkout or cloud cache steps—needs to check `detect-act`:
+
+```yml
+if: steps.detect-act.outputs.is-act == 'false'
 ```
