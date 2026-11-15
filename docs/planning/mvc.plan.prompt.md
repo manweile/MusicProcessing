@@ -1052,7 +1052,7 @@ COMPLETED
     - 7.1a move `_validate_dir` and `_validate_file` out of `MainFrame` into a shared validation module (no `wx` import) COMPLETED
     - 7.1b move worker-thread orchestration (`run_task`, `worker`) out of `MainFrame` into a shared task runner (no `wx` import) COMPLETED
     - 7.1c define the view interface (`show_message`, `show_error`, `show_generated_files`, `set_busy`); `MainFrame` implements it COMPLETED
-    - 7.1d construct model instances in one composition root instead of module-level globals in `handlers.py`
+    - 7.1d construct model instances in one composition root instead of module-level globals in `handlers.py` IN PROGRESS
     - 7.1e leave `MainFrame` with widget construction, layout, event binding, and view-interface methods only
     - Validation: existing tests and GUI smoke test pass; moved code has unit tests that need no `wx`.
     - Exit criteria: `MainFrame` contains no validation, threading, or model-coordination logic.

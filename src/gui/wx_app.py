@@ -36,6 +36,11 @@ bootstrap_logging()
 # Local Module Classes
 from src.controllers.task_runner import TaskRunner          # noqa: E402, for running tasks outside the GUI thread
 from src.gui.handlers import EventHandlers                  # noqa: E402, event handlers for the GUI
+from src.models.audio_info.audio_art import AudioArt        # noqa: E402, for GUI audio-art operations
+from src.models.audio_info.audio_metadata import AudioMetadata  # noqa: E402, for GUI audio-metadata operations
+from src.models.audio_info.audio_playlist import AudioPlaylist  # noqa: E402, for GUI playlist operations
+from src.models.audio_normalize.audio_normalization import AudioNormalization  # noqa: E402, for GUI normalization
+from src.models.dir_processing.directory_processing import DirectoryProcessing  # noqa: E402, for GUI directory operations
 
 ## @var logger
 # @brief Logger instance for the module.
@@ -101,7 +106,16 @@ class MainFrame(wx.Frame):
     settingPathText: wx.TextCtrl
 
 
-    def __init__(self, parent=None) -> None:
+    def __init__(
+        self,
+        parent=None,
+        *,
+        art: AudioArt,
+        directory: DirectoryProcessing,
+        metadata: AudioMetadata,
+        normalization: AudioNormalization,
+        playlist: AudioPlaylist
+    ) -> None:
         '''
         @brief Initialize the MainFrame class.
 
@@ -109,6 +123,11 @@ class MainFrame(wx.Frame):
 
         @param self {MainFrame} The instance of the class.
         @param parent {Any} The parent window, if any.
+        @param art {AudioArt} The audio-art model instance.
+        @param directory {DirectoryProcessing} The directory-processing model instance.
+        @param metadata {AudioMetadata} The audio-metadata model instance.
+        @param normalization {AudioNormalization} The audio-normalization model instance.
+        @param playlist {AudioPlaylist} The audio-playlist model instance.
         '''
 
         # Initialize the main frame with the specified parent, title, and size
@@ -130,7 +149,7 @@ class MainFrame(wx.Frame):
         self.mainNotebook = wx.Notebook(self.mainSplitter)
 
         # Initialize event handlers
-        self.mainHandlers = EventHandlers(self)
+        self.mainHandlers = EventHandlers(self, art, directory, metadata, normalization, playlist)
 
         # Create the individual panels for each tab in the notebook
         self.panelArt = self._panel_art(self.mainNotebook)
@@ -381,70 +400,70 @@ class MainFrame(wx.Frame):
         grid = wx.GridBagSizer(8, 8)
 
         # Bulk directory audio conversion nested subpanel
-        bulk_box = wx.StaticBox(panel, label="Bulk Directory Audio Conversion")
-        bulk_sizer = wx.StaticBoxSizer(bulk_box, wx.VERTICAL)
-        bulk_subpanel = wx.Panel(panel)
-        bulk_grid = wx.GridBagSizer(8, 8)
+        bulkBox = wx.StaticBox(panel, label="Bulk Directory Audio Conversion")
+        bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
+        bulkSubpanel = wx.Panel(panel)
+        bulkGrid = wx.GridBagSizer(8, 8)
 
         # Path controls for bulk directory audio conversion
-        self.convert_walk_tld, convert_walk_tld_btn = self._make_path_controls(bulk_subpanel)
-        convert_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.convert_walk_tld))
+        self.convertWalkTld, convertWalkTldBtn = self._make_path_controls(bulkSubpanel)
+        convertWalkTldBtn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.convertWalkTld))
 
         # file type drop list for bulk conversion
         file_types = ["Any file type"] + AUDIO_EXTS
-        self.convert_walk_audio_pattern = wx.Choice(bulk_subpanel, choices=file_types)
-        self.convert_walk_audio_pattern.SetSelection(0)  # Default to "Any file type"
-        self.convert_walk_audio_pattern.SetToolTip("Select file type pattern or 'Any file type' to process all supported audio files")
+        self.convertWalkAudioPattern = wx.Choice(bulkSubpanel, choices=file_types)
+        self.convertWalkAudioPattern.SetSelection(0)  # Default to "Any file type"
+        self.convertWalkAudioPattern.SetToolTip("Select file type pattern or 'Any file type' to process all supported audio files")
 
-        # execute button for bulk directory audio conversion
-        convert_walk_exec = wx.Button(bulk_subpanel, label="Convert Directory Audio")
-        convert_walk_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_convert_walk)
+        # convert button for bulk directory audio conversion
+        convertBulkBtn = wx.Button(bulkSubpanel, label="Convert Directory Audio")
+        convertBulkBtn.Bind(wx.EVT_BUTTON, self.mainHandlers.on_convert_walk)
 
         # order the top level directory controls in the bulk directory conversion subpanel grid
-        bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulk_grid.Add(self.convert_walk_tld, pos=(0, 1), flag=wx.EXPAND)
-        bulk_grid.Add(convert_walk_tld_btn, pos=(0, 2))
+        bulkGrid.Add(wx.StaticText(bulkSubpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(self.convertWalkTld, pos=(0, 1), flag=wx.EXPAND)
+        bulkGrid.Add(convertWalkTldBtn, pos=(0, 2))
 
         # order the file type pattern controls in the bulk directory conversion subpanel grid
-        bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Convert from Audio File Format:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulk_grid.Add(self.convert_walk_audio_pattern, pos=(1, 1), span=(1, 2), flag=wx.EXPAND)
-        bulk_grid.Add(convert_walk_exec, pos=(1, 3))
+        bulkGrid.Add(wx.StaticText(bulkSubpanel, label="Convert from Audio File Format:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(self.convertWalkAudioPattern, pos=(1, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(convertBulkBtn, pos=(1, 3))
 
         # order the subpanels in the main grid
-        bulk_grid.AddGrowableCol(1)
-        bulk_subpanel.SetSizer(bulk_grid)
-        bulk_sizer.Add(bulk_subpanel, 1, wx.EXPAND | wx.ALL, 4)
+        bulkGrid.AddGrowableCol(1)
+        bulkSubpanel.SetSizer(bulkGrid)
+        bulkSizer.Add(bulkSubpanel, 1, wx.EXPAND | wx.ALL, 4)
 
         # specific audio file conversion nested subpanel
-        specific_box = wx.StaticBox(panel, label="Specific Audio File Conversion")
-        specific_sizer = wx.StaticBoxSizer(specific_box, wx.VERTICAL)
-        specific_subpanel = wx.Panel(panel)
-        specific_grid = wx.GridBagSizer(8, 8)
+        specificBox = wx.StaticBox(panel, label="Specific Audio File Conversion")
+        specificSizer = wx.StaticBoxSizer(specificBox, wx.VERTICAL)
+        specificSubpanel = wx.Panel(panel)
+        specificGrid = wx.GridBagSizer(8, 8)
 
         # Path controls for specific audio file conversion
-        self.convert_file_path, convert_file_btn = self._make_path_controls(specific_subpanel)
-        convert_file_btn.Bind(
+        self.convertFilePath, convertFilePathBtn = self._make_path_controls(specificSubpanel)
+        convertFilePathBtn.Bind(
             wx.EVT_BUTTON,
-            lambda evt: self.mainHandlers.on_browse_file(evt, self.convert_file_path, "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"))
+            lambda evt: self.mainHandlers.on_browse_file(evt, self.convertFilePath, "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"))
 
-        # execute button for specific audio file conversion
-        convert_file_exec = wx.Button(specific_subpanel, label="Convert Audio File")
-        convert_file_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_convert_file)
+        # convert button for specific audio file conversion
+        convertFileBtn = wx.Button(specificSubpanel, label="Convert Audio File")
+        convertFileBtn.Bind(wx.EVT_BUTTON, self.mainHandlers.on_convert_file)
 
         # order the controls in the specific audio file conversion subpanel grid
-        specific_grid.Add(wx.StaticText(specific_subpanel, label="Audio file to convert:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        specific_grid.Add(self.convert_file_path, pos=(0, 1), flag=wx.EXPAND)
-        specific_grid.Add(convert_file_btn, pos=(0, 2))
-        specific_grid.Add(convert_file_exec, pos=(0, 3))
+        specificGrid.Add(wx.StaticText(specificSubpanel, label="Audio file to convert:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        specificGrid.Add(self.convertFilePath, pos=(0, 1), flag=wx.EXPAND)
+        specificGrid.Add(convertFilePathBtn, pos=(0, 2))
+        specificGrid.Add(convertFileBtn, pos=(0, 3))
 
         # allow specific subpanel to expand when frame is resized
-        specific_grid.AddGrowableCol(1)
-        specific_subpanel.SetSizer(specific_grid)
-        specific_sizer.Add(specific_subpanel, 1, wx.EXPAND | wx.ALL, 4)
+        specificGrid.AddGrowableCol(1)
+        specificSubpanel.SetSizer(specificGrid)
+        specificSizer.Add(specificSubpanel, 1, wx.EXPAND | wx.ALL, 4)
 
         # order the sub panels in the main grid
-        grid.Add(bulk_sizer, pos=(0, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
-        grid.Add(specific_sizer, pos=(1, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
+        grid.Add(bulkSizer, pos=(0, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
+        grid.Add(specificSizer, pos=(1, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
 
         grid.AddGrowableCol(1)
         panel.SetSizer(grid)
@@ -1010,7 +1029,13 @@ def run_gui():
     '''
 
     app = wx.App(False)
-    frame = MainFrame()
+    frame = MainFrame(
+        art=AudioArt(),
+        directory=DirectoryProcessing(),
+        metadata=AudioMetadata(),
+        normalization=AudioNormalization(),
+        playlist=AudioPlaylist()
+    )
     frame.Show()
     app.MainLoop()
 ## @}
