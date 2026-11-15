@@ -1,7 +1,0 @@
-usage: main.py normalize-filename [-h] file
-
-positional arguments:
-  file        mandatory audio file path
-
-options:
-  -h, --help  show this help message and exit

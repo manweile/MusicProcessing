@@ -1,7 +1,0 @@
-usage: main.py update-walk [-h] tld
-
-positional arguments:
-  tld         mandatory start path tld only
-
-options:
-  -h, --help  show this help message and exit

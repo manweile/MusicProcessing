@@ -1,8 +1,0 @@
-usage: main.py ebu-file [-h] [--target TARGET] file
-
-positional arguments:
-  file             mandatory audio file path
-
-options:
-  -h, --help       show this help message and exit
-  --target TARGET  optional target path

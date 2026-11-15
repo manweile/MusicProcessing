@@ -1,7 +1,0 @@
-usage: main.py normalize-filename-walk [-h] tld
-
-positional arguments:
-  tld         mandatory start path tld/fld/sld
-
-options:
-  -h, --help  show this help message and exit

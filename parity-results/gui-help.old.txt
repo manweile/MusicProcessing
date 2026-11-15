@@ -1,4 +1,0 @@
-usage: main.py gui [-h]
-
-options:
-  -h, --help  show this help message and exit

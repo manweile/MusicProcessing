@@ -1,8 +1,0 @@
-usage: main.py update-playlist [-h] tld m3u
-
-positional arguments:
-  tld         mandatory start path tld only
-  m3u         mandatory m3u file path
-
-options:
-  -h, --help  show this help message and exit

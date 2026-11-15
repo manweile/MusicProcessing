@@ -1,8 +1,0 @@
-usage: main.py update-genres [-h] tld csv
-
-positional arguments:
-  tld         mandatory start path tld only
-  csv         mandatory genre csv file path
-
-options:
-  -h, --help  show this help message and exit

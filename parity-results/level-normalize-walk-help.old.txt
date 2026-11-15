@@ -1,9 +1,0 @@
-usage: main.py level-normalize-walk [-h] [--target TARGET] tld type
-
-positional arguments:
-  tld              mandatory start path tld/fld
-  type             mandatory level type {ebu|peak|rms}
-
-options:
-  -h, --help       show this help message and exit
-  --target TARGET  optional target path

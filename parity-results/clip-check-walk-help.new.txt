@@ -1,7 +1,0 @@
-usage: main.py clip-check-walk [-h] tld
-
-positional arguments:
-  tld         mandatory start path tld/fld
-
-options:
-  -h, --help  show this help message and exit

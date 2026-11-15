@@ -1,2 +1,0 @@
-usage: main.py convert-file [-h] [--target TARGET] file
-main.py convert-file: error: argument file: File not found: C:\parity\missing.mp3

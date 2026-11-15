@@ -1,9 +1,0 @@
-usage: main.py convert-walk [-h] [--pattern PATTERN] [--target TARGET] tld
-
-positional arguments:
-  tld                mandatory start path tld/fld/sld
-
-options:
-  -h, --help         show this help message and exit
-  --pattern PATTERN  optional file ext {.flac|.mp3|.m4a|.wma}
-  --target TARGET    optional target path

@@ -1,8 +1,0 @@
-usage: main.py get-media-info-walk [-h] [--pattern PATTERN] tld
-
-positional arguments:
-  tld                mandatory start path tld/fld
-
-options:
-  -h, --help         show this help message and exit
-  --pattern PATTERN  optional file ext {.flac|.mp3|.m4a|.wma}
