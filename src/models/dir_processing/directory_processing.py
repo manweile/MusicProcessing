@@ -36,6 +36,7 @@ from src.core.constants import M3U_EXT                      # for M3U file exten
 from src.core.constants import M4A_EXT                      # for M4A file extension
 from src.core.constants import MP3_EXT                      # for MP3 file extension
 from src.core.constants import MUSIC_TLD                    # for music top level directory name
+from src.core.constants import PLAYLIST_EXTS                # for playlist file extensions
 from src.core.constants import RESULT_DIR                   # for text result directory name
 from src.core.constants import RESULT_EXT                   # for text result extension
 from src.core.constants import UTF8                         # for UTF-8 text encoding
@@ -248,17 +249,28 @@ class DirectoryProcessing():
                             m4a_count += 1
                         elif file_extension == WMA_EXT:
                             wma_count += 1
-                    else:
-                        if file_extension == CSV_EXT:
-                            csv_count += 1
+
+                    if (file_extension.lower() in PLAYLIST_EXTS):
                         if file_extension == M3U_EXT:
                             m3u_count += 1
-                        elif file_extension == RESULT_EXT:
-                            txt_count += 1
-                        elif file_extension == ".jpg":
-                            jpg_count += 1
-                        else:
-                            not_count += 1
+
+                    if file_extension == CSV_EXT:
+                        csv_count += 1
+
+                    if file_extension == RESULT_EXT:
+                        txt_count += 1
+
+                    if file_extension == ".jpg":
+                        jpg_count += 1
+
+                    not_audio = file_extension.lower() not in AUDIO_EXTS
+                    not_playlist = file_extension.lower() not in PLAYLIST_EXTS
+                    not_csv = file_extension != CSV_EXT
+                    not_result = file_extension != RESULT_EXT
+                    not_jpg = file_extension != ".jpg"
+
+                    if (not_audio and not_playlist and not_csv and not_result and not_jpg):
+                        not_count += 1
 
                     tot_count += 1
 
