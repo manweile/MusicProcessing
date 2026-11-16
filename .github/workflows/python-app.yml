@@ -137,12 +137,12 @@ jobs:
         # need PYTHONTRACEMALLOC for memory tracing; enables tracking of memory allocations during tests (disabled in act for speed)
         env:
           PYTHONTRACEMALLOC: ${{ steps.detect-act.outputs.is-act == 'false' && '1' || '0' }}
-        # /dev/shm is used for storing generated files in memory during act runs to improve performance
+        # /dev/shm stores generated files in memory during act runs without replacing tracked files
         run: |
           if [ "${ACT:-false}" = "true" ]; then
-            rm -rf src/generated_files
-            mkdir -p /dev/shm/generated_files
-            ln -s /dev/shm/generated_files src/generated_files
+            export MUSICPROCESSING_GENERATED_PATH=/dev/shm/generated_files
+            rm -rf "$MUSICPROCESSING_GENERATED_PATH"
+            mkdir -p "$MUSICPROCESSING_GENERATED_PATH"
           fi
           xvfb-run -a python -m unittest discover -v tests
 

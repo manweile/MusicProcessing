@@ -217,6 +217,7 @@ TODO
 GUI:
 1) implement mvc refactoring planning
   a) major refactoring
+  b) items all GUI objects need to be in camelCase (2) & Remove unique media walk from GUI (3) are concurrent
 IN PROGRESS
 
 2) all GUI objects need to be in camelCase
@@ -224,13 +225,19 @@ IN PROGRESS
   eg list_type_tld  its a wx.TextCtrl for directory path input
     i) when you see it like this: self.list_type_tld, while it is a variable
     ii) it is really a TextCtrl variable and will be exposed  to other modules, especially handlers.py!
+  b) complete BEFORE Milestone 7 Phase 2
 IN PROGRESS
 
-3) put UI magic strings into appropriate __init__.py as constants
+3) Remove unique media walk from GUI
+  a) unique media walk removed from functionality
+  b) this must be done BEFORE Milestone 7.2f
+IN PROGRESS
+
+4) put UI magic strings into appropriate __init__.py as constants
   a) reference appropriately and use
 TODO
 
-4) Modify Convert tab UI/UX
+5) Modify Convert tab UI/UX
   a) add optional target directory input, default to output/Music
     i) applies to single file conversion
     ii) applies to directory walk conversions
@@ -238,7 +245,7 @@ TODO
     i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
 TODO
 
-5) Modify Leveling tab UI/UX
+6) Modify Leveling tab UI/UX
   a) add optional target directory input, default to output/Music
     i) applies to single file conversion
     ii) applies to directory walk conversions
@@ -246,13 +253,13 @@ TODO
     i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
 TODO
 
-6) add icons to tabs
+7) add icons to tabs
   a) will need to find appropriate iconography
   b) will need to add licenses etc
   c) going to need an "about" menu item?
 TODO
 
-7) How do I log warnings?
+8) How do I log warnings?
   a) warnings are not fatal, but user does need to know.
     i) currently neither CLI or GUI mode inform user
   b) test case: run extract art on D:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
@@ -266,34 +273,29 @@ TODO
   c) test_audio_playlist.test_update_playlist has a patch for logger.warning; changes made may impact this
 TODO
 
-8) add the new functions: clip_check_file, clip_walk, rename_albums etc
+9) add the new functions: clip_check_file, clip_walk, rename_albums etc
   a) to which tab do each of them belong?
 TODO
 
-9) rethink metadata and directory tabs.
+10) rethink metadata and directory tabs.
   a) model functions have changed
   b) possibly want to display file output in splitter control log area
 TODO
 
-10) think about adding menu structure
+11) think about adding menu structure
   a) QoL feature
 TODO
 
-11) rename AlbumArt
+12) rename AlbumArt
   a) use album_art instead; more in keeping with other resource directory names
 TODO
 
-12) think about renaming Music to music_files
+13) think about renaming Music to music_files
   a) just to keep things looking clean
 TODO
 
-13) splitter pane needs a clear button
+14) splitter pane needs a clear button
   a) real PITA having to parse through old results
-TODO
-
-14) get rid of directory nesting
-  a) saves col space eg: src.models.audio_art vs src.models.audio_info.audio_art
-  b) medium to major refactoring
 TODO
 
 15) after an action completes
@@ -360,6 +362,27 @@ TODO
   b) test audio utilities (test clip check walk) is longer running
   c) test audio metadata (converting) is longer running
 TODO
+
+7) consider bringing the nested tests out as main tests
+  a) sometimes they don't run
+  b) minor PITA checking UI count vs terminal count
+    i) 3 in TestAudioArt.test_unpack_asf_image_malformed_data:
+      image payload is truncated
+      MIME type is missing its terminator
+      missing its header
+    ii) 4 in TestAudioMetadata.test_update_genres_from_csv_invalid_input:
+      "blank"
+      "duplicate"
+      "header"
+      "unsorted"
+    iii) 3 in TestAudioNormalization.test_normalization_methods_reject_non_mp3_files:
+      ebu_normalize_file
+      peak_normalize_file
+      rms_normalize_file
+    iv) 2 in TestDirectoryProcessing.test_get_audio_file_rejects_lower_level_paths:
+      start_path = D:\MusicProcessing\tests\Music\Abba
+      start_path = D:\MusicProcessing\tests\Music\Abba\Waterloo
+  TODO
 
 ======================================================================================================================================================
 

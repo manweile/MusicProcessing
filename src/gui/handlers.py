@@ -214,11 +214,11 @@ class EventHandlers:
             return
 
         # get the file type pattern selection from the GUI
-        selection = self.mainFrame.convertAudioExt.GetSelection()
+        selection = self.mainFrame.convertAudioChoice.GetSelection()
         if selection == 0:
             pattern = None
         else:
-            pattern = self.mainFrame.convertAudioExt.GetString(selection)
+            pattern = self.mainFrame.convertAudioChoice.GetString(selection)
 
         callback = self.mainFrame.show_generated_files
         self.mainFrame.taskRunner.run_task(self.metadata.convert_walk, tld, pattern, on_success=callback)
@@ -295,11 +295,11 @@ class EventHandlers:
             return
 
         # get the file type pattern selection from the GUI
-        selection = self.mainFrame.extractArtExt.GetSelection()
+        selection = self.mainFrame.extractArtChoice.GetSelection()
         if selection == 0:
             pattern = None
         else:
-            pattern = self.mainFrame.extractArtExt.GetString(selection)
+            pattern = self.mainFrame.extractArtChoice.GetString(selection)
 
         self.mainFrame.taskRunner.run_task(self.art.extract_walk, start_path, pattern)
 
@@ -436,7 +436,7 @@ class EventHandlers:
         self.mainFrame.taskRunner.run_task(self.directory.list_type, tld, ext, on_success=callback)
 
 
-    def on_normalize_walk(self, event):
+    def on_level_directory_audio(self, event):
         '''
         @brief Handle the event for normalizing audio files in a directory walk.
 
