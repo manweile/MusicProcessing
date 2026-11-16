@@ -173,7 +173,7 @@ class EventHandlers:
         dlg.Destroy()
 
 
-    def on_convert_file(self, event):
+    def on_convert_file_audio(self, event):
         '''
         @brief Handle the event for converting a single file.
 
@@ -185,7 +185,7 @@ class EventHandlers:
         '''
 
         # get the file path from the GUI and validate it before conversion
-        path = self.mainFrame.convertFilePath.GetValue().strip()
+        path = self.mainFrame.convertAudioPath.GetValue().strip()
 
         # not a valid file, return early
         if not self._validate_file(path):
@@ -195,7 +195,7 @@ class EventHandlers:
         self.mainFrame.taskRunner.run_task(self.metadata.convert_file, path, on_success=callback)
 
 
-    def on_convert_walk(self, event):
+    def on_convert_directory_audio(self, event):
         '''
         @brief Handle the event for converting files in a directory walk.
 
@@ -214,11 +214,11 @@ class EventHandlers:
             return
 
         # get the file type pattern selection from the GUI
-        selection = self.mainFrame.convertWalkAudioPattern.GetSelection()
+        selection = self.mainFrame.convertAudioExt.GetSelection()
         if selection == 0:
             pattern = None
         else:
-            pattern = self.mainFrame.convertWalkAudioPattern.GetString(selection)
+            pattern = self.mainFrame.convertAudioExt.GetString(selection)
 
         callback = self.mainFrame.show_generated_files
         self.mainFrame.taskRunner.run_task(self.metadata.convert_walk, tld, pattern, on_success=callback)
@@ -267,7 +267,7 @@ class EventHandlers:
         '''
 
         # get the file path from the GUI and validate it before extracting album art
-        file_path = self.mainFrame.filePathText.GetValue().strip()
+        file_path = self.mainFrame.extractArtPath.GetValue().strip()
 
         # not a valid file, return early
         if not self._validate_file(file_path):
@@ -276,7 +276,7 @@ class EventHandlers:
         self.mainFrame.taskRunner.run_task(self.art.extract_album_art, file_path)
 
 
-    def on_extract_walk_art(self, event):
+    def on_extract_directory_art(self, event):
         '''
         @brief Handle the event for extracting album art from a directory walk.
 
@@ -288,18 +288,18 @@ class EventHandlers:
         '''
 
         # get the top-level directory and validate it before extracting album art from a directory walk
-        start_path = self.mainFrame.bulkPathText.GetValue().strip()
+        start_path = self.mainFrame.extractArtTld.GetValue().strip()
 
         # not a valid directory, return early
         if not self._validate_dir(start_path):
             return
 
         # get the file type pattern selection from the GUI
-        selection = self.mainFrame.patternChoice.GetSelection()
+        selection = self.mainFrame.extractArtExt.GetSelection()
         if selection == 0:
             pattern = None
         else:
-            pattern = self.mainFrame.patternChoice.GetString(selection)
+            pattern = self.mainFrame.extractArtExt.GetString(selection)
 
         self.mainFrame.taskRunner.run_task(self.art.extract_walk, start_path, pattern)
 
@@ -585,7 +585,7 @@ class EventHandlers:
         '''
 
         # get the top-level directory and validate it before setting album art for audio files in a directory
-        tld = self.mainFrame.settingPathText.GetValue().strip()
+        tld = self.mainFrame.setArtTld.GetValue().strip()
 
         # not a valid directory, return early
         if not self._validate_dir(tld):

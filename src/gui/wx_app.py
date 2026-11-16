@@ -86,24 +86,34 @@ class MainFrame(wx.Frame):
     '''
 
     # Blueprint hints tell VS Code these instance variables exist and what they are
-    mainLog: wx.TextCtrl
-    mainPanel: wx.Panel
-    mainSplitter: wx.SplitterWindow
-    mainNotebook: wx.Notebook
-    mainHandlers: EventHandlers
-    taskRunner: TaskRunner
 
-    panelArt: wx.Panel
-    panelConvert: wx.Panel
-    panelLeveling: wx.Panel
-    panelPlaylist: wx.Panel
-    panelMetadata: wx.Panel
-    panelDirectory: wx.Panel
+    eventHandlers: EventHandlers                            # Event handler instance for GUI events
+    taskRunner: TaskRunner                                  # Task runner instance for executing background tasks
 
-    bulkPathText: wx.TextCtrl
-    patternChoice: wx.Choice
-    filePathText: wx.TextCtrl
-    settingPathText: wx.TextCtrl
+    mainLog: wx.TextCtrl                                    # Text control for displaying main log messages
+    mainNotebook: wx.Notebook                               # Notebook for tabbed panels within the main splitter window
+    mainPanel: wx.Panel                                     # Main panel within the frame
+    mainSplitter: wx.SplitterWindow                         # Splitter window dividing the main panel and log area
+
+    panelArt: wx.Panel                                      # Panel for audio art processing
+    panelConvert: wx.Panel                                  # Panel for audio conversion
+    panelLeveling: wx.Panel                                 # Panel for audio level normalization
+    panelPlaylist: wx.Panel                                 # Panel for audio playlist processing
+    panelMetadata: wx.Panel                                 # Panel for metadata information
+    panelDirectory: wx.Panel                                # Panel for directory processing
+
+    extractArtTld: wx.TextCtrl                              # Text control input for directory art extraction path input
+    extractArtExt: wx.Choice                                # Choice control for selecting directory art extraction from audio with extension
+    extractArtPath: wx.TextCtrl                             # Text control input for file art extraction path input
+    setArtTld: wx.TextCtrl                                  # Text control input for setting album art path input
+
+    convertWalkTld: wx.TextCtrl                             # Text control input for convert walk top-level directory
+    convertAudioExt: wx.Choice                              # Choice control for selecting audio file extension to use in convert walk
+    convertAudioPath: wx.TextCtrl                           # Text control input for file audio conversion path input
+
+    list_type_tld: wx.TextCtrl                              # Text control for list type input
+
+    media_info_tld: wx.TextCtrl                             # Text control for media info display
 
 
     def __init__(
@@ -115,7 +125,7 @@ class MainFrame(wx.Frame):
         metadata: AudioMetadata,
         normalization: AudioNormalization,
         playlist: AudioPlaylist
-    ) -> None:
+    ):
         '''
         @brief Initialize the MainFrame class.
 
@@ -130,61 +140,63 @@ class MainFrame(wx.Frame):
         @param playlist {AudioPlaylist} The audio-playlist model instance.
         '''
 
-        # Initialize the main frame with the specified parent, title, and size
-        super().__init__(parent, title="Music Processing GUI", size=(960, 760))
+        # initialize the main frame with the specified parent, title, and size
+        super().__init__(parent, title="Music Processing", size=(960, 760))
 
-        # Increase font size by 2 points
+        # Initialize event handlers
+        self.eventHandlers = EventHandlers(self, art, directory, metadata, normalization, playlist)
+
+        # create the background task runner with callbacks for GUI updates
+        self.taskRunner = TaskRunner(log=self.log, call_after=wx.CallAfter, set_busy_state=self.set_busy, show_error=self.show_error)
+
+        # increase font size by 2 points
         font = wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT)
         font.SetPointSize(font.GetPointSize() + 2)
         self.SetFont(font)
 
-        # Create the main panel within the frame
+        # create the main panel within the frame
         self.mainPanel = wx.Panel(self)
         self.mainPanel.SetFont(font)
 
-        # Create splitter window for resizable notebook/log split
+        # create splitter window for resizable notebook/log split
         self.mainSplitter = wx.SplitterWindow(self.mainPanel, style=wx.SP_LIVE_UPDATE)
 
-        # Create the notebook for tabbed panels within the splitter window
+        # create the notebook for tabbed panels within the splitter window
         self.mainNotebook = wx.Notebook(self.mainSplitter)
 
-        # Initialize event handlers
-        self.mainHandlers = EventHandlers(self, art, directory, metadata, normalization, playlist)
+        # create the individual panels for each tab in the notebook
+        self.artTabPanel = self._create_art_tab_panel(self.mainNotebook)
+        self.panelConvert = self._create_conversion_tab_panel(self.mainNotebook)
+        self.panelLeveling = self._create_leveling_tab_panel(self.mainNotebook)
+        self.panelPlaylist = self._create_playlist_tab_panel(self.mainNotebook)
+        self.panelMetadata = self._create_metadata_tab_panel(self.mainNotebook)
+        self.panelDirectory = self._create_directory_tab_panel(self.mainNotebook)
 
-        # Create the individual panels for each tab in the notebook
-        self.panelArt = self._panel_art(self.mainNotebook)
-        self.panelConvert = self._panel_convert(self.mainNotebook)
-        self.panelLeveling = self._panel_leveling(self.mainNotebook)
-        self.panelPlaylist = self._panel_playlist(self.mainNotebook)
-        self.panelMetadata = self._panel_metadata(self.mainNotebook)
-        self.panelDirectory = self._panel_directory(self.mainNotebook)
+        # add the created panels to the notebook as separate tabs, displayed from left to right in the order they are added
+        self.mainNotebook.AddPage(self.artTabPanel, "Art Processing")
+        self.mainNotebook.AddPage(self.panelConvert, "Audio Conversion")
+        self.mainNotebook.AddPage(self.panelLeveling, "Level Normalizing")
+        self.mainNotebook.AddPage(self.panelPlaylist, "Playlist Processing")
+        self.mainNotebook.AddPage(self.panelDirectory, "Directory Processing")
+        self.mainNotebook.AddPage(self.panelMetadata, "Metadata Information")
 
-        # Add the created panels to the notebook as separate tabs
-        self.mainNotebook.AddPage(self.panelArt, "Art")
-        self.mainNotebook.AddPage(self.panelConvert, "Convert")
-        self.mainNotebook.AddPage(self.panelLeveling, "Normalize")
-        self.mainNotebook.AddPage(self.panelPlaylist, "Playlist")
-        self.mainNotebook.AddPage(self.panelMetadata, "Metadata")
-        self.mainNotebook.AddPage(self.panelDirectory, "Directory")
+        # create the log control for displaying log messages
+        self.mainLog = wx.TextCtrl(self.mainSplitter, style=wx.HSCROLL | wx.TE_MULTILINE | wx.TE_READONLY, value="")
 
-        # Create the log control for displaying log messages
-        self.mainLog = wx.TextCtrl(self.mainSplitter, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL, value="")
-
-        # Create the background task runner with callbacks for GUI updates
-        self.taskRunner = TaskRunner(log=self.log, call_after=wx.CallAfter, set_busy_state=self.set_busy, show_error=self.show_error)
-
-        # Split horizontally: notebook on top, log on bottom
+        # split horizontally: notebook on top, log on bottom
         self.mainSplitter.SplitHorizontally(self.mainNotebook, self.mainLog)
-        self.mainSplitter.SetSashPosition(550)  # Initial sash position in pixels from top
+        # Initial sash position in pixels from top
+        sash_position = self.Size.height // 2
+        self.mainSplitter.SetSashPosition(sash_position)
 
-        # Set up the main sizer for the panel and add the splitter window to it
+        # set up the main sizer for the panel and add the splitter window to it
         mainSizer = wx.BoxSizer(wx.VERTICAL)
         mainSizer.Add(self.mainSplitter, 1, wx.EXPAND)
         self.mainPanel.SetSizer(mainSizer)
         self.Maximize()
 
 
-    def _panel_art(self, parent) -> wx.Panel:
+    def _create_art_tab_panel(self, parent) -> wx.Panel:
         '''
         @brief This panel contains album art extraction and setting controls.
 
@@ -197,20 +209,30 @@ class MainFrame(wx.Frame):
         '''
 
         panel = wx.Panel(parent)
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         grid = wx.GridBagSizer(8, 8)
 
-        grid.Add(self._sizer_extract_walk(panel), pos=(0, 0), flag=wx.EXPAND | wx.ALL, border=4)
-        grid.Add(self._sizer_set_album_art(panel), pos=(1, 0), flag=wx.EXPAND | wx.ALL, border=4)
-        grid.Add(self._sizer_extract_album_art(panel), pos=(0, 1), span=(2, 1), flag=wx.EXPAND | wx.ALL, border=4)
+        # create the sizers for the art tab panel
+        directoryArtExtractionSizer = self._create_art_directory_extraction_sizer(panel)
+        setAlbumArtSizer = self._create_art_set_album_art_sizer(panel)
+        fileArtExtractionSizer = self._create_art_file_extraction_sizer(panel)
 
+        # vertically stack the directory extraction and album art setting sections
+        grid.Add(directoryArtExtractionSizer, pos=(0, 0), flag=wx.ALL | wx.EXPAND, border=4)
+        grid.Add(setAlbumArtSizer, pos=(1, 0), flag=wx.ALL | wx.EXPAND, border=4)
+        # horizontally place the file extraction section to the right of the directory extraction and album art sections
+        grid.Add(fileArtExtractionSizer, pos=(0, 1), span=(2, 1), flag=wx.ALL | wx.EXPAND, border=4)
+
+        # make both columns growable so that the sizers expand properly when the panel is resized
         grid.AddGrowableCol(0, 1)
         grid.AddGrowableCol(1, 1)
+
         panel.SetSizer(grid)
 
         return panel
 
 
-    def _sizer_extract_walk(self, parent) -> wx.StaticBoxSizer:
+    def _create_art_directory_extraction_sizer(self, parent) -> wx.StaticBoxSizer:
         '''
         @brief Creates the bulk directory art extraction section.
 
@@ -219,10 +241,10 @@ class MainFrame(wx.Frame):
         @param self {MainFrame} The instance of the class.
         @param parent {wx.Panel} The parent panel for the section.
 
-        @retval bulk_sizer {wx.StaticBoxSizer} The sizer containing the extraction controls.
+        @retval bulkSizer {wx.StaticBoxSizer} The sizer containing the extraction controls.
         '''
 
-        # Create the static box, sizers, and panel for the bulk directory art extraction section
+        # create the static box, sizers, and panel for the bulk directory art extraction section
         bulkBox = wx.StaticBox(parent, label="Directory Art Extraction")
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
         bulkPanel = wx.Panel(parent)
@@ -232,45 +254,45 @@ class MainFrame(wx.Frame):
         briefDesc = wx.StaticText(bulkPanel, label="Extracts album art from all audio files in a directory walk")
         resultDesc = wx.StaticText(bulkPanel, label="The extracted album art will be saved alongside the audio files")
 
-        # Create controls for selecting the starting path for bulk extraction
-        self.bulkPathText, bulkBrowseButton = self._make_path_controls(bulkPanel)
-        bulkBrowseButton.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.bulkPathText))
+        # create controls for selecting the starting path for bulk extraction
+        self.extractArtTld, extractWalkBrowse = self._make_path_controls(bulkPanel)
+        extractWalkBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.extractArtTld))
 
-        # Create controls for selecting the file type pattern for bulk extraction
+        # file type drop list for bulk conversion
         file_types = ["Any file type"] + AUDIO_EXTS
-        self.patternChoice = wx.Choice(bulkPanel, choices=file_types)
-        self.patternChoice.SetSelection(0)
-        self.patternChoice.SetToolTip("Select file type pattern or 'Any file type' to process all supported audio files")
+        self.extractArtExt = wx.Choice(bulkPanel, choices=file_types)
+        self.extractArtExt.SetSelection(0)
+        self.extractArtExt.SetToolTip("Select audio file type or 'Any file type' to process all supported audio files")
 
-        # Create the extraction button
-        extractBulkButton = wx.Button(bulkPanel, label="Extract Directory Art")
-        extractBulkButton.Bind(wx.EVT_BUTTON, self.mainHandlers.on_extract_walk_art)
+        # create the extraction button
+        extractDirectoryArt = wx.Button(bulkPanel, label="Extract Directory Art")
+        extractDirectoryArt.Bind(wx.EVT_BUTTON, self.eventHandlers.on_extract_directory_art)
 
-        # Add info text controls to the grid layout
+        # add info text controls to the grid layout
         bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
         bulkGrid.Add(resultDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
 
         # add controls for the starting path to the grid layout
         bulkGrid.Add(wx.StaticText(bulkPanel, label="Starting path tld or fld:"), pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(self.bulkPathText, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
-        bulkGrid.Add(bulkBrowseButton, pos=(2, 3), flag=wx.EXPAND)
+        bulkGrid.Add(self.extractArtTld, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(extractWalkBrowse, pos=(2, 3), flag=wx.EXPAND)
 
-        # Add controls for selecting the file type pattern and extraction button to the grid layout
+        # add controls for selecting the file type pattern and extraction button to the grid layout
         bulkGrid.Add(wx.StaticText(bulkPanel, label="Extract from Audio Ext:"), pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(self.patternChoice, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
-        bulkGrid.Add(extractBulkButton, pos=(3, 3))
+        bulkGrid.Add(self.extractArtExt, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(extractDirectoryArt, pos=(3, 3))
 
-        # Make the second column growable to allow the controls to expand properly
+        # make the second column growable to allow the controls to expand properly
         bulkGrid.AddGrowableCol(1)
 
-        # Set the sizer for the panel and add it to the static box sizer
+        # set the sizer for the panel and add it to the static box sizer
         bulkPanel.SetSizer(bulkGrid)
-        bulkSizer.Add(bulkPanel, 1, wx.EXPAND | wx.ALL, 4)
+        bulkSizer.Add(bulkPanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
 
         return bulkSizer
 
 
-    def _sizer_extract_album_art(self, parent) -> wx.StaticBoxSizer:
+    def _create_art_file_extraction_sizer(self, parent) -> wx.StaticBoxSizer:
         '''
         @brief Creates the specific file art extraction section.
 
@@ -282,7 +304,7 @@ class MainFrame(wx.Frame):
         @retval fileSizer {wx.StaticBoxSizer} The sizer containing the extraction controls.
         '''
 
-        # Create the static box, sizer , and panel for the file art extraction section
+        # create the static box, sizer , and panel for the file art extraction section
         fileBox = wx.StaticBox(parent, label="File Art Extraction")
         fileSizer = wx.StaticBoxSizer(fileBox, wx.VERTICAL)
         filePanel = wx.Panel(parent)
@@ -292,46 +314,46 @@ class MainFrame(wx.Frame):
         briefDesc = wx.StaticText(filePanel, label="Extracts album art from specific audio file")
         resultDesc = wx.StaticText(filePanel, label="The extracted album art will be saved alongside the audio file")
 
-        # Create file picker controls for selecting the audio file
+        # create file picker controls for selecting the audio file
         file_exts = "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"
-        self.filePathText, fileBrowseButton = self._make_path_controls(filePanel)
-        fileBrowseButton.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_file(evt, self.filePathText, file_exts))
+        self.extractArtPath, fileBrowse = self._make_path_controls(filePanel)
+        fileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.extractArtPath, file_exts))
 
-        # Create the extract file art button
-        extractFileButton = wx.Button(filePanel, label="Extract File Art")
-        extractFileButton.Bind(wx.EVT_BUTTON, self.mainHandlers.on_extract_file_art)
+        # create the extract file art button
+        extractFileArt = wx.Button(filePanel, label="Extract File Art")
+        extractFileArt.Bind(wx.EVT_BUTTON, self.eventHandlers.on_extract_file_art)
 
-        # Create a horizontal sizer for the file path and extract buttons
+        # create a horizontal sizer for the file path and extract buttons
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
-        buttonSizer.Add(fileBrowseButton, 0, wx.RIGHT, 8)
-        buttonSizer.Add(extractFileButton, 0)
+        buttonSizer.Add(fileBrowse, 0, wx.RIGHT, 8)
+        buttonSizer.Add(extractFileArt, 0)
 
-        # Create a horizontal sizer for the file path row
+        # create a horizontal sizer for the file path row
         pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
-        pathRowSizer.Add(self.filePathText, 1, wx.EXPAND | wx.RIGHT, 8)
+        pathRowSizer.Add(self.extractArtPath, 1, wx.EXPAND | wx.RIGHT, 8)
         pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
 
-        # Add info text controls to the grid layout
+        # add info text controls to the grid layout
         fileGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
         fileGrid.Add(resultDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
 
-        # Add the path row to the grid layout
+        # add the path row to the grid layout
         fileGrid.Add(wx.StaticText(filePanel, label="Audio file path:"), pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         fileGrid.Add(pathRowSizer, pos=(2, 1), span=(1, 3), flag=wx.EXPAND)
 
-        # Make the second column growable to allow the controls to expand properly
+        # make the second column growable to allow the controls to expand properly
         fileGrid.AddGrowableCol(1)
 
-        # Set the sizer for the panel and add it to the static box sizer
+        # set the sizer for the panel and add it to the static box sizer
         filePanel.SetSizer(fileGrid)
-        fileSizer.Add(filePanel, 1, wx.EXPAND | wx.ALL, 4)
+        fileSizer.Add(filePanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
 
         return fileSizer
 
 
-    def _sizer_set_album_art(self, parent) -> wx.StaticBoxSizer:
+    def _create_art_set_album_art_sizer(self, parent) -> wx.StaticBoxSizer:
         '''
-        @brief Creates the bulk directory art setting section.
+        @brief Creates the bulk directory album art setting section.
 
         @details Provides directory selection and album art setting controls.
 
@@ -347,36 +369,37 @@ class MainFrame(wx.Frame):
         setBulkPanel = wx.Panel(parent)
         setBulkGrid = wx.GridBagSizer(8, 8)
 
-        # Create static text for brief description of the section
+        # create static text for brief description of the section
         briefDesc = wx.StaticText(setBulkPanel, label="Sets album art file for an album directory from project source folder")
         detailDesc = wx.StaticText(setBulkPanel, label="Copies a matching AlbumArt JPEG into the album directory when it is available")
 
-        # Create controls for selecting the starting path for setting album art
-        self.settingPathText, settingBrowseButton = self._make_path_controls(setBulkPanel)
-        settingBrowseButton.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.settingPathText))
+        # create controls for selecting the starting path for setting album art
+        self.setArtTld, setArtBrowse = self._make_path_controls(setBulkPanel)
+        setArtBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.setArtTld))
 
-        # Create the set art button
-        setArtButton = wx.Button(setBulkPanel, label="Set Album Art")
-        setArtButton.Bind(wx.EVT_BUTTON, self.mainHandlers.on_set_album_art)
+        # create the set album art button
+        setAlbumArt = wx.Button(setBulkPanel, label="Set Album Art")
+        setAlbumArt.Bind(wx.EVT_BUTTON, self.eventHandlers.on_set_album_art)
 
-        # Create a horizontal sizer for the browse and setting buttons
+        # create a horizontal sizer for the browse and setting buttons
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
-        buttonSizer.Add(settingBrowseButton, 0, wx.RIGHT, 8)
-        buttonSizer.Add(setArtButton, 0)
+        buttonSizer.Add(setArtBrowse, 0, wx.RIGHT, 8)
+        buttonSizer.Add(setAlbumArt, 0)
 
-        # Create a horizontal sizer for the starting path row
+        # create a horizontal sizer for the starting path row
         pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
-        pathRowSizer.Add(self.settingPathText, 1, wx.EXPAND | wx.RIGHT, 8)
+        pathRowSizer.Add(self.setArtTld, 1, wx.EXPAND | wx.RIGHT, 8)
         pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
 
-        # Add the info text controls to the grid layout
+        # add the info text controls to the grid layout
         setBulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 4), flag=wx.EXPAND)
         setBulkGrid.Add(detailDesc, pos=(1, 0), span=(1, 4), flag=wx.EXPAND)
 
-        # Add the starting path controls to the grid layout
+        # add the starting path controls to the grid layout
         setBulkGrid.Add(wx.StaticText(setBulkPanel, label="Starting path tld or fld:"), pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         setBulkGrid.Add(pathRowSizer, pos=(2, 1), span=(1, 3), flag=wx.EXPAND)
 
+        # make the second column growable to allow the controls to expand properly
         setBulkGrid.AddGrowableCol(1)
         setBulkPanel.SetSizer(setBulkGrid)
         setBulkSizer.Add(setBulkPanel, 1, wx.EXPAND | wx.ALL, 4)
@@ -384,7 +407,7 @@ class MainFrame(wx.Frame):
         return setBulkSizer
 
 
-    def _panel_convert(self, parent) -> wx.Panel:
+    def _create_conversion_tab_panel(self, parent) -> wx.Panel:
         '''
         @brief This panel includes controls for audio file conversion
 
@@ -397,81 +420,146 @@ class MainFrame(wx.Frame):
         '''
 
         panel = wx.Panel(parent)
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         grid = wx.GridBagSizer(8, 8)
 
-        # Bulk directory audio conversion nested subpanel
-        bulkBox = wx.StaticBox(panel, label="Bulk Directory Audio Conversion")
-        bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
-        bulkSubpanel = wx.Panel(panel)
-        bulkGrid = wx.GridBagSizer(8, 8)
+        # create the sizers for conversion tab panel
+        directoryAudioConvertSizer = self._create_convert_directory_audio_sizer(panel)
+        fileAudioConvertSizer = self._create_convert_file_audio_sizer(panel)
 
-        # Path controls for bulk directory audio conversion
-        self.convertWalkTld, convertWalkTldBtn = self._make_path_controls(bulkSubpanel)
-        convertWalkTldBtn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.convertWalkTld))
+        # horizontally order the directory and file conversion sections in the main grid
+        grid.Add(directoryAudioConvertSizer, pos=(0, 0), flag=wx.ALL | wx.EXPAND, border=4)
+        grid.Add(fileAudioConvertSizer, pos=(0, 1), flag=wx.ALL | wx.EXPAND, border=4)
 
-        # file type drop list for bulk conversion
-        file_types = ["Any file type"] + AUDIO_EXTS
-        self.convertWalkAudioPattern = wx.Choice(bulkSubpanel, choices=file_types)
-        self.convertWalkAudioPattern.SetSelection(0)  # Default to "Any file type"
-        self.convertWalkAudioPattern.SetToolTip("Select file type pattern or 'Any file type' to process all supported audio files")
+        # make both columns growable so that the sizers expand properly when the panel is resized
+        grid.AddGrowableCol(0, 1)
+        grid.AddGrowableCol(1, 1)
 
-        # convert button for bulk directory audio conversion
-        convertBulkBtn = wx.Button(bulkSubpanel, label="Convert Directory Audio")
-        convertBulkBtn.Bind(wx.EVT_BUTTON, self.mainHandlers.on_convert_walk)
-
-        # order the top level directory controls in the bulk directory conversion subpanel grid
-        bulkGrid.Add(wx.StaticText(bulkSubpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(self.convertWalkTld, pos=(0, 1), flag=wx.EXPAND)
-        bulkGrid.Add(convertWalkTldBtn, pos=(0, 2))
-
-        # order the file type pattern controls in the bulk directory conversion subpanel grid
-        bulkGrid.Add(wx.StaticText(bulkSubpanel, label="Convert from Audio File Format:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(self.convertWalkAudioPattern, pos=(1, 1), span=(1, 2), flag=wx.EXPAND)
-        bulkGrid.Add(convertBulkBtn, pos=(1, 3))
-
-        # order the subpanels in the main grid
-        bulkGrid.AddGrowableCol(1)
-        bulkSubpanel.SetSizer(bulkGrid)
-        bulkSizer.Add(bulkSubpanel, 1, wx.EXPAND | wx.ALL, 4)
-
-        # specific audio file conversion nested subpanel
-        specificBox = wx.StaticBox(panel, label="Specific Audio File Conversion")
-        specificSizer = wx.StaticBoxSizer(specificBox, wx.VERTICAL)
-        specificSubpanel = wx.Panel(panel)
-        specificGrid = wx.GridBagSizer(8, 8)
-
-        # Path controls for specific audio file conversion
-        self.convertFilePath, convertFilePathBtn = self._make_path_controls(specificSubpanel)
-        convertFilePathBtn.Bind(
-            wx.EVT_BUTTON,
-            lambda evt: self.mainHandlers.on_browse_file(evt, self.convertFilePath, "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"))
-
-        # convert button for specific audio file conversion
-        convertFileBtn = wx.Button(specificSubpanel, label="Convert Audio File")
-        convertFileBtn.Bind(wx.EVT_BUTTON, self.mainHandlers.on_convert_file)
-
-        # order the controls in the specific audio file conversion subpanel grid
-        specificGrid.Add(wx.StaticText(specificSubpanel, label="Audio file to convert:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        specificGrid.Add(self.convertFilePath, pos=(0, 1), flag=wx.EXPAND)
-        specificGrid.Add(convertFilePathBtn, pos=(0, 2))
-        specificGrid.Add(convertFileBtn, pos=(0, 3))
-
-        # allow specific subpanel to expand when frame is resized
-        specificGrid.AddGrowableCol(1)
-        specificSubpanel.SetSizer(specificGrid)
-        specificSizer.Add(specificSubpanel, 1, wx.EXPAND | wx.ALL, 4)
-
-        # order the sub panels in the main grid
-        grid.Add(bulkSizer, pos=(0, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
-        grid.Add(specificSizer, pos=(1, 0), span=(1, 4), flag=wx.EXPAND | wx.ALL, border=4)
-
-        grid.AddGrowableCol(1)
         panel.SetSizer(grid)
 
         return panel
 
 
-    def _panel_directory(self, parent) -> wx.Panel:
+    def _create_convert_directory_audio_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Create the bulk directory audio conversion section.
+
+        @details Provides directory selection, file type filtering, and conversion controls.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {wx.Panel} The parent window for the sizer.
+
+        @retval bulkSizer {wx.Sizer} The created sizer for directory audio conversion.
+        '''
+
+        # create the static box, sizers, and panel for the bulk directory audio conversion section
+        bulkBox = wx.StaticBox(parent, label="Directory Audio Conversion")
+        bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
+        bulkPanel = wx.Panel(parent)
+        bulkGrid = wx.GridBagSizer(8, 8)
+
+        # create static text for brief description of the section
+        briefDesc = wx.StaticText(bulkPanel, label="Converts all audio files in a directory walk")
+        resultDesc = wx.StaticText(bulkPanel, label="The converted files will be saved in project default output location")
+
+        # create controls for selecting the starting path for bulk conversion
+        self.convertWalkTld, convertWalkBrowse = self._make_path_controls(bulkPanel)
+        convertWalkBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.convertWalkTld))
+
+        # file type drop list for bulk conversion
+        file_types = ["Any file type"] + AUDIO_EXTS
+        self.convertAudioExt = wx.Choice(bulkPanel, choices=file_types)
+        self.convertAudioExt.SetSelection(0)
+        self.convertAudioExt.SetToolTip("Select audio file type or 'Any file type' to process all supported audio files")
+
+        # create the conversion button
+        convertDirectoryAudio = wx.Button(bulkPanel, label="Convert Directory Audio")
+        convertDirectoryAudio.Bind(wx.EVT_BUTTON, self.eventHandlers.on_convert_directory_audio)
+
+        # add info text controls to the grid layout
+        bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
+        bulkGrid.Add(resultDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
+
+        # order the top level directory controls in the bulk directory conversion subpanel grid
+        bulkGrid.Add(wx.StaticText(bulkPanel, label="Starting path tld or fld:"), pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(self.convertWalkTld, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(convertWalkBrowse, pos=(2, 3), flag=wx.EXPAND)
+
+        # order the file type pattern controls in the bulk directory conversion subpanel grid
+        bulkGrid.Add(wx.StaticText(bulkPanel, label="Convert from Audio Ext:"), pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(self.convertAudioExt, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(convertDirectoryAudio, pos=(3, 3))
+
+        # make the second column growable to allow the controls to expand properly
+        bulkGrid.AddGrowableCol(1)
+
+        # set the sizer for the panel and add it to the static box sizer
+        bulkPanel.SetSizer(bulkGrid)
+        bulkSizer.Add(bulkPanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
+
+        return bulkSizer
+
+
+    def _create_convert_file_audio_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Create the specific file audio conversion section.
+
+        @details Provides audio file selection and audio conversion controls.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {wx.Panel} The parent panel for the sizer.
+
+        @retval specificSizer {wx.StaticBoxSizer} The created sizer for specific audio file conversion.
+        '''
+
+        # create the static box, sizer , and panel for the specific audio file conversion section
+        fileBox = wx.StaticBox(parent, label="Convert Audio File")
+        fileSizer = wx.StaticBoxSizer(fileBox, wx.VERTICAL)
+        filePanel = wx.Panel(parent)
+        fileGrid = wx.GridBagSizer(8, 8)
+
+        # create static text for brief description of the section
+        briefDesc = wx.StaticText(filePanel, label="Convert specific audio file")
+        resultDesc = wx.StaticText(filePanel, label="The converted file will be saved in project default output location")
+
+        # create file picker controls for selecting the audio file
+        file_exts = "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"
+        self.convertAudioPath, fileBrowse = self._make_path_controls(filePanel)
+        fileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.convertAudioPath, file_exts))
+
+        # create the convert audio file button
+        convertAudioFile = wx.Button(filePanel, label="Convert Audio File")
+        convertAudioFile.Bind(wx.EVT_BUTTON, self.eventHandlers.on_convert_file_audio)
+
+        # create a horizontal sizer for the file path and extract buttons
+        buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
+        buttonSizer.Add(fileBrowse, 0, wx.RIGHT, 8)
+        buttonSizer.Add(convertAudioFile, 0)
+
+        # create a horizontal sizer for the file path row
+        pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
+        pathRowSizer.Add(self.convertAudioPath, 1, wx.EXPAND | wx.RIGHT, 8)
+        pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
+
+        # add info text controls to the grid layout
+        fileGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
+        fileGrid.Add(resultDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
+
+        # add the path row to the grid layout
+        fileGrid.Add(wx.StaticText(filePanel, label="Audio file path:"), pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        fileGrid.Add(pathRowSizer, pos=(2, 1), span=(1, 3), flag=wx.EXPAND)
+
+        # make the second column growable to allow the controls to expand properly
+        fileGrid.AddGrowableCol(1)
+
+        # set the sizer for the panel and add it to the static box sizer
+        filePanel.SetSizer(fileGrid)
+        fileSizer.Add(filePanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
+
+        return fileSizer
+
+
+    def _create_directory_tab_panel(self, parent) -> wx.Panel:
         '''
         @brief Create the directory panel.
 
@@ -488,26 +576,26 @@ class MainFrame(wx.Frame):
         grid = wx.GridBagSizer(8, 8)
 
         self.list_audio_tld, list_audio_btn = self._make_path_controls(panel)
-        list_audio_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.list_audio_tld))
+        list_audio_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.list_audio_tld))
         list_audio_exec = wx.Button(panel, label="List Audio")
-        list_audio_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_list_audio)
+        list_audio_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_list_audio)
 
         self.list_type_tld, list_type_btn = self._make_path_controls(panel)
-        list_type_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.list_type_tld))
+        list_type_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.list_type_tld))
         self.list_type_ext = wx.TextCtrl(panel)
         list_type_exec = wx.Button(panel, label="List Type")
-        list_type_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_list_type)
+        list_type_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_list_type)
 
         self.remove_albums_tld, remove_albums_btn = self._make_path_controls(panel)
-        remove_albums_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.remove_albums_tld))
+        remove_albums_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.remove_albums_tld))
         remove_albums_exec = wx.Button(panel, label="Remove Empty Albums")
-        remove_albums_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_remove_albums)
+        remove_albums_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_remove_albums)
 
         self.remove_pattern_tld, remove_pattern_btn = self._make_path_controls(panel)
-        remove_pattern_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.remove_pattern_tld))
+        remove_pattern_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.remove_pattern_tld))
         self.remove_pattern_pattern = wx.TextCtrl(panel)
         remove_pattern_exec = wx.Button(panel, label="Remove Pattern")
-        remove_pattern_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_remove_pattern)
+        remove_pattern_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_remove_pattern)
 
         grid.Add(wx.StaticText(panel, label="Top-level dir (list audio):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         grid.Add(self.list_audio_tld, pos=(0, 1), flag=wx.EXPAND)
@@ -537,7 +625,7 @@ class MainFrame(wx.Frame):
         return panel
 
 
-    def _panel_metadata(self, parent) -> wx.Panel:
+    def _create_metadata_tab_panel(self, parent) -> wx.Panel:
         '''
         @brief Create the metadata panel.
 
@@ -554,22 +642,22 @@ class MainFrame(wx.Frame):
         grid = wx.GridBagSizer(8, 8)
 
         self.tags_walk_tld, tags_walk_tld_btn = self._make_path_controls(panel)
-        tags_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.tags_walk_tld))
+        tags_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.tags_walk_tld))
         self.tags_walk_pattern = wx.TextCtrl(panel)
         self.tags_walk_ffprobe = wx.CheckBox(panel, label="Use ffprobe")
         tags_walk_exec = wx.Button(panel, label="Get Tags Walk")
-        tags_walk_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_get_tags_walk)
+        tags_walk_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_get_tags_walk)
 
         self.media_info_tld, media_info_btn = self._make_path_controls(panel)
-        media_info_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.media_info_tld))
+        media_info_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.media_info_tld))
         self.media_info_pattern = wx.TextCtrl(panel)
         media_info_exec = wx.Button(panel, label="Get Media Info Walk")
-        media_info_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_get_media_info_walk)
+        media_info_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_get_media_info_walk)
 
         self.unique_media_tld, unique_media_btn = self._make_path_controls(panel)
-        unique_media_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.unique_media_tld))
+        unique_media_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.unique_media_tld))
         unique_media_exec = wx.Button(panel, label="Get Unique Media")
-        unique_media_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_get_unique_media)
+        unique_media_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_get_unique_media)
 
         grid.Add(wx.StaticText(panel, label="Top-level dir (tags walk):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         grid.Add(self.tags_walk_tld, pos=(0, 1), flag=wx.EXPAND)
@@ -597,7 +685,7 @@ class MainFrame(wx.Frame):
         return panel
 
 
-    def _panel_leveling(self, parent) -> wx.Panel:
+    def _create_leveling_tab_panel(self, parent) -> wx.Panel:
         '''
         @brief Create the leveling panel.
 
@@ -620,7 +708,7 @@ class MainFrame(wx.Frame):
 
         # Path controls for bulk directory audio normalization
         self.norm_walk_tld, norm_walk_tld_btn = self._make_path_controls(bulk_subpanel)
-        norm_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.norm_walk_tld))
+        norm_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.norm_walk_tld))
 
         # normalization type drop list for bulk normalization
         self.norm_type_choice = wx.Choice(bulk_subpanel, choices=["ebu", "peak", "rms"])
@@ -629,7 +717,7 @@ class MainFrame(wx.Frame):
 
         # execute button for bulk directory audio normalization
         norm_walk_exec = wx.Button(bulk_subpanel, label="Normalize Directory")
-        norm_walk_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_normalize_walk)
+        norm_walk_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_normalize_walk)
 
         # order the top level directory controls in the bulk directory normalization subpanel grid
         bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
@@ -655,26 +743,26 @@ class MainFrame(wx.Frame):
         # Path controls for specific file ebu normalizations
         mp3_wildcard = "MP3 files (*.mp3)|*.mp3"
         self.ebu_file_path, ebu_file_btn = self._make_path_controls(specific_subpanel)
-        ebu_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_file(evt, self.ebu_file_path, mp3_wildcard))
+        ebu_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.ebu_file_path, mp3_wildcard))
 
         # execute button for specific file EBU normalization
         ebu_file_exec = wx.Button(specific_subpanel, label="EBU Normalize File")
-        ebu_file_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_ebu_file)
+        ebu_file_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_ebu_file)
 
         # Path controls for specific file peak normalizations
         self.peak_file_path, peak_file_btn = self._make_path_controls(specific_subpanel)
-        peak_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_file(evt, self.peak_file_path, mp3_wildcard))
+        peak_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.peak_file_path, mp3_wildcard))
 
         peak_file_exec = wx.Button(specific_subpanel, label="Peak Normalize File")
-        peak_file_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_peak_file)
+        peak_file_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_peak_file)
 
         # Path controls for specific file RMS normalizations
         self.rms_file_path, rms_file_btn = self._make_path_controls(specific_subpanel)
-        rms_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_file(evt, self.rms_file_path, mp3_wildcard))
+        rms_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.rms_file_path, mp3_wildcard))
 
         # execute button for specific file RMS normalization
         rms_file_exec = wx.Button(specific_subpanel, label="RMS Normalize File")
-        rms_file_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_rms_file)
+        rms_file_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_rms_file)
 
         # order the specific file ebu normalization controls in the grid
         specific_grid.Add(wx.StaticText(specific_subpanel, label="File to EBU Normalize:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
@@ -731,7 +819,7 @@ class MainFrame(wx.Frame):
         return path_controls
 
 
-    def _panel_playlist(self, parent) -> wx.Panel:
+    def _create_playlist_tab_panel(self, parent) -> wx.Panel:
         '''
         @brief Create the playlist panel.
 
@@ -755,11 +843,11 @@ class MainFrame(wx.Frame):
 
         # Path controls for updating playlist walk
         self.bulk_tld, bulk_btn = self._make_path_controls(bulk_subpanel)
-        bulk_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_dir(evt, self.bulk_tld))
+        bulk_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.bulk_tld))
 
         # execute button for updating playlist walk
         bulk_exec = wx.Button(bulk_subpanel, label="Update Directory Playlist")
-        bulk_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_update_walk)
+        bulk_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_update_walk)
 
         # order the controls in the update playlist walk subpanel grid
         bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
@@ -781,11 +869,11 @@ class MainFrame(wx.Frame):
         # Path controls for updating M3U playlist
         playlist_wildcard = f"Playlist files ({';'.join('*' + ext for ext in PLAYLIST_EXTS)})|{';'.join('*' + ext for ext in PLAYLIST_EXTS)}"
         self.update_m3u_file, update_m3u_file_btn = self._make_path_controls(specific_subpanel)
-        update_m3u_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.mainHandlers.on_browse_file(evt, self.update_m3u_file, playlist_wildcard))
+        update_m3u_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.update_m3u_file, playlist_wildcard))
 
         # Execute button for updating M3U playlist
         update_m3u_exec = wx.Button(specific_subpanel, label="Update Playlist File")
-        update_m3u_exec.Bind(wx.EVT_BUTTON, self.mainHandlers.on_update_m3u)
+        update_m3u_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_update_m3u)
 
         # order the controls in the update M3U playlist subpanel grid
         specific_grid.Add(wx.StaticText(specific_subpanel, label="Playlist file to update:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
@@ -856,6 +944,7 @@ class MainFrame(wx.Frame):
                 self._move_files_dialog(selected_files)
 
         dlg.Destroy()
+
 
     def _show_generated_playlist_dialog(self):
         '''
