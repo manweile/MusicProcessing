@@ -140,6 +140,14 @@ class MainFrame(wx.Frame):
     rmsLevelFile: wx.Button                                 # Button control for leveling RMS file
     rmsFileBrowse: wx.Button                                # Button control for browsing file RMS leveling path
 
+    playlistUpdateTld: wx.TextCtrl                          # Text control input for playlist update top-level directory
+    playlistWalkBrowse: wx.Button                           # Button control for browsing playlist update top-level directory
+    updateDirPlaylist: wx.Button                            # Button control for updating directory playlist
+
+    updatePlaylistPath: wx.TextCtrl                         # Text control input for the playlist update file path
+    updateFileBrowse: wx.Button                             # Button control for browsing the playlist update file path
+    updatePlaylistFile: wx.Button                           # Button control for updating the playlist file
+
 
     def __init__(
         self,
@@ -452,7 +460,7 @@ class MainFrame(wx.Frame):
 
     def _create_convert_tab(self, parent) -> wx.Panel:
         '''
-        @brief This panel includes controls for audio file conversion
+        @brief This panel includes controls for audio file conversion.
 
         @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
 
@@ -629,7 +637,7 @@ class MainFrame(wx.Frame):
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         grid = wx.GridBagSizer(8, 8)
 
-        #  create the sizers for level tab panel
+        # create the sizers for level tab panel
         levelDirSizer = self._create_level_dir_sizer(panel)
         levelFileSizer = self._create_level_file_sizer(panel)
 
@@ -648,7 +656,7 @@ class MainFrame(wx.Frame):
 
     def _create_level_dir_sizer(self, parent) -> wx.StaticBoxSizer:
         '''
-        @brief Create the bulk directory audio leveling sizer.
+        @brief Create the bulk directory audio leveling section.
 
         @details Provides directory selection, leveling type filtering, and leveling controls.
 
@@ -799,10 +807,9 @@ class MainFrame(wx.Frame):
 
     def _create_playlist_tab(self, parent) -> wx.Panel:
         '''
-        @brief Create the playlist panel.
+        @brief This panels includes controls for updating playlists.
 
-        @details This panel provides controls for updating M3U playlists and performing directory walks.<br>
-        It includes nested subpanels for updating a specific playlist file and for walking a directory tree.
+        @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
 
         @param self {MainFrame} The instance of the class.
         @param parent {Any} The parent window for the panel.
@@ -811,67 +818,150 @@ class MainFrame(wx.Frame):
         '''
 
         panel = wx.Panel(parent)
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         grid = wx.GridBagSizer(8, 8)
 
-        # Update Playlist Walk nested subpanel
-        bulk_box = wx.StaticBox(panel, label="Bulk Directory Playlist Update")
-        bulk_sizer = wx.StaticBoxSizer(bulk_box, wx.VERTICAL)
-        bulk_subpanel = wx.Panel(panel)
-        bulk_grid = wx.GridBagSizer(8, 8)
+        # create the sizers for level tab panel
+        playlistDirSizer = self._create_playlist_dir_sizer(panel)
+        playlistFileSizer = self._create_playlist_file_sizer(panel)
 
-        # Path controls for updating playlist walk
-        self.bulk_tld, bulk_btn = self._make_path_controls(bulk_subpanel)
-        bulk_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.bulk_tld))
+        # order the sub panels side by side in the main grid
+        grid.Add(playlistDirSizer, pos=(0, 0), flag=wx.ALL | wx.EXPAND, border=4)
+        grid.Add(playlistFileSizer, pos=(0, 1), flag=wx.ALL | wx.EXPAND, border=4)
 
-        # execute button for updating playlist walk
-        bulk_exec = wx.Button(bulk_subpanel, label="Update Directory Playlist")
-        bulk_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_update_walk)
+        # make both columns growable so that the sizers expand properly when the panel is resized
+        grid.AddGrowableCol(0, 1)
+        grid.AddGrowableCol(1, 1)
 
-        # order the controls in the update playlist walk subpanel grid
-        bulk_grid.Add(wx.StaticText(bulk_subpanel, label="Top Level Directory to walk:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulk_grid.Add(self.bulk_tld, pos=(0, 1), flag=wx.EXPAND)
-        bulk_grid.Add(bulk_btn, pos=(0, 2))
-        bulk_grid.Add(bulk_exec, pos=(0, 3))
-
-        # allows update playlist walk subpanel to expand when frame is resized
-        bulk_grid.AddGrowableCol(1)
-        bulk_subpanel.SetSizer(bulk_grid)
-        bulk_sizer.Add(bulk_subpanel, 1, wx.EXPAND | wx.ALL, 4)
-
-        # Specific playlist update nested subpanel
-        specific_box = wx.StaticBox(panel, label="Specific Playlist Update")
-        specific_sizer = wx.StaticBoxSizer(specific_box, wx.VERTICAL)
-        specific_subpanel = wx.Panel(panel)
-        specific_grid = wx.GridBagSizer(8, 8)
-
-        # Path controls for updating M3U playlist
-        playlist_wildcard = f"Playlist files ({';'.join('*' + ext for ext in PLAYLIST_EXTS)})|{';'.join('*' + ext for ext in PLAYLIST_EXTS)}"
-        self.update_m3u_file, update_m3u_file_btn = self._make_path_controls(specific_subpanel)
-        update_m3u_file_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.update_m3u_file, playlist_wildcard))
-
-        # Execute button for updating M3U playlist
-        update_m3u_exec = wx.Button(specific_subpanel, label="Update Playlist File")
-        update_m3u_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_update_m3u)
-
-        # order the controls in the update M3U playlist subpanel grid
-        specific_grid.Add(wx.StaticText(specific_subpanel, label="Playlist file to update:"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        specific_grid.Add(self.update_m3u_file, pos=(0, 1), flag=wx.EXPAND)
-        specific_grid.Add(update_m3u_file_btn, pos=(0, 2))
-        specific_grid.Add(update_m3u_exec, pos=(0, 3))
-
-        # allows update M3U subpanel to expand when frame is resized
-        specific_grid.AddGrowableCol(1)
-        specific_subpanel.SetSizer(specific_grid)
-        specific_sizer.Add(specific_subpanel, 1, wx.EXPAND | wx.ALL, 4)
-
-        # order the subpanels in the main grid
-        grid.Add(bulk_sizer, pos=(0, 0), span=(1, 4), flag=wx.ALL | wx.EXPAND, border=4)
-        grid.Add(specific_sizer, pos=(1, 0), span=(1, 4), flag=wx.ALL | wx.EXPAND, border=4)
-
-        grid.AddGrowableCol(1)
         panel.SetSizer(grid)
 
         return panel
+
+
+    def _create_playlist_dir_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Create the bulk directory playlist update section.
+
+        @details Provides directory selection and playlist update controls.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {wx.Panel} The parent panel for the sizer.
+
+        @retval bulk_sizer {wx.StaticBoxSizer} The created sizer for directory playlist updates.
+        '''
+
+        bulkPanel = wx.Panel(parent)
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
+        bulkGrid = wx.GridBagSizer(8, 8)
+
+        # create the static box, sizers, and panel for the bulk directory audio conversion section
+        bulkBox = wx.StaticBox(parent, label="Directory Playlist Update")
+        bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
+
+        # create static text for describing section & starting path label
+        briefDesc = wx.StaticText(bulkPanel, label="Updates all playlist files in a directory walk")
+        resultDesc = wx.StaticText(bulkPanel, label="The updated playlists will be saved in project default output location")
+        startPathLabel = wx.StaticText(bulkPanel, label="Starting path tld or fld:")
+
+        # create controls for selecting the starting path for bulk updating
+        self.playlistUpdateTld, self.playlistWalkBrowse = self._make_path_controls(bulkPanel)
+        self.playlistUpdateTld.Name = "playlistUpdateTld"
+        self.playlistWalkBrowse.Name = "playlistWalkBrowse"
+        self.playlistWalkBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.playlistUpdateTld))
+
+        # create the update playlist button
+        self.updateDirPlaylist = wx.Button(bulkPanel, label="Update Directory Playlist")
+        self.updateDirPlaylist.Bind(wx.EVT_BUTTON, self.eventHandlers.on_update_walk)
+
+        # create a horizontal sizer for the browse and convert buttons
+        buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
+        buttonSizer.Add(self.playlistWalkBrowse, 0, wx.RIGHT, 8)
+        buttonSizer.Add(self.updateDirPlaylist, 0)
+
+        # create a horizontal sizer for the file path row
+        pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
+        pathRowSizer.Add(self.playlistUpdateTld, 1, wx.EXPAND | wx.RIGHT, 8)
+        pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
+
+        # add info text controls to the grid layout
+        bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
+        bulkGrid.Add(resultDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
+
+        # order the top level directory controls in the bulk directory update subpanel grid
+        bulkGrid.Add(startPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(pathRowSizer, pos=(2, 1), span=(1, 3), flag=wx.EXPAND)
+
+        # make the second column growable to allow the controls to expand properly
+        bulkGrid.AddGrowableCol(1)
+
+        # set the sizer for the panel and add it to the static box sizer
+        bulkPanel.SetSizer(bulkGrid)
+        bulkSizer.Add(bulkPanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
+
+        return bulkSizer
+
+
+    def _create_playlist_file_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Create the specific playlist update section.
+
+        @details Provides playlist file selection and update controls.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {wx.Panel} The parent panel for the sizer.
+
+        @retval fileSizer {wx.StaticBoxSizer} The created sizer for specific playlist updates.
+        '''
+
+        filePanel = wx.Panel(parent)
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
+        fileGrid = wx.GridBagSizer(8, 8)
+
+        fileBox = wx.StaticBox(parent, label="Update Playlist File")
+        fileSizer = wx.StaticBoxSizer(fileBox, wx.VERTICAL)
+
+        # create static text for describing section & audio path label
+        briefDesc = wx.StaticText(filePanel, label="Update specific playlist file")
+        resultDesc = wx.StaticText(filePanel, label="The updated file will be saved in project default output location")
+        playlistPathLabel = wx.StaticText(filePanel, label="Playlist file path:")
+
+        # create path input and browse button controls for selecting the audio file
+        playlist_wildcard = f"Playlist files ({';'.join('*' + ext for ext in PLAYLIST_EXTS)})|{';'.join('*' + ext for ext in PLAYLIST_EXTS)}"
+        self.updatePlaylistPath, self.updateFileBrowse = self._make_path_controls(filePanel)
+        self.updatePlaylistPath.Name = "updatePlaylistPath"
+        self.updateFileBrowse.Name = "updateFileBrowse"
+        self.updateFileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.updatePlaylistPath, playlist_wildcard))
+
+        # create the update playlist fille button
+        self.updatePlaylistFile = wx.Button(filePanel, label="Update Playlist File")
+        self.updatePlaylistFile.Bind(wx.EVT_BUTTON, self.eventHandlers.on_update_m3u)
+
+        # create a horizontal sizer for the browse and convert buttons
+        buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
+        buttonSizer.Add(self.updateFileBrowse, 0, wx.RIGHT, 8)
+        buttonSizer.Add(self.updatePlaylistFile, 0)
+
+        # create a horizontal sizer for the file path row
+        pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
+        pathRowSizer.Add(self.updatePlaylistPath, 1, wx.EXPAND | wx.RIGHT, 8)
+        pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
+
+        # add info text controls to the grid layout
+        fileGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
+        fileGrid.Add(resultDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
+
+        # add the path row to the grid layout
+        fileGrid.Add(playlistPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        fileGrid.Add(pathRowSizer, pos=(2, 1), span=(1, 3), flag=wx.EXPAND)
+
+        # make the second column growable to allow the controls to expand properly
+        fileGrid.AddGrowableCol(1)
+
+        # set the sizer for the panel and add it to the static box sizer
+        filePanel.SetSizer(fileGrid)
+        fileSizer.Add(filePanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
+
+        return fileSizer
 
 
     def _create_dir_tab(self, parent) -> wx.Panel:
