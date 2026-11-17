@@ -317,7 +317,10 @@ class DirectoryProcessing():
         @brief Generates a csv containing full file path for audio file extension.
 
         @details Returns all valid audio files when no file pattern is specified.<br>
-        Requires a valid extension such as '.mp3', '.m4a', '.wma', or '.flac' when a pattern is specified.<br>
+        Requires a valid extension such as '.mp3', '.m4a', '.wma', or '.flac' when a pattern is specified.
+
+        @note This functionality is only present in CLI mode, for power users.<br>
+        File path by audio extension type is a subset of full path for all audio files and a txt listing the types of files found.
 
         @param self {DirectoryProcessing} The instance of the class.
         @param start_path {str} The starting path that contains all the music files.<br>

@@ -31,5 +31,5 @@ subcommands:
     rms-file file --target target                           RMS level audio file; mandatory: audio file path; optional: target path
     set-album-art tld                                       Set albums art file; mandatory: start path tld/fld
     update-genres tld csv                                   Update songs genre from CSV; mandatory: start path tld only; mandatory: genre csv file path
-    update-playlist tld m3u                                 Update playlist file songs path; mandatory: start path tld only; mandatory: m3u file path
+    update-playlist m3u                                     Update playlist file songs path; mandatory: m3u file path
     update-walk tld                                         Update playlist files songs path; mandatory: start path tld only

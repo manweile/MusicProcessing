@@ -98,7 +98,7 @@ _COMMAND_ARGUMENTS = {
     "rms-file": ("file", "target"),
     "set-album-art": ("tld",),
     "update-genres": ("tld", "csv"),
-    "update-playlist": ("tld", "m3u"),
+    "update-playlist": ("m3u"),
     "update-walk": ("tld",)
 }
 
@@ -406,17 +406,17 @@ def update_genres(tld_path: str, csv_path: str):
     metadata.update_genres(tld_path, csv_path)
 
 
-def update_playlist(tld_path: str, input_m3u: str):
+def update_playlist(input_m3u: str):
     '''
     @brief Updates playlist-relative paths.
 
-    @details Updates paths in the specified playlist based on the directory structure.
+    @details Updates paths in the specified playlist based on its directory.<br>
+    Assumes the playlist is in the top-level directory containing its referenced audio files.
 
-    @param tld_path {str} The top-level directory containing audio files.
     @param input_m3u {str} The path to the playlist file.
     '''
 
-    playlist.update_playlist(tld_path, input_m3u)
+    playlist.update_playlist(input_m3u)
 
 
 def update_walk(tld_path: str):

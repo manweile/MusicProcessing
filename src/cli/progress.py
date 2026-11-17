@@ -7,6 +7,8 @@
 
 @details Adapts tqdm and yaspin displays to the shared progress interface.
 
+@note This implementation does not require logging functionality.
+
 @version 1.0.0
 @date 2026-11-10
 

@@ -148,8 +148,7 @@ subcommands:
     update-genres tld csv                                   Update songs genre from CSV;
                                                             mandatory: start path tld only; mandatory: artist genre CSV file path
 
-    update-playlist tld m3u                                 Update playlist file songs path;
-                                                            mandatory: start path tld only; mandatory: playlist file in tld path
+    update-playlist m3u                                     Update playlist file songs path; mandatory: m3u file path
 
     update-walk tld                                         Update playlist files songs path;
                                                             mandatory: start path tld only

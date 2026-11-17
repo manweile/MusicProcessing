@@ -87,15 +87,21 @@ class EventHandlers:
         @param path {str} The directory path to validate.
 
         @retval {bool} Whether the path identifies an existing directory.
+
+        @exception e_error {Exception} Raised if an error occurs during validation.
         '''
 
-        if validate_dir(path):
-            return True
+        try:
+            if validate_dir(path):
+                return True
 
-        if not path:
-            wx.MessageBox("Please specify a directory path.", "Validation", wx.ICON_WARNING)
-        else:
-            wx.MessageBox(f"Directory not found: {path}", "Validation", wx.ICON_ERROR)
+            if not path:
+                wx.MessageBox("Please specify a directory path.", "Validation", wx.ICON_WARNING)
+            else:
+                wx.MessageBox(f"Directory not found: {path}", "Validation", wx.ICON_ERROR)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
         return False
 
@@ -110,15 +116,21 @@ class EventHandlers:
         @param path {str} The file path to validate.
 
         @retval {bool} Whether the path identifies an existing file.
+
+        @exception e_error {Exception} Raised if an error occurs during validation.
         '''
 
-        if validate_file(path):
-            return True
+        try:
+            if validate_file(path):
+                return True
 
-        if not path:
-            wx.MessageBox("Please specify a file path.", "Validation", wx.ICON_WARNING)
-        else:
-            wx.MessageBox(f"File not found: {path}", "Validation", wx.ICON_ERROR)
+            if not path:
+                wx.MessageBox("Please specify a file path.", "Validation", wx.ICON_WARNING)
+            else:
+                wx.MessageBox(f"File not found: {path}", "Validation", wx.ICON_ERROR)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
         return False
 
@@ -133,17 +145,23 @@ class EventHandlers:
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
         @param textctrl {wx.TextCtrl} The text control to update with the selected directory path.
+
+        @exception e_error {Exception} Raised if an error occurs during browsing a directory.
         '''
 
-        # prevent typing or picking a non-existent path
-        dlg = wx.DirDialog(self.mainFrame, "Select directory", style=wx.DD_DIR_MUST_EXIST)
+        try:
+            # prevent typing or picking a non-existent path
+            dlg = wx.DirDialog(self.mainFrame, "Select directory", style=wx.DD_DIR_MUST_EXIST)
 
-        if dlg.ShowModal() == wx.ID_OK:
-            path = dlg.GetPath()
-            textctrl.SetValue(path)
-            textctrl.SetFocus()
+            if dlg.ShowModal() == wx.ID_OK:
+                path = dlg.GetPath()
+                textctrl.SetValue(path)
+                textctrl.SetFocus()
 
-        dlg.Destroy()
+            dlg.Destroy()
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_browse_file(self, event, textctrl, wildcard=None):
@@ -157,20 +175,26 @@ class EventHandlers:
         @param event {object} The event object.
         @param textctrl {wx.TextCtrl} The text control to update with the selected file path.
         @param wildcard {str} Optional, the file type filter for the dialog.
+
+        @exception e_error {Exception} Raised if an error occurs during browsing a file.
         '''
 
-        if wildcard is None:
-            wildcard = ""
+        try:
+            if wildcard is None:
+                wildcard = ""
 
-        # open/select existing file; trying to type or choose a non-existent file name will trigger a warning
-        dlg = wx.FileDialog(self.mainFrame, "Select file", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, wildcard=wildcard)
+            # open/select existing file; trying to type or choose a non-existent file name will trigger a warning
+            dlg = wx.FileDialog(self.mainFrame, "Select file", style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, wildcard=wildcard)
 
-        if dlg.ShowModal() == wx.ID_OK:
-            path = dlg.GetPath()
-            textctrl.SetValue(path)
-            textctrl.SetFocus()
+            if dlg.ShowModal() == wx.ID_OK:
+                path = dlg.GetPath()
+                textctrl.SetValue(path)
+                textctrl.SetFocus()
 
-        dlg.Destroy()
+                dlg.Destroy()
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_convert_file_audio(self, event):
@@ -182,17 +206,23 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during file conversion.
         '''
 
-        # get the file path from the GUI and validate it before conversion
-        path = self.mainFrame.convertAudioPath.GetValue().strip()
+        try:
+            # get the file path from the GUI and validate it before conversion
+            path = self.mainFrame.convertAudioPath.GetValue().strip()
 
-        # not a valid file, return early
-        if not self._validate_file(path):
-            return
+            # not a valid file, return early
+            if not self._validate_file(path):
+                return
 
-        callback = self.mainFrame.show_generated_files
-        self.mainFrame.taskRunner.run_task(self.metadata.convert_file, path, on_success=callback)
+            callback = self.mainFrame.show_generated_files
+            self.mainFrame.taskRunner.run_task(self.metadata.convert_file, path, on_success=callback)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_convert_directory_audio(self, event):
@@ -204,24 +234,30 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during directory conversion.
         '''
 
-        # get the top-level directory and validate it before conversion
-        tld = self.mainFrame.convertWalkTld.GetValue().strip()
+        try:
+            # get the top-level directory and validate it before conversion
+            tld = self.mainFrame.convertWalkTld.GetValue().strip()
 
-        # not a valid directory, return early
-        if not self._validate_dir(tld):
-            return
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
 
-        # get the file type pattern selection from the GUI
-        selection = self.mainFrame.convertAudioChoice.GetSelection()
-        if selection == 0:
-            pattern = None
-        else:
-            pattern = self.mainFrame.convertAudioChoice.GetString(selection)
+            # get the file type pattern selection from the GUI
+            selection = self.mainFrame.convertAudioChoice.GetSelection()
+            if selection == 0:
+                pattern = None
+            else:
+                pattern = self.mainFrame.convertAudioChoice.GetString(selection)
 
-        callback = self.mainFrame.show_generated_files
-        self.mainFrame.taskRunner.run_task(self.metadata.convert_walk, tld, pattern, on_success=callback)
+            callback = self.mainFrame.show_generated_files
+            self.mainFrame.taskRunner.run_task(self.metadata.convert_walk, tld, pattern, on_success=callback)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_ebu_file(self, event):
@@ -233,26 +269,38 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during EBU normalization.
         '''
 
-        # get the file path from the GUI and validate it before EBU normalization
-        path = self.mainFrame.ebu_file_path.GetValue().strip()
+        try:
+            # get the file path from the GUI and validate it before EBU normalization
+            path = self.mainFrame.ebuFilePath.GetValue().strip()
 
-        # not a valid file, return early
-        if not self._validate_file(path):
-            return
+            # not a valid file, return early
+            if not self._validate_file(path):
+                return
 
-        # define the callback function to display the result file after EBU normalization
-        def callback():
-            '''
-            @brief Display the EBU normalization result file.
+            # define the callback function to display the result file after EBU normalization
+            def callback():
+                '''
+                @brief Display the EBU normalization result file.
 
-            @details Opens the result file after the ebu normalization task succeeds.
-            '''
+                @details Opens the result file after the ebu normalization task succeeds.
 
-            self.mainFrame._show_result_file("ebu_normalize_file")
+                @exception e_error {Exception} Raises an exception if displaying the result file fails.
+                '''
 
-        self.mainFrame.taskRunner.run_task(self.normalization.ebu_normalize_file, path, on_success=callback)
+                try:
+                    self.mainFrame._show_result_file("ebu_normalize_file")
+
+                except Exception as e_error:
+                    wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+            self.mainFrame.taskRunner.run_task(self.normalization.ebu_normalize_file, path, on_success=callback)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_extract_file_art(self, event):
@@ -264,16 +312,22 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during album art extraction.
         '''
 
-        # get the file path from the GUI and validate it before extracting album art
-        file_path = self.mainFrame.extractArtPath.GetValue().strip()
+        try:
+            # get the file path from the GUI and validate it before extracting album art
+            file_path = self.mainFrame.extractArtPath.GetValue().strip()
 
-        # not a valid file, return early
-        if not self._validate_file(file_path):
-            return
+            # not a valid file, return early
+            if not self._validate_file(file_path):
+                return
 
-        self.mainFrame.taskRunner.run_task(self.art.extract_album_art, file_path)
+            self.mainFrame.taskRunner.run_task(self.art.extract_album_art, file_path)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_extract_directory_art(self, event):
@@ -285,23 +339,29 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during album art extraction from a directory walk.
         '''
 
-        # get the top-level directory and validate it before extracting album art from a directory walk
-        start_path = self.mainFrame.extractArtTld.GetValue().strip()
+        try:
+            # get the top-level directory and validate it before extracting album art from a directory walk
+            start_path = self.mainFrame.extractArtTld.GetValue().strip()
 
-        # not a valid directory, return early
-        if not self._validate_dir(start_path):
-            return
+            # not a valid directory, return early
+            if not self._validate_dir(start_path):
+                return
 
-        # get the file type pattern selection from the GUI
-        selection = self.mainFrame.extractArtChoice.GetSelection()
-        if selection == 0:
-            pattern = None
-        else:
-            pattern = self.mainFrame.extractArtChoice.GetString(selection)
+            # get the file type pattern selection from the GUI
+            selection = self.mainFrame.extractArtChoice.GetSelection()
+            if selection == 0:
+                pattern = None
+            else:
+                pattern = self.mainFrame.extractArtChoice.GetString(selection)
 
-        self.mainFrame.taskRunner.run_task(self.art.extract_walk, start_path, pattern)
+            self.mainFrame.taskRunner.run_task(self.art.extract_walk, start_path, pattern)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_get_media_info_walk(self, event):
@@ -313,23 +373,29 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during media information retrieval from a directory walk.
         '''
 
-        # get the top-level directory and validate it before retrieving media information from a directory walk
-        tld = self.mainFrame.media_info_tld.GetValue().strip()
+        try:
+            # get the top-level directory and validate it before retrieving media information from a directory walk
+            tld = self.mainFrame.media_info_tld.GetValue().strip()
 
-        # not a valid directory, return early
-        if not self._validate_dir(tld):
-            return
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
 
-        # get the file type pattern from the GUI
-        pattern = None
-        stripped_input = self.mainFrame.media_info_pattern.GetValue().strip()
-        if stripped_input != "":
-            pattern = stripped_input
+            # get the file type pattern from the GUI
+            pattern = None
+            stripped_input = self.mainFrame.media_info_pattern.GetValue().strip()
+            if stripped_input != "":
+                pattern = stripped_input
 
-        callback = self.mainFrame.show_generated_files
-        self.mainFrame.taskRunner.run_task(self.metadata.get_media_info_walk, tld, pattern, on_success=callback)
+            callback = self.mainFrame.show_generated_files
+            self.mainFrame.taskRunner.run_task(self.metadata.get_media_info_walk, tld, pattern, on_success=callback)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_get_tags_walk(self, event):
@@ -341,47 +407,31 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during media tags retrieval from a directory walk.
         '''
 
-        # get the top-level directory and validate it before retrieving media tags from a directory walk
-        tld = self.mainFrame.tags_walk_tld.GetValue().strip()
+        try:
+            # get the top-level directory and validate it before retrieving media tags from a directory walk
+            tld = self.mainFrame.tags_walk_tld.GetValue().strip()
 
-        # not a valid directory, return early
-        if not self._validate_dir(tld):
-            return
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
 
-        # get the file type pattern and ffprobe path from the GUI
-        pattern = None
-        stripped_input = self.mainFrame.tags_walk_pattern.GetValue().strip()
-        if stripped_input != "":
-            pattern = stripped_input
+            # get the file type pattern and ffprobe path from the GUI
+            pattern = None
+            stripped_input = self.mainFrame.tags_walk_pattern.GetValue().strip()
+            if stripped_input != "":
+                pattern = stripped_input
 
-        ffprobe = self.mainFrame.tags_walk_ffprobe.GetValue()
+            ffprobe = self.mainFrame.tags_walk_ffprobe.GetValue()
 
-        callback = self.mainFrame.show_generated_files
-        self.mainFrame.taskRunner.run_task(self.metadata.get_tags_walk, tld, pattern, ffprobe, on_success=callback)
+            callback = self.mainFrame.show_generated_files
+            self.mainFrame.taskRunner.run_task(self.metadata.get_tags_walk, tld, pattern, ffprobe, on_success=callback)
 
-
-    def on_get_unique_media(self, event):
-        '''
-        @brief Handle the event for retrieving unique media files from a directory walk.
-
-        @details Retrieves the top-level directory from the GUI, validates it, and then runs the unique media retrieval task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-        '''
-
-        # get the top-level directory and validate it before retrieving unique media files
-        tld = self.mainFrame.unique_media_tld.GetValue().strip()
-
-        # not a valid directory, return early
-        if not self._validate_dir(tld):
-            return
-
-        callback = self.mainFrame.show_generated_files
-        self.mainFrame.taskRunner.run_task(self.metadata.get_unique_media, tld, on_success=callback)
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_list_audio(self, event):
@@ -393,47 +443,23 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during audio file listing.
         '''
 
-        # get the top-level directory and validate it before listing audio files
-        tld = self.mainFrame.list_audio_tld.GetValue().strip()
+        try:
+            # get the top-level directory and validate it before listing audio files
+            tld = self.mainFrame.list_audio_tld.GetValue().strip()
 
-        # not a valid directory, return early
-        if not self._validate_dir(tld):
-            return
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
 
-        callback = self.mainFrame.show_generated_files
-        self.mainFrame.taskRunner.run_task(self.directory.list_audio, tld, on_success=callback)
+            callback = self.mainFrame.show_generated_files
+            self.mainFrame.taskRunner.run_task(self.directory.list_audio, tld, on_success=callback)
 
-
-    def on_list_type(self, event):
-        '''
-        @brief Handle the event for listing files of a specific type in a directory.
-
-        @details Retrieves the top-level directory and file extension from the GUI, validates them, and then runs the file type listing task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-        '''
-
-        # get the top-level directory and validate it before listing files of a specific type
-        tld = self.mainFrame.list_type_tld.GetValue().strip()
-
-        # not a valid directory, return early
-        if not self._validate_dir(tld):
-            return
-
-        # get the file extension from the GUI and validate it before listing files of a specific type
-        ext = self.mainFrame.list_type_ext.GetValue().strip()
-
-        # not a valid file extension, return early
-        if not ext:
-            wx.MessageBox("Please enter a file extension", "Error", wx.ICON_ERROR)
-            return
-
-        callback = self.mainFrame.show_generated_files
-        self.mainFrame.taskRunner.run_task(self.directory.list_type, tld, ext, on_success=callback)
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_level_directory_audio(self, event):
@@ -445,20 +471,26 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during audio normalization in a directory walk.
         '''
 
-        # get the top-level directory and validate it before normalizing audio files in a directory walk
-        tld = self.mainFrame.norm_walk_tld.GetValue().strip()
+        try:
+            # get the top-level directory and validate it before normalizing audio files in a directory walk
+            tld = self.mainFrame.levelWalkTld.GetValue().strip()
 
-        # not a valid directory, return early
-        if not self._validate_dir(tld):
-            return
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
 
-        # get the normalization type from the GUI
-        norm_type = self.mainFrame.norm_type_choice.GetStringSelection().lower()
+            # get the normalization type from the GUI
+            norm_type = self.mainFrame.levelAudioChoice.GetStringSelection().lower()
 
-        callback = self.mainFrame.show_generated_files
-        self.mainFrame.taskRunner.run_task(self.normalization.normalize_walk, tld, norm_type, on_success=callback)
+            callback = self.mainFrame.show_generated_files
+            self.mainFrame.taskRunner.run_task(self.normalization.normalize_walk, tld, norm_type, on_success=callback)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_peak_file(self, event):
@@ -470,26 +502,38 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during peak normalization of the audio file.
         '''
 
-        # get the file path from the GUI and validate it before peak normalizing the audio file
-        path = self.mainFrame.peak_file_path.GetValue().strip()
+        try:
+            # get the file path from the GUI and validate it before peak normalizing the audio file
+            path = self.mainFrame.peakFilePath.GetValue().strip()
 
-        # not a valid file, return early
-        if not self._validate_file(path):
-            return
+            # not a valid file, return early
+            if not self._validate_file(path):
+                return
 
-        # define the callback function to display the result file after EBU normalization
-        def callback():
-            '''
-            @brief Display the Peak normalization result file.
+            # define the callback function to display the result file after EBU normalization
+            def callback():
+                '''
+                @brief Display the Peak normalization result file.
 
-            @details Opens the result file after the peak normalization task succeeds.
-            '''
+                @details Opens the result file after the peak normalization task succeeds.
 
-            self.mainFrame._show_result_file("peak_normalize_file")
+                @exception e_error {Exception} Raises an exception if displaying the result file fails.
+                '''
 
-        self.mainFrame.taskRunner.run_task(self.normalization.peak_normalize_file, path, on_success=callback)
+                try:
+                    self.mainFrame._show_result_file("peak_normalize_file")
+
+                except Exception as e_error:
+                    raise e_error
+
+            self.mainFrame.taskRunner.run_task(self.normalization.peak_normalize_file, path, on_success=callback)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_remove_albums(self, event):
@@ -501,15 +545,21 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during album removal.
         '''
 
-        # get the top-level directory and validate it before removing albums
-        tld = self.mainFrame.remove_albums_tld.GetValue().strip()
-        if not self._validate_dir(tld):
-            return
+        try:
+            # get the top-level directory and validate it before removing albums
+            tld = self.mainFrame.remove_albums_tld.GetValue().strip()
+            if not self._validate_dir(tld):
+                return
 
-        callback = self.mainFrame.show_generated_files
-        self.mainFrame.taskRunner.run_task(self.directory.remove_albums, tld, on_success=callback)
+            callback = self.mainFrame.show_generated_files
+            self.mainFrame.taskRunner.run_task(self.directory.remove_albums, tld, on_success=callback)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_remove_pattern(self, event):
@@ -521,25 +571,31 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during pattern removal.
         '''
 
-        # get the top-level directory and validate it before removing files matching a pattern
-        tld = self.mainFrame.remove_pattern_tld.GetValue().strip()
+        try:
+            # get the top-level directory and validate it before removing files matching a pattern
+            tld = self.mainFrame.remove_pattern_tld.GetValue().strip()
 
-        # not a valid directory, return early
-        if not self._validate_dir(tld):
-            return
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
 
-        # get the pattern from the GUI and validate it before removing files matching a pattern
-        pattern = self.mainFrame.remove_pattern_pattern.GetValue().strip()
+            # get the pattern from the GUI and validate it before removing files matching a pattern
+            pattern = self.mainFrame.remove_pattern_pattern.GetValue().strip()
 
-        # not a valid pattern, return early
-        if not pattern:
-            wx.MessageBox("Please enter a pattern to remove", "Error", wx.ICON_ERROR)
-            return
+            # not a valid pattern, return early
+            if not pattern:
+                wx.MessageBox("Please enter a pattern to remove", "Error", wx.ICON_ERROR)
+                return
 
-        callback = self.mainFrame.show_generated_files
-        self.mainFrame.taskRunner.run_task(self.directory.remove_pattern, tld, pattern, on_success=callback)
+            callback = self.mainFrame.show_generated_files
+            self.mainFrame.taskRunner.run_task(self.directory.remove_pattern, tld, pattern, on_success=callback)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_rms_file(self, event):
@@ -551,26 +607,38 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during RMS normalization.
         '''
 
-        # get the file path from the GUI and validate it before RMS normalizing the audio file
-        path = self.mainFrame.rms_file_path.GetValue().strip()
+        try:
+            # get the file path from the GUI and validate it before RMS normalizing the audio file
+            path = self.mainFrame.rmsFilePath.GetValue().strip()
 
-        # not a valid file, return early
-        if not self._validate_file(path):
-            return
+            # not a valid file, return early
+            if not self._validate_file(path):
+                return
 
-        # define the callback function to display the result file after RMS normalization
-        def callback():
-            '''
-            @brief Display the RMS normalization result file.
+            # define the callback function to display the result file after RMS normalization
+            def callback():
+                '''
+                @brief Display the RMS normalization result file.
 
-            @details Opens the result file after the normalization task succeeds.
-            '''
+                @details Opens the result file after the normalization task succeeds.
 
-            self.mainFrame._show_result_file("rms_normalize_file")
+                @exception e_error {Exception} Raises an exception if displaying the result file fails.
+                '''
 
-        self.mainFrame.taskRunner.run_task(self.normalization.rms_normalize_file, path, on_success=callback)
+                try:
+                    self.mainFrame._show_result_file("rms_normalize_file")
+
+                except Exception as e_error:
+                    raise e_error
+
+            self.mainFrame.taskRunner.run_task(self.normalization.rms_normalize_file, path, on_success=callback)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_set_album_art(self, event):
@@ -582,20 +650,26 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during album art setting.
         '''
 
-        # get the top-level directory and validate it before setting album art for audio files in a directory
-        tld = self.mainFrame.setArtTld.GetValue().strip()
+        try:
+            # get the top-level directory and validate it before setting album art for audio files in a directory
+            tld = self.mainFrame.setArtTld.GetValue().strip()
 
-        # not a valid directory, return early
-        if not self._validate_dir(tld):
-            return
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
 
-        callback = self.mainFrame.show_generated_files
-        self.mainFrame.taskRunner.run_task(self.art.set_album_art, tld, on_success=callback)
+            callback = self.mainFrame.show_generated_files
+            self.mainFrame.taskRunner.run_task(self.art.set_album_art, tld, on_success=callback)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
-    def on_update_m3u(self, event):
+    def on_update_playlist(self, event):
         '''
         @brief Handle the event for updating an M3U playlist.
 
@@ -604,17 +678,23 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during playlist update.
         '''
 
-        # get the M3U file path from the GUI and validate it before updating the playlist
-        m3u_file = self.mainFrame.update_m3u_file.GetValue().strip()
+        try:
+            # get the M3U file path from the GUI and validate it before updating the playlist
+            m3u_file = self.mainFrame.updatePlaylistPath.GetValue().strip()
 
-        # not a valid file, return early
-        if not self._validate_file(m3u_file):
-            return
+            # not a valid file, return early
+            if not self._validate_file(m3u_file):
+                return
 
-        callback = self.mainFrame._show_generated_playlist_dialog
-        self.mainFrame.taskRunner.run_task(self.playlist.update_playlist, m3u_file, on_success=callback)
+            callback = self.mainFrame._show_generated_playlist_dialog
+            self.mainFrame.taskRunner.run_task(self.playlist.update_playlist, m3u_file, on_success=callback)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
     def on_update_walk(self, event):
@@ -626,14 +706,20 @@ class EventHandlers:
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during directory walk update.
         '''
 
-        # get the top-level directory from the GUI and validate it before updating a directory walk
-        tld = self.mainFrame.bulk_tld.GetValue().strip()
+        try:
+            # get the top-level directory from the GUI and validate it before updating a directory walk
+            tld = self.mainFrame.playlistUpdateTld.GetValue().strip()
 
-        # not a valid directory, return early
-        if not self._validate_dir(tld):
-            return
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
 
-        callback = self.mainFrame._show_generated_playlist_dialog
-        self.mainFrame.taskRunner.run_task(self.playlist.update_walk, tld, on_success=callback)
+            callback = self.mainFrame._show_generated_playlist_dialog
+            self.mainFrame.taskRunner.run_task(self.playlist.update_walk, tld, on_success=callback)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)

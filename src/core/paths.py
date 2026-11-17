@@ -7,6 +7,8 @@
 
 @details Provides definitions for core paths used throughout the application.
 
+@note This implementation does not require logging functionality.
+
 @version 1.0.0
 @date 2026-11-02
 

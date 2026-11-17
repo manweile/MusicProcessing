@@ -81,6 +81,8 @@ class TaskRunner:
         @param func {Callable} The function to run.
         @param args {Tuple} Arguments to pass to the function.
         @param on_success {Optional[Callable]} Callback to dispatch after successful completion.
+
+        @exception e_error {Exception} Raised if the task encounters an error.
         '''
 
         # log the start of the task execution
@@ -95,13 +97,13 @@ class TaskRunner:
             if on_success:
                 self._call_after(on_success)
 
-        except Exception as error:
+        except Exception as e_error:
             # log the exception and prepare to dispatch the error callback
             logging.getLogger(__name__).exception("Task %s failed", func.__name__)
-            self._log(f"{func.__name__} failed: {error}")
+            self._log(f"{func.__name__} failed: {e_error}")
 
             # dispatch the error callback with the error message
-            self._call_after(self._show_error, str(error))
+            self._call_after(self._show_error, str(e_error))
         finally:
             # ensure the busy state is reset to idle regardless of task outcome
             self._call_after(self._set_busy_state, False)

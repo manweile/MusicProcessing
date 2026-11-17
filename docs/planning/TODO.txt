@@ -7,382 +7,405 @@ NOT DISPOSED:
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 DOXYGEN:
-1) determine best practice for file doc blocks and update file doc blocks examples, this will be a major refactoring
-  a) __init__.py files get:
-    @file src/core/__init__.py
-    @package core
-  b) *.py files with just stand alone defs get:
-    @file src/core/logging_config.py
-    @package src.core.logging_config
-  c) *.py files with one class get:
-    @file src/core/directory_processing.py
-    @package src.core.directory_processing
-  d) *.py files with multiple classes get:
-    @file src/core/progress.py
-    @package core.progress
-  e) *.py with mixed classes and stand alone defs get:
-    @file src/core/parser.py
-    @package src.core.parser
-  f) python.instructions.md will need change in file doc block rules (note that @file always comes first)
-  g) do a one off test to verify good doxygen html
-TODO
+  1) determine best practice for file doc blocks and update file doc blocks examples, this will be a major refactoring
+    a) __init__.py files get:
+      @file src/core/__init__.py
+      @package core
+    b) *.py files with just stand alone defs get:
+      @file src/core/logging_config.py
+      @package src.core.logging_config
+    c) *.py files with one class get:
+      @file src/core/directory_processing.py
+      @package src.core.directory_processing
+    d) *.py files with multiple classes get:
+      @file src/core/progress.py
+      @package core.progress
+    e) *.py with mixed classes and stand alone defs get:
+      @file src/core/parser.py
+      @package src.core.parser
+    f) python.instructions.md will need change in file doc block rules (note that @file always comes first)
+    g) do a one off test to verify good doxygen html
+  TODO
 
-2) I really don't want to curate all the constants for file paths with two or more @details in tests\__init__.py
-  eg:
-    ## @var TEST_MP3_ABBA
-    # @brief Path to mp3 audio file for tests.
-    # @details Use this when needing a mp3 audio file for audio art tests.
-    # @details Use this when needing a mp3 audio file for audio metadata tests.
-    # @details Use this when needing a mp3 audio file for audio normalization tests.
-    # @details This mp3 has a co-located Folder.jpg file.
-    TEST_MP3_ABBA = os.path.join(TESTS_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+  2) I really don't want to curate all the constants for file paths with two or more @details in tests\__init__.py
+    eg:
+      ## @var TEST_MP3_ABBA
+      # @brief Path to mp3 audio file for tests.
+      # @details Use this when needing a mp3 audio file for audio art tests.
+      # @details Use this when needing a mp3 audio file for audio metadata tests.
+      # @details Use this when needing a mp3 audio file for audio normalization tests.
+      # @details This mp3 has a co-located Folder.jpg file.
+      TEST_MP3_ABBA = os.path.join(TESTS_TLD, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
 
-  a) unnecessary tech debt to maintain.
-  b) thats what table in testing.md is for; details 1-4 are reflected in the Testing.md table Test Case column
-  c) each variable should only have 1 details item
-    i) the specifics should NOT be documented be anywhere else
-    ii) the specifics should pertinent to use
-    eg: @details Use this when needing a mp3 audio file for tests
+    a) unnecessary tech debt to maintain.
+    b) thats what table in testing.md is for; details 1-4 are reflected in the Testing.md table Test Case column
+    c) each variable should only have 1 details item
+      i) the specifics should NOT be documented be anywhere else
+      ii) the specifics should pertinent to use
+      eg: @details Use this when needing a mp3 audio file for tests
+  TODO
 TODO
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ENVIRONMENT:
-1) get pylance hover working how I want it to
-   a) figure out to get doxygen html I like with pylance I like
-   Eg given this doc header:
-    def _timestamp() -> str:
-        '''
-        @brief Get the current timestamp as a string.
+  1) get pylance hover working how I want it to
+    a) figure out to get doxygen html I like with pylance I like
+    Eg given this doc header:
+      def _timestamp() -> str:
+          '''
+          @brief Get the current timestamp as a string.
+
+          @details This function is used for generating unique result file names based on the current date and time.
+
+          @retval time_stamp {str} A string representing the current timestamp in the format "YYYY-MM-DD HH:MM:SS".
+
+          @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
+          '''
+
+      returns this pyLance on hover:
+        (function) def _timestamp() -> str
+
+        Get the current timestamp as a string.
 
         @details This function is used for generating unique result file names based on the current date and time.
 
         @retval time_stamp {str} A string representing the current timestamp in the format "YYYY-MM-DD HH:MM:SS".
 
         @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
-        '''
 
-    returns this pyLance on hover:
-      (function) def _timestamp() -> str
+      doxygen generates this html:
+        ◆ _timestamp()
+        str _timestamp 	( 		)                                                                              protected
 
-      Get the current timestamp as a string.
+        Get the current timestamp as a string.
 
-      @details This function is used for generating unique result file names based on the current date and time.
+        This function is used for generating unique result file names based on the current date and time.
 
-      @retval time_stamp {str} A string representing the current timestamp in the format "YYYY-MM-DD HH:MM:SS".
+        Return values
+            time_stamp	{str} A string representing the current timestamp in the format "YYYY-MM-DD HH:MM:SS".
 
-      @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
+        Exceptions
+            e_error	{Exception} A common baseclass exception to handle unforeseen errors.
 
-    doxygen generates this html:
-      ◆ _timestamp()
-      str _timestamp 	( 		)                                                                              protected
+    b) pyLance output is NOT consistent across project
+      i) @brief doe NOT display, just the text, whereas @details gives the tag and text
+      ii) I want consistent for both, lean to displaying the tag for consistency
+      iii) @note appears to render properly, though does need <br> for line separation.
+      iv) @code appears to render properly, though is tad clunk with the @code{.text} and @endcode
+      v) @param is a PITA, when it displays (which is not consistent), its NOT 1 line per tag
+      vi) @retval might be ok, but need to figure how to handle instantiated variable return vs raw value return
+      vii) reasonably sure @return is not acceptable to doxygen
+      viii) @exception is a PITA, its NOT 1 line per tag
+    c) the source doc header example does generate acceptable doxygen html I like, want to keep it.
+      i) note how doxygen html nicely formats the Return Values and Exceptions (also nicely formats Parameters)
+      I really want to have that in pyLance
+  TODO
 
-      Get the current timestamp as a string.
+  2) Possibly update yaspin, tqdm, wxpython, mutagen versions
+    a) need to check inter compatibility first; may end up with using current versions
+  TODO
 
-      This function is used for generating unique result file names based on the current date and time.
+  3) Update environment.md
+    a) think about adding wxPython install on Linux instructions - it's a brute
+    b) think about adding ffmpeg install instructions, win & linux
+    c) add pip install -r requirements.txt option
+  TODO
 
-      Return values
-          time_stamp	{str} A string representing the current timestamp in the format "YYYY-MM-DD HH:MM:SS".
+  4) Think about wxFormBuilder
+    a) integrating and using
+      ) medium weight research & practice needed
+    b) adding install & usage instructions to environment.md
+  TODO
 
-      Exceptions
-          e_error	{Exception} A common baseclass exception to handle unforeseen errors.
-
-   b) pyLance output is NOT consistent across project
-    i) @brief doe NOT display, just the text, whereas @details gives the tag and text
-    ii) I want consistent for both, lean to displaying the tag for consistency
-    iii) @note appears to render properly, though does need <br> for line separation.
-    iv) @code appears to render properly, though is tad clunk with the @code{.text} and @endcode
-    v) @param is a PITA, when it displays (which is not consistent), its NOT 1 line per tag
-    vi) @retval might be ok, but need to figure how to handle instantiated variable return vs raw value return
-    vii) reasonably sure @return is not acceptable to doxygen
-    viii) @exception is a PITA, its NOT 1 line per tag
-   c) the source doc header example does generate acceptable doxygen html I like, want to keep it.
-    i) note how doxygen html nicely formats the Return Values and Exceptions (also nicely formats Parameters)
-    I really want to have that in pyLance
-TODO
-
-2) Possibly update yaspin, tqdm, wxpython, mutagen versions
-  a) need to check inter compatibility first; may end up with using current versions
-TODO
-
-3) Update environment.md
-  a) think about adding wxPython install on Linux instructions - it's a brute
-  b) think about adding ffmpeg install instructions, win & linux
-  c) add pip install -r requirements.txt option
-TODO
-
-4) Think about wxFormBuilder
-  a) integrating and using
-    ) medium weight research & practice needed
-  b) adding install & usage instructions to environment.md
-TODO
-
-5) add rule to python.instructions.md
-  a) refer to __read_artist_genres:
-  the if blocks where errors are logged and raised is the pattern I use to handle warnings, errors & exceptions.
-  the except blocks at end the function are the pattern I use to handle:
-    unexpected exceptions - they get logged and raised
-    the handled exceptions: (like from the if blocks) have already logged the problem,
-    so they just raise the exception up the chain Note that this pattern is why almost every function has a generic "except Exception as e_error:"
+  5) python.instructions.md is getting very big and not being applied very well in certain cases
+    a) analyze file
+      i) expensive in copilot constants
+      ii) parse out the stuff that truly applies to every python file
+      iii) split it up, make it more atomic? ie python.class.instructions.md etc stuff that ONLY applies to particular file types
+        1) class files
+        2) test files
+        3) ??
+    b) add rule to python.instructions.md; refer to __read_artist_genres:
+      i)  the if blocks where errors are logged and raised is the pattern I use to handle warnings, errors & exceptions.
+          the except blocks at end the function are the pattern I use to handle:
+            unexpected exceptions - they get logged and raised
+            the handled exceptions: (like from the if blocks) have already logged the problem,
+          so they just raise the exception up the chain
+          Note that this pattern is why almost every function has a generic "except Exception as e_error:"
+  TODO
 TODO
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 MODELS:
-1) rethink get_audio_file_list and get_ext_file_list functions in directory processing
-  a) get_ext_file_list is basically a subset of get_audio_file_list; get_audio_file_list sorts on the file ext col in csv
-  b) get_audio_file_list txt files specify the file paths for:
-    Found 1 csv files
-    Found 6 jpg files
-    Found 1 text files
-    Found 1 m3u files
-    Found 1 unknown type files
-    Found 10 non-audio files
-
+  2) get_audio_file_list has 1 bug
+    a) file paths with a comma in them are adding a extra column to output csv
     eg:
-    Found 1 csv files
-      D:\MusicProcessing\tests\Music\test.csv
-    Found 6 jpg files
-      D:\MusicProcessing\tests\Music\Abba\Waterloo\Folder.jpg
-      D:\MusicProcessing\tests\Music\Cream\Goodbye\Folder.jpg
-      D:\MusicProcessing\tests\Music\Creedence Clearwater Revival\Chronicle, Vol. 1\Folder.jpg
-      D:\MusicProcessing\tests\Music\Genesis\In Too Deep-I’d Rather Be You\Folder.jpg
-      D:\MusicProcessing\tests\Music\NoMetadata\Here\Folder.jpg
-      D:\MusicProcessing\tests\Music\The Eagles\Desperado\Folder.jpg
-    Found 1 text files
-      D:\MusicProcessing\tests\Music\test.txt
-    Found 1 m3u files
-      D:\MusicProcessing\tests\Music\test.m3u
-    Found 1 unknown type files
-      D:\MusicProcessing\tests\Music\test.sh
-    Found 10 non-audio files
-TODO
+    d:\MusicProcessing\tests\Music\Albert Collins\Best Of The Blues, Vol. 1\Albert Collins - Trash Talkin'.mp3;.mp3
+    d:\MusicProcessing\tests\Music\Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma;.wma
+  TODO
 
-2) get_audio_file_list has 1 bug
-  a) file paths with a comma in them are adding a extra column to output csv
-  eg:
-  d:\MusicProcessing\tests\Music\Albert Collins\Best Of The Blues, Vol. 1\Albert Collins - Trash Talkin'.mp3;.mp3
-  d:\MusicProcessing\tests\Music\Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma;.wma
-TODO
+  3) create_csv, create_txt, get_file_directory, make_dir, path_info are really private utilities
+    a) think about moving them out of directory_processing into say folder_utilities??
+      i) this could be can of worms - there are a few private art, metadata, playlist functions too
+      ii) though subprocess_utilities is an established pattern
+      iii) could have art_utilities, metadata_utilities, playlist_utilities
+      iv) remember that _func and __func defs require different unit test handling
+  TODO
 
-3) create_csv, create_txt, get_file_directory, make_dir, path_info are really utilities
-  a) think about moving them out of directory_processing
-TODO
-
-4) think about refactoring package naming/structure
-  a) src.models.audio_info -> audio_info maybe not necessary
-  b) src.models.audio_normalize -> audio_normalize maybe not necessary
-  c) src.models.dir_processing -> dir_processing maybe not necessary
+  4) think about refactoring package naming/structure
+    a) src.models.audio_info -> audio_info maybe not necessary
+    b) src.models.audio_normalize -> audio_normalize maybe not necessary
+    c) src.models.dir_processing -> dir_processing maybe not necessary
+  TODO
 TODO
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 CLI:
-1) change command arguments THIS IS A BIG REFACTOR
-  a)
-    _COMMAND_ARGUMENTS = {
-        "clip-check-file": ("file",),
-        "clip-check-walk": ("tld",),
-        "convert-file": ("file", "target"),
-        "convert-walk": ("tld", "pattern", "target"),       ->convert-file-walk
-        "create-albums": ("tld",),
-        "ebu-file": ("file", "target"),                     ->level-normalize-ebu
-        "extract-album-art": ("file",),                     ->extract-file-art
-        "extract-walk": ("tld", "pattern"),                 ->extract-art-walk
-        "get-audio-file-list": ("tld",),
-        "get-ext-file-list": ("tld", "pattern"),
-        "get-media-info-walk": ("tld", "pattern"),          ->get-audio-info-walk
-        "get-tags-walk": ("tld", "pattern", "ffprobe"),     ->get-media-tags-walk
-        "gui": (),
-        "level-normalize-walk": ("tld", "type", "target"),
-        "normalize-filename": ("file",),                    ->rename-file
-        "normalize-filename-walk": ("tld",),                ->rename-file-walk
-        "peak-file": ("file", "target"),                    ->level-normalize-peak
-        "remove-empty-albums": ("tld",),
-        "remove-pattern": ("tld", "pattern"),
-        "remove-set-list": ("tld",),
-        "rename-album-directories": ("tld",),
-        "rms-file": ("file", "target"),                     ->level-normalize-rms
-        "set-album-art": ("tld",),                          ->set-art-walk
-        "update-genres": ("tld", "csv"),
-        "update-playlist": ("tld", "m3u"),
-        "update-walk": ("tld",)                             ->update-playlist-walk
-    }
-  b) change matching function defs
-    eg: def convert_walk                                    ->convert_file_walk
+  1) think about playlist update having optional target input
+    a) keeps pattern established by convert and level
+  TODO
+
+  2) change command arguments THIS IS A BIG REFACTOR
+    a)
+      _COMMAND_ARGUMENTS = {
+          "clip-check-file": ("file",),
+          "clip-check-walk": ("tld",),
+          "convert-file": ("file", "target"),
+          "convert-walk": ("tld", "pattern", "target"),       ->convert-file-walk
+          "create-albums": ("tld",),
+          "ebu-file": ("file", "target"),                     ->level-normalize-ebu
+          "extract-album-art": ("file",),                     ->extract-file-art
+          "extract-walk": ("tld", "pattern"),                 ->extract-art-walk
+          "get-audio-file-list": ("tld",),
+          "get-ext-file-list": ("tld", "pattern"),
+          "get-media-info-walk": ("tld", "pattern"),          ->get-audio-info-walk
+          "get-tags-walk": ("tld", "pattern", "ffprobe"),     ->get-media-tags-walk
+          "gui": (),
+          "level-normalize-walk": ("tld", "type", "target"),
+          "normalize-filename": ("file",),                    ->rename-file
+          "normalize-filename-walk": ("tld",),                ->rename-file-walk
+          "peak-file": ("file", "target"),                    ->level-normalize-peak
+          "remove-empty-albums": ("tld",),
+          "remove-pattern": ("tld", "pattern"),
+          "remove-set-list": ("tld",),
+          "rename-album-directories": ("tld",),
+          "rms-file": ("file", "target"),                     ->level-normalize-rms
+          "set-album-art": ("tld",),                          ->set-art-walk
+          "update-genres": ("tld", "csv"),
+          "update-playlist": ("m3u"),
+          "update-walk": ("tld",)                             ->update-playlist-walk
+      }
+    b) change matching function defs
+      eg: def convert_walk                                    ->convert_file_walk
+    c) should some items have this trailing comma format: "clip-check-walk": ("tld",)?
+      i) investigate
+  TODO
 TODO
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 GUI:
-1) implement mvc refactoring planning
-  a) major refactoring
-  b) items all GUI objects need to be in camelCase (2) & Remove unique media walk from GUI (3) are concurrent
+  1) implement mvc refactoring planning
+    a) major refactoring
+    b) items all GUI objects need to be in camelCase (2) & Remove unique media walk from GUI (3) are concurrent
+  IN PROGRESS
+
+  2) all GUI objects need to be in camelCase
+    a) really confusing if not;
+    eg list_type_tld  its a wx.TextCtrl for directory path input
+      i) when you see it like this: self.list_type_tld, while it is a variable
+      ii) it is really a TextCtrl variable and will be exposed  to other modules, especially handlers.py!
+    b) complete BEFORE Milestone 7 Phase 2
+  IN PROGRESS
+
+  4) add the new functions: clip_check_file, clip_walk, create_albums, rename_albums etc
+    a) to which tab do each of them belong?
+  IN PROGRESS
+
+  5) put UI magic strings into appropriate __init__.py as constants
+    a) reference appropriately and use
+  TODO
+
+  6) Modify Convert tab UI/UX
+    a) add optional target directory input, default to output/Music
+      i) applies to single file conversion
+      ii) applies to directory walk conversions
+    b) remove "after conversion" move dialog
+      i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
+  TODO
+
+  7) Modify Leveling tab UI/UX
+    a) add optional target directory input, default to output/Music
+      i) applies to single file conversion
+      ii) applies to directory walk conversions
+    b) remove "after leveling" move dialog
+      i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
+  TODO
+
+  8) add icons to tabs
+    a) will need to find appropriate iconography
+    b) will need to add licenses etc
+    c) going to need an "about" menu item?
+  TODO
+
+  9) How do I log warnings?
+    a) warnings are not fatal, but user does need to know.
+      i) currently neither CLI or GUI mode inform user
+    b) test case: run extract art on D:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
+      this file has no art at all, so extract_album_art will log into debug.log, info.log, warning.log, main.log, audio_art.log
+      but the gui will show success!!
+      Need to check on what CLI does.
+      Do I need to throw a MusicProcessing Error in extract_album_art? Note this will probably change tests
+      Also, there are other model functions that have this pattern - write to a log file
+      Basically, have to inspect and think about every logger.info and logger.warning.
+      Some of the logger.warnings may need to be upgraded to actually throwing an exception.
+    c) test_audio_playlist.test_update_playlist has a patch for logger.warning; changes made may impact this
+  TODO
+
+  10) rethink displaying function output.
+    a) model functions have changed
+    b) possibly want to display file output in splitter control log area
+  TODO
+
+  11) think about adding menu structure
+    a) QoL feature
+  TODO
+
+  12) rename AlbumArt
+    a) use album_art instead; more in keeping with other resource directory names
+  TODO
+
+  13) think about renaming Music to music_files
+    a) just to keep things looking clean
+  TODO
+
+  14) splitter pane needs a clear button
+    a) real PITA having to parse through old results
+  TODO
+
+  15) after an action completes
+    a) need path input to clear from input field
+    b) path input prepended to success message
+    c) this may mean some model functions will require return values
+  TODO
+
+  16) display logger.info messages
+    a) go through and remove unnecessary logger.info
+    b) some info's user needs to know
+    c) in gui mode, need to display in log pane
+    d) in cli mode display in terminal
+      i) but need to handle test mode (ie headless)
+    e) this may mean some model functions will require return values
+    f) test_directory_processing.test_path_info_not_audio has a patch for logger.info; changes made may impact this
+  TODO
+
+  17) add cancel buttons
+    a) will require thought about layout change
+    b) cancel action will clear related input field
+  TODO
+
+  18) Add color to each function action sub panel border.
+    a) wil be temp until GUI layout complete
+    b) makes it easier to visualize layouts
+  TODO
+
+  19) programmatically figure out monitor resolution
+    a) use it to size app frame
+    b) divide it in half to set splitter sash
+  TODO
+
+  20) exception handling & logging in task_runner
+    a) shouldn't run_task have try/except at minimum?
+      i) its a threading function, so not sure how error handling would work - need investigation
+    b) worker sets up it's logging in the except clause
+      i) why not use the same logging setup as models etc do?
+  TODO
 IN PROGRESS
-
-2) all GUI objects need to be in camelCase
-  a) really confusing if not;
-  eg list_type_tld  its a wx.TextCtrl for directory path input
-    i) when you see it like this: self.list_type_tld, while it is a variable
-    ii) it is really a TextCtrl variable and will be exposed  to other modules, especially handlers.py!
-  b) complete BEFORE Milestone 7 Phase 2
-IN PROGRESS
-
-3) Remove unique media walk from GUI
-  a) unique media walk removed from functionality
-  b) this must be done BEFORE Milestone 7.2f
-IN PROGRESS
-
-4) put UI magic strings into appropriate __init__.py as constants
-  a) reference appropriately and use
-TODO
-
-5) Modify Convert tab UI/UX
-  a) add optional target directory input, default to output/Music
-    i) applies to single file conversion
-    ii) applies to directory walk conversions
-  b) remove "after conversion" move dialog
-    i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
-TODO
-
-6) Modify Leveling tab UI/UX
-  a) add optional target directory input, default to output/Music
-    i) applies to single file conversion
-    ii) applies to directory walk conversions
-  b) remove "after leveling" move dialog
-    i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
-TODO
-
-7) add icons to tabs
-  a) will need to find appropriate iconography
-  b) will need to add licenses etc
-  c) going to need an "about" menu item?
-TODO
-
-8) How do I log warnings?
-  a) warnings are not fatal, but user does need to know.
-    i) currently neither CLI or GUI mode inform user
-  b) test case: run extract art on D:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
-    this file has no art at all, so extract_album_art will log into debug.log, info.log, warning.log, main.log, audio_art.log
-    but the gui will show success!!
-    Need to check on what CLI does.
-    Do I need to throw a MusicProcessing Error in extract_album_art? Note this will probably change tests
-    Also, there are other model functions that have this pattern - write to a log file
-    Basically, have to inspect and think about every logger.info and logger.warning.
-    Some of the logger.warnings may need to be upgraded to actually throwing an exception.
-  c) test_audio_playlist.test_update_playlist has a patch for logger.warning; changes made may impact this
-TODO
-
-9) add the new functions: clip_check_file, clip_walk, rename_albums etc
-  a) to which tab do each of them belong?
-TODO
-
-10) rethink metadata and directory tabs.
-  a) model functions have changed
-  b) possibly want to display file output in splitter control log area
-TODO
-
-11) think about adding menu structure
-  a) QoL feature
-TODO
-
-12) rename AlbumArt
-  a) use album_art instead; more in keeping with other resource directory names
-TODO
-
-13) think about renaming Music to music_files
-  a) just to keep things looking clean
-TODO
-
-14) splitter pane needs a clear button
-  a) real PITA having to parse through old results
-TODO
-
-15) after an action completes
-  a) need path input to clear from input field
-  b) path input prepended to success message
-  c) this may mean some model functions will require return values
-TODO
-
-16) display logger.info messages
-  a) go through and remove unnecessary logger.info IN PROGRESS
-  b) some info's user needs to know
-  c) in gui mode, need to display in log pane
-  d) in cli mode display in terminal
-    i) but need to handle test mode (ie headless)
-  e) this may mean some model functions will require return values
-  f) test_directory_processing.test_path_info_not_audio has a patch for logger.info; changes made may impact this
-TODO
-
-17) add cancel buttons
-  a) will require thought about layout change
-  b) cancel action will clear related input field
-TODO
-
-18) Add color to each function action sub panel border.
-  a) wil be temp until GUI layout complete
-  b) makes it easier to visualize layouts
-TODO
-
-19) programmatically figure out monitor resolution
-  a) use it to size app frame
-  b) divide it in half to set splitter sash
-TODO
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 TESTING:
-1) figure out how to test gui functionality
-  a) refer to page 144 of wxPython in Action
-  b) test very basic gui functionality; existing test suite handles the models
-  c) update testing.md
-  d) check out the google search saved on phone
-TODO
+  1) figure out how to test gui functionality
+    a) research
+      i) refer to page 144 of wxPython in Action
+      ii) google search: how to function test a running wxPython gui
+    b) test very basic gui functionality; existing test suite handles the models
+    c) update testing.md
+  IN PROGRESS
 
-2) add a test for get_ebu_loudness_info
-  a) missed it somehow
-TODO
-
-3) Think about threading test suite
-  a) will require extreme care where test suites create temp directories
-    i) may need unique hard coded names in setUpClass functions
-    ii) could also use temp dirs instead of real ones; might be execution time saving there
-TODO
-
-4) test_directory_processing.test_get_audio_file is testing csv/txt file creation
-  a) should test expected contents of files instead
-TODO
-
-5) test_directory_processing should really have tests to create csv/txt files in default locations too
-  a) have tests for alternate locations
-TODO
-
-6) find out if test suites can be executed in parallel threads
-  a) test audio normalization is longer running
-  b) test audio utilities (test clip check walk) is longer running
-  c) test audio metadata (converting) is longer running
-TODO
-
-7) consider bringing the nested tests out as main tests
-  a) sometimes they don't run
-  b) minor PITA checking UI count vs terminal count
-    i) 3 in TestAudioArt.test_unpack_asf_image_malformed_data:
-      image payload is truncated
-      MIME type is missing its terminator
-      missing its header
-    ii) 4 in TestAudioMetadata.test_update_genres_from_csv_invalid_input:
-      "blank"
-      "duplicate"
-      "header"
-      "unsorted"
-    iii) 3 in TestAudioNormalization.test_normalization_methods_reject_non_mp3_files:
-      ebu_normalize_file
-      peak_normalize_file
-      rms_normalize_file
-    iv) 2 in TestDirectoryProcessing.test_get_audio_file_rejects_lower_level_paths:
-      start_path = D:\MusicProcessing\tests\Music\Abba
-      start_path = D:\MusicProcessing\tests\Music\Abba\Waterloo
+  2) add a test for get_ebu_loudness_info
+    a) missed it somehow
   TODO
+
+  3) Think about threading test suite
+    a) will require extreme care where test suites create temp directories
+      i) may need unique hard coded names in setUpClass functions
+      ii) could also use temp dirs instead of real ones; might be execution time saving there
+  TODO
+
+  4) test_directory_processing.test_get_audio_file is testing csv/txt file creation
+    a) should test expected contents of files instead
+      i) current txt test output:
+          Found 1 csv files
+          Found 6 jpg files
+          Found 1 text files
+          Found 1 m3u files
+          Found 1 unknown type files
+          Found 10 non-audio files
+
+          eg:
+          Found 1 csv files
+            D:\MusicProcessing\tests\Music\test.csv
+          Found 6 jpg files
+            D:\MusicProcessing\tests\Music\Abba\Waterloo\Folder.jpg
+            D:\MusicProcessing\tests\Music\Cream\Goodbye\Folder.jpg
+            D:\MusicProcessing\tests\Music\Creedence Clearwater Revival\Chronicle, Vol. 1\Folder.jpg
+            D:\MusicProcessing\tests\Music\Genesis\In Too Deep-I’d Rather Be You\Folder.jpg
+            D:\MusicProcessing\tests\Music\NoMetadata\Here\Folder.jpg
+            D:\MusicProcessing\tests\Music\The Eagles\Desperado\Folder.jpg
+          Found 1 text files
+            D:\MusicProcessing\tests\Music\test.txt
+          Found 1 m3u files
+            D:\MusicProcessing\tests\Music\test.m3u
+          Found 1 unknown type files
+            D:\MusicProcessing\tests\Music\test.sh
+          Found 10 non-audio files
+  TODO
+
+  5) test_directory_processing should really have tests to create csv/txt files in default locations too
+    a) have tests for alternate locations
+  TODO
+
+  6) find out if test suites can be executed in parallel threads
+    a) test audio normalization is longer running
+    b) test audio utilities (test clip check walk) is longer running
+    c) test audio metadata (converting) is longer running
+  TODO
+
+  7) consider bringing the nested tests out as main tests
+    a) sometimes they don't run
+    b) minor PITA checking UI count vs terminal count
+      i) 3 in TestAudioArt.test_unpack_asf_image_malformed_data:
+        image payload is truncated
+        MIME type is missing its terminator
+        missing its header
+      ii) 4 in TestAudioMetadata.test_update_genres_from_csv_invalid_input:
+        "blank"
+        "duplicate"
+        "header"
+        "unsorted"
+      iii) 3 in TestAudioNormalization.test_normalization_methods_reject_non_mp3_files:
+        ebu_normalize_file
+        peak_normalize_file
+        rms_normalize_file
+      iv) 2 in TestDirectoryProcessing.test_get_audio_file_rejects_lower_level_paths:
+        start_path = D:\MusicProcessing\tests\Music\Abba
+        start_path = D:\MusicProcessing\tests\Music\Abba\Waterloo
+  TODO
+IN PROGRESS
 
 ======================================================================================================================================================
 
@@ -759,4 +782,39 @@ DISPOSED:
           Annie Lennox - Into the West.mp3        :already at target peak
           Howard Shore-The Taming Of Smeagol.mp3  :rms leveling adjustment
     d) update testing.md table
+  COMPLETED
+
+  43) Remove unique media walk from GUI
+    a) unique media walk is removed from CLI functionality
+    b) this must be done BEFORE Milestone 7.2f
+  COMPLETED
+
+  44) rethink get_audio_file_list and get_ext_file_list functions in directory processing
+    a) get_ext_file_list is basically a subset of get_audio_file_list; get_audio_file_list sorts on the file ext col in csv
+      i) get_audio_file_list txt files specify the file paths for:
+        Found 1 csv files
+        Found 6 jpg files
+        Found 1 text files
+        Found 1 m3u files
+        Found 1 unknown type files
+        Found 10 non-audio files
+
+        eg:
+        Found 1 csv files
+          D:\MusicProcessing\tests\Music\test.csv
+        Found 6 jpg files
+          D:\MusicProcessing\tests\Music\Abba\Waterloo\Folder.jpg
+          D:\MusicProcessing\tests\Music\Cream\Goodbye\Folder.jpg
+          D:\MusicProcessing\tests\Music\Creedence Clearwater Revival\Chronicle, Vol. 1\Folder.jpg
+          D:\MusicProcessing\tests\Music\Genesis\In Too Deep-I’d Rather Be You\Folder.jpg
+          D:\MusicProcessing\tests\Music\NoMetadata\Here\Folder.jpg
+          D:\MusicProcessing\tests\Music\The Eagles\Desperado\Folder.jpg
+        Found 1 text files
+          D:\MusicProcessing\tests\Music\test.txt
+        Found 1 m3u files
+          D:\MusicProcessing\tests\Music\test.m3u
+        Found 1 unknown type files
+          D:\MusicProcessing\tests\Music\test.sh
+        Found 10 non-audio files
+    b) keep get_ext_file_list in CLI mode, remove it from GUI mode COMPLETED
   COMPLETED

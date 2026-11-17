@@ -1,6 +1,6 @@
 from test UI:
 ----------------------------------------------------------------------
-Ran 161 tests in 138.128s
+Ran 161 tests in 161.128s
 
 OK
 Finished running tests!

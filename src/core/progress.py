@@ -7,6 +7,8 @@
 
 @details Provides a shared protocol for reporting operation progress.
 
+@note This implementation does not require logging functionality.
+
 @version 1.0.0
 @date 2026-11-09
 

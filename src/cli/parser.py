@@ -339,10 +339,7 @@ def build_parser(prog: str | None = None) -> CustomArgumentParser:
             "update-playlist",
             "Update playlist file songs path",
             commands.update_playlist,
-            (
-                (constants.ARG_CLI_TLD, existing_path, constants.ARG_HELP_TLD, False),
-                (constants.ARG_CLI_PLAYLIST, existing_file, constants.ARG_HELP_PLAYLIST, False)
-            )
+            ((constants.ARG_CLI_PLAYLIST, existing_file, constants.ARG_HELP_PLAYLIST, False),)
         ),
         (
             "update-walk",

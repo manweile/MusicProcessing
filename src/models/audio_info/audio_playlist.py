@@ -121,22 +121,20 @@ class AudioPlaylist():
             return audio
 
 
-    def update_playlist(self, tld_path: str, input_m3u: str) -> None:
+    def update_playlist(self, input_m3u: str) -> None:
         '''
         @brief Updates an old playlist relative pathing.
 
         @details Updates relative paths in an M3U playlist.<br>
         Creates the updated playlist in the generated-files directory.<br>
+        Uses the playlist directory as the search root for referenced audio files.<br>
         Expects the updated playlist to be moved to the music top level directory.
 
         @note see https://en.wikipedia.org/wiki/M3U<br>
         My playlists are relative pathed (unlike windows pls files, which are absolute pathed).<br>
         Because I use relative pathing, m3u files MUST live in the top level directory ie in Music<br>
         So a proper relative path will be artist/album/title.mp3
-
         @param self {AudioPlaylist} The instance of the class.
-        @param tld_path {str} The top level directory where playlist and music files are located.<br>
-        The start path must be a valid top-level directory containing artist folders, and only a tld.
         @param input_m3u {str} The full file path to playlist needing conversion.
         @return {None} This function does not return any value.
 
@@ -155,7 +153,7 @@ class AudioPlaylist():
                 logger.exception(f"PlaylistError input file {input_m3u} is not a playlist", stack_info=True)
                 raise PlaylistError(f"PlaylistError input file {input_m3u} is not a playlist")
 
-            tld_path = os.path.dirname(input_m3u)
+            playlist_dir = os.path.dirname(input_m3u)
 
             # new m3u file gets created in generated files directory so can later be move to correct tld
             export_path = GENERATED_PATH
@@ -174,7 +172,7 @@ class AudioPlaylist():
                         elif extinf in line:
                             # get the audio file name, change ext to mp3 if needed
                             audio_file = self.get_audio_name(line.strip("\n"))
-                            audio_file_path = directory.get_file_directory(tld_path, audio_file)
+                            audio_file_path = directory.get_file_directory(playlist_dir, audio_file)
 
                             if audio_file_path:
                                 found_file = Path(audio_file_path)
@@ -187,7 +185,7 @@ class AudioPlaylist():
                                 outfile.write(relative_path)
                                 outfile.write("\n")
                             else:
-                                logger.warning(f"{audio_file} from {input_basename} not found in {tld_path}")
+                                logger.warning(f"{audio_file} from {input_basename} not found in {playlist_dir}")
                                 continue
 
         except OSError as os_error:
@@ -196,7 +194,7 @@ class AudioPlaylist():
         except PlaylistError as p_error:
             raise p_error
         except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} updating playlist tld_path: {tld_path}, input_m3u: {input_m3u}", stack_info=True)
+            logger.exception(f"Exception {type(e_error).__name__} updating playlist input_m3u: {input_m3u}", stack_info=True)
             raise e_error
         else:
             logger.info(f"Updated {input_basename}\n")
@@ -228,7 +226,7 @@ class AudioPlaylist():
                         continue
 
                     input_file_path = os.path.join(dir_path, file)
-                    self.update_playlist(dir_path, input_file_path)
+                    self.update_playlist(input_file_path)
 
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} updating m3u files in tld_path: {tld_path}", stack_info=True)

@@ -711,9 +711,9 @@ Best practice: wait to run the playlist updating until you have everything conve
 
 ### update-playlist
 
-Update playlist paths in a single playlist file, works with tld input only, and requires path to playlist file.
+Update playlist paths in a single playlist file. The playlist must be in the top-level directory containing its referenced audio files.
 
-command line: `python main.py update-playlist "Drive:/path/to/tld" "Drive/path/to/tld/playlist.m3u`
+command line: `python main.py update-playlist "Drive:/path/to/tld/playlist.m3u"`
 
 ### update-walk
 

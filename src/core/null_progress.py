@@ -8,6 +8,8 @@
 @details Supports headless operation without displaying progress.<br>
 Intentionally a no-op implementation.
 
+@note This implementation does not require logging functionality.
+
 @version 1.0.0
 @date 2026-11-09
 
