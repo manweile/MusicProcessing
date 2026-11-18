@@ -876,8 +876,8 @@ class TestAudioMetadata(TestCase):
         # walk through ConvertedMusic files
         for file_path in self.converted_file_paths:
             audio_file = mutagen.File(file_path)
-            metadata_type = audio_file.__class__.__name__
-            self.assertTrue(metadata_type in AUDIO_FILES)
+            metadata_class = audio_file.__class__.__name__
+            self.assertTrue(metadata_class in AUDIO_FILES)
 
 
     def test_get_metadata_type_fail(self):
@@ -892,8 +892,8 @@ class TestAudioMetadata(TestCase):
         '''
 
         audio_file = mutagen.File(TEST_M3U)
-        metadata_type = audio_file.__class__.__name__
-        self.assertEqual(metadata_type, "NoneType")
+        metadata_class = audio_file.__class__.__name__
+        self.assertEqual(metadata_class, "NoneType")
 
 
     def test_get_tags_walk(self):

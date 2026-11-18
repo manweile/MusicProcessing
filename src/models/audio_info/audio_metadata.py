@@ -494,22 +494,22 @@ class AudioMetadata():
             data.append(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
             data.append(f"Source directory path: {input_path_parent}")
 
-            metadata_type = self.get_mutagen_metadata_type(file_path)
+            metadata_class = self.get_mutagen_metadata_class(file_path)
 
-            if metadata_type is None:
+            if metadata_class is None:
                 logger.error(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None", exc_info=True)
                 raise MetadataTypeError(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None")
 
             input_tags = self.get_mutagen_tags(file_path)
 
             if input_tags:
-                if metadata_type == FLAC_TYPE:
+                if metadata_class == FLAC_TYPE:
                     tags = self.map_flac_tags(input_tags)
-                elif metadata_type == MP3_TYPE:
+                elif metadata_class == MP3_TYPE:
                     tags = self.map_mp3_tags(input_tags)
-                elif metadata_type == MP4_TYPE:
+                elif metadata_class == MP4_TYPE:
                     tags = self.map_m4a_tags(input_tags)
-                elif metadata_type == ASF_TYPE:
+                elif metadata_class == ASF_TYPE:
                     tags = self.map_wma_tags(input_tags)
             else:
                 tags = None
@@ -769,43 +769,6 @@ class AudioMetadata():
                 progress.finish()
 
 
-    def get_mutagen_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags | VCFLACDict | None:
-        '''
-        @brief Gets tags for any type of audio file.
-
-        @details Any type means metadata tags Mutagen library supports.
-
-        @note Mutagen normalizes legacy TYER date frames to its modern TDRC (ie ID3v2.4) representation when reading them.<br>
-        If an audio file metadata is ID3v2.3, and it's raw tag bytes contain a TYER frame without a TRDC frame,<br>
-        Mutagen will read the TYER frame and present it through the TDRC interface.<br>
-        This ensures consistent date handling across different ID3 versions.<br>
-        The audio file's metadata remains IDv2.3, it does not get automatically upgraded to ID3v2.4 version.<br>
-        <br>
-        In multiple ID3 encodings, Mutagen will prioritizes the newest version ID3v2 tag over all others.<br>
-        However, APEv2 tags are ignored when ID3v2 tags are present, or if only APEv2 are present.
-
-        @param self {AudioMetadata} The instance of the class.
-        @param file_path {str} The full path to audio file.
-        @return tags {object} Tag object holding audio file tags, or None when the file has no tags.
-
-        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            tags = None
-            audio_file = self.load_any_file(file_path)
-
-            if audio_file is not None:
-                tags = audio_file.tags
-
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} getting metadata type for file: {file_path}", stack_info=True)
-            raise e_error
-        else:
-            return tags
-
-
     def get_media_info(self, file_path: str) -> dict:
         r'''
         @brief Returns dictionary with media info.
@@ -1037,7 +1000,44 @@ class AudioMetadata():
             return media_tags
 
 
-    def get_mutagen_metadata_type(self, file_path: str) -> str:
+    def get_mutagen_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags | VCFLACDict | None:
+        '''
+        @brief Gets tags for any type of audio file.
+
+        @details Any type means metadata tags Mutagen library supports.
+
+        @note Mutagen normalizes legacy TYER date frames to its modern TDRC (ie ID3v2.4) representation when reading them.<br>
+        If an audio file metadata is ID3v2.3, and it's raw tag bytes contain a TYER frame without a TRDC frame,<br>
+        Mutagen will read the TYER frame and present it through the TDRC interface.<br>
+        This ensures consistent date handling across different ID3 versions.<br>
+        The audio file's metadata remains IDv2.3, it does not get automatically upgraded to ID3v2.4 version.<br>
+        <br>
+        In multiple ID3 encodings, Mutagen will prioritizes the newest version ID3v2 tag over all others.<br>
+        However, APEv2 tags are ignored when ID3v2 tags are present, or if only APEv2 are present.
+
+        @param self {AudioMetadata} The instance of the class.
+        @param file_path {str} The full path to audio file.
+        @return tags {object} Tag object holding audio file tags, or None when the file has no tags.
+
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            tags = None
+            audio_file = self.load_any_file(file_path)
+
+            if audio_file is not None:
+                tags = audio_file.tags
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting metadata type for file: {file_path}", stack_info=True)
+            raise e_error
+        else:
+            return tags
+
+
+    def get_mutagen_metadata_class(self, file_path: str) -> str:
         '''
         @brief Returns the Mutagen library metadata class type of an audio file.
 
@@ -1049,20 +1049,20 @@ class AudioMetadata():
 
         @param self {AudioMetadata} The instance of the class.
         @param file_path {str} The full path to audio file.
-        @return metadata_type {str} The type of the audio file class.
+        @return metadata_class {str} The type of the audio file class.
 
         @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
         try:
-            metadata_type = None
+            metadata_class = None
 
             audio_file = self.load_any_file(file_path)
 
             if audio_file is not None:
                 # the built in class name of the filetype returned shows what metadata type
-                metadata_type = audio_file.__class__.__name__
+                metadata_class = audio_file.__class__.__name__
             else:
                 logger.error(f"ValueError getting metadata type: {file_path} returned None", exc_info=True)
                 raise ValueError(f"ValueError getting metadata type: {file_path} returned None")
@@ -1073,7 +1073,7 @@ class AudioMetadata():
             logger.exception(f"Exception {type(e_error).__name__} getting metadata type for file: {file_path}", stack_info=True)
             raise e_error
         else:
-            return metadata_type
+            return metadata_class
 
 
     def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe: bool = False):
@@ -1119,15 +1119,15 @@ class AudioMetadata():
                         if ffprobe:
                             input_tags = self.get_ffprobe_tags(tag_file_path)
                         else:
-                            metadata_type = self.get_mutagen_metadata_type(tag_file_path)
-                            if metadata_type in AUDIO_FILES:
+                            metadata_class = self.get_mutagen_metadata_class(tag_file_path)
+                            if metadata_class in AUDIO_FILES:
                                 input_tags = self.get_mutagen_tags(tag_file_path)
 
                         if input_tags:
                             if ffprobe:
                                 data.append(f"\n{tag_file_path} has {len(input_tags)} ffprobe tags")
                             else:
-                                data.append(f"\n{tag_file_path} has {len(input_tags)} {metadata_type} tags")
+                                data.append(f"\n{tag_file_path} has {len(input_tags)} {metadata_class} tags")
 
                             tag_items = input_tags.items()
                             for key, value in tag_items:
