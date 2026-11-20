@@ -1060,7 +1060,8 @@ COMPLETED
     - 7.1e establish the GUI functional-test baseline against the current `MainFrame`; follow
       [the standalone 7.1e plan](mvc-7.1e-gui-functional-testing.md)
     - 7.1f leave `MainFrame` with widget construction, layout, event binding, and view-interface methods only
-    - Validation: model/unit tests, then the functional GUI baseline, pass; moved code has unit tests that need no `wx`.
+    - Validation: model/unit tests and the functional GUI baseline pass using the validated 7.1e procedure;
+      moved code has unit tests that need no `wx`.
     - Exit criteria: `MainFrame` contains no validation, threading, or model-coordination logic.
   - Phase 2: create one controller per functional area, one area per iteration, in this order
     - 7.2a art
@@ -1073,7 +1074,8 @@ COMPLETED
       - add the controller, taking plain values and the view interface, using the Phase 1 validation and task runner
       - wire the matching `handlers.py` / `MainFrame` path and CLI command (where behavior overlaps) to the controller
       - add controller tests using a fake view and `NullProgress`; no `wx` import is needed
-      - run the model/unit suite followed by the functional GUI suite before starting the next area
+      - run the model/unit suite and functional GUI suite before starting the next area, sequentially until concurrent
+        execution has passed the isolation checks in the 7.1e plan for that environment
   - Exit criteria: controllers contain no widget references; all six areas use controllers; the functional baseline passes.
 
 8. Milestone 8: wx view split
@@ -1102,16 +1104,14 @@ COMPLETED
   - Validation:
     - keep the existing GUI smoke test passing during development
     - keep the functional GUI tests discoverable and runnable individually and as a suite in the VS Code Python Test Explorer
-    - run the model/unit test suite to completion before starting GUI functional tests in a separate process; do not run
-      the suites concurrently or rely on test discovery order, so model fixtures are cleaned up before GUI tests begin
-    - in Test Explorer, run the model/unit tests as a group first and the GUI functional tests only after that group finishes
-    - in headless GitHub Actions and GitHub Local Actions (GLA), invoke the model/unit and GUI suites separately and in
-      that order under `xvfb-run`; preserve the workflow's `ACT`-specific generated-output isolation
+    - use the 7.1e plan's sequential test procedure unless concurrent execution has passed its isolation checks for the
+      environment; do not rely on discovery order or allow concurrent fixture use
+    - preserve separate test processes, headless `xvfb-run` execution, and the workflow's `ACT`-specific output isolation
     - manually verify startup and each tab's primary workflow, validation, progress, dialogs, and generated outputs before cutover.
   - Exit criteria:
     - the replacement GUI passes parity checks
     - automated functional tests exercise all six tabs and pass in Test Explorer, GitHub Actions, and GLA
-    - CI runs the two suites sequentially; Test Explorer's documented sequence avoids concurrent fixture use
+    - CI and Test Explorer follow the validated sequential or isolated concurrent procedure for each environment
     - all interactive or test-targeted widgets have unique names, verified by the GUI tests
     - no controller or model references a widget
     - `run_gui` is re-exported from `views/wx/__init__.py`
@@ -1146,7 +1146,7 @@ COMPLETED
     - update any supporting fixtures or helper modules to match the mirrored layout
     - ensure test discovery works with the new structure
   - Validation:
-    - run the model/unit suite to completion, then run GUI functional tests in a separate process
+    - run model/unit and GUI functional suites in separate processes using the validated 7.1e procedure
     - verify GUI functional tests in VS Code Test Explorer and run them headlessly under `xvfb-run` in GitHub Actions and GLA
     - perform manual validation of the CLI and GUI workflows
   - Exit criteria: all tests pass and manual validation confirms expected behavior.
@@ -1170,9 +1170,9 @@ COMPLETED
    `test_gui.py` (rewritten for the view and controller split).
 4. New tests: progress interface, CLI parser and dispatch, controllers (with a fake view), reporter selection, and
    functional wx GUI workflows.
-5. Run after every milestone: finish the model/unit suite before starting GUI functional tests in a separate process,
-   then manually smoke one CLI subcommand and the GUI. Keep GUI tests discoverable in VS Code Test Explorer; run the same
-   sequence under `xvfb-run` in headless GitHub Actions and GLA.
+5. Run after every milestone: run model/unit and GUI functional suites in separate processes, sequentially unless
+   concurrent execution has passed the 7.1e isolation checks for that environment, then manually smoke one CLI
+   subcommand and the GUI. Keep GUI tests discoverable in VS Code Test Explorer and use `xvfb-run` in headless CI and GLA.
 
 ## Repo Risks And Mismatches
 
