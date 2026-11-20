@@ -1057,21 +1057,8 @@ COMPLETED
     - 7.1b move worker-thread orchestration (`run_task`, `worker`) out of `MainFrame` into a shared task runner (no `wx` import) COMPLETED
     - 7.1c define the view interface (`show_message`, `show_error`, `show_generated_files`, `set_busy`); `MainFrame` implements it COMPLETED
     - 7.1d construct model instances in one composition root instead of module-level globals in `handlers.py` COMPLETED
-    - 7.1e establish a functional-test baseline against the current `MainFrame`:
-      - preserve existing widget names and give every interactive or test-targeted widget an explicit, stable name unique
-        across the GUI; test that the required names are present and unique
-      - exercise all six currently displayed tabs through named wx controls and user events; cover each tab's primary
-        workflow, validation, busy behavior, dialogs, and generated outputs as applicable to the existing GUI
-      - use isolated fixture copies and generated-output paths, bounded waits for worker completion, and clean window
-        teardown; assert visible outcomes and generated files instead of only testing controllers or frame construction
-      - keep the tests individually discoverable in VS Code Test Explorer and runnable as a separate functional suite
-      - configure GitHub Actions and GitHub Local Actions (GLA) to run model/unit tests first and the GUI functional suite
-        afterward in a separate process under `xvfb-run`; neither suite may run concurrently or include the other
-      - document the equivalent two-group sequence in Test Explorer: finish model/unit tests before running GUI tests;
-        do not use a combined Run All if it cannot guarantee this ordering
-      - preserve the workflow's `ACT`-specific generated-output isolation and verify both CI environments and Test Explorer
-      - do not begin 7.1f or the controller iterations until the baseline and sequential execution pass; do not start GUI
-        tests if model/unit execution has failed or fixture cleanup has not completed
+    - 7.1e establish the GUI functional-test baseline against the current `MainFrame`; follow
+      [the standalone 7.1e plan](mvc-7.1e-gui-functional-testing.md)
     - 7.1f leave `MainFrame` with widget construction, layout, event binding, and view-interface methods only
     - Validation: model/unit tests, then the functional GUI baseline, pass; moved code has unit tests that need no `wx`.
     - Exit criteria: `MainFrame` contains no validation, threading, or model-coordination logic.
