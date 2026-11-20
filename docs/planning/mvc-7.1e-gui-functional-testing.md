@@ -10,6 +10,14 @@ The tests must exercise the wx GUI itself, not just instantiate the frame or tes
 
 ## Work
 
+- Use the model unit tests that correspond to each GUI workflow as the reference for choosing fixtures, setup, expected
+  outputs, and meaningful error cases. For example, use `test_convert_file` and `test_convert_walk` in
+  `tests/test_audio_metadata.py` as patterns for GUI file-conversion and directory-conversion tests, including their
+  copied music fixtures and expected output paths. Apply the same approach to the other tabs using their matching model
+  tests.
+- Keep these tests focused on GUI functionality: drive the named controls as a user would and assert visible results
+  and produced outputs. Do not add GUI tests for helper methods or private functions, or duplicate model-level logic
+  tests through direct method calls.
 - Preserve existing widget names and give every interactive or test-targeted widget an explicit, stable name unique
   across the GUI. Test that the required names are present and unique.
 - Exercise all six currently displayed tabs through named wx controls and user events. Cover each tab's primary workflow,
