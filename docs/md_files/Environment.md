@@ -11,6 +11,20 @@ I have used it professionally and privately since 2016.<br>
 Python is a great compromise between ease of use and capability.<br>
 Ffmpeg/Ffprobe/Mutagen are the troika this project uses for the heavy lifting.
 
+## Monitors
+
+I have an inverted T, four monitor configuration. All four monitors are 1920 by 1080 pixel resolution.<br>
+The upper centre monitor is the primary display. The lower row monitors are secondary displays.<br>
+The upper centre monitor is at 100% scaling. The lower row monitors are all at 125% scaling.<br>
+The upper centre monitor is horizontally aligned with respect to the lower centre monitor.<br>
+
+| Physical Position | Usage     | Scaling | Logical Dim | Home XY Coord  | Boundary (Left,Top) to (Right,Bot) |
+| ----------------- | --------- | ------- | ----------- | -------------- | ---------------------------------- |
+| Upper Centre      | Primary   | 100%    | 1920 x 1080 | (0, 0)         | (0, 0) to (+1920, +1080)           |
+| Lower Left        | Secondary | 125%    | 1536 x 864  | (-1344, +1080) | (-1344, +1080) to (+192, +1944)    |
+| Lower Centre      | Secondary | 125%    | 1536 x 864  | (+192, +1080)  | (+192, +1080) to (+1728, +1944)    |
+| Lower Right       | Secondary | 125%    | 1536 x 864  | (+1728, +1080) | (+1728, +1080) to (+3264, +1944)   |
+
 ## Git For Windows
 
 [Git for Windows](https://gitforwindows.org/) offers a lightweight set of tools, bringing the full feature set of the Git SCM to Windows.<br>

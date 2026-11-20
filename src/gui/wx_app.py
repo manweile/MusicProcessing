@@ -255,7 +255,7 @@ class MainFrame(wx.Frame):
         '''
 
         # initialize the main frame with the specified parent, title, and size
-        super().__init__(parent, title="Music Processing", size=(960, 760))
+        super().__init__(parent, title="Music Processing", size=(960, 760), name="mainFrame")
 
         # Initialize event handlers
         self.eventHandlers = EventHandlers(self, art, directory, metadata, normalization, playlist)
@@ -309,6 +309,41 @@ class MainFrame(wx.Frame):
         mainSizer = wx.BoxSizer(wx.VERTICAL)
         mainSizer.Add(self.mainSplitter, 1, wx.EXPAND)
         self.mainPanel.SetSizer(mainSizer)
+
+        # position the GUI window based on the environment variable for display placement
+        # the environment key/value pair is only set when using the specific GUI launch configuration
+        # therefore code not applicable from such as terminal command line, CI/CD pipelines, non-GUI launch configurations etc
+        if os.environ.get("MUSICPROCESSING_GUI_DISPLAY") == "lower-left":
+            # gather the geometry of all available displays
+            displays = []
+            for index in range(wx.Display.GetCount()):
+                displays.append(wx.Display(index).GetGeometry())
+
+            if not displays:
+                raise RuntimeError("No displays are available for GUI placement")
+
+            main_display_geometry = wx.Display().GetGeometry()
+
+            # OS assigned display numbers relative to initialization sequence; therefore unreliable for determining physical layout
+            # this code is predicated on two invariants:
+            # 1. inverted T four monitor configuration
+            # 2. main display is upper center
+            lower_displays = []
+            for geometry in displays:
+                if geometry.y > main_display_geometry.y:
+                    lower_displays.append(geometry)
+
+            # if there are no lower displays, fall back to any available display
+            candidate_displays = lower_displays or displays
+            lower_left_display = candidate_displays[0]
+
+            # find the leftmost display among the candidate displays
+            for geometry in candidate_displays[1:]:
+                if geometry.x < lower_left_display.x:
+                    lower_left_display = geometry
+
+            self.SetPosition(lower_left_display.GetTopLeft())
+
         self.Maximize()
 
 

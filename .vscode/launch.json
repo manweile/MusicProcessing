@@ -13,11 +13,28 @@
             "justMyCode": false
         },
         {
-            "name": "Python Debugger: MusicProcessing with args input",
+            "name": "Python Debugger: MusicProcessing CLI",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/main.py",
             "args": "${command:pickArgs}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "justMyCode": false
+        },
+        // the environment variable MUSICPROCESSING_GUI_DISPLAY is only set when launching the GUI configuration
+        // code using the environment variable must check for key/value
+        {
+            "name": "Python Debugger: MusicProcessing GUI",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": [
+                "gui"
+            ],
+            "env": {
+                "MUSICPROCESSING_GUI_DISPLAY": "lower-left"
+            },
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
             "justMyCode": false
