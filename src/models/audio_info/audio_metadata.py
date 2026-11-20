@@ -494,7 +494,7 @@ class AudioMetadata():
             data.append(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
             data.append(f"Source directory path: {input_path_parent}")
 
-            metadata_class = self.get_mutagen_metadata_class(file_path)
+            metadata_class = self.get_metadata_class(file_path)
 
             if metadata_class is None:
                 logger.error(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None", exc_info=True)
@@ -1037,7 +1037,7 @@ class AudioMetadata():
             return tags
 
 
-    def get_mutagen_metadata_class(self, file_path: str) -> str:
+    def get_metadata_class(self, file_path: str) -> str:
         '''
         @brief Returns the Mutagen library metadata class type of an audio file.
 
@@ -1119,7 +1119,7 @@ class AudioMetadata():
                         if ffprobe:
                             input_tags = self.get_ffprobe_tags(tag_file_path)
                         else:
-                            metadata_class = self.get_mutagen_metadata_class(tag_file_path)
+                            metadata_class = self.get_metadata_class(tag_file_path)
                             if metadata_class in AUDIO_FILES:
                                 input_tags = self.get_mutagen_tags(tag_file_path)
 

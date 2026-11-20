@@ -134,124 +134,8 @@ ENVIRONMENT:
           so they just raise the exception up the chain
           Note that this pattern is why almost every function has a generic "except Exception as e_error:"
   TODO
-TODO
 
-------------------------------------------------------------------------------------------------------------------------------------------------------
-
-MODELS:
-  2) get_audio_file_list has 1 bug
-    a) file paths with a comma in them are adding a extra column to output csv
-    eg:
-    d:\MusicProcessing\tests\Music\Albert Collins\Best Of The Blues, Vol. 1\Albert Collins - Trash Talkin'.mp3;.mp3
-    d:\MusicProcessing\tests\Music\Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma;.wma
-  TODO
-
-  3) create_csv, create_txt, get_file_directory, make_dir, path_info are really private utilities
-    a) think about moving them out of directory_processing into say folder_utilities??
-      i) this could be can of worms - there are a few private art, metadata, playlist functions too
-      ii) though subprocess_utilities is an established pattern
-      iii) could have art_utilities, metadata_utilities, playlist_utilities
-      iv) remember that _func and __func defs require different unit test handling
-  TODO
-
-  4) think about refactoring package naming/structure
-    a) src.models.audio_info -> audio_info maybe not necessary
-    b) src.models.audio_normalize -> audio_normalize maybe not necessary
-    c) src.models.dir_processing -> dir_processing maybe not necessary
-  TODO
-TODO
-
-------------------------------------------------------------------------------------------------------------------------------------------------------
-
-CLI:
-  1) think about playlist update having optional target input
-    a) keeps pattern established by convert and level
-  TODO
-
-  2) change command arguments THIS IS A BIG REFACTOR
-    a)
-      _COMMAND_ARGUMENTS = {
-          "clip-check-file": ("file",),
-          "clip-check-walk": ("tld",),
-          "convert-file": ("file", "target"),
-          "convert-walk": ("tld", "pattern", "target"),       ->convert-file-walk
-          "create-albums": ("tld",),
-          "ebu-file": ("file", "target"),                     ->level-normalize-ebu
-          "extract-album-art": ("file",),                     ->extract-file-art
-          "extract-walk": ("tld", "pattern"),                 ->extract-art-walk
-          "get-audio-file-list": ("tld",),
-          "get-ext-file-list": ("tld", "pattern"),
-          "get-media-info-walk": ("tld", "pattern"),          ->get-audio-info-walk
-          "get-tags-walk": ("tld", "pattern", "ffprobe"),     ->get-media-tags-walk
-          "gui": (),
-          "level-normalize-walk": ("tld", "type", "target"),
-          "normalize-filename": ("file",),                    ->rename-file
-          "normalize-filename-walk": ("tld",),                ->rename-file-walk
-          "peak-file": ("file", "target"),                    ->level-normalize-peak
-          "remove-empty-albums": ("tld",),
-          "remove-pattern": ("tld", "pattern"),
-          "remove-set-list": ("tld",),
-          "rename-album-directories": ("tld",),
-          "rms-file": ("file", "target"),                     ->level-normalize-rms
-          "set-album-art": ("tld",),                          ->set-art-walk
-          "update-genres": ("tld", "csv"),
-          "update-playlist": ("m3u"),
-          "update-walk": ("tld",)                             ->update-playlist-walk
-      }
-    b) change matching function defs
-      eg: def convert_walk                                    ->convert_file_walk
-    c) should some items have this trailing comma format: "clip-check-walk": ("tld",)?
-      i) investigate
-  TODO
-TODO
-
-------------------------------------------------------------------------------------------------------------------------------------------------------
-
-GUI:
-  1) implement mvc refactoring planning
-    a) major refactoring
-    b) items all GUI objects need to be in camelCase (2) & Remove unique media walk from GUI (3) are concurrent
-  IN PROGRESS
-
-  2) all GUI objects need to be in camelCase
-    a) really confusing if not;
-    eg list_type_tld  its a wx.TextCtrl for directory path input
-      i) when you see it like this: self.list_type_tld, while it is a variable
-      ii) it is really a TextCtrl variable and will be exposed  to other modules, especially handlers.py!
-    b) complete BEFORE Milestone 7 Phase 2
-  IN PROGRESS
-
-  4) add the new functions: clip_check_file, clip_walk, create_albums, rename_albums etc
-    a) to which tab do each of them belong?
-  IN PROGRESS
-
-  5) put UI magic strings into appropriate __init__.py as constants
-    a) reference appropriately and use
-  TODO
-
-  6) Modify Convert tab UI/UX
-    a) add optional target directory input, default to output/Music
-      i) applies to single file conversion
-      ii) applies to directory walk conversions
-    b) remove "after conversion" move dialog
-      i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
-  TODO
-
-  7) Modify Leveling tab UI/UX
-    a) add optional target directory input, default to output/Music
-      i) applies to single file conversion
-      ii) applies to directory walk conversions
-    b) remove "after leveling" move dialog
-      i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
-  TODO
-
-  8) add icons to tabs
-    a) will need to find appropriate iconography
-    b) will need to add licenses etc
-    c) going to need an "about" menu item?
-  TODO
-
-  9) How do I log warnings?
+  6) How do I log warnings?
     a) warnings are not fatal, but user does need to know.
       i) currently neither CLI or GUI mode inform user
     b) test case: run extract art on D:\MusicProcessing\tests\Music\Crush\Here\No_tag_Crush-Live.mp3
@@ -265,34 +149,45 @@ GUI:
     c) test_audio_playlist.test_update_playlist has a patch for logger.warning; changes made may impact this
   TODO
 
-  10) rethink displaying function output.
-    a) model functions have changed
-    b) possibly want to display file output in splitter control log area
-  TODO
-
-  11) think about adding menu structure
-    a) QoL feature
-  TODO
-
-  12) rename AlbumArt
+  7) think about renaming AlbumArt
     a) use album_art instead; more in keeping with other resource directory names
   TODO
 
-  13) think about renaming Music to music_files
+  8) think about renaming Music to music_files
     a) just to keep things looking clean
   TODO
+TODO
 
-  14) splitter pane needs a clear button
-    a) real PITA having to parse through old results
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+MODELS:
+  2) get_audio_file_list has 1 bug
+    a) file paths with a comma in them are adding a extra column to output csv
+    eg:
+    d:\MusicProcessing\tests\Music\Albert Collins\Best Of The Blues, Vol. 1\Albert Collins - Trash Talkin'.mp3;.mp3
+    d:\MusicProcessing\tests\Music\Creedence Clearwater Revival\Chronicle, Vol. 1\Creedence Clearwater Revival-Fortunate Son.wma;.wma
   TODO
 
-  15) after an action completes
-    a) need path input to clear from input field
-    b) path input prepended to success message
-    c) this may mean some model functions will require return values
+  3) private utilities
+    a) think about renaming all private utility functions to _* or __*
+      i) remember that _func and __func defs require different unit test handling
+    b) only CLI/GUI exposed defs would have *_* name pattern
+    c) think about also moving private utility functions into new class files
+      i) eg for directory_processing, create_csv, create_txt into reporting_utilities
+      ii) eg for directory_processing, get_file_directory, make_dir, path_info into directory_utilities
+      iii) this could be can of worms - there are a few private art, metadata, playlist functions too
+      iv) though subprocess_utilities is an established pattern
+      v) could have art_utilities, metadata_utilities, playlist_utilities
+    d) does make for cleaner & more readable API structure
   TODO
 
-  16) display logger.info messages
+  4) think about refactoring package naming/structure
+    a) src.models.audio_info -> audio_info maybe not necessary
+    b) src.models.audio_normalize -> audio_normalize maybe not necessary
+    c) src.models.dir_processing -> dir_processing maybe not necessary
+  TODO
+
+  5) display logger.info messages
     a) go through and remove unnecessary logger.info
     b) some info's user needs to know
     c) in gui mode, need to display in log pane
@@ -302,26 +197,153 @@ GUI:
     f) test_directory_processing.test_path_info_not_audio has a patch for logger.info; changes made may impact this
   TODO
 
-  17) add cancel buttons
+  6) think about adding get_tags_info ie for just 1 file
+    a) required by cli todo "adding a get_tags_info ie for just 1 file"
+    b) also requires get_tags_walk rebuild
+  TODO
+
+  7) get_tags_walk does NOT require ffprobe option
+    a) ffmpeg does NOT have native metadata, can only report metadata tags IFF they are present ie flac, id3, m4a, asf
+    b) therefore the use ffprobe functionality does NOT need to be cli or gui exposed
+    c) get_ffprobe_tags should be retained however and become a power user CLI only function for single files
+  TODO
+TODO
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CLI:
+  1) playlist update having optional target input
+    a) keeps pattern established by convert and level
+  TODO
+
+  2) change command arguments THIS IS A BIG REFACTOR
+    a)
+      _COMMAND_ARGUMENTS = {
+          "clip-check-file": ("file",),                       ->clip-check              # CLI & GUI   Leveling    GUI TODO
+          "clip-check-walk": ("tld",),                                                  # CLI & GUI   Leveling    GUI TODO
+          "convert-file": ("file", "target"),                                           # CLI & GUI   Convert
+          "convert-walk": ("tld", "pattern", "target"),       ->convert-file-walk       # CLI & GUI   Convert
+          "create-albums": ("tld",),                          ->add-album-folders       # CLI & GUI   Names       GUI TODO
+          "ebu-file": ("file", "target"),                     ->level-ebu               # CLI & GUI   Leveling
+          "extract-album-art": ("file",),                     ->extract-art             # CLI & GUI   Art
+          "extract-walk": ("tld", "pattern"),                 ->extract-art-walk        # CLI & GUI   Art
+          "get-audio-file-list": ("tld",),                                              # CLI ONLY    Info
+          "get-ext-file-list": ("tld", "pattern"),                                      # CLI ONLY    Info
+          "get-media-info-walk": ("tld", "pattern"),                                    # CLI & GUI   Info        GUI TODO
+          "get-tags-walk": ("tld", "pattern", "ffprobe"),     ->get-media-tags-walk     # CLI & GUI   Info        GUI TODO
+          "gui": (),                                                                    # GUI ONLY
+          "level-normalize-walk": ("tld", "type", "target"),                            # CLI & GUI   Leveling
+          "normalize-filename": ("file",),                    ->rename-file             # CLI & GUI   Names       GUI TODO
+          "normalize-filename-walk": ("tld",),                ->rename-file-walk        # CLI & GUI   Names       GUI TODO
+          "peak-file": ("file", "target"),                    ->level-peak              # CLI & GUI   Leveling
+          "remove-empty-albums": ("tld",),                                              # CLI & GUI   Removal
+          "remove-pattern": ("tld", "pattern"),               ->remove-input-pattern    # CLI & GUI   Removal
+          "remove-set-list": ("tld",),                                                  # CLI & GUI   Removal
+          "rename-album-directories": ("tld",),               ->rename-album-folders    # CLI & GUI   Names       GUI TODO
+          "rms-file": ("file", "target"),                     ->level-rms               # CLI & GUI   Leveling
+          "set-album-art": ("tld",),                          ->set-art-walk            # CLI & GUI   Art
+          "update-genres": ("tld", "csv"),                                              # CLI ONLY    Info
+          "update-playlist": ("m3u"),                                                   # CLI & GUI   Playlist
+          "update-walk": ("tld",)                             ->update-playlist-walk    # CLI & GUI   Playlist
+      }
+    b) change matching function defs
+      eg: def convert_walk                                    ->convert_file_walk
+  TODO
+
+  3) think about exposing get_media_info ie for just 1 file
+    a) it returns a dict, relatively easy to save dict in txt or csv File as well
+    b) still don't want terminal output, so CLI usage would have to ignore the output
+    c) GUI usage would also ignore dict, but eventually use csv/txt output
+  TODO
+
+  4) think about adding a get_tags_info ie for just 1 file
+    a) would probably look very similar to an exposed for CLI get_media_info for 1 file
+    b) will require new model def and rework of existing get_tags_walk
+  TODO
+TODO
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+GUI:
+  1) all GUI objects need to be in camelCase
+    a) really confusing if not;
+    eg list_type_tld  its a wx.TextCtrl for directory path input
+      i) when you see it like this: self.list_type_tld, while it is a variable
+      ii) it is really a TextCtrl variable and will be exposed  to other modules, especially handlers.py!
+    b) complete BEFORE Milestone 7 Phase 2
+  IN PROGRESS
+
+  2) add the new functionality:
+    a)clip check, clip check walk, add albums, rename albums, rename file, rename file walk
+  IN PROGRESS
+
+  3) implement mvc refactoring planning
+    a) major refactoring
+    b) finalize minimal functionality GUI design
+  IN PROGRESS
+
+  4) put UI magic strings into appropriate __init__.py as constants
+    a) reference appropriately and use
+  TODO
+
+  5) decide if models that can take optional target (conversion, leveling, playlist (a todo of its own)) get GUI functionality
+    a) add optional target directory input, default to output/Music
+      i) applies to single file conversion
+      ii) applies to directory walk conversions
+    b) remove "after conversion" move dialog
+      i) IFF user goes with default (no target dir), then modal warning dialog to move files from src/generated_files/Music
+  TODO
+
+  6) add icons to tabs
+    a) will need to find appropriate iconography
+    b) will need to add licenses etc
+    c) going to need an "about" menu item?
+  TODO
+
+  7) rethink displaying function output.
+    a) model functions have changed
+    b) possibly want to display file output in splitter control log area
+  TODO
+
+  8) think about adding menu structure
+    a) QoL feature
+  TODO
+
+  9) splitter pane needs a clear button
+    a) real PITA having to parse through old results
+  TODO
+
+  10) after an action completes
+    a) need path input to clear from input field
+    b) path input prepended to success message
+    c) this may mean some model functions will require return values
+  TODO
+
+  11) add cancel buttons
     a) will require thought about layout change
     b) cancel action will clear related input field
   TODO
 
-  18) Add color to each function action sub panel border.
+  12) Add color to each function action sub panel border.
     a) wil be temp until GUI layout complete
     b) makes it easier to visualize layouts
   TODO
 
-  19) programmatically figure out monitor resolution
+  13) programmatically figure out monitor resolution
     a) use it to size app frame
     b) divide it in half to set splitter sash
   TODO
 
-  20) exception handling & logging in task_runner
+  14) exception handling & logging in task_runner
     a) shouldn't run_task have try/except at minimum?
       i) its a threading function, so not sure how error handling would work - need investigation
     b) worker sets up it's logging in the except clause
       i) why not use the same logging setup as models etc do?
+  TODO
+
+  15) ffprobe usage in get_tags_walk
+    a) model is being changed eventually; in interim GUI will always send false in handler call
+    b) remove hard coding when model is changed
   TODO
 IN PROGRESS
 
@@ -331,7 +353,7 @@ TESTING:
   1) figure out how to test gui functionality
     a) research
       i) refer to page 144 of wxPython in Action
-      ii) google search: how to function test a running wxPython gui
+      ii) get google search from phone
     b) test very basic gui functionality; existing test suite handles the models
     c) update testing.md
   IN PROGRESS
@@ -344,6 +366,10 @@ TESTING:
     a) will require extreme care where test suites create temp directories
       i) may need unique hard coded names in setUpClass functions
       ii) could also use temp dirs instead of real ones; might be execution time saving there
+    b) long running suites:
+      i)test audio normalization (all of the leveling tests)
+      ii) test audio utilities (test clip check walk)
+      iii) test audio metadata (converting)
   TODO
 
   4) test_directory_processing.test_get_audio_file is testing csv/txt file creation
@@ -379,13 +405,7 @@ TESTING:
     a) have tests for alternate locations
   TODO
 
-  6) find out if test suites can be executed in parallel threads
-    a) test audio normalization is longer running
-    b) test audio utilities (test clip check walk) is longer running
-    c) test audio metadata (converting) is longer running
-  TODO
-
-  7) consider bringing the nested tests out as main tests
+  6) consider bringing the nested tests out as main tests
     a) sometimes they don't run
     b) minor PITA checking UI count vs terminal count
       i) 3 in TestAudioArt.test_unpack_asf_image_malformed_data:
@@ -817,4 +837,5 @@ DISPOSED:
           D:\MusicProcessing\tests\Music\test.sh
         Found 10 non-audio files
     b) keep get_ext_file_list in CLI mode, remove it from GUI mode COMPLETED
+    c) keep get_audio_file_list in CLI mode. remove it from GUI mode COMPLETED
   COMPLETED

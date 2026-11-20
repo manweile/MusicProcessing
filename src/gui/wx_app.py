@@ -87,66 +87,147 @@ class MainFrame(wx.Frame):
 
     # Blueprint hints tell VS Code these instance variables exist and what they are
 
+    # handlers and task runner instances
     eventHandlers: EventHandlers                            # Event handler instance for GUI events
     taskRunner: TaskRunner                                  # Task runner instance for executing background tasks
 
+    # main UI components within the frame
     mainLog: wx.TextCtrl                                    # Text control for displaying main log messages
     mainNotebook: wx.Notebook                               # Notebook for tabbed panels within the main splitter window
     mainPanel: wx.Panel                                     # Main panel within the frame
     mainSplitter: wx.SplitterWindow                         # Splitter window dividing the main panel and log area
 
+    # tabs within the main notebook
+    # nameTab: wx.Panel                                       # Panel for folder & file name management
     artTab: wx.Panel                                        # Panel for audio art processing
     convertTab: wx.Panel                                    # Panel for audio conversion
     levelTab: wx.Panel                                      # Panel for audio level normalization
     playlistTab: wx.Panel                                   # Panel for audio playlist processing
     infoTab: wx.Panel                                       # Panel for audio & metadata information
-    dirTab: wx.Panel                                        # Panel for directory processing
+    removalTab: wx.Panel                                    # Panel for file removal operations
 
-    extractArtTld: wx.TextCtrl                              # Text control input for directory art extraction path input
-    extractDirBrowse: wx.Button                             # Button control for browsing extract walk path
-    extractArtChoice: wx.Choice                             # Choice control for selecting directory art extraction from audio with extension
-    extractDirArt: wx.Button                                # Button control for extracting directory art
+    # folder & file name management
+    # controls for directory adding missing album folders
+    # addAlbumsWalkTld: wx.TextCtrl                           # Text control input for adding album folder top-level directory
+    # addAlbumsWalkBrowse: wx.Button                          # Button control for browsing add album folder top-level directory
+    # addAlbumsWalk: wx.Button                                # Button control for adding directory albums
 
-    extractArtPath: wx.TextCtrl                             # Text control input for file art extraction path input
-    extractFileBrowse: wx.Button                            # Button control for browsing file art extraction path
-    extractFileArt: wx.Button                               # Button control for extracting file art
+    # controls for directory renaming existing album folders
+    # renameAlbumsWalkTld: wx.TextCtrl                        # Text control input for renaming album folder top-level directory
+    # renameAlbumsWalkBrowse: wx.Button                       # Button control for browsing rename album folder top-level directory
+    # renameAlbumsWalk: wx.Button                             # Button control for renaming directory albums
 
-    setArtTld: wx.TextCtrl                                  # Text control input for setting album art path input
-    setArtBrowse: wx.Button                                 # Button control for browsing set album art path
+    # controls for directory renaming files
+    # renameFilesWalkTld: wx.TextCtrl                         # Text control input for renaming files top-level directory
+    # renameFilesWalkBrowse: wx.Button                        # Button control for browsing rename files top-level directory
+    # renameFilesWalk: wx.Button                              # Button control for renaming directory files
 
-    convertWalkTld: wx.TextCtrl                             # Text control input for convert walk path input
-    convertWalkBrowse: wx.Button                            # Button control for browsing convert walk path
-    convertAudioChoice: wx.Choice                           # Choice control for selecting audio file extension to use in convert walk
-    convertDirAudio: wx.Button                              # Button control for converting directory audio
+    # controls for specific file renaming
+    # renameAudioFilePath: wx.TextCtrl                        # Text control input for specific file renaming
+    # renameAudioFileBrowse: wx.Button                        # Button control for browsing specific file to rename
+    # renameAudioFile: wx.Button                              # Button control for renaming specific file
 
-    convertAudioPath: wx.TextCtrl                           # Text control input for file audio conversion path input
-    convertFileBrowse: wx.Button                            # Button control for browsing file audio conversion path
+    # controls for art file extraction & setting
+    # controls for directory art files extraction
+    extractArtDirTld: wx.TextCtrl                           # Text control input for directory art extraction path
+    extractArtDirBrowse: wx.Button                          # Button control for browsing extract walk path
+    extractArtDirChoice: wx.Choice                          # Choice control for selecting directory art extraction from audio with extension
+    extractArtDir: wx.Button                                # Button control for extracting directory art
+
+    # controls for specific file art extraction
+    extractArtFilePath: wx.TextCtrl                         # Text control input for file art extraction path
+    extractArtFileBrowse: wx.Button                         # Button control for browsing file art extraction path
+    extractArtFile: wx.Button                               # Button control for extracting file art
+
+    # controls for directory setting album art files
+    setArtDirTld: wx.TextCtrl                               # Text control input for setting album art path
+    setArtDirBrowse: wx.Button                              # Button control for browsing set album art path
+    setArtDir: wx.Button                                    # Button control for setting directory album art
+
+    # controls for audio file conversion
+    # controls for directory audio files conversion
+    convertAudioDirTld: wx.TextCtrl                         # Text control input for convert walk path
+    convertAudioDirBrowse: wx.Button                        # Button control for browsing convert walk path
+    convertAudioDirChoice: wx.Choice                        # Choice control for selecting audio file extension to use in convert walk
+    convertAudioDir: wx.Button                              # Button control for converting directory audio
+
+    # controls for specific file audio conversion
+    convertAudioFilePath: wx.TextCtrl                       # Text control input for file audio conversion path
+    convertAudioFileBrowse: wx.Button                       # Button control for browsing file audio conversion path
     convertAudioFile: wx.Button                             # Button control for converting file audio
 
-    levelWalkTld: wx.TextCtrl                               # Text control input for level walk path input
-    levelWalkBrowse: wx.Button                              # Button control for browsing level walk path
-    levelAudioChoice: wx.Choice                             # Choice control for selecting level normalization type to use in leveling walk
-    levelDirAudio: wx.Button                                # Button control for leveling directory audio
+    # controls for audio file leveling
+    # controls for directory clip checking
+    # clipCheckDirTld: wx.TextCtrl                            # Text control input for clip checking path
+    # clipCheckDirBrowse: wx.Button                           # Button control for browsing clip checking walk path
+    # clipCheckDir: wx.Button                                 # Button control for clip check on directory audio
 
+    # controls for specific file clip checking
+    # clipCheckFilePath: wx.TextCtrl                          # Text control input for the clip check file path
+    # clipCheckFileBrowse: wx.Button                          # Button control for browsing file clip check path
+    # clipCheckFile: wx.Button                                # Button control for performing the file clip check
+
+    # controls for directory audio files leveling
+    levelAudioDirTld: wx.TextCtrl                           # Text control input for level walk path input
+    levelAudioDirBrowse: wx.Button                          # Button control for browsing level walk path
+    levelAudioDirChoice: wx.Choice                          # Choice control for selecting level normalization type to use in leveling walk
+    levelAudioDir: wx.Button                                # Button control for leveling directory audio
+
+    # controls for specific file EBU leveling
     ebuFilePath: wx.TextCtrl                                # Text control input for file EBU leveling path input
     ebuFileBrowse: wx.Button                                # Button control for browsing file EBU leveling path
     ebuLevelFile: wx.Button                                 # Button control for leveling EBU file
 
+    # controls for specific file peak leveling
     peakFilePath: wx.TextCtrl                               # Text control input for file peak leveling path input
-    peakLevelFile: wx.Button                                # Button control for leveling peak file
     peakFileBrowse: wx.Button                               # Button control for browsing file peak leveling path
+    peakLevelFile: wx.Button                                # Button control for leveling peak file
 
+    # controls for specific file RMS leveling
     rmsFilePath: wx.TextCtrl                                # Text control input for file RMS leveling path input
-    rmsLevelFile: wx.Button                                 # Button control for leveling RMS file
     rmsFileBrowse: wx.Button                                # Button control for browsing file RMS leveling path
+    rmsLevelFile: wx.Button                                 # Button control for leveling RMS file
 
-    playlistUpdateTld: wx.TextCtrl                          # Text control input for playlist update top-level directory
-    playlistWalkBrowse: wx.Button                           # Button control for browsing playlist update top-level directory
-    updateDirPlaylist: wx.Button                            # Button control for updating directory playlist
+    # controls for playlist file updating
+    # controls for directory playlist files update
+    playlistUpdateDirTld: wx.TextCtrl                       # Text control input for playlist update top-level directory
+    playlistUpdateDirBrowse: wx.Button                      # Button control for browsing playlist update top-level directory
+    playlistUpdateDir: wx.Button                            # Button control for updating directory playlist
 
-    updatePlaylistPath: wx.TextCtrl                         # Text control input for the playlist update file path
-    updateFileBrowse: wx.Button                             # Button control for browsing the playlist update file path
+    # controls for specific playlist file update
+    updatePlaylistFilePath: wx.TextCtrl                     # Text control input for the playlist update file path
+    updatePlaylistFileBrowse: wx.Button                     # Button control for browsing the playlist update file path
     updatePlaylistFile: wx.Button                           # Button control for updating the playlist file
+
+    # controls for removal of folders & files
+    # controls for removing empty album folders
+    removeAlbumsDirTld: wx.TextCtrl                         # Text control input for the top-level directory for removing empty albums
+    removeAlbumsDirBrowse: wx.Button                        # Button control for browsing the top-level directory for removing empty albums
+    removeAlbumsDir: wx.Button                              # Button control for removing empty albums
+
+    # controls for directory remove files by input pattern
+    removePatternDirTld: wx.TextCtrl                        # Text control input for the top-level directory for pattern-based file removal
+    removePatternDirBrowse: wx.Button                       # Button control for browsing the top-level directory for pattern-based file removal
+    removePatternDirInput: wx.TextCtrl                      # Text control input for the pattern to remove
+    removePatternDir: wx.Button                             # Button control for removing files based on the specified pattern
+
+    # controls for directory remove files by set pattern
+    removeListDirTld: wx.TextCtrl                           # Text control input for the top-level directory for list-based file removal
+    removeListDirBrowse: wx.Button                          # Button control for browsing the top-level directory for list-based file removal
+    removeListDir: wx.Button                                # Button control for removing files based on the specified list
+
+    # controls for media & metadata information
+    # controls for directory media inspection
+    mediaInfoDirTld: wx.TextCtrl                           # Text control input media inspection walk path
+    mediaInfoDirBrowse: wx.Button                          # Button control for browsing media inspection walk path
+    mediaInfoDirChoice: wx.Choice                          # Choice control for selecting media file extension to use in media inspection walk
+    mediaInfoDir: wx.Button                                # Button control for directory media inspection
+
+    # controls for directory metadata inspection
+    mediaTagsDirTld: wx.TextCtrl                            # Text control input for audio tag walk path
+    mediaTagsDirBrowse: wx.Button                           # Button control for browsing audio tag walk path
+    mediaTagDirChoice: wx.Choice                            # Choice control for selecting audio file extension to use in audio tag walk
+    mediaTagsDir: wx.Button                                 # Button control for directory audio tag
 
 
     def __init__(
@@ -198,19 +279,21 @@ class MainFrame(wx.Frame):
         self.mainNotebook = wx.Notebook(self.mainSplitter, name="mainNotebook")
 
         # create the individual panels for each tab in the notebook
+        # self.nameTab = self._create_name_tab(self.mainNotebook)
         self.artTab = self._create_art_tab(self.mainNotebook)
         self.convertTab = self._create_convert_tab(self.mainNotebook)
         self.levelTab = self._create_level_tab(self.mainNotebook)
         self.playlistTab = self._create_playlist_tab(self.mainNotebook)
+        self.removeTab = self._create_remove_tab(self.mainNotebook)
         self.infoTab = self._create_info_tab(self.mainNotebook)
-        self.dirTab = self._create_dir_tab(self.mainNotebook)
 
         # add the created panels to the notebook as separate tabs, displayed from left to right in the order they are added
+        # self.mainNotebook.AddPage(self.nameTab, "Name Management")
         self.mainNotebook.AddPage(self.artTab, "Art Processing")
         self.mainNotebook.AddPage(self.convertTab, "Audio Conversion")
         self.mainNotebook.AddPage(self.levelTab, "Audio Leveling")
         self.mainNotebook.AddPage(self.playlistTab, "Playlist Processing")
-        self.mainNotebook.AddPage(self.dirTab, "Directory Processing")
+        self.mainNotebook.AddPage(self.removeTab, "Removal Processing")
         self.mainNotebook.AddPage(self.infoTab, "Information")
 
         # create the log control for displaying log messages
@@ -229,11 +312,104 @@ class MainFrame(wx.Frame):
         self.Maximize()
 
 
+    def _create_name_tab(self, parent) -> wx.Panel:
+        '''
+        @brief This panel contains album & song name management controls.
+
+        @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent window for the panel.
+
+        @retval panel (wx.Panel) The created name management panel.
+        '''
+
+        panel = wx.Panel(parent, name="nameTab")
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
+        grid = wx.GridBagSizer(8, 8)
+
+        # create sizers for name tab panel as needed
+
+
+        # order subpanels within the folder tab as needed
+
+
+        # make columns growable so that the sizers expand properly when the panel is resized
+
+
+        panel.SetSizer(grid)
+
+        return panel
+
+
+    def _create_rename_dir_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Create the bulk directory rename audio files sizer.
+
+        @details Provides directory selection and renaming controls.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent panel for the sizer.
+
+        @retval bulkSizer {wx.StaticBoxSizer} The created sizer for bulk renaming audio files.
+        '''
+
+        # @note can be tld, or fld or sld (top-level directory, artist folder, or album folder)
+        pass
+
+
+    def _create_rename_file_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Create the specific audio file rename sizer.
+
+        @details Provides file selection and renaming controls.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent panel for the sizer.
+
+        @retval bulkSizer {wx.StaticBoxSizer} The created sizer for renaming specific audio files.
+        '''
+
+        pass
+
+
+    def _create_add_folders_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Create the bulk add missing album folders sizer.
+
+        @details Provides directory selection and missing album folders addition controls.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent panel for the sizer.
+
+        @retval bulkSizer {wx.StaticBoxSizer} The created sizer for adding missing album folders.
+        '''
+
+        # @note input path con ONLY be tld (top-level directory)
+        pass
+
+
+    def _create_rename_folders_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Create the bulk rename incorrect album folders sizer.
+
+        @details Provides directory selection and incorrect album folders renaming controls.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent panel for the sizer.
+
+        @retval bulkSizer {wx.StaticBoxSizer} The created sizer for renaming incorrect album folders.
+        '''
+
+        # @note input path can ONLY be tld (top-level directory)
+        pass
+
+
     def _create_art_tab(self, parent) -> wx.Panel:
         '''
         @brief This panel contains album art extraction and setting controls.
 
-        @details Stacks the extraction sections at left and places the setting section to their right.
+        @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
 
         @param self {MainFrame} The instance of the class.
         @param parent {Any} The parent window for the panel.
@@ -247,16 +423,17 @@ class MainFrame(wx.Frame):
 
         # create the sizers for the art tab panel
         artDirSizer = self._create_art_dir_sizer(panel)
-        setAlbumArtSizer = self._create_art_set_album_sizer(panel)
+        setAlbumArtSizer = self._create_art_set_sizer(panel)
         fileArtSizer = self._create_art_file_sizer(panel)
 
         # vertically stack the directory extraction and album art setting sections
         grid.Add(artDirSizer, pos=(0, 0), flag=wx.ALL | wx.EXPAND, border=4)
         grid.Add(setAlbumArtSizer, pos=(1, 0), flag=wx.ALL | wx.EXPAND, border=4)
+
         # horizontally place the file extraction section to the right of the directory extraction and album art sections
         grid.Add(fileArtSizer, pos=(0, 1), span=(2, 1), flag=wx.ALL | wx.EXPAND, border=4)
 
-        # make both columns growable so that the sizers expand properly when the panel is resized
+        # make columns growable so that the sizers expand properly when the panel is resized
         grid.AddGrowableCol(0, 1)
         grid.AddGrowableCol(1, 1)
 
@@ -288,24 +465,24 @@ class MainFrame(wx.Frame):
         # create static text for describing section & starting path label and file type selection
         briefDesc = wx.StaticText(bulkPanel, label="Extracts album art from all audio files in a directory walk")
         resultDesc = wx.StaticText(bulkPanel, label="The extracted album art will be saved alongside the audio files")
-        startPathLabel = wx.StaticText(bulkPanel, label="Starting path tld or fld:")
+        startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld:")
         fileTypeLabel = wx.StaticText(bulkPanel, label="Extract from Audio Ext:")
 
         # create controls for selecting the starting path for bulk extraction
-        self.extractArtTld, self.extractDirBrowse = self._make_path_controls(bulkPanel)
-        self.extractArtTld.Name = "extractArtTld"
-        self.extractDirBrowse.Name = "extractDirBrowse"
-        self.extractDirBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.extractArtTld))
+        self.extractArtDirTld, self.extractArtDirBrowse = self._make_path_controls(bulkPanel)
+        self.extractArtDirTld.Name = "extractArtDirTld"
+        self.extractArtDirBrowse.Name = "extractArtDirBrowse"
+        self.extractArtDirBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.extractArtDirTld))
 
         # file type drop list for bulk conversion
         file_types = ["Any file type"] + AUDIO_EXTS
-        self.extractArtChoice = wx.Choice(bulkPanel, choices=file_types, name="extractArtChoice")
-        self.extractArtChoice.SetSelection(0)
-        self.extractArtChoice.SetToolTip("Select audio file type or 'Any file type' to process all supported audio files")
+        self.extractArtDirChoice = wx.Choice(bulkPanel, choices=file_types, name="extractArtDirChoice")
+        self.extractArtDirChoice.SetSelection(0)
+        self.extractArtDirChoice.SetToolTip("Select audio file type or 'Any file type' to process all supported audio files")
 
         # create the extraction button
-        self.extractDirArt = wx.Button(bulkPanel, label="Extract Directory Art", name="extractDirArt")
-        self.extractDirArt.Bind(wx.EVT_BUTTON, self.eventHandlers.on_extract_directory_art)
+        self.extractArtDir = wx.Button(bulkPanel, label="Extract All Art", name="extractArtDir")
+        self.extractArtDir.Bind(wx.EVT_BUTTON, self.eventHandlers.on_extract_directory_art)
 
         # add info text controls to the grid layout
         bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
@@ -313,13 +490,13 @@ class MainFrame(wx.Frame):
 
         # add controls for the starting path to the grid layout
         bulkGrid.Add(startPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(self.extractArtTld, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
-        bulkGrid.Add(self.extractDirBrowse, pos=(2, 3), flag=wx.EXPAND)
+        bulkGrid.Add(self.extractArtDirTld, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.extractArtDirBrowse, pos=(2, 3), flag=wx.EXPAND)
 
         # add controls for selecting the file type pattern and extraction button to the grid layout
         bulkGrid.Add(fileTypeLabel, pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(self.extractArtChoice, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
-        bulkGrid.Add(self.extractDirArt, pos=(3, 3))
+        bulkGrid.Add(self.extractArtDirChoice, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.extractArtDir, pos=(3, 3))
 
         # make the second column growable to allow the controls to expand properly
         bulkGrid.AddGrowableCol(1)
@@ -350,8 +527,6 @@ class MainFrame(wx.Frame):
         # create the static box, sizer, and panel for the file art extraction section
         fileBox = wx.StaticBox(parent, label="File Art Extraction")
         fileSizer = wx.StaticBoxSizer(fileBox, wx.VERTICAL)
-        filePanel = wx.Panel(parent)
-        fileGrid = wx.GridBagSizer(8, 8)
 
         # create static text for describing section & audio file path label
         briefDesc = wx.StaticText(filePanel, label="Extracts album art from specific audio file")
@@ -360,23 +535,23 @@ class MainFrame(wx.Frame):
 
         # create path input and browse button controls for selecting the audio file
         wildcard_exts = "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"
-        self.extractArtPath, self.extractFileBrowse = self._make_path_controls(filePanel)
-        self.extractArtPath.Name = "extractArtPath"
-        self.extractFileBrowse.Name = "extractFileBrowse"
-        self.extractFileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.extractArtPath, wildcard_exts))
+        self.extractArtFilePath, self.extractArtFileBrowse = self._make_path_controls(filePanel)
+        self.extractArtFilePath.Name = "extractArtFilePath"
+        self.extractArtFileBrowse.Name = "extractArtFileBrowse"
+        self.extractArtFileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.extractArtFilePath, wildcard_exts))
 
         # create the extract file art button
-        self.extractFileArt = wx.Button(filePanel, label="Extract File Art")
-        self.extractFileArt.Bind(wx.EVT_BUTTON, self.eventHandlers.on_extract_file_art)
+        self.extractArtFile = wx.Button(filePanel, label="Extract File Art")
+        self.extractArtFile.Bind(wx.EVT_BUTTON, self.eventHandlers.on_extract_file_art)
 
         # create a horizontal sizer for the file path and extract buttons
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
-        buttonSizer.Add(self.extractFileBrowse, 0, wx.RIGHT, 8)
-        buttonSizer.Add(self.extractFileArt, 0)
+        buttonSizer.Add(self.extractArtFileBrowse, 0, wx.RIGHT, 8)
+        buttonSizer.Add(self.extractArtFile, 0)
 
         # create a horizontal sizer for the file path row
         pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
-        pathRowSizer.Add(self.extractArtPath, 1, wx.EXPAND | wx.RIGHT, 8)
+        pathRowSizer.Add(self.extractArtFilePath, 1, wx.EXPAND | wx.RIGHT, 8)
         pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
 
         # add info text controls to the grid layout
@@ -397,7 +572,7 @@ class MainFrame(wx.Frame):
         return fileSizer
 
 
-    def _create_art_set_album_sizer(self, parent) -> wx.StaticBoxSizer:
+    def _create_art_set_sizer(self, parent) -> wx.StaticBoxSizer:
         '''
         @brief Creates the bulk directory album art setting section.
 
@@ -406,7 +581,7 @@ class MainFrame(wx.Frame):
         @param self {MainFrame} The instance of the class.
         @param parent {wx.Panel} The parent panel for the section.
 
-        @retval setBulkSizer {wx.StaticBoxSizer} The sizer containing the setting controls.
+        @retval bulkSizer {wx.StaticBoxSizer} The sizer containing the setting controls.
         '''
 
         bulkPanel = wx.Panel(parent)
@@ -420,26 +595,26 @@ class MainFrame(wx.Frame):
         # create static text for describing section & starting path label
         briefDesc = wx.StaticText(bulkPanel, label="Sets album art file for an album directory from project source folder")
         detailDesc = wx.StaticText(bulkPanel, label="Copies a matching AlbumArt JPEG into the album directory when it is available")
-        startPathLabel = wx.StaticText(bulkPanel, label="Starting path tld or fld:")
+        startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld:")
 
         # create controls for selecting the starting path for setting album art
-        self.setArtTld, self.setArtBrowse = self._make_path_controls(bulkPanel)
-        self.setArtTld.Name = "setArtTld"
-        self.setArtBrowse.Name = "setArtBrowse"
-        self.setArtBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.setArtTld))
+        self.setArtDirTld, self.setArtDirBrowse = self._make_path_controls(bulkPanel)
+        self.setArtDirTld.Name = "setArtDirTld"
+        self.setArtDirBrowse.Name = "setArtDirBrowse"
+        self.setArtDirBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.setArtDirTld))
 
         # create the set album art button
-        setAlbumArt = wx.Button(bulkPanel, label="Set Album Art")
-        setAlbumArt.Bind(wx.EVT_BUTTON, self.eventHandlers.on_set_album_art)
+        self.setArtDir = wx.Button(bulkPanel, label="Set Album Art", name="setArtDir")
+        self.setArtDir.Bind(wx.EVT_BUTTON, self.eventHandlers.on_set_album_art)
 
         # create a horizontal sizer for the browse and setting buttons
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
-        buttonSizer.Add(self.setArtBrowse, 0, wx.RIGHT, 8)
-        buttonSizer.Add(setAlbumArt, 0)
+        buttonSizer.Add(self.setArtDirBrowse, 0, wx.RIGHT, 8)
+        buttonSizer.Add(self.setArtDir, 0)
 
         # create a horizontal sizer for the starting path row
         pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
-        pathRowSizer.Add(self.setArtTld, 1, wx.EXPAND | wx.RIGHT, 8)
+        pathRowSizer.Add(self.setArtDirTld, 1, wx.EXPAND | wx.RIGHT, 8)
         pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
 
         # add the info text controls to the grid layout
@@ -453,14 +628,14 @@ class MainFrame(wx.Frame):
         # make the second column growable to allow the controls to expand properly
         bulkGrid.AddGrowableCol(1)
         bulkPanel.SetSizer(bulkGrid)
-        bulkSizer.Add(bulkPanel, 1, wx.EXPAND | wx.ALL, 4)
+        bulkSizer.Add(bulkPanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
 
         return bulkSizer
 
 
     def _create_convert_tab(self, parent) -> wx.Panel:
         '''
-        @brief This panel includes controls for audio file conversion.
+        @brief This panel contains audio file conversion controls.
 
         @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
 
@@ -482,7 +657,7 @@ class MainFrame(wx.Frame):
         grid.Add(convertDirSizer, pos=(0, 0), flag=wx.ALL | wx.EXPAND, border=4)
         grid.Add(convertFileSizer, pos=(0, 1), flag=wx.ALL | wx.EXPAND, border=4)
 
-        # make both columns growable so that the sizers expand properly when the panel is resized
+        # make columns growable so that the sizers expand properly when the panel is resized
         grid.AddGrowableCol(0, 1)
         grid.AddGrowableCol(1, 1)
 
@@ -500,7 +675,7 @@ class MainFrame(wx.Frame):
         @param self {MainFrame} The instance of the class.
         @param parent {wx.Panel} The parent window for the sizer.
 
-        @retval bulkSizer {wx.Sizer} The created sizer for directory audio conversion.
+        @retval bulkSizer {wx.StaticBoxSizer} The created sizer for directory audio conversion.
         '''
 
         bulkPanel = wx.Panel(parent)
@@ -514,24 +689,24 @@ class MainFrame(wx.Frame):
         # create static text for describing section & starting path label and file type selection
         briefDesc = wx.StaticText(bulkPanel, label="Converts all audio files in a directory walk")
         resultDesc = wx.StaticText(bulkPanel, label="The converted files will be saved in project default output location")
-        startPathLabel = wx.StaticText(bulkPanel, label="Starting path tld or fld:")
+        startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld or sld:")
         fileTypeLabel = wx.StaticText(bulkPanel, label="Convert from Audio Ext:")
 
         # create controls for selecting the starting path for bulk conversion
-        self.convertWalkTld, self.convertWalkBrowse = self._make_path_controls(bulkPanel)
-        self.convertWalkTld.Name = "convertWalkTld"
-        self.convertWalkBrowse.Name = "convertWalkBrowse"
-        self.convertWalkBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.convertWalkTld))
+        self.convertAudioDirTld, self.convertAudioDirBrowse = self._make_path_controls(bulkPanel)
+        self.convertAudioDirTld.Name = "convertAudioDirTld"
+        self.convertAudioDirBrowse.Name = "convertAudioDirBrowse"
+        self.convertAudioDirBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.convertAudioDirTld))
 
         # file type drop list for bulk conversion
         file_types = ["Any file type"] + AUDIO_EXTS
-        self.convertAudioChoice = wx.Choice(bulkPanel, choices=file_types, name="convertAudioChoice")
-        self.convertAudioChoice.SetSelection(0)
-        self.convertAudioChoice.SetToolTip("Select audio file type or 'Any file type' to process all supported audio files")
+        self.convertAudioDirChoice = wx.Choice(bulkPanel, choices=file_types, name="convertAudioDirChoice")
+        self.convertAudioDirChoice.SetSelection(0)
+        self.convertAudioDirChoice.SetToolTip("Select audio file type or 'Any file type' to process all supported audio files")
 
         # create the conversion button
-        self.convertDirAudio = wx.Button(bulkPanel, label="Convert Directory Audio")
-        self.convertDirAudio.Bind(wx.EVT_BUTTON, self.eventHandlers.on_convert_directory_audio)
+        self.convertAudioDir = wx.Button(bulkPanel, label="Convert All Audio", name="convertAudioDir")
+        self.convertAudioDir.Bind(wx.EVT_BUTTON, self.eventHandlers.on_convert_directory_audio)
 
         # add info text controls to the grid layout
         bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
@@ -539,13 +714,13 @@ class MainFrame(wx.Frame):
 
         # order the top level directory controls in the bulk directory conversion subpanel grid
         bulkGrid.Add(startPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(self.convertWalkTld, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
-        bulkGrid.Add(self.convertWalkBrowse, pos=(2, 3), flag=wx.EXPAND)
+        bulkGrid.Add(self.convertAudioDirTld, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.convertAudioDirBrowse, pos=(2, 3), flag=wx.EXPAND)
 
         # order the file type pattern controls in the bulk directory conversion subpanel grid
         bulkGrid.Add(fileTypeLabel, pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(self.convertAudioChoice, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
-        bulkGrid.Add(self.convertDirAudio, pos=(3, 3))
+        bulkGrid.Add(self.convertAudioDirChoice, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.convertAudioDir, pos=(3, 3))
 
         # make the second column growable to allow the controls to expand properly
         bulkGrid.AddGrowableCol(1)
@@ -584,10 +759,10 @@ class MainFrame(wx.Frame):
 
         # create path input and browse button controls for selecting the audio file
         wildcard_exts = "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"
-        self.convertAudioPath, self.convertFileBrowse = self._make_path_controls(filePanel)
-        self.convertAudioPath.Name = "convertAudioPath"
-        self.convertFileBrowse.Name = "convertAudioBrowse"
-        self.convertFileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.convertAudioPath, wildcard_exts))
+        self.convertAudioFilePath, self.convertAudioFileBrowse = self._make_path_controls(filePanel)
+        self.convertAudioFilePath.Name = "convertAudioFilePath"
+        self.convertAudioFileBrowse.Name = "convertAudioDirBrowse"
+        self.convertAudioFileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.convertAudioFilePath, wildcard_exts))
 
         # create the convert audio file button
         self.convertAudioFile = wx.Button(filePanel, label="Convert Audio File")
@@ -595,12 +770,12 @@ class MainFrame(wx.Frame):
 
         # create a horizontal sizer for the browse and convert buttons
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
-        buttonSizer.Add(self.convertFileBrowse, 0, wx.RIGHT, 8)
+        buttonSizer.Add(self.convertAudioFileBrowse, 0, wx.RIGHT, 8)
         buttonSizer.Add(self.convertAudioFile, 0)
 
         # create a horizontal sizer for the file path row
         pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
-        pathRowSizer.Add(self.convertAudioPath, 1, wx.EXPAND | wx.RIGHT, 8)
+        pathRowSizer.Add(self.convertAudioFilePath, 1, wx.EXPAND | wx.RIGHT, 8)
         pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
 
         # add info text controls to the grid layout
@@ -623,7 +798,7 @@ class MainFrame(wx.Frame):
 
     def _create_level_tab(self, parent) -> wx.Panel:
         '''
-        @brief This panel includes controls for audio file leveling.
+        @brief This panel contains audio file leveling controls.
 
         @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
 
@@ -645,7 +820,7 @@ class MainFrame(wx.Frame):
         grid.Add(levelDirSizer, pos=(0, 0), flag=wx.ALL | wx.EXPAND, border=4)
         grid.Add(levelFileSizer, pos=(0, 1), flag=wx.ALL | wx.EXPAND, border=4)
 
-        # make both columns growable so that the sizers expand properly when the panel is resized
+        # make columns growable so that the sizers expand properly when the panel is resized
         grid.AddGrowableCol(0, 1)
         grid.AddGrowableCol(1, 1)
 
@@ -663,7 +838,7 @@ class MainFrame(wx.Frame):
         @param self {MainFrame} The instance of the class.
         @param parent {Any} The parent window for the sizer.
 
-        @retval sizer {wx.StaticBoxSizer} The created sizer for directory audio leveling.
+        @retval bulkSizer {wx.StaticBoxSizer} The created sizer for directory audio leveling.
         '''
 
         bulkPanel = wx.Panel(parent)
@@ -677,24 +852,24 @@ class MainFrame(wx.Frame):
         # create static text for describing section & starting path label and leveling type selection
         briefDesc = wx.StaticText(bulkPanel, label="Levels all audio files in a directory walk")
         resultDesc = wx.StaticText(bulkPanel, label="The leveled files will be saved in project default output location")
-        startPathLabel = wx.StaticText(bulkPanel, label="Starting path tld or fld:")
+        startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld:")
         levelTypeLabel = wx.StaticText(bulkPanel, label="Level Audio Type:")
 
         # create controls for selecting the starting path for bulk leveling
-        self.levelWalkTld, self.levelWalkBrowse = self._make_path_controls(bulkPanel)
-        self.levelWalkTld.Name = "levelWalkTld"
-        self.levelWalkBrowse.Name = "levelWalkBrowse"
-        self.levelWalkBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.levelWalkTld))
+        self.levelAudioDirTld, self.levelAudioDirBrowse = self._make_path_controls(bulkPanel)
+        self.levelAudioDirTld.Name = "levelAudioDirTld"
+        self.levelAudioDirBrowse.Name = "levelAudioDirBrowse"
+        self.levelAudioDirBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.levelAudioDirTld))
 
         # level type drop list for bulk leveling
         level_types = ["ebu", "peak", "rms"]
-        self.levelAudioChoice = wx.Choice(bulkPanel, choices=level_types, name="levelAudioChoice")
-        self.levelAudioChoice.SetSelection(0)
-        self.levelAudioChoice.SetToolTip("Select normalization type: ebu (loudness), peak (peak level), or rms (RMS level)")
+        self.levelAudioDirChoice = wx.Choice(bulkPanel, choices=level_types, name="levelAudioDirChoice")
+        self.levelAudioDirChoice.SetSelection(0)
+        self.levelAudioDirChoice.SetToolTip("Select normalization type: ebu (loudness), peak (peak level), or rms (RMS level)")
 
         # create the leveling button
-        self.levelDirAudio = wx.Button(bulkPanel, label="Level Directory Audio")
-        self.levelDirAudio.Bind(wx.EVT_BUTTON, self.eventHandlers.on_level_directory_audio)
+        self.levelAudioDir = wx.Button(bulkPanel, label="Level All Audio", name="levelAudioDir")
+        self.levelAudioDir.Bind(wx.EVT_BUTTON, self.eventHandlers.on_level_directory_audio)
 
         #  add info text controls to the grid layout
         bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
@@ -702,13 +877,13 @@ class MainFrame(wx.Frame):
 
         # order the top level directory controls in the bulk directory conversion subpanel grid
         bulkGrid.Add(startPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(self.levelWalkTld, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
-        bulkGrid.Add(self.levelWalkBrowse, pos=(2, 3), flag=wx.EXPAND)
+        bulkGrid.Add(self.levelAudioDirTld, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.levelAudioDirBrowse, pos=(2, 3), flag=wx.EXPAND)
 
         # order the file type pattern controls in the bulk directory conversion subpanel grid
         bulkGrid.Add(levelTypeLabel, pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(self.levelAudioChoice, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
-        bulkGrid.Add(self.levelDirAudio, pos=(3, 3))
+        bulkGrid.Add(self.levelAudioDirChoice, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.levelAudioDir, pos=(3, 3))
 
         # make the second column growable to allow the controls to expand properly
         bulkGrid.AddGrowableCol(1)
@@ -807,7 +982,7 @@ class MainFrame(wx.Frame):
 
     def _create_playlist_tab(self, parent) -> wx.Panel:
         '''
-        @brief This panels includes controls for updating playlists.
+        @brief This panels contains playlist updating controls
 
         @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
 
@@ -829,7 +1004,7 @@ class MainFrame(wx.Frame):
         grid.Add(playlistDirSizer, pos=(0, 0), flag=wx.ALL | wx.EXPAND, border=4)
         grid.Add(playlistFileSizer, pos=(0, 1), flag=wx.ALL | wx.EXPAND, border=4)
 
-        # make both columns growable so that the sizers expand properly when the panel is resized
+        # make columns growable so that the sizers expand properly when the panel is resized
         grid.AddGrowableCol(0, 1)
         grid.AddGrowableCol(1, 1)
 
@@ -847,40 +1022,40 @@ class MainFrame(wx.Frame):
         @param self {MainFrame} The instance of the class.
         @param parent {wx.Panel} The parent panel for the sizer.
 
-        @retval bulk_sizer {wx.StaticBoxSizer} The created sizer for directory playlist updates.
+        @retval bulkSizer {wx.StaticBoxSizer} The created sizer for directory playlist updates.
         '''
 
         bulkPanel = wx.Panel(parent)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizers, and panel for the bulk directory audio conversion section
+        # create the static box, sizers, and panel for the bulk directory playlist update section
         bulkBox = wx.StaticBox(parent, label="Directory Playlist Update")
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label
         briefDesc = wx.StaticText(bulkPanel, label="Updates all playlist files in a directory walk")
         resultDesc = wx.StaticText(bulkPanel, label="The updated playlists will be saved in project default output location")
-        startPathLabel = wx.StaticText(bulkPanel, label="Starting path tld or fld:")
+        startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld only:")
 
         # create controls for selecting the starting path for bulk updating
-        self.playlistUpdateTld, self.playlistWalkBrowse = self._make_path_controls(bulkPanel)
-        self.playlistUpdateTld.Name = "playlistUpdateTld"
-        self.playlistWalkBrowse.Name = "playlistWalkBrowse"
-        self.playlistWalkBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.playlistUpdateTld))
+        self.playlistUpdateDirTld, self.playlistUpdateDirBrowse = self._make_path_controls(bulkPanel)
+        self.playlistUpdateDirTld.Name = "playlistUpdateDirTld"
+        self.playlistUpdateDirBrowse.Name = "playlistUpdateDirBrowse"
+        self.playlistUpdateDirBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.playlistUpdateDirTld))
 
         # create the update playlist button
-        self.updateDirPlaylist = wx.Button(bulkPanel, label="Update Directory Playlist")
-        self.updateDirPlaylist.Bind(wx.EVT_BUTTON, self.eventHandlers.on_update_walk)
+        self.playlistUpdateDir = wx.Button(bulkPanel, label="Update All Playlists", name="playlistUpdateDir")
+        self.playlistUpdateDir.Bind(wx.EVT_BUTTON, self.eventHandlers.on_update_walk)
 
         # create a horizontal sizer for the browse and convert buttons
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
-        buttonSizer.Add(self.playlistWalkBrowse, 0, wx.RIGHT, 8)
-        buttonSizer.Add(self.updateDirPlaylist, 0)
+        buttonSizer.Add(self.playlistUpdateDirBrowse, 0, wx.RIGHT, 8)
+        buttonSizer.Add(self.playlistUpdateDir, 0)
 
         # create a horizontal sizer for the file path row
         pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
-        pathRowSizer.Add(self.playlistUpdateTld, 1, wx.EXPAND | wx.RIGHT, 8)
+        pathRowSizer.Add(self.playlistUpdateDirTld, 1, wx.EXPAND | wx.RIGHT, 8)
         pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
 
         # add info text controls to the grid layout
@@ -927,10 +1102,10 @@ class MainFrame(wx.Frame):
 
         # create path input and browse button controls for selecting the audio file
         playlist_wildcard = f"Playlist files ({';'.join('*' + ext for ext in PLAYLIST_EXTS)})|{';'.join('*' + ext for ext in PLAYLIST_EXTS)}"
-        self.updatePlaylistPath, self.updateFileBrowse = self._make_path_controls(filePanel)
-        self.updatePlaylistPath.Name = "updatePlaylistPath"
-        self.updateFileBrowse.Name = "updateFileBrowse"
-        self.updateFileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.updatePlaylistPath, playlist_wildcard))
+        self.updatePlaylistFilePath, self.updatePlaylistFileBrowse = self._make_path_controls(filePanel)
+        self.updatePlaylistFilePath.Name = "updatePlaylistFilePath"
+        self.updatePlaylistFileBrowse.Name = "updatePlaylistFileBrowse"
+        self.updatePlaylistFileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.updatePlaylistFilePath, playlist_wildcard))
 
         # create the update playlist fille button
         self.updatePlaylistFile = wx.Button(filePanel, label="Update Playlist File")
@@ -938,12 +1113,12 @@ class MainFrame(wx.Frame):
 
         # create a horizontal sizer for the browse and convert buttons
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
-        buttonSizer.Add(self.updateFileBrowse, 0, wx.RIGHT, 8)
+        buttonSizer.Add(self.updatePlaylistFileBrowse, 0, wx.RIGHT, 8)
         buttonSizer.Add(self.updatePlaylistFile, 0)
 
         # create a horizontal sizer for the file path row
         pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
-        pathRowSizer.Add(self.updatePlaylistPath, 1, wx.EXPAND | wx.RIGHT, 8)
+        pathRowSizer.Add(self.updatePlaylistFilePath, 1, wx.EXPAND | wx.RIGHT, 8)
         pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
 
         # add info text controls to the grid layout
@@ -964,107 +1139,395 @@ class MainFrame(wx.Frame):
         return fileSizer
 
 
-    def _create_dir_tab(self, parent) -> wx.Panel:
-        '''
-        @brief Create the directory panel.
-
-        @details Provides controls for listing audio files and removing empty albums or files matching a pattern.<br>
-        It includes options for selecting top-level directories and specifying file extensions or patterns.
-
-        @param self {MainFrame} The instance of the class.
-        @param parent {Any} The parent window for the panel.
-
-        @retval panel {wx.Panel} The created directory panel.
-        '''
-
-        panel = wx.Panel(parent, name="dirTab")
-        grid = wx.GridBagSizer(8, 8)
-
-        self.list_audio_tld, list_audio_btn = self._make_path_controls(panel)
-        list_audio_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.list_audio_tld))
-        list_audio_exec = wx.Button(panel, label="List Audio")
-        list_audio_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_list_audio)
-
-        self.remove_albums_tld, remove_albums_btn = self._make_path_controls(panel)
-        remove_albums_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.remove_albums_tld))
-        remove_albums_exec = wx.Button(panel, label="Remove Empty Albums")
-        remove_albums_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_remove_albums)
-
-        self.remove_pattern_tld, remove_pattern_btn = self._make_path_controls(panel)
-        remove_pattern_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.remove_pattern_tld))
-        self.remove_pattern_pattern = wx.TextCtrl(panel)
-        remove_pattern_exec = wx.Button(panel, label="Remove Pattern")
-        remove_pattern_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_remove_pattern)
-
-        grid.Add(wx.StaticText(panel, label="Top-level dir (list audio):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.list_audio_tld, pos=(0, 1), flag=wx.EXPAND)
-        grid.Add(list_audio_btn, pos=(0, 2))
-        grid.Add(list_audio_exec, pos=(0, 3))
-
-        grid.Add(self.remove_albums_tld, pos=(2, 1), flag=wx.EXPAND)
-        grid.Add(remove_albums_btn, pos=(2, 2))
-        grid.Add(remove_albums_exec, pos=(2, 3))
-
-        grid.Add(self.remove_pattern_tld, pos=(3, 1), flag=wx.EXPAND)
-        grid.Add(remove_pattern_btn, pos=(3, 2))
-        grid.Add(wx.StaticText(panel, label="Pattern:"), pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.remove_pattern_pattern, pos=(3, 3), span=(1, 2), flag=wx.EXPAND)
-        grid.Add(remove_pattern_exec, pos=(3, 5))
-
-        grid.AddGrowableCol(1)
-        panel.SetSizer(grid)
-
-        return panel
-
-
     def _create_info_tab(self, parent) -> wx.Panel:
         '''
-        @brief Create the metadata panel.
+        @brief This panel contains information retrieval controls.
 
-        @details This panel provides controls for retrieving and displaying metadata from media files.<br>
+        @details This panel is organized into nested subpanels for bulk directory processing.
         It includes options for tags walk and media info walk.
 
         @param self {MainFrame} The instance of the class.
         @param parent {Any} The parent window for the panel.
 
-        @retval panel {wx.Panel} The created metadata panel.
+        @retval panel {wx.Panel} The created information panel.
         '''
 
         panel = wx.Panel(parent, name="infoTab")
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         grid = wx.GridBagSizer(8, 8)
 
-        self.tags_walk_tld, tags_walk_tld_btn = self._make_path_controls(panel)
-        tags_walk_tld_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.tags_walk_tld))
-        self.tags_walk_pattern = wx.TextCtrl(panel)
-        self.tags_walk_ffprobe = wx.CheckBox(panel, label="Use ffprobe")
-        tags_walk_exec = wx.Button(panel, label="Get Tags Walk")
-        tags_walk_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_get_tags_walk)
+        # create the sizers for information retrieval tab panel
+        infoMediaSizer = self._create_info_media_sizer(panel)
+        infoTagsSizer = self._create_info_tag_sizer(panel)
 
-        self.media_info_tld, media_info_btn = self._make_path_controls(panel)
-        media_info_btn.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.media_info_tld))
-        self.media_info_pattern = wx.TextCtrl(panel)
-        media_info_exec = wx.Button(panel, label="Get Media Info Walk")
-        media_info_exec.Bind(wx.EVT_BUTTON, self.eventHandlers.on_get_media_info_walk)
+        # horizontally order the directory and file conversion sections in the main grid
+        grid.Add(infoMediaSizer, pos=(0, 0), flag=wx.ALL | wx.EXPAND, border=4)
+        grid.Add(infoTagsSizer, pos=(0, 1), flag=wx.ALL | wx.EXPAND, border=4)
 
-        grid.Add(wx.StaticText(panel, label="Top-level dir (tags walk):"), pos=(0, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.tags_walk_tld, pos=(0, 1), flag=wx.EXPAND)
-        grid.Add(tags_walk_tld_btn, pos=(0, 2))
-        grid.Add(wx.StaticText(panel, label="Pattern:"), pos=(1, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.tags_walk_pattern, pos=(1, 1), span=(1, 2), flag=wx.EXPAND)
-        grid.Add(self.tags_walk_ffprobe, pos=(2, 1))
-        grid.Add(tags_walk_exec, pos=(2, 2))
+        # make columns growable so that the sizers expand properly when the panel is resized
+        grid.AddGrowableCol(0, 1)
+        grid.AddGrowableCol(1, 1)
 
-        grid.Add(wx.StaticText(panel, label="Top-level dir (media info walk):"), pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.media_info_tld, pos=(3, 1), flag=wx.EXPAND)
-        grid.Add(media_info_btn, pos=(3, 2))
-        grid.Add(wx.StaticText(panel, label="Pattern:"), pos=(4, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        grid.Add(self.media_info_pattern, pos=(4, 1), span=(1, 2), flag=wx.EXPAND)
-        grid.Add(media_info_exec, pos=(4, 3))
-
-        grid.AddGrowableCol(1)
         panel.SetSizer(grid)
 
         return panel
+
+
+    def _create_info_media_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Create the bulk directory audio file media information walk sizer.
+
+        @details Provides directory selection walk controls.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent panel for the sizer.
+
+        @retval bulkSizer {wx.StaticBoxSizer} The sizer containing the information controls.
+        '''
+
+        bulkPanel = wx.Panel(parent)
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
+        bulkGrid = wx.GridBagSizer(8, 8)
+
+        # create the static box, sizers, and panel for the bulk directory media information section
+        bulkBox = wx.StaticBox(parent, label="Directory Media Information")
+        bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
+
+        # create static text for describing section & starting path label and file type selection
+        briefDesc = wx.StaticText(bulkPanel, label="Gets media information in a directory walk")
+        resultDesc = wx.StaticText(bulkPanel, label="The media information file will be saved in project default output location")
+        startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld:")
+        fileTypeLabel = wx.StaticText(bulkPanel, label="Information from Audio Ext:")
+
+        # create controls for selecting the starting path for bulk media information
+        self.mediaInfoDirTld, self.mediaInfoDirBrowse = self._make_path_controls(bulkPanel)
+        self.mediaInfoDirTld.Name = "mediaInfoDirTld"
+        self.mediaInfoDirBrowse.Name = "mediaInfoDirBrowse"
+        self.mediaInfoDirBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.mediaInfoDirTld))
+
+        # file type drop list for bulk media information
+        file_types = ["Any file type"] + AUDIO_EXTS
+        self.mediaInfoDirChoice = wx.Choice(bulkPanel, choices=file_types, name="mediaInfoDirChoice")
+        self.mediaInfoDirChoice.SetSelection(0)
+        self.mediaInfoDirChoice.SetToolTip("Select audio file type or 'Any file type' to process all supported audio files")
+
+        # create the get media information button
+        self.mediaInfoDir = wx.Button(bulkPanel, label="Get Media Info", name="mediaInfoDir")
+        self.mediaInfoDir.Bind(wx.EVT_BUTTON, self.eventHandlers.on_get_media_info_walk)
+
+        # add info text controls to the grid layout
+        bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
+        bulkGrid.Add(resultDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
+
+        # order the top level directory controls in the bulk directory media information subpanel grid
+        bulkGrid.Add(startPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(self.mediaInfoDirTld, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.mediaInfoDirBrowse, pos=(2, 3), flag=wx.EXPAND)
+
+        # order the file type pattern controls in the bulk directory conversion subpanel grid
+        bulkGrid.Add(fileTypeLabel, pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(self.mediaInfoDirChoice, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.mediaInfoDir, pos=(3, 3))
+
+        # make the second column growable to allow the controls to expand properly
+        bulkGrid.AddGrowableCol(1)
+
+        # set the sizer for the panel and add it to the static box sizer
+        bulkPanel.SetSizer(bulkGrid)
+        bulkSizer.Add(bulkPanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
+
+        return bulkSizer
+
+
+    def _create_info_tag_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Create the bulk directory audio file tag information walk sizer.
+
+        @details Provides directory selection walk controls.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent panel for the sizer.
+
+        @retval bulkSizer {wx.StaticBoxSizer} The sizer containing the tag controls.
+        '''
+
+        bulkPanel = wx.Panel(parent)
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
+        bulkGrid = wx.GridBagSizer(8, 8)
+
+        # create the static box, sizers, and panel for the bulk directory tag information section
+        bulkBox = wx.StaticBox(parent, label="Directory Tag Information")
+        bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
+
+        # create static text for describing section & starting path label and file type selection
+        briefDesc = wx.StaticText(bulkPanel, label="Gets tag information in a directory walk")
+        resultDesc = wx.StaticText(bulkPanel, label="The tag information file will be saved in project default output location")
+        startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld:")
+        fileTypeLabel = wx.StaticText(bulkPanel, label="Information from Audio Ext:")
+
+        # create controls for selecting the starting path for bulk tag information
+        self.mediaTagsDirTld, self.mediaTagsDirBrowse = self._make_path_controls(bulkPanel)
+        self.mediaTagsDirTld.Name = "mediaTagsDirTld"
+        self.mediaTagsDirBrowse.Name = "mediaTagsDirBrowse"
+        self.mediaTagsDirBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.mediaTagsDirTld))
+
+        # file type drop list for bulk tag information
+        file_types = ["Any file type"] + AUDIO_EXTS
+        self.mediaTagDirChoice = wx.Choice(bulkPanel, choices=file_types, name="mediaTagDirChoice")
+        self.mediaTagDirChoice.SetSelection(0)
+        self.mediaTagDirChoice.SetToolTip("Select audio file type or 'Any file type' to process all supported audio files")
+
+        # create the get media tags button
+        self.mediaTagsDir = wx.Button(bulkPanel, label="Get Media Tags", name="mediaTagsDir")
+        self.mediaTagsDir.Bind(wx.EVT_BUTTON, self.eventHandlers.on_get_media_tags_walk)
+
+        # add info text controls to the grid layout
+        bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
+        bulkGrid.Add(resultDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
+
+        # order the top level directory controls in the bulk directory tag information subpanel grid
+        bulkGrid.Add(startPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(self.mediaTagsDirTld, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.mediaTagsDirBrowse, pos=(2, 3), flag=wx.EXPAND)
+
+        # order the file type pattern controls in the bulk directory tag information subpanel grid
+        bulkGrid.Add(fileTypeLabel, pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(self.mediaTagDirChoice, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.mediaTagsDir, pos=(3, 3))
+
+        # make the second column growable to allow the controls to expand properly
+        bulkGrid.AddGrowableCol(1)
+
+        # set the sizer for the panel and add it to the static box sizer
+        bulkPanel.SetSizer(bulkGrid)
+        bulkSizer.Add(bulkPanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
+
+        return bulkSizer
+
+
+    def _create_remove_tab(self, parent) -> wx.Panel:
+        '''
+        @brief This panel contains folder & file removal controls.
+
+        @details This panel is organized into nested subpanels for bulk directory processing and specific file processing.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent window for the panel.
+
+        @retval panel {wx.Panel} The created removal panel.
+        '''
+
+        panel = wx.Panel(parent, name="removeTab")
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
+        grid = wx.GridBagSizer(8, 8)
+
+        # create the sizers for the removal tab
+        removePatternSizer = self._create_remove_pattern_sizer(panel)
+        removeListSizer = self._create_remove_list_sizer(panel)
+        removeAlbumsSizer = self._create_remove_albums_sizer(panel)
+
+        # vertically stack the remove pattern and remove list sizers
+        grid.Add(removePatternSizer, pos=(0, 0), flag=wx.ALL | wx.EXPAND, border=4)
+        grid.Add(removeListSizer, pos=(1, 0), flag=wx.ALL | wx.EXPAND, border=4)
+
+        # horizontally place the remove album section to the right of the remove pattern and remove list sizers
+        grid.Add(removeAlbumsSizer, pos=(0, 1), span=(2, 1), flag=wx.ALL | wx.EXPAND, border=4)
+
+        # make columns growable so that the sizers expand properly when the panel is resized
+        grid.AddGrowableCol(0, 1)
+        grid.AddGrowableCol(1, 1)
+
+        panel.SetSizer(grid)
+
+        return panel
+
+
+    def _create_remove_pattern_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Create the bulk remove files matching a pattern sizer.
+
+        @details Provides directory selection, file type filtering, and  file removal controls.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {wx.Panel} The parent window for the sizer.
+
+        @retval bulkSizer {wx.Sizer} The created sizer for directory audio conversion.
+        '''
+
+        bulkPanel = wx.Panel(parent)
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
+        bulkGrid = wx.GridBagSizer(8, 8)
+
+        # create the static box, sizers, and panel for the bulk directory audio conversion section
+        bulkBox = wx.StaticBox(parent, label="Remove Matching Pattern")
+        bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
+
+        # create static text for describing section & starting path label and file type selection
+        briefDesc = wx.StaticText(bulkPanel, label="Removes all files in a directory walk")
+        resultDesc = wx.StaticText(bulkPanel, label="Will not remove *.* pattern, or from file-system root/mount point")
+        startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld:")
+        fileTypeLabel = wx.StaticText(bulkPanel, label="Remove this pattern:")
+
+        # create controls for selecting the starting path for bulk file removal
+        self.removePatternDirTld, self.removePatternDirBrowse = self._make_path_controls(bulkPanel)
+        self.removePatternDirTld.Name = "removePatternDirTld"
+        self.removePatternDirBrowse.Name = "removePatternDirBrowse"
+        self.removePatternDirBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.removePatternDirTld))
+
+        # create the pattern to remove input field
+        self.removePatternDirInput = wx.TextCtrl(bulkPanel, name="removePatternDirInput")
+        self.removePatternDirInput.SetToolTip("Enter the pattern to remove")
+
+        # create the removal button
+        self.removePatternDir = wx.Button(bulkPanel, label="Remove Pattern", name="removePatternDir")
+        self.removePatternDir.Bind(wx.EVT_BUTTON, self.eventHandlers.on_remove_pattern)
+
+        # add info text controls to the grid layout
+        bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
+        bulkGrid.Add(resultDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
+
+        # order the top level directory controls in the bulk directory conversion subpanel grid
+        bulkGrid.Add(startPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(self.removePatternDirTld, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.removePatternDirBrowse, pos=(2, 3), flag=wx.EXPAND)
+
+        # order the file type pattern controls in the bulk directory conversion subpanel grid
+        bulkGrid.Add(fileTypeLabel, pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(self.removePatternDirInput, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.removePatternDir, pos=(3, 3))
+
+        # make the second column growable to allow the controls to expand properly
+        bulkGrid.AddGrowableCol(1)
+
+        # set the sizer for the panel and add it to the static box sizer
+        bulkPanel.SetSizer(bulkGrid)
+        bulkSizer.Add(bulkPanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
+
+        return bulkSizer
+
+
+    def _create_remove_list_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Creates the bulk directory remove files per set list sizer.
+
+        @details Provides controls for selecting the directory and removing items from a set list.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent panel for the sizer.
+
+        @retval bulkSizer {wx.StaticBoxSizer} The created sizer for removing items from a list.
+        '''
+
+        bulkPanel = wx.Panel(parent)
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
+        bulkGrid = wx.GridBagSizer(8, 8)
+
+        # Create the static box, sizer, and panel for the album art setting section
+        bulkBox = wx.StaticBox(parent, label="Remove Matching List")
+        bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
+
+        # create static text for describing section & starting path label
+        briefDesc = wx.StaticText(bulkPanel, label="Removes files from a set list in a bulk directory walk")
+        detailDesc = wx.StaticText(bulkPanel, label="Only removes files that match the set list and are within the specified starting path")
+        startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld or sld:")
+
+        # create controls for selecting the starting path for setting album art
+        self.removeListDirTld, self.removeListDirBrowse = self._make_path_controls(bulkPanel)
+        self.removeListDirTld.Name = "removeListDirTld"
+        self.removeListDirBrowse.Name = "removeListDirBrowse"
+        self.removeListDirBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.removeListDirTld))
+
+        # create the remove from set list button
+        self.removeListDir = wx.Button(bulkPanel, label="Remove List", name="removeListDir")
+        self.removeListDir.Bind(wx.EVT_BUTTON, self.eventHandlers.on_remove_from_set_list)
+
+        # create a horizontal sizer for the browse and setting buttons
+        buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
+        buttonSizer.Add(self.removeListDirBrowse, 0, wx.RIGHT, 8)
+        buttonSizer.Add(self.removeListDir, 0)
+
+        # create a horizontal sizer for the starting path row
+        pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
+        pathRowSizer.Add(self.removeListDirTld, 1, wx.EXPAND | wx.RIGHT, 8)
+        pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
+
+        # add the info text controls to the grid layout
+        bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 4), flag=wx.EXPAND)
+        bulkGrid.Add(detailDesc, pos=(1, 0), span=(1, 4), flag=wx.EXPAND)
+
+        # add the starting path controls to the grid layout
+        bulkGrid.Add(startPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(pathRowSizer, pos=(2, 1), span=(1, 3), flag=wx.EXPAND)
+
+        # make the second column growable to allow the controls to expand properly
+        bulkGrid.AddGrowableCol(1)
+        bulkPanel.SetSizer(bulkGrid)
+        bulkSizer.Add(bulkPanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
+
+        return bulkSizer
+
+
+    def _create_remove_albums_sizer(self, parent) -> wx.StaticBoxSizer:
+        '''
+        @brief Create the bulk remove empty albums sizer.
+
+        @details Provides directory selection and empty folder removal controls.
+
+        @param self {MainFrame} The instance of the class.
+        @param parent {Any} The parent panel for the sizer.
+
+        @retval bulkSizer {wx.StaticBoxSizer} The created sizer for removing empty albums.
+        '''
+
+        bulkPanel = wx.Panel(parent)
+        # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
+        bulkGrid = wx.GridBagSizer(8, 8)
+
+        # create static text box, sizers, and panel for the bulk remove empty albums section
+        bulkBox = wx.StaticBox(parent, label="Remove Empty Albums")
+        bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
+
+        # create static text for describing section and starting path label
+        briefDesc = wx.StaticText(bulkPanel, label="Removes all empty album folders in a directory walk")
+        resultDesc = wx.StaticText(bulkPanel, label="All empty second level album folders will be removed")
+        startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld:")
+
+        # create controls for selection the starting path for bulk removal
+        self.removeAlbumsDirTld, self.removeAlbumsDirBrowse = self._make_path_controls(bulkPanel)
+        self.removeAlbumsDirTld.Name = "removeAlbumsDirTld"
+        self.removeAlbumsDirBrowse.Name = "removeAlbumsDirBrowse"
+        self.removeAlbumsDirBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.removeAlbumsDirTld))
+
+        # create the remove albums button
+        self.removeAlbumsDir = wx.Button(bulkPanel, label="Remove Albums", name="removeAlbumsDir")
+        self.removeAlbumsDir.Bind(wx.EVT_BUTTON, self.eventHandlers.on_remove_empty_albums)
+
+        # create a horizontal sizer for the browse and remove buttons
+        buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
+        buttonSizer.Add(self.removeAlbumsDirBrowse, 0, wx.RIGHT, 8)
+        buttonSizer.Add(self.removeAlbumsDir, 0)
+
+        # create a horizontal sizer for the file path row
+        pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
+        pathRowSizer.Add(self.removeAlbumsDirTld, 1, wx.EXPAND | wx.RIGHT, 8)
+        pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
+
+        # add info text controls to the grid layout
+        bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
+        bulkGrid.Add(resultDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
+
+        # order the top level directory controls in the bulk directory update subpanel grid
+        bulkGrid.Add(startPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(pathRowSizer, pos=(2, 1), span=(1, 3), flag=wx.EXPAND)
+
+        # make the second column growable to allow the controls to expand properly
+        bulkGrid.AddGrowableCol(1)
+
+        # set the sizer for the panel and add it to the static box sizer
+        bulkPanel.SetSizer(bulkGrid)
+        bulkSizer.Add(bulkPanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
+
+        return bulkSizer
 
 
     def _make_path_controls(self, parent) -> (tuple[wx.TextCtrl, wx.Button]):
