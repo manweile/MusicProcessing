@@ -29,6 +29,8 @@ from src.models.audio_info.audio_art import AudioArt        # audio art handling
 from src.models.audio_info.audio_metadata import AudioMetadata
 # audio playlist handling class
 from src.models.audio_info.audio_playlist import AudioPlaylist
+# audio utilities handling class
+from src.models.audio_info.audio_utilities import AudioUtilities
 # normalization handling class
 from src.models.audio_normalize.audio_normalization import AudioNormalization
 # directory processing class
@@ -53,6 +55,7 @@ class EventHandlers:
         directory: DirectoryProcessing,
         metadata: AudioMetadata,
         normalization: AudioNormalization,
+        utilities: AudioUtilities,
         playlist: AudioPlaylist
     ):
         '''
@@ -74,6 +77,7 @@ class EventHandlers:
         self.directory = directory
         self.metadata = metadata
         self.normalization = normalization
+        self.utilities = utilities
         self.playlist = playlist
 
 
@@ -197,75 +201,11 @@ class EventHandlers:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
-    def on_convert_file_audio(self, event):
-        '''
-        @brief Handle the event for converting a single file.
-
-        @details Retrieves the file path from the GUI, validates it, and then runs the conversion task.<br>
-        The conversion task is executed asynchronously, and upon success, a dialog is shown with the generated files.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during file conversion.
-        '''
-
-        try:
-            # get the file path from the GUI and validate it before conversion
-            path = self.mainFrame.convertAudioFilePath.GetValue().strip()
-
-            # not a valid file, return early
-            if not self._validate_file(path):
-                return
-
-            callback = self.mainFrame.show_generated_files
-            self.mainFrame.taskRunner.run_task(self.metadata.convert_file, path, on_success=callback)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_convert_directory_audio(self, event):
-        '''
-        @brief Handle the event for converting files in a directory walk.
-
-        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the conversion task.<br>
-        The conversion task is executed asynchronously, and upon success, a dialog is shown with the generated files.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during directory conversion.
-        '''
-
-        try:
-            # get the top-level directory and validate it before conversion
-            tld = self.mainFrame.convertAudioDirTld.GetValue().strip()
-
-            # not a valid directory, return early
-            if not self._validate_dir(tld):
-                return
-
-            # get the file type pattern selection from the GUI
-            selection = self.mainFrame.convertAudioDirChoice.GetSelection()
-            if selection == 0:
-                pattern = None
-            else:
-                pattern = self.mainFrame.convertAudioDirChoice.GetString(selection)
-
-            callback = self.mainFrame.show_generated_files
-            self.mainFrame.taskRunner.run_task(self.metadata.convert_walk, tld, pattern, on_success=callback)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_create_album_dir(self, event):
+    def on_add_albums(self, event):
         '''
         @brief Handle the event for creating album directories.
 
-        @details Retrieves the top-level directory from the GUI, validates it, and then runs the task to create album directories.<br>
-        The task is executed asynchronously.
+        @details Retrieves the top-level directory from the GUI, validates it, runs the task to create album directories asynchronously.
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
@@ -275,95 +215,101 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before creating album directories
-            tld = self.mainFrame.createAlbumDirTld.GetValue().strip()
+            tld = self.mainFrame.addAlbumsWalkTld.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(tld):
                 return
 
-            # @todo find the right model function for creating album directories
-            self.mainFrame.taskRunner.run_task(self.directory.create_album_dirs, tld)
+            self.mainFrame.taskRunner.run_task(self.metadata.create_album_dirs, tld)
 
         except Exception as e_error:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
-    def on_ebu_file(self, event):
+    def on_rename_albums(self, event):
         '''
-        @brief Handle the event for EBU normalization of a single file.
+        @brief Handle the event for renaming albums.
 
-        @details Retrieves the file path from the GUI, validates it, and then runs the EBU normalization task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the result file.
+        @details Retrieves the top-level directory from the GUI, validates it, runs the album renaming task asynchronously.
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
 
-        @exception e_error {Exception} Raised if an error occurs during EBU normalization.
+        @exception e_error {Exception} Raised if an error occurs during album renaming.
         '''
 
         try:
-            # get the file path from the GUI and validate it before EBU normalization
-            path = self.mainFrame.ebuFilePath.GetValue().strip()
+            # get the top-level directory and validate it before renaming albums
+            tld = self.mainFrame.renameAlbumsWalkTld.GetValue().strip()
 
-            # not a valid file, return early
-            if not self._validate_file(path):
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
                 return
 
-            # define the callback function to display the result file after EBU normalization
-            def callback():
-                '''
-                @brief Display the EBU normalization result file.
-
-                @details Opens the result file after the ebu normalization task succeeds.
-
-                @exception e_error {Exception} Raises an exception if displaying the result file fails.
-                '''
-
-                try:
-                    self.mainFrame._show_result_file("ebu_normalize_file")
-
-                except Exception as e_error:
-                    wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-            self.mainFrame.taskRunner.run_task(self.normalization.ebu_normalize_file, path, on_success=callback)
+            self.mainFrame.taskRunner.run_task(self.metadata.rename_album_directories, tld)
 
         except Exception as e_error:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
-    def on_extract_file_art(self, event):
+    def on_rename_files_walk(self, event):
         '''
-        @brief Handle the event for extracting album art from a single file.
+        @brief Handle the event for renaming files in a directory walk.
 
-        @details Retrieves the file path from the GUI, validates it, and then runs the album art extraction task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
+        @details Retrieves the top-level directory from the GUI, validates it, runs the file renaming task asynchronously.
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
 
-        @exception e_error {Exception} Raised if an error occurs during album art extraction.
+        @exception e_error {Exception} Raised if an error occurs during file renaming from a directory walk.
         '''
 
         try:
-            # get the file path from the GUI and validate it before extracting album art
-            file_path = self.mainFrame.extractArtFilePath.GetValue().strip()
+            # get the top-level directory and validate it before renaming files from a directory walk
+            start_path = self.mainFrame.renameFilesWalkTld.GetValue().strip()
+
+            # not a valid directory, return early
+            if not self._validate_dir(start_path):
+                return
+
+            self.mainFrame.taskRunner.run_task(self.metadata.normalize_filename_walk, start_path)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_rename_file(self, event):
+        '''
+        @brief Handle the event for renaming a single file.
+
+        @details Retrieves the file path from the GUI, validates it, runs the file renaming task asynchronously.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during file renaming.
+        '''
+
+        try:
+            # get the file path and validate it before renaming
+            file_path = self.mainFrame.renameAudioFilePath.GetValue().strip()
 
             # not a valid file, return early
             if not self._validate_file(file_path):
                 return
 
-            self.mainFrame.taskRunner.run_task(self.art.extract_album_art, file_path)
+            self.mainFrame.taskRunner.run_task(self.metadata.normalize_filename, file_path)
 
         except Exception as e_error:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
-    def on_extract_directory_art(self, event):
+    def on_extract_art_walk(self, event):
         '''
         @brief Handle the event for extracting album art from a directory walk.
 
-        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the album art extraction task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
+        @details Retrieves the top-level directory and pattern from the GUI, validates them, runs the album art extraction task asynchronously.
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
@@ -392,12 +338,401 @@ class EventHandlers:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
+    def on_set_album_art(self, event):
+        '''
+        @brief Handle the event for setting album art for audio files in a directory.
+
+        @details Retrieves the top-level directory from the GUI, validates it, runs the album art setting task asynchronously.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during album art setting.
+        '''
+
+        try:
+            # get the top-level directory and validate it before setting album art for audio files in a directory
+            tld = self.mainFrame.setArtDirTld.GetValue().strip()
+
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
+
+            self.mainFrame.taskRunner.run_task(self.art.set_album_art, tld)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_extract_art_file(self, event):
+        '''
+        @brief Handle the event for extracting album art from a single file.
+
+        @details Retrieves the file path from the GUI, validates it, runs the album art extraction task asynchronously.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during album art extraction.
+        '''
+
+        try:
+            # get the file path from the GUI and validate it before extracting album art
+            file_path = self.mainFrame.extractArtFilePath.GetValue().strip()
+
+            # not a valid file, return early
+            if not self._validate_file(file_path):
+                return
+
+            self.mainFrame.taskRunner.run_task(self.art.extract_album_art, file_path)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_convert_walk(self, event):
+        '''
+        @brief Handle the event for converting files in a directory walk.
+
+        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the conversion task.<br>
+        The conversion task is executed asynchronously, and upon success, a dialog is shown with the generated files.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during directory conversion.
+        '''
+
+        try:
+            # get the top-level directory and validate it before conversion
+            tld = self.mainFrame.convertAudioDirTld.GetValue().strip()
+
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
+
+            # get the file type pattern selection from the GUI
+            selection = self.mainFrame.convertAudioDirChoice.GetSelection()
+            if selection == 0:
+                pattern = None
+            else:
+                pattern = self.mainFrame.convertAudioDirChoice.GetString(selection)
+
+            # callback = self.mainFrame.show_generated_files
+            # self.mainFrame.taskRunner.run_task(self.metadata.convert_walk, tld, pattern, on_success=callback)
+            self.mainFrame.taskRunner.run_task(self.metadata.convert_walk, tld, pattern)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_convert_file(self, event):
+        '''
+        @brief Handle the event for converting a single file.
+
+        @details Retrieves the file path from the GUI, validates it, and then runs the conversion task.<br>
+        The conversion task is executed asynchronously, and upon success, a dialog is shown with the generated files.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during file conversion.
+        '''
+
+        try:
+            # get the file path from the GUI and validate it before conversion
+            path = self.mainFrame.convertAudioFilePath.GetValue().strip()
+
+            # not a valid file, return early
+            if not self._validate_file(path):
+                return
+
+            # callback = self.mainFrame.show_generated_files
+            # self.mainFrame.taskRunner.run_task(self.metadata.convert_file, path, on_success=callback)
+            self.mainFrame.taskRunner.run_task(self.metadata.convert_file, path)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_clip_check_walk(self, event):
+        '''
+        @brief Handle the event for checking audio clips in a directory walk.
+
+        @details Retrieves the top-level directory from the GUI, validates it, runs the clip checking task asynchronously.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during directory clip checking.
+        '''
+
+        try:
+            # get the top-level directory and validate it before clip checking
+            tld = self.mainFrame.clipCheckDirTld.GetValue().strip()
+
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
+
+            self.mainFrame.taskRunner.run_task(self.utilities.clip_check_walk, tld)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_clip_check_file(self, event):
+        '''
+        @brief Handle the event for checking audio clips in selected file.
+
+        @details Retrieves the mp3 file path from the GUI, validates it, runs the clip checking task asynchronously.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during file clip checking.
+        '''
+
+        try:
+            # get the mp3 file path from the GUI and validate it before clip checking
+            path = self.mainFrame.clipCheckFilePath.GetValue().strip()
+
+            # not a valid file, return early
+            if not self._validate_file(path):
+                return
+
+            self.mainFrame.taskRunner.run_task(self.utilities.clip_check_file, path)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_level_walk(self, event):
+        '''
+        @brief Handle the event for normalizing audio files in a directory walk.
+
+        @details Retrieves the top-level directory and normalization type from the GUI, validates them, and then runs the normalization task.<br>
+        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during audio normalization in a directory walk.
+        '''
+
+        try:
+            # get the top-level directory and validate it before normalizing audio files in a directory walk
+            tld = self.mainFrame.levelAudioDirTld.GetValue().strip()
+
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
+
+            # get the normalization type from the GUI
+            norm_type = self.mainFrame.levelAudioDirChoice.GetStringSelection().lower()
+
+            # callback = self.mainFrame.show_generated_files
+            # self.mainFrame.taskRunner.run_task(self.normalization.level_normalize_walk, tld, norm_type, on_success=callback)
+            self.mainFrame.taskRunner.run_task(self.normalization.level_normalize_walk, tld, norm_type)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_ebu_level_file(self, event):
+        '''
+        @brief Handle the event for EBU normalization of a single file.
+
+        @details Retrieves the file path from the GUI, validates it, and then runs the EBU normalization task.<br>
+        The task is executed asynchronously, and upon success, a dialog is shown with the result file.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during EBU normalization.
+        '''
+
+        try:
+            # get the file path from the GUI and validate it before EBU normalization
+            path = self.mainFrame.ebuFilePath.GetValue().strip()
+
+            # not a valid file, return early
+            if not self._validate_file(path):
+                return
+
+            # # define the callback function to display the result file after EBU normalization
+            # def callback():
+            #     '''
+            #     @brief Display the EBU normalization result file.
+
+            #     @details Opens the result file after the ebu normalization task succeeds.
+
+            #     @exception e_error {Exception} Raises an exception if displaying the result file fails.
+            #     '''
+
+            #     try:
+            #         self.mainFrame._show_result_file("ebu_normalize_file")
+
+            #     except Exception as e_error:
+            #         wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+            # self.mainFrame.taskRunner.run_task(self.normalization.ebu_normalize_file, path, on_success=callback)
+            self.mainFrame.taskRunner.run_task(self.normalization.ebu_normalize_file, path)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_peak_file(self, event):
+        '''
+        @brief Handle the event for peak normalizing a single audio file.
+
+        @details Retrieves the file path from the GUI, validates it, and then runs the peak normalization task.<br>
+        The task is executed asynchronously, and upon success, a dialog is shown with the result file.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during peak normalization of the audio file.
+        '''
+
+        try:
+            # get the file path from the GUI and validate it before peak normalizing the audio file
+            path = self.mainFrame.peakFilePath.GetValue().strip()
+
+            # not a valid file, return early
+            if not self._validate_file(path):
+                return
+
+            # # define the callback function to display the result file after EBU normalization
+            # def callback():
+            #     '''
+            #     @brief Display the Peak normalization result file.
+
+            #     @details Opens the result file after the peak normalization task succeeds.
+
+            #     @exception e_error {Exception} Raises an exception if displaying the result file fails.
+            #     '''
+
+            #     try:
+            #         self.mainFrame._show_result_file("peak_normalize_file")
+
+            #     except Exception as e_error:
+            #         raise e_error
+
+            # self.mainFrame.taskRunner.run_task(self.normalization.peak_normalize_file, path, on_success=callback)
+            self.mainFrame.taskRunner.run_task(self.normalization.peak_normalize_file, path)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_rms_file(self, event):
+        '''
+        @brief Handle the event for RMS normalizing a single audio file.
+
+        @details Retrieves the file path from the GUI, validates it, and then runs the RMS normalization task.<br>
+        The task is executed asynchronously, and upon success, a dialog is shown with the result file.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during RMS normalization.
+        '''
+
+        try:
+            # get the file path from the GUI and validate it before RMS normalizing the audio file
+            path = self.mainFrame.rmsFilePath.GetValue().strip()
+
+            # not a valid file, return early
+            if not self._validate_file(path):
+                return
+
+            # # define the callback function to display the result file after RMS normalization
+            # def callback():
+            #     '''
+            #     @brief Display the RMS normalization result file.
+
+            #     @details Opens the result file after the normalization task succeeds.
+
+            #     @exception e_error {Exception} Raises an exception if displaying the result file fails.
+            #     '''
+
+            #     try:
+            #         self.mainFrame._show_result_file("rms_normalize_file")
+
+            #     except Exception as e_error:
+            #         raise e_error
+
+            # self.mainFrame.taskRunner.run_task(self.normalization.rms_normalize_file, path, on_success=callback)
+            self.mainFrame.taskRunner.run_task(self.normalization.rms_normalize_file, path)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_update_playlist_walk(self, event):
+        '''
+        @brief Handle the event for updating a directory walk.
+
+        @details Retrieves the top-level directory from the GUI, validates it, runs the directory walk update task asynchronously.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during directory walk update.
+        '''
+
+        try:
+            # get the top-level directory from the GUI and validate it before updating a directory walk
+            tld = self.mainFrame.playlistUpdateDirTld.GetValue().strip()
+
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
+
+            # callback = self.mainFrame._show_generated_playlist_dialog
+            # self.mainFrame.taskRunner.run_task(self.playlist.update_walk, tld, on_success=callback)
+            self.mainFrame.taskRunner.run_task(self.playlist.update_walk, tld)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_update_playlist_ile(self, event):
+        '''
+        @brief Handle the event for updating an M3U playlist.
+
+        @details Retrieves the M3U file path from the GUI, validates it, and then runs the playlist update task.<br>
+        The task is executed asynchronously, and upon success, a dialog is shown with generated playlist files.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during playlist update.
+        '''
+
+        try:
+            # get the M3U file path from the GUI and validate it before updating the playlist
+            m3u_file = self.mainFrame.updatePlaylistFilePath.GetValue().strip()
+
+            # not a valid file, return early
+            if not self._validate_file(m3u_file):
+                return
+
+            # callback = self.mainFrame._show_generated_playlist_dialog
+            # self.mainFrame.taskRunner.run_task(self.playlist.update_playlist, m3u_file, on_success=callback)
+            self.mainFrame.taskRunner.run_task(self.playlist.update_playlist, m3u_file)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
     def on_get_media_info_walk(self, event):
         '''
         @brief Handle the event for retrieving media information from a directory walk.
 
-        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the media information retrieval task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
+        @details Retrieves the top-level directory and pattern from the GUI, validates them, runs the media information retrieval task asynchronously.
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
@@ -430,8 +765,7 @@ class EventHandlers:
         '''
         @brief Handle the event for retrieving media tags from a directory walk.
 
-        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the media tags retrieval task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
+        @details Retrieves the top-level directory and pattern from the GUI, validates them, runs the media tags retrieval task asynchronously.
 
         @todo ffprobe flag set to false pending implementation of removal from get_tags_walk function
 
@@ -459,84 +793,7 @@ class EventHandlers:
             # ffprobe flag set to false pending implementation of removal from get_tags_walk function
             ffprobe = False
 
-            # @todo remove on test pass
-            # callback = self.mainFrame.show_generated_files
-            # self.mainFrame.taskRunner.run_task(self.metadata.get_tags_walk, tld, pattern, ffprobe, on_success=callback)
             self.mainFrame.taskRunner.run_task(self.metadata.get_tags_walk, tld, pattern, ffprobe)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_level_directory_audio(self, event):
-        '''
-        @brief Handle the event for normalizing audio files in a directory walk.
-
-        @details Retrieves the top-level directory and normalization type from the GUI, validates them, and then runs the normalization task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during audio normalization in a directory walk.
-        '''
-
-        try:
-            # get the top-level directory and validate it before normalizing audio files in a directory walk
-            tld = self.mainFrame.levelAudioDirTld.GetValue().strip()
-
-            # not a valid directory, return early
-            if not self._validate_dir(tld):
-                return
-
-            # get the normalization type from the GUI
-            norm_type = self.mainFrame.levelAudioDirChoice.GetStringSelection().lower()
-
-            callback = self.mainFrame.show_generated_files
-            self.mainFrame.taskRunner.run_task(self.normalization.level_normalize_walk, tld, norm_type, on_success=callback)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_peak_file(self, event):
-        '''
-        @brief Handle the event for peak normalizing a single audio file.
-
-        @details Retrieves the file path from the GUI, validates it, and then runs the peak normalization task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the result file.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during peak normalization of the audio file.
-        '''
-
-        try:
-            # get the file path from the GUI and validate it before peak normalizing the audio file
-            path = self.mainFrame.peakFilePath.GetValue().strip()
-
-            # not a valid file, return early
-            if not self._validate_file(path):
-                return
-
-            # define the callback function to display the result file after EBU normalization
-            def callback():
-                '''
-                @brief Display the Peak normalization result file.
-
-                @details Opens the result file after the peak normalization task succeeds.
-
-                @exception e_error {Exception} Raises an exception if displaying the result file fails.
-                '''
-
-                try:
-                    self.mainFrame._show_result_file("peak_normalize_file")
-
-                except Exception as e_error:
-                    raise e_error
-
-            self.mainFrame.taskRunner.run_task(self.normalization.peak_normalize_file, path, on_success=callback)
 
         except Exception as e_error:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
@@ -546,8 +803,7 @@ class EventHandlers:
         '''
         @brief Handle the event for removing albums from a directory.
 
-        @details Retrieves the top-level directory from the GUI, validates it, and then runs the album removal task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
+        @details Retrieves the top-level directory from the GUI, validates it, runs the album removal task asynchronously.
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
@@ -567,12 +823,11 @@ class EventHandlers:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
-    def on_remove_from_set_list(self, event):
+    def on_remove_list(self, event):
         '''
         @brief Handle the event for removing files from a set list in a directory.
 
-        @details Retrieves the top-level directory from the GUI, validates it, and then runs the removal task for the set list.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
+        @details Retrieves the top-level directory from the GUI, validates it, runs the removal task for the set list asynchronously.
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
@@ -596,8 +851,7 @@ class EventHandlers:
         '''
         @brief Handle the event for removing files matching a pattern from a directory.
 
-        @details Retrieves the top-level directory and pattern from the GUI, validates them, and then runs the pattern removal task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
+        @details Retrieves the top-level directory and pattern from the GUI, validates them, runs the pattern removal task asynchronously.
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
@@ -622,132 +876,6 @@ class EventHandlers:
                 return
 
             self.mainFrame.taskRunner.run_task(self.directory.remove_pattern, tld, pattern)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_rms_file(self, event):
-        '''
-        @brief Handle the event for RMS normalizing a single audio file.
-
-        @details Retrieves the file path from the GUI, validates it, and then runs the RMS normalization task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the result file.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during RMS normalization.
-        '''
-
-        try:
-            # get the file path from the GUI and validate it before RMS normalizing the audio file
-            path = self.mainFrame.rmsFilePath.GetValue().strip()
-
-            # not a valid file, return early
-            if not self._validate_file(path):
-                return
-
-            # define the callback function to display the result file after RMS normalization
-            def callback():
-                '''
-                @brief Display the RMS normalization result file.
-
-                @details Opens the result file after the normalization task succeeds.
-
-                @exception e_error {Exception} Raises an exception if displaying the result file fails.
-                '''
-
-                try:
-                    self.mainFrame._show_result_file("rms_normalize_file")
-
-                except Exception as e_error:
-                    raise e_error
-
-            self.mainFrame.taskRunner.run_task(self.normalization.rms_normalize_file, path, on_success=callback)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_set_album_art(self, event):
-        '''
-        @brief Handle the event for setting album art for audio files in a directory.
-
-        @details Retrieves the top-level directory from the GUI, validates it, and then runs the album art setting task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the generated files.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during album art setting.
-        '''
-
-        try:
-            # get the top-level directory and validate it before setting album art for audio files in a directory
-            tld = self.mainFrame.setArtDirTld.GetValue().strip()
-
-            # not a valid directory, return early
-            if not self._validate_dir(tld):
-                return
-
-            self.mainFrame.taskRunner.run_task(self.art.set_album_art, tld)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_update_playlist(self, event):
-        '''
-        @brief Handle the event for updating an M3U playlist.
-
-        @details Retrieves the M3U file path from the GUI, validates it, and then runs the playlist update task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with generated playlist files.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during playlist update.
-        '''
-
-        try:
-            # get the M3U file path from the GUI and validate it before updating the playlist
-            m3u_file = self.mainFrame.updatePlaylistFilePath.GetValue().strip()
-
-            # not a valid file, return early
-            if not self._validate_file(m3u_file):
-                return
-
-            callback = self.mainFrame._show_generated_playlist_dialog
-            self.mainFrame.taskRunner.run_task(self.playlist.update_playlist, m3u_file, on_success=callback)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_update_walk(self, event):
-        '''
-        @brief Handle the event for updating a directory walk.
-
-        @details Retrieves the top-level directory from the GUI, validates it, and then runs the directory walk update task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with generated playlist files.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during directory walk update.
-        '''
-
-        try:
-            # get the top-level directory from the GUI and validate it before updating a directory walk
-            tld = self.mainFrame.playlistUpdateDirTld.GetValue().strip()
-
-            # not a valid directory, return early
-            if not self._validate_dir(tld):
-                return
-
-            callback = self.mainFrame._show_generated_playlist_dialog
-            self.mainFrame.taskRunner.run_task(self.playlist.update_walk, tld, on_success=callback)
 
         except Exception as e_error:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)

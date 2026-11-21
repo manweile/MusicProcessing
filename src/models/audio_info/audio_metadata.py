@@ -425,348 +425,60 @@ class AudioMetadata():
             return id3_tags
 
 
-    def convert_file(self, file_path: str = None, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None):
+    def get_ffprobe_tags(self, file_path: str) -> dict:
         '''
-        @brief Converts an acceptable audio file to mp3 audio file, using ffmpeg directly.
+        @brief Gets media tags.
 
-        @details Converts flac, m4a, mp3 & wma files to mp3 files with ID3v2.3 tags, including cover art.<br>
-        Metadata is read and mapped to the ID3v2.3 tags, then appended to the conversion command line.<br>
-        The final ffmpeg conversion command line is executed to produce the mp3 file with the desired metadata.<br>
-        Once the mp3 file has been created, the co-located cover art is added via Mutagen.<br>
-        Calling function MUST supply path to an existing valid audio file with valid metadata.<br>
-        The supplied audio file MUST have co-located Folder.jpg album art.
+        @details Uses ffprobe to get tags from any valid audio file.
 
         @code{.text}
-        Initial ffmpeg command line converts audio files to mp3 format, wipes out existing metadata, enforces ID3v2.3 tags, and preserves bit rate.
-        ffmpeg -hide_banner -i file_path -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198
+        The general media info command line (ffprobe -v quiet -show_format -show_streams file_path)
+        will insert 'comment' = 'Cover (front)' in the tags dictionary when the audio file has embedded art.
 
-        -hide_banner; reduce output clutter
-        -i file_path; the path to the audio file
-        -vn -map_metadata -1; -vn drops video stream and -map_metadata -1 drops all text metadata
-        -codec:a libmp3lame; sets audio codec for mp3
-        -id3v2_version 3; known bug, MUST specify id3v2 version, else will get ID3v2.4
-        -b:a 128198; ffmpeg will downgrade bitrate if you don't set it
+        This cli will only return textual audio metadata.
+        ffprobe -v -of json -show_entries format_tags file_path
 
-        The initial ffmpeg command line is expanded twice.
-        First expansion adds the preferred metadata once it has been mapped from original audio file to ID3v2.3 tags.
-
-        Second expansion adds the export file path.
-
-        Cover art is added directly via Mutagen MP3 module - it's easier with Mutagen than ffmpeg.
+        -v quiet; reduce console clutter
+        -of json; output in json format
+        -show_entries format_tags; we only care about tags
+        file_path; the path to the audio file
         @endcode
 
-        @param self {AudioMetadata} The instance of the class.
-        @param file_path {str} The path for audio file to be converted.
-        @param target {str} The optional target directory for exported files.
-        @param show_spinner {bool} Show spinner flag.
-        @param progress {ProgressReporter | None} Optional progress reporter.
+        @note ffprobe/ffmpeg do not have a native metadata encoding; they only extract/report existing tags from the audio file.<br>
+        However, they are metadata encoding agnostic and will work when Mutagen cannot.
 
-        @exception MetadataTypeError Indicates a non-standard metadata type was encountered.
-        @exception MusicProcessingError A generic music processing error occurred.
-        @exception PathInfoError Indicates directory_processing.path_info function returned None.
+        @param self {AudioMetadata} The instance of the class.
+        @param file_path {str} The full path to audio file.
+        @return media_tags {dict} Media tags from filepath.
+
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
         @exception Exception A common baseclass exception to handle unforeseen errors.
         '''
 
-        data = []
-        txt_filename = inspect.currentframe().f_code.co_name
-
         try:
-            # get export path for converted files, will return None for an invalid audio extension
-            export_path = directory.path_info(file_path, target)
-
-            if export_path is None:
-                logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
-                raise PathInfoError(f"PathInfoError with file {file_path} returned None")
-            else:
-                directory.make_dir(os.path.dirname(export_path))
-
-            input_path_parent = os.path.dirname(file_path)
-            cover = os.path.join(input_path_parent, FOLDER_ART)
-
-            if not os.path.exists(cover):
-                raise MusicProcessingError(f"album directory {input_path_parent} does not contain a {FOLDER_ART} file.")
-
-            # export format is always mp3
-            export_format = MP3_EXT.removeprefix(".")
-
-            input_format = os.path.splitext(file_path)[1].lower()[1:]
-            input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
-            data.append(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
-            data.append(f"Source directory path: {input_path_parent}")
-
-            metadata_class = self.get_metadata_class(file_path)
-
-            if metadata_class is None:
-                logger.error(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None", exc_info=True)
-                raise MetadataTypeError(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None")
-
-            input_tags = self.get_mutagen_tags(file_path)
-
-            if input_tags:
-                if metadata_class == FLAC_TYPE:
-                    tags = self.map_flac_tags(input_tags)
-                elif metadata_class == MP3_TYPE:
-                    tags = self.map_mp3_tags(input_tags)
-                elif metadata_class == MP4_TYPE:
-                    tags = self.map_m4a_tags(input_tags)
-                elif metadata_class == ASF_TYPE:
-                    tags = self.map_wma_tags(input_tags)
-            else:
-                tags = None
-
-            # get the input file info - want bitrate so can preserve the quality in exported file
-            media_info = self.get_media_info(file_path)
-            bitrate = media_info['bit_rate']
+            media_tags = None
 
             command = [
-                "ffmpeg",
-                "-hide_banner",
-                "-i", file_path,
-                "-vn", "-map_metadata", "-1",
-                "-codec:a", "libmp3lame",
-                "-id3v2_version", "3",
-                "-b:a", str(bitrate)
+                "ffprobe",
+                "-v", "error",
+                "-of", "json",
+                "-show_entries", "format_tags",
+                file_path
             ]
+            result = subprocess_utils.subprocess_run(command)
+            data = json.loads(result.stdout)
 
-            # cycle through tags dictionary and add metadata directly to command string
-            if tags is not None:
-                if not isinstance(tags, dict):
-                    logger.exception("Tags must be a dictionary.", stack_info=True)
-                    raise MusicProcessingError("Tags must be a dictionary.")
-                else:
-                    for key, value in tags.items():
-                        command.extend(['-metadata', '{0}={1}'.format(key, value)])
+            if "format" in data and "tags" in data["format"]:
+                media_tags = data["format"]["tags"]
 
-            # specify the output with overwrite flag, always want clean output
-            command.extend([export_path, '-y'])
-
-            progress_reporter = None
-            if show_spinner:
-                progress_reporter = progress
-
-            success_msg = subprocess_utils.spinner_popen_pipe(export_path, command, progress_reporter)
-            if success_msg is not None:
-                data.append(success_msg)
-
-            # Add album art
-            mp3_file = MP3(export_path, ID3=ID3, v2_version=3)
-            # encoding & type = 3 specifies UTF-8 & front cover
-            with open(cover, "rb") as album_art_file:
-                mp3_file.tags.add(
-                    APIC(
-                        encoding=3,
-                        mime="image/jpeg",
-                        type=3,
-                        desc="Cover",
-                        data=album_art_file.read()
-                    )
-                )
-            # have to specify ID3v2 version to avoid defaults to v2.4
-            # which are not compatible with Windows display
-            mp3_file.save(v2_version=3)
-
-            directory.create_txt(txt_filename, data, None, None)
-
-        except MetadataTypeError as mt_error:
-            raise mt_error
-        except MusicProcessingError as mp_error:
-            raise mp_error
-        except PathInfoError as pi_error:
-            raise pi_error
+        except JSONDecodeError as jd_error:
+            logger.error("JSONDecodeError decoding JSON output from ffprobe", exc_info=True)
+            raise jd_error
         except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+            logger.exception(f"Exception {type(e_error).__name__} getting media tags for file {file_path}", stack_info=True)
             raise e_error
-
-
-    def convert_walk(
-        self,
-        start_path: str,
-        file_pattern: str,
-        target: str = None,
-        show_spinner: bool = True,
-        progress: ProgressReporter | None = None
-    ):
-        '''
-        @brief Converts all audio files found in specified path to mp3 format.
-
-        @details Calling functions MUST verify valid start path.<br>
-        If file pattern not specified, processes all valid audio files.<br>
-        Otherwise must be a valid audio file extension like '.mp3', '.m4a', '.wma', or '.flac'.
-
-        @param self {AudioMetadata} The instance of the class.
-        @param start_path {str} The starting path that contains all the music files.<br>
-        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
-        @param file_pattern {str} Optional, the audio file pattern we want to transform.
-        @param target {str} Optional, the target directory for exported files. Defaults to None.
-        @param show_spinner {bool} Optional, whether to display a spinner during conversion. Defaults to True.
-        @param progress {ProgressReporter | None} Optional progress reporter.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        input_file_ext = None
-
-        try:
-            # calling function is NOT responsible for pattern validity
-            if file_pattern and file_pattern not in AUDIO_EXTS:
-                logger.warning(f"Pattern {file_pattern} is not for a valid audio file")
-                return
-
-            input_path = Path(start_path)
-
-            for dir_path, _, file_names in os.walk(input_path):
-                for file in file_names:
-                    _, input_file_ext = os.path.splitext(file)
-
-                    # file is not flac, mp3, m4a, or wma, so carry on to next file
-                    if input_file_ext.lower() not in AUDIO_EXTS:
-                        continue
-                    elif file_pattern:
-                        if not fnmatch.fnmatch(input_file_ext.lower(), file_pattern.lower()):
-                            continue
-
-                    input_file_path = os.path.join(dir_path, file)
-                    self.convert_file(input_file_path, target, show_spinner, progress)
-
-        except Exception as e_error:
-            if file_pattern:
-                exc_msg = f"Exception {type(e_error).__name__} walking {start_path} to convert {file_pattern} audio files to mp3"
-            else:
-                exc_msg = f"Exception {type(e_error).__name__} walking {start_path} to convert audio files to mp3"
-
-            logger.exception(exc_msg, stack_info=True)
-            raise e_error
-
-
-    def create_album_dirs(self, start_path: str, progress: ProgressReporter | None = None):
-        r'''
-        @brief Creates second level (sld) album sub-directories in first level (fld) artist directories.
-
-        @details Creates the album sub directory for the artist from album metadata if needed.<br>
-        Calling functions MUST verify valid start path. Audio files will be moved into their respective album directories.<br>
-
-        @note Using the Windows invalid character set because it is more restrictive (therefore OS universal).<br>
-        The characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` will be replaced by `-`.<br>
-        Refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename<br>
-        <br>
-        A csv report named after the function (`create_album_dirs`) will be created in csv folder.<br>
-        It will contain all audio file paths, album metadata values and sanitized album directory names.
-
-        @param self {AudioMetadata} The instance of the class.
-        @param start_path {str} The top level directory that contains all the music files.<br>
-        The start path must be a valid top-level directory containing artist folders, and only a tld.
-        @param progress {ProgressReporter | None} Optional progress reporter.
-
-        @exception ValidationError A pathlib module validation error occurred.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        data = []
-        csv_filename = inspect.currentframe().f_code.co_name
-        header_row = ["audio file path", "album metadata", "sanitized album directory"]
-
-        progress_started = False
-
-        try:
-            # get the artist dirs under tld
-            tld_content = os.listdir(start_path)
-            len_tld_content = len(tld_content)
-
-            if progress is not None:
-                progress.start(len_tld_content, f"Processing {start_path} content")
-                progress_started = True
-
-            # top level directory consists of artist directories, playlist files and couple other sundry files
-            for tld_item in tld_content:
-                # Count every top-level entry to keep the total aligned with the report.
-                tld_item_path = os.path.join(start_path, tld_item)
-                if os.path.isfile(tld_item_path):
-                    if progress is not None:
-                        progress.advance(1)
-                    continue
-
-                # since we skip tld items that are files, now we need to check tld items that are directories
-                artist_content = os.listdir(tld_item_path)
-                # want to know if we have any empty artist directories so we can deal with them later
-                if os.path.isdir(tld_item_path) and not artist_content:
-                    logger.info(f"{tld_item_path} is an empty artist directory")
-                    if progress is not None:
-                        progress.advance(1)
-                    continue
-
-                # now we can look at what's in the current artist 1st level directory
-                for artist_item in artist_content:
-
-                    # we don't care about existing album 2nd level dirs
-                    artist_item_path = os.path.join(tld_item_path, artist_item)
-                    if os.path.isdir(artist_item_path):
-                        continue
-
-                    # if we find an audio file, we need a album sub-directory for it
-                    # as artist dirs are supposed to only contain album sub dirs
-                    if os.path.isfile(artist_item_path):
-                        _, file_ext = os.path.splitext(artist_item)
-
-                    # audio files are supposed to be in an album sub dir
-                    if file_ext.lower() in AUDIO_EXTS:
-                        audio_file = artist_item_path
-                        # using ffprobe function cause it is audio file type agnostic
-                        file_media_tags = self.get_ffprobe_tags(audio_file)
-                    else:
-                        # we found a non audio file
-                        continue
-
-                    # Returns False if file_media_tags is missing/empty
-                    album_exists = bool(file_media_tags) and any(k.lower() == "album" for k in file_media_tags)
-                    if album_exists:
-                        value_album = None
-                        # looking for exact word match for "album" key, handles album or ALBUM etc
-                        for key, value in file_media_tags.items():
-                            if key.lower() == "album":
-                                value_album = value
-                                # need the actual key for logging
-                                key_album = key
-                                break
-
-                        # replace any slashes, they would wreak havoc by creating nested dirs
-                        album = value_album.replace("/", "-")
-
-                        # sanitize because the metadata might have characters invalid for directory names
-                        sanitized_album_name = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows",
-                                                                              validate_after_sanitize=True)
-
-                        data.append([audio_file, file_media_tags[key_album], sanitized_album_name])
-
-                        # make the album sub directory is REQUIRED before moving the audio file
-                        album_path = os.path.join(tld_item_path, sanitized_album_name)
-                        directory.make_dir(album_path)
-
-                        # now transfer the audio file to new album directory
-                        file_path = os.path.basename(audio_file)
-                        destination_path = os.path.join(album_path, file_path)
-                        shutil.move(audio_file, destination_path)
-
-                    else:
-                        logger.info(f"{audio_file} is missing album metadata")
-                        continue
-
-                if progress is not None:
-                    progress.advance(1)
-
-            directory.create_csv(csv_filename, data, None, None, header_row, 0)
-
-        except ExecError as exc_error:
-            logger.exception(f"ExecError moving {file_path} to {destination_path}", exc_info=True)
-            raise exc_error
-        except ValidationError as v_error:
-            logger.exception(f"ValidationError sanitizing album metadata {album}", stack_info=True)
-            raise v_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} creating sub-dirs for {start_path}", stack_info=True)
-            raise e_error
-        finally:
-            if progress_started:
-                progress.finish()
+        else:
+            return media_tags
 
 
     def get_media_info(self, file_path: str) -> dict:
@@ -885,121 +597,6 @@ class AudioMetadata():
             return media_info
 
 
-    def get_media_info_walk(self, start_path: str, file_pattern: str):
-        '''
-        @brief Gets media info (codec, duration, size, bitrate...) for audio files and saves to file.
-
-        @details Wrapper function for `get_media_info` to walk through the directory tree and get media information for audio files.<br>
-        The collected information is stored in a list and can be saved to a file.
-
-        @param self {AudioMetadata} The instance of the class.
-        @param start_path {str} The starting path that contains all the music files.<br>
-        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
-        @param file_pattern {str} The audio file pattern we want to get tags from.
-
-        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        data = []
-        txt_filename = inspect.currentframe().f_code.co_name
-
-        try:
-            for dir_path, _, file_names in os.walk(start_path):
-                # the tld Music does contain files, but not audio files
-                if dir_path == start_path:
-                    continue
-
-                for file in file_names:
-                    input_file, input_file_ext = os.path.splitext(file)
-
-                    # file is not mp3, m4a, or wma, so carry on to next file
-                    if input_file_ext.lower() not in AUDIO_EXTS:
-                        continue
-                    elif file_pattern:
-                        if not fnmatch.fnmatch(input_file_ext.lower(), file_pattern.lower()):
-                            continue
-
-                    input_file_path = os.path.join(dir_path, file)
-
-                    media_info = self.get_media_info(input_file_path)
-                    if media_info:
-                        file_msg = f"\n{input_file_path} has {len(media_info)} keys"
-                        data.append(file_msg)
-                        for key, value in media_info.items():
-                            if isinstance(value, dict):
-                                continue
-                            else:
-                                data.append(f"key: {key}, value: {value}")
-                    else:
-                        logger.error(f"ValueError getting info for audio file: {input_file_path} returned None", exc_info=True)
-                        raise ValueError(f"ValueError getting info for audio file: {input_file_path} returned None")
-
-            directory.create_txt(txt_filename, data, None, None)
-
-        except ValueError as v_error:
-            raise v_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} getting media info for file {input_file_path}")
-            raise e_error
-
-
-    def get_ffprobe_tags(self, file_path: str) -> dict:
-        '''
-        @brief Gets media tags.
-
-        @details Uses ffprobe to get tags from any valid audio file.
-
-        @code{.text}
-        The general media info command line (ffprobe -v quiet -show_format -show_streams file_path)
-        will insert 'comment' = 'Cover (front)' in the tags dictionary when the audio file has embedded art.
-
-        This cli will only return textual audio metadata.
-        ffprobe -v -of json -show_entries format_tags file_path
-
-        -v quiet; reduce console clutter
-        -of json; output in json format
-        -show_entries format_tags; we only care about tags
-        file_path; the path to the audio file
-        @endcode
-
-        @note ffprobe/ffmpeg do not have a native metadata encoding; they only extract/report existing tags from the audio file.<br>
-        However, they are metadata encoding agnostic and will work when Mutagen cannot.
-
-        @param self {AudioMetadata} The instance of the class.
-        @param file_path {str} The full path to audio file.
-        @return media_tags {dict} Media tags from filepath.
-
-        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            media_tags = None
-
-            command = [
-                "ffprobe",
-                "-v", "error",
-                "-of", "json",
-                "-show_entries", "format_tags",
-                file_path
-            ]
-            result = subprocess_utils.subprocess_run(command)
-            data = json.loads(result.stdout)
-
-            if "format" in data and "tags" in data["format"]:
-                media_tags = data["format"]["tags"]
-
-        except JSONDecodeError as jd_error:
-            logger.error("JSONDecodeError decoding JSON output from ffprobe", exc_info=True)
-            raise jd_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} getting media tags for file {file_path}", stack_info=True)
-            raise e_error
-        else:
-            return media_tags
-
-
     def get_mutagen_tags(self, file_path: str) -> ASFTags | ID3 | MP4Tags | VCFLACDict | None:
         '''
         @brief Gets tags for any type of audio file.
@@ -1074,72 +671,6 @@ class AudioMetadata():
             raise e_error
         else:
             return metadata_class
-
-
-    def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe: bool = False):
-        '''
-        @brief Gets tags for audio files and saves to file.
-
-        @details File walk will skip any non-audio files like playlists, jpgs, etc.<br>
-        Therefore a non-audio ext input will never have a pattern match.<br>
-        This function defaults to using Mutagen for tag extraction unless ffprobe is specified.<br>
-        The lowest allowable directory in `file_path` is an artist directory.<br>
-
-        @param self {AudioMetadata} The instance of the class.
-        @param file_path {str} The starting path that contains all the music files.<br>
-        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
-        @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
-        @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
-
-        @exception Exception A common baseclass exception to handle unforeseen errors.
-        '''
-
-        data = []
-        txt_filename = inspect.currentframe().f_code.co_name
-
-        try:
-            input_tags = None
-            for dir_path, _, file_names in os.walk(file_path):
-                # the tld Music does contain files, but not audio files
-                if dir_path == file_path:
-                    continue
-
-                for file in file_names:
-                    input_file, input_file_ext = os.path.splitext(file)
-
-                    # we don't touch non-audio files like jpg's
-                    if input_file_ext.lower() not in AUDIO_EXTS:
-                        continue
-
-                    if file_pattern and not fnmatch.fnmatch(input_file_ext.lower(), file_pattern.lower()):
-                        continue
-                    else:
-                        tag_file_path = os.path.join(dir_path, file)
-
-                        if ffprobe:
-                            input_tags = self.get_ffprobe_tags(tag_file_path)
-                        else:
-                            metadata_class = self.get_metadata_class(tag_file_path)
-                            if metadata_class in AUDIO_FILES:
-                                input_tags = self.get_mutagen_tags(tag_file_path)
-
-                        if input_tags:
-                            if ffprobe:
-                                data.append(f"\n{tag_file_path} has {len(input_tags)} ffprobe tags")
-                            else:
-                                data.append(f"\n{tag_file_path} has {len(input_tags)} {metadata_class} tags")
-
-                            tag_items = input_tags.items()
-                            for key, value in tag_items:
-                                data.append(f"{key}: {value}")
-                        else:
-                            data.append(f"\n{tag_file_path} has no metadata")
-
-            directory.create_txt(txt_filename, data, None, None)
-
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
-            raise e_error
 
 
     def has_art_tag(self, file_path: str) -> bool:
@@ -1465,6 +996,468 @@ class AudioMetadata():
             raise e_error
         else:
             return id3_tags
+
+
+    def convert_file(self, file_path: str = None, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None):
+        '''
+        @brief Converts an acceptable audio file to mp3 audio file, using ffmpeg directly.
+
+        @details Converts flac, m4a, mp3 & wma files to mp3 files with ID3v2.3 tags, including cover art.<br>
+        Metadata is read and mapped to the ID3v2.3 tags, then appended to the conversion command line.<br>
+        The final ffmpeg conversion command line is executed to produce the mp3 file with the desired metadata.<br>
+        Once the mp3 file has been created, the co-located cover art is added via Mutagen.<br>
+        Calling function MUST supply path to an existing valid audio file with valid metadata.<br>
+        The supplied audio file MUST have co-located Folder.jpg album art.
+
+        @code{.text}
+        Initial ffmpeg command line converts audio files to mp3 format, wipes out existing metadata, enforces ID3v2.3 tags, and preserves bit rate.
+        ffmpeg -hide_banner -i file_path -vn -map_metadata -1 -codec:a libmp3lame -id3v2_version 3 -b:a 128198
+
+        -hide_banner; reduce output clutter
+        -i file_path; the path to the audio file
+        -vn -map_metadata -1; -vn drops video stream and -map_metadata -1 drops all text metadata
+        -codec:a libmp3lame; sets audio codec for mp3
+        -id3v2_version 3; known bug, MUST specify id3v2 version, else will get ID3v2.4
+        -b:a 128198; ffmpeg will downgrade bitrate if you don't set it
+
+        The initial ffmpeg command line is expanded twice.
+        First expansion adds the preferred metadata once it has been mapped from original audio file to ID3v2.3 tags.
+
+        Second expansion adds the export file path.
+
+        Cover art is added directly via Mutagen MP3 module - it's easier with Mutagen than ffmpeg.
+        @endcode
+
+        @param self {AudioMetadata} The instance of the class.
+        @param file_path {str} The path for audio file to be converted.
+        @param target {str} The optional target directory for exported files.
+        @param show_spinner {bool} Show spinner flag.
+        @param progress {ProgressReporter | None} Optional progress reporter.
+
+        @exception MetadataTypeError Indicates a non-standard metadata type was encountered.
+        @exception MusicProcessingError A generic music processing error occurred.
+        @exception PathInfoError Indicates directory_processing.path_info function returned None.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        txt_filename = inspect.currentframe().f_code.co_name
+
+        try:
+            # get export path for converted files, will return None for an invalid audio extension
+            export_path = directory.path_info(file_path, target)
+
+            if export_path is None:
+                logger.exception(f"PathInfoError with file {file_path} returned None", stack_info=True)
+                raise PathInfoError(f"PathInfoError with file {file_path} returned None")
+            else:
+                directory.make_dir(os.path.dirname(export_path))
+
+            input_path_parent = os.path.dirname(file_path)
+            cover = os.path.join(input_path_parent, FOLDER_ART)
+
+            if not os.path.exists(cover):
+                raise MusicProcessingError(f"album directory {input_path_parent} does not contain a {FOLDER_ART} file.")
+
+            # export format is always mp3
+            export_format = MP3_EXT.removeprefix(".")
+
+            input_format = os.path.splitext(file_path)[1].lower()[1:]
+            input_path_stem = os.path.splitext(os.path.basename(file_path))[0]
+            data.append(f"Beginning conversion on {input_path_stem} from {input_format} to {export_format}")
+            data.append(f"Source directory path: {input_path_parent}")
+
+            metadata_class = self.get_metadata_class(file_path)
+
+            if metadata_class is None:
+                logger.error(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None", exc_info=True)
+                raise MetadataTypeError(f"MetadataTypeError with file: {os.path.basename(file_path)} returned None")
+
+            input_tags = self.get_mutagen_tags(file_path)
+
+            if input_tags:
+                if metadata_class == FLAC_TYPE:
+                    tags = self.map_flac_tags(input_tags)
+                elif metadata_class == MP3_TYPE:
+                    tags = self.map_mp3_tags(input_tags)
+                elif metadata_class == MP4_TYPE:
+                    tags = self.map_m4a_tags(input_tags)
+                elif metadata_class == ASF_TYPE:
+                    tags = self.map_wma_tags(input_tags)
+            else:
+                tags = None
+
+            # get the input file info - want bitrate so can preserve the quality in exported file
+            media_info = self.get_media_info(file_path)
+            bitrate = media_info['bit_rate']
+
+            command = [
+                "ffmpeg",
+                "-hide_banner",
+                "-i", file_path,
+                "-vn", "-map_metadata", "-1",
+                "-codec:a", "libmp3lame",
+                "-id3v2_version", "3",
+                "-b:a", str(bitrate)
+            ]
+
+            # cycle through tags dictionary and add metadata directly to command string
+            if tags is not None:
+                if not isinstance(tags, dict):
+                    logger.exception("Tags must be a dictionary.", stack_info=True)
+                    raise MusicProcessingError("Tags must be a dictionary.")
+                else:
+                    for key, value in tags.items():
+                        command.extend(['-metadata', '{0}={1}'.format(key, value)])
+
+            # specify the output with overwrite flag, always want clean output
+            command.extend([export_path, '-y'])
+
+            progress_reporter = None
+            if show_spinner:
+                progress_reporter = progress
+
+            success_msg = subprocess_utils.spinner_popen_pipe(export_path, command, progress_reporter)
+            if success_msg is not None:
+                data.append(success_msg)
+
+            # Add album art
+            mp3_file = MP3(export_path, ID3=ID3, v2_version=3)
+            # encoding & type = 3 specifies UTF-8 & front cover
+            with open(cover, "rb") as album_art_file:
+                mp3_file.tags.add(
+                    APIC(
+                        encoding=3,
+                        mime="image/jpeg",
+                        type=3,
+                        desc="Cover",
+                        data=album_art_file.read()
+                    )
+                )
+            # have to specify ID3v2 version to avoid defaults to v2.4
+            # which are not compatible with Windows display
+            mp3_file.save(v2_version=3)
+
+            directory.create_txt(txt_filename, data, None, None)
+
+        except MetadataTypeError as mt_error:
+            raise mt_error
+        except MusicProcessingError as mp_error:
+            raise mp_error
+        except PathInfoError as pi_error:
+            raise pi_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} converting {file_path} to {export_path}", stack_info=True)
+            raise e_error
+
+
+    def convert_walk(self, start_path: str, file_pattern: str, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None):
+        '''
+        @brief Converts all audio files found in specified path to mp3 format.
+
+        @details Calling functions MUST verify valid start path.<br>
+        If file pattern not specified, processes all valid audio files.<br>
+        Otherwise must be a valid audio file extension like '.mp3', '.m4a', '.wma', or '.flac'.
+
+        @param self {AudioMetadata} The instance of the class.
+        @param start_path {str} The starting path that contains all the music files.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), or an album folder (sld).
+        @param file_pattern {str} Optional, the audio file pattern we want to transform.
+        @param target {str} Optional, the target directory for exported files. Defaults to None.
+        @param show_spinner {bool} Optional, whether to display a spinner during conversion. Defaults to True.
+        @param progress {ProgressReporter | None} Optional progress reporter.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        input_file_ext = None
+
+        try:
+            # calling function is NOT responsible for pattern validity
+            if file_pattern and file_pattern not in AUDIO_EXTS:
+                logger.warning(f"Pattern {file_pattern} is not for a valid audio file")
+                return
+
+            input_path = Path(start_path)
+
+            for dir_path, _, file_names in os.walk(input_path):
+                for file in file_names:
+                    _, input_file_ext = os.path.splitext(file)
+
+                    # file is not flac, mp3, m4a, or wma, so carry on to next file
+                    if input_file_ext.lower() not in AUDIO_EXTS:
+                        continue
+                    elif file_pattern:
+                        if not fnmatch.fnmatch(input_file_ext.lower(), file_pattern.lower()):
+                            continue
+
+                    input_file_path = os.path.join(dir_path, file)
+                    self.convert_file(input_file_path, target, show_spinner, progress)
+
+        except Exception as e_error:
+            if file_pattern:
+                exc_msg = f"Exception {type(e_error).__name__} walking {start_path} to convert {file_pattern} audio files to mp3"
+            else:
+                exc_msg = f"Exception {type(e_error).__name__} walking {start_path} to convert audio files to mp3"
+
+            logger.exception(exc_msg, stack_info=True)
+            raise e_error
+
+
+    def create_album_dirs(self, start_path: str, progress: ProgressReporter | None = None):
+        r'''
+        @brief Creates second level (sld) album sub-directories in first level (fld) artist directories.
+
+        @details Creates the album sub directory for the artist from album metadata if needed.<br>
+        Calling functions MUST verify valid start path. Audio files will be moved into their respective album directories.<br>
+
+        @note Using the Windows invalid character set because it is more restrictive (therefore OS universal).<br>
+        The characters `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|` will be replaced by `-`.<br>
+        Refer to https://pathvalidate.readthedocs.io/en/latest/pages/reference/function.html#pathvalidate.sanitize_filename<br>
+        <br>
+        A csv report named after the function (`create_album_dirs`) will be created in csv folder.<br>
+        It will contain all audio file paths, album metadata values and sanitized album directory names.
+
+        @param self {AudioMetadata} The instance of the class.
+        @param start_path {str} The top level directory that contains all the music files.<br>
+        The start path must be a valid top-level directory containing artist folders, and only a tld.
+        @param progress {ProgressReporter | None} Optional progress reporter.
+
+        @exception ValidationError A pathlib module validation error occurred.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        csv_filename = inspect.currentframe().f_code.co_name
+        header_row = ["audio file path", "album metadata", "sanitized album directory"]
+
+        progress_started = False
+
+        try:
+            # get the artist dirs under tld
+            tld_content = os.listdir(start_path)
+            len_tld_content = len(tld_content)
+
+            if progress is not None:
+                progress.start(len_tld_content, f"Processing {start_path} content")
+                progress_started = True
+
+            # top level directory consists of artist directories, playlist files and couple other sundry files
+            for tld_item in tld_content:
+                # Count every top-level entry to keep the total aligned with the report.
+                tld_item_path = os.path.join(start_path, tld_item)
+                if os.path.isfile(tld_item_path):
+                    if progress is not None:
+                        progress.advance(1)
+                    continue
+
+                # since we skip tld items that are files, now we need to check tld items that are directories
+                artist_content = os.listdir(tld_item_path)
+                # want to know if we have any empty artist directories so we can deal with them later
+                if os.path.isdir(tld_item_path) and not artist_content:
+                    logger.info(f"{tld_item_path} is an empty artist directory")
+                    if progress is not None:
+                        progress.advance(1)
+                    continue
+
+                # now we can look at what's in the current artist 1st level directory
+                for artist_item in artist_content:
+
+                    # we don't care about existing album 2nd level dirs
+                    artist_item_path = os.path.join(tld_item_path, artist_item)
+                    if os.path.isdir(artist_item_path):
+                        continue
+
+                    # if we find an audio file, we need a album sub-directory for it
+                    # as artist dirs are supposed to only contain album sub dirs
+                    if os.path.isfile(artist_item_path):
+                        _, file_ext = os.path.splitext(artist_item)
+
+                    # audio files are supposed to be in an album sub dir
+                    if file_ext.lower() in AUDIO_EXTS:
+                        audio_file = artist_item_path
+                        # using ffprobe function cause it is audio file type agnostic
+                        file_media_tags = self.get_ffprobe_tags(audio_file)
+                    else:
+                        # we found a non audio file
+                        continue
+
+                    # Returns False if file_media_tags is missing/empty
+                    album_exists = bool(file_media_tags) and any(k.lower() == "album" for k in file_media_tags)
+                    if album_exists:
+                        value_album = None
+                        # looking for exact word match for "album" key, handles album or ALBUM etc
+                        for key, value in file_media_tags.items():
+                            if key.lower() == "album":
+                                value_album = value
+                                # need the actual key for logging
+                                key_album = key
+                                break
+
+                        # replace any slashes, they would wreak havoc by creating nested dirs
+                        album = value_album.replace("/", "-")
+
+                        # sanitize because the metadata might have characters invalid for directory names
+                        sanitized_album_name = pathvalidate.sanitize_filepath(album, replacement_text="-", platform="Windows",
+                                                                              validate_after_sanitize=True)
+
+                        data.append([audio_file, file_media_tags[key_album], sanitized_album_name])
+
+                        # make the album sub directory is REQUIRED before moving the audio file
+                        album_path = os.path.join(tld_item_path, sanitized_album_name)
+                        directory.make_dir(album_path)
+
+                        # now transfer the audio file to new album directory
+                        file_path = os.path.basename(audio_file)
+                        destination_path = os.path.join(album_path, file_path)
+                        shutil.move(audio_file, destination_path)
+
+                    else:
+                        logger.info(f"{audio_file} is missing album metadata")
+                        continue
+
+                if progress is not None:
+                    progress.advance(1)
+
+            directory.create_csv(csv_filename, data, None, None, header_row, 0)
+
+        except ExecError as exc_error:
+            logger.exception(f"ExecError moving {file_path} to {destination_path}", exc_info=True)
+            raise exc_error
+        except ValidationError as v_error:
+            logger.exception(f"ValidationError sanitizing album metadata {album}", stack_info=True)
+            raise v_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} creating sub-dirs for {start_path}", stack_info=True)
+            raise e_error
+        finally:
+            if progress_started:
+                progress.finish()
+
+
+    def get_media_info_walk(self, start_path: str, file_pattern: str):
+        '''
+        @brief Gets media info (codec, duration, size, bitrate...) for audio files and saves to file.
+
+        @details Wrapper function for `get_media_info` to walk through the directory tree and get media information for audio files.<br>
+        The collected information is stored in a list and can be saved to a file.
+
+        @param self {AudioMetadata} The instance of the class.
+        @param start_path {str} The starting path that contains all the music files.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
+        @param file_pattern {str} The audio file pattern we want to get tags from.
+
+        @exception ValueError A function or operation received an argument of correct type but inappropriate value.
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        txt_filename = inspect.currentframe().f_code.co_name
+
+        try:
+            for dir_path, _, file_names in os.walk(start_path):
+                # the tld Music does contain files, but not audio files
+                if dir_path == start_path:
+                    continue
+
+                for file in file_names:
+                    input_file, input_file_ext = os.path.splitext(file)
+
+                    # file is not mp3, m4a, or wma, so carry on to next file
+                    if input_file_ext.lower() not in AUDIO_EXTS:
+                        continue
+                    elif file_pattern:
+                        if not fnmatch.fnmatch(input_file_ext.lower(), file_pattern.lower()):
+                            continue
+
+                    input_file_path = os.path.join(dir_path, file)
+
+                    media_info = self.get_media_info(input_file_path)
+                    if media_info:
+                        file_msg = f"\n{input_file_path} has {len(media_info)} keys"
+                        data.append(file_msg)
+                        for key, value in media_info.items():
+                            if isinstance(value, dict):
+                                continue
+                            else:
+                                data.append(f"key: {key}, value: {value}")
+                    else:
+                        logger.error(f"ValueError getting info for audio file: {input_file_path} returned None", exc_info=True)
+                        raise ValueError(f"ValueError getting info for audio file: {input_file_path} returned None")
+
+            directory.create_txt(txt_filename, data, None, None)
+
+        except ValueError as v_error:
+            raise v_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting media info for file {input_file_path}")
+            raise e_error
+
+
+    def get_tags_walk(self, file_path: str, file_pattern: str, ffprobe: bool = False):
+        '''
+        @brief Gets tags for audio files and saves to file.
+
+        @details File walk will skip any non-audio files like playlists, jpgs, etc.<br>
+        Therefore a non-audio ext input will never have a pattern match.<br>
+        This function defaults to using Mutagen for tag extraction unless ffprobe is specified.<br>
+        The lowest allowable directory in `file_path` is an artist directory.<br>
+
+        @param self {AudioMetadata} The instance of the class.
+        @param file_path {str} The starting path that contains all the music files.<br>
+        The starting path can be the top level directory (tld), an artist folder (fld), but not an album folder (sld).
+        @param file_pattern {str} Optional, the audio file pattern we want to get tags from.
+        @param ffprobe {bool} Optional, return ffprobe tags instead of mutagen tags.
+
+        @exception Exception A common baseclass exception to handle unforeseen errors.
+        '''
+
+        data = []
+        txt_filename = inspect.currentframe().f_code.co_name
+
+        try:
+            input_tags = None
+            for dir_path, _, file_names in os.walk(file_path):
+                # the tld Music does contain files, but not audio files
+                if dir_path == file_path:
+                    continue
+
+                for file in file_names:
+                    input_file, input_file_ext = os.path.splitext(file)
+
+                    # we don't touch non-audio files like jpg's
+                    if input_file_ext.lower() not in AUDIO_EXTS:
+                        continue
+
+                    if file_pattern and not fnmatch.fnmatch(input_file_ext.lower(), file_pattern.lower()):
+                        continue
+                    else:
+                        tag_file_path = os.path.join(dir_path, file)
+
+                        if ffprobe:
+                            input_tags = self.get_ffprobe_tags(tag_file_path)
+                        else:
+                            metadata_class = self.get_metadata_class(tag_file_path)
+                            if metadata_class in AUDIO_FILES:
+                                input_tags = self.get_mutagen_tags(tag_file_path)
+
+                        if input_tags:
+                            if ffprobe:
+                                data.append(f"\n{tag_file_path} has {len(input_tags)} ffprobe tags")
+                            else:
+                                data.append(f"\n{tag_file_path} has {len(input_tags)} {metadata_class} tags")
+
+                            tag_items = input_tags.items()
+                            for key, value in tag_items:
+                                data.append(f"{key}: {value}")
+                        else:
+                            data.append(f"\n{tag_file_path} has no metadata")
+
+            directory.create_txt(txt_filename, data, None, None)
+
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting tags for file {file_path}", stack_info=True)
+            raise e_error
 
 
     def normalize_filename(self, file_path: str):
