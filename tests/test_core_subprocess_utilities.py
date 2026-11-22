@@ -1,9 +1,9 @@
 '''
 @class TestSubprocessUtilities
-@file test_subprocess_utilities.py
+@file test_core_subprocess_utilities.py
 @author Gerald Manweiler
 
-@brief Defines the test subprocess utilities class.
+@brief Defines the core subprocess utilities test class.
 
 @details Tests subprocess command execution, error propagation, and decoding behavior.
 
@@ -75,7 +75,7 @@ class TestSubprocessUtilities(TestCase):
     @classmethod
     def setUpClass(cls):
         '''
-        @brief Initialize data for test suite.
+        @brief Initialize data for the core subprocess utilities test suite.
 
         @details Creates shared ffprobe and ffmpeg command fixtures for the test suite.
 
@@ -108,7 +108,7 @@ class TestSubprocessUtilities(TestCase):
         -f null -; sends the output to null to avoid creating an actual output file
         @endcode
 
-        @param cls {TestSubprocessUtilities} Test class receiving shared command fixtures.
+        @param cls {TestSubprocessUtilities} Core subprocess utilities test class receiving shared command fixtures.
         '''
 
         cls.file_path = TEST_M3U
@@ -141,7 +141,7 @@ class TestSubprocessUtilities(TestCase):
 
     def test_popen_pipe_ffmpeg_invalid_file(self):
         '''
-        @brief Test ffmpeg pipe execution with an invalid file type.
+        @brief Test core subprocess utilities ffmpeg pipe execution with an invalid file type.
 
         @details Verifies an invalid input file raises a runtime error.
 
@@ -163,7 +163,7 @@ class TestSubprocessUtilities(TestCase):
 
     def test_popen_pipe_ffmpegprocess_error(self):
         '''
-        @brief Test spinner pipe execution with an ffmpeg process error.
+        @brief Test core subprocess utilities spinner pipe execution with an ffmpeg process error.
 
         @details Verifies failed asynchronous ffmpeg execution raises an ffmpeg process error.
 
@@ -185,7 +185,7 @@ class TestSubprocessUtilities(TestCase):
 
     def test_spinner_subprocess_run_reports_elapsed_time(self):
         '''
-        @brief Tests subprocess progress reporting and elapsed time.
+        @brief Tests core subprocess utilities progress reporting and elapsed time.
 
         @details Verifies the progress lifecycle and elapsed value are returned with the process.<br>
         While this test uses the class level error case ffmpeg command, it's really about the progress reporting and elapsed time.
@@ -209,7 +209,7 @@ class TestSubprocessUtilities(TestCase):
 
     def test_popen_pipe_ffprobe_invalid_data(self):
         '''
-        @brief Test ffprobe pipe execution with invalid MP3 data.
+        @brief Test core subprocess utilities ffprobe pipe execution with invalid MP3 data.
 
         @details Verifies malformed audio data raises a runtime error.
 
@@ -234,7 +234,7 @@ class TestSubprocessUtilities(TestCase):
 
     def test_popen_pipe_ffprobe_invalid_file(self):
         '''
-        @brief Test ffprobe pipe execution with an invalid file type.
+        @brief Test core subprocess utilities ffprobe pipe execution with an invalid file type.
 
         @details Verifies a playlist input raises a runtime error.
 
@@ -295,7 +295,7 @@ class TestSubprocessUtilities(TestCase):
 
     def test_subprocess_run_ffmpeg_invalid_file(self):
         '''
-        @brief Test ffmpeg volume analysis with an invalid file type.
+        @brief Test core subprocess utilities ffmpeg volume analysis with an invalid file type.
 
         @details Verifies ffmpeg raises a called process error for a playlist input.
 
@@ -324,7 +324,7 @@ class TestSubprocessUtilities(TestCase):
 
     def test_subprocess_run_ffprobe_non_extant(self):
         '''
-        @brief Test ffprobe video-stream inspection with a missing file.
+        @brief Test core subprocess utilities ffprobe video-stream inspection with a missing file.
 
         @details Verifies ffprobe raises a called process error for a non-existent input file.
 
@@ -369,7 +369,7 @@ class TestSubprocessUtilities(TestCase):
     @patch('src.core.subprocess_utils.subprocess.run')
     def test_subprocess_run_unicode_decode_error(self, mock_subprocess_run):
         '''
-        @brief Test subprocess execution with undecodable output.
+        @brief Test core subprocess utilities execution with undecodable output.
 
         @details Verifies an undecodable mocked subprocess result raises a Unicode decode error.<br>
         Patching the subprocess_utils.subprocess.run constructor to simulate undecodable output.
@@ -407,7 +407,7 @@ if __name__ == "__main__":
 
     @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
 
-    @note This test module can be run directly with `python tests/test_subprocess_utilities.py`.
+    @note This test module can be run directly with `python tests/test_core_subprocess_utilities.py`.
 
     @test Execution of the test suite.
     '''

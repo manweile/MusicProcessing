@@ -1,6 +1,6 @@
 '''
 @class TestAudioNormalization
-@file test_audio_normalization.py
+@file test_models_audio_normalization.py
 @author Gerald Manweiler
 
 @brief Defines the test audio normalization class.
@@ -787,7 +787,7 @@ if __name__ == "__main__":
 
     @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
 
-    @note This test module can be run directly with `python tests/test_audio_normalization.py`.
+    @note This test module can be run directly with `python tests/test_models_audio_normalization.py`.
 
     @test Execution of the test suite.
 

@@ -1,6 +1,6 @@
 '''
 @class TestProgress
-@file test_progress.py
+@file test_tests_progress.py
 @author Gerald Manweiler
 
 @brief Defines the progress interface tests.
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
 
-    @note This test module can be run directly with `python tests/test_progress.py`.
+    @note This test module can be run directly with `python tests/test_tests_progress.py`.
 
     @test Execution of the test suite.
     '''

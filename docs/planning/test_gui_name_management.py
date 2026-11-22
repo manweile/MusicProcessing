@@ -1,21 +1,46 @@
-import os
-import shutil
-import tempfile
-import time
+'''
+@class TestGuiNameManagement
+@file test_gui_name_management.py
+@author Gerald Manweiler
+
+@brief Defines the GUI tests for name management.
+
+@details Verifies the behavior of the GUI for name management.
+
+@version 1.0.0
+@date 2026-11-09
+
+@copyright @showdate "%Y" GWN Software. All rights reserved.
+'''
+
+# Standard Modules
+import os                                                   # for file and directory operations
+import shutil                                               # for high-level file operations
+import tempfile                                             # for creating temporary directories
+import time                                                 # for time-related functions
+from unittest import TestCase                               # for creating test cases
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch                             # for mocking objects in tests
 
-import wx
+# Third-Party Modules
+import wx                                                   # for wxPython GUI components
 
-from tests import (
-    TEST_M4A_EAGLES,
-    TEST_MP3_ABBA,
-    TEST_MP3_GENESIS,
-    TEST_MP3_NO_METADATA,
-    TEST_WMA_CCR,
-)
-from src.core.constants import CSV_DIR, CSV_EXT
+# Local Module Methods
+from tests.support import get_method_names                  # for direct test-suite construction
+
+# Local Module Constants
+from tests import TEST_M4A_EAGLES
+from tests import TEST_MP3_ABBA
+from tests import TEST_MP3_GENESIS
+from tests import TEST_MP3_NO_METADATA
+from tests import TEST_WMA_CCR
+
+from src.core.constants import CSV_DIR
+from src.core.constants import CSV_EXT
+
+# Local Module Classes
 from src.gui.wx_app import MainFrame
+
 from src.models.audio_info.audio_art import AudioArt
 from src.models.audio_info.audio_metadata import AudioMetadata
 from src.models.audio_info.audio_playlist import AudioPlaylist
@@ -24,11 +49,27 @@ from src.models.audio_normalize.audio_normalization import AudioNormalization
 from src.models.dir_processing.directory_processing import DirectoryProcessing
 
 
-class TestAddAlbumFoldersGui(unittest.TestCase):
+class TestGuiNameManagement(TestCase):
+    ''''
+    @brief Tests for the GUI name management functionality.
+
+    @details Verifies that the GUI correctly handles name management operations, including adding, editing, and removing album folders.
+    '''
 
     @classmethod
     def setUpClass(cls):
+        '''
+        @brief Initializes data for for the GUI name management tests.
+
+        @details Initializes the wx.App instance and sets up the list of source file paths to be used in the tests.
+
+        @param cls {TestGuiNameManagement} Test class receiving shared fixtures.
+        '''
+
+        # initialize the wx.App instance for the GUI tests
         cls.app = wx.App(False)
+
+        # prepare the list of source file paths for the tests
         cls.prepped_src_file_paths = [
             TEST_M4A_EAGLES,
             TEST_MP3_ABBA,
@@ -37,7 +78,16 @@ class TestAddAlbumFoldersGui(unittest.TestCase):
             TEST_WMA_CCR,
         ]
 
+
     def setUp(self):
+        '''
+        @brief Sets up the test environment for each test method.
+
+        @details Creates temporary directories for prepped and generated files, patches the GENERATED_PATH, and initializes the MainFrame instance.
+
+        @param self {TestGuiNameManagement} Test instance receiving the setup environment.
+        '''
+
         temp_dir = tempfile.TemporaryDirectory(prefix="musicprocessing-gui-")
         self.addCleanup(temp_dir.cleanup)
 
@@ -71,10 +121,12 @@ class TestAddAlbumFoldersGui(unittest.TestCase):
         wx.YieldIfNeeded()
         self.addCleanup(self._destroy_frame)
 
+
     def _destroy_frame(self):
         if self.frame:
             self.frame.Destroy()
             wx.YieldIfNeeded()
+
 
     def _wait_until(self, predicate, timeout=10):
         deadline = time.monotonic() + timeout
@@ -86,6 +138,7 @@ class TestAddAlbumFoldersGui(unittest.TestCase):
             time.sleep(0.01)
 
         self.fail(f"Condition was not met within {timeout} seconds")
+
 
     def test_add_album_folders_happy_path(self):
         path_control = self.frame.FindWindowByName("addAlbumsWalkTld")
@@ -110,7 +163,7 @@ class TestAddAlbumFoldersGui(unittest.TestCase):
             (
                 "Creedence Clearwater Revival",
                 "Chronicle, Vol. 1",
-                "Creedence Clearwater Revival-Fortun ate Son.wma",
+                "Creedence Clearwater Revival-Fortunate Son.wma",
             ),
             ("Genesis", "In Too Deep - I'd Rather Be You", "Genesis-In Too Deep.mp3"),
         ]
@@ -145,4 +198,21 @@ class TestAddAlbumFoldersGui(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    '''
+    @brief Run the TestGuiNameManagement test suite directly.
+
+    @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
+
+    @note This test module can be run directly with `python tests/test_gui_name_management.py`.
+
+    @test Execution of the test suite.
+    '''
+
+    methods = get_method_names(TestGuiNameManagement)
+
+    suite = unittest.TestSuite()
+    for name in methods:
+        suite.addTest(TestGuiNameManagement(name))
+
+    runner = unittest.TextTestRunner(verbosity=2)
+    runner.run(suite)

@@ -1,9 +1,9 @@
 '''
 @class TestLoggingConfig
-@file test_logging_config.py
+@file test_core_logging_config.py
 @author Gerald Manweiler
 
-@brief Defines the test logging configuration class.
+@brief Defines the test core logging configuration class.
 
 @details Verifies package and module logging setup, idempotency, and failure handling.
 
@@ -344,7 +344,7 @@ if __name__ == "__main__":
 
     @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
 
-    @note This test module can be run directly with `python tests/test_logging_config.py`.
+    @note This test module can be run directly with `python tests/test_core_logging_config.py`.
 
     @test Execution of the test suite.
     '''

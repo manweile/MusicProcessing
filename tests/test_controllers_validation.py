@@ -1,6 +1,6 @@
 '''
 @class TestPathValidation
-@file test_validation.py
+@file test_controllers_validation.py
 @author Gerald Manweiler
 
 @brief Defines the test path validation class.
@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     @details Collects all test methods from the TestPathValidation class and executes them using a unittest test runner.
 
-    @note This test module can be run directly with `python tests/test_validation.py`.
+    @note This test module can be run directly with `python tests/test_controllers_validation.py`.
 
     @test Execution of the test suite.
     '''

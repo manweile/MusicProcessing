@@ -1,9 +1,9 @@
 '''
 @class TestNullProgress
-@file test_null_progress.py
+@file test_core_null_progress.py
 @author Gerald Manweiler
 
-@brief Defines the no-op progress reporter tests.
+@brief Defines the core no-op progress reporter tests.
 
 @details Tests no-op progress reporter behavior.
 
@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
 
-    @note This test module can be run directly with `python tests/test_null_progress.py`.
+    @note This test module can be run directly with `python tests/test_core_null_progress.py`.
 
     @test Execution of the test suite.
     '''

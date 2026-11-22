@@ -1,6 +1,6 @@
 '''
 @class TestAudioMetadata
-@file test_audio_metadata.py
+@file test_models_audio_metadata.py
 @author Gerald Manweiler
 
 @brief Defines the test audio metadata class.
@@ -108,7 +108,7 @@ class TestAudioMetadata(TestCase):
 
         @details Creates shared fixture paths, expected results, and metadata values for the test suite.
 
-        @param cls {type[TestAudioMetadata]} Test class receiving shared fixtures.
+        @param cls {TestAudioMetadata} Test class receiving shared fixtures.
         '''
 
         # the top level directory path where files will be created - D:\MusicProcessing\src\generated_files\Music
@@ -1916,7 +1916,7 @@ if __name__ == "__main__":
 
     @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
 
-    @note This test module can be run directly with `python tests/test_audio_metadata.py`.
+    @note This test module can be run directly with `python tests/test_models_audio_metadata.py`.
 
     @test Execution of the test suite.
     '''

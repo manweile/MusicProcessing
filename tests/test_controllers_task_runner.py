@@ -1,6 +1,6 @@
 '''
 @class TestTaskRunner
-@file test_task_runner.py
+@file test_controllers_task_runner.py
 @author Gerald Manweiler
 
 @brief Defines the test task runner class.
@@ -165,7 +165,7 @@ if __name__ == "__main__":
 
     @details Collects all test methods from the TestTaskRunner class and executes them using a unittest test runner.
 
-    @note This test module can be run directly with `python tests/test_task_runner.py`.
+    @note This test module can be run directly with `python tests/test_controllers_task_runner.py`.
 
     @test Execution of the test suite.
     '''

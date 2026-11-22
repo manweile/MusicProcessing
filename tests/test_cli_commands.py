@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 '''
-@class TestCli
-@file test_cli.py
+@class TestCommands
+@file test_cli_commands.py
 @author Gerald Manweiler
 
 @brief Defines tests for the extracted CLI modules.
@@ -37,7 +37,7 @@ from src.core.constants import UTF8                         # utf-8 encoding con
 from src.cli import commands                                # for patching command logging
 
 
-class TestCli(TestCase):
+class TestCommands(TestCase):
     '''
     @brief Tests the extracted CLI modules.
 
@@ -55,7 +55,7 @@ class TestCli(TestCase):
 
         @test Happy path.
 
-        @param self {TestCli} The instance of the test class.
+        @param self {TestCommands} The instance of the test class.
         '''
 
         baseline_path = Path(__file__).with_name("cli help baseline.txt")
@@ -75,7 +75,7 @@ class TestCli(TestCase):
 
         @test Happy path and validation error.
 
-        @param self {TestCli} The instance of the test class.
+        @param self {TestCommands} The instance of the test class.
         '''
 
         # prepare the path to the music top-level directory for testing
@@ -104,7 +104,7 @@ class TestCli(TestCase):
 
         @test Happy path.
 
-        @param self {TestCli} The instance of the test class.
+        @param self {TestCommands} The instance of the test class.
         '''
 
         handler = Mock()
@@ -127,7 +127,7 @@ class TestCli(TestCase):
 
         @test Error case.
 
-        @param self {TestCli} The instance of the test class.
+        @param self {TestCommands} The instance of the test class.
         '''
 
         # prepare a mock handler that raises an exception to simulate a failure scenario
@@ -150,7 +150,7 @@ class TestCli(TestCase):
 
         @test Edge case.
 
-        @param self {TestCli} The instance of the test class.
+        @param self {TestCommands} The instance of the test class.
         '''
 
         with self.assertRaisesRegex(ValueError, "A subcommand is required"):
@@ -162,12 +162,16 @@ if __name__ == "__main__":
     @brief Runs the CLI tests directly.
 
     @details Collects test methods and executes them with a text runner.
+
+    @note This test module can be run directly with `python tests/test_cli_commands.py`.
+
+    @test Execution of the test suite.
     '''
 
-    methods = get_method_names(TestCli)
+    methods = get_method_names(TestCommands)
     suite = unittest.TestSuite()
     for name in methods:
-        suite.addTest(TestCli(name))
+        suite.addTest(TestCommands(name))
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)

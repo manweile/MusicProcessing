@@ -1,6 +1,6 @@
 '''
 @class TestAudioPlaylist
-@file test_audio_playlist.py
+@file test_models_audio_playlist.py
 @author Gerald Manweiler
 
 @brief Defines the test audio playlist class.
@@ -212,7 +212,7 @@ if __name__ == "__main__":
 
     @details Collects test methods, adds them to a suite, and executes the suite with a text runner.
 
-    @note This test module can be run directly with `python tests/test_audio_playlist.py`.
+    @note This test module can be run directly with `python tests/test_models_audio_playlist.py`.
 
     @test Execution of the test suite.
     '''
