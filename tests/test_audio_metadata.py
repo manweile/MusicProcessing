@@ -466,7 +466,7 @@ class TestAudioMetadata(TestCase):
         '''
         @brief Tests creating an album sub-directory in an artist directory.
 
-        @details The album sub-directory should be created for each album within the artist directory.
+        @details The album sub-directory should be created for eawithin the artist directory.
 
         @test Happy path.
 

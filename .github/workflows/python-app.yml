@@ -146,3 +146,39 @@ jobs:
           fi
           xvfb-run -a python -m unittest discover -v tests
 
+      # replace from line 136
+      # @todo predicated on tests suites getting renamed:
+      # models suites will become test_model_*.py,
+      # core utils will become test_core_*.py,
+      # cli utils will become test_cli_*.py,
+      # test_main.py will become test_project_main.py
+      # - name: Test model and unit suites
+      #   env:
+      #     PYTHONTRACEMALLOC: ${{ steps.detect-act.outputs.is-act == 'false' && '1' || '0' }}
+      #   run: |
+      #     if [ "${ACT:-false}" = "true" ]; then
+      #       export MUSICPROCESSING_GENERATED_PATH=/dev/shm/generated_files
+      #       rm -rf "$MUSICPROCESSING_GENERATED_PATH"
+      #       mkdir -p "$MUSICPROCESSING_GENERATED_PATH"
+      #     fi
+
+      #     for pattern in \
+      #       'test_model_*.py' \
+      #       'test_core_*.py' \
+      #       'test_cli_*.py' \
+      #       'test_project_main.py'
+      #     do
+      #       xvfb-run -a python -m unittest discover -v -s tests -p "$pattern"
+      #     done
+
+      # - name: Test GUI functional suite
+      #   env:
+      #     PYTHONTRACEMALLOC: ${{ steps.detect-act.outputs.is-act == 'false' && '1' || '0' }}
+      #   run: |
+      #     if [ "${ACT:-false}" = "true" ]; then
+      #       export MUSICPROCESSING_GENERATED_PATH=/dev/shm/generated_files
+      #       rm -rf "$MUSICPROCESSING_GENERATED_PATH"
+      #       mkdir -p "$MUSICPROCESSING_GENERATED_PATH"
+      #     fi
+      #     xvfb-run -a python -m unittest discover -v -s tests -p 'test_gui_*.py'
+
