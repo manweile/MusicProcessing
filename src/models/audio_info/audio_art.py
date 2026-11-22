@@ -561,8 +561,6 @@ class AudioArt():
         '''
 
         try:
-            has_stream = False
-
             command = [
                 'ffprobe',
                 '-hide_banner',
@@ -577,9 +575,11 @@ class AudioArt():
             # ffprobe outputs to stdout, unlike ffmpeg
             probe = json.loads(probe_process.stdout)
 
-            for stream in probe['streams']:
-                if stream['codec_type'] == 'video':
-                    has_stream = True
+            # Check if any video stream found (including attached artwork, which is always stream 1)
+            if 'streams' in probe and len(probe['streams']) > 0:
+                return True
+
+            return False
 
         except JSONDecodeError as jd_error:
             logger.error(f"JSONDecodeError on audio file: {file_path}", exc_info=True)
@@ -587,8 +587,6 @@ class AudioArt():
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} extracting video stream from {file_path}", stack_info=True)
             raise e_error
-        else:
-            return has_stream
 
 
     def set_album_art(self, input_path: str) -> None:

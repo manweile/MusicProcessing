@@ -26,7 +26,12 @@ import sys                                                  # for system-specifi
 from json import JSONDecodeError                            # for handling JSON decode errors
 from os import strerror                                     # for operating-system error messages
 from pathlib import Path                                    # for object-oriented filesystem paths
-from shutil import ExecError                                # for handling shutil execution errors
+
+# Handle ExecError deprecation in Python 3.14+ (treats it as RuntimeError)
+try:
+    from shutil import ExecError
+except ImportError:
+    ExecError = RuntimeError
 
 # Third Party Modules
 import mutagen                                              # for audio metadata handling
