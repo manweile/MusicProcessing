@@ -699,7 +699,7 @@ class EventHandlers:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
-    def on_update_playlist_ile(self, event):
+    def on_update_playlist_file(self, event):
         '''
         @brief Handle the event for updating an M3U playlist.
 
@@ -723,6 +723,88 @@ class EventHandlers:
             # callback = self.mainFrame._show_generated_playlist_dialog
             # self.mainFrame.taskRunner.run_task(self.playlist.update_playlist, m3u_file, on_success=callback)
             self.mainFrame.taskRunner.run_task(self.playlist.update_playlist, m3u_file)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_remove_pattern(self, event):
+        '''
+        @brief Handle the event for removing files matching a pattern from a directory.
+
+        @details Retrieves the top-level directory and pattern from the GUI, validates them, runs the pattern removal task asynchronously.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during pattern removal.
+        '''
+
+        try:
+            # get the top-level directory and validate it before removing files matching a pattern
+            tld = self.mainFrame.removePatternDirTld.GetValue().strip()
+
+            # not a valid directory, return early
+            if not self._validate_dir(tld):
+                return
+
+            # get the pattern from the GUI and validate it before removing files matching a pattern
+            pattern = self.mainFrame.removePatternDirInput.GetValue().strip()
+
+            # not a valid pattern, return early
+            if not pattern:
+                wx.MessageBox("Please enter a pattern to remove", "Error", wx.ICON_ERROR)
+                return
+
+            self.mainFrame.taskRunner.run_task(self.directory.remove_pattern, tld, pattern)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_remove_empty_albums(self, event):
+        '''
+        @brief Handle the event for removing albums from a directory.
+
+        @details Retrieves the top-level directory from the GUI, validates it, runs the album removal task asynchronously.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during album removal.
+        '''
+
+        try:
+            # get the top-level directory and validate it before removing albums
+            tld = self.mainFrame.removeAlbumsWalkTld.GetValue().strip()
+            if not self._validate_dir(tld):
+                return
+
+            self.mainFrame.taskRunner.run_task(self.directory.remove_empty_albums, tld)
+
+        except Exception as e_error:
+            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
+
+
+    def on_remove_list(self, event):
+        '''
+        @brief Handle the event for removing files from a set list in a directory.
+
+        @details Retrieves the top-level directory from the GUI, validates it, runs the removal task for the set list asynchronously.
+
+        @param self {EventHandlers} The instance of the class the method belongs to.
+        @param event {object} The event object.
+
+        @exception e_error {Exception} Raised if an error occurs during removal from the set list.
+        '''
+
+        try:
+            # get the top-level directory and validate it before removing files from the set list
+            tld = self.mainFrame.removeListDirTld.GetValue().strip()
+            if not self._validate_dir(tld):
+                return
+
+            self.mainFrame.taskRunner.run_task(self.directory.remove_set_list, tld)
 
         except Exception as e_error:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
@@ -794,88 +876,6 @@ class EventHandlers:
             ffprobe = False
 
             self.mainFrame.taskRunner.run_task(self.metadata.get_tags_walk, tld, pattern, ffprobe)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_remove_empty_albums(self, event):
-        '''
-        @brief Handle the event for removing albums from a directory.
-
-        @details Retrieves the top-level directory from the GUI, validates it, runs the album removal task asynchronously.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during album removal.
-        '''
-
-        try:
-            # get the top-level directory and validate it before removing albums
-            tld = self.mainFrame.removeAlbumsWalkTld.GetValue().strip()
-            if not self._validate_dir(tld):
-                return
-
-            self.mainFrame.taskRunner.run_task(self.directory.remove_empty_albums, tld)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_remove_list(self, event):
-        '''
-        @brief Handle the event for removing files from a set list in a directory.
-
-        @details Retrieves the top-level directory from the GUI, validates it, runs the removal task for the set list asynchronously.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during removal from the set list.
-        '''
-
-        try:
-            # get the top-level directory and validate it before removing files from the set list
-            tld = self.mainFrame.removeListDirTld.GetValue().strip()
-            if not self._validate_dir(tld):
-                return
-
-            self.mainFrame.taskRunner.run_task(self.directory.remove_set_list, tld)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_remove_pattern(self, event):
-        '''
-        @brief Handle the event for removing files matching a pattern from a directory.
-
-        @details Retrieves the top-level directory and pattern from the GUI, validates them, runs the pattern removal task asynchronously.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during pattern removal.
-        '''
-
-        try:
-            # get the top-level directory and validate it before removing files matching a pattern
-            tld = self.mainFrame.removePatternDirTld.GetValue().strip()
-
-            # not a valid directory, return early
-            if not self._validate_dir(tld):
-                return
-
-            # get the pattern from the GUI and validate it before removing files matching a pattern
-            pattern = self.mainFrame.removePatternDirInput.GetValue().strip()
-
-            # not a valid pattern, return early
-            if not pattern:
-                wx.MessageBox("Please enter a pattern to remove", "Error", wx.ICON_ERROR)
-                return
-
-            self.mainFrame.taskRunner.run_task(self.directory.remove_pattern, tld, pattern)
 
         except Exception as e_error:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)

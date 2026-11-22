@@ -402,19 +402,28 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The created sizer for adding missing album folders.
         '''
 
-        # @note input path con ONLY be tld (top-level directory)
+        # what the function is about
+        function_text = "Add Album Folders"
+
+        # info text for the section
+        brief_text = "Adds missing album folders to artist folders in a directory walk"
+        detail_text = "Must start from tld, checks for artist (fld) folders that only contain songs"
+        result_text = "Album folders are created for each unique and valid album tag, the songs move to correct folders"
+        path_text = "Starting path, tld only:"
+
         bulkPanel = wx.Panel(parent)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
         # create the static box, sizers, and panel for the bulk directory playlist update section
-        bulkBox = wx.StaticBox(parent, label="Add Album Folders")
-        bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
+        bulkBox = wx.StaticBox(parent, label=function_text)
+        bulkSizer = wx.StaticBoxSizer(bulkBox, orient=wx.VERTICAL)
 
         # create static text for describing section & starting path label
-        briefDesc = wx.StaticText(bulkPanel, label="Adds missing album folders per metadata in a directory walk")
-        resultDesc = wx.StaticText(bulkPanel, label="The required album name must be present, folders are created as needed")
-        startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld only:")
+        briefDesc = wx.StaticText(bulkPanel, label=brief_text)
+        detailDesc = wx.StaticText(bulkPanel, label=detail_text)
+        resultDesc = wx.StaticText(bulkPanel, label=result_text)
+        startPathLabel = wx.StaticText(bulkPanel, label=path_text)
 
         # create controls for selecting the starting path for bulk updating
         self.addAlbumsWalkTld, self.addAlbumsWalkBrowse = self._make_path_controls(bulkPanel)
@@ -423,33 +432,32 @@ class MainFrame(wx.Frame):
         self.addAlbumsWalkBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.addAlbumsWalkTld))
 
         # create the update playlist button
-        self.addAlbumsWalk = wx.Button(bulkPanel, label="Add Album Folders", name="addAlbumsWalk")
+        self.addAlbumsWalk = wx.Button(bulkPanel, label=function_text, name="addAlbumsWalk")
         self.addAlbumsWalk.Bind(wx.EVT_BUTTON, self.eventHandlers.on_add_albums)
 
-        # create a horizontal sizer for the browse and convert buttons
+        # create a horizontal sizer for the browse and function buttons
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
-        buttonSizer.Add(self.addAlbumsWalkBrowse, 0, wx.RIGHT, 8)
-        buttonSizer.Add(self.addAlbumsWalk, 0)
+        buttonSizer.Add(self.addAlbumsWalkBrowse, proportion=0, flag=wx.RIGHT, border=8)
+        buttonSizer.Add(self.addAlbumsWalk, proportion=0)
 
-        # create a horizontal sizer for the file path row
+        # create a horizontal sizer for all of the path input widgets
         pathRowSizer = wx.BoxSizer(wx.HORIZONTAL)
-        pathRowSizer.Add(self.addAlbumsWalkTld, 1, wx.EXPAND | wx.RIGHT, 8)
-        pathRowSizer.Add(buttonSizer, 0, wx.ALIGN_CENTER_VERTICAL)
+        pathRowSizer.Add(startPathLabel, proportion=0, flag=wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, border=8)
+        pathRowSizer.Add(self.addAlbumsWalkTld, proportion=1, flag=wx.EXPAND | wx.RIGHT, border=8)
+        pathRowSizer.Add(buttonSizer, proportion=0, flag=wx.ALIGN_CENTER_VERTICAL)
 
-        # add info text controls to the grid layout
+        # order the widgets in the grid layout
         bulkGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
-        bulkGrid.Add(resultDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
-
-        # order the top level directory controls in the bulk directory update subpanel grid
-        bulkGrid.Add(startPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(pathRowSizer, pos=(2, 1), span=(1, 3), flag=wx.EXPAND)
+        bulkGrid.Add(detailDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
+        bulkGrid.Add(resultDesc, pos=(2, 0), span=(1, 3), flag=wx.EXPAND)
+        bulkGrid.Add(pathRowSizer, pos=(3, 0), span=(1, 4), flag=wx.EXPAND)
 
         # make the second column growable to allow the controls to expand properly
         bulkGrid.AddGrowableCol(1)
 
         # set the sizer for the panel and add it to the static box sizer
         bulkPanel.SetSizer(bulkGrid)
-        bulkSizer.Add(bulkPanel, 1, flag=wx.ALL | wx.EXPAND, border=4)
+        bulkSizer.Add(bulkPanel, proportion=1, flag=wx.ALL | wx.EXPAND, border=4)
 
         return bulkSizer
 
@@ -1493,7 +1501,7 @@ class MainFrame(wx.Frame):
 
         # create the update playlist fille button
         self.updatePlaylistFile = wx.Button(filePanel, label="Update Playlist File")
-        self.updatePlaylistFile.Bind(wx.EVT_BUTTON, self.eventHandlers.on_update_playlist_ile)
+        self.updatePlaylistFile.Bind(wx.EVT_BUTTON, self.eventHandlers.on_update_playlist_file)
 
         # create a horizontal sizer for the browse and convert buttons
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)

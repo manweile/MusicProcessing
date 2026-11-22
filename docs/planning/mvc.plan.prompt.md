@@ -1064,12 +1064,13 @@ COMPLETED
       moved code has unit tests that need no `wx`.
     - Exit criteria: `MainFrame` contains no validation, threading, or model-coordination logic.
   - Phase 2: create one controller per functional area, one area per iteration, in this order
-    - 7.2a art
-    - 7.2b convert
-    - 7.2c normalization
-    - 7.2d playlist
-    - 7.2e directory
-    - 7.2f metadata
+    - 7.2a name management
+    - 7.2b art processing
+    - 7.2c audio conversion
+    - 7.2d audio leveling
+    - 7.2e playlist processing
+    - 7.2f removal processing
+    - 7.2g information
     - Each iteration:
       - add the controller, taking plain values and the view interface, using the Phase 1 validation and task runner
       - wire the matching `handlers.py` / `MainFrame` path and CLI command (where behavior overlaps) to the controller

@@ -342,9 +342,14 @@ GUI:
   TODO
 
   15) ffprobe usage in get_tags_walk
-    a) model is being changed eventually; in interim GUI will always send false in handler call
-    b) remove hard coding when model is changed
-  TODO
+    a) model is being changed eventually; in interim GUI will always send false in handler call COMPLETED
+    b) remove hard coding when model is changed  IN PROGRESS
+  IN PROGRESS
+
+  16) look at _create_add_albums_sizer pattern and apply across GUI
+    a) better text descriptions
+    b) better widget sizing
+  IN PROGRESS
 IN PROGRESS
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -366,6 +371,11 @@ TESTING:
     a) will require extreme care where test suites create temp directories
       i) may need unique hard coded names in setUpClass functions
       ii) could also use temp dirs instead of real ones; might be execution time saving there
+      iii) ie all the test suites that copy fixtures in a setUpClass would use tempfile.TemporaryDirectory() instead
+        applies to:
+        test_audio_art.py, test_audio_metadata.py, test_audio_normalization, test_audio_utilities.py, test_directory_processing.py, test_main.py
+        maybe applies to:
+        test_audio_playlist.py
     b) long running suites:
       i)test audio normalization (all of the leveling tests)
       ii) test audio utilities (test clip check walk)
@@ -405,7 +415,11 @@ TESTING:
     a) have tests for alternate locations
   TODO
 
-  6) consider bringing the nested tests out as main tests
+  6) determine which tests till need to exist after MVC refactor is done
+    a) planning markdown milestone 10 not explicit in that respect
+  TODO
+
+  7) consider bringing the nested tests out as main tests
     a) sometimes they don't run
     b) minor PITA checking UI count vs terminal count
       i) 3 in TestAudioArt.test_unpack_asf_image_malformed_data:
@@ -424,6 +438,13 @@ TESTING:
       iv) 2 in TestDirectoryProcessing.test_get_audio_file_rejects_lower_level_paths:
         start_path = D:\MusicProcessing\tests\Music\Abba
         start_path = D:\MusicProcessing\tests\Music\Abba\Waterloo
+  TODO
+
+  8) should test_main.py really need to have:
+    a) test_main_without_arguments_create Main_log really belong there?
+      i) maybe it should be in test_cli.py
+    b) test_main_help_matches_baseline
+      i) maybe it should be in test_cli.py
   TODO
 IN PROGRESS
 

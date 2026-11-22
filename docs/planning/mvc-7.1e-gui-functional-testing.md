@@ -11,7 +11,7 @@ The tests must exercise the wx GUI itself, not just instantiate the frame or tes
 
 ## Phase 1: Sequential Baseline
 
-- Use the model unit tests that correspond to each GUI workflow as the reference for choosing fixtures, setup, expected
+- Use the model happy path unit tests that correspond to each GUI workflow as the reference for choosing fixtures, setup, expected
   outputs, and meaningful error cases. For example, use `test_convert_file` and `test_convert_walk` in
   `tests/test_audio_metadata.py` as patterns for GUI file-conversion and directory-conversion tests, including their
   copied music fixtures and expected output paths. Apply the same approach to the other tabs using their matching model
@@ -21,7 +21,7 @@ The tests must exercise the wx GUI itself, not just instantiate the frame or tes
   tests through direct method calls.
 - Preserve existing widget names and give every interactive or test-targeted widget an explicit, stable name unique
   across the GUI. Test that the required names are present and unique.
-- Exercise all six currently displayed tabs through named wx controls and user events. Cover each tab's primary workflow,
+- Exercise all seven currently displayed tabs through named wx controls and user events. Cover each tab's primary workflow,
   validation, busy behavior, dialogs, and generated outputs as applicable to the existing GUI.
 - Use isolated fixture copies and generated-output paths, bounded waits for worker completion, and clean window teardown.
   Assert visible outcomes and generated files.

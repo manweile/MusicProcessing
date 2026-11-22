@@ -1124,6 +1124,7 @@ class TestAudioMetadata(TestCase):
 
         self.assertDictEqual(id3_tags, m4a_mapped)
 
+
     def test_map_flac_tags(self):
         '''
         @brief Tests mapping Cream-Badge FLAC tags to preferred ID3 format.
