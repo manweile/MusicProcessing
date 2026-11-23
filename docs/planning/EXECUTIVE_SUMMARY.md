@@ -25,7 +25,7 @@
 ---
 
 ### Group 2: Filesystem Operations (1 test)
-**Test:** `test_create_album_dir_exec`
+**Test:** `test_create_album_dir_error`
 
 **Problem:** File copy setup fails
 - **Windows:** `shutil.copy()` succeeds ✓
@@ -33,7 +33,7 @@
 
 **Root Cause:** Parent directory issue in test setup (line 292 of test_models_audio_metadata.py)
 
-**Solution:** 
+**Solution:**
 ```python
 # Before shutil.copy(), explicitly ensure directory exists:
 os.makedirs(os.path.dirname(dest_path), exist_ok=True)
@@ -66,7 +66,7 @@ os.makedirs(os.path.dirname(dest_path), exist_ok=True)
 |------|------|-------|------|----------|
 | `test_extract_ffmpeg_art_no_stream` | audio_art.py | CalledProcessError not raised | ffmpeg behavior | Medium |
 | `test_has_video_stream_false` | audio_art.py | Returns True (expected False) | ffprobe classification | Medium |
-| `test_create_album_dir_exec` | audio_metadata.py | FileNotFoundError in setup | filesystem | High |
+| `test_create_album_dir_error` | audio_metadata.py | FileNotFoundError in setup | filesystem | High |
 | `test_get_media_info` | audio_metadata.py | Dict mismatch (56 vs 54 keys) | ffprobe version | High |
 | `test_get_media_info_walk` | audio_metadata.py | M4A key count 54 vs 56 | ffprobe version | High |
 
@@ -117,7 +117,7 @@ shutil.copy(src_genre, dest_path)
 **Option A - Update Baseline (Quick Fix):**
 ```python
 # Change test from exact dict match to flexible check
-critical_fields = ['codec_name', 'duration', 'size', 'bit_rate', 
+critical_fields = ['codec_name', 'duration', 'size', 'bit_rate',
                    'sample_rate', 'channels']
 for field in critical_fields:
     self.assertIn(field, results_dict)
@@ -127,7 +127,7 @@ for field in critical_fields:
 **Option B - Detect FFmpeg Version (Robust):**
 ```python
 def get_ffmpeg_version():
-    result = subprocess.run(['ffprobe', '-version'], 
+    result = subprocess.run(['ffprobe', '-version'],
                           capture_output=True, text=True)
     version_line = result.stdout.split('\n')[0]
     # Parse version number...
@@ -160,7 +160,7 @@ if 'streams' in streams and len(streams['streams']) > 0:
 for stream in streams.get('streams', []):
     codec_type = stream.get('codec_type', '')
     codec_name = stream.get('codec_name', '')
-    
+
     # Skip attached artwork (reported as video by ffprobe 8.0)
     if codec_type == 'video':
         if codec_name in ['mjpeg', 'png', 'bmp']:
@@ -176,7 +176,7 @@ for stream in streams.get('streams', []):
 return False
 ```
 
-**Expected Result:** 
+**Expected Result:**
 - Windows: Still returns False for WMA artwork ✓
 - Ubuntu: Now returns False for WMA artwork ✓
 
@@ -190,7 +190,7 @@ After applying fixes:
 # Run the 5 failing tests
 pytest tests/test_models_audio_art.py::TestAudioArt::test_extract_ffmpeg_art_no_stream \
         tests/test_models_audio_art.py::TestAudioArt::test_has_video_stream_false \
-        tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album_dir_exec \
+        tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album_dir_error \
         tests/test_models_audio_metadata.py::TestAudioMetadata::test_get_media_info \
         tests/test_models_audio_metadata.py::TestAudioMetadata::test_get_media_info_walk -v
 

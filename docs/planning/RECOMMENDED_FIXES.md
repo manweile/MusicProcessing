@@ -1,6 +1,6 @@
 # Recommended Fixes for 5 Failed Tests
 
-## Fix #1: test_create_album_dir_exec (TEST #3)
+## Fix #1: test_create_album_dir_error (TEST #3)
 
 ### File: `tests/test_models_audio_metadata.py`
 **Location:** Line 292 in `setUpClass()` method
@@ -135,11 +135,11 @@ def has_video_stream(self, file_path: str) -> bool:
                 # Artwork is typically mjpeg or png
                 if codec_name in ['mjpeg', 'png', 'bmp']:
                     continue
-                
+
                 # Also check disposition for attached pictures
                 if disposition.get('attached_pic') == 1:
                     continue
-                
+
                 # This is actual video content, not artwork
                 return True
 
@@ -171,14 +171,14 @@ This fix might also prevent `test_extract_ffmpeg_art_no_stream` from raising the
 def test_extract_ffmpeg_art_no_stream(self):
     '''
     @brief Test ffmpeg album-art extraction without a video stream.
-    
+
     @details Verifies that extract_ffmpeg_art properly handles files without video streams.
-    
+
     @test Error case.
     '''
-    
+
     input_audio = TEST_WMA_HOLIDAY
-    
+
     # Either:
     # Option A: has_video_stream check prevents the call
     if art.has_video_stream(input_audio):
@@ -204,7 +204,7 @@ def test_get_media_info(self):
     '''
     @brief Tests returns dictionary with media info.
     '''
-    
+
     # Hardcoded Windows ffprobe output
     media_dict = {
         'index': '1', 'codec_name': 'mjpeg', 'codec_long_name': 'Motion JPEG', ...
@@ -214,12 +214,12 @@ def test_get_media_info(self):
         'filename': r'D:\MusicProcessing\tests\Music\Crush\Here\Crush-Live.mp3',
         ...
     }
-    
+
     # Update path based on OS
     # ...
-    
+
     results_dict = metadata.get_media_info(TEST_MP3_CRUSH)
-    
+
     self.assertDictEqual(media_dict, results_dict)  # <-- FAILS: 3486 char diff
 ```
 
@@ -229,16 +229,16 @@ def test_get_media_info(self):
     '''
     @brief Tests returns dictionary with media info.
 
-    @details The function should correctly retrieve media information such as 
+    @details The function should correctly retrieve media information such as
     codec, duration, size, and bitrate for the given audio file.
 
     @test Happy path.
 
     @param self {TestAudioMetadata} The instance of the test class.
     '''
-    
+
     results_dict = metadata.get_media_info(TEST_MP3_CRUSH)
-    
+
     # Check for required fields instead of exact dict match
     # This works with any ffprobe version
     required_fields = [
@@ -246,13 +246,13 @@ def test_get_media_info(self):
         'duration', 'size', 'bit_rate', 'sample_rate', 'channels',
         'format_name', 'filename', 'probe_score'
     ]
-    
+
     for field in required_fields:
-        self.assertIn(field, results_dict, 
+        self.assertIn(field, results_dict,
                      f"Missing required field '{field}' in media info")
         self.assertIsNotNone(results_dict[field],
                             f"Field '{field}' is None")
-    
+
     # Verify specific values for critical fields
     self.assertEqual(results_dict['codec_type'], 'video')
     self.assertIn('Crush-Live.mp3', results_dict['filename'])
@@ -264,22 +264,22 @@ def test_get_media_info(self):
 ```python
 def test_get_media_info(self):
     '''@brief Tests returns dictionary with media info.'''
-    
+
     results_dict = metadata.get_media_info(TEST_MP3_CRUSH)
-    
+
     # Fields that exist in all ffprobe versions
     base_fields = [
         'codec_name', 'codec_long_name', 'codec_type',
         'duration', 'size', 'bit_rate', 'filename'
     ]
-    
+
     # Fields added in newer ffprobe versions
     new_fields = ['closed_captions', 'film_grain']
-    
+
     # Check base fields (always present)
     for field in base_fields:
         self.assertIn(field, results_dict)
-    
+
     # Optional fields (version dependent)
     for field in new_fields:
         if field in results_dict:
@@ -299,15 +299,15 @@ def test_get_media_info(self):
 ```python
 def test_get_media_info_walk(self):
     '''@brief Tests getting media info...'''
-    
+
     # use the ConvertedMusic dir
     metadata.get_media_info_walk(self.converted, None)
-    
+
     # ... check output file exists ...
-    
+
     with open(txt_path, "r") as f:
         lines = f.readlines()
-    
+
     self.assertIn(f"{self.mp3_line} has 37 keys\n", lines)
     self.assertIn(f"{self.wma_line} has 38 keys\n", lines)
     self.assertIn(f"{self.m4a_line} has 56 keys\n", lines)  # <-- FAILS: has 54
@@ -318,7 +318,7 @@ def test_get_media_info_walk(self):
 def test_get_media_info_walk(self):
     '''@brief Tests getting media info for audio files in directory.
 
-    @details Verifies that the function correctly retrieves media information 
+    @details Verifies that the function correctly retrieves media information
     for all audio files in the specified directory.
 
     @test Happy path.
@@ -354,12 +354,12 @@ def test_get_media_info_walk(self):
     mp3_min_keys = 35
     wma_min_keys = 36
     m4a_min_keys = 50  # Was 56, but 54 acceptable for newer ffprobe
-    
+
     # Extract line with file info
     mp3_info = next((l for l in lines if self.mp3_line in l), None)
     wma_info = next((l for l in lines if self.wma_line in l), None)
     m4a_info = next((l for l in lines if self.m4a_line in l), None)
-    
+
     # Parse key counts
     for line, file_name, min_keys in [
         (mp3_info, "MP3", mp3_min_keys),
@@ -367,12 +367,12 @@ def test_get_media_info_walk(self):
         (m4a_info, "M4A", m4a_min_keys)
     ]:
         self.assertIsNotNone(line, f"{file_name} not found in output")
-        
+
         # Extract key count from line like "path/to/file.ext has 37 keys"
         import re
         match = re.search(r'has (\d+) keys', line)
         self.assertIsNotNone(match, f"Could not parse key count from: {line}")
-        
+
         key_count = int(match.group(1))
         self.assertGreaterEqual(key_count, min_keys,
             f"{file_name} has {key_count} keys, expected at least {min_keys}")
@@ -403,7 +403,7 @@ def test_get_media_info_walk(self):
     # Verify each file is in output and has required fields
     for file_path in [self.mp3_line, self.wma_line, self.m4a_line]:
         self.assertIn(file_path, content, f"File not found: {file_path}")
-        
+
         for field in required_fields:
             field_pattern = f"key: {field},"
             self.assertIn(field_pattern, content,
@@ -418,7 +418,7 @@ After applying fixes, test them:
 
 ```bash
 # Test #3 (filesystem fix)
-pytest tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album_dir_exec -xvs
+pytest tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album_dir_error -xvs
 
 # Tests #1 & #2 (audio stream fixes)
 pytest tests/test_models_audio_art.py::TestAudioArt::test_extract_ffmpeg_art_no_stream \
@@ -431,7 +431,7 @@ pytest tests/test_models_audio_metadata.py::TestAudioMetadata::test_get_media_in
 # All 5 together
 pytest tests/test_models_audio_art.py::TestAudioArt::test_extract_ffmpeg_art_no_stream \
         tests/test_models_audio_art.py::TestAudioArt::test_has_video_stream_false \
-        tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album_dir_exec \
+        tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album_dir_error \
         tests/test_models_audio_metadata.py::TestAudioMetadata::test_get_media_info \
         tests/test_models_audio_metadata.py::TestAudioMetadata::test_get_media_info_walk -v
 ```

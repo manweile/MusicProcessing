@@ -411,12 +411,12 @@ class MainFrame(wx.Frame):
         result_text = "Album folders are created for each unique and valid album tag, the songs move to correct folders"
         path_text = "Starting path, tld only:"
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label=function_text)
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizers, and panel for the bulk directory playlist update section
-        bulkBox = wx.StaticBox(parent, label=function_text)
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, orient=wx.VERTICAL)
 
         # create static text for describing section & starting path label
@@ -474,12 +474,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The created sizer for renaming incorrect album folders.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Rename Album Folders")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizers, and panel for the bulk directory playlist update section
-        bulkBox = wx.StaticBox(parent, label="Rename Album Folders")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label
@@ -537,12 +537,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The created sizer for bulk renaming audio files.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Directory File Renaming")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # Create the static box, sizer, and panel for the album art setting section
-        bulkBox = wx.StaticBox(parent, label="Directory File Renaming")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label
@@ -598,12 +598,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The created sizer for renaming specific audio files.
         '''
 
-        filePanel = wx.Panel(parent)
+        fileBox = wx.StaticBox(parent, label="Rename Audio File")
+        filePanel = wx.Panel(fileBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         fileGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizer, and panel for the specific audio file rename section
-        fileBox = wx.StaticBox(parent, label="Rename Audio File")
+        # create the static box sizer
         fileSizer = wx.StaticBoxSizer(fileBox, wx.VERTICAL)
 
         # create static text for describing section & audio path label
@@ -703,12 +703,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The sizer containing the extraction controls.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Directory Art Extraction")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizers, and panel for the bulk directory art extraction section
-        bulkBox = wx.StaticBox(parent, label="Directory Art Extraction")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label and file type selection
@@ -769,12 +769,12 @@ class MainFrame(wx.Frame):
         @retval fileSizer {wx.StaticBoxSizer} The sizer containing the extraction controls.
         '''
 
-        filePanel = wx.Panel(parent)
+        fileBox = wx.StaticBox(parent, label="File Art Extraction")
+        filePanel = wx.Panel(fileBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         fileGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizer, and panel for the file art extraction section
-        fileBox = wx.StaticBox(parent, label="File Art Extraction")
+        # create the static box sizer
         fileSizer = wx.StaticBoxSizer(fileBox, wx.VERTICAL)
 
         # create static text for describing section & audio file path label
@@ -834,12 +834,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The sizer containing the setting controls.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Set Album Art")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # Create the static box, sizer, and panel for the album art setting section
-        bulkBox = wx.StaticBox(parent, label="Set Album Art")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label
@@ -928,12 +928,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The created sizer for directory audio conversion.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Directory Audio Conversion")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizers, and panel for the bulk directory audio conversion section
-        bulkBox = wx.StaticBox(parent, label="Directory Audio Conversion")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label and file type selection
@@ -994,12 +994,12 @@ class MainFrame(wx.Frame):
         @retval fileSizer {wx.StaticBoxSizer} The created sizer for specific audio file conversion.
         '''
 
-        filePanel = wx.Panel(parent)
+        fileBox = wx.StaticBox(parent, label="Convert Audio File")
+        filePanel = wx.Panel(fileBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         fileGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizer, and panel for the specific audio file conversion section
-        fileBox = wx.StaticBox(parent, label="Convert Audio File")
+        # create the static box sizer
         fileSizer = wx.StaticBoxSizer(fileBox, wx.VERTICAL)
 
         # create static text for describing section & audio path label
@@ -1098,12 +1098,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The created sizer for directory audio clip checking.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Directory Clip Checking")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizers, and panel for the bulk directory audio conversion section
-        bulkBox = wx.StaticBox(parent, label="Directory Clip Checking")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label
@@ -1161,12 +1161,12 @@ class MainFrame(wx.Frame):
         @retval fileSizer {wx.StaticBoxSizer} The created sizer for specific file audio clip checking.
         '''
 
-        filePanel = wx.Panel(parent)
+        fileBox = wx.StaticBox(parent, label="File Clip Checking")
+        filePanel = wx.Panel(fileBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         fileGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizers, and panel for the bulk file audio conversion section
-        fileBox = wx.StaticBox(parent, label="File Clip Checking")
+        # create the static box sizer
         fileSizer = wx.StaticBoxSizer(fileBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label
@@ -1226,12 +1226,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The created sizer for directory audio leveling.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Directory Audio Leveling")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizers, and panel for the bulk directory audio conversion section
-        bulkBox = wx.StaticBox(parent, label="Directory Audio Leveling")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label and leveling type selection
@@ -1295,12 +1295,12 @@ class MainFrame(wx.Frame):
         @retval fileSizer {wx.StaticBoxSizer} The created static box sizer for leveling file audio controls.
         '''
 
-        filePanel = wx.Panel(parent)
+        filesBox = wx.StaticBox(parent, label="Level Audio Files")
+        filePanel = wx.Panel(filesBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         fileGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizer, and panel for the specific audio conversion section
-        filesBox = wx.StaticBox(parent, label="Level Audio Files")
+        # create the static box sizer
         fileSizer = wx.StaticBoxSizer(filesBox, wx.VERTICAL)
 
         # create static text for describing section & audio path labels
@@ -1413,12 +1413,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The created sizer for directory playlist updates.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Directory Playlist Update")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizers, and panel for the bulk directory playlist update section
-        bulkBox = wx.StaticBox(parent, label="Directory Playlist Update")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label
@@ -1476,11 +1476,12 @@ class MainFrame(wx.Frame):
         @retval fileSizer {wx.StaticBoxSizer} The created sizer for specific playlist updates.
         '''
 
-        filePanel = wx.Panel(parent)
+        fileBox = wx.StaticBox(parent, label="Update Playlist File")
+        filePanel = wx.Panel(fileBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         fileGrid = wx.GridBagSizer(8, 8)
 
-        fileBox = wx.StaticBox(parent, label="Update Playlist File")
+        # create the static box sizer
         fileSizer = wx.StaticBoxSizer(fileBox, wx.VERTICAL)
 
         # create static text for describing section & audio path label
@@ -1577,12 +1578,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The sizer containing the information controls.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Directory Media Information")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizers, and panel for the bulk directory media information section
-        bulkBox = wx.StaticBox(parent, label="Directory Media Information")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label and file type selection
@@ -1643,12 +1644,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The sizer containing the tag controls.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Directory Tag Information")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizers, and panel for the bulk directory tag information section
-        bulkBox = wx.StaticBox(parent, label="Directory Tag Information")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label and file type selection
@@ -1746,12 +1747,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.Sizer} The created sizer for directory audio conversion.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Remove Matching Pattern")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # create the static box, sizers, and panel for the bulk directory audio conversion section
-        bulkBox = wx.StaticBox(parent, label="Remove Matching Pattern")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label and file type selection
@@ -1810,12 +1811,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The created sizer for removing items from a list.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Remove Matching List")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # Create the static box, sizer, and panel for the album art setting section
-        bulkBox = wx.StaticBox(parent, label="Remove Matching List")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section & starting path label
@@ -1871,12 +1872,12 @@ class MainFrame(wx.Frame):
         @retval bulkSizer {wx.StaticBoxSizer} The created sizer for removing empty albums.
         '''
 
-        bulkPanel = wx.Panel(parent)
+        bulkBox = wx.StaticBox(parent, label="Remove Empty Albums")
+        bulkPanel = wx.Panel(bulkBox)
         # set gaps between elements in the grid bag sizer; elements added to grid may have border spacing of their own which is additive to this
         bulkGrid = wx.GridBagSizer(8, 8)
 
-        # create static text box, sizers, and panel for the bulk remove empty albums section
-        bulkBox = wx.StaticBox(parent, label="Remove Empty Albums")
+        # create the static box sizer
         bulkSizer = wx.StaticBoxSizer(bulkBox, wx.VERTICAL)
 
         # create static text for describing section and starting path label

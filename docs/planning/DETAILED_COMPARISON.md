@@ -88,7 +88,7 @@ Windows ffprobe may:
 **Code in question (audio_art.py:538-570):**
 ```python
 def has_video_stream(self, file_path: str) -> bool:
-    # ... 
+    # ...
     command = [
         'ffprobe',
         '-hide_banner',
@@ -99,7 +99,7 @@ def has_video_stream(self, file_path: str) -> bool:
     ]
     result = subprocess_run(command, capture_output=True, text=True)
     streams = json.loads(result.stdout)
-    
+
     # Check if any streams found
     if 'streams' in streams and len(streams['streams']) > 0:
         return True  # <-- Returns True for attached artwork on Ubuntu
@@ -121,7 +121,7 @@ return False
 
 ---
 
-## Test #3: `test_create_album_dir_exec` (Setup Failure)
+## Test #3: `test_create_album_dir_error` (Setup Failure)
 
 **What it tests:**
 Creating album directory structure for genre update tests
@@ -142,12 +142,12 @@ Creating album directory structure for genre update tests
 1. Source file: /home/gerald/MusicProcessing/tests/Music/Cream/Goodbye/Cream-Badge.flac
 2. Destination: /home/gerald/MusicProcessing/tests/GenreMusic/Cream/Goodbye/Cream-Badge.flac
 3. Operation: shutil.copy(src_genre, dest_path)
-   
+
    Call stack:
    shutil.copy()
    → shutil.copystat()  (or copymode)
    → os.chmod(dst, stat.S_IMODE(st.st_mode))
-   
+
    ERROR: FileNotFoundError: [Errno 2] No such file or directory
    Path: '/home/gerald/MusicProcessing/tests/GenreMusic/Cream/Goodbye/Cream-Badge.flac'
 ```
@@ -186,7 +186,7 @@ shutil.copy(src_genre, dest_path)
 Test line 292 in test_models_audio_metadata.py shows:
 ```python
 for src_genre in cls.genre_source_file_paths:
-    # ... 
+    # ...
     dest_dir = os.path.join(cls.genre, artist_album)
     os.makedirs(dest_dir, exist_ok=True)  # <-- EXISTS HERE ✓
     dest_path = os.path.join(dest_dir, file_name)
@@ -277,7 +277,7 @@ def assertDictContains(self, expected_keys, actual_dict):
         self.assertIn(key, actual_dict)
 
 critical_fields = [
-    'codec_name', 'duration', 'size', 'bit_rate', 
+    'codec_name', 'duration', 'size', 'bit_rate',
     'sample_rate', 'channels'
 ]
 self.assertDictContains(critical_fields, results_dict)
@@ -325,7 +325,7 @@ Actual key counts:
 Assertion fails:
   Expected: '/home/gerald/MusicProcessing/tests/ConvertedMusic/The Eagles/Desperado/The Eagles-Desperado.m4a has 56 keys'
   Actual:   '/home/gerald/MusicProcessing/tests/ConvertedMusic/The Eagles/Desperado/The Eagles-Desperado.m4a has 54 keys'
-  
+
   Missing 2 keys: 'closed_captions', 'film_grain' (same as Test #4)
 ```
 
@@ -375,7 +375,7 @@ Likely situation:
 Windows:
   ffmpeg version 6.x (newer)
   Includes all metadata fields
-  
+
 Ubuntu (from apt):
   ffmpeg version 5.1 (older)
   Missing some newer metadata fields

@@ -72,7 +72,7 @@ This directory contains a comprehensive analysis of **5 failing tests** that pas
 |---|-----------|------|-----------|----------|------------|
 | 1 | `test_extract_ffmpeg_art_no_stream` | audio_art.py | ffmpeg behavior difference | Medium | 2 |
 | 2 | `test_has_video_stream_false` | audio_art.py | ffprobe detects artwork as video | Medium | 2 |
-| 3 | `test_create_album_dir_exec` | audio_metadata.py | shutil.copymode() permission issue | **High** | **1** |
+| 3 | `test_create_album_dir_error` | audio_metadata.py | shutil.copymode() permission issue | **High** | **1** |
 | 4 | `test_get_media_info` | audio_metadata.py | ffprobe missing 2 fields (closed_captions, film_grain) | **High** | **1** |
 | 5 | `test_get_media_info_walk` | audio_metadata.py | M4A key count mismatch (56 vs 54) | **High** | **1** |
 
@@ -119,7 +119,7 @@ pytest tests/test_models_audio_art.py::TestAudioArt::test_has_video_stream_false
 pytest \
   tests/test_models_audio_art.py::TestAudioArt::test_extract_ffmpeg_art_no_stream \
   tests/test_models_audio_art.py::TestAudioArt::test_has_video_stream_false \
-  tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album_dir_exec \
+  tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album_dir_error \
   tests/test_models_audio_metadata.py::TestAudioMetadata::test_get_media_info \
   tests/test_models_audio_metadata.py::TestAudioMetadata::test_get_media_info_walk \
   -v

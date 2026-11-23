@@ -5,12 +5,12 @@
 - **Why:** ffmpeg on Ubuntu doesn't throw error for missing video stream in WMA
 - **Fix:** Handle both error and non-error cases OR skip test on Ubuntu
 
-## 2️⃣ test_has_video_stream_false  
+## 2️⃣ test_has_video_stream_false
 - **Status:** ❌ FAILED (Returns True, expected False)
 - **Why:** Ubuntu's ffprobe treats embedded artwork as a video stream
 - **Fix:** Update stream detection logic OR use OS-specific assertion
 
-## 3️⃣ test_create_album_dir_exec
+## 3️⃣ test_create_album_dir_error
 - **Status:** ❌ ERROR (FileNotFoundError during setup)
 - **Why:** `shutil.copymode()` fails on Linux - destination file issue
 - **Fix:** Ensure parent directory exists before copy
@@ -64,7 +64,7 @@
 ```bash
 pytest tests/test_models_audio_art.py::TestAudioArt::test_extract_ffmpeg_art_no_stream \
         tests/test_models_audio_art.py::TestAudioArt::test_has_video_stream_false \
-        tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album_dir_exec \
+        tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album_dir_error \
         tests/test_models_audio_metadata.py::TestAudioMetadata::test_get_media_info \
         tests/test_models_audio_metadata.py::TestAudioMetadata::test_get_media_info_walk -v
 ```
@@ -77,7 +77,7 @@ pytest tests/test_models_audio_art.py::TestAudioArt::test_extract_ffmpeg_art_no_
 
 **Run just the audio_metadata tests:**
 ```bash
-pytest tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album_dir_exec \
+pytest tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album_dir_error \
         tests/test_models_audio_metadata.py::TestAudioMetadata::test_get_media_info \
         tests/test_models_audio_metadata.py::TestAudioMetadata::test_get_media_info_walk -v
 ```
@@ -101,7 +101,7 @@ pytest tests/test_models_audio_metadata.py::TestAudioMetadata::test_create_album
 
 ## Code Examples
 
-### Problem: test_create_album_dir_exec
+### Problem: test_create_album_dir_error
 **Current code fails:**
 ```python
 shutil.copy(src_genre, dest_path)  # Fails on Linux with FileNotFoundError

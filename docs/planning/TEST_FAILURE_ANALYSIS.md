@@ -11,7 +11,7 @@
 |------|------|----------|-----------|
 | `test_extract_ffmpeg_art_no_stream` | `test_models_audio_art.py` | Audio Stream Detection | ffmpeg behavior difference |
 | `test_has_video_stream_false` | `test_models_audio_art.py` | Audio Stream Detection | ffprobe behavior difference |
-| `test_create_album_dir_exec` | `test_models_audio_metadata.py` | File Setup | `shutil.copymode()` failure |
+| `test_create_album_dir_error` | `test_models_audio_metadata.py` | File Setup | `shutil.copymode()` failure |
 | `test_get_media_info` | `test_models_audio_metadata.py` | Media Metadata | ffprobe output field differences |
 | `test_get_media_info_walk` | `test_models_audio_metadata.py` | Media Metadata | ffprobe output field count mismatch |
 
@@ -92,14 +92,14 @@ command = [
 
 **Key Issue:** Some ffprobe versions on Linux incorrectly classify:
 - Attached album art images as "video" stream
-- Thumbnail frames as "video" stream  
+- Thumbnail frames as "video" stream
 - When `-select_streams v:0` is used, it may still return image streams that have video-like codec properties
 
 The WMA file `TEST_WMA_HOLIDAY` likely contains embedded artwork, which Ubuntu's ffprobe detects as a "video" stream, while Windows ffprobe handles it differently.
 
 ---
 
-### 3. `test_create_album_dir_exec` ❌
+### 3. `test_create_album_dir_error` ❌
 **File:** `tests/test_models_audio_metadata.py` (setup phase)
 **Status:** ERROR (Setup Failure)
 
@@ -107,7 +107,7 @@ The WMA file `TEST_WMA_HOLIDAY` likely contains embedded artwork, which Ubuntu's
 Test setup fails during `shutil.copy()` operation:
 
 ```python
-FileNotFoundError: [Errno 2] No such file or directory: 
+FileNotFoundError: [Errno 2] No such file or directory:
   '/home/gerald/MusicProcessing/tests/GenreMusic/Cream/Goodbye/Cream-Badge.flac'
 ```
 
@@ -204,8 +204,8 @@ self.assertIn(f"{self.m4a_line} has 56 keys\n", lines)
 
 #### Actual Error
 ```
-AssertionError: 
-  '/home/gerald/MusicProcessing/tests/ConvertedMusic/The Eagles/Desperado/The Eagles-Desperado.m4a has 56 keys\n' 
+AssertionError:
+  '/home/gerald/MusicProcessing/tests/ConvertedMusic/The Eagles/Desperado/The Eagles-Desperado.m4a has 56 keys\n'
   not found in [actual output with 54 keys]
 ```
 

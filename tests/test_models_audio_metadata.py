@@ -18,7 +18,7 @@ import copy                                                 # for creating deep 
 import gc                                                   # for releasing transient metadata objects
 import hashlib                                              # for validating fixture files remain unchanged
 import os                                                   # for operating-system path operations
-import platform                                             # for platform-specific fixture paths
+import re                                                   # for regular expression matching
 import shutil                                               # for test-fixture copying and removal
 import stat                                                 # for modifying file permissions
 import tempfile                                             # for temporary directory structures
@@ -30,12 +30,6 @@ from unittest import TestCase                               # for creating test 
 from unittest.mock import Mock                              # for mock test doubles
 from unittest.mock import call                              # for expected mock calls
 from unittest.mock import patch                             # for patching objects in tests
-
-# Handle ExecError deprecation in Python 3.14+ (treats it as RuntimeError)
-try:
-    from shutil import ExecError
-except ImportError:
-    ExecError = RuntimeError
 
 # Third Party Modules
 import mutagen                                              # for handling various audio metadata formats
@@ -473,7 +467,7 @@ class TestAudioMetadata(TestCase):
         '''
         @brief Tests creating an album sub-directory in an artist directory.
 
-        @details The album sub-directory should be created for eawithin the artist directory.
+        @details The album sub-directory should be created for each album within the artist directory.
 
         @test Happy path.
 
@@ -498,11 +492,11 @@ class TestAudioMetadata(TestCase):
         self.assertFalse(dir_not_exists)
 
 
-    def test_create_album_dir_exec(self):
+    def test_create_album_dir_error(self):
         '''
-        @brief Tests creating an album sub-directory throws ExecError.
+        @brief Tests creating an album sub-directory throws RuntimeError.
 
-        @details Attempting to create an album sub-directory should raise an ExecError.
+        @details Attempting to create an album sub-directory should raise a RuntimeError.
 
         @test Error case.
 
@@ -514,11 +508,11 @@ class TestAudioMetadata(TestCase):
         create_album_metadata = AudioMetadata()
 
         mock_album_metadata = Mock(spec=create_album_metadata)
-        mock_album_metadata.side_effect = ExecError()
+        mock_album_metadata.side_effect = RuntimeError()
 
         create_album_metadata.create_album_dirs = mock_album_metadata
 
-        with self.assertRaises((ExecError, RuntimeError)):
+        with self.assertRaises(RuntimeError):
             create_album_metadata.create_album_dirs(prepped_path)
 
         mock_album_metadata.reset_mock(return_value=True, side_effect=True)
@@ -596,8 +590,7 @@ class TestAudioMetadata(TestCase):
         '''
         @brief Tests returns dictionary with media info.
 
-        @details The function should correctly retrieve media information such as 
-        codec, duration, size, and bitrate for the given audio file.
+        @details The function should correctly retrieve media information such as codec, duration, size, and bitrate for the given audio file.
 
         @test Happy path.
 
@@ -606,19 +599,25 @@ class TestAudioMetadata(TestCase):
 
         results_dict = metadata.get_media_info(TEST_MP3_CRUSH)
 
-        # Check for required fields instead of exact dict match
-        # This works with any ffprobe version (older or newer)
+        # check for required fields instead of exact dict match; this works with any ffprobe version (older or newer)
         required_fields = [
-            'codec_name', 'codec_long_name', 'codec_type',
-            'duration', 'size', 'bit_rate', 'sample_rate', 'channels',
-            'format_name', 'filename', 'probe_score'
+            'codec_name',
+            'codec_long_name',
+            'codec_type',
+            'duration',
+            'size',
+            'bit_rate',
+            'sample_rate',
+            'channels',
+            'format_name',
+            'filename',
+            'probe_score'
         ]
 
+        # Verify that all required fields are present and not None in the results dictionary
         for field in required_fields:
-            self.assertIn(field, results_dict, 
-                         f"Missing required field '{field}' in media info")
-            self.assertIsNotNone(results_dict[field],
-                                f"Field '{field}' is None")
+            self.assertIn(field, results_dict, f"Missing required field '{field}' in media info")
+            self.assertIsNotNone(results_dict[field], f"Field '{field}' is None")
 
         # Verify specific values for critical fields
         self.assertEqual(results_dict['codec_type'], 'video')
@@ -673,44 +672,39 @@ class TestAudioMetadata(TestCase):
             lines = f.readlines()
 
         # Check that files are processed (file paths appear in output)
-        self.assertTrue(
-            any(self.mp3_line in line for line in lines),
-            f"MP3 file not found in output"
-        )
-        self.assertTrue(
-            any(self.wma_line in line for line in lines),
-            f"WMA file not found in output"
-        )
-        self.assertTrue(
-            any(self.m4a_line in line for line in lines),
-            f"M4A file not found in output"
-        )
-        self.assertTrue(
-            any(self.flac_line in line for line in lines),
-            f"FLAC file not found in output"
-        )
+        self.assertTrue(any(self.mp3_line in line for line in lines), f"File not found in output: {self.mp3_line}")
+        self.assertTrue(any(self.wma_line in line for line in lines), f"File not found in output: {self.wma_line}")
+        self.assertTrue(any(self.m4a_line in line for line in lines), f"File not found in output: {self.m4a_line}")
+        self.assertTrue(any(self.flac_line in line for line in lines), f"File not found in output: {self.flac_line}")
 
         # Check for minimum acceptable key counts (allowing for ffprobe version differences)
-        # Older ffprobe versions output fewer fields (e.g. missing 'closed_captions', 'film_grain')
-        # so we check for minimum rather than exact counts
-        import re
-        
-        for file_line, min_keys in [
+        # Older ffprobe versions output fewer fields so we check for minimum rather than exact counts
+        file_key_thresholds = [
             (self.mp3_line, 35),
             (self.wma_line, 36),
-            (self.m4a_line, 50),  # Was 56 on Windows ffprobe; 54+ on Ubuntu is acceptable
-            (self.flac_line, 50)   # Was 56 on Windows ffprobe; 54+ on Ubuntu is acceptable
-        ]:
-            matching_line = next((l for l in lines if file_line in l), None)
-            self.assertIsNotNone(matching_line, f"File not found in output: {file_line}")
-            
+            (self.m4a_line, 50),                            # Was 56 on Windows ffprobe; 54+ on Ubuntu is acceptable
+            (self.flac_line, 50)                            # Was 56 on Windows ffprobe; 54+ on Ubuntu is acceptable
+        ]
+
+        # Check each expected file's key count against the minimum threshold
+        for expected_file_path, minimum_key_count in file_key_thresholds:
+            matching_output_line = None
+
+            # Find the line in the output that corresponds to the expected file path
+            for output_line in lines:
+                if expected_file_path in output_line:
+                    matching_output_line = output_line
+                    break
+
+            self.assertIsNotNone(matching_output_line, f"File not found in output: {expected_file_path}")
+
             # Extract key count from line like "path/to/file.ext has 37 keys"
-            match = re.search(r'has (\d+) keys', matching_line)
-            self.assertIsNotNone(match, f"Could not parse key count from: {matching_line}")
-            
-            key_count = int(match.group(1))
-            self.assertGreaterEqual(key_count, min_keys,
-                f"File has {key_count} keys, expected at least {min_keys}: {file_line}")
+            key_count_match = re.search(r'has (\d+) keys', matching_output_line)
+            self.assertIsNotNone(key_count_match, f"Could not parse key count from: {matching_output_line}")
+
+            key_count = int(key_count_match.group(1))
+            result_text = f"File has {key_count} keys, expected at least {minimum_key_count}: {expected_file_path}"
+            self.assertGreaterEqual(key_count, minimum_key_count, result_text)
 
 
     def test_get_media_info_walk_invalid_pattern(self):

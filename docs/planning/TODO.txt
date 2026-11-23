@@ -104,7 +104,8 @@ ENVIRONMENT:
 
   2) Possibly update yaspin, tqdm, wxpython, mutagen versions
     a) need to check inter compatibility first; may end up with using current versions
-  TODO
+    b) python update showed can be done at least doing >= in requirements.txt worked
+  IN PROGRESS
 
   3) Update environment.md
     a) think about adding wxPython install on Linux instructions - it's a brute
@@ -155,6 +156,12 @@ ENVIRONMENT:
 
   8) think about renaming Music to music_files
     a) just to keep things looking clean
+  TODO
+
+  9) update python-app.yml
+    a) python 3.14.4
+    b) ubuntu 26.04.1
+    c) ffmpeg 8.0.1 (this is the difficult one)
   TODO
 TODO
 

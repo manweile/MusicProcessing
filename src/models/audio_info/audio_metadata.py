@@ -27,12 +27,6 @@ from json import JSONDecodeError                            # for handling JSON 
 from os import strerror                                     # for operating-system error messages
 from pathlib import Path                                    # for object-oriented filesystem paths
 
-# Handle ExecError deprecation in Python 3.14+ (treats it as RuntimeError)
-try:
-    from shutil import ExecError
-except ImportError:
-    ExecError = RuntimeError
-
 # Third Party Modules
 import mutagen                                              # for audio metadata handling
 import pathvalidate                                         # for validating filesystem paths
@@ -1326,8 +1320,8 @@ class AudioMetadata():
 
             directory.create_csv(csv_filename, data, None, None, header_row, 0)
 
-        except ExecError as exc_error:
-            logger.exception(f"ExecError moving {file_path} to {destination_path}", exc_info=True)
+        except RuntimeError as exc_error:
+            logger.exception(f"RuntimeError moving {file_path} to {destination_path}", exc_info=True)
             raise exc_error
         except ValidationError as v_error:
             logger.exception(f"ValidationError sanitizing album metadata {album}", stack_info=True)
