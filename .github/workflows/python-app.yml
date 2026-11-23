@@ -20,16 +20,23 @@ on:
 
 # using specific version of ffmpeg because empirically proven to work
 env:
-  FFMPEG_RELEASE_TAG: "autobuild-2026-02-28-12-59"
-  FFMPEG_ARCHIVE: "ffmpeg-n8.0.1-66-g27b8d1a017-linux64-gpl-8.0.tar.xz"
+  FFMPEG_HOST: "github.com"
+  FFMPEG_REPO: "BtbN/FFmpeg-Builds"
+  FFMPEG_RELEASE_TAG: "latest"
+  FFMPEG_ARCHIVE: "ffmpeg-n8.1-latest-linux64-gpl-8.1.tar.xz"
 
 jobs:
   run-unit-tests:
     name: Unit Tests
-    # for Github Local Actions, create on Windows:`C:\Users\<User\.actrc` or on Ubuntu: `~/.actrc`
-    # with the content: `-P ubuntu-26.04=ghcr.io/catthehacker/ubuntu:act-26.04`
-    # this ensures that the correct Ubuntu image is used when running locally with act
-    # and matches the environment expected by the workflow on GitHub Actions when run in the cloud
+    # for Github Local Actions, create an .actrc file:
+    # on Windows:`C:\Users\<User\.actrc
+    # with: the content `-P ubuntu-26.04=ghcr.io/catthehacker/ubuntu:act-26.04`
+    # on Ubuntu: `~/.actrc`
+    # with the content:
+    # -P ubuntu-26.04=docker.gitea.com/runner-images:ubuntu-26.04
+    # -P ubuntu-latest=docker.gitea.com/runner-images:ubuntu-26.04
+    # ensures that the correct Ubuntu image for native OS is used when running locally with act
+    # matches the environment expected by the workflow on GitHub Actions when run in the cloud
     runs-on: ubuntu-26.04
     permissions:
       contents: read
@@ -43,7 +50,11 @@ jobs:
       # ensure node stays on the default system PATH after setup-python modifies GITHUB_PATH
       - name: Ensure node is in /usr/local/bin for act
         if: steps.detect-act.outputs.is-act == 'true'
-        run: sudo ln -sf "$(command -v node)" /usr/local/bin/node
+        run: |
+          node_path=$(command -v node || true)
+          if [ -n "$node_path" ] && [ "$node_path" != "/usr/local/bin/node" ]; then
+            sudo ln -sf "$node_path" /usr/local/bin/node
+          fi
 
       # checkout the repository to ensure the workflow has access to the codebase
       - name: Checkout Repository
@@ -61,7 +72,7 @@ jobs:
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: "3.14.4"
+          python-version: "3.14"
 
       # cache FFmpeg download to speed up subsequent workflow runs
       - name: Cache FFmpeg Download
@@ -77,14 +88,18 @@ jobs:
       - name: Download FFmpeg
         # download if not in cache on GitHub, or if archive is missing locally in act
         if: >
-          (steps.detect-act.outputs.is-act == 'false' && steps.cache-ffmpeg.outputs.cache-hit == 'false') ||
+          (steps.detect-act.outputs.is-act == 'false' && steps.cache-ffmpeg.outputs.cache-hit != 'true') ||
           (steps.detect-act.outputs.is-act == 'true' && hashFiles(format('.cache/ffmpeg/{0}', env.FFMPEG_ARCHIVE)) == '')
         run: |
-          echo "Downloading ${FFMPEG_ARCHIVE}"
+          FFMPEG_URL="https://${FFMPEG_HOST}/${FFMPEG_REPO}/releases/download/${FFMPEG_RELEASE_TAG}/${FFMPEG_ARCHIVE}"
+          echo "Downloading ${FFMPEG_URL}"
           mkdir -p .cache/ffmpeg
-          wget --quiet --show-progress --tries=5 --waitretry=2 \
-            "https://github.com{FFMPEG_RELEASE_TAG}/${FFMPEG_ARCHIVE}" \
-            -O ".cache/ffmpeg/${FFMPEG_ARCHIVE}"
+          if ! curl -fsSL --retry 5 --retry-delay 2 "${FFMPEG_URL}" -o ".cache/ffmpeg/${FFMPEG_ARCHIVE}" || ! xz -t ".cache/ffmpeg/${FFMPEG_ARCHIVE}"; then
+            rm -f ".cache/ffmpeg/${FFMPEG_ARCHIVE}"
+            echo "Error: Failed to download a valid FFmpeg archive from ${FFMPEG_URL}"
+            exit 1
+          fi
+
 
       # install FFmpeg
       - name: Extract and Install FFmpeg

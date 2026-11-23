@@ -205,27 +205,42 @@ Use a token with only the permissions those jobs need, store it in the extension
 
 #### Runners
 
-Create file on Windows: `C:\Users\<User>\.actrc` or on Ubuntu: `~/.actrc` and have this in it:
-`-P ubuntu-26.04=ghcr.io/catthehacker/ubuntu:act-26.04`
+GLA can use a specified image for the runner OS.<br>
+This requires a `.actrc` file
 
-Map the runner label defined in `python-app.yml` (`runs-on: ubuntu-26.04`) to its matching local Docker image in GLA's **Runners** settings.<br>
+- on Windows
+  - `C:\Users\<User>\.actrc`
+  - contents:  `-P ubuntu-26.04=ghcr.io/catthehacker/ubuntu:act-26.04`
+- on Ubuntu
+  - `~/.actrc`
+  - -P ubuntu-26.04=docker.gitea.com/runner-images:ubuntu-26.04
+  - -P ubuntu-latest=docker.gitea.com/runner-images:ubuntu-26.04
+
+Map the runner label defined in `python-app.yml` ie `runs-on: ubuntu-26.04` to its matching local Docker image in GLA's **Runners** settings.<br>
 Ensure the checkbox next to `ubuntu-26.04` is enabled so nektos/act uses the Ubuntu 26.04 container image specified in `.actrc` without prompting.
 
 #### Options
 
 Configure the following flags in GLA's **Options** settings to test uncommitted changes and speed up local runs:
 
-- **`artifact-server-path`** Windows = (`C:\temp\act-artifacts`)** Ubuntu = (`/tmp/act-artifacts`) :
+- **`artifact-server-path`**
+  - on Windows: `C:\temp\act-artifacts`
+  - on Ubuntu: `/tmp/act-artifacts`
   - Provides a local directory for `actions/cache` and artifact storage when running outside GitHub.
-- **`bind` (`true`)**:
+- **`bind`**:
+  - `true`
   - Tells act to bind-mount the current worktree directly into the job container instead of copying it,
   allowing local runs to test uncommitted workflow or source changes.
   - *(Note: Set to `false` if you need container-isolated filesystem changes, such as symlinking temporary directories inside Linux.)*
-- **`container-options` (`-v act-pip-cache:/root/.cache/pip -v act-toolcache:/opt/hostedtoolcache`)**:
+- **`container-options`**
+  - on Windows: `-v act-pip-cache:/root/.cache/pip -v act-toolcache:/opt/hostedtoolcache`
+  - on Ubuntu:  `-v act-pip-cache:/root/.cache/pip -v /opt/hostedtoolcache:/opt/hostedtoolcache`
   - Mounts persistent Docker volumes so Python toolchains and `pip` wheels (such as `wxPython`) survive across container resets.
-- **`pull` (`false`)**:
+- **`pull`**
+  - `false`
   - Stops act from checking Docker Hub for newer runner images before every local execution.
-- **`reuse` (`true`)**:
+- **`reuse`**
+  - `true`
   - Keeps the job container alive between runs so system packages (`apt`), FFmpeg binaries, and Python dependencies do not reinstall from scratch.
 
 Without `Detect act` and `bind`, the `python-app.yml` unit-test workflow would overwrite local changes with the commit selected by `github.sha`.<br>
