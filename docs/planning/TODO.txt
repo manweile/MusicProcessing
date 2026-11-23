@@ -163,6 +163,12 @@ ENVIRONMENT:
     b) ubuntu 26.04.1
     c) ffmpeg 8.0.1 (this is the difficult one)
   TODO
+
+  10) document Github Local Actions setup
+    a) windows is working, but need to doc  the C:\users\gmanw\.actrc file, the options in the GLA UI settings
+    b) need to diagnose and fix on ubuntu laptop
+    c) needs to be OS agnotic - must run under windows 10 and ubuntu 26
+  TODO
 TODO
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------

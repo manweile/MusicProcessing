@@ -8,7 +8,7 @@
 # for more information, see: https://github.com
 #
 # @version 1.1.0
-# @date 2026-10-27
+# @date 2026-11-22
 #
 # @copyright Copyright (c) 2026 Gerald Manweiler
 
@@ -20,13 +20,17 @@ on:
 
 # using specific version of ffmpeg because empirically proven to work
 env:
-  FFMPEG_RELEASE_TAG: "autobuild-2026-07-31-14-10"
-  FFMPEG_ARCHIVE: "ffmpeg-n7.1.5-12-g1fdbca85aa-linux64-gpl-7.1.tar.xz"
+  FFMPEG_RELEASE_TAG: "autobuild-2026-02-28-12-59"
+  FFMPEG_ARCHIVE: "ffmpeg-n8.0.1-66-g27b8d1a017-linux64-gpl-8.0.tar.xz"
 
 jobs:
   run-unit-tests:
     name: Unit Tests
-    runs-on: ubuntu-24.04
+    # for Github Local Actions, create on Windows:`C:\Users\<User\.actrc` or on Ubuntu: `~/.actrc`
+    # with the content: `-P ubuntu-26.04=ghcr.io/catthehacker/ubuntu:act-26.04`
+    # this ensures that the correct Ubuntu image is used when running locally with act
+    # and matches the environment expected by the workflow on GitHub Actions when run in the cloud
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       actions: write
@@ -35,6 +39,11 @@ jobs:
       - name: Detect act
         id: detect-act
         run: echo "is-act=${ACT:-false}" >> "$GITHUB_OUTPUT"
+
+      # ensure node stays on the default system PATH after setup-python modifies GITHUB_PATH
+      - name: Ensure node is in /usr/local/bin for act
+        if: steps.detect-act.outputs.is-act == 'true'
+        run: sudo ln -sf "$(command -v node)" /usr/local/bin/node
 
       # checkout the repository to ensure the workflow has access to the codebase
       - name: Checkout Repository
@@ -49,10 +58,10 @@ jobs:
           submodules: false
 
       # the python environment is set up with the required version and dependencies for running the unit tests
-      - name: Set up Python 3.12
+      - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.14.4"
 
       # cache FFmpeg download to speed up subsequent workflow runs
       - name: Cache FFmpeg Download
@@ -132,22 +141,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # # run tests with unittest
-      # - name: Test with unittest
-      #   # need PYTHONTRACEMALLOC for memory tracing; enables tracking of memory allocations during tests (disabled in act for speed)
-      #   env:
-      #     PYTHONTRACEMALLOC: ${{ steps.detect-act.outputs.is-act == 'false' && '1' || '0' }}
-      #   # /dev/shm stores generated files in memory during act runs without replacing tracked files
-      #   run: |
-      #     if [ "${ACT:-false}" = "true" ]; then
-      #       export MUSICPROCESSING_GENERATED_PATH=/dev/shm/generated_files
-      #       rm -rf "$MUSICPROCESSING_GENERATED_PATH"
-      #       mkdir -p "$MUSICPROCESSING_GENERATED_PATH"
-      #     fi
-      #     xvfb-run -a python -m unittest discover -v tests
+      # 1: pythontracemalloc to track memory allocations during non-Github Local Actions runs; helps identify memory leaks and optimize memory usage
+      # 2: for Github Local Actions runs, set up generated files path to store generated files in shared memory;
+      # coupled to pertinent test suites to ensure isolation and prevent interference with other tests
+      # 3:particular unittest test suite files now coupled to pattern; any change to them requires updating the patterns here accordingly
 
-      # replace from line 136
-      # pattern is now coupled to test names
+      # non-GUI test suites run first to prevent any interference with GUI tests
       - name: Test model and unit suites
         env:
           PYTHONTRACEMALLOC: ${{ steps.detect-act.outputs.is-act == 'false' && '1' || '0' }}
@@ -178,5 +177,9 @@ jobs:
             rm -rf "$MUSICPROCESSING_GENERATED_PATH"
             mkdir -p "$MUSICPROCESSING_GENERATED_PATH"
           fi
-          xvfb-run -a python -m unittest discover -v -s tests -p 'test_gui_*.py'
 
+          for pattern in \
+            'test_gui_*.py'
+          do
+            xvfb-run -a python -m unittest discover -v -s tests -p "$pattern"
+          done

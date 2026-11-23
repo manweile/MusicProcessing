@@ -205,17 +205,17 @@ Use a token with only the permissions those jobs need, store it in the extension
 
 #### Runners
 
-Map the runner label defined in `python-app.yml` (`runs-on: ubuntu-24.04`) to its matching local Docker image in GLA's **Runners** settings:
+Create file on Windows: `C:\Users\<User>\.actrc` or on Ubuntu: `~/.actrc` and have this in it:
+`-P ubuntu-26.04=ghcr.io/catthehacker/ubuntu:act-26.04`
 
-- `ubuntu-24.04` = `catthehacker/ubuntu:act-24.04`
-
-Ensure the checkbox next to `ubuntu-24.04` is enabled so nektos/act uses the cached Ubuntu 24.04 container image without prompting.
+Map the runner label defined in `python-app.yml` (`runs-on: ubuntu-26.04`) to its matching local Docker image in GLA's **Runners** settings.<br>
+Ensure the checkbox next to `ubuntu-26.04` is enabled so nektos/act uses the Ubuntu 26.04 container image specified in `.actrc` without prompting.
 
 #### Options
 
 Configure the following flags in GLA's **Options** settings to test uncommitted changes and speed up local runs:
 
-- **`artifact-server-path` (`C:\temp\act-artifacts`)**:
+- **`artifact-server-path`** Windows = (`C:\temp\act-artifacts`)** Ubuntu = (`/tmp/act-artifacts`) :
   - Provides a local directory for `actions/cache` and artifact storage when running outside GitHub.
 - **`bind` (`true`)**:
   - Tells act to bind-mount the current worktree directly into the job container instead of copying it,
