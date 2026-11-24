@@ -26,21 +26,11 @@ env:
   FFMPEG_REPO: "BtbN/FFmpeg-Builds"
   FFMPEG_RELEASE_TAG: "latest"
   FFMPEG_ARCHIVE: "ffmpeg-n8.1-latest-linux64-gpl-8.1.tar.xz"
-  # FFMPEG_RELEASE_TAG: "autobuild-2026-02-28-12-59"
-  # FFMPEG_ARCHIVE: "ffmpeg-n8.0.1-66-g27b8d1a017-linux64-gpl-8.0.tar.xz"
 
 jobs:
   run-unit-tests:
     name: Unit Tests
-    # for Github Local Actions, create an .actrc file:
-    # on Windows:`C:\Users\<User\.actrc
-    # with: the content `-P ubuntu-26.04=ghcr.io/catthehacker/ubuntu:act-26.04`
-    # on Ubuntu: `~/.actrc`
-    # with the content:
-    # -P ubuntu-26.04=docker.gitea.com/runner-images:ubuntu-26.04
-    # -P ubuntu-latest=docker.gitea.com/runner-images:ubuntu-26.04
-    # ensures that the correct Ubuntu image for native OS is used when running locally with act
-    # matches the environment expected by the workflow on GitHub Actions when run in the cloud
+    # must match the image specified in .actrc file for GitHub Local Actions runner
     runs-on: ubuntu-26.04
     permissions:
       contents: read
