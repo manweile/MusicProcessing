@@ -7,21 +7,7 @@
 # Linux system libraries for wxPython builds, installs Python dependencies, and runs unit tests.<br>
 # for more information, see: https://github.com
 #
-# @note successful Windows act command line:
-# act --workflows ".github/workflows/ci-pipeline.yml"       the workflow file to use
-# --secret-file ""                                          Settings>Secrets>GITHUB_TOKEN, required for authenticating Github APIs
-# --var-file ""                                             Settings>Variables> none set in UI
-# --input-file ""                                           Settings>Inputs> none set in UI
-# --eventpath ""                                            Settings>Secrets> none set in UI
-# --bind="true"                                             Settings>Options>bind-mount current worktree into job container allow local changes
-# --artifact-server-path "C:\\temp\\act-artifacts"          Settings>Options>local directory for `actions/cache` and artifact storage
-# --pull="false"                                            Settings>Options>Stops checking Docker Hub for newer runner images
-# --container-options "-v act-pip-cache:/root/.cache/pip"   Settings>Options>mount persistent Docker volumes so resources survive between runs
-# --reuse="true"                                            Settings>Options>keep job container alive between runs
-# runners are sourced from `C:\Users\<User>\.actrc
-# and contain appropriate image for the specified Ubuntu version used in the workflow (ubuntu-26.04)
-#
-# @todo Still working on successful Ubuntu act command line usage
+# @note Refer to Environment.md for Github Local Actions section for important setup instructions.
 #
 # @version 1.1.0
 # @date 2026-11-22
@@ -38,10 +24,10 @@ on:
 env:
   FFMPEG_HOST: "github.com"
   FFMPEG_REPO: "BtbN/FFmpeg-Builds"
-  # FFMPEG_RELEASE_TAG: "latest"
-  # FFMPEG_ARCHIVE: "ffmpeg-n8.1-latest-linux64-gpl-8.1.tar.xz"
-  FFMPEG_RELEASE_TAG: "autobuild-2026-02-28-12-59"
-  FFMPEG_ARCHIVE: "ffmpeg-n8.0.1-66-g27b8d1a017-linux64-gpl-8.0.tar.xz"
+  FFMPEG_RELEASE_TAG: "latest"
+  FFMPEG_ARCHIVE: "ffmpeg-n8.1-latest-linux64-gpl-8.1.tar.xz"
+  # FFMPEG_RELEASE_TAG: "autobuild-2026-02-28-12-59"
+  # FFMPEG_ARCHIVE: "ffmpeg-n8.0.1-66-g27b8d1a017-linux64-gpl-8.0.tar.xz"
 
 jobs:
   run-unit-tests:
@@ -129,10 +115,13 @@ jobs:
 
       # install FFmpeg
       - name: Extract and Install FFmpeg
-        # only extract and install FFmpeg if not running in act or if FFmpeg is not already installed
+        # reinstall in act only when the selected archive changes
         run: |
-          if [ "${ACT:-false}" = "true" ] && command -v ffmpeg >/dev/null 2>&1; then
-            echo "FFmpeg already installed, skipping."
+          if [ "${ACT:-false}" = "true" ] &&
+            [ -f /opt/ffmpeg/.installed-archive ] &&
+            [ "$(cat /opt/ffmpeg/.installed-archive)" = "${FFMPEG_RELEASE_TAG}/${FFMPEG_ARCHIVE}" ] &&
+            command -v ffmpeg >/dev/null 2>&1; then
+            echo "FFmpeg ${FFMPEG_RELEASE_TAG}/${FFMPEG_ARCHIVE} already installed, skipping."
             exit 0
           fi
           echo "Extracting ${FFMPEG_ARCHIVE}"
@@ -140,6 +129,7 @@ jobs:
           sudo tar --strip-components 1 -xf ".cache/ffmpeg/${FFMPEG_ARCHIVE}" -C /opt/ffmpeg/extracted
           sudo install -m 755 /opt/ffmpeg/extracted/bin/ffmpeg /usr/local/bin/ffmpeg
           sudo install -m 755 /opt/ffmpeg/extracted/bin/ffprobe /usr/local/bin/ffprobe
+          echo "${FFMPEG_RELEASE_TAG}/${FFMPEG_ARCHIVE}" | sudo tee /opt/ffmpeg/.installed-archive >/dev/null
           ffmpeg -version
           ffprobe -version
 
@@ -176,7 +166,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-python-
 
-      # install Python dependencies
+      # install Python dependencies, with wxPython wheel downloaded from GitHub so it doesn't have to be built from source
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip

@@ -42,15 +42,15 @@ This project **requires**  the following Python Modules:
 
 #### external library dependencies
 
-- colorama==0.4.6                                           # dependency of tqdm
-- termcolor===2.3.0                                         # dependency of yaspin
+- colorama>=0.4.6                                           # dependency of tqdm
+- termcolor>=2.3.0                                          # dependency of yaspin
 
 ##### required project external libraries
 
-- mutagen==1.47.0                                           # to read, write, and manipulate audio metadata across many file formats
-- pathvalidate==3.2.3                                       # to sanitize and validate filenames and file paths across different operating systems
-- tqdm==4.67.1                                              # to add customizable progress bars to loops, iterables, and long-running tasks
-- yaspin==3.1.0                                             # to create animated loading spinners in the terminal
+- mutagen>=1.47.0                                           # to read, write, and manipulate audio metadata across many file formats
+- pathvalidate>=3.2.3                                       # to sanitize and validate filenames and file paths across different operating systems
+- tqdm>=4.67.1                                              # to add customizable progress bars to loops, iterables, and long-running tasks
+- yaspin>=3.1.0                                             # to create animated loading spinners in the terminal
 
 Install all of them via pip, eg:
 
@@ -193,7 +193,34 @@ I'm not going to go into *all* the ins and outs of installing nektos/act and Doc
 You can find the documentation by following the links.<br>
 While it is tedious, it is not overly complex.
 
-**Note:** There are Settings steps for GLA:
+#### Images and Runners
+
+GLA **requires** a Ubuntu image; easiest way to get an image is via terminal cli: `docker pull <image>`<br>
+e.g. `docker pull docker.gitea.com/runner-images:ubuntu-26.04`
+
+Your choice of image is coupled to the workflow(s) that use it; considerations are:
+
+- has all the tools you need (ie like node)
+- compatible with python version you want
+- compatible with ffmpeg version you want
+
+I'm using Gitea instead of Catthehacker (GLA's default) because:
+
+- Catthehacker is not updating as timely or accurately as Gitea
+- Gitea ubuntu-26 is ~500Mb, and allows me to use github actions for checkout, cache, setup-python, and it works with GLA
+
+Once you have the image, GLA can use it for the runner OS.<br>
+This requires a `.actrc` file
+
+- on Windows
+  - `C:\Users\<User>\.actrc`
+- on Ubuntu
+  - `~/.actrc`
+
+Add the image to the file: `docker pull docker.gitea.com/runner-images:ubuntu-26.04`
+
+Map the runner label defined in `python-app.yml` ie `runs-on: ubuntu-26.04` to its matching local Docker image in GLA's **Runners** settings.<br>
+Ensure the checkbox next to `ubuntu-26.04` is enabled so nektos/act uses the Ubuntu 26.04 container image specified in `.actrc` without prompting.
 
 #### Secrets (GITHUB_TOKEN)
 
@@ -202,22 +229,6 @@ GLA and nektos/act need to provide a `GITHUB_TOKEN` secret if the selected workf
 
 The artifact and workflow cleanup jobs use the token for deletion requests.<br>
 Use a token with only the permissions those jobs need, store it in the extension’s Secrets settings, and do not commit it to the repository.
-
-#### Runners
-
-GLA can use a specified image for the runner OS.<br>
-This requires a `.actrc` file
-
-- on Windows
-  - `C:\Users\<User>\.actrc`
-  - contents:  `-P ubuntu-26.04=ghcr.io/catthehacker/ubuntu:act-26.04`
-- on Ubuntu
-  - `~/.actrc`
-  - -P ubuntu-26.04=docker.gitea.com/runner-images:ubuntu-26.04
-  - -P ubuntu-latest=docker.gitea.com/runner-images:ubuntu-26.04
-
-Map the runner label defined in `python-app.yml` ie `runs-on: ubuntu-26.04` to its matching local Docker image in GLA's **Runners** settings.<br>
-Ensure the checkbox next to `ubuntu-26.04` is enabled so nektos/act uses the Ubuntu 26.04 container image specified in `.actrc` without prompting.
 
 #### Options
 

@@ -680,10 +680,10 @@ class TestAudioMetadata(TestCase):
         # Check for minimum acceptable key counts (allowing for ffprobe version differences)
         # Older ffprobe versions output fewer fields so we check for minimum rather than exact counts
         file_key_thresholds = [
-            (self.mp3_line, 35),
+            (self.mp3_line, 37),
             (self.wma_line, 36),
-            (self.m4a_line, 50),                            # Was 56 on Windows ffprobe; 54+ on Ubuntu is acceptable
-            (self.flac_line, 50)                            # Was 56 on Windows ffprobe; 54+ on Ubuntu is acceptable
+            (self.m4a_line, 54),                            # Was 56 on Windows ffprobe; 54+ on Ubuntu is acceptable
+            (self.flac_line, 54)                            # Was 56 on Windows ffprobe; 54+ on Ubuntu is acceptable
         ]
 
         # Check each expected file's key count against the minimum threshold
@@ -755,7 +755,34 @@ class TestAudioMetadata(TestCase):
         with open(txt_path, "r") as f:
             lines = f.readlines()
 
-        self.assertIn(f"{self.mp3_line} has 37 keys\n", lines)
+        # Check that files are processed (file paths appear in output)
+        self.assertTrue(any(self.mp3_line in line for line in lines), f"File not found in output: {self.mp3_line}")
+
+        # Check for minimum acceptable key counts (allowing for ffprobe version differences)
+        # Older ffprobe versions output fewer fields so we check for minimum rather than exact counts
+        file_key_thresholds = [(self.mp3_line, 37)]
+
+        # Check each expected file's key count against the minimum threshold
+        for expected_file_path, minimum_key_count in file_key_thresholds:
+            matching_output_line = None
+
+            # Find the line in the output that corresponds to the expected file path
+            for output_line in lines:
+                if expected_file_path in output_line:
+                    matching_output_line = output_line
+                    break
+
+            self.assertIsNotNone(matching_output_line, f"File not found in output: {expected_file_path}")
+
+            # Extract key count from line like "path/to/file.ext has 37 keys"
+            key_count_match = re.search(r'has (\d+) keys', matching_output_line)
+            self.assertIsNotNone(key_count_match, f"Could not parse key count from: {matching_output_line}")
+
+            key_count = int(key_count_match.group(1))
+            result_text = f"File has {key_count} keys, expected at least {minimum_key_count}: {expected_file_path}"
+            self.assertGreaterEqual(key_count, minimum_key_count, result_text)
+
+        # self.assertIn(f"{self.mp3_line} has 37 keys\n", lines)
 
 
     def test_get_media_tags(self):
