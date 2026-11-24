@@ -233,7 +233,7 @@ Configure the following flags in GLA's **Options** settings to test uncommitted 
   allowing local runs to test uncommitted workflow or source changes.
   - *(Note: Set to `false` if you need container-isolated filesystem changes, such as symlinking temporary directories inside Linux.)*
 - **`container-options`**
-  - on Windows: `-v act-pip-cache:/root/.cache/pip -v act-toolcache:/opt/hostedtoolcache`
+  - on Windows: `-v act-pip-cache:/root/.cache/pip`
   - on Ubuntu:  `-v act-pip-cache:/root/.cache/pip -v /opt/hostedtoolcache:/opt/hostedtoolcache`
   - Mounts persistent Docker volumes so Python toolchains and `pip` wheels (such as `wxPython`) survive across container resets.
 - **`pull`**

@@ -7,6 +7,22 @@
 # Linux system libraries for wxPython builds, installs Python dependencies, and runs unit tests.<br>
 # for more information, see: https://github.com
 #
+# @note successful Windows act command line:
+# act --workflows ".github/workflows/ci-pipeline.yml"       the workflow file to use
+# --secret-file ""                                          Settings>Secrets>GITHUB_TOKEN, required for authenticating Github APIs
+# --var-file ""                                             Settings>Variables> none set in UI
+# --input-file ""                                           Settings>Inputs> none set in UI
+# --eventpath ""                                            Settings>Secrets> none set in UI
+# --bind="true"                                             Settings>Options>bind-mount current worktree into job container allow local changes
+# --artifact-server-path "C:\\temp\\act-artifacts"          Settings>Options>local directory for `actions/cache` and artifact storage
+# --pull="false"                                            Settings>Options>Stops checking Docker Hub for newer runner images
+# --container-options "-v act-pip-cache:/root/.cache/pip"   Settings>Options>mount persistent Docker volumes so resources survive between runs
+# --reuse="true"                                            Settings>Options>keep job container alive between runs
+# runners are sourced from `C:\Users\<User>\.actrc
+# and contain appropriate image for the specified Ubuntu version used in the workflow (ubuntu-26.04)
+#
+# @todo Still working on successful Ubuntu act command line usage
+#
 # @version 1.1.0
 # @date 2026-11-22
 #
@@ -22,8 +38,10 @@ on:
 env:
   FFMPEG_HOST: "github.com"
   FFMPEG_REPO: "BtbN/FFmpeg-Builds"
-  FFMPEG_RELEASE_TAG: "latest"
-  FFMPEG_ARCHIVE: "ffmpeg-n8.1-latest-linux64-gpl-8.1.tar.xz"
+  # FFMPEG_RELEASE_TAG: "latest"
+  # FFMPEG_ARCHIVE: "ffmpeg-n8.1-latest-linux64-gpl-8.1.tar.xz"
+  FFMPEG_RELEASE_TAG: "autobuild-2026-02-28-12-59"
+  FFMPEG_ARCHIVE: "ffmpeg-n8.0.1-66-g27b8d1a017-linux64-gpl-8.0.tar.xz"
 
 jobs:
   run-unit-tests:
@@ -86,11 +104,20 @@ jobs:
 
       # download FFmpeg if necessary and cache
       - name: Download FFmpeg
-        # download if not in cache on GitHub, or if archive is missing locally in act
+        # download on a cache miss in GitHub or when the local act archive is invalid
         if: >
           (steps.detect-act.outputs.is-act == 'false' && steps.cache-ffmpeg.outputs.cache-hit != 'true') ||
-          (steps.detect-act.outputs.is-act == 'true' && hashFiles(format('.cache/ffmpeg/{0}', env.FFMPEG_ARCHIVE)) == '')
+          steps.detect-act.outputs.is-act == 'true'
         run: |
+          if [ "${ACT:-false}" = "true" ] && [ -f ".cache/ffmpeg/${FFMPEG_ARCHIVE}" ]; then
+            if xz -t ".cache/ffmpeg/${FFMPEG_ARCHIVE}"; then
+              echo "FFmpeg archive already downloaded and valid, skipping."
+              exit 0
+            fi
+            echo "Cached FFmpeg archive is invalid; downloading a fresh copy."
+            rm -f ".cache/ffmpeg/${FFMPEG_ARCHIVE}"
+          fi
+
           FFMPEG_URL="https://${FFMPEG_HOST}/${FFMPEG_REPO}/releases/download/${FFMPEG_RELEASE_TAG}/${FFMPEG_ARCHIVE}"
           echo "Downloading ${FFMPEG_URL}"
           mkdir -p .cache/ffmpeg
@@ -99,7 +126,6 @@ jobs:
             echo "Error: Failed to download a valid FFmpeg archive from ${FFMPEG_URL}"
             exit 1
           fi
-
 
       # install FFmpeg
       - name: Extract and Install FFmpeg
@@ -154,6 +180,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install "https://github.com/wxWidgets/Phoenix/releases/download/wxPython-4.3.2/wxpython-4.3.2+ubuntu2604-cp314-cp314-linux_x86_64.whl"
           pip install -r requirements.txt
 
       # 1: pythontracemalloc to track memory allocations during non-Github Local Actions runs; helps identify memory leaks and optimize memory usage
