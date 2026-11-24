@@ -21,11 +21,16 @@ on:
   workflow_call:
 
 # using specific version of ffmpeg because empirically proven to work
+# ffmpeg update has produced "gotcha" issues in the past (8.0.1 to 8.1 in re ffprobe media info handling)
+# the wxPython wheel is for CPython 3.14 on Linux x86_64 (Ubuntu 26.04), so it’s suitable for the workflow’s runner
+# any updates to either Ubuntu runner or Python version may require adjustments to the specified wheel
 env:
   FFMPEG_HOST: "github.com"
   FFMPEG_REPO: "BtbN/FFmpeg-Builds"
   FFMPEG_RELEASE_TAG: "latest"
   FFMPEG_ARCHIVE: "ffmpeg-n8.1-latest-linux64-gpl-8.1.tar.xz"
+  WX_PYTHON_WHEEL_FILE: "wxpython-4.3.2+ubuntu2604-cp314-cp314-linux_x86_64.whl"
+  WX_PYTHON_WHEEL_URL: "https://github.com/wxWidgets/Phoenix/releases/download/wxPython-4.3.2/wxpython-4.3.2+ubuntu2604-cp314-cp314-linux_x86_64.whl"
 
 jobs:
   run-unit-tests:
@@ -156,11 +161,46 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-python-
 
+      #  cache the wxPython wheel to avoid rebuilding it from source on subsequent runs
+      - name: Cache wxPython wheel
+        id: cache-wxpython
+        # only cache wxPython wheel if not running in act
+        if: steps.detect-act.outputs.is-act == 'false'
+        uses: actions/cache@v4
+        with:
+          path: .cache/wxpython/${{ env.WX_PYTHON_WHEEL_FILE }}
+          key: ${{ runner.os }}-${{ runner.arch }}-wxpython-${{ env.WX_PYTHON_WHEEL_FILE }}
+
+      # download the wxPython wheel if necessary
+      - name: Download wxPython
+        # download on a cache miss or when running in act
+        if: >
+          (steps.detect-act.outputs.is-act == 'false' && steps.cache-wxpython.outputs.cache-hit != 'true') ||
+          steps.detect-act.outputs.is-act == 'true'
+        run: |
+          wheel_path=".cache/wxpython/$WX_PYTHON_WHEEL_FILE"
+
+          if [ "${ACT:-false}" = "true" ] && [ -f "$wheel_path" ]; then
+            if python -m zipfile -t "$wheel_path" >/dev/null; then
+              echo "wxPython wheel already downloaded and valid, skipping."
+              exit 0
+            fi
+            echo "Cached wxPython wheel is invalid; downloading a fresh copy."
+            rm -f "$wheel_path"
+          fi
+
+          mkdir -p .cache/wxpython
+          if ! curl -fsSL --retry 5 --retry-delay 2 "$WX_PYTHON_WHEEL_URL" -o "$wheel_path" || ! python -m zipfile -t "$wheel_path" >/dev/null; then
+            rm -f "$wheel_path"
+            echo "Error: Failed to download a valid wxPython wheel from $WX_PYTHON_WHEEL_URL"
+            exit 1
+          fi
+
       # install Python dependencies, with wxPython wheel downloaded from GitHub so it doesn't have to be built from source
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install "https://github.com/wxWidgets/Phoenix/releases/download/wxPython-4.3.2/wxpython-4.3.2+ubuntu2604-cp314-cp314-linux_x86_64.whl"
+          pip install ".cache/wxpython/$WX_PYTHON_WHEEL_FILE"
           pip install -r requirements.txt
 
       # 1: pythontracemalloc to track memory allocations during non-Github Local Actions runs; helps identify memory leaks and optimize memory usage
