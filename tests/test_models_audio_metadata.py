@@ -1270,7 +1270,7 @@ class TestAudioMetadata(TestCase):
         '''
         @brief Tests normalizing filenames during a directory walk.
 
-        @details Verifies all supported audio files are routed to the normalizer while unsupported files are skipped.
+        @details Verifies all supported audio files are renamed.
 
         @test Happy path.
 

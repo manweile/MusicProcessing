@@ -623,7 +623,7 @@ class MainFrame(wx.Frame):
         )
 
         # create the rename audio file button
-        self.renameAudioFile = wx.Button(filePanel, label="Rename Audio File")
+        self.renameAudioFile = wx.Button(filePanel, label="Rename Audio File", name="renameAudioFile")
         self.renameAudioFile.Bind(wx.EVT_BUTTON, self.eventHandlers.on_rename_file)
 
         # create a horizontal sizer for the browse and convert buttons

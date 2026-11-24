@@ -29,11 +29,15 @@ import wx                                                   # for wxPython GUI c
 from tests.support import get_method_names                  # for direct test-suite construction
 
 # Local Module Constants
+from tests import TEST_FLAC_CREAM                           # test data for Cream FLAC audio file
+from tests import TEST_M4A_DAVIS                            # test data for M4A Joshua Davis audio file
 from tests import TEST_M4A_EAGLES                           # test data for M4A Eagles audio file
+from tests import TEST_MP3_10CC                             # test data for MP3 10cc audio file
 from tests import TEST_MP3_ABBA                             # test data for MP3 ABBA audio file
 from tests import TEST_MP3_GENESIS                          # test data for MP3 Genesis audio file
 from tests import TEST_MP3_NO_METADATA                      # test data for MP3 file without metadata
 from tests import TEST_WMA_CCR                              # test data for WMA CCR audio file
+from tests import TEST_WMA_JOHN                             # test data for WMA Elton John audio file
 from tests import TESTS_TLD                                 # test music directory
 
 from src.core.constants import CSV_DIR                      # for the CSV directory path
@@ -196,11 +200,11 @@ class TestGuiNameManagement(TestCase):
         self.addCleanup(self._destroy_frame)
 
 
-    def test_add_album_folders_happy_path(self):
+    def test_add_album_folders(self):
         '''
-        @brief Tests the happy path for adding album folders.
+        @brief Tests creating an album sub-directory in an artist directory.
 
-        @details Simulates user interaction to add album folders, verifies that files are moved correctly, and checks the generated report.
+        @details Simulates user interaction to add the album sub-directory should be created for each album within the artist directory.
 
         @test Happy path.
 
@@ -244,6 +248,166 @@ class TestGuiNameManagement(TestCase):
 
         # verify that the report for created album directories exists
         report_path = os.path.join(self.generated, CSV_DIR, "create_album_dirs" + CSV_EXT)
+        self.assertTrue(os.path.isfile(report_path))
+
+
+    def test_rename_album_folders(self):
+        '''
+        @brief tests renaming album directory from album metadata.
+
+        @details Copies the Genesis fixture into a temporary artist directory.
+
+        @test Happy path, already-correct name, and name collision.
+
+        @param self {TestGuiNameManagement} The instance of the test class.
+        '''
+
+        artist_dir = os.path.join(self.prepped, "Genesis")
+        wrong_dir = os.path.join(artist_dir, "In Too Deep-I’d Rather Be You")
+        expected_dir = os.path.join(artist_dir, "In Too Deep - I'd Rather Be You")
+        genesis_file = os.path.join(artist_dir, os.path.basename(TEST_MP3_GENESIS))
+
+        os.makedirs(wrong_dir)
+        shutil.move(genesis_file, os.path.join(wrong_dir, os.path.basename(TEST_MP3_GENESIS)))
+
+        # find the path control and button for renaming album folders
+        path_control = self.frame.FindWindowByName("renameAlbumsWalkTld")
+        rename_button = self.frame.FindWindowByName("renameAlbumsWalk")
+
+        self.assertIsNotNone(path_control)
+        self.assertIsNotNone(rename_button)
+
+        # set the path control value to the prepped directory
+        path_control.SetValue(self.prepped)
+
+        def rename_albums():
+            '''
+            @brief Helper function to trigger the renaming of album directories and wait for completion.
+
+            @details Clears the main log, posts button event starting renaming process, waits until completion message is in log.
+
+            @note This function is used within the test to simulate user interaction with the GUI.
+            '''
+
+            self.frame.mainLog.Clear()
+            wx.PostEvent(rename_button, wx.CommandEvent(wx.EVT_BUTTON.typeId, wx.ID_ANY))
+            self._wait_until(lambda: "rename_album_directories completed." in self.frame.mainLog.GetValue())
+
+        # verify an incorrectly named directory is renamed
+        rename_albums()
+        self.assertFalse(os.path.exists(wrong_dir))
+        self.assertTrue(os.path.isfile(os.path.join(expected_dir, os.path.basename(TEST_MP3_GENESIS))))
+
+        # an already correctly named directory remains unchanged
+        rename_albums()
+        self.assertTrue(os.path.isdir(expected_dir))
+
+        # an existing destination causes the renamed directory to use a counter suffix
+        os.makedirs(wrong_dir)
+        shutil.copy2(TEST_MP3_GENESIS, os.path.join(wrong_dir, os.path.basename(TEST_MP3_GENESIS)))
+
+        rename_albums()
+        self.assertFalse(os.path.exists(wrong_dir))
+        self.assertTrue(os.path.isfile(os.path.join(expected_dir, os.path.basename(TEST_MP3_GENESIS))))
+        self.assertTrue(os.path.isfile(os.path.join(f"{expected_dir} (1)", os.path.basename(TEST_MP3_GENESIS))))
+
+
+    def test_rename_files_walk(self):
+        '''
+        @brief Tests normalizing filenames during a directory walk.
+
+        @details Verifies all supported audio files are renamed.
+
+        @test Happy path.
+
+        @param self {TestGuiNameManagement} The instance of the test class.
+        '''
+
+        test_dir = os.path.join(self.prepped, "normalize_filename_walk")
+        os.makedirs(test_dir)
+
+        audio_files = [
+            (TEST_MP3_10CC, "10cc-Donna.mp3"),
+            (TEST_FLAC_CREAM, "Cream-Politician.flac"),
+            (TEST_M4A_DAVIS, "Joshua Davis-The Workingman’s Hymn.m4a"),
+            (TEST_M4A_EAGLES, "The Eagles-Desperado.m4a"),
+            (TEST_WMA_CCR, "Creedence Clearwater Revival-Fortunate Son.wma"),
+            (TEST_WMA_JOHN, "Elton John-Saturday Night’s Alright (for Fighting).wma")
+        ]
+        source_files = []
+        normalized_files = []
+
+        for index, (fixture, normalized_name) in enumerate(audio_files):
+            _, file_ext = os.path.splitext(fixture)
+            source_file = os.path.join(test_dir, f"incorrect-name-{index}{file_ext}")
+            shutil.copy2(fixture, source_file)
+            source_files.append(source_file)
+            normalized_files.append(os.path.join(test_dir, normalized_name))
+
+        notes_file = os.path.join(test_dir, "notes.txt")
+        with open(notes_file, "w", encoding="utf-8") as notes:
+            notes.write("not an audio file")
+
+        # find the path control and button for renaming files
+        path_control = self.frame.FindWindowByName("renameFilesWalkTld")
+        rename_button = self.frame.FindWindowByName("renameFilesWalk")
+
+        self.assertIsNotNone(path_control)
+        self.assertIsNotNone(rename_button)
+
+        # set the path control value and simulate clicking the rename button
+        path_control.SetValue(test_dir)
+        wx.PostEvent(rename_button, wx.CommandEvent(wx.EVT_BUTTON.typeId, wx.ID_ANY))
+
+        # wait until the log indicates that filename normalization has completed
+        self._wait_until(lambda: "normalize_filename_walk completed." in self.frame.mainLog.GetValue())
+
+        for source_file in source_files:
+            self.assertFalse(os.path.exists(source_file), source_file)
+
+        for normalized_file in normalized_files:
+            self.assertTrue(os.path.isfile(normalized_file), normalized_file)
+
+        self.assertTrue(os.path.isfile(notes_file), notes_file)
+
+
+    def test_rename_file(self):
+        '''
+        @brief Tests renaming an audio file using its album artist and title metadata.
+
+        @details Verifies that an audio file is renamed according to its album artist and title metadata.
+
+        @test Happy path.
+
+        @param self {TestGuiNameManagement} The instance of the test class.
+        '''
+
+        test_dir = os.path.join(self.prepped, "rename_single_file")
+        os.makedirs(test_dir)
+
+        wrong_file = os.path.join(test_dir, "incorrect-name.mp3")
+        normalized_file = os.path.join(test_dir, "10cc-Donna.mp3")
+        shutil.copy2(TEST_MP3_10CC, wrong_file)
+
+        # find the path control and button for renaming a single audio file
+        path_control = self.frame.FindWindowByName("renameAudioFilePath")
+        rename_button = self.frame.FindWindowByName("renameAudioFile")
+
+        self.assertIsNotNone(path_control)
+        self.assertIsNotNone(rename_button)
+
+        # set the path control value and simulate clicking the rename button
+        path_control.SetValue(wrong_file)
+        wx.PostEvent(rename_button, wx.CommandEvent(wx.EVT_BUTTON.typeId, wx.ID_ANY))
+
+        # wait until the log indicates that filename normalization has completed
+        self._wait_until(lambda: "normalize_filename completed." in self.frame.mainLog.GetValue())
+
+        self.assertFalse(os.path.exists(wrong_file), wrong_file)
+        self.assertTrue(os.path.isfile(normalized_file), normalized_file)
+
+        # verify that the report for the normalized filename exists
+        report_path = os.path.join(self.generated, CSV_DIR, "normalize_filename" + CSV_EXT)
         self.assertTrue(os.path.isfile(report_path))
 
 

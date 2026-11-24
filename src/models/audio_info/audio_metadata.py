@@ -1528,8 +1528,9 @@ class AudioMetadata():
                 album_artist = album_artist_tag[0]
                 title = title_tag[0]
             elif isinstance(audio_file, ASF):
-                album_artist = album_artist_tag[0]
-                title = title_tag[0]
+                # ASF tags are returned as lists, so we convert them to strings
+                album_artist = str(album_artist_tag[0])
+                title = str(title_tag[0])
 
             # "album_artist - title" is acceptable
             file_stem = os.path.splitext(os.path.basename(file_path))[0]

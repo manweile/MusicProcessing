@@ -43,7 +43,7 @@ The tests must exercise the wx GUI itself, not just instantiate the frame or tes
   desktop or Xvfb execution on Ubuntu, and Xvfb execution in GitHub Actions and GLA.
 - Verify the ordered test runs in VS Code on Windows 10 and Ubuntu 26, GitHub Actions, and GLA.
 
-### Validation and Exit Criteria
+### Phase 1 Validation and Exit Criteria
 
 - The model/unit suite completes successfully before the GUI functional suite starts; fixture cleanup is complete.
 - GUI functional tests pass in VS Code on Windows 10 and Ubuntu 26, and headlessly in GitHub Actions and GLA.
@@ -73,7 +73,7 @@ Passing Phase 1 remains the prerequisite for 7.1f and the controller iterations;
 - Update `docs/md_files/Testing.md` with the proven invocation, isolation, prerequisites, and sequential fallback for
   each environment.
 
-### Validation and Exit Criteria
+### Phase 2 Validation and Exit Criteria
 
 - In each environment, run both suites together at least three times, confirm their execution overlaps and both
   complete successfully with no unexpected skips, and verify fixture originals remain unchanged and neither suite

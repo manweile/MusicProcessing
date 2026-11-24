@@ -1,12 +1,12 @@
 from test UI:
 ----------------------------------------------------------------------
-Ran 161 tests in 161.128s
+Ran 165 tests in 171.128s
 
 OK
 Finished running tests!
 
 There 4 test suites with sub tests, for total of 12
-Thats why test UI says 173 tests, but results say 161
+Thats why test UI says 1777 tests, but results say 165
 
 3 in TestAudioArt.test_unpack_asf_image_malformed_data:
   image payload is truncated
