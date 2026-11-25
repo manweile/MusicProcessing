@@ -44,6 +44,12 @@ DOXYGEN:
       ii) the specifics should pertinent to use
       eg: @details Use this when needing a mp3 audio file for tests
   TODO
+
+  3) add grouping to files - though I NOT sure if this correct way to diff
+    ie what is doxygen vs python definitions of public, private, protected, etc
+    a) see audio_normalization.py for class example
+    b) see commands.py for module example
+  TODO
 TODO
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -105,8 +111,8 @@ ENVIRONMENT:
   3) Update environment.md
     a) think about adding wxPython install on Linux instructions - it's a brute
     b) think about adding ffmpeg install instructions, win & linux
-    c) add pip install -r requirements.txt option
-  TODO
+    c) add pip install -r requirements.txt option COMPLETED
+  IN PROGRESS
 
   4) Think about wxFormBuilder
     a) integrating and using
@@ -152,11 +158,11 @@ ENVIRONMENT:
   8) think about renaming Music to music_files
     a) just to keep things looking clean
   TODO
-TODO
+IN PROGRESS
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
-CI:
+CI/CD:
   3) consider splitting python-app.yml
     a) getting complex in re handling remote Github Ci vs Github Local Actions
     b) might be better off to have 1 GLA guard that calls a dedicated to GLA workflow
@@ -270,18 +276,6 @@ TODO
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 GUI:
-  1) all GUI objects need to be in camelCase
-    a) really confusing if not;
-    eg list_type_tld  its a wx.TextCtrl for directory path input
-      i) when you see it like this: self.list_type_tld, while it is a variable
-      ii) it is really a TextCtrl variable and will be exposed  to other modules, especially handlers.py!
-    b) complete BEFORE Milestone 7 Phase 2
-  IN PROGRESS
-
-  2) add the new functionality:
-    a)clip check, clip check walk, add albums, rename albums, rename file, rename file walk
-  IN PROGRESS
-
   3) implement mvc refactoring planning
     a) major refactoring
     b) finalize minimal functionality GUI design
@@ -360,14 +354,6 @@ IN PROGRESS
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 TESTING:
-  1) figure out how to test gui functionality
-    a) research
-      i) refer to page 144 of wxPython in Action
-      ii) get google search from phone
-    b) test very basic gui functionality; existing test suite handles the models
-    c) update testing.md
-  IN PROGRESS
-
   2) add a test for get_ebu_loudness_info
     a) missed it somehow
   TODO
@@ -451,4 +437,4 @@ TESTING:
     b) test_main_help_matches_baseline
       i) maybe it should be in test_cli.py
   TODO
-IN PROGRESS
+TODO

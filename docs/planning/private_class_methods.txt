@@ -1,0 +1,10 @@
+Private methods used within their class
+AudioArt:
+  __unpack_asf_image
+  __write_data
+AudioMetadata:
+  __read_artist_genres
+  __set_genre
+  __update_id3
+AudioNormalization:
+  __loudnorm_json_parse

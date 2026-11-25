@@ -73,6 +73,7 @@ class AudioNormalization():
     @details Provides methods to analyze audio levels and apply supported normalization strategies.
     '''
 
+    ## @name Initialization
     def __init__(self):
         '''
         @brief Initializes the AudioNormalization class.
@@ -83,8 +84,10 @@ class AudioNormalization():
         '''
 
         pass
+    #  @}
 
-
+    ## @name Private Methods
+    #  @{
     def __loudnorm_json_parse(self, input_process: CompletedProcess) -> dict:
         '''
         @brief Parses JSON from FFmpeg loudnorm standard-error output.
@@ -157,6 +160,67 @@ class AudioNormalization():
             raise e_error
         else:
             return output_data
+    # @}
+
+    ## @name Public Helper Methods
+    # @{
+    def get_bit_rate(self, file_path: str) -> int | None:
+        '''
+        @brief Retrieves the bitrate of a media file using ffprobe.
+
+        @details Uses FFprobe to read the media container's bitrate.
+
+        @code{.text}
+        get bit rate command
+        ffprobe -v error -print_format json -show_entries format=bit_rate file_path
+
+        -v error; reduce clutter
+        -print_format json; output in json format
+        -show_entries format=bit_rate; get just the bit rate
+        file_path; the path to the media file to be analyzed.
+        @endcode
+
+        @param self {AudioNormalization} The instance of the class.
+        @param file_path {str} The path to the media file.
+
+        @retval bit_rate {int | None} The bitrate in bits per second, or None if not found.
+
+        @exception i_error {IndexError} Raised if the format or bit rate information is missing.
+        @exception jd_error {JSONDecodeError} A json decoding error occurred.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            bit_rate = None
+
+            command = [
+                'ffprobe',
+                '-v', 'error',
+                '-print_format', 'json',
+                '-show_entries', 'format=bit_rate',
+                file_path
+            ]
+
+            # ffprobe runs command fast enough that a spinner toast is not needed
+            result = subprocess_utils.subprocess_run(command)
+
+            # unlike ffmpeg, ffprobe does use stdout
+            data = json.loads(result.stdout)
+
+            if 'format' in data and 'bit_rate' in data['format']:
+                bit_rate = int(data['format']['bit_rate'])
+
+        except IndexError as i_error:
+            logger.error(f"IndexError no format found or bit rate information missing for audio file: {file_path}", exc_info=True)
+            raise i_error
+        except JSONDecodeError as jd_error:
+            logger.error(f"JSONDecodeError decoding JSON output from ffprobe on audio file: {file_path}", exc_info=True)
+            raise jd_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} normalizing audio file: {file_path}", stack_info=True)
+            raise e_error
+        else:
+            return bit_rate
 
 
     def get_ebu_loudness_info(self, file_path: str, show_spinner: bool = True, progress: ProgressReporter | None = None) -> dict:
@@ -221,6 +285,132 @@ class AudioNormalization():
             raise e_error
 
 
+    def get_sample_rate(self, file_path: str) -> int | None:
+        '''
+        @brief Gets the sample rate from audio file.
+
+        @details Uses FFprobe to read the first audio stream's sample rate.
+
+        @code{.text}
+        get sample rate command
+        ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of json file_path
+
+        -v error: reduce clutter
+        -select_streams a:0; only want audio stream
+        -show_entries stream=sample_rate; we only get the one entry specified
+        -of json; to output in json format
+        file_path; the path to the audio file to be analyzed.
+        @endcode
+
+        @param self {AudioNormalization} The instance of the class.
+        @param file_path {str} The full path to audio file.
+
+        @retval sample_rate {int | None} The sample rate in Hz, or None if not found.
+
+        @exception i_error {IndexError} An index error finding audio stream or sample rate information.
+        @exception jd_error {JSONDecodeError} A json decoding error occurred.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            sample_rate = None
+
+            command = [
+                'ffprobe',
+                '-v', 'error',
+                '-select_streams', 'a:0',
+                '-show_entries', 'stream=sample_rate',
+                '-of', 'json',
+                file_path
+            ]
+
+            # ffprobe runs command fast enough that a spinner toast is not needed
+            result = subprocess_utils.subprocess_run(command)
+
+            # unlike ffmpeg, ffprobe does use stdout
+            data = json.loads(result.stdout)
+
+            if 'streams' in data and data['streams']:
+                sample_rate = int(data['streams'][0]['sample_rate'])
+
+        except IndexError as i_error:
+            logger.error(f"IndexError no audio stream found or sample rate information missing for audio file: {file_path}", exc_info=True)
+            raise i_error
+        except JSONDecodeError as jd_error:
+            logger.error(f"JSONDecodeError decoding JSON output from ffprobe on audio file: {file_path}", exc_info=True)
+            raise jd_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting sample rate for audio file: {file_path}", stack_info=True)
+            raise e_error
+        else:
+            return sample_rate
+
+
+    def get_volume_info(self, file_path: str) -> dict:
+        '''
+        @brief Gets mean and max volume from audio file using ffmpeg.
+
+        @details Uses FFmpeg's volumedetect filter to collect mean and maximum volume values.
+
+        @code{.text}
+        get volume information command
+        ffmpeg -hide_banner -i file_path -filter:a volumedetect -f null -
+
+        -hide_banner; to reduce output clutter
+        -i file_path; specifies the input audio file
+        -filter:a volumedetect; applies the volumedetect filter to the audio stream
+        -f null -; sends the output to null to avoid creating an actual output file
+        @endcode
+
+        @param self {AudioNormalization} The instance of the class.
+        @param file_path {str} The full path to audio file.
+
+        @retval volumes {dict} The mean and max volumes of audio file in decibels relative to max PCM value.
+        - **mean_value** *{float}*: the root mean square volume
+        - **max_volume** *{float}*: the per-sample maximum volume
+
+        @exception re_error {re.error} An error occurred processing a regular expression with re module.
+        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
+        '''
+
+        try:
+            volumes = dict()
+
+            command = [
+                'ffmpeg',
+                '-hide_banner',
+                '-i', file_path,
+                '-filter:a', 'volumedetect',
+                '-f', 'null', '-'
+            ]
+
+            # ffmpeg runs the volumedetect command fast enough that spinner toast not needed
+            process = subprocess_utils.subprocess_run(command)
+
+            # ffmpeg sends its output to stderr, not stdout
+            output_str = process.stderr
+
+            mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
+            max_volume_match = re.search(r'max_volume: ([-]?\d+\.\d+) dB', output_str)
+
+            if mean_volume_match and max_volume_match:
+                mean_volume = float(mean_volume_match.group(1))
+                max_volume = float(max_volume_match.group(1))
+                volumes['mean_volume'] = mean_volume
+                volumes['max_volume'] = max_volume
+
+        except re.error as re_error:
+            logger.error(f"Regex error processing {output_str}", exc_info=True)
+            raise re_error
+        except Exception as e_error:
+            logger.exception(f"Exception {type(e_error).__name__} getting volume for file {file_path}", stack_info=True)
+            raise e_error
+        else:
+            return volumes
+    # @}
+
+    ## @name Public Methods
+    # @{
     def ebu_normalize_file(self, file_path: str, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None):
         '''
         @brief Normalizes an audio file to the EBU R128 standard, optionally specifying a target directory.
@@ -416,189 +606,6 @@ class AudioNormalization():
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} while ebu normalizing audio file: {file_path}", stack_info=True)
             raise e_error
-
-
-    def get_bit_rate(self, file_path: str) -> int | None:
-        '''
-        @brief Retrieves the bitrate of a media file using ffprobe.
-
-        @details Uses FFprobe to read the media container's bitrate.
-
-        @code{.text}
-        get bit rate command
-        ffprobe -v error -print_format json -show_entries format=bit_rate file_path
-
-        -v error; reduce clutter
-        -print_format json; output in json format
-        -show_entries format=bit_rate; get just the bit rate
-        file_path; the path to the media file to be analyzed.
-        @endcode
-
-        @param self {AudioNormalization} The instance of the class.
-        @param file_path {str} The path to the media file.
-
-        @retval bit_rate {int | None} The bitrate in bits per second, or None if not found.
-
-        @exception i_error {IndexError} Raised if the format or bit rate information is missing.
-        @exception jd_error {JSONDecodeError} A json decoding error occurred.
-        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            bit_rate = None
-
-            command = [
-                'ffprobe',
-                '-v', 'error',
-                '-print_format', 'json',
-                '-show_entries', 'format=bit_rate',
-                file_path
-            ]
-
-            # ffprobe runs command fast enough that a spinner toast is not needed
-            result = subprocess_utils.subprocess_run(command)
-
-            # unlike ffmpeg, ffprobe does use stdout
-            data = json.loads(result.stdout)
-
-            if 'format' in data and 'bit_rate' in data['format']:
-                bit_rate = int(data['format']['bit_rate'])
-
-        except IndexError as i_error:
-            logger.error(f"IndexError no format found or bit rate information missing for audio file: {file_path}", exc_info=True)
-            raise i_error
-        except JSONDecodeError as jd_error:
-            logger.error(f"JSONDecodeError decoding JSON output from ffprobe on audio file: {file_path}", exc_info=True)
-            raise jd_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} normalizing audio file: {file_path}", stack_info=True)
-            raise e_error
-        else:
-            return bit_rate
-
-
-    def get_sample_rate(self, file_path: str) -> int | None:
-        '''
-        @brief Gets the sample rate from audio file.
-
-        @details Uses FFprobe to read the first audio stream's sample rate.
-
-        @code{.text}
-        get sample rate command
-        ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of json file_path
-
-        -v error: reduce clutter
-        -select_streams a:0; only want audio stream
-        -show_entries stream=sample_rate; we only get the one entry specified
-        -of json; to output in json format
-        file_path; the path to the audio file to be analyzed.
-        @endcode
-
-        @param self {AudioNormalization} The instance of the class.
-        @param file_path {str} The full path to audio file.
-
-        @retval sample_rate {int | None} The sample rate in Hz, or None if not found.
-
-        @exception i_error {IndexError} An index error finding audio stream or sample rate information.
-        @exception jd_error {JSONDecodeError} A json decoding error occurred.
-        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            sample_rate = None
-
-            command = [
-                'ffprobe',
-                '-v', 'error',
-                '-select_streams', 'a:0',
-                '-show_entries', 'stream=sample_rate',
-                '-of', 'json',
-                file_path
-            ]
-
-            # ffprobe runs command fast enough that a spinner toast is not needed
-            result = subprocess_utils.subprocess_run(command)
-
-            # unlike ffmpeg, ffprobe does use stdout
-            data = json.loads(result.stdout)
-
-            if 'streams' in data and data['streams']:
-                sample_rate = int(data['streams'][0]['sample_rate'])
-
-        except IndexError as i_error:
-            logger.error(f"IndexError no audio stream found or sample rate information missing for audio file: {file_path}", exc_info=True)
-            raise i_error
-        except JSONDecodeError as jd_error:
-            logger.error(f"JSONDecodeError decoding JSON output from ffprobe on audio file: {file_path}", exc_info=True)
-            raise jd_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} getting sample rate for audio file: {file_path}", stack_info=True)
-            raise e_error
-        else:
-            return sample_rate
-
-
-    def get_volume_info(self, file_path: str) -> dict:
-        '''
-        @brief Gets mean and max volume from audio file using ffmpeg.
-
-        @details Uses FFmpeg's volumedetect filter to collect mean and maximum volume values.
-
-        @code{.text}
-        get volume information command
-        ffmpeg -hide_banner -i file_path -filter:a volumedetect -f null -
-
-        -hide_banner; to reduce output clutter
-        -i file_path; specifies the input audio file
-        -filter:a volumedetect; applies the volumedetect filter to the audio stream
-        -f null -; sends the output to null to avoid creating an actual output file
-        @endcode
-
-        @param self {AudioNormalization} The instance of the class.
-        @param file_path {str} The full path to audio file.
-
-        @retval volumes {dict} The mean and max volumes of audio file in decibels relative to max PCM value.
-        - **mean_value** *{float}*: the root mean square volume
-        - **max_volume** *{float}*: the per-sample maximum volume
-
-        @exception re_error {re.error} An error occurred processing a regular expression with re module.
-        @exception e_error {Exception} A common baseclass exception to handle unforeseen errors.
-        '''
-
-        try:
-            volumes = dict()
-
-            command = [
-                'ffmpeg',
-                '-hide_banner',
-                '-i', file_path,
-                '-filter:a', 'volumedetect',
-                '-f', 'null', '-'
-            ]
-
-            # ffmpeg runs the volumedetect command fast enough that spinner toast not needed
-            process = subprocess_utils.subprocess_run(command)
-
-            # ffmpeg sends its output to stderr, not stdout
-            output_str = process.stderr
-
-            mean_volume_match = re.search(r'mean_volume: ([-]?\d+\.\d+) dB', output_str)
-            max_volume_match = re.search(r'max_volume: ([-]?\d+\.\d+) dB', output_str)
-
-            if mean_volume_match and max_volume_match:
-                mean_volume = float(mean_volume_match.group(1))
-                max_volume = float(max_volume_match.group(1))
-                volumes['mean_volume'] = mean_volume
-                volumes['max_volume'] = max_volume
-
-        except re.error as re_error:
-            logger.error(f"Regex error processing {output_str}", exc_info=True)
-            raise re_error
-        except Exception as e_error:
-            logger.exception(f"Exception {type(e_error).__name__} getting volume for file {file_path}", stack_info=True)
-            raise e_error
-        else:
-            return volumes
 
 
     def level_normalize_walk(
@@ -913,3 +920,4 @@ class AudioNormalization():
         except Exception as e_error:
             logger.exception(f"Exception {type(e_error).__name__} while rms normalizing audio file: {file_path}", stack_info=True)
             raise e_error
+    # @}

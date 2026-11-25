@@ -1,0 +1,32 @@
+Helpers called by those GUI/CLI facing methods
+AudioArt:
+  extract_asf_art
+  extract_ffmpeg_art
+  extract_m4a_art
+  extract_flac_art
+  extract_mp3_art
+  has_video_stream
+AudioMetadata:
+  get_ffprobe_tags
+  get_media_info
+  get_mutagen_tags
+  get_metadata_class
+  has_art_tag
+  load_any_file
+  map_flac_tags
+  map_m4a_tags
+  map_mp3_tags
+  map_wma_tags
+AudioNormalization:
+  get_ebu_loudness_info
+  get_bit_rate
+  get_sample_rate
+  get_volume_info
+AudioPlaylist:
+  get_audio_name
+DirectoryProcessing:
+  create_csv
+  create_txt
+  get_file_directory
+  make_dir
+  path_info

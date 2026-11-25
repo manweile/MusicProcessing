@@ -1,0 +1,32 @@
+GUI/CLI-facing model methods
+AudioUtilities:
+  clip_check_file
+  clip_check_walk
+AudioArt:
+  extract_album_art
+  extract_walk
+  set_album_art
+AudioMetadata:
+  convert_file
+  convert_walk
+  create_album_dirs
+  get_media_info_walk
+  get_tags_walk
+  normalize_filename
+  normalize_filename_walk
+  rename_album_directories
+  update_genres
+AudioNormalization:
+  ebu_normalize_file
+  level_normalize_walk
+  peak_normalize_file
+  rms_normalize_file
+AudioPlaylist:
+  update_playlist
+  update_walk
+DirectoryProcessing:
+  get_audio_file_list
+  get_ext_file_list
+  remove_empty_albums
+  remove_pattern
+  remove_set_list

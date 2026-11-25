@@ -429,3 +429,23 @@ DISPOSED:
     b) need to diagnose and fix on ubuntu laptop
     c) needs to be OS agnostic - must run under windows 10 and ubuntu 26
   COMPLETED
+
+  48) add the new functionality:
+    a)clip check, clip check walk, add albums, rename albums, rename file, rename file walk
+  COMPLETED
+
+  49) all GUI objects need to be in camelCase
+    a) really confusing if not;
+    eg list_type_tld  its a wx.TextCtrl for directory path input
+      i) when you see it like this: self.list_type_tld, while it is a variable
+      ii) it is really a TextCtrl variable and will be exposed  to other modules, especially handlers.py!
+    b) complete BEFORE Milestone 7 Phase 2
+  COMPLETED
+
+  50) figure out how to test gui functionality
+    a) research
+      i) refer to page 144 of wxPython in Action
+      ii) get google search from phone
+    b) test very basic gui functionality; existing test suite handles the models
+    c) update testing.md
+  COMPLETED
