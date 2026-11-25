@@ -1,6 +1,6 @@
 '''
 @class TestProgress
-@file test_tests_progress.py
+@file test_support_progress.py
 @author Gerald Manweiler
 
 @brief Defines the progress interface tests.

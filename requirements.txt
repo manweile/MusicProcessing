@@ -5,15 +5,13 @@ colorama>=0.4.6
 termcolor>=2.3.0
 
 # project external libraries
-## gui libraries
+## open-source, cross-platform GUI toolkit for desktop applications with graphical user interfaces
 wxpython>=4.2.3
-
-## audio libraries
+# to read, write, and manipulate audio metadata across many file formats
 mutagen>=1.47.0
-
-## path validation libraries
+# to sanitize and validate filenames and file paths across different operating systems
 pathvalidate>=3.2.3
-
-## progress bar & toast libraries
+# to add customizable progress bars to loops, iterables, and long-running tasks
 tqdm>=4.67.1
+# to create animated loading spinners in the terminal
 yaspin>=3.1.0

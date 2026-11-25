@@ -2,6 +2,13 @@
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "2.0.0",
+    "inputs": [
+        {
+            "id": "cliSubcommandArguments",
+            "type": "promptString",
+            "description": "Enter a CLI subcommand and any arguments, or --help",
+        }
+    ],
     "tasks": [
 
       /** Doxygen Tasks */
@@ -160,6 +167,5 @@
           "close": false
         }
       }
-
     ]
 }

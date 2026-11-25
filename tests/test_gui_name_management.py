@@ -27,6 +27,7 @@ import wx                                                   # for wxPython GUI c
 
 # Local Module Methods
 from tests.support import get_method_names                  # for direct test-suite construction
+from tests.support import get_wx_app                        # for shared wx application instance
 
 # Local Module Constants
 from tests import TEST_FLAC_CREAM                           # test data for Cream FLAC audio file
@@ -144,17 +145,11 @@ class TestGuiNameManagement(TestCase):
         @param cls {TestGuiNameManagement} Test class receiving shared fixtures.
         '''
 
-        # initialize the wx.App instance for the GUI tests
-        cls.app = wx.App(False)
+        # reuse the wx.App instance for the GUI tests, else could get a segmentation fault due to multiple wx.App instances
+        cls.app = get_wx_app()
 
         # prepare the list of source file paths for the tests
-        cls.prepped_src_file_paths = [
-            TEST_M4A_EAGLES,
-            TEST_MP3_ABBA,
-            TEST_MP3_GENESIS,
-            TEST_MP3_NO_METADATA,
-            TEST_WMA_CCR,
-        ]
+        cls.prepped_src_file_paths = [TEST_M4A_EAGLES, TEST_MP3_ABBA, TEST_MP3_GENESIS, TEST_MP3_NO_METADATA, TEST_WMA_CCR]
 
 
     def setUp(self):
@@ -196,7 +191,10 @@ class TestGuiNameManagement(TestCase):
             utilities=AudioUtilities(),
             playlist=AudioPlaylist(),
         )
+
+        # yield to the GUI event loop to ensure the frame is fully initialized
         wx.YieldIfNeeded()
+        # add cleanup to destroy the frame after the test completes
         self.addCleanup(self._destroy_frame)
 
 
@@ -262,11 +260,13 @@ class TestGuiNameManagement(TestCase):
         @param self {TestGuiNameManagement} The instance of the test class.
         '''
 
+        # create the artist directory and the incorrectly named album directory
         artist_dir = os.path.join(self.prepped, "Genesis")
         wrong_dir = os.path.join(artist_dir, "In Too Deep-I’d Rather Be You")
         expected_dir = os.path.join(artist_dir, "In Too Deep - I'd Rather Be You")
         genesis_file = os.path.join(artist_dir, os.path.basename(TEST_MP3_GENESIS))
 
+        # create the incorrectly named album directory and move the Genesis file into it
         os.makedirs(wrong_dir)
         shutil.move(genesis_file, os.path.join(wrong_dir, os.path.basename(TEST_MP3_GENESIS)))
 
@@ -279,6 +279,7 @@ class TestGuiNameManagement(TestCase):
 
         # set the path control value to the prepped directory
         path_control.SetValue(self.prepped)
+
 
         def rename_albums():
             '''
@@ -306,6 +307,7 @@ class TestGuiNameManagement(TestCase):
         os.makedirs(wrong_dir)
         shutil.copy2(TEST_MP3_GENESIS, os.path.join(wrong_dir, os.path.basename(TEST_MP3_GENESIS)))
 
+        # trigger the renaming process and verify the results
         rename_albums()
         self.assertFalse(os.path.exists(wrong_dir))
         self.assertTrue(os.path.isfile(os.path.join(expected_dir, os.path.basename(TEST_MP3_GENESIS))))
@@ -323,9 +325,11 @@ class TestGuiNameManagement(TestCase):
         @param self {TestGuiNameManagement} The instance of the test class.
         '''
 
+        # prepare a generated album-art file for the target album
         test_dir = os.path.join(self.prepped, "normalize_filename_walk")
         os.makedirs(test_dir)
 
+        # copy the audio fixtures into the test directory with incorrect names
         audio_files = [
             (TEST_MP3_10CC, "10cc-Donna.mp3"),
             (TEST_FLAC_CREAM, "Cream-Politician.flac"),
@@ -334,9 +338,12 @@ class TestGuiNameManagement(TestCase):
             (TEST_WMA_CCR, "Creedence Clearwater Revival-Fortunate Son.wma"),
             (TEST_WMA_JOHN, "Elton John-Saturday Night’s Alright (for Fighting).wma")
         ]
+
+        # prepare lists to track the source and normalized file paths
         source_files = []
         normalized_files = []
 
+        # copy the audio fixtures to the test directory with incorrect names and track their paths
         for index, (fixture, normalized_name) in enumerate(audio_files):
             _, file_ext = os.path.splitext(fixture)
             source_file = os.path.join(test_dir, f"incorrect-name-{index}{file_ext}")
@@ -344,6 +351,7 @@ class TestGuiNameManagement(TestCase):
             source_files.append(source_file)
             normalized_files.append(os.path.join(test_dir, normalized_name))
 
+        # create a non-audio file to ensure it is not affected by the renaming process
         notes_file = os.path.join(test_dir, "notes.txt")
         with open(notes_file, "w", encoding="utf-8") as notes:
             notes.write("not an audio file")
@@ -362,12 +370,15 @@ class TestGuiNameManagement(TestCase):
         # wait until the log indicates that filename normalization has completed
         self._wait_until(lambda: "normalize_filename_walk completed." in self.frame.mainLog.GetValue())
 
+        # verify that all source files have been removed after renaming
         for source_file in source_files:
             self.assertFalse(os.path.exists(source_file), source_file)
 
+        # verify that all normalized files exist after renaming
         for normalized_file in normalized_files:
             self.assertTrue(os.path.isfile(normalized_file), normalized_file)
 
+        # verify that the non-audio file remains unaffected by the renaming process
         self.assertTrue(os.path.isfile(notes_file), notes_file)
 
 
@@ -382,9 +393,11 @@ class TestGuiNameManagement(TestCase):
         @param self {TestGuiNameManagement} The instance of the test class.
         '''
 
+        # prepare the test directory for renaming a single audio file
         test_dir = os.path.join(self.prepped, "rename_single_file")
         os.makedirs(test_dir)
 
+        # define the source and normalized file paths for the test
         wrong_file = os.path.join(test_dir, "incorrect-name.mp3")
         normalized_file = os.path.join(test_dir, "10cc-Donna.mp3")
         shutil.copy2(TEST_MP3_10CC, wrong_file)

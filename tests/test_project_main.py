@@ -1,6 +1,6 @@
 '''
 @class TestMain
-@file test_main.py
+@file test_project_main.py
 @author Gerald Manweiler
 
 @brief Defines the test main logging class.

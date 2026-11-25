@@ -1,6 +1,6 @@
 '''
 @class TestDirectoryProcessing
-@file test_directory_processing.py
+@file test_models_directory_processing.py
 @author Gerald Manweiler
 
 @brief Defines the test directory processing class.

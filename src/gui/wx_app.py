@@ -791,7 +791,7 @@ class MainFrame(wx.Frame):
         self.extractArtFileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.extractArtFilePath, wildcard_exts))
 
         # create the extract file art button
-        self.extractArtFile = wx.Button(filePanel, label="Extract File Art")
+        self.extractArtFile = wx.Button(filePanel, label="Extract File Art", name="extractArtFile")
         self.extractArtFile.Bind(wx.EVT_BUTTON, self.eventHandlers.on_extract_art_file)
 
         # create a horizontal sizer for the file path and extract buttons

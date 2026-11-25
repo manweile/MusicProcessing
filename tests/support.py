@@ -16,6 +16,9 @@
 # Standard Modules
 import inspect                                              # for test method discovery
 
+# Third-Party Modules
+import wx                                                   # for wxPython GUI components
+
 # Local Module Classes
 from src.core.progress import ProgressReporter              # progress reporting interface
 
@@ -89,6 +92,8 @@ class FakeProgress(ProgressReporter):
         self.starts.append((total, description))
 
 
+## @name Test Suite Execution Helpers
+# @{
 def get_method_names(cls) -> list[str]:
     '''
     @brief Get names of test methods defined by a class.
@@ -109,3 +114,22 @@ def get_method_names(cls) -> list[str]:
                 method_names.append(name)
 
     return method_names
+
+
+def get_wx_app():
+    '''
+    @brief Retrieves the shared wx.App instance.
+
+    @details Returns the existing wx.App instance if available, otherwise creates a new one.<br>
+    Ensures that only one wx.App instance exists throughout the tests, preventing segmentation faults in CI runs.
+
+    @retval {wx.App} The shared wx.App instance.
+    '''
+
+    app = wx.App.Get()
+
+    if app is None:
+        app = wx.App(False)
+
+    return app
+## @}

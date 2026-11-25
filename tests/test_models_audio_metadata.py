@@ -653,6 +653,8 @@ class TestAudioMetadata(TestCase):
 
         @details The function should correctly retrieve media information for all audio files located in top level directory of the specified path.
 
+        @note Ffmpeg version may affect the number of keys returned by ffprobe, so minimum key counts are used for validation.
+
         @test Happy path.
 
         @param self {TestAudioMetadata} The instance of the test class.

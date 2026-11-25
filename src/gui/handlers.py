@@ -69,6 +69,7 @@ class EventHandlers:
         @param directory {DirectoryProcessing} The directory-processing model instance.
         @param metadata {AudioMetadata} The audio-metadata model instance.
         @param normalization {AudioNormalization} The audio-normalization model instance.
+        @param utilities {AudioUtilities} The audio-utilities model instance.
         @param playlist {AudioPlaylist} The audio-playlist model instance.
         '''
 

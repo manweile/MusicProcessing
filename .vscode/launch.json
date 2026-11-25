@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        // just like it says, no option for input arguments though
         {
             "name": "Python Debugger: Current File",
             "type": "debugpy",
@@ -12,6 +13,8 @@
             "console": "integratedTerminal",
             "justMyCode": false
         },
+        // really meant for entering command-line arguments for the CLI version of MusicProcessing,
+        // BUT you can enter the "gui" argument here if you want to launch the GUI from the CLI configuration
         {
             "name": "Python Debugger: MusicProcessing CLI",
             "type": "debugpy",
@@ -22,8 +25,8 @@
             "cwd": "${workspaceFolder}",
             "justMyCode": false
         },
-        // the environment variable MUSICPROCESSING_GUI_DISPLAY is only set when launching the GUI configuration
-        // code using the environment variable must check for key/value
+        // the environment variable MUSICPROCESSING_GUI_DISPLAY sets the display location
+        // the main GUI app code is coupled to this environment variable
         {
             "name": "Python Debugger: MusicProcessing GUI",
             "type": "debugpy",

@@ -25,6 +25,9 @@ The upper centre monitor is horizontally aligned with respect to the lower centr
 | Lower Centre      | Secondary | 125%    | 1536 x 864  | (+192, +1080)  | (+192, +1080) to (+1728, +1944)    |
 | Lower Right       | Secondary | 125%    | 1536 x 864  | (+1728, +1080) | (+1728, +1080) to (+3264, +1944)   |
 
+Configuration info is pertinent to the Python GUI Debugger launch.json task; I like the GUI to display in lower-left monitor when debugging.<br>
+The main GUI app code is coupled to this configuration and the launch.json task using it; refer to both for details.
+
 ## Git For Windows
 
 [Git for Windows](https://gitforwindows.org/) offers a lightweight set of tools, bringing the full feature set of the Git SCM to Windows.<br>
@@ -40,19 +43,31 @@ You can find full documentation at the link.
 
 This project **requires**  the following Python Modules:
 
-#### external library dependencies
+```text
+# project external library dependencies
+## dependency of tqdm
+colorama>=0.4.6
+## dependency of yaspin
+termcolor>=2.3.0
 
-- colorama>=0.4.6                                           # dependency of tqdm
-- termcolor>=2.3.0                                          # dependency of yaspin
+# project external libraries
+## open-source, cross-platform GUI toolkit for desktop applications with graphical user interfaces
+wxpython>=4.2.3
+# to read, write, and manipulate audio metadata across many file formats
+mutagen>=1.47.0
+# to sanitize and validate filenames and file paths across different operating systems
+pathvalidate>=3.2.3
+# to add customizable progress bars to loops, iterables, and long-running tasks
+tqdm>=4.67.1
+# to create animated loading spinners in the terminal
+yaspin>=3.1.0
+```
 
-##### required project external libraries
+Save the required modules in `requirements.txt` at root level. The Github remote & local CI and  will need them.<br>
+Technically, the dependencies do not need to be listed first; doing so is just future proofing in case one of them becomes a legacy package.<br>
+The `>=` is also future proofing, but in this case for OS & Python version updates/upgrades.
 
-- mutagen>=1.47.0                                           # to read, write, and manipulate audio metadata across many file formats
-- pathvalidate>=3.2.3                                       # to sanitize and validate filenames and file paths across different operating systems
-- tqdm>=4.67.1                                              # to add customizable progress bars to loops, iterables, and long-running tasks
-- yaspin>=3.1.0                                             # to create animated loading spinners in the terminal
-
-Install all of them via pip, eg:
+Install individually via pip, eg:
 
 ```powershell
 pip install mutagen==1.47.0
@@ -64,7 +79,11 @@ or
 python -m pip install mutagen==1.47.0
 ```
 
-Save the required modules in `requirements.txt` at root level. The Github remote & local CI and  will need them.
+or en masse:
+
+```powershell
+pip install -r requirements.txt
+```
 
 ## FFMPEG & FFPROBE
 
@@ -72,8 +91,13 @@ Save the required modules in `requirements.txt` at root level. The Github remote
 It is able to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.<br>
 It supports the most obscure ancient formats up to the cutting edge.
 
-FFmpeg compiles and runs across Linux, Mac OS X, Microsoft Windows, the BSDs, Solaris, etc.<br>
-I am using version n7.1.1-57-g1b48158a23-20250831 on my win 10 hardware, and 8.0.1-3ubuntu2 on my Linux hardware.
+FFmpeg compiles and runs across Linux, Mac OS X, Microsoft Windows, the BSDs, Solaris, etc.
+
+I am currently using version 8.01 on both my Windows 10 and Ubuntu hardware.<br>
+The CI is using version 8.1; it's easier for the workflow to acquire programmatically.
+
+The mismatch does require cognizance in the metadata test suite.<br>
+Version 8.1 and up has slightly different values in some situations. Refer to the metadata test suite test case doc header notes.
 
 ### FFMPEG
 
@@ -89,7 +113,7 @@ I am using version n7.1.1-57-g1b48158a23-20250831 on my win 10 hardware, and 8.0
 It supports ASF (wma), FLAC, MP4 (m4a), and MP3 audio files. All versions of ID3v2 are supported.<br>
 It works with Python 3.10+ on Linux, Windows and macOS, and has no dependencies outside the Python standard library.
 
-## VS Code Setup
+## VS Code
 
 [VS Code](https://code.visualstudio.com/). Follow the links.
 
@@ -109,8 +133,9 @@ Get-Content -Path "D:\MusicProcessing\docs\extensions\extensions.txt" | ForEach-
 
 **Caveat Emptor**
 I make no promises about usability if you install the extensions as is, I can't know whats on *your* system after all.<br>
-I also use VS Code extensions for C/C++ development, so there are extensions dependent on that in my list.<br>
-I am reasonably confident VS Code won't turn belly up on you, it's never happened to me.
+I also use VS Code extensions for C/C++ development, so there are extensions dependent on that in my list.
+
+I am reasonably confident VS Code won't turn belly up on you, it's never happened to me when I have installed from an extensions list.
 
 **Note** VS code needs to be in your system PATH.
 
@@ -133,28 +158,27 @@ The heuristic I use for selection is:
 - how many downloads does it have
 - is it currently supported
 
-### LAUNCH json
+### Launch json
 
 Launch.json is a configuration file used to set up and customize debugging and execution environment details for your applications.<br>
-It is located in the `.vscode`folder at the root of your project workspace.<br>
-Configures how to run, debug, or interact with your code when you press the F5 key or hit the "Run and Debug" button.<br>
+Configures what happens when you press the F5 key or hit the "Run and Debug" button.<br>
+It is located in the `.vscode`folder at the root of your project workspace.
+
 By default, VS Code tries to automatically run the file you currently have open.<br>
 However, many projects require specific parameters to execute correctly. You use launch.json when your application needs:
 
 - A specific entry point (e.g., always starting from a main.py, no matter which file you are currently editing).
-  - with or without command-line arguments passed into the program.
+  - in CLI mode with requirement to enter subcommands & options
+  - in GUI mode
 - A currently open file
 
-### TASKS json
+### Tasks json
 
 Tasks.json is a configuration file used to automate repetitive development workflows and integrate external tools directly into the editor.<br>
-It is located in the `.vscode`folder at the root of your project workspace.<br>
-Instead of manually opening a terminal and re-typing commands, you can trigger them with a single keyboard shortcut or from drop down menus.
+Instead of manually opening a terminal and typing commands, you can trigger them with a single keyboard shortcut or from drop down menus.<br>
+It is located in the `.vscode`folder at the root of your project workspace.
 
-- Running Tests: Executing test suites like pytest and automatically updating local coverage reports.
-- Debugging Glue: paired with launch.json (via the preLaunchTask setting) to automatically build your app right before the debugger launches.
-
-### Github Instructions
+## Github Instructions
 
 The instructions md files automatically configure and guide the behavior of GitHub Copilot.<br>
 They act as persistent background rules that force the AI to follow your team's exact coding standards, frameworks,
@@ -165,23 +189,24 @@ It's behaviour is injected into every single prompt or inline request across the
 
 The scoped files are at `/.github/instructions` and need an `applyTo` glob pattern file specifying when they apply.
 
-### Github Workflows
+## Github Workflows
 
 GitHub workflow YAML files define automated processes for your code repository.<br>
 They act as the "instruction manuals" for GitHub Actions, telling GitHub exactly when and
 how to automatically build, test, package, or deploy your project.<br>
 These files must be saved in the `.github/workflows/` directory of your repository to work.
 
-### GitHub Local Actions
+## GitHub Local Actions
 
-I regard GitHub Local Actions (GLA) as an essential external tool.<br>
-It allows you to quickly and efficiently run your workflows locally,
-bypassing the hassle of committing and pushing changes every time you need to test a workflow.
+I regard GitHub Local Actions (GLA) as an essential tool.<br>
+It allows you to quickly and efficiently run your workflows locally.<br>
+This bypasses the tedium of committing and pushing changes every time you need to test a workflow.<br>
+Furthermore, if the workflow needs debugging, you have better tools locally, and you haven't burned Github Action minutes.
 
 GLA uses the nektos/act CLI tool to read your GitHub Actions from your `.github/workflows/*`.<br>
 Once nektos/act has the execution path and dependencies, it uses the Docker API to run the necessary containers.
 
-#### Requirements
+### GLA Requirements
 
 - [GitHub Local Actions](https://marketplace.visualstudio.com/items?itemName=SanjulaGanepola.github-local-actions)
   - [GitHub Local Actions Docs](https://sanjulaganepola.github.io/github-local-actions-docs/)
@@ -193,7 +218,9 @@ I'm not going to go into *all* the ins and outs of installing nektos/act and Doc
 You can find the documentation by following the links.<br>
 While it is tedious, it is not overly complex.
 
-#### Images and Runners
+I am also not going into how to use both - thats a whole other kettle of fish and well beyond the scope of this document.
+
+### Images and Runners
 
 GLA **requires** a Ubuntu image; easiest way to get an image is via terminal cli: `docker pull <image>`<br>
 e.g. `docker pull docker.gitea.com/runner-images:ubuntu-26.04`
@@ -222,7 +249,7 @@ Add the image to the file: `docker pull docker.gitea.com/runner-images:ubuntu-26
 Map the runner label defined in `python-app.yml` ie `runs-on: ubuntu-26.04` to its matching local Docker image in GLA's **Runners** settings.<br>
 Ensure the checkbox next to `ubuntu-26.04` is enabled so nektos/act uses the Ubuntu 26.04 container image specified in `.actrc` without prompting.
 
-#### Secrets (GITHUB_TOKEN)
+### Secrets (GITHUB_TOKEN)
 
 GitHub token for local runs: GitHub Actions automatically provides `github.token` to workflows.<br>
 GLA and nektos/act need to provide a `GITHUB_TOKEN` secret if the selected workflow or action needs to authenticate with GitHub APIs.
@@ -230,7 +257,7 @@ GLA and nektos/act need to provide a `GITHUB_TOKEN` secret if the selected workf
 The artifact and workflow cleanup jobs use the token for deletion requests.<br>
 Use a token with only the permissions those jobs need, store it in the extension’s Secrets settings, and do not commit it to the repository.
 
-#### Options
+### Options
 
 Configure the following flags in GLA's **Options** settings to test uncommitted changes and speed up local runs:
 
