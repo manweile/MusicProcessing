@@ -1133,6 +1133,7 @@ class AudioMetadata():
                         data=album_art_file.read()
                     )
                 )
+
             # have to specify ID3v2 version to avoid defaults to v2.4
             # which are not compatible with Windows display
             mp3_file.save(v2_version=3)
@@ -1150,7 +1151,14 @@ class AudioMetadata():
             raise e_error
 
 
-    def convert_walk(self, start_path: str, file_pattern: str, target: str = None, show_spinner: bool = True, progress: ProgressReporter | None = None):
+    def convert_walk(
+        self,
+        start_path: str,
+        file_pattern: str,
+        target: str = None,
+        show_spinner: bool = True,
+        progress: ProgressReporter | None = None
+    ):
         '''
         @brief Converts all audio files found in specified path to mp3 format.
 

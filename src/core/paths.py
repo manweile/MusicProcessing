@@ -37,7 +37,7 @@ SRC_PATH = os.path.join(PROJECT_ROOT, "src")
 ## @var GENERATED_PATH
 # @brief Generated-files directory path.
 # @details Provides a shared path and supports an environment override for isolated test output when running in Github Local Actions CI environment.
-GENERATED_PATH = os.environ.get("MUSICPROCESSING_GENERATED_PATH") or os.path.join(SRC_PATH, "generated_files")
+GENERATED_PATH = os.environ.get("GLA_GENERATED_PATH") or os.path.join(SRC_PATH, "generated_files")
 
 ## @var RESOURCES_PATH
 # @brief Resources directory path.

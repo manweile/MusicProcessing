@@ -80,8 +80,8 @@ class DirectoryProcessing():
         pass
 
 
-    def create_csv(self, csv_filename: str, data: list,
-                   csv_dir: str | None = None, text_mode: str | None = None, header_row: list | None = None, sort_col: int | None = None) -> None:
+    def create_csv(self, csv_filename: str, data: list, csv_dir: str | None = None, text_mode: str | None = None, header_row: list | None = None,
+                   sort_col: int | None = None) -> None:
         '''
         @brief Creates a CSV file.
 

@@ -205,7 +205,7 @@ jobs:
 
       # 1: pythontracemalloc to track memory allocations during non-Github Local Actions runs; helps identify memory leaks and optimize memory usage
       # 2: for Github Local Actions runs, set up generated files path to store generated files in shared memory;
-      # coupled to pertinent test suites to ensure isolation and prevent interference with other tests
+      # coupled to pertinent test suites & core modules to ensure isolation and prevent interference with other tests
       # 3:particular unittest test suite files now coupled to pattern; any change to them requires updating the patterns here accordingly
 
       # non-GUI test suites run first to prevent any interference with GUI tests
@@ -214,9 +214,9 @@ jobs:
           PYTHONTRACEMALLOC: ${{ steps.detect-act.outputs.is-act == 'false' && '1' || '0' }}
         run: |
           if [ "${ACT:-false}" = "true" ]; then
-            export MUSICPROCESSING_GENERATED_PATH=/dev/shm/generated_files
-            rm -rf "$MUSICPROCESSING_GENERATED_PATH"
-            mkdir -p "$MUSICPROCESSING_GENERATED_PATH"
+            export GLA_GENERATED_PATH=/dev/shm/generated_files
+            rm -rf "$GLA_GENERATED_PATH"
+            mkdir -p "$GLA_GENERATED_PATH"
           fi
 
           for pattern in \
@@ -235,9 +235,9 @@ jobs:
           PYTHONTRACEMALLOC: ${{ steps.detect-act.outputs.is-act == 'false' && '1' || '0' }}
         run: |
           if [ "${ACT:-false}" = "true" ]; then
-            export MUSICPROCESSING_GENERATED_PATH=/dev/shm/generated_files
-            rm -rf "$MUSICPROCESSING_GENERATED_PATH"
-            mkdir -p "$MUSICPROCESSING_GENERATED_PATH"
+            export GLA_GENERATED_PATH=/dev/shm/generated_files
+            rm -rf "$GLA_GENERATED_PATH"
+            mkdir -p "$GLA_GENERATED_PATH"
           fi
 
           for pattern in \

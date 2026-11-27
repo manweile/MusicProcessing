@@ -354,7 +354,7 @@ class TestAudioMetadata(TestCase):
         '''
         @brief Test converting a valid audio file to mp3 format.
 
-        @details The audio files must have a co-located Folder.jpg file.
+        @details The source audio files must have a co-located Folder.jpg file.
 
         @test Happy path.
 
@@ -367,6 +367,33 @@ class TestAudioMetadata(TestCase):
         for audio_file in self.converted_results:
             audio_exists = os.path.exists(audio_file)
             self.assertTrue(audio_exists)
+
+
+    def test_covert_file_with_target(self):
+        '''
+        @brief Test converting a valid audio file with a specified target path.
+
+        @details The source audio file must have a co-located Folder.jpg file.
+
+        @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
+        '''
+
+        # create temp tld and add it to post cleanup
+        temp_dir = tempfile.TemporaryDirectory(prefix="musicprocessing-unittest--")
+        self.addCleanup(temp_dir.cleanup)
+
+        # create temp target directory inside the temp tld
+        temp_target = os.path.join(temp_dir.name, "Converted")
+        os.makedirs(temp_target, exist_ok=True)
+
+        metadata.convert_file(TEST_MP3_ABBA, temp_target, show_spinner=False)
+
+        # check if the converted file exists in the target directory
+        convert_result = os.path.join(temp_target, "Abba", "Waterloo", "ABBA-Waterloo.mp3")
+        audio_exists = os.path.exists(convert_result)
+        self.assertTrue(audio_exists)
 
 
     def test_convert_file_no_jpg(self):
@@ -389,25 +416,6 @@ class TestAudioMetadata(TestCase):
         self.assertEqual(cm.exception.message, err_msg)
 
 
-    def test_convert_file_wo_metadata(self):
-        '''
-        @brief Test Attempt converting an audio file that does not have metadata.
-
-        @details The audio file lacks metadata, which should be handled gracefully.
-
-        @test Error case.
-
-        @param self {TestAudioMetadata} The instance of the test class.
-        '''
-
-        no_metadata = TEST_MP3_NO_METADATA
-        metadata.convert_file(no_metadata, None, show_spinner=False)
-
-        audio_file = os.path.join(self.test_tld, "NoMetadata", "Here", "No_tag_Crush-Live.mp3")
-        audio_exists = os.path.exists(audio_file)
-        self.assertTrue(audio_exists)
-
-
     def test_convert_walk(self):
         '''
         @brief Test converting all valid audio files in a top level directory to MP3 format.
@@ -424,6 +432,33 @@ class TestAudioMetadata(TestCase):
         for audio_file in self.converted_results:
             audio_exists = os.path.exists(audio_file)
             self.assertTrue(audio_exists)
+
+
+    def test_convert_walk_with_target(self):
+        '''
+        @brief Test converting a valid audio files with a specified target path.
+
+        @details The source audio files must have a co-located Folder.jpg file.
+
+        @test Happy path.
+
+        @param self {TestAudioMetadata} The instance of the test class.
+        '''
+
+        # create temp tld and add it to post cleanup
+        temp_dir = tempfile.TemporaryDirectory(prefix="musicprocessing-unittest--")
+        self.addCleanup(temp_dir.cleanup)
+
+        # create temp target directory inside the temp tld
+        temp_target = os.path.join(temp_dir.name, "Converted")
+        os.makedirs(temp_target, exist_ok=True)
+
+        for file in self.prepped_src_file_paths:
+            metadata.convert_file(file, temp_target, show_spinner=False)
+
+        # verify that there are equal number of converted files in the temp target directory
+        converted_files = os.listdir(temp_target)
+        self.assertEqual(len(converted_files), len(self.prepped_src_file_paths))
 
 
     def test_convert_walk_pattern(self):

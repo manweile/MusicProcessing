@@ -169,6 +169,7 @@ class TestGuiNameManagement(TestCase):
         os.makedirs(os.path.join(self.generated, CSV_DIR), exist_ok=True)
 
         # patch the GENERATED_PATH constant to point to the temporary generated directory
+        # need it for the tests that check on report generation
         generated_path_patcher = patch("src.models.dir_processing.directory_processing.GENERATED_PATH", self.generated)
         generated_path_patcher.start()
         self.addCleanup(generated_path_patcher.stop)
@@ -210,8 +211,8 @@ class TestGuiNameManagement(TestCase):
         '''
 
         # find the path control and add button for adding album folders
-        path_control = self.frame.FindWindowByName("addAlbumsWalkTld")
-        add_button = self.frame.FindWindowByName("addAlbumsWalk")
+        path_control = self.frame.FindWindowByName("addAlbumsPath")
+        add_button = self.frame.FindWindowByName("addAlbums")
 
         self.assertIsNotNone(path_control)
         self.assertIsNotNone(add_button)
@@ -271,8 +272,8 @@ class TestGuiNameManagement(TestCase):
         shutil.move(genesis_file, os.path.join(wrong_dir, os.path.basename(TEST_MP3_GENESIS)))
 
         # find the path control and button for renaming album folders
-        path_control = self.frame.FindWindowByName("renameAlbumsWalkTld")
-        rename_button = self.frame.FindWindowByName("renameAlbumsWalk")
+        path_control = self.frame.FindWindowByName("renameAlbumsPath")
+        rename_button = self.frame.FindWindowByName("renameAlbums")
 
         self.assertIsNotNone(path_control)
         self.assertIsNotNone(rename_button)
@@ -357,8 +358,8 @@ class TestGuiNameManagement(TestCase):
             notes.write("not an audio file")
 
         # find the path control and button for renaming files
-        path_control = self.frame.FindWindowByName("renameFilesWalkTld")
-        rename_button = self.frame.FindWindowByName("renameFilesWalk")
+        path_control = self.frame.FindWindowByName("renameFilesPath")
+        rename_button = self.frame.FindWindowByName("renameFiles")
 
         self.assertIsNotNone(path_control)
         self.assertIsNotNone(rename_button)
@@ -380,6 +381,10 @@ class TestGuiNameManagement(TestCase):
 
         # verify that the non-audio file remains unaffected by the renaming process
         self.assertTrue(os.path.isfile(notes_file), notes_file)
+
+        # verify that the report for the normalized filename exists
+        report_path = os.path.join(self.generated, CSV_DIR, "normalize_filename" + CSV_EXT)
+        self.assertTrue(os.path.isfile(report_path))
 
 
     def test_rename_file(self):

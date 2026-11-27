@@ -240,7 +240,7 @@ class TestGuiArtProcessing(TestCase):
         '''
 
         # find the path control and extract button for album-art extraction from a directory
-        path_control = self.frame.FindWindowByName("extractArtDirTld")
+        path_control = self.frame.FindWindowByName("extractArtPath")
         extract_button = self.frame.FindWindowByName("extractArtDir")
 
         self.assertIsNotNone(path_control)
@@ -272,8 +272,8 @@ class TestGuiArtProcessing(TestCase):
         '''
 
         # find the path control, pattern choice, and extract button for album-art extraction from a directory
-        path_control = self.frame.FindWindowByName("extractArtDirTld")
-        pattern_choice = self.frame.FindWindowByName("extractArtDirChoice")
+        path_control = self.frame.FindWindowByName("extractArtPath")
+        pattern_choice = self.frame.FindWindowByName("extractArtChoice")
         extract_button = self.frame.FindWindowByName("extractArtDir")
 
         self.assertIsNotNone(path_control)
@@ -329,7 +329,7 @@ class TestGuiArtProcessing(TestCase):
         shutil.copy2(existing_art_source, generated_art)
 
         # find the path control and button for setting album art
-        path_control = self.frame.FindWindowByName("setArtDirTld")
+        path_control = self.frame.FindWindowByName("setArtPath")
         set_button = self.frame.FindWindowByName("setArtDir")
 
         self.assertIsNotNone(path_control)

@@ -53,13 +53,13 @@ class TestCorePaths(TestCase):
         override_path = os.path.join("tmp", "generated_files")
 
         # patch dict to set the environment variable for the override path
-        with patch.dict(os.environ, {"MUSICPROCESSING_GENERATED_PATH": override_path}):
+        with patch.dict(os.environ, {"GLA_GENERATED_PATH": override_path}):
             # assert that the GENERATED_PATH matches the override path
             importlib.reload(paths)
             self.assertEqual(paths.GENERATED_PATH, override_path)
 
         # patch dict to unset the environment variable for the default path
-        with patch.dict(os.environ, {"MUSICPROCESSING_GENERATED_PATH": ""}):
+        with patch.dict(os.environ, {"GLA_GENERATED_PATH": ""}):
             # assert that the GENERATED_PATH falls back to the default path within the source directory
             importlib.reload(paths)
             self.assertEqual(paths.GENERATED_PATH, os.path.join(paths.SRC_PATH, "generated_files"))

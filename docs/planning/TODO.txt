@@ -172,6 +172,11 @@ TODO
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 MODELS:
+  1) rename_album_directories should write a report
+    a) will require changes to test_models_audio_metadata
+    b) will require changes to test_gui_name_management
+  TODO
+
   2) get_audio_file_list has 1 bug
     a) file paths with a comma in them are adding a extra column to output csv
     eg:
@@ -354,6 +359,13 @@ IN PROGRESS
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 TESTING:
+  1) refer to "cleanliness" of how TestGuinNameManagement and TestGuiArtProcessing do their setUpClass & setUp
+    a) I want to use temp dirs instead of creating then removing dirs under /tests/Music
+    b) the only time I need to copy a test fixture is case where the test produces something that would be co-located
+      i) test fixture files and their siblings are immutable
+      ii) eg. extract art tests will produce a jpg. Some test fixtures already have a co-located jpeg, don't want to overwrite
+  TODO
+
   2) add a test for get_ebu_loudness_info
     a) missed it somehow
   TODO
@@ -400,7 +412,7 @@ TESTING:
           Found 1 unknown type files
             D:\MusicProcessing\tests\Music\test.sh
           Found 10 non-audio files
-  TODO
+    TODO
 
   5) test_directory_processing should really have tests to create csv/txt files in default locations too
     a) have tests for alternate locations
@@ -436,5 +448,10 @@ TESTING:
       i) maybe it should be in test_cli.py
     b) test_main_help_matches_baseline
       i) maybe it should be in test_cli.py
+  TODO
+
+  9) convert file/convert walk tests need change
+    a) they only test mp3 to mp3 conversion
+    b) single file can stay mp3, but convert walk should do flac, m4a, and wma
   TODO
 TODO

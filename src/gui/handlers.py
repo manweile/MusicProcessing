@@ -216,7 +216,7 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before creating album directories
-            tld = self.mainFrame.addAlbumsWalkTld.GetValue().strip()
+            tld = self.mainFrame.addAlbumsPath.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(tld):
@@ -242,7 +242,7 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before renaming albums
-            tld = self.mainFrame.renameAlbumsWalkTld.GetValue().strip()
+            tld = self.mainFrame.renameAlbumsPath.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(tld):
@@ -268,7 +268,7 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before renaming files from a directory walk
-            start_path = self.mainFrame.renameFilesWalkTld.GetValue().strip()
+            start_path = self.mainFrame.renameFilesPath.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(start_path):
@@ -320,18 +320,18 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before extracting album art from a directory walk
-            start_path = self.mainFrame.extractArtDirTld.GetValue().strip()
+            start_path = self.mainFrame.extractArtPath.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(start_path):
                 return
 
             # get the file type pattern selection from the GUI
-            selection = self.mainFrame.extractArtDirChoice.GetSelection()
+            selection = self.mainFrame.extractArtChoice.GetSelection()
             if selection == 0:
                 pattern = None
             else:
-                pattern = self.mainFrame.extractArtDirChoice.GetString(selection)
+                pattern = self.mainFrame.extractArtChoice.GetString(selection)
 
             self.mainFrame.taskRunner.run_task(self.art.extract_walk, start_path, pattern)
 
@@ -353,7 +353,7 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before setting album art for audio files in a directory
-            tld = self.mainFrame.setArtDirTld.GetValue().strip()
+            tld = self.mainFrame.setArtPath.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(tld):
@@ -406,22 +406,31 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before conversion
-            tld = self.mainFrame.convertAudioDirTld.GetValue().strip()
+            src = self.mainFrame.convertAudioSrcPath.GetValue().strip()
 
             # not a valid directory, return early
-            if not self._validate_dir(tld):
+            if not self._validate_dir(src):
                 return
 
+            # get the optional target path from the GUI and validate it if provided
+            dest = self.mainFrame.convertAudioDestPath.GetValue().strip()
+
+            # not a valid directory, return early
+            if dest and not self._validate_dir(dest):
+                return
+
+            # handle empty destination path by setting it to None
+            if dest == "":
+                dest = None
+
             # get the file type pattern selection from the GUI
-            selection = self.mainFrame.convertAudioDirChoice.GetSelection()
+            selection = self.mainFrame.convertAudioChoice.GetSelection()
             if selection == 0:
                 pattern = None
             else:
-                pattern = self.mainFrame.convertAudioDirChoice.GetString(selection)
+                pattern = self.mainFrame.convertAudioChoice.GetString(selection)
 
-            # callback = self.mainFrame.show_generated_files
-            # self.mainFrame.taskRunner.run_task(self.metadata.convert_walk, tld, pattern, on_success=callback)
-            self.mainFrame.taskRunner.run_task(self.metadata.convert_walk, tld, pattern)
+            self.mainFrame.taskRunner.run_task(self.metadata.convert_walk, src, pattern, dest)
 
         except Exception as e_error:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
@@ -442,15 +451,22 @@ class EventHandlers:
 
         try:
             # get the file path from the GUI and validate it before conversion
-            path = self.mainFrame.convertAudioFilePath.GetValue().strip()
+            path = self.mainFrame.convertAudioFileSrcPath.GetValue().strip()
 
             # not a valid file, return early
             if not self._validate_file(path):
                 return
 
-            # callback = self.mainFrame.show_generated_files
-            # self.mainFrame.taskRunner.run_task(self.metadata.convert_file, path, on_success=callback)
-            self.mainFrame.taskRunner.run_task(self.metadata.convert_file, path)
+            # get the optional target path from the GUI and validate it if provided
+            dest = self.mainFrame.convertAudioFileDestPath.GetValue().strip()
+            if dest and not self._validate_dir(dest):
+                return
+
+            # handle an empty destination path by using the default output folder
+            if dest == "":
+                dest = None
+
+            self.mainFrame.taskRunner.run_task(self.metadata.convert_file, path, dest)
 
         except Exception as e_error:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
@@ -470,7 +486,7 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before clip checking
-            tld = self.mainFrame.clipCheckDirTld.GetValue().strip()
+            tld = self.mainFrame.clipCheckPath.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(tld):
@@ -523,14 +539,14 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before normalizing audio files in a directory walk
-            tld = self.mainFrame.levelAudioDirTld.GetValue().strip()
+            tld = self.mainFrame.levelAudioPath.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(tld):
                 return
 
             # get the normalization type from the GUI
-            norm_type = self.mainFrame.levelAudioDirChoice.GetStringSelection().lower()
+            norm_type = self.mainFrame.levelAudioChoice.GetStringSelection().lower()
 
             # callback = self.mainFrame.show_generated_files
             # self.mainFrame.taskRunner.run_task(self.normalization.level_normalize_walk, tld, norm_type, on_success=callback)
@@ -686,7 +702,7 @@ class EventHandlers:
 
         try:
             # get the top-level directory from the GUI and validate it before updating a directory walk
-            tld = self.mainFrame.playlistUpdateDirTld.GetValue().strip()
+            tld = self.mainFrame.playlistUpdatePath.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(tld):
@@ -743,14 +759,14 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before removing files matching a pattern
-            tld = self.mainFrame.removePatternDirTld.GetValue().strip()
+            tld = self.mainFrame.removePatternPath.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(tld):
                 return
 
             # get the pattern from the GUI and validate it before removing files matching a pattern
-            pattern = self.mainFrame.removePatternDirInput.GetValue().strip()
+            pattern = self.mainFrame.removePatternInput.GetValue().strip()
 
             # not a valid pattern, return early
             if not pattern:
@@ -801,7 +817,7 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before removing files from the set list
-            tld = self.mainFrame.removeListDirTld.GetValue().strip()
+            tld = self.mainFrame.removeListPath.GetValue().strip()
             if not self._validate_dir(tld):
                 return
 
@@ -825,18 +841,18 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before retrieving media information from a directory walk
-            tld = self.mainFrame.mediaInfoDirTld.GetValue().strip()
+            tld = self.mainFrame.mediaInfoPath.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(tld):
                 return
 
             # get the file type pattern selection from the GUI
-            selection = self.mainFrame.convertAudioDirChoice.GetSelection()
+            selection = self.mainFrame.convertAudioChoice.GetSelection()
             if selection == 0:
                 pattern = None
             else:
-                pattern = self.mainFrame.convertAudioDirChoice.GetString(selection)
+                pattern = self.mainFrame.convertAudioChoice.GetString(selection)
 
             self.mainFrame.taskRunner.run_task(self.metadata.get_media_info_walk, tld, pattern)
 
@@ -860,18 +876,18 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before retrieving media tags from a directory walk
-            tld = self.mainFrame.mediaTagsDirTld.GetValue().strip()
+            tld = self.mainFrame.mediaTagsPath.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(tld):
                 return
 
             # get the file type pattern selection from the GUI
-            selection = self.mainFrame.mediaTagDirChoice.GetSelection()
+            selection = self.mainFrame.mediaTagChoice.GetSelection()
             if selection == 0:
                 pattern = None
             else:
-                pattern = self.mainFrame.mediaTagDirChoice.GetString(selection)
+                pattern = self.mainFrame.mediaTagChoice.GetString(selection)
 
             # ffprobe flag set to false pending implementation of removal from get_tags_walk function
             ffprobe = False
