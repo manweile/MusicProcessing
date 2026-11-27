@@ -18,6 +18,7 @@ import logging                                              # for warning-log as
 import math                                                 # for bitrate comparison rounding
 import os                                                   # for file-system path operations
 import shutil                                               # for test-fixture copying and removal
+import tempfile                                             # for temporary directory structures
 import unittest                                             # for direct test-suite execution
 from json import JSONDecodeError                            # for JSON parsing error assertions
 from pathlib import Path                                    # for test-fixture path manipulation
@@ -43,6 +44,7 @@ from tests import TEST_MP3_CRUSH                            # for linear normali
 from tests import TEST_MP3_SMEAGOL                          # for RMS normalization tests
 from tests import TEST_MP3_X                                # for max-volume tests
 from tests import TESTS_PATH                                # for normalized test-fixture paths
+from tests import TESTS_TLD                                 # test music directory
 
 # Local Module Errors
 from src.core.errors import JSONOutputError                 # for loudnorm output parsing errors
@@ -600,6 +602,89 @@ class TestAudioNormalization(TestCase):
         self.assertEqual("JSONOutputError", cm.exception.__class__.__name__)
         err_msg = f"JSONOutputError could not find JSON output in subprocess stderr\n{test_process.stderr}"
         self.assertEqual(err_msg, cm.exception.message)
+
+
+    def test_normalize_file_with_target(self):
+        '''
+        @brief Test normalization for an audio file with a specified target directory.
+
+        @details Verifies that normalization correctly exports the file to the target directory.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
+        '''
+
+        # create temp tld and add it to post cleanup
+        temp_dir = tempfile.TemporaryDirectory(prefix="musicprocessing-unittest--")
+        self.addCleanup(temp_dir.cleanup)
+
+        # create temp target directory inside the temp tld
+        temp_target = os.path.join(temp_dir.name, "Leveled")
+        os.makedirs(temp_target, exist_ok=True)
+
+        normalization.peak_normalize_file(self.peak_src, temp_target, show_spinner=False)
+
+        leveled_file = os.path.join(temp_target, "Crush", "Here", "Crush-Live.mp3")
+        audio_exists = os.path.exists(leveled_file)
+        self.assertTrue(audio_exists)
+
+
+    def test_normalize_walk_with_target(self):
+        '''
+        @brief Test normalization for all audio files in a directory with a specified target directory.
+
+        @details Verifies that three source files are exported under their artist and album directories.
+
+        @test Happy path.
+
+        @param self {TestAudioNormalization} The instance of the test class.
+        '''
+
+        # create temp directory and add it to post cleanup
+        temp_dir = tempfile.TemporaryDirectory(prefix="musicprocessing-unittest--")
+        self.addCleanup(temp_dir.cleanup)
+
+        # create temp source directory inside the temp tld
+        converted_src = os.path.join(temp_dir.name, "Converted")
+        os.makedirs(converted_src, exist_ok=True)
+
+        # populate the converted source directory with the source files and track expected files and directories paths
+        expected_files = set()
+        expected_dirs = set()
+
+        for source in self.src_file_paths:
+            relative_source_path = os.path.relpath(source, TESTS_TLD)
+            artist, album, _ = relative_source_path.split(os.sep, 2)
+            album_dir = os.path.join(converted_src, artist, album)
+            os.makedirs(album_dir, exist_ok=True)
+            shutil.copy2(source, os.path.join(album_dir, os.path.basename(source)))
+            # track the expected files
+            expected_files.add(Path(relative_source_path))
+            # track the expected directories
+            expected_dirs.add(Path(artist))
+            expected_dirs.add(Path(os.path.join(artist, album)))
+
+        # create temp target directory inside the temp tld
+        temp_target = os.path.join(temp_dir.name, "Leveled")
+        os.makedirs(temp_target, exist_ok=True)
+
+        normalization.level_normalize_walk(converted_src, "peak", temp_target, show_spinner=False)
+
+        # collect all files and directories under the target path after normalization
+        target_path = Path(temp_target)
+        # list all entries under the target path recursively
+        entries = list(target_path.rglob("*"))
+        # separate the entries into files and directories relative to the target path
+        leveled_files = {entry.relative_to(target_path) for entry in entries if entry.is_file()}
+        leveled_dirs = {entry.relative_to(target_path) for entry in entries if entry.is_dir()}
+
+        # verify the number of files and directories matches the expected count
+        self.assertEqual(len(leveled_files), len(expected_files))
+        self.assertEqual(len(leveled_dirs), len(expected_dirs))
+        # verify the actual files and directories match the expected ones
+        self.assertEqual(leveled_files, expected_files)
+        self.assertEqual(leveled_dirs, expected_dirs)
 
 
     def test_normalize_walk_ebu(self):

@@ -445,20 +445,52 @@ class TestAudioMetadata(TestCase):
         @param self {TestAudioMetadata} The instance of the test class.
         '''
 
-        # create temp tld and add it to post cleanup
+        # create temp directory and add it to post cleanup
         temp_dir = tempfile.TemporaryDirectory(prefix="musicprocessing-unittest--")
         self.addCleanup(temp_dir.cleanup)
+
+        # create temp source directory inside the temp tld
+        prepped_source = os.path.join(temp_dir.name, "Source")
+        os.makedirs(prepped_source, exist_ok=True)
+
+        # populate the prepped source directory with the source files and track expected files and directories paths
+        expected_files = set()
+        expected_dirs = set()
+
+        for source in self.prepped_src_file_paths:
+            relative_source_path = os.path.relpath(source, TESTS_TLD)
+            artist, album, _ = relative_source_path.split(os.sep, 2)
+            album_dir = os.path.join(prepped_source, artist, album)
+            os.makedirs(album_dir, exist_ok=True)
+            shutil.copy2(source, os.path.join(album_dir, os.path.basename(source)))
+            source_cover = os.path.join(os.path.dirname(source), FOLDER_ART)
+            shutil.copy2(source_cover, os.path.join(album_dir, FOLDER_ART))
+            # track the expected files
+            expected_files.add(Path(relative_source_path).with_suffix(MP3_EXT))
+            # track the expected directories
+            expected_dirs.add(Path(artist))
+            expected_dirs.add(Path(os.path.join(artist, album)))
 
         # create temp target directory inside the temp tld
         temp_target = os.path.join(temp_dir.name, "Converted")
         os.makedirs(temp_target, exist_ok=True)
 
-        for file in self.prepped_src_file_paths:
-            metadata.convert_file(file, temp_target, show_spinner=False)
+        metadata.convert_walk(prepped_source, None, temp_target, show_spinner=False)
 
-        # verify that there are equal number of converted files in the temp target directory
-        converted_files = os.listdir(temp_target)
-        self.assertEqual(len(converted_files), len(self.prepped_src_file_paths))
+        # collect all files and directories under the target path after conversion
+        target_path = Path(temp_target)
+        # list all entries under the target path recursively
+        entries = list(target_path.rglob("*"))
+        # separate the entries into files and directories relative to the target path
+        leveled_files = {entry.relative_to(target_path) for entry in entries if entry.is_file()}
+        leveled_dirs = {entry.relative_to(target_path) for entry in entries if entry.is_dir()}
+
+        # verify the number of files and directories matches the expected count
+        self.assertEqual(len(leveled_files), len(expected_files))
+        self.assertEqual(len(leveled_dirs), len(expected_dirs))
+        # verify the actual files and directories match the expected ones
+        self.assertEqual(leveled_files, expected_files)
+        self.assertEqual(leveled_dirs, expected_dirs)
 
 
     def test_convert_walk_pattern(self):

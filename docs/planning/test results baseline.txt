@@ -1,15 +1,15 @@
 from Test Result terminal:
 ----------------------------------------------------------------------
-Ran 170 tests in 168.128s
+Ran 172 tests in 226.128s
 
 OK
 Finished running tests!
 
 from Test Explorer UI:
-182/182
+184/184
 
 There 4 test suites with sub tests, for total of 12
-Thats why test UI says 182 tests, but test results terminal says 170
+Thats why test UI says 184 tests, but test results terminal says 172
 
 3 in TestAudioArt.test_unpack_asf_image_malformed_data:
   image payload is truncated

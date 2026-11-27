@@ -426,6 +426,9 @@ class AudioNormalization():
         ffmpeg loudnorm integrated loudness target EBU R128 default: -24.0, using -16.0, which is the AES recommendation for streamed files<br>
         ffmpeg loudnorm loudness range target EBU R128 default: 7, using 11.0 for  wider range<br>
         ffmpeg loudnorm maximum true peak EBU R128 default: -2.0, using default for the extra headroom space vs -1.0 or 0.0<br>
+        <br>
+        Ebu, peak and rms normalization are subtly different from each other with respect to the audio information they need to analyze.<br>
+        EBU R128 focuses on perceived loudness, needing sample rate and bit rate for the normalization.
 
         @code{.text}
         1st pass stats command to get loudnorm statistics
@@ -672,6 +675,9 @@ class AudioNormalization():
         It only ensures that the highest peak reaches the target level.<br>
         Requires an MP3 file.
 
+        @note Ebu, peak and rms normalization are subtly different from each other with respect to the audio information they need to analyze.<br>
+        Peak focuses on maximum signal level, needing bit rate and max volume for the normalization.
+
         @code{.text}
         ffmpeg -hide_banner -i file_path -filter:a volume=adjustmentdB -c:v copy -c:a libmp3lame -b:a bitrate -id3v2_version 3 export_path -y
 
@@ -798,6 +804,9 @@ class AudioNormalization():
         RMS normalization adjusts the audio level based on the root mean square (RMS) value,.<br>
         This better represents perceived loudness compared to peak normalization.
         Requires an MP3 file.
+
+        @note Ebu, peak and rms normalization are subtly different from each other with respect to the audio information they need to analyze.<br>
+        RMS focuses on average power of audio signal, needing bit rate and average volume for the normalization.
 
         @code{.text}
         ffmpeg -hide_banner -i file_path -filter:a volume=adjustmentdB -c:v copy -c:a libmp3lame -b:a bitrate -id3v2_version 3 export_path -y
