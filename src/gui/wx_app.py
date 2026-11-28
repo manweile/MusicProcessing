@@ -174,14 +174,19 @@ class MainFrame(wx.Frame):
     clipCheckFile: wx.Button                                # Button control for performing the file clip check
 
     # controls for directory audio files leveling
-    levelAudioPath: wx.TextCtrl                             # Text control input for level walk path input
+    levelAudioSrcPath: wx.TextCtrl                          # Text control input for level walk path input
     levelAudioSource: wx.Button                             # Button control for browsing level walk path
+    levelAudioDestPath: wx.TextCtrl                         # Text control input for level walk destination path
+    levelAudioTarget: wx.TextCtrl                           # Text control input for level walk target path
     levelAudioChoice: wx.Choice                             # Choice control for selecting level normalization type to use in leveling walk
     levelAudioDir: wx.Button                                # Button control for leveling directory audio
 
     # controls for specific file leveling
-    levelAudioFilePath: wx.TextCtrl                          # Text control input for the level audio file path
+    levelAudioFileSrcPath: wx.TextCtrl                       # Text control input for the level audio file path
     levelAudioFileSource: wx.Button                          # Button control for browsing the level audio file path
+    levelAudioFileDestPath: wx.TextCtrl                      # Text control input for the level audio file destination path
+    levelAudioFileTarget: wx.TextCtrl                        # Text control input for the level audio file target path
+    levelAudioFileChoice: wx.Choice                          # Choice control for selecting level normalization type for the single audio file
     levelAudioFile: wx.Button                                # Button control for performing the level audio file operation
 
     # controls for specific file EBU leveling
@@ -435,9 +440,7 @@ class MainFrame(wx.Frame):
         startPathLabel = wx.StaticText(bulkPanel, label=path_text)
 
         # create controls for selecting the starting path for bulk updating
-        self.addAlbumsPath, self.addAlbumsSource = self._make_source_controls(bulkPanel)
-        self.addAlbumsPath.Name = "addAlbumsPath"
-        self.addAlbumsSource.Name = "addAlbumsSource"
+        self.addAlbumsPath, self.addAlbumsSource = self._make_source_controls(bulkPanel, "addAlbumsPath", "addAlbumsSource")
         self.addAlbumsSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.addAlbumsPath))
 
         # create the update playlist button
@@ -497,9 +500,7 @@ class MainFrame(wx.Frame):
         startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld only:")
 
         # create controls for selecting the starting path for bulk updating
-        self.renameAlbumsPath, self.renameAlbumsSource = self._make_source_controls(bulkPanel)
-        self.renameAlbumsPath.Name = "renameAlbumsPath"
-        self.renameAlbumsSource.Name = "renameAlbumsSource"
+        self.renameAlbumsPath, self.renameAlbumsSource = self._make_source_controls(bulkPanel, "renameAlbumsPath", "renameAlbumsSource")
         self.renameAlbumsSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.renameAlbumsPath))
 
         # create the rename albums button
@@ -560,9 +561,7 @@ class MainFrame(wx.Frame):
         startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld or sld:")
 
         # create controls for selecting the starting path for setting album art
-        self.renameFilesPath, self.renameFilesSource = self._make_source_controls(bulkPanel)
-        self.renameFilesPath.Name = "renameFilesPath"
-        self.renameFilesSource.Name = "renameFilesSource"
+        self.renameFilesPath, self.renameFilesSource = self._make_source_controls(bulkPanel, "renameFilesPath", "renameFilesSource")
         self.renameFilesSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.renameFilesPath))
 
         # create the remove from set list button
@@ -624,9 +623,7 @@ class MainFrame(wx.Frame):
         # @todo needs to be all audio file types
         # @todo use audio_exts constant to build wildcard string for audio files
         wildcard_exts = "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"
-        self.renameAudioFilePath, self.renameAudioFileSource = self._make_source_controls(filePanel)
-        self.renameAudioFilePath.Name = "renameAudioFilePath"
-        self.renameAudioFileSource.Name = "renameAudioFileSource"
+        self.renameAudioFilePath, self.renameAudioFileSource = self._make_source_controls(filePanel, "renameAudioFilePath", "renameAudioFileSource")
         self.renameAudioFileSource.Bind(
             wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.renameAudioFilePath, wildcard_exts)
         )
@@ -727,9 +724,7 @@ class MainFrame(wx.Frame):
         fileTypeLabel = wx.StaticText(bulkPanel, label="Extract from Audio Ext:")
 
         # create controls for selecting the starting path for bulk extraction
-        self.extractArtPath, self.extractArtSource = self._make_source_controls(bulkPanel)
-        self.extractArtPath.Name = "extractArtPath"
-        self.extractArtSource.Name = "extractArtSource"
+        self.extractArtPath, self.extractArtSource = self._make_source_controls(bulkPanel, "extractArtPath", "extractArtSource")
         self.extractArtSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.extractArtPath))
 
         # file type drop list for bulk conversion
@@ -794,9 +789,7 @@ class MainFrame(wx.Frame):
         # create path input and browse button controls for selecting the audio file
         # @todo use audio_exts constant to build
         wildcard_exts = "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"
-        self.extractArtFilePath, self.extractArtFileBrowse = self._make_source_controls(filePanel)
-        self.extractArtFilePath.Name = "extractArtFilePath"
-        self.extractArtFileBrowse.Name = "extractArtFileBrowse"
+        self.extractArtFilePath, self.extractArtFileBrowse = self._make_source_controls(filePanel, "extractArtFilePath", "extractArtFileBrowse")
         self.extractArtFileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.extractArtFilePath, wildcard_exts))
 
         # create the extract file art button
@@ -857,9 +850,7 @@ class MainFrame(wx.Frame):
         startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld:")
 
         # create controls for selecting the starting path for setting album art
-        self.setArtPath, self.setArtSource = self._make_source_controls(bulkPanel)
-        self.setArtPath.Name = "setArtPath"
-        self.setArtSource.Name = "setArtSource"
+        self.setArtPath, self.setArtSource = self._make_source_controls(bulkPanel, "setArtPath", "setArtSource")
         self.setArtSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.setArtPath))
 
         # create the set album art button
@@ -953,16 +944,12 @@ class MainFrame(wx.Frame):
         fileTypeLabel = wx.StaticText(bulkPanel, label="Convert from Audio Ext:")
 
         # create controls for selecting the starting path for bulk conversion
-        self.convertAudioSrcPath, self.convertAudioSource = self._make_source_controls(bulkPanel)
-        self.convertAudioSrcPath.Name = "convertAudioSrcPath"
-        self.convertAudioSource.Name = "convertAudioSource"
+        self.convertAudioSrcPath, self.convertAudioSource = self._make_source_controls(bulkPanel, "convertAudioSrcPath", "convertAudioSource")
         self.convertAudioSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.convertAudioSrcPath))
 
         # create controls for selecting the optional target path for bulk conversion
-        self.convertAudioDestPath, self.convertAudioDest = self._make_target_controls(bulkPanel)
-        self.convertAudioDest.Name = "convertAudioDest"
-        self.convertAudioDest.Name = "convertAudioDest"
-        self.convertAudioDest.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.convertAudioDestPath))
+        self.convertAudioDestPath, self.convertAudioTarget = self._make_target_controls(bulkPanel, "convertAudioDestPath", "convertAudioTarget")
+        self.convertAudioTarget.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.convertAudioDestPath))
 
         # file type drop list for bulk conversion
         file_types = ["Any file type"] + AUDIO_EXTS
@@ -986,7 +973,7 @@ class MainFrame(wx.Frame):
         # order the optional target path controls in the bulk directory conversion subpanel grid
         bulkGrid.Add(destPathLabel, pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
         bulkGrid.Add(self.convertAudioDestPath, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
-        bulkGrid.Add(self.convertAudioDest, pos=(3, 3), flag=wx.EXPAND)
+        bulkGrid.Add(self.convertAudioTarget, pos=(3, 3), flag=wx.EXPAND)
 
         # order the file type pattern controls in the bulk directory conversion subpanel grid
         bulkGrid.Add(fileTypeLabel, pos=(4, 0), flag=wx.ALIGN_CENTER_VERTICAL)
@@ -1032,15 +1019,14 @@ class MainFrame(wx.Frame):
         # create path input and browse button controls for selecting the audio file
         # @todo use audio_exts constant to build wildcard string for audio files
         wildcard_exts = "Audio files (*.flac;*.mp3;*.m4a;*.wma)|*.flac;*.mp3;*.m4a;*.wma"
-        self.convertAudioFileSrcPath, self.convertAudioFileSource = self._make_source_controls(filePanel)
-        self.convertAudioFileSrcPath.Name = "convertAudioFileSrcPath"
-        self.convertAudioFileSource.Name = "convertAudioSource"
-        self.convertAudioFileSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.convertAudioFileSrcPath, wildcard_exts))
+        self.convertAudioFileSrcPath, self.convertAudioFileSource = self._make_source_controls(
+            filePanel, "convertAudioFileSrcPath", "convertAudioSource")
+        self.convertAudioFileSource.Bind(
+            wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.convertAudioFileSrcPath, wildcard_exts))
 
         # create optional target path controls
-        self.convertAudioFileDestPath, self.convertAudioFileTarget = self._make_target_controls(filePanel)
-        self.convertAudioFileDestPath.Name = "convertAudioFileDestPath"
-        self.convertAudioFileTarget.Name = "convertAudioFileTarget"
+        self.convertAudioFileDestPath, self.convertAudioFileTarget = self._make_target_controls(
+            filePanel, "convertAudioFileDestPath", "convertAudioFileTarget")
         self.convertAudioFileTarget.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.convertAudioFileDestPath))
 
         # create the convert audio file button
@@ -1139,9 +1125,7 @@ class MainFrame(wx.Frame):
         startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld:")
 
         # create controls for selecting the starting path for bulk clip checking
-        self.clipCheckPath, self.clipCheckSource = self._make_source_controls(bulkPanel)
-        self.clipCheckPath.Name = "clipCheckPath"
-        self.clipCheckSource.Name = "clipCheckSource"
+        self.clipCheckPath, self.clipCheckSource = self._make_source_controls(bulkPanel, "clipCheckPath", "clipCheckSource")
         self.clipCheckSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.clipCheckPath))
 
         # create the clip checking button
@@ -1204,9 +1188,7 @@ class MainFrame(wx.Frame):
         # create controls for selecting the files for bulk clip checking
         mp3_wildcard = f"MP3 files (*{MP3_EXT})|*{MP3_EXT}"
 
-        self.clipCheckFilePath, self.clipCheckFileSource = self._make_source_controls(filePanel)
-        self.clipCheckFilePath.Name = "clipCheckFilePath"
-        self.clipCheckFileSource.Name = "clipCheckFileSource"
+        self.clipCheckFilePath, self.clipCheckFileSource = self._make_source_controls(filePanel, "clipCheckFilePath", "clipCheckFileSource")
         self.clipCheckFileSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.clipCheckFilePath, mp3_wildcard))
 
         # create the clip checking button
@@ -1263,15 +1245,18 @@ class MainFrame(wx.Frame):
 
         # create static text for describing section & starting path label and leveling type selection
         briefDesc = wx.StaticText(bulkPanel, label="Levels all audio files in a directory walk")
-        resultDesc = wx.StaticText(bulkPanel, label="The leveled files will be saved in project default output location")
+        resultDesc = wx.StaticText(bulkPanel, label="Processed files saved in default output folder or specified target folder")
         startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld:")
+        destPathLabel = wx.StaticText(bulkPanel, label="Destination path:")
         levelTypeLabel = wx.StaticText(bulkPanel, label="Level Audio Type:")
 
         # create controls for selecting the starting path for bulk leveling
-        self.levelAudioPath, self.levelAudioSource = self._make_source_controls(bulkPanel)
-        self.levelAudioPath.Name = "levelAudioPath"
-        self.levelAudioSource.Name = "levelAudioSource"
-        self.levelAudioSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.levelAudioPath))
+        self.levelAudioSrcPath, self.levelAudioSource = self._make_source_controls(bulkPanel, "levelAudioSrcPath", "levelAudioSource")
+        self.levelAudioSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.levelAudioSrcPath))
+
+        # create controls for selecting the optional target path for bulk leveling
+        self.levelAudioDestPath, self.levelAudioTarget = self._make_source_controls(bulkPanel, "levelAudioDestPath", "levelAudioTarget")
+        self.levelAudioTarget.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.levelAudioDestPath))
 
         # level type drop list for bulk leveling
         # @todo add a level types constant LEVEL_TYPES = ["ebu", "peak", "rms"]
@@ -1292,13 +1277,18 @@ class MainFrame(wx.Frame):
 
         # order the top level directory controls in the bulk directory conversion subpanel grid
         bulkGrid.Add(startPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(self.levelAudioPath, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.levelAudioSrcPath, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
         bulkGrid.Add(self.levelAudioSource, pos=(2, 3), flag=wx.EXPAND)
 
-        # order the file type pattern controls in the bulk directory conversion subpanel grid
-        bulkGrid.Add(levelTypeLabel, pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        bulkGrid.Add(self.levelAudioChoice, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
-        bulkGrid.Add(self.levelAudioDir, pos=(3, 3))
+        # order the optional target path controls in the bulk directory conversion subpanel grid
+        bulkGrid.Add(destPathLabel, pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(self.levelAudioDestPath, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.levelAudioTarget, pos=(3, 3), flag=wx.EXPAND)
+
+        # order the level type controls in the bulk directory conversion subpanel grid
+        bulkGrid.Add(levelTypeLabel, pos=(4, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        bulkGrid.Add(self.levelAudioChoice, pos=(4, 1), span=(1, 2), flag=wx.EXPAND)
+        bulkGrid.Add(self.levelAudioDir, pos=(4, 3))
 
         # make the second column growable to allow the controls to expand properly
         bulkGrid.AddGrowableCol(1)
@@ -1332,58 +1322,54 @@ class MainFrame(wx.Frame):
 
         # create static text for describing section & audio path labels
         briefDesc = wx.StaticText(filePanel, label="Level specific audio file by normalization type")
-        resultDesc = wx.StaticText(filePanel, label="The leveled file will be saved in project default output location")
-        ebuLabel = wx.StaticText(filePanel, label="File to EBU normalize:")
-        peakLabel = wx.StaticText(filePanel, label="File to Peak normalize:")
-        rmsLabel = wx.StaticText(filePanel, label="File to RMS normalize:")
+        resultDesc = wx.StaticText(filePanel, label="Processed file saved in default output folder or specified target folder")
+        audioPathLabel = wx.StaticText(filePanel, label="Audio file path:")
+        destPathLabel = wx.StaticText(filePanel, label="Destination path:")
+        levelTypeLabel = wx.StaticText(filePanel, label="Level Audio Type:")
 
         # create path input and browse button controls for selecting the audio files
-        wildcard_mp3 = "MP3 Audio files (*.mp3)|*.mp3"
+        wildcard_mp3 = f"MP3 Audio files (*{MP3_EXT})|*{MP3_EXT}"
+        self.levelAudioFileSrcPath, self.levelAudioFileSource = self._make_source_controls(
+            filePanel, "levelAudioFileSrcPath", "levelAudioFileSource")
+        self.levelAudioFileSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.levelAudioFileSrcPath, wildcard_mp3))
 
-        self.ebuFilePath, self.ebuFileBrowse = self._make_source_controls(filePanel)
-        self.ebuFilePath.Name = "ebuFilePath"
-        self.ebuFileBrowse.Name = "ebuFileBrowse"
-        self.ebuFileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.ebuFilePath, wildcard_mp3))
+        # create optional target path controls
+        self.levelAudioFileDestPath, self.levelAudioFileTarget = self._make_target_controls(
+            filePanel, "levelAudioFileDestPath", "levelAudioFileTarget")
+        self.levelAudioFileTarget.Bind(
+            wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.levelAudioFileDestPath))
 
-        self.peakFilePath, self.peakFileBrowse = self._make_source_controls(filePanel)
-        self.peakFilePath.Name = "peakFilePath"
-        self.peakFileBrowse.Name = "peakFileBrowse"
-        self.peakFileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.peakFilePath, wildcard_mp3))
+        # level type drop list for single file leveling
+        # @todo add a level types constant LEVEL_TYPES = ["ebu", "peak", "rms"]
+        # @todo add singular type constants (LEVEL_EBU = "ebu", LEVEL_PEAK = "peak", LEVEL_RMS = "rms")
+        # @todo use the LEVEL_TYPES constant to populate the level_types list
+        level_types = ["ebu", "peak", "rms"]
+        self.levelAudioFileChoice = wx.Choice(filePanel, choices=level_types, name="levelAudioChoice")
+        self.levelAudioFileChoice.SetSelection(0)
+        self.levelAudioFileChoice.SetToolTip("Select normalization type: ebu (loudness), peak (peak level), or rms (RMS level)")
 
-        self.rmsFilePath, self.rmsFileBrowse = self._make_source_controls(filePanel)
-        self.rmsFilePath.Name = "rmsFilePath"
-        self.rmsFileBrowse.Name = "rmsFileBrowse"
-        self.rmsFileBrowse.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.rmsFilePath, wildcard_mp3))
-
-        # create the single file leveling buttons
-        self.ebuLevelFile = wx.Button(filePanel, label="Level EBU File")
-        self.ebuLevelFile.Bind(wx.EVT_BUTTON, self.eventHandlers.on_ebu_level_file)
-
-        self.peakLevelFile = wx.Button(filePanel, label="Level Peak File")
-        self.peakLevelFile.Bind(wx.EVT_BUTTON, self.eventHandlers.on_peak_file)
-
-        self.rmsLevelFile = wx.Button(filePanel, label="Level RMS File")
-        self.rmsLevelFile.Bind(wx.EVT_BUTTON, self.eventHandlers.on_rms_file)
+        # create the single file leveling button for the level audio file
+        self.levelAudioFile = wx.Button(filePanel, label="Level Audio File")
+        self.levelAudioFile.Bind(wx.EVT_BUTTON, self.eventHandlers.on_level_file)
 
         # add info text controls to the grid layout
-        fileGrid.Add(briefDesc, pos=(0, 0), span=(1, 4), flag=wx.EXPAND)
-        fileGrid.Add(resultDesc, pos=(1, 0), span=(1, 4), flag=wx.EXPAND)
+        fileGrid.Add(briefDesc, pos=(0, 0), span=(1, 3), flag=wx.EXPAND)
+        fileGrid.Add(resultDesc, pos=(1, 0), span=(1, 3), flag=wx.EXPAND)
 
-        # add path rows with shared columns to keep controls aligned
-        fileGrid.Add(ebuLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        fileGrid.Add(self.ebuFilePath, pos=(2, 1), flag=wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
-        fileGrid.Add(self.ebuFileBrowse, pos=(2, 2), flag=wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
-        fileGrid.Add(self.ebuLevelFile, pos=(2, 3), flag=wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
+        # add the source path controls to the grid layout
+        fileGrid.Add(audioPathLabel, pos=(2, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        fileGrid.Add(self.levelAudioFileSrcPath, pos=(2, 1), span=(1, 2), flag=wx.EXPAND)
+        fileGrid.Add(self.levelAudioFileSource, pos=(2, 3), flag=wx.EXPAND)
 
-        fileGrid.Add(peakLabel, pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        fileGrid.Add(self.peakFilePath, pos=(3, 1), flag=wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
-        fileGrid.Add(self.peakFileBrowse, pos=(3, 2), flag=wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
-        fileGrid.Add(self.peakLevelFile, pos=(3, 3), flag=wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
+        # add the destination path controls to the grid layout
+        fileGrid.Add(destPathLabel, pos=(3, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        fileGrid.Add(self.levelAudioFileDestPath, pos=(3, 1), span=(1, 2), flag=wx.EXPAND)
+        fileGrid.Add(self.levelAudioFileTarget, pos=(3, 3), flag=wx.EXPAND)
 
-        fileGrid.Add(rmsLabel, pos=(4, 0), flag=wx.ALIGN_CENTER_VERTICAL)
-        fileGrid.Add(self.rmsFilePath, pos=(4, 1), flag=wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
-        fileGrid.Add(self.rmsFileBrowse, pos=(4, 2), flag=wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
-        fileGrid.Add(self.rmsLevelFile, pos=(4, 3), flag=wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
+        # order the level type controls in the single file leveling subpanel grid
+        fileGrid.Add(levelTypeLabel, pos=(4, 0), flag=wx.ALIGN_CENTER_VERTICAL)
+        fileGrid.Add(self.levelAudioFileChoice, pos=(4, 1), span=(1, 2), flag=wx.EXPAND)
+        fileGrid.Add(self.levelAudioFile, pos=(4, 3))
 
         # make the second column growable to allow the controls to expand properly
         fileGrid.AddGrowableCol(1)
@@ -1454,9 +1440,7 @@ class MainFrame(wx.Frame):
         startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld only:")
 
         # create controls for selecting the starting path for bulk updating
-        self.playlistUpdatePath, self.playlistUpdateSource = self._make_source_controls(bulkPanel)
-        self.playlistUpdatePath.Name = "playlistUpdatePath"
-        self.playlistUpdateSource.Name = "playlistUpdateSource"
+        self.playlistUpdatePath, self.playlistUpdateSource = self._make_source_controls(bulkPanel, "playlistUpdatePath", "playlistUpdateSource")
         self.playlistUpdateSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.playlistUpdatePath))
 
         # create the update playlist button
@@ -1520,9 +1504,8 @@ class MainFrame(wx.Frame):
         playlist_patterns = ';'.join('*' + ext for ext in PLAYLIST_EXTS)
         playlist_wildcard = f"Playlist files ({playlist_patterns})|{playlist_patterns}"
 
-        self.updatePlaylistFilePath, self.updatePlaylistFileBrowse = self._make_source_controls(filePanel)
-        self.updatePlaylistFilePath.Name = "updatePlaylistFilePath"
-        self.updatePlaylistFileBrowse.Name = "updatePlaylistFileBrowse"
+        self.updatePlaylistFilePath, self.updatePlaylistFileBrowse = self._make_source_controls(
+            filePanel, "updatePlaylistFilePath", "updatePlaylistFileBrowse")
         self.updatePlaylistFileBrowse.Bind(
             wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_file(evt, self.updatePlaylistFilePath, playlist_wildcard)
         )
@@ -1620,9 +1603,7 @@ class MainFrame(wx.Frame):
         fileTypeLabel = wx.StaticText(bulkPanel, label="Information from Audio Ext:")
 
         # create controls for selecting the starting path for bulk media information
-        self.mediaInfoPath, self.mediaInfoSource = self._make_source_controls(bulkPanel)
-        self.mediaInfoPath.Name = "mediaInfoPath"
-        self.mediaInfoSource.Name = "mediaInfoSource"
+        self.mediaInfoPath, self.mediaInfoSource = self._make_source_controls(bulkPanel, "mediaInfoPath", "mediaInfoSource")
         self.mediaInfoSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.mediaInfoPath))
 
         # file type drop list for bulk media information
@@ -1686,9 +1667,7 @@ class MainFrame(wx.Frame):
         fileTypeLabel = wx.StaticText(bulkPanel, label="Information from Audio Ext:")
 
         # create controls for selecting the starting path for bulk tag information
-        self.mediaTagsPath, self.mediaTagsSource = self._make_source_controls(bulkPanel)
-        self.mediaTagsPath.Name = "mediaTagsPath"
-        self.mediaTagsSource.Name = "mediaTagsSource"
+        self.mediaTagsPath, self.mediaTagsSource = self._make_source_controls(bulkPanel, "mediaTagsPath", "mediaTagsSource")
         self.mediaTagsSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.mediaTagsPath))
 
         # file type drop list for bulk tag information
@@ -1789,9 +1768,7 @@ class MainFrame(wx.Frame):
         fileTypeLabel = wx.StaticText(bulkPanel, label="Remove this pattern:")
 
         # create controls for selecting the starting path for bulk file removal
-        self.removePatternPath, self.removePatternSource = self._make_source_controls(bulkPanel)
-        self.removePatternPath.Name = "removePatternPath"
-        self.removePatternSource.Name = "removePatternSource"
+        self.removePatternPath, self.removePatternSource = self._make_source_controls(bulkPanel, "removePatternPath", "removePatternSource")
         self.removePatternSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.removePatternPath))
 
         # create the pattern to remove input field
@@ -1852,9 +1829,7 @@ class MainFrame(wx.Frame):
         startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld or sld:")
 
         # create controls for selecting the starting path for setting album art
-        self.removeListPath, self.removeListSource = self._make_source_controls(bulkPanel)
-        self.removeListPath.Name = "removeListPath"
-        self.removeListSource.Name = "removeListSource"
+        self.removeListPath, self.removeListSource = self._make_source_controls(bulkPanel, "removeListPath", "removeListSource")
         self.removeListSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.removeListPath))
 
         # create the remove from set list button
@@ -1913,9 +1888,7 @@ class MainFrame(wx.Frame):
         startPathLabel = wx.StaticText(bulkPanel, label="Starting path, tld or fld:")
 
         # create controls for selection the starting path for bulk removal
-        self.removeAlbumsPath, self.removeAlbumsSource = self._make_source_controls(bulkPanel)
-        self.removeAlbumsPath.Name = "removeAlbumsPath"
-        self.removeAlbumsSource.Name = "removeAlbumsSource"
+        self.removeAlbumsPath, self.removeAlbumsSource = self._make_source_controls(bulkPanel, "removeAlbumsPath", "removeAlbumsSource")
         self.removeAlbumsSource.Bind(wx.EVT_BUTTON, lambda evt: self.eventHandlers.on_browse_dir(evt, self.removeAlbumsPath))
 
         # create the remove albums button
@@ -1950,7 +1923,7 @@ class MainFrame(wx.Frame):
         return bulkSizer
 
 
-    def _make_source_controls(self, parent) -> (tuple[wx.TextCtrl, wx.Button]):
+    def _make_source_controls(self, parent, txt_name, button_name) -> (tuple[wx.TextCtrl, wx.Button]):
         '''
         @brief Helper function to create a standard set of source path controls (text box and browse button).
 
@@ -1963,11 +1936,11 @@ class MainFrame(wx.Frame):
         '''
 
         #  create the text control for path input
-        pathLabel = wx.TextCtrl(parent)
+        pathLabel = wx.TextCtrl(parent, name=txt_name)
         pathLabel.SetToolTip("Enter a source path or click Source button")
 
         # create the browse button for selecting the path
-        browseButton = wx.Button(parent, label="Source")
+        browseButton = wx.Button(parent, label="Source", name=button_name)
         browseButton.SetToolTip("Browse for source path")
 
         path_controls = (pathLabel, browseButton)
@@ -1975,7 +1948,7 @@ class MainFrame(wx.Frame):
         return path_controls
 
 
-    def _make_target_controls(self, parent) -> (tuple[wx.TextCtrl, wx.Button]):
+    def _make_target_controls(self, parent, txt_name, button_name) -> (tuple[wx.TextCtrl, wx.Button]):
         '''
         @brief Helper function to create a standard set of target path controls (text box and browse button).
 
@@ -1988,11 +1961,11 @@ class MainFrame(wx.Frame):
         '''
 
         #  create the text control for path input
-        pathLabel = wx.TextCtrl(parent)
+        pathLabel = wx.TextCtrl(parent, name=txt_name)
         pathLabel.SetToolTip("Enter a target path or click Target button")
 
         # create the browse button for selecting the path
-        browseButton = wx.Button(parent, label="Target")
+        browseButton = wx.Button(parent, label="Target", name=button_name)
         browseButton.SetToolTip("Browse for target path")
 
         path_controls = (pathLabel, browseButton)

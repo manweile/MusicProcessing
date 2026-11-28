@@ -539,11 +539,22 @@ class EventHandlers:
 
         try:
             # get the top-level directory and validate it before normalizing audio files in a directory walk
-            tld = self.mainFrame.levelAudioPath.GetValue().strip()
+            tld = self.mainFrame.levelAudioSrcPath.GetValue().strip()
 
             # not a valid directory, return early
             if not self._validate_dir(tld):
                 return
+
+            # get the optional target path from the GUI and validate it if provided
+            dest = self.mainFrame.levelAudioDestPath.GetValue().strip()
+
+            # not a valid directory, return early
+            if dest and not self._validate_dir(dest):
+                return
+
+            # handle empty destination path by setting it to None
+            if dest == "":
+                dest = None
 
             # get the normalization type from the GUI
             norm_type = self.mainFrame.levelAudioChoice.GetStringSelection().lower()
@@ -556,133 +567,46 @@ class EventHandlers:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
 
 
-    def on_ebu_level_file(self, event):
+    def on_level_file(self, event):
         '''
-        @brief Handle the event for EBU normalization of a single file.
+        @brief Handle the event for normalizing a single audio file.
 
-        @details Retrieves the file path from the GUI, validates it, and then runs the EBU normalization task.<br>
+        @details Retrieves the file path and normalization type from the GUI, validates them, and then runs the normalization task.<br>
         The task is executed asynchronously, and upon success, a dialog is shown with the result file.
 
         @param self {EventHandlers} The instance of the class the method belongs to.
         @param event {object} The event object.
 
-        @exception e_error {Exception} Raised if an error occurs during EBU normalization.
+        @exception e_error {Exception} Raised if an error occurs during audio normalization of a single file.
         '''
 
         try:
-            # get the file path from the GUI and validate it before EBU normalization
-            path = self.mainFrame.ebuFilePath.GetValue().strip()
+            # get the file path from the GUI and validate it before normalizing the audio file
+            path = self.mainFrame.levelAudioFileSrcPath.GetValue().strip()
 
             # not a valid file, return early
             if not self._validate_file(path):
                 return
 
-            # # define the callback function to display the result file after EBU normalization
-            # def callback():
-            #     '''
-            #     @brief Display the EBU normalization result file.
-
-            #     @details Opens the result file after the ebu normalization task succeeds.
-
-            #     @exception e_error {Exception} Raises an exception if displaying the result file fails.
-            #     '''
-
-            #     try:
-            #         self.mainFrame._show_result_file("ebu_normalize_file")
-
-            #     except Exception as e_error:
-            #         wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-            # self.mainFrame.taskRunner.run_task(self.normalization.ebu_normalize_file, path, on_success=callback)
-            self.mainFrame.taskRunner.run_task(self.normalization.ebu_normalize_file, path)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_peak_file(self, event):
-        '''
-        @brief Handle the event for peak normalizing a single audio file.
-
-        @details Retrieves the file path from the GUI, validates it, and then runs the peak normalization task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the result file.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during peak normalization of the audio file.
-        '''
-
-        try:
-            # get the file path from the GUI and validate it before peak normalizing the audio file
-            path = self.mainFrame.peakFilePath.GetValue().strip()
-
-            # not a valid file, return early
-            if not self._validate_file(path):
+            # get the optional target path from the GUI and validate it if provided
+            dest = self.mainFrame.levelAudioFileDestPath.GetValue().strip()
+            if dest and not self._validate_dir(dest):
                 return
 
-            # # define the callback function to display the result file after EBU normalization
-            # def callback():
-            #     '''
-            #     @brief Display the Peak normalization result file.
+            # handle an empty destination path by using the default output folder
+            if dest == "":
+                dest = None
 
-            #     @details Opens the result file after the peak normalization task succeeds.
+            # get the normalization type from the GUI
+            norm_type = self.mainFrame.levelAudioFileChoice.GetStringSelection().lower()
 
-            #     @exception e_error {Exception} Raises an exception if displaying the result file fails.
-            #     '''
-
-            #     try:
-            #         self.mainFrame._show_result_file("peak_normalize_file")
-
-            #     except Exception as e_error:
-            #         raise e_error
-
-            # self.mainFrame.taskRunner.run_task(self.normalization.peak_normalize_file, path, on_success=callback)
-            self.mainFrame.taskRunner.run_task(self.normalization.peak_normalize_file, path)
-
-        except Exception as e_error:
-            wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
-
-
-    def on_rms_file(self, event):
-        '''
-        @brief Handle the event for RMS normalizing a single audio file.
-
-        @details Retrieves the file path from the GUI, validates it, and then runs the RMS normalization task.<br>
-        The task is executed asynchronously, and upon success, a dialog is shown with the result file.
-
-        @param self {EventHandlers} The instance of the class the method belongs to.
-        @param event {object} The event object.
-
-        @exception e_error {Exception} Raised if an error occurs during RMS normalization.
-        '''
-
-        try:
-            # get the file path from the GUI and validate it before RMS normalizing the audio file
-            path = self.mainFrame.rmsFilePath.GetValue().strip()
-
-            # not a valid file, return early
-            if not self._validate_file(path):
-                return
-
-            # # define the callback function to display the result file after RMS normalization
-            # def callback():
-            #     '''
-            #     @brief Display the RMS normalization result file.
-
-            #     @details Opens the result file after the normalization task succeeds.
-
-            #     @exception e_error {Exception} Raises an exception if displaying the result file fails.
-            #     '''
-
-            #     try:
-            #         self.mainFrame._show_result_file("rms_normalize_file")
-
-            #     except Exception as e_error:
-            #         raise e_error
-
-            # self.mainFrame.taskRunner.run_task(self.normalization.rms_normalize_file, path, on_success=callback)
-            self.mainFrame.taskRunner.run_task(self.normalization.rms_normalize_file, path)
+            # call the correct normalization function per the selected normalization type
+            if norm_type == "ebu":
+                self.mainFrame.taskRunner.run_task(self.normalization.ebu_normalize_file, path, dest)
+            elif norm_type == "peak":
+                self.mainFrame.taskRunner.run_task(self.normalization.peak_normalize_file, path, dest)
+            elif norm_type == "rms":
+                self.mainFrame.taskRunner.run_task(self.normalization.rms_normalize_file, path, dest)
 
         except Exception as e_error:
             wx.MessageBox(f"An error occurred: {e_error}", "Error", wx.ICON_ERROR)
