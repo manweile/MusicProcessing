@@ -314,19 +314,28 @@ class MainFrame(wx.Frame):
         self.mainNotebook.AddPage(self.removeTab, "Removal Processing")
         self.mainNotebook.AddPage(self.infoTab, "Information")
 
+        # set Name Management tab as the default tab
+        self.mainNotebook.SetSelection(0)
+
         # create the log control for displaying log messages
         self.mainLog = wx.TextCtrl(self.mainSplitter, style=wx.HSCROLL | wx.TE_MULTILINE | wx.TE_READONLY, value="", name="mainLog")
 
         # split horizontally: notebook on top, log on bottom
         self.mainSplitter.SplitHorizontally(self.mainNotebook, self.mainLog)
-        # Initial sash position in pixels from top
-        sash_position = self.Size.height // 2
-        self.mainSplitter.SetSashPosition(sash_position)
+
+        # bind notebook page changed event to dynamically adjust sash position
+        self.mainNotebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self._on_notebook_page_changed)
 
         # set up the main sizer for the panel and add the splitter window to it
         mainSizer = wx.BoxSizer(wx.VERTICAL)
         mainSizer.Add(self.mainSplitter, 1, wx.EXPAND)
         self.mainPanel.SetSizer(mainSizer)
+
+        # call Layout to ensure proper sizing before adjusting sash
+        self.mainPanel.Layout()
+
+        # adjust initial sash position based on the Name Management tab content
+        wx.CallAfter(self._adjust_sash_position)
 
         # position the GUI window based on the environment variable for display placement
         # the environment key/value pair is only set when using the specific GUI launch configuration
@@ -2093,6 +2102,64 @@ class MainFrame(wx.Frame):
             content = result_file.read()
 
         wx.CallAfter(self.mainLog.SetValue, f"=== {filename + RESULT_EXT} ===\n{content}")
+
+
+    def _adjust_sash_position(self):
+        '''
+        @brief Adjust the sash position based on the current tab's content height.
+
+        @details Calculates the vertical extent of all visible controls in the active tab.<br>
+        Positions the sash approximately 20 pixels below the lowest visible element.
+
+        @param self {MainFrame} The instance of the class.
+        '''
+
+        active_tab = self.mainNotebook.GetCurrentPage()
+        if active_tab is None:
+            return
+
+        # find the bottom-most control in the current tab
+        max_bottom = 0
+        for child in active_tab.GetChildren():
+            if child.IsShown():
+                rect = child.GetRect()
+                control_bottom = rect.y + rect.height
+                if control_bottom > max_bottom:
+                    max_bottom = control_bottom
+
+        # if no visible controls found, use best size as fallback
+        if max_bottom == 0:
+            best_size = active_tab.GetBestSize()
+            tab_height = best_size.height if best_size.height > 0 else 200
+        else:
+            # add buffer pixels below the lowest visible element
+            tab_height = max_bottom + 20
+
+        # calculate sash position with constraints
+        splitter_height = self.mainSplitter.GetSize().height
+        min_log_height = 100
+        max_tab_height = splitter_height - min_log_height
+
+        # account for the notebook tab bar height
+        notebook_tab_height = 30
+
+        # set sash position
+        sash_position = min(tab_height + notebook_tab_height, max_tab_height)
+        self.mainSplitter.SetSashPosition(sash_position)
+
+
+    def _on_notebook_page_changed(self, event):
+        '''
+        @brief Event handler for notebook page changes to adjust sash position dynamically.
+
+        @details When a notebook tab is changed, this method recalculates and adjusts the sash position
+        based on the content of the newly visible tab.
+
+        @param self {MainFrame} The instance of the class.
+        @param event {wx.NotebookEvent} The event object from the notebook page change.
+        '''
+
+        wx.CallAfter(self._adjust_sash_position)
 
 
     def log(self, message):
